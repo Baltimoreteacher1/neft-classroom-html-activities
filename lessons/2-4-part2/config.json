@@ -206,46 +206,1791 @@
     "imageAlt": "Two box plots of average monthly temperatures in degrees Fahrenheit, one for Honolulu, Hawaii and one for Chicago, Illinois.",
     "sampleAnswer": "Chicago's five-number summary is about Min = 26°F, Q1 = 34°F, Median = 57°F, Q3 = 74°F, Max = 90°F, giving a range of 90 − 26 = 64°F and an IQR of 74 − 34 = 40°F. Honolulu's five-number summary is about Min = 78°F, Q1 = 82°F, Median = 84°F, Q3 = 86°F, Max = 89°F, giving a range of 89 − 78 = 11°F and an IQR of 86 − 82 = 4°F. Honolulu's median (84°F) is 84 − 57 = 27°F warmer than Chicago's (57°F), and Honolulu's temperatures are far more consistent (range 11°F, IQR 4°F) than Chicago's, which swing widely across the year (range 64°F, IQR 40°F) — showing Chicago has hot summers and cold winters while Honolulu stays warm and steady year-round."
   },
-  "reviewCheck": {
-    "type": "multiple-choice",
-    "stem": "Two box plots show: Team A has IQR = 8, Team B has IQR = 22. What does this tell you?",
-    "choices": [
-      "Team A's middle 50% is more consistent; Team B's is more spread out",
-      "Team B is a better team",
-      "Team A has a higher median",
-      "The IQRs don't tell you about consistency"
+  "reviewWarmup": {
+    "title": "Warm-Up: Yesterday's Lesson",
+    "kind": "previous",
+    "prevLessonTitle": "Represent and Describe Data in a Box Plot",
+    "questions": [
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?",
+        "choices": [
+          "13",
+          "25",
+          "10",
+          "20"
+        ],
+        "correctIndex": 0,
+        "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13.",
+        "choiceFeedback": [
+          "",
+          "This is the spread, but IQR is Q3 − Q1 only.",
+          "Full range from min to max is 25, but IQR is different.",
+          "IQR only uses the quartiles, not min and max."
+        ],
+        "hints": [
+          "You're given five numbers, but IQR only uses two of them: Q1 and Q3. Ignore the min, median, and max.",
+          "IQR = Q3 − Q1. Find Q3 (28) and Q1 (15) in the summary — the IQR is their difference, the width of the box.",
+          "Set up the subtraction Q3 − Q1: that's 28 − 15. The difference you get is the IQR."
+        ],
+        "stemEs": "Un diagrama de caja muestra: Mín = 10, Q1 = 15, Mediana = 20, Q3 = 28, Máx = 35. ¿Cuál es el rango intercuartílico (RIC)?",
+        "explanationEs": "RIC = Q3 − Q1 = 28 − 15 = 13.",
+        "hintsEs": [
+          "Te dan cinco números, pero el RIC solo usa dos: Q1 y Q3. Ignora el mínimo, la mediana y el máximo.",
+          "RIC = Q3 − Q1. Halla Q3 (28) y Q1 (15) en el resumen: el RIC es su diferencia, el ancho de la caja.",
+          "Plantea la resta Q3 − Q1: eso es 28 − 15. La diferencia que obtengas es el RIC."
+        ],
+        "misconceptionTags": [
+          null,
+          "stat-range-for-iqr",
+          "stat-range-for-iqr",
+          "stat-range-for-iqr"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "On a box plot, what does the line inside the box represent?",
+        "choices": [
+          "The median",
+          "The mean",
+          "The mode",
+          "The range"
+        ],
+        "correctIndex": 0,
+        "explanation": "The line inside the box of a box plot always represents the median.",
+        "choiceFeedback": [
+          "",
+          "The line shows center—but mean is a different measure.",
+          "The line is always the middle value, not an average.",
+          "The range is a spread — the whole distance from the smallest value to the largest — not a single line drawn inside the box. Think about which value splits the data in half."
+        ],
+        "hints": [
+          "Picture a box plot: a box with whiskers, and a line cutting through the box. That line marks the CENTER of the data.",
+          "The box runs from Q1 to Q3, so the line inside splits the middle 50% in half. Think about which measure splits ordered data into halves.",
+          "First step: recall which measure means 'the middle value of the ordered data.' The line inside the box always marks that exact measure."
+        ],
+        "stemEs": "En un diagrama de caja, ¿qué representa la línea que está dentro de la caja?",
+        "explanationEs": "La línea dentro de la caja de un diagrama de caja siempre representa la mediana.",
+        "choicesEs": [
+          "La mediana",
+          "La media",
+          "La moda",
+          "El rango"
+        ],
+        "hintsEs": [
+          "Imagina un diagrama de caja: una caja con bigotes y una línea que atraviesa la caja. Esa línea marca el CENTRO de los datos.",
+          "La caja va de Q1 a Q3, así que la línea de adentro parte por la mitad al 50% central. Piensa qué medida divide en mitades los datos ordenados.",
+          "Primer paso: recuerda qué medida significa 'el valor del medio de los datos ordenados'. La línea dentro de la caja siempre marca esa medida."
+        ],
+        "misconceptionTags": [
+          null,
+          "stat-mean-vs-median",
+          "stat-mean-vs-median",
+          "stat-center-vs-spread"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What percentage of data falls between Q1 and Q3 on a box plot?",
+        "choices": [
+          "50%",
+          "25%",
+          "75%",
+          "100%"
+        ],
+        "correctIndex": 0,
+        "explanation": "The box in a box plot contains the middle 50% of the data (from Q1 to Q3).",
+        "choiceFeedback": [
+          "",
+          "The box shows the inner half—is it 25%?",
+          "Q1 to Q3 is the middle section—what fraction is that?",
+          "Each quarter is 25%—Q1 to Q3 is two quarters."
+        ],
+        "hints": [
+          "Quartiles cut the data into 4 equal parts — 'quart' like 'quarter.' Each part holds the same share of the data.",
+          "Each quarter of the data is 25%. Count how many quarters sit between Q1 and Q3: Q1 to the median, then the median to Q3.",
+          "First step: Q1 to the median is one quarter — 25%. Add the quarter from the median up to Q3 to get the box's total share."
+        ],
+        "stemEs": "¿Qué porcentaje de los datos queda entre Q1 y Q3 en un diagrama de caja?",
+        "explanationEs": "La caja de un diagrama de caja contiene el 50% central de los datos (de Q1 a Q3).",
+        "hintsEs": [
+          "Los cuartiles cortan los datos en 4 partes iguales: 'cuart-' como 'cuarto'. Cada parte tiene la misma porción de los datos.",
+          "Cada cuarto de los datos es 25%. Cuenta cuántos cuartos hay entre Q1 y Q3: de Q1 a la mediana y de la mediana a Q3.",
+          "Primer paso: de Q1 a la mediana es un cuarto, 25%. Suma el cuarto que va de la mediana a Q3 para obtener la porción total de la caja."
+        ]
+      }
+    ]
+  },
+  "reviewHighlights": {
+    "rule": "Box Plots & 5-Number Summary",
+    "formula": "IQR = Q3 − Q1",
+    "steps": [
+      "1. 5-Number Summary: Minimum, Lower Quartile (Q1), Median (Q2), Upper Quartile (Q3), Maximum",
+      "2. Draw the Box: The box spans from Q1 to Q3 and contains the middle 50% of data",
+      "3. Whiskers: Draw lines from the box out to the minimum and maximum"
     ],
-    "correctIndex": 0,
-    "explanation": "A smaller IQR means the middle 50% of data is more tightly clustered. Team A's scoring is more consistent in the middle range.",
-    "choiceFeedback": [
-      "",
-      "Bigger IQR doesn't mean better—it means more variation.",
-      "IQR tells consistency—smaller is tighter.",
-      "IQR is always about consistency in the middle 50%."
+    "watchOut": "A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%."
+  },
+  "groupLevels": {
+    "level1": [
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?",
+        "choices": [
+          "13",
+          "25",
+          "10",
+          "20"
+        ],
+        "correctIndex": 0,
+        "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13.",
+        "choiceFeedback": [
+          "",
+          "This is the spread, but IQR is Q3 − Q1 only.",
+          "Full range from min to max is 25, but IQR is different.",
+          "IQR only uses the quartiles, not min and max."
+        ],
+        "hints": [
+          "You're given five numbers, but IQR only uses two of them: Q1 and Q3. Ignore the min, median, and max.",
+          "IQR = Q3 − Q1. Find Q3 (28) and Q1 (15) in the summary — the IQR is their difference, the width of the box.",
+          "Set up the subtraction Q3 − Q1: that's 28 − 15. The difference you get is the IQR."
+        ],
+        "stemEs": "Un diagrama de caja muestra: Mín = 10, Q1 = 15, Mediana = 20, Q3 = 28, Máx = 35. ¿Cuál es el rango intercuartílico (RIC)?",
+        "explanationEs": "RIC = Q3 − Q1 = 28 − 15 = 13.",
+        "hintsEs": [
+          "Te dan cinco números, pero el RIC solo usa dos: Q1 y Q3. Ignora el mínimo, la mediana y el máximo.",
+          "RIC = Q3 − Q1. Halla Q3 (28) y Q1 (15) en el resumen: el RIC es su diferencia, el ancho de la caja.",
+          "Plantea la resta Q3 − Q1: eso es 28 − 15. La diferencia que obtengas es el RIC."
+        ],
+        "misconceptionTags": [
+          null,
+          "stat-range-for-iqr",
+          "stat-range-for-iqr",
+          "stat-range-for-iqr"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "On a box plot, what does the line inside the box represent?",
+        "choices": [
+          "The median",
+          "The mean",
+          "The mode",
+          "The range"
+        ],
+        "correctIndex": 0,
+        "explanation": "The line inside the box of a box plot always represents the median.",
+        "choiceFeedback": [
+          "",
+          "The line shows center—but mean is a different measure.",
+          "The line is always the middle value, not an average.",
+          "The range is a spread — the whole distance from the smallest value to the largest — not a single line drawn inside the box. Think about which value splits the data in half."
+        ],
+        "hints": [
+          "Picture a box plot: a box with whiskers, and a line cutting through the box. That line marks the CENTER of the data.",
+          "The box runs from Q1 to Q3, so the line inside splits the middle 50% in half. Think about which measure splits ordered data into halves.",
+          "First step: recall which measure means 'the middle value of the ordered data.' The line inside the box always marks that exact measure."
+        ],
+        "stemEs": "En un diagrama de caja, ¿qué representa la línea que está dentro de la caja?",
+        "explanationEs": "La línea dentro de la caja de un diagrama de caja siempre representa la mediana.",
+        "choicesEs": [
+          "La mediana",
+          "La media",
+          "La moda",
+          "El rango"
+        ],
+        "hintsEs": [
+          "Imagina un diagrama de caja: una caja con bigotes y una línea que atraviesa la caja. Esa línea marca el CENTRO de los datos.",
+          "La caja va de Q1 a Q3, así que la línea de adentro parte por la mitad al 50% central. Piensa qué medida divide en mitades los datos ordenados.",
+          "Primer paso: recuerda qué medida significa 'el valor del medio de los datos ordenados'. La línea dentro de la caja siempre marca esa medida."
+        ],
+        "misconceptionTags": [
+          null,
+          "stat-mean-vs-median",
+          "stat-mean-vs-median",
+          "stat-center-vs-spread"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What percentage of data falls between Q1 and Q3 on a box plot?",
+        "choices": [
+          "50%",
+          "25%",
+          "75%",
+          "100%"
+        ],
+        "correctIndex": 0,
+        "explanation": "The box in a box plot contains the middle 50% of the data (from Q1 to Q3).",
+        "choiceFeedback": [
+          "",
+          "The box shows the inner half—is it 25%?",
+          "Q1 to Q3 is the middle section—what fraction is that?",
+          "Each quarter is 25%—Q1 to Q3 is two quarters."
+        ],
+        "hints": [
+          "Quartiles cut the data into 4 equal parts — 'quart' like 'quarter.' Each part holds the same share of the data.",
+          "Each quarter of the data is 25%. Count how many quarters sit between Q1 and Q3: Q1 to the median, then the median to Q3.",
+          "First step: Q1 to the median is one quarter — 25%. Add the quarter from the median up to Q3 to get the box's total share."
+        ],
+        "stemEs": "¿Qué porcentaje de los datos queda entre Q1 y Q3 en un diagrama de caja?",
+        "explanationEs": "La caja de un diagrama de caja contiene el 50% central de los datos (de Q1 a Q3).",
+        "hintsEs": [
+          "Los cuartiles cortan los datos en 4 partes iguales: 'cuart-' como 'cuarto'. Cada parte tiene la misma porción de los datos.",
+          "Cada cuarto de los datos es 25%. Cuenta cuántos cuartos hay entre Q1 y Q3: de Q1 a la mediana y de la mediana a Q3.",
+          "Primer paso: de Q1 a la mediana es un cuarto, 25%. Suma el cuarto que va de la mediana a Q3 para obtener la porción total de la caja."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the range of: 14, 22, 8, 31, 17",
+        "choices": [
+          "23",
+          "31",
+          "8",
+          "18"
+        ],
+        "correctIndex": 0,
+        "explanation": "Range = max − min = 31 − 8 = 23.",
+        "choiceFeedback": [
+          "",
+          "Find max and min—is range the minimum?",
+          "Max is 31, min is 8—range is the difference.",
+          "Range is spread—subtract max from min, don't add."
+        ],
+        "hints": [
+          "Range = how far the data stretches: the gap between the biggest and smallest values only. The middle values don't matter.",
+          "Scan the list 14, 22, 8, 31, 17: find the maximum and the minimum, then subtract the min from the max.",
+          "First step: the max is 31 and the min is 8. Set up 31 − 8 — that difference is the range."
+        ],
+        "stemEs": "Halla el rango de: 14, 22, 8, 31, 17",
+        "explanationEs": "Rango = máximo − mínimo = 31 − 8 = 23.",
+        "hintsEs": [
+          "El rango es cuánto se extienden los datos: la diferencia entre el valor mayor y el menor. Los valores del medio no importan.",
+          "Revisa la lista 14, 22, 8, 31, 17: halla el máximo y el mínimo, y luego resta el mínimo del máximo.",
+          "Primer paso: el máximo es 31 y el mínimo es 8. Plantea 31 − 8: esa diferencia es el rango."
+        ]
+      },
+      {
+        "id": "2-4-group1-parallel-01",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 2, 4, 5, 7, 8.",
+        "answer": "2, 3, 5, 7.5, 8",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            2,
+            4,
+            5,
+            7,
+            8
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "2, 8"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "5"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "2, 3, 5, 7.5, 8"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 2, 8."
+        ],
+        "explanation": "Minimum and maximum: 2, 8. Median: 5. Write min, Q1, median, Q3, max: 2, 3, 5, 7.5, 8.",
+        "stemEs": "Construye un resumen de cinco números para 2, 4, 5, 7, 8.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 2, 8."
+        ],
+        "explanationEs": "Mínimo y máximo: 2, 8. Mediana: 5. Escribe mínimo, Q1, mediana, Q3, máximo: 2, 3, 5, 7.5, 8."
+      },
+      {
+        "id": "2-4-group1-parallel-02",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 3, 5, 6, 8, 9.",
+        "answer": "3, 4, 6, 8.5, 9",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            3,
+            5,
+            6,
+            8,
+            9
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "3, 9"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "6"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "3, 4, 6, 8.5, 9"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 3, 9."
+        ],
+        "explanation": "Minimum and maximum: 3, 9. Median: 6. Write min, Q1, median, Q3, max: 3, 4, 6, 8.5, 9.",
+        "stemEs": "Construye un resumen de cinco números para 3, 5, 6, 8, 9.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 3, 9."
+        ],
+        "explanationEs": "Mínimo y máximo: 3, 9. Mediana: 6. Escribe mínimo, Q1, mediana, Q3, máximo: 3, 4, 6, 8.5, 9."
+      },
+      {
+        "id": "2-4-group1-parallel-03",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 4, 6, 7, 7, 10.",
+        "answer": "4, 5, 7, 8.5, 10",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            4,
+            6,
+            7,
+            7,
+            10
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "4, 10"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "7"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "4, 5, 7, 8.5, 10"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 4, 10."
+        ],
+        "explanation": "Minimum and maximum: 4, 10. Median: 7. Write min, Q1, median, Q3, max: 4, 5, 7, 8.5, 10.",
+        "stemEs": "Construye un resumen de cinco números para 4, 6, 7, 7, 10.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 4, 10."
+        ],
+        "explanationEs": "Mínimo y máximo: 4, 10. Mediana: 7. Escribe mínimo, Q1, mediana, Q3, máximo: 4, 5, 7, 8.5, 10."
+      },
+      {
+        "id": "2-4-group1-parallel-04",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 4, 5, 8, 8, 11.",
+        "answer": "4, 4.5, 8, 9.5, 11",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            4,
+            5,
+            8,
+            8,
+            11
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "4, 11"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "8"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "4, 4.5, 8, 9.5, 11"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 4, 11."
+        ],
+        "explanation": "Minimum and maximum: 4, 11. Median: 8. Write min, Q1, median, Q3, max: 4, 4.5, 8, 9.5, 11.",
+        "stemEs": "Construye un resumen de cinco números para 4, 5, 8, 8, 11.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 4, 11."
+        ],
+        "explanationEs": "Mínimo y máximo: 4, 11. Mediana: 8. Escribe mínimo, Q1, mediana, Q3, máximo: 4, 4.5, 8, 9.5, 11."
+      },
+      {
+        "id": "2-4-group1-parallel-05",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 12, 15, 17, 18, 19.",
+        "answer": "12, 13.5, 17, 18.5, 19",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            12,
+            15,
+            17,
+            18,
+            19
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "12, 19"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "17"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "12, 13.5, 17, 18.5, 19"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 12, 19."
+        ],
+        "explanation": "Minimum and maximum: 12, 19. Median: 17. Write min, Q1, median, Q3, max: 12, 13.5, 17, 18.5, 19.",
+        "stemEs": "Construye un resumen de cinco números para 12, 15, 17, 18, 19.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 12, 19."
+        ],
+        "explanationEs": "Mínimo y máximo: 12, 19. Mediana: 17. Escribe mínimo, Q1, mediana, Q3, máximo: 12, 13.5, 17, 18.5, 19."
+      },
+      {
+        "id": "2-4-group1-parallel-06",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 13, 15, 16, 18, 19.",
+        "answer": "13, 14, 16, 18.5, 19",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            13,
+            15,
+            16,
+            18,
+            19
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "13, 19"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "16"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "13, 14, 16, 18.5, 19"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 13, 19."
+        ],
+        "explanation": "Minimum and maximum: 13, 19. Median: 16. Write min, Q1, median, Q3, max: 13, 14, 16, 18.5, 19.",
+        "stemEs": "Construye un resumen de cinco números para 13, 15, 16, 18, 19.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 13, 19."
+        ],
+        "explanationEs": "Mínimo y máximo: 13, 19. Mediana: 16. Escribe mínimo, Q1, mediana, Q3, máximo: 13, 14, 16, 18.5, 19."
+      }
     ],
-    "hints": [
-      "IQR measures the width of the box — how spread out the MIDDLE 50% of each team's scores is.",
-      "Compare a narrow box (IQR 8) with a wide box (IQR 22). Ask what narrow vs wide says about consistency — not about which team is better.",
-      "First step: translate each number — Team A's middle scores span only 8 points; Team B's span 22. Then choose the statement that matches."
+    "level2": [
+      {
+        "type": "multiple-choice",
+        "stem": "Two box plots show: Team A has IQR = 8, Team B has IQR = 22. What does this tell you?",
+        "choices": [
+          "Team A's middle 50% is more consistent; Team B's is more spread out",
+          "Team B is a better team",
+          "Team A has a higher median",
+          "The IQRs don't tell you about consistency"
+        ],
+        "correctIndex": 0,
+        "explanation": "A smaller IQR means the middle 50% of data is more tightly clustered. Team A's scoring is more consistent in the middle range.",
+        "choiceFeedback": [
+          "",
+          "Bigger IQR doesn't mean better—it means more variation.",
+          "IQR tells consistency—smaller is tighter.",
+          "IQR is always about consistency in the middle 50%."
+        ],
+        "hints": [
+          "IQR measures the width of the box — how spread out the MIDDLE 50% of each team's scores is.",
+          "Compare a narrow box (IQR 8) with a wide box (IQR 22). Ask what narrow vs wide says about consistency — not about which team is better.",
+          "First step: translate each number — Team A's middle scores span only 8 points; Team B's span 22. Then choose the statement that matches."
+        ],
+        "stemEs": "Dos diagramas de caja muestran: el equipo A tiene un RIC = 8 y el equipo B tiene un RIC = 22. ¿Qué te dice esto?",
+        "explanationEs": "Un RIC más pequeño significa que el 50% central de los datos está más agrupado. La anotación del equipo A es más consistente en el rango central.",
+        "choicesEs": [
+          "El 50% central del equipo A es más consistente; el del equipo B está más disperso",
+          "El equipo B es mejor equipo",
+          "El equipo A tiene una mediana más alta",
+          "Los RIC no dicen nada sobre la consistencia"
+        ],
+        "hintsEs": [
+          "El RIC mide el ancho de la caja: qué tan dispersos están los puntajes del 50% CENTRAL de cada equipo.",
+          "Compara una caja angosta (RIC 8) con una caja ancha (RIC 22). Pregunta qué dice angosta frente a ancha sobre la consistencia, no sobre qué equipo es mejor.",
+          "Primer paso: traduce cada número — los puntajes centrales del Equipo A abarcan solo 8 puntos; los del Equipo B abarcan 22. Luego elige el enunciado que coincida."
+        ],
+        "misconceptionTags": [
+          null,
+          "stat-center-vs-spread",
+          "stat-center-vs-spread",
+          "stat-center-vs-spread"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Hawks' points per quarter are 2, 4, 5, 7, 8, 10, 12. Resting on the scoreboard, what are the minimum, median, and maximum?",
+        "choices": [
+          "Minimum 2, median 7, maximum 12",
+          "Minimum 2, median 5, maximum 12",
+          "Minimum 0, median 7, maximum 12",
+          "Minimum 2, median 8, maximum 10"
+        ],
+        "correctIndex": 0,
+        "explanation": "The data is already in order. The smallest value is 2 and the largest is 12. There are 7 values, so the median is the 4th value, which is 7.",
+        "choiceFeedback": [
+          "",
+          "Median is the middle—with 7 values, which is in the middle?",
+          "There's no zero shown—count from the data given.",
+          "Seven values: positions 1,2,3,4,5,6,7—which is the 4th?"
+        ],
+        "stemEs": "Los puntos por cuarto de los Hawks son 2, 4, 5, 7, 8, 10, 12. Según el marcador, ¿cuáles son el mínimo, la mediana y el máximo?",
+        "explanationEs": "Los datos ya están ordenados. El valor más pequeño es 2 y el más grande es 12. Hay 7 valores, así que la mediana es el 4.º valor, que es 7.",
+        "hints": [
+          "A five-number summary always starts from a list arranged from least to greatest.",
+          "The minimum and maximum are the two ends of the ordered list; the median is the value sitting right in the middle.",
+          "There are 7 values here, so the middle one is the 4th. Count in from either end to find it."
+        ],
+        "hintsEs": [
+          "Un resumen de cinco números siempre empieza con una lista ordenada de menor a mayor.",
+          "El mínimo y el máximo son los dos extremos de la lista ordenada; la mediana es el valor que queda justo en medio.",
+          "Aquí hay 7 valores, así que el del medio es el 4.º. Cuenta desde cualquiera de los extremos para hallarlo."
+        ],
+        "choicesEs": [
+          "Mínimo 2, mediana 7, máximo 12",
+          "Mínimo 2, mediana 5, máximo 12",
+          "Mínimo 0, mediana 7, máximo 12",
+          "Mínimo 2, mediana 8, máximo 10"
+        ],
+        "misconceptionTags": [
+          null,
+          null,
+          "stat-histogram-bin-misread",
+          null
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Comets scored 6, 10, 14, 18, 22, 26, 30, 34 across 8 games. After ordering, what are Q1 and Q3?",
+        "choices": [
+          "Q1 = 12, Q3 = 28",
+          "Q1 = 10, Q3 = 30",
+          "Q1 = 14, Q3 = 26",
+          "Q1 = 20, Q3 = 34"
+        ],
+        "correctIndex": 0,
+        "explanation": "With 8 values the median splits the data into a lower half (6, 10, 14, 18) and an upper half (22, 26, 30, 34). Q1 is the median of the lower half: (10 + 14) ÷ 2 = 12. Q3 is the median of the upper half: (26 + 30) ÷ 2 = 28.",
+        "choiceFeedback": [
+          "",
+          "First half: 6, 10, 14, 18—Q1 is the median of these.",
+          "Q1 and Q3 come from the halves—not the full data.",
+          "Split the data in half, then find median of each half."
+        ],
+        "stemEs": "Los Comets anotaron 6, 10, 14, 18, 22, 26, 30, 34 en 8 juegos. Después de ordenarlos, ¿cuáles son Q1 y Q3?",
+        "explanationEs": "Con 8 valores, la mediana divide los datos en una mitad inferior (6, 10, 14, 18) y una mitad superior (22, 26, 30, 34). Q1 es la mediana de la mitad inferior: (10 + 14) ÷ 2 = 12. Q3 es la mediana de la mitad superior: (26 + 30) ÷ 2 = 28.",
+        "hints": [
+          "Q1 and Q3 are medians too — one for the lower half of the data and one for the upper half.",
+          "Split the 8 ordered values into a lower half of 4 and an upper half of 4, then find the median of each half.",
+          "The lower half is 6, 10, 14, 18. With 4 values its median is the average of the middle two — work that out, then do the same for the upper half."
+        ],
+        "hintsEs": [
+          "Q1 y Q3 también son medianas: una de la mitad inferior de los datos y otra de la mitad superior.",
+          "Divide los 8 valores ordenados en una mitad inferior de 4 y una mitad superior de 4, y luego halla la mediana de cada mitad.",
+          "La mitad inferior es 6, 10, 14, 18. Con 4 valores, su mediana es el promedio de los dos del centro; calcúlalo y después haz lo mismo con la mitad superior."
+        ],
+        "choicesEs": [
+          "Q1 = 12, Q3 = 28",
+          "Q1 = 10, Q3 = 30",
+          "Q1 = 14, Q3 = 26",
+          "Q1 = 20, Q3 = 34"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot for the Rockets shows Min = 8, Q1 = 15, Median = 22, Q3 = 30, Max = 38. The middle 50% of their scores falls between which two values?",
+        "choices": [
+          "Between 15 and 30",
+          "Between 8 and 38",
+          "Between 8 and 22",
+          "Between 22 and 38"
+        ],
+        "correctIndex": 0,
+        "explanation": "The box of a box plot stretches from Q1 to Q3, and that box always holds the middle 50% of the data. Here the box goes from Q1 = 15 to Q3 = 30.",
+        "choiceFeedback": [
+          "",
+          "The whiskers go to min and max—but the box is 50% of data.",
+          "Q1 to median is 25%, median to Q3 is 25%—together?",
+          "Q3 to max covers another 25%—is that the middle 50%?"
+        ],
+        "stemEs": "Un diagrama de caja de los Rockets muestra Mín = 8, Q1 = 15, Mediana = 22, Q3 = 30, Máx = 38. ¿El 50% central de sus puntajes queda entre qué dos valores?",
+        "explanationEs": "La caja de un diagrama de caja se extiende de Q1 a Q3, y esa caja siempre contiene el 50% central de los datos. Aquí la caja va de Q1 = 15 a Q3 = 30.",
+        "hints": [
+          "In a box plot it is the box itself — not the whiskers — that holds the middle half of the data.",
+          "The box stretches from Q1 on one end to Q3 on the other.",
+          "Find Q1 and Q3 in the list of values you were given, and read off the two numbers the box runs between."
+        ],
+        "hintsEs": [
+          "En un diagrama de caja es la caja misma, no los bigotes, la que contiene la mitad central de los datos.",
+          "La caja se extiende desde Q1 en un extremo hasta Q3 en el otro.",
+          "Busca Q1 y Q3 en la lista de valores que te dieron y lee los dos números entre los que va la caja."
+        ],
+        "choicesEs": [
+          "Entre 15 y 30",
+          "Entre 8 y 38",
+          "Entre 8 y 22",
+          "Entre 22 y 38"
+        ]
+      },
+      {
+        "type": "open-response",
+        "prompt": "Two basketball teams played 9 games each. Team A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Team B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Find the five-number summary and IQR for each team. Which team is more consistent? Which has a wider spread in the middle 50%?",
+        "sentenceFrame": "Team A: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team B: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team ___ is more consistent because its IQR is ___.",
+        "keywords": [
+          "five-number summary",
+          "Q1",
+          "Q3",
+          "IQR",
+          "consistent",
+          "spread",
+          "middle 50%"
+        ],
+        "minLength": 50,
+        "hint": "Order each team's scores, then find the median and the quartiles (Q1 and Q3).",
+        "hints": [
+          "Both score lists are already ordered, 9 games each — so the 5th score is each team's median. That's your anchor point.",
+          "For each team: Min = 1st value, Max = 9th, Median = 5th. Q1 = middle of the first four, Q3 = middle of the last four. Then IQR = Q3 − Q1.",
+          "Team A first: Min = 40, Max = 56, Median = 48 (the 5th value). Now average 42 and 44 for Q1, and 52 and 54 for Q3."
+        ],
+        "explanation": "Team A's summary is 40, 43, 48, 53, 56 with IQR = 53 − 43 = 10, and Team B's is 30, 37.5, 48, 57.5, 65 with IQR = 57.5 − 37.5 = 20. Both teams share a median of 48, but Team B's middle 50% spreads twice as far, so Team A is the more consistent team.",
+        "explanationEs": "El resumen del Equipo A es 40, 43, 48, 53, 56 con IQR = 53 − 43 = 10, y el del Equipo B es 30, 37.5, 48, 57.5, 65 con IQR = 57.5 − 37.5 = 20. Los dos equipos comparten una mediana de 48, pero el 50% central del Equipo B se extiende el doble, así que el Equipo A es el más consistente.",
+        "promptEs": "Dos equipos de baloncesto jugaron 9 partidos cada uno. Equipo A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Equipo B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Encuentra el resumen de cinco números y el RIC de cada equipo. ¿Cuál equipo es más consistente? ¿Cuál tiene mayor dispersión en el 50% central?",
+        "hintsEs": [
+          "Ambas listas de puntajes ya están ordenadas, con 9 partidos cada una, así que el 5.º puntaje es la mediana de cada equipo. Ese es tu punto de anclaje.",
+          "Para cada equipo: Mín = 1.er valor, Máx = 9.º, Mediana = 5.º. Q1 = el medio de los primeros cuatro, Q3 = el medio de los últimos cuatro. Luego RIC = Q3 − Q1.",
+          "Equipo A primero: Mín = 40, Máx = 56, Mediana = 48 (el 5.º valor). Ahora promedia 42 y 44 para Q1, y 52 y 54 para Q3."
+        ]
+      },
+      {
+        "id": "2-4-group1-parallel-07",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 14, 14, 16, 17, 20.",
+        "answer": "14, 14, 16, 18.5, 20",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            14,
+            14,
+            16,
+            17,
+            20
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "14, 20"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "16"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "14, 14, 16, 18.5, 20"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 14, 20."
+        ],
+        "explanation": "Minimum and maximum: 14, 20. Median: 16. Write min, Q1, median, Q3, max: 14, 14, 16, 18.5, 20.",
+        "stemEs": "Construye un resumen de cinco números para 14, 14, 16, 17, 20.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 14, 20."
+        ],
+        "explanationEs": "Mínimo y máximo: 14, 20. Mediana: 16. Escribe mínimo, Q1, mediana, Q3, máximo: 14, 14, 16, 18.5, 20."
+      },
+      {
+        "id": "2-4-group1-parallel-08",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 15, 15, 17, 18, 21.",
+        "answer": "15, 15, 17, 19.5, 21",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            15,
+            15,
+            17,
+            18,
+            21
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "15, 21"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "17"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "15, 15, 17, 19.5, 21"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 15, 21."
+        ],
+        "explanation": "Minimum and maximum: 15, 21. Median: 17. Write min, Q1, median, Q3, max: 15, 15, 17, 19.5, 21.",
+        "stemEs": "Construye un resumen de cinco números para 15, 15, 17, 18, 21.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 15, 21."
+        ],
+        "explanationEs": "Mínimo y máximo: 15, 21. Mediana: 17. Escribe mínimo, Q1, mediana, Q3, máximo: 15, 15, 17, 19.5, 21."
+      },
+      {
+        "id": "2-4-group1-parallel-09",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 22, 26, 27, 28, 28.",
+        "answer": "22, 24, 27, 28, 28",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            22,
+            26,
+            27,
+            28,
+            28
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "22, 28"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "27"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "22, 24, 27, 28, 28"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 22, 28."
+        ],
+        "explanation": "Minimum and maximum: 22, 28. Median: 27. Write min, Q1, median, Q3, max: 22, 24, 27, 28, 28.",
+        "stemEs": "Construye un resumen de cinco números para 22, 26, 27, 28, 28.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 22, 28."
+        ],
+        "explanationEs": "Mínimo y máximo: 22, 28. Mediana: 27. Escribe mínimo, Q1, mediana, Q3, máximo: 22, 24, 27, 28, 28."
+      },
+      {
+        "id": "2-4-group1-parallel-10",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 23, 24, 28, 29, 29.",
+        "answer": "23, 23.5, 28, 29, 29",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            23,
+            24,
+            28,
+            29,
+            29
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "23, 29"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "28"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "23, 23.5, 28, 29, 29"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 23, 29."
+        ],
+        "explanation": "Minimum and maximum: 23, 29. Median: 28. Write min, Q1, median, Q3, max: 23, 23.5, 28, 29, 29.",
+        "stemEs": "Construye un resumen de cinco números para 23, 24, 28, 29, 29.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 23, 29."
+        ],
+        "explanationEs": "Mínimo y máximo: 23, 29. Mediana: 28. Escribe mínimo, Q1, mediana, Q3, máximo: 23, 23.5, 28, 29, 29."
+      },
+      {
+        "id": "2-4-group1-parallel-11",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 24, 25, 25, 27, 30.",
+        "answer": "24, 24.5, 25, 28.5, 30",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            24,
+            25,
+            25,
+            27,
+            30
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "24, 30"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "25"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "24, 24.5, 25, 28.5, 30"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 24, 30."
+        ],
+        "explanation": "Minimum and maximum: 24, 30. Median: 25. Write min, Q1, median, Q3, max: 24, 24.5, 25, 28.5, 30.",
+        "stemEs": "Construye un resumen de cinco números para 24, 25, 25, 27, 30.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 24, 30."
+        ],
+        "explanationEs": "Mínimo y máximo: 24, 30. Mediana: 25. Escribe mínimo, Q1, mediana, Q3, máximo: 24, 24.5, 25, 28.5, 30."
+      },
+      {
+        "id": "2-4-group1-parallel-12",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 25, 26, 26, 28, 31.",
+        "answer": "25, 25.5, 26, 29.5, 31",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            25,
+            26,
+            26,
+            28,
+            31
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "25, 31"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "26"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "25, 25.5, 26, 29.5, 31"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 25, 31."
+        ],
+        "explanation": "Minimum and maximum: 25, 31. Median: 26. Write min, Q1, median, Q3, max: 25, 25.5, 26, 29.5, 31.",
+        "stemEs": "Construye un resumen de cinco números para 25, 26, 26, 28, 31.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 25, 31."
+        ],
+        "explanationEs": "Mínimo y máximo: 25, 31. Mediana: 26. Escribe mínimo, Q1, mediana, Q3, máximo: 25, 25.5, 26, 29.5, 31."
+      },
+      {
+        "id": "2-4-group2-parallel-01",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 2, 4, 5, 7, 8.",
+        "answer": "2, 3, 5, 7.5, 8",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            2,
+            4,
+            5,
+            7,
+            8
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "2, 8"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "5"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "2, 3, 5, 7.5, 8"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 2, 8."
+        ],
+        "explanation": "Minimum and maximum: 2, 8. Median: 5. Write min, Q1, median, Q3, max: 2, 3, 5, 7.5, 8.",
+        "stemEs": "Construye un resumen de cinco números para 2, 4, 5, 7, 8.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 2, 8."
+        ],
+        "explanationEs": "Mínimo y máximo: 2, 8. Mediana: 5. Escribe mínimo, Q1, mediana, Q3, máximo: 2, 3, 5, 7.5, 8."
+      },
+      {
+        "id": "2-4-group2-parallel-02",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 3, 5, 6, 8, 9.",
+        "answer": "3, 4, 6, 8.5, 9",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            3,
+            5,
+            6,
+            8,
+            9
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "3, 9"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "6"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "3, 4, 6, 8.5, 9"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 3, 9."
+        ],
+        "explanation": "Minimum and maximum: 3, 9. Median: 6. Write min, Q1, median, Q3, max: 3, 4, 6, 8.5, 9.",
+        "stemEs": "Construye un resumen de cinco números para 3, 5, 6, 8, 9.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 3, 9."
+        ],
+        "explanationEs": "Mínimo y máximo: 3, 9. Mediana: 6. Escribe mínimo, Q1, mediana, Q3, máximo: 3, 4, 6, 8.5, 9."
+      },
+      {
+        "id": "2-4-group2-parallel-03",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 4, 6, 7, 7, 10.",
+        "answer": "4, 5, 7, 8.5, 10",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            4,
+            6,
+            7,
+            7,
+            10
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "4, 10"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "7"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "4, 5, 7, 8.5, 10"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 4, 10."
+        ],
+        "explanation": "Minimum and maximum: 4, 10. Median: 7. Write min, Q1, median, Q3, max: 4, 5, 7, 8.5, 10.",
+        "stemEs": "Construye un resumen de cinco números para 4, 6, 7, 7, 10.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 4, 10."
+        ],
+        "explanationEs": "Mínimo y máximo: 4, 10. Mediana: 7. Escribe mínimo, Q1, mediana, Q3, máximo: 4, 5, 7, 8.5, 10."
+      },
+      {
+        "id": "2-4-group2-parallel-04",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 4, 5, 8, 8, 11.",
+        "answer": "4, 4.5, 8, 9.5, 11",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            4,
+            5,
+            8,
+            8,
+            11
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "4, 11"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "8"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "4, 4.5, 8, 9.5, 11"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 4, 11."
+        ],
+        "explanation": "Minimum and maximum: 4, 11. Median: 8. Write min, Q1, median, Q3, max: 4, 4.5, 8, 9.5, 11.",
+        "stemEs": "Construye un resumen de cinco números para 4, 5, 8, 8, 11.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 4, 11."
+        ],
+        "explanationEs": "Mínimo y máximo: 4, 11. Mediana: 8. Escribe mínimo, Q1, mediana, Q3, máximo: 4, 4.5, 8, 9.5, 11."
+      },
+      {
+        "id": "2-4-group2-parallel-05",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 12, 15, 17, 18, 19.",
+        "answer": "12, 13.5, 17, 18.5, 19",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            12,
+            15,
+            17,
+            18,
+            19
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "12, 19"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "17"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "12, 13.5, 17, 18.5, 19"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 12, 19."
+        ],
+        "explanation": "Minimum and maximum: 12, 19. Median: 17. Write min, Q1, median, Q3, max: 12, 13.5, 17, 18.5, 19.",
+        "stemEs": "Construye un resumen de cinco números para 12, 15, 17, 18, 19.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 12, 19."
+        ],
+        "explanationEs": "Mínimo y máximo: 12, 19. Mediana: 17. Escribe mínimo, Q1, mediana, Q3, máximo: 12, 13.5, 17, 18.5, 19."
+      },
+      {
+        "id": "2-4-group2-parallel-06",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 13, 15, 16, 18, 19.",
+        "answer": "13, 14, 16, 18.5, 19",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            13,
+            15,
+            16,
+            18,
+            19
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "13, 19"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "16"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "13, 14, 16, 18.5, 19"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 13, 19."
+        ],
+        "explanation": "Minimum and maximum: 13, 19. Median: 16. Write min, Q1, median, Q3, max: 13, 14, 16, 18.5, 19.",
+        "stemEs": "Construye un resumen de cinco números para 13, 15, 16, 18, 19.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 13, 19."
+        ],
+        "explanationEs": "Mínimo y máximo: 13, 19. Mediana: 16. Escribe mínimo, Q1, mediana, Q3, máximo: 13, 14, 16, 18.5, 19."
+      }
     ],
-    "stemEs": "Dos diagramas de caja muestran: el equipo A tiene un RIC = 8 y el equipo B tiene un RIC = 22. ¿Qué te dice esto?",
-    "explanationEs": "Un RIC más pequeño significa que el 50% central de los datos está más agrupado. La anotación del equipo A es más consistente en el rango central.",
-    "choicesEs": [
-      "El 50% central del equipo A es más consistente; el del equipo B está más disperso",
-      "El equipo B es mejor equipo",
-      "El equipo A tiene una mediana más alta",
-      "Los RIC no dicen nada sobre la consistencia"
-    ],
-    "hintsEs": [
-      "El RIC mide el ancho de la caja: qué tan dispersos están los puntajes del 50% CENTRAL de cada equipo.",
-      "Compara una caja angosta (RIC 8) con una caja ancha (RIC 22). Pregunta qué dice angosta frente a ancha sobre la consistencia, no sobre qué equipo es mejor.",
-      "Primer paso: traduce cada número — los puntajes centrales del Equipo A abarcan solo 8 puntos; los del Equipo B abarcan 22. Luego elige el enunciado que coincida."
-    ],
-    "misconceptionTags": [
-      null,
-      "stat-center-vs-spread",
-      "stat-center-vs-spread",
-      "stat-center-vs-spread"
+    "level3": [
+      {
+        "type": "open-response",
+        "prompt": "Two basketball teams played 9 games each. Team A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Team B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Find the five-number summary and IQR for each team. Which team is more consistent? Which has a wider spread in the middle 50%?",
+        "sentenceFrame": "Team A: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team B: Min=___, Q1=___, Median=___, Q3=___, Max=___, IQR=___. Team ___ is more consistent because its IQR is ___.",
+        "keywords": [
+          "five-number summary",
+          "Q1",
+          "Q3",
+          "IQR",
+          "consistent",
+          "spread",
+          "middle 50%"
+        ],
+        "minLength": 50,
+        "hint": "Order each team's scores, then find the median and the quartiles (Q1 and Q3).",
+        "hints": [
+          "Both score lists are already ordered, 9 games each — so the 5th score is each team's median. That's your anchor point.",
+          "For each team: Min = 1st value, Max = 9th, Median = 5th. Q1 = middle of the first four, Q3 = middle of the last four. Then IQR = Q3 − Q1.",
+          "Team A first: Min = 40, Max = 56, Median = 48 (the 5th value). Now average 42 and 44 for Q1, and 52 and 54 for Q3."
+        ],
+        "explanation": "Team A's summary is 40, 43, 48, 53, 56 with IQR = 53 − 43 = 10, and Team B's is 30, 37.5, 48, 57.5, 65 with IQR = 57.5 − 37.5 = 20. Both teams share a median of 48, but Team B's middle 50% spreads twice as far, so Team A is the more consistent team.",
+        "explanationEs": "El resumen del Equipo A es 40, 43, 48, 53, 56 con IQR = 53 − 43 = 10, y el del Equipo B es 30, 37.5, 48, 57.5, 65 con IQR = 57.5 − 37.5 = 20. Los dos equipos comparten una mediana de 48, pero el 50% central del Equipo B se extiende el doble, así que el Equipo A es el más consistente.",
+        "promptEs": "Dos equipos de baloncesto jugaron 9 partidos cada uno. Equipo A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Equipo B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Encuentra el resumen de cinco números y el RIC de cada equipo. ¿Cuál equipo es más consistente? ¿Cuál tiene mayor dispersión en el 50% central?",
+        "hintsEs": [
+          "Ambas listas de puntajes ya están ordenadas, con 9 partidos cada una, así que el 5.º puntaje es la mediana de cada equipo. Ese es tu punto de anclaje.",
+          "Para cada equipo: Mín = 1.er valor, Máx = 9.º, Mediana = 5.º. Q1 = el medio de los primeros cuatro, Q3 = el medio de los últimos cuatro. Luego RIC = Q3 − Q1.",
+          "Equipo A primero: Mín = 40, Máx = 56, Mediana = 48 (el 5.º valor). Ahora promedia 42 y 44 para Q1, y 52 y 54 para Q3."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Hawks' points per quarter are 2, 4, 5, 7, 8, 10, 12. Resting on the scoreboard, what are the minimum, median, and maximum?",
+        "choices": [
+          "Minimum 2, median 7, maximum 12",
+          "Minimum 2, median 5, maximum 12",
+          "Minimum 0, median 7, maximum 12",
+          "Minimum 2, median 8, maximum 10"
+        ],
+        "correctIndex": 0,
+        "explanation": "The data is already in order. The smallest value is 2 and the largest is 12. There are 7 values, so the median is the 4th value, which is 7.",
+        "choiceFeedback": [
+          "",
+          "Median is the middle—with 7 values, which is in the middle?",
+          "There's no zero shown—count from the data given.",
+          "Seven values: positions 1,2,3,4,5,6,7—which is the 4th?"
+        ],
+        "stemEs": "Los puntos por cuarto de los Hawks son 2, 4, 5, 7, 8, 10, 12. Según el marcador, ¿cuáles son el mínimo, la mediana y el máximo?",
+        "explanationEs": "Los datos ya están ordenados. El valor más pequeño es 2 y el más grande es 12. Hay 7 valores, así que la mediana es el 4.º valor, que es 7.",
+        "hints": [
+          "A five-number summary always starts from a list arranged from least to greatest.",
+          "The minimum and maximum are the two ends of the ordered list; the median is the value sitting right in the middle.",
+          "There are 7 values here, so the middle one is the 4th. Count in from either end to find it."
+        ],
+        "hintsEs": [
+          "Un resumen de cinco números siempre empieza con una lista ordenada de menor a mayor.",
+          "El mínimo y el máximo son los dos extremos de la lista ordenada; la mediana es el valor que queda justo en medio.",
+          "Aquí hay 7 valores, así que el del medio es el 4.º. Cuenta desde cualquiera de los extremos para hallarlo."
+        ],
+        "choicesEs": [
+          "Mínimo 2, mediana 7, máximo 12",
+          "Mínimo 2, mediana 5, máximo 12",
+          "Mínimo 0, mediana 7, máximo 12",
+          "Mínimo 2, mediana 8, máximo 10"
+        ],
+        "misconceptionTags": [
+          null,
+          null,
+          "stat-histogram-bin-misread",
+          null
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Comets scored 6, 10, 14, 18, 22, 26, 30, 34 across 8 games. After ordering, what are Q1 and Q3?",
+        "choices": [
+          "Q1 = 12, Q3 = 28",
+          "Q1 = 10, Q3 = 30",
+          "Q1 = 14, Q3 = 26",
+          "Q1 = 20, Q3 = 34"
+        ],
+        "correctIndex": 0,
+        "explanation": "With 8 values the median splits the data into a lower half (6, 10, 14, 18) and an upper half (22, 26, 30, 34). Q1 is the median of the lower half: (10 + 14) ÷ 2 = 12. Q3 is the median of the upper half: (26 + 30) ÷ 2 = 28.",
+        "choiceFeedback": [
+          "",
+          "First half: 6, 10, 14, 18—Q1 is the median of these.",
+          "Q1 and Q3 come from the halves—not the full data.",
+          "Split the data in half, then find median of each half."
+        ],
+        "stemEs": "Los Comets anotaron 6, 10, 14, 18, 22, 26, 30, 34 en 8 juegos. Después de ordenarlos, ¿cuáles son Q1 y Q3?",
+        "explanationEs": "Con 8 valores, la mediana divide los datos en una mitad inferior (6, 10, 14, 18) y una mitad superior (22, 26, 30, 34). Q1 es la mediana de la mitad inferior: (10 + 14) ÷ 2 = 12. Q3 es la mediana de la mitad superior: (26 + 30) ÷ 2 = 28.",
+        "hints": [
+          "Q1 and Q3 are medians too — one for the lower half of the data and one for the upper half.",
+          "Split the 8 ordered values into a lower half of 4 and an upper half of 4, then find the median of each half.",
+          "The lower half is 6, 10, 14, 18. With 4 values its median is the average of the middle two — work that out, then do the same for the upper half."
+        ],
+        "hintsEs": [
+          "Q1 y Q3 también son medianas: una de la mitad inferior de los datos y otra de la mitad superior.",
+          "Divide los 8 valores ordenados en una mitad inferior de 4 y una mitad superior de 4, y luego halla la mediana de cada mitad.",
+          "La mitad inferior es 6, 10, 14, 18. Con 4 valores, su mediana es el promedio de los dos del centro; calcúlalo y después haz lo mismo con la mitad superior."
+        ],
+        "choicesEs": [
+          "Q1 = 12, Q3 = 28",
+          "Q1 = 10, Q3 = 30",
+          "Q1 = 14, Q3 = 26",
+          "Q1 = 20, Q3 = 34"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot for the Rockets shows Min = 8, Q1 = 15, Median = 22, Q3 = 30, Max = 38. The middle 50% of their scores falls between which two values?",
+        "choices": [
+          "Between 15 and 30",
+          "Between 8 and 38",
+          "Between 8 and 22",
+          "Between 22 and 38"
+        ],
+        "correctIndex": 0,
+        "explanation": "The box of a box plot stretches from Q1 to Q3, and that box always holds the middle 50% of the data. Here the box goes from Q1 = 15 to Q3 = 30.",
+        "choiceFeedback": [
+          "",
+          "The whiskers go to min and max—but the box is 50% of data.",
+          "Q1 to median is 25%, median to Q3 is 25%—together?",
+          "Q3 to max covers another 25%—is that the middle 50%?"
+        ],
+        "stemEs": "Un diagrama de caja de los Rockets muestra Mín = 8, Q1 = 15, Mediana = 22, Q3 = 30, Máx = 38. ¿El 50% central de sus puntajes queda entre qué dos valores?",
+        "explanationEs": "La caja de un diagrama de caja se extiende de Q1 a Q3, y esa caja siempre contiene el 50% central de los datos. Aquí la caja va de Q1 = 15 a Q3 = 30.",
+        "hints": [
+          "In a box plot it is the box itself — not the whiskers — that holds the middle half of the data.",
+          "The box stretches from Q1 on one end to Q3 on the other.",
+          "Find Q1 and Q3 in the list of values you were given, and read off the two numbers the box runs between."
+        ],
+        "hintsEs": [
+          "En un diagrama de caja es la caja misma, no los bigotes, la que contiene la mitad central de los datos.",
+          "La caja se extiende desde Q1 en un extremo hasta Q3 en el otro.",
+          "Busca Q1 y Q3 en la lista de valores que te dieron y lee los dos números entre los que va la caja."
+        ],
+        "choicesEs": [
+          "Entre 15 y 30",
+          "Entre 8 y 38",
+          "Entre 8 y 22",
+          "Entre 22 y 38"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?",
+        "choices": [
+          "13",
+          "25",
+          "10",
+          "20"
+        ],
+        "correctIndex": 0,
+        "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13.",
+        "choiceFeedback": [
+          "",
+          "This is the spread, but IQR is Q3 − Q1 only.",
+          "Full range from min to max is 25, but IQR is different.",
+          "IQR only uses the quartiles, not min and max."
+        ],
+        "hints": [
+          "You're given five numbers, but IQR only uses two of them: Q1 and Q3. Ignore the min, median, and max.",
+          "IQR = Q3 − Q1. Find Q3 (28) and Q1 (15) in the summary — the IQR is their difference, the width of the box.",
+          "Set up the subtraction Q3 − Q1: that's 28 − 15. The difference you get is the IQR."
+        ],
+        "stemEs": "Un diagrama de caja muestra: Mín = 10, Q1 = 15, Mediana = 20, Q3 = 28, Máx = 35. ¿Cuál es el rango intercuartílico (RIC)?",
+        "explanationEs": "RIC = Q3 − Q1 = 28 − 15 = 13.",
+        "hintsEs": [
+          "Te dan cinco números, pero el RIC solo usa dos: Q1 y Q3. Ignora el mínimo, la mediana y el máximo.",
+          "RIC = Q3 − Q1. Halla Q3 (28) y Q1 (15) en el resumen: el RIC es su diferencia, el ancho de la caja.",
+          "Plantea la resta Q3 − Q1: eso es 28 − 15. La diferencia que obtengas es el RIC."
+        ],
+        "misconceptionTags": [
+          null,
+          "stat-range-for-iqr",
+          "stat-range-for-iqr",
+          "stat-range-for-iqr"
+        ],
+        "choicesEs": [
+          "13",
+          "25",
+          "10",
+          "20"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "On a box plot, what does the line inside the box represent?",
+        "choices": [
+          "The median",
+          "The mean",
+          "The mode",
+          "The range"
+        ],
+        "correctIndex": 0,
+        "explanation": "The line inside the box of a box plot always represents the median.",
+        "choiceFeedback": [
+          "",
+          "The line shows center—but mean is a different measure.",
+          "The line is always the middle value, not an average.",
+          "The range is a spread — the whole distance from the smallest value to the largest — not a single line drawn inside the box. Think about which value splits the data in half."
+        ],
+        "hints": [
+          "Picture a box plot: a box with whiskers, and a line cutting through the box. That line marks the CENTER of the data.",
+          "The box runs from Q1 to Q3, so the line inside splits the middle 50% in half. Think about which measure splits ordered data into halves.",
+          "First step: recall which measure means 'the middle value of the ordered data.' The line inside the box always marks that exact measure."
+        ],
+        "stemEs": "En un diagrama de caja, ¿qué representa la línea que está dentro de la caja?",
+        "explanationEs": "La línea dentro de la caja de un diagrama de caja siempre representa la mediana.",
+        "choicesEs": [
+          "La mediana",
+          "La media",
+          "La moda",
+          "El rango"
+        ],
+        "hintsEs": [
+          "Imagina un diagrama de caja: una caja con bigotes y una línea que atraviesa la caja. Esa línea marca el CENTRO de los datos.",
+          "La caja va de Q1 a Q3, así que la línea de adentro parte por la mitad al 50% central. Piensa qué medida divide en mitades los datos ordenados.",
+          "Primer paso: recuerda qué medida significa 'el valor del medio de los datos ordenados'. La línea dentro de la caja siempre marca esa medida."
+        ],
+        "misconceptionTags": [
+          null,
+          "stat-mean-vs-median",
+          "stat-mean-vs-median",
+          "stat-center-vs-spread"
+        ]
+      },
+      {
+        "id": "2-4-group2-parallel-07",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 14, 14, 16, 17, 20.",
+        "answer": "14, 14, 16, 18.5, 20",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            14,
+            14,
+            16,
+            17,
+            20
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "14, 20"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "16"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "14, 14, 16, 18.5, 20"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 14, 20."
+        ],
+        "explanation": "Minimum and maximum: 14, 20. Median: 16. Write min, Q1, median, Q3, max: 14, 14, 16, 18.5, 20.",
+        "stemEs": "Construye un resumen de cinco números para 14, 14, 16, 17, 20.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 14, 20."
+        ],
+        "explanationEs": "Mínimo y máximo: 14, 20. Mediana: 16. Escribe mínimo, Q1, mediana, Q3, máximo: 14, 14, 16, 18.5, 20."
+      },
+      {
+        "id": "2-4-group2-parallel-08",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 15, 15, 17, 18, 21.",
+        "answer": "15, 15, 17, 19.5, 21",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            15,
+            15,
+            17,
+            18,
+            21
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "15, 21"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "17"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "15, 15, 17, 19.5, 21"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 15, 21."
+        ],
+        "explanation": "Minimum and maximum: 15, 21. Median: 17. Write min, Q1, median, Q3, max: 15, 15, 17, 19.5, 21.",
+        "stemEs": "Construye un resumen de cinco números para 15, 15, 17, 18, 21.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 15, 21."
+        ],
+        "explanationEs": "Mínimo y máximo: 15, 21. Mediana: 17. Escribe mínimo, Q1, mediana, Q3, máximo: 15, 15, 17, 19.5, 21."
+      },
+      {
+        "id": "2-4-group2-parallel-09",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 22, 26, 27, 28, 28.",
+        "answer": "22, 24, 27, 28, 28",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            22,
+            26,
+            27,
+            28,
+            28
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "22, 28"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "27"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "22, 24, 27, 28, 28"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 22, 28."
+        ],
+        "explanation": "Minimum and maximum: 22, 28. Median: 27. Write min, Q1, median, Q3, max: 22, 24, 27, 28, 28.",
+        "stemEs": "Construye un resumen de cinco números para 22, 26, 27, 28, 28.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 22, 28."
+        ],
+        "explanationEs": "Mínimo y máximo: 22, 28. Mediana: 27. Escribe mínimo, Q1, mediana, Q3, máximo: 22, 24, 27, 28, 28."
+      },
+      {
+        "id": "2-4-group2-parallel-10",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 23, 24, 28, 29, 29.",
+        "answer": "23, 23.5, 28, 29, 29",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            23,
+            24,
+            28,
+            29,
+            29
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "23, 29"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "28"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "23, 23.5, 28, 29, 29"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 23, 29."
+        ],
+        "explanation": "Minimum and maximum: 23, 29. Median: 28. Write min, Q1, median, Q3, max: 23, 23.5, 28, 29, 29.",
+        "stemEs": "Construye un resumen de cinco números para 23, 24, 28, 29, 29.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 23, 29."
+        ],
+        "explanationEs": "Mínimo y máximo: 23, 29. Mediana: 28. Escribe mínimo, Q1, mediana, Q3, máximo: 23, 23.5, 28, 29, 29."
+      },
+      {
+        "id": "2-4-group2-parallel-11",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 24, 25, 25, 27, 30.",
+        "answer": "24, 24.5, 25, 28.5, 30",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            24,
+            25,
+            25,
+            27,
+            30
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "24, 30"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "25"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "24, 24.5, 25, 28.5, 30"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 24, 30."
+        ],
+        "explanation": "Minimum and maximum: 24, 30. Median: 25. Write min, Q1, median, Q3, max: 24, 24.5, 25, 28.5, 30.",
+        "stemEs": "Construye un resumen de cinco números para 24, 25, 25, 27, 30.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 24, 30."
+        ],
+        "explanationEs": "Mínimo y máximo: 24, 30. Mediana: 25. Escribe mínimo, Q1, mediana, Q3, máximo: 24, 24.5, 25, 28.5, 30."
+      },
+      {
+        "id": "2-4-group2-parallel-12",
+        "type": "guided-fill",
+        "stem": "Build a five-number summary for 25, 26, 26, 28, 31.",
+        "answer": "25, 25.5, 26, 29.5, 31",
+        "visual": {
+          "kind": "box-plot",
+          "values": [
+            25,
+            26,
+            26,
+            28,
+            31
+          ]
+        },
+        "steps": [
+          {
+            "prompt": "Minimum and maximum: ___.",
+            "promptEs": "Mínimo y máximo: ___.",
+            "answer": "25, 31"
+          },
+          {
+            "prompt": "Median: ___.",
+            "promptEs": "Mediana: ___.",
+            "answer": "26"
+          },
+          {
+            "prompt": "Write min, Q1, median, Q3, max: ___.",
+            "promptEs": "Escribe mínimo, Q1, mediana, Q3, máximo: ___.",
+            "answer": "25, 25.5, 26, 29.5, 31"
+          }
+        ],
+        "hints": [
+          "Re-read the question. What exactly is it asking you to find?",
+          "Use the visual model, then complete one step at a time.",
+          "Start like this: Minimum and maximum: 25, 31."
+        ],
+        "explanation": "Minimum and maximum: 25, 31. Median: 26. Write min, Q1, median, Q3, max: 25, 25.5, 26, 29.5, 31.",
+        "stemEs": "Construye un resumen de cinco números para 25, 26, 26, 28, 31.",
+        "hintsEs": [
+          "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+          "Usa el modelo visual y completa un paso a la vez.",
+          "Empieza así: Mínimo y máximo: 25, 31."
+        ],
+        "explanationEs": "Mínimo y máximo: 25, 31. Mediana: 26. Escribe mínimo, Q1, mediana, Q3, máximo: 25, 25.5, 26, 29.5, 31."
+      }
     ]
   }
 }

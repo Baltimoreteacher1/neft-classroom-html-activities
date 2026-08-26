@@ -206,40 +206,658 @@
     "imageAlt": "A neighborhood street map on a coordinate plane beside a table of locations: Bank at 1 and one-fourth, negative 1; Grocery at negative three-fourths, 0; Library at 0, negative three-fourths; Post Office at negative 1, 1 and one-fourth.",
     "sampleAnswer": "Grocery to Library: the Grocery is at (−¾, 0) and the Library is at (0, −¾). Going east changes only the x-coordinate, a distance of |−¾ − 0| = ¾ unit. Going south changes only the y-coordinate, a distance of |0 − (−¾)| = ¾ unit. Together Deon walks ¾ + ¾ = 1½ units. North-south: compare the y-coordinates — Bank −1, Grocery 0, Library −¾, Post Office 1¼. The greatest and least are the Post Office at 1¼ and the Bank at −1, and because they are on opposite sides of 0 you add the absolute values: 1¼ + 1 = 2¼ units apart."
   },
-  "reviewCheck": {
-    "type": "multiple-choice",
-    "stem": "Two points are at (-3, -7) and (-3, 5). What is the distance between them?",
-    "choices": [
-      "12 units",
-      "2 units",
-      "7 units",
-      "8 units"
+  "reviewWarmup": {
+    "title": "Warm-Up: Yesterday's Lesson",
+    "kind": "previous",
+    "prevLessonTitle": "Determine Distance on the Coordinate Plane",
+    "questions": [
+      {
+        "type": "multiple-choice",
+        "stem": "What is the distance between (-4, 3) and (2, 3)?",
+        "choices": [
+          "2 units",
+          "4 units",
+          "6 units",
+          "8 units"
+        ],
+        "correctIndex": 2,
+        "explanation": "Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.",
+        "choiceFeedback": [
+          "2 is the difference of the sizes 4 and 2, but the points sit on OPPOSITE sides of zero. Count the units from -4 to 0, then from 0 to 2, and combine them.",
+          "It looks like you counted from -4 only as far as 0 and stopped there. The segment keeps going past the origin to x = 2, so there are more units to add on.",
+          "",
+          "This is the distance you would get if the second point were at x = 4 instead of x = 2. Find 2 on the x-axis and count only that far."
+        ],
+        "hints": [
+          "Both points have y = 3, so they sit on the same horizontal line — only the x-values differ.",
+          "Find the gap between x = -4 and x = 2. The path crosses zero, so add the two distances |-4| and |2|.",
+          "Count from -4 to 0 (that's 4 units), then from 0 to 2. Add the two parts together."
+        ],
+        "stemEs": "¿Cuál es la distancia entre (-4, 3) y (2, 3)?",
+        "explanationEs": "Los dos puntos tienen y = 3, así que esta es una distancia horizontal. |2 - (-4)| = |2 + 4| = 6 unidades.",
+        "choicesEs": [
+          "2 unidades",
+          "4 unidades",
+          "6 unidades",
+          "8 unidades"
+        ],
+        "hintsEs": [
+          "Ambos puntos tienen y = 3, así que están en la misma línea horizontal: solo cambian los valores de x.",
+          "Halla la distancia entre x = −4 y x = 2. El camino cruza el cero, así que suma las dos distancias |−4| y |2|.",
+          "Cuenta de −4 a 0 (son 4 unidades) y luego de 0 a 2. Suma las dos partes."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is the distance between (5, -2) and (5, 4)?",
+        "choices": [
+          "2 units",
+          "4 units",
+          "6 units",
+          "10 units"
+        ],
+        "correctIndex": 2,
+        "explanation": "Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.",
+        "choiceFeedback": [
+          "2 only counts part of the trip. The segment runs from y = -2 all the way up to y = 4 — the units below zero and above zero both count.",
+          "You counted the part above the x-axis, from 0 up to 4, but the segment starts below the axis at -2. Add the units under zero too.",
+          "",
+          "It looks like you combined the x-coordinates (5 and 5) instead of the y-coordinates. The x-values match here, which is the clue that the segment is vertical — the y-values are what change."
+        ],
+        "hints": [
+          "Both points share x = 5 — the segment is VERTICAL, so compare the y-values -2 and 4.",
+          "The path crosses zero: split it into a below-zero part and an above-zero part using absolute values.",
+          "From y = -2 up to 0 is 2 units; from 0 up to 4 is 4 more. Add the parts."
+        ],
+        "stemEs": "¿Cuál es la distancia entre (5, -2) y (5, 4)?",
+        "explanationEs": "Los dos puntos tienen x = 5, así que esta es una distancia vertical. |4 - (-2)| = |4 + 2| = 6 unidades.",
+        "choicesEs": [
+          "2 unidades",
+          "4 unidades",
+          "6 unidades",
+          "10 unidades"
+        ],
+        "hintsEs": [
+          "Ambos puntos comparten x = 5: el segmento es VERTICAL, así que compara los valores de y, −2 y 4.",
+          "El camino cruza el cero: divídelo en una parte debajo de cero y otra arriba de cero usando valores absolutos.",
+          "De y = −2 hasta 0 son 2 unidades; de 0 hasta 4 son 4 más. Suma las partes."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A rectangle has vertices at (1, 1), (5, 1), (5, 4), (1, 4). What is its perimeter?",
+        "choices": [
+          "14 units",
+          "12 units",
+          "20 units",
+          "8 units"
+        ],
+        "correctIndex": 0,
+        "explanation": "Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14.",
+        "choiceFeedback": [
+          "",
+          "Not quite. Width = 5 - 1 = ___.",
+          "You used the coordinates 5 and 5 as if they were the side lengths. A coordinate tells you where a corner sits, not how long a side is — subtract the two x-values and the two y-values first.",
+          "The rectangle has four sides, and this only accounts for the two horizontal ones. After doubling the width, add the two vertical sides as well."
+        ],
+        "hints": [
+          "Perimeter is the distance all the way around — you need the width AND the height first.",
+          "Width: subtract the x-values 5 and 1. Height: subtract the y-values 4 and 1. Then add all four sides.",
+          "Find 5 − 1 for the width and 4 − 1 for the height. Now double each and add — that covers all four sides."
+        ],
+        "stemEs": "Un rectángulo tiene vértices en (1, 1), (5, 1), (5, 4), (1, 4). ¿Cuál es su perímetro?",
+        "explanationEs": "Ancho = 5 - 1 = 4. Altura = 4 - 1 = 3. Perímetro = 2(4 + 3) = 14.",
+        "choicesEs": [
+          "14 unidades",
+          "12 unidades",
+          "20 unidades",
+          "8 unidades"
+        ],
+        "hintsEs": [
+          "El perímetro es la distancia alrededor: primero necesitas el ancho Y la altura.",
+          "Ancho: resta los valores de x, 5 y 1. Altura: resta los valores de y, 4 y 1. Luego suma los cuatro lados.",
+          "Halla 5 − 1 para el ancho y 4 − 1 para la altura. Ahora duplica cada uno y suma: eso cubre los cuatro lados."
+        ]
+      }
+    ]
+  },
+  "reviewHighlights": {
+    "rule": "Distance on the Coordinate Plane",
+    "formula": "Distance = |x1 − x2| (horizontal) or |y1 − y2| (vertical)",
+    "steps": [
+      "1. Same quadrant / Same sign: Subtract absolute values of differing coordinates",
+      "2. Different quadrants / Opposite signs: Add absolute values of differing coordinates",
+      "3. Distance represents length, so it is always positive"
     ],
-    "correctIndex": 0,
-    "explanation": "Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.",
-    "choiceFeedback": [
-      "",
-      "Not quite. Distance = |5 - (-7)| = |5 + 7| = ___.",
-      "You counted the part below the x-axis, from -7 up to 0, and stopped. The second point is at y = 5, which is above the axis, so there is more to count.",
-      "It looks like you combined -3 with 5 — that mixes an x-coordinate with a y-coordinate. Both points share x = -3, so the numbers that change are the y-values."
+    "watchOut": "A common mistake in Distance on the Coordinate Plane is subtracting the coordinates as if both points were on the same side of zero, instead of adding their absolute values when the points are on opposite sides. For example, to find the distance between (-6, 3) and (2, 3), a student might subtract 6 − 2 = 4, but since -6 and 2 are on opposite sides of zero, the absolute values must be added instead: |-6| + |2| = 6 + 2 = 8. The correct distance is 8 units, not 4. Before you submit, ask: 'Are these two points on opposite sides of zero — and if so, did I add the absolute values instead of subtracting?'"
+  },
+  "groupLevels": {
+    "level1": [
+      {
+        "type": "multiple-choice",
+        "stem": "What is the distance between (-4, 3) and (2, 3)?",
+        "choices": [
+          "2 units",
+          "4 units",
+          "6 units",
+          "8 units"
+        ],
+        "correctIndex": 2,
+        "explanation": "Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.",
+        "choiceFeedback": [
+          "2 is the difference of the sizes 4 and 2, but the points sit on OPPOSITE sides of zero. Count the units from -4 to 0, then from 0 to 2, and combine them.",
+          "It looks like you counted from -4 only as far as 0 and stopped there. The segment keeps going past the origin to x = 2, so there are more units to add on.",
+          "",
+          "This is the distance you would get if the second point were at x = 4 instead of x = 2. Find 2 on the x-axis and count only that far."
+        ],
+        "hints": [
+          "Both points have y = 3, so they sit on the same horizontal line — only the x-values differ.",
+          "Find the gap between x = -4 and x = 2. The path crosses zero, so add the two distances |-4| and |2|.",
+          "Count from -4 to 0 (that's 4 units), then from 0 to 2. Add the two parts together."
+        ],
+        "stemEs": "¿Cuál es la distancia entre (-4, 3) y (2, 3)?",
+        "explanationEs": "Los dos puntos tienen y = 3, así que esta es una distancia horizontal. |2 - (-4)| = |2 + 4| = 6 unidades.",
+        "choicesEs": [
+          "2 unidades",
+          "4 unidades",
+          "6 unidades",
+          "8 unidades"
+        ],
+        "hintsEs": [
+          "Ambos puntos tienen y = 3, así que están en la misma línea horizontal: solo cambian los valores de x.",
+          "Halla la distancia entre x = −4 y x = 2. El camino cruza el cero, así que suma las dos distancias |−4| y |2|.",
+          "Cuenta de −4 a 0 (son 4 unidades) y luego de 0 a 2. Suma las dos partes."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is the distance between (5, -2) and (5, 4)?",
+        "choices": [
+          "2 units",
+          "4 units",
+          "6 units",
+          "10 units"
+        ],
+        "correctIndex": 2,
+        "explanation": "Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.",
+        "choiceFeedback": [
+          "2 only counts part of the trip. The segment runs from y = -2 all the way up to y = 4 — the units below zero and above zero both count.",
+          "You counted the part above the x-axis, from 0 up to 4, but the segment starts below the axis at -2. Add the units under zero too.",
+          "",
+          "It looks like you combined the x-coordinates (5 and 5) instead of the y-coordinates. The x-values match here, which is the clue that the segment is vertical — the y-values are what change."
+        ],
+        "hints": [
+          "Both points share x = 5 — the segment is VERTICAL, so compare the y-values -2 and 4.",
+          "The path crosses zero: split it into a below-zero part and an above-zero part using absolute values.",
+          "From y = -2 up to 0 is 2 units; from 0 up to 4 is 4 more. Add the parts."
+        ],
+        "stemEs": "¿Cuál es la distancia entre (5, -2) y (5, 4)?",
+        "explanationEs": "Los dos puntos tienen x = 5, así que esta es una distancia vertical. |4 - (-2)| = |4 + 2| = 6 unidades.",
+        "choicesEs": [
+          "2 unidades",
+          "4 unidades",
+          "6 unidades",
+          "10 unidades"
+        ],
+        "hintsEs": [
+          "Ambos puntos comparten x = 5: el segmento es VERTICAL, así que compara los valores de y, −2 y 4.",
+          "El camino cruza el cero: divídelo en una parte debajo de cero y otra arriba de cero usando valores absolutos.",
+          "De y = −2 hasta 0 son 2 unidades; de 0 hasta 4 son 4 más. Suma las partes."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A rectangle has vertices at (1, 1), (5, 1), (5, 4), (1, 4). What is its perimeter?",
+        "choices": [
+          "14 units",
+          "12 units",
+          "20 units",
+          "8 units"
+        ],
+        "correctIndex": 0,
+        "explanation": "Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14.",
+        "choiceFeedback": [
+          "",
+          "Not quite. Width = 5 - 1 = ___.",
+          "You used the coordinates 5 and 5 as if they were the side lengths. A coordinate tells you where a corner sits, not how long a side is — subtract the two x-values and the two y-values first.",
+          "The rectangle has four sides, and this only accounts for the two horizontal ones. After doubling the width, add the two vertical sides as well."
+        ],
+        "hints": [
+          "Perimeter is the distance all the way around — you need the width AND the height first.",
+          "Width: subtract the x-values 5 and 1. Height: subtract the y-values 4 and 1. Then add all four sides.",
+          "Find 5 − 1 for the width and 4 − 1 for the height. Now double each and add — that covers all four sides."
+        ],
+        "stemEs": "Un rectángulo tiene vértices en (1, 1), (5, 1), (5, 4), (1, 4). ¿Cuál es su perímetro?",
+        "explanationEs": "Ancho = 5 - 1 = 4. Altura = 4 - 1 = 3. Perímetro = 2(4 + 3) = 14.",
+        "choicesEs": [
+          "14 unidades",
+          "12 unidades",
+          "20 unidades",
+          "8 unidades"
+        ],
+        "hintsEs": [
+          "El perímetro es la distancia alrededor: primero necesitas el ancho Y la altura.",
+          "Ancho: resta los valores de x, 5 y 1. Altura: resta los valores de y, 4 y 1. Luego suma los cuatro lados.",
+          "Halla 5 − 1 para el ancho y 4 − 1 para la altura. Ahora duplica cada uno y suma: eso cubre los cuatro lados."
+        ]
+      }
     ],
-    "hints": [
-      "Both points share x = -3, so this is a vertical distance between y = -7 and y = 5.",
-      "The y-values have opposite signs, so add their absolute values instead of just subtracting the digits.",
-      "Count from -7 up to 0 (that's 7 units), then from 0 up to 5. Add the two counts."
+    "level2": [
+      {
+        "type": "multiple-choice",
+        "stem": "Two points are at (-3, -7) and (-3, 5). What is the distance between them?",
+        "choices": [
+          "12 units",
+          "2 units",
+          "7 units",
+          "8 units"
+        ],
+        "correctIndex": 0,
+        "explanation": "Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.",
+        "choiceFeedback": [
+          "",
+          "Not quite. Distance = |5 - (-7)| = |5 + 7| = ___.",
+          "You counted the part below the x-axis, from -7 up to 0, and stopped. The second point is at y = 5, which is above the axis, so there is more to count.",
+          "It looks like you combined -3 with 5 — that mixes an x-coordinate with a y-coordinate. Both points share x = -3, so the numbers that change are the y-values."
+        ],
+        "hints": [
+          "Both points share x = -3, so this is a vertical distance between y = -7 and y = 5.",
+          "The y-values have opposite signs, so add their absolute values instead of just subtracting the digits.",
+          "Count from -7 up to 0 (that's 7 units), then from 0 up to 5. Add the two counts."
+        ],
+        "stemEs": "Dos puntos están en (-3, -7) y (-3, 5). ¿Cuál es la distancia entre ellos?",
+        "explanationEs": "El mismo x = -3. Distancia = |5 - (-7)| = |5 + 7| = 12 unidades.",
+        "choicesEs": [
+          "12 unidades",
+          "2 unidades",
+          "7 unidades",
+          "8 unidades"
+        ],
+        "hintsEs": [
+          "Ambos puntos comparten x = −3, así que esta es una distancia vertical entre y = −7 y y = 5.",
+          "Los valores de y tienen signos opuestos, así que suma sus valores absolutos en vez de solo restar los dígitos.",
+          "Cuenta de −7 hasta 0 (son 7 unidades) y luego de 0 hasta 5. Suma los dos conteos."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is the distance between (2, 3) and (2, 8)?",
+        "choices": [
+          "11 units",
+          "5 units",
+          "6 units",
+          "5.5 units"
+        ],
+        "correctIndex": 1,
+        "explanation": "The x-coordinates match, so distance = |8 - 3| = 5 units.",
+        "choiceFeedback": [
+          "Not quite. The x-coordinates match, so distance = |8 - 3| = ___.",
+          "",
+          "It looks like you counted the grid lines 3, 4, 5, 6, 7, 8 instead of the hops between them. Distance counts the spaces, so the starting line does not get counted.",
+          "This is the halfway point between 3 and 8, not the gap between them. Subtract the two y-coordinates instead of averaging them."
+        ],
+        "hints": [
+          "The x's match (both 2), so the distance is just the gap between y = 3 and y = 8.",
+          "Both y-values are on the same side of zero here — subtract the smaller y from the larger y.",
+          "Set up 8 − 3 and work it out. That count of units is your distance."
+        ],
+        "stemEs": "¿Cuál es la distancia entre (2, 3) y (2, 8)?",
+        "explanationEs": "Las coordenadas x coinciden, así que la distancia = |8 - 3| = 5 unidades.",
+        "choicesEs": [
+          "11 unidades",
+          "5 unidades",
+          "6 unidades",
+          "5.5 unidades"
+        ],
+        "hintsEs": [
+          "Las x coinciden (ambas 2), así que la distancia es solo el espacio entre y = 3 y y = 8.",
+          "Aquí ambos valores de y están del mismo lado del cero: resta la y menor de la y mayor.",
+          "Plantea 8 − 3 y resuélvelo. Ese conteo de unidades es tu distancia."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What is the distance between (-4, 1) and (3, 1)?",
+        "choices": [
+          "1 unit",
+          "12 units",
+          "7 units",
+          "-7 units"
+        ],
+        "correctIndex": 2,
+        "explanation": "The y-coordinates match, so distance = |3 - (-4)| = 7 units.",
+        "choiceFeedback": [
+          "Not quite. The y-coordinates match, so distance = |3 - (-4)| = ___.",
+          "It looks like you multiplied 4 and 3. When a segment crosses zero, the two pieces get added together, not multiplied — count the hops on each side of the origin.",
+          "",
+          "A distance can never be negative, because it just counts units. If your subtraction comes out negative, take the absolute value of it."
+        ],
+        "hints": [
+          "The y's match (both 1), so it's a horizontal gap between x = -4 and x = 3.",
+          "The x-values have opposite signs: add the distances |-4| and |3| instead of subtracting 4 − 3.",
+          "Count -4 to 0 (4 units), then 0 to 3 (3 units). Combine the parts — a distance is never negative."
+        ],
+        "stemEs": "¿Cuál es la distancia entre (-4, 1) y (3, 1)?",
+        "explanationEs": "Las coordenadas y coinciden, así que la distancia = |3 - (-4)| = 7 unidades.",
+        "choicesEs": [
+          "1 unidad",
+          "12 unidades",
+          "7 unidades",
+          "-7 unidades"
+        ],
+        "hintsEs": [
+          "Las y coinciden (ambas 1), así que es un espacio horizontal entre x = −4 y x = 3.",
+          "Los valores de x tienen signos opuestos: suma las distancias |−4| y |3| en vez de restar 4 − 3.",
+          "Cuenta de −4 a 0 (4 unidades) y luego de 0 a 3 (3 unidades). Combina las partes: una distancia nunca es negativa."
+        ],
+        "misconceptionTags": [
+          null,
+          "op-multiplied-instead-of-added",
+          null,
+          null
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Bank is at (2, 3) and the Library is at (2, 9). How many blocks apart are they?",
+        "choices": [
+          "6 blocks",
+          "12 blocks",
+          "3 blocks",
+          "11 blocks"
+        ],
+        "correctIndex": 0,
+        "explanation": "Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.",
+        "choiceFeedback": [
+          "",
+          "12 adds the two y-values, 3 + 9. Distance along a vertical street is the GAP between them — how far is it from 3 up to 9?",
+          "It looks like you used the Bank's y-coordinate, 3, as the answer. A coordinate tells you where a building sits, not how far apart two buildings are — compare 3 with 9.",
+          "It looks like you added 2 and 9, which mixes an x-coordinate with a y-coordinate. Both places share x = 2, so the numbers that change are the y-values."
+        ],
+        "stemEs": "El Banco está en (2, 3) y la Biblioteca está en (2, 9). ¿A cuántas cuadras de distancia están?",
+        "explanationEs": "El mismo x = 2, así que el segmento es vertical. Distancia = |9 - 3| = 6 cuadras.",
+        "hints": [
+          "Both buildings sit at x = 2, so the trip between them runs straight up and down — only the y-coordinates change.",
+          "For a vertical trip where both y-values are above zero, subtract them and take the absolute value: |9 - 3|.",
+          "Start at y = 3 and count up one block at a time: 3 to 4, 4 to 5, 5 to 6 … keep counting until you land on y = 9."
+        ],
+        "hintsEs": [
+          "Los dos edificios están en x = 2, así que el recorrido entre ellos va directo hacia arriba y hacia abajo; solo cambian las coordenadas y.",
+          "Para un recorrido vertical donde los dos valores de y están arriba del cero, réstalos y toma el valor absoluto: |9 - 3|.",
+          "Empieza en y = 3 y cuenta hacia arriba de cuadra en cuadra: de 3 a 4, de 4 a 5, de 5 a 6… sigue contando hasta llegar a y = 9."
+        ],
+        "choicesEs": [
+          "6 cuadras",
+          "12 cuadras",
+          "3 cuadras",
+          "11 cuadras"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Park is at (-4, 5) and City Hall is at (3, 5). How many blocks apart are they?",
+        "choices": [
+          "1 block",
+          "7 blocks",
+          "12 blocks",
+          "5 blocks"
+        ],
+        "correctIndex": 1,
+        "explanation": "Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.",
+        "choiceFeedback": [
+          "1 treats -4 and 3 as if they sat on the same side of zero. The Park is at x = -4 — count from -4 to 0, then 0 to 3, and put the two pieces together.",
+          "",
+          "It looks like you multiplied 4 and 3. When the walk crosses zero, the piece on the left and the piece on the right get added together, not multiplied.",
+          "You used the shared y-coordinate, 5, as the answer. Both places sit at y = 5, so that number never changes — the distance comes from the x-values, -4 and 3."
+        ],
+        "stemEs": "El Parque está en (-4, 5) y el Ayuntamiento está en (3, 5). ¿A cuántas cuadras de distancia están?",
+        "explanationEs": "El mismo y = 5, así que el segmento es horizontal. Los puntos están en lados opuestos del cero, así que suma los valores absolutos: |-4| + |3| = 4 + 3 = 7 cuadras.",
+        "hints": [
+          "Both places sit at y = 5, so the walk between them runs straight across — only the x-coordinates change.",
+          "The Park is left of zero and City Hall is right of zero, so split the walk at the origin and add the two pieces: |-4| + |3|.",
+          "Count from x = -4 over to x = 0 first — that is 4 blocks. Now count the blocks from 0 out to x = 3 and add them on."
+        ],
+        "hintsEs": [
+          "Los dos lugares están en y = 5, así que la caminata entre ellos va directo de lado a lado; solo cambian las coordenadas x.",
+          "El Parque está a la izquierda del cero y el Ayuntamiento a la derecha, así que divide la caminata en el origen y suma las dos partes: |-4| + |3|.",
+          "Cuenta primero de x = -4 hasta x = 0: son 4 cuadras. Ahora cuenta las cuadras de 0 hasta x = 3 y súmalas."
+        ],
+        "choicesEs": [
+          "1 cuadra",
+          "7 cuadras",
+          "12 cuadras",
+          "5 cuadras"
+        ],
+        "misconceptionTags": [
+          null,
+          null,
+          "op-multiplied-instead-of-added",
+          null
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Café is at (-2, 1) and the Gym is at (-2, -4). How many blocks apart are they?",
+        "choices": [
+          "3 blocks",
+          "5 blocks",
+          "6 blocks",
+          "2 blocks"
+        ],
+        "correctIndex": 1,
+        "explanation": "Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.",
+        "choiceFeedback": [
+          "3 mixes in the x-coordinate, -2. Both places share x = -2, so that number never moves — the trip runs along y from 1 down to -4. Count those units.",
+          "",
+          "It looks like you counted the grid lines 1, 0, -1, -2, -3, -4 instead of the hops between them. Distance counts the spaces you cross, so the starting line is not one of them.",
+          "You used the shared x-coordinate, -2, as the answer. Both places sit at x = -2, so that number never changes — the distance comes from the y-values, 1 and -4."
+        ],
+        "stemEs": "El Café está en (-2, 1) y el Gimnasio está en (-2, -4). ¿A cuántas cuadras de distancia están?",
+        "explanationEs": "El mismo x = -2, así que el segmento es vertical. Los puntos están en lados opuestos del cero: |1| + |-4| = 1 + 4 = 5 cuadras.",
+        "hints": [
+          "Both places sit at x = -2, so the trip between them runs straight up and down — only the y-coordinates change.",
+          "The Café is above zero and the Gym is below zero, so split the trip at the origin and add the two pieces: |1| + |-4|.",
+          "From y = 1 down to y = 0 is 1 block. Now count the blocks from 0 down to y = -4 and add them on."
+        ],
+        "hintsEs": [
+          "Los dos lugares están en x = -2, así que el recorrido entre ellos va directo hacia arriba y hacia abajo; solo cambian las coordenadas y.",
+          "El Café está arriba del cero y el Gimnasio abajo del cero, así que divide el recorrido en el origen y suma las dos partes: |1| + |-4|.",
+          "De y = 1 hasta y = 0 hay 1 cuadra. Ahora cuenta las cuadras de 0 hasta y = -4 y súmalas."
+        ],
+        "choicesEs": [
+          "3 cuadras",
+          "5 cuadras",
+          "6 cuadras",
+          "2 cuadras"
+        ]
+      }
     ],
-    "stemEs": "Dos puntos están en (-3, -7) y (-3, 5). ¿Cuál es la distancia entre ellos?",
-    "explanationEs": "El mismo x = -3. Distancia = |5 - (-7)| = |5 + 7| = 12 unidades.",
-    "choicesEs": [
-      "12 unidades",
-      "2 unidades",
-      "7 unidades",
-      "8 unidades"
-    ],
-    "hintsEs": [
-      "Ambos puntos comparten x = −3, así que esta es una distancia vertical entre y = −7 y y = 5.",
-      "Los valores de y tienen signos opuestos, así que suma sus valores absolutos en vez de solo restar los dígitos.",
-      "Cuenta de −7 hasta 0 (son 7 unidades) y luego de 0 hasta 5. Suma los dos conteos."
+    "level3": [
+      {
+        "type": "open-response",
+        "prompt": "A rectangle has vertices at (-4, -2), (3, -2), (3, 5), and (-4, 5). Find the length, width, perimeter, and area of the rectangle. Show your work using absolute value.",
+        "sentenceFrame": "The width is |___ - (___)| = ___ units. The height is |___ - (___)| = ___ units. The perimeter is 2(___ + ___) = ___ units. The area is ___ × ___ = ___ square units.",
+        "keywords": [
+          "absolute value",
+          "distance",
+          "perimeter",
+          "area",
+          "width",
+          "height",
+          "7",
+          "49"
+        ],
+        "minLength": 40,
+        "hint": "Use examples with specific coordinates to explain your thinking.",
+        "hints": [
+          "Width uses the two x-values (-4 and 3); height uses the two y-values (-2 and 5). Each pair has opposite signs.",
+          "Use absolute value: width = |3 − (-4)| and height = |5 − (-2)|. Then perimeter = 2(w + h) and area = w × h.",
+          "Start with the width: |3 − (-4)| means 3 + 4. Work that out, then set up the height the same way."
+        ],
+        "explanation": "The width comes from the two x-values, |3 - (-4)| = 7, and the height comes from the two y-values, |5 - (-2)| = 7, so this rectangle is actually a square. That gives a perimeter of 2(7 + 7) = 28 units and an area of 7 × 7 = 49 square units.",
+        "explanationEs": "El ancho viene de los dos valores de x, |3 - (-4)| = 7, y la altura viene de los dos valores de y, |5 - (-2)| = 7, así que este rectángulo en realidad es un cuadrado. Eso da un perímetro de 2(7 + 7) = 28 unidades y un área de 7 × 7 = 49 unidades cuadradas.",
+        "hintsEs": [
+          "El ancho usa los dos valores de x (-4 y 3); el alto usa los dos valores de y (-2 y 5). Cada par tiene signos opuestos.",
+          "Usa el valor absoluto: ancho = |3 − (-4)| y alto = |5 − (-2)|. Luego perímetro = 2(ancho + alto) y área = ancho × alto.",
+          "Empieza con el ancho: |3 − (-4)| significa 3 + 4. Resuélvelo y luego plantea la altura de la misma manera."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A rectangle has corners (1, 2), (1, 5), (5, 5), and (5, 2). What is its perimeter?",
+        "choices": [
+          "7 units",
+          "12 units",
+          "14 units",
+          "10 units"
+        ],
+        "correctIndex": 2,
+        "explanation": "Width = |5 - 1| = 4, height = |5 - 2| = 3, so perimeter = 2(4 + 3) = 14 units. (Area would be 12 sq units, so perimeter and area are different here.)",
+        "choiceFeedback": [
+          "Not quite. Width = |5 - 1| = 4, height = |5 - 2| = 3, so perimeter = 2(4 + 3) = ___.",
+          "You found 4 × 3, which is the space inside the rectangle. Perimeter is the distance all the way around the outside, so add the four side lengths instead.",
+          "",
+          "It looks like you doubled the coordinate 5 rather than an actual side length. Subtract to get the width and the height first, then go around all four sides."
+        ],
+        "hints": [
+          "It's a rectangle: the two x-values (1 and 5) and two y-values (2 and 5) build the sides.",
+          "Width = |5 − 1| and height = |5 − 2|. The perimeter adds ALL four sides — not just one width and one height.",
+          "Find 5 − 1 and 5 − 2 first. Then double each result and add them together."
+        ],
+        "stemEs": "Un rectángulo tiene esquinas en (1, 2), (1, 5), (5, 5) y (5, 2). ¿Cuál es su perímetro?",
+        "explanationEs": "Ancho = |5 - 1| = 4, altura = |5 - 2| = 3, así que el perímetro = 2(4 + 3) = 14 unidades. (El área sería 12 unidades cuadradas, así que aquí el perímetro y el área son diferentes).",
+        "hintsEs": [
+          "Es un rectángulo: los dos valores de x (1 y 5) y los dos de y (2 y 5) forman los lados.",
+          "Ancho = |5 − 1| y alto = |5 − 2|. El perímetro suma LOS CUATRO lados — no solo un ancho y un alto.",
+          "Halla primero 5 − 1 y 5 − 2. Luego duplica cada resultado y súmalos."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "How far apart are the points (-2, 5) and (-2, -3)?",
+        "choices": [
+          "2 units",
+          "8 units",
+          "15 units",
+          "-8 units"
+        ],
+        "correctIndex": 1,
+        "explanation": "The x-coordinates match, so distance = |5 - (-3)| = 8 units.",
+        "choiceFeedback": [
+          "Not quite. The x-coordinates match, so distance = |5 - (-3)| = ___.",
+          "",
+          "It looks like you multiplied 5 and 3. The two pieces of a segment that crosses the x-axis get added, so count the units above zero and the units below zero and combine them.",
+          "Distance is a count of units, so it is never negative. Take the absolute value of your subtraction to make it positive."
+        ],
+        "hints": [
+          "The x's match (both -2), so measure the vertical gap between y = 5 and y = -3.",
+          "Opposite signs on the y-values: the distance is |5| plus |-3|, the two distances from zero combined.",
+          "Count from 5 down to 0, then from 0 down to -3. Add the two counts — distance is always positive."
+        ],
+        "stemEs": "¿Qué tan separados están los puntos (-2, 5) y (-2, -3)?",
+        "explanationEs": "Las coordenadas x coinciden, así que la distancia = |5 - (-3)| = 8 unidades.",
+        "choicesEs": [
+          "2 unidades",
+          "8 unidades",
+          "15 unidades",
+          "-8 unidades"
+        ],
+        "hintsEs": [
+          "Las x coinciden (ambas −2), así que mide el espacio vertical entre y = 5 y y = −3.",
+          "Signos opuestos en los valores de y: la distancia es |5| más |−3|, las dos distancias desde cero combinadas.",
+          "Cuenta de 5 hasta 0 y luego de 0 hasta −3. Suma los dos conteos: la distancia siempre es positiva."
+        ],
+        "misconceptionTags": [
+          null,
+          null,
+          "op-multiplied-instead-of-added",
+          null
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Park is at (-4, 5) and City Hall is at (3, 5). How many blocks apart are they?",
+        "choices": [
+          "1 block",
+          "7 blocks",
+          "12 blocks",
+          "5 blocks"
+        ],
+        "correctIndex": 1,
+        "explanation": "Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.",
+        "choiceFeedback": [
+          "1 treats -4 and 3 as if they sat on the same side of zero. The Park is at x = -4 — count from -4 to 0, then 0 to 3, and put the two pieces together.",
+          "",
+          "It looks like you multiplied 4 and 3. When the walk crosses zero, the piece on the left and the piece on the right get added together, not multiplied.",
+          "You used the shared y-coordinate, 5, as the answer. Both places sit at y = 5, so that number never changes — the distance comes from the x-values, -4 and 3."
+        ],
+        "stemEs": "El Parque está en (-4, 5) y el Ayuntamiento está en (3, 5). ¿A cuántas cuadras de distancia están?",
+        "explanationEs": "El mismo y = 5, así que el segmento es horizontal. Los puntos están en lados opuestos del cero, así que suma los valores absolutos: |-4| + |3| = 4 + 3 = 7 cuadras.",
+        "hints": [
+          "Both places sit at y = 5, so the walk between them runs straight across — only the x-coordinates change.",
+          "The Park is left of zero and City Hall is right of zero, so split the walk at the origin and add the two pieces: |-4| + |3|.",
+          "Count from x = -4 over to x = 0 first — that is 4 blocks. Now count the blocks from 0 out to x = 3 and add them on."
+        ],
+        "hintsEs": [
+          "Los dos lugares están en y = 5, así que la caminata entre ellos va directo de lado a lado; solo cambian las coordenadas x.",
+          "El Parque está a la izquierda del cero y el Ayuntamiento a la derecha, así que divide la caminata en el origen y suma las dos partes: |-4| + |3|.",
+          "Cuenta primero de x = -4 hasta x = 0: son 4 cuadras. Ahora cuenta las cuadras de 0 hasta x = 3 y súmalas."
+        ],
+        "choicesEs": [
+          "1 cuadra",
+          "7 cuadras",
+          "12 cuadras",
+          "5 cuadras"
+        ],
+        "misconceptionTags": [
+          null,
+          null,
+          "op-multiplied-instead-of-added",
+          null
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A vertical path starts at (3, −2) and is exactly 7 blocks long. Where could it end?",
+        "stemEs": "Un camino vertical empieza en (3, −2) y mide exactamente 7 cuadras. ¿Dónde podría terminar?",
+        "choices": [
+          "(3, 5) or (3, −9) — seven blocks up, or seven blocks down",
+          "(3, 5) only — distances always count upward",
+          "(10, −2) or (−4, −2)",
+          "(3, 9) or (3, −5)"
+        ],
+        "choicesEs": [
+          "(3, 5) o (3, −9) — siete cuadras hacia arriba o siete hacia abajo",
+          "(3, 5) solamente — las distancias siempre se cuentan hacia arriba",
+          "(10, −2) o (−4, −2)",
+          "(3, 9) o (3, −5)"
+        ],
+        "correctIndex": 0,
+        "explanation": "Vertical means x stays 3 and y moves 7: up gives −2 + 7 = 5, down gives −2 − 7 = −9. Both check: |5 − (−2)| = 7 and |−9 − (−2)| = 7. A distance fixes how far, never which direction.",
+        "explanationEs": "Vertical significa que x se queda en 3 y y se mueve 7: hacia arriba, −2 + 7 = 5; hacia abajo, −2 − 7 = −9. Ambos cumplen: |5 − (−2)| = 7 y |−9 − (−2)| = 7. Una distancia fija cuánto, nunca hacia dónde.",
+        "choiceFeedback": [
+          "",
+          "Check the downward option: is |−9 − (−2)| also 7? Distance has no preferred direction.",
+          "Those endpoints changed the x-coordinate — that is a HORIZONTAL path.",
+          "Measure them: |9 − (−2)| = 11 and |−5 − (−2)| = 3. Neither is 7 blocks."
+        ],
+        "choiceFeedbackEs": [
+          "",
+          "Revisa la opción hacia abajo: ¿|−9 − (−2)| también es 7? La distancia no tiene dirección preferida.",
+          "Esos extremos cambiaron la coordenada x: ese es un camino HORIZONTAL.",
+          "Mídelos: |9 − (−2)| = 11 y |−5 − (−2)| = 3. Ninguno mide 7 cuadras."
+        ],
+        "hints": [
+          "A vertical path keeps x the same. Which coordinate moves?",
+          "From y = −2, travel 7 in each direction along the y-axis.",
+          "−2 + 7 and −2 − 7. Check each candidate with |end − start| = 7."
+        ],
+        "hintsEs": [
+          "Un camino vertical mantiene la x igual. ¿Qué coordenada se mueve?",
+          "Desde y = −2, viaja 7 en cada dirección por el eje y.",
+          "−2 + 7 y −2 − 7. Comprueba cada candidato con |final − inicio| = 7."
+        ]
+      }
     ]
   }
 }

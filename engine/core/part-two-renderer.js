@@ -122,24 +122,63 @@ function renderReview(host, state, ctx, config) {
     1,
     "🔁",
     "Review",
-    "This is day 2. Remind yourself what we did, then answer one question to warm up.",
+    "Day 2. Three things from yesterday, then a warm-up to get your hands moving.",
   );
 
+  // The objectives, POSTED in full — the same two cards the 🎯 Objectives page
+  // shows, because on day 2 the goal has not changed and a student walking in
+  // should see what they are still working on without opening anything.
   // resolveContentObjective / resolveLanguageObjective return text that is
-  // ALREADY HTML-escaped (same contract app.js openObjectives relies on), so
-  // running esc() over them again would print "&amp;" at students.
-  const card = el("section", "card card-teal");
-  card.append(
+  // ALREADY HTML-escaped, so running esc() over them again would print "&amp;".
+  const goals = el("section", "card card-teal");
+  goals.append(
     el(
       "div",
       null,
       `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📌 What we are still working on</h3>
        <p style="margin:0 0 6px; font-size:1.1rem; font-weight:700; color:#0f172a; line-height:1.5;">🎯 ${resolveContentObjective(config)}</p>
        <p style="margin:0; font-size:1.05rem; font-weight:600; color:#334155; line-height:1.5;">🗣️ ${resolveLanguageObjective(config)}</p>
-       <p style="margin:12px 0 0; font-size:.95rem; color:#475569;">Need the full page? Open <strong>📓 Math Notes</strong> or <strong>🎯 Objectives</strong> above.</p>`,
+       <p style="margin:12px 0 0; font-size:.95rem; color:#475569;">Open <strong>🎯 Objectives</strong> above for the full page, or <strong>📓 Math Notes</strong> for yesterday's notebook page.</p>`,
     ),
   );
-  host.append(card);
+  host.append(goals);
+
+  // Yesterday in a few highlights, not the whole notes page: the rule the
+  // notebook anchors on, its steps, and the mistake the lesson warned about.
+  const h = config.reviewHighlights;
+  if (h && (h.rule || h.formula || (h.steps && h.steps.length))) {
+    const card = el("section", "card");
+    const steps = Array.isArray(h.steps) ? h.steps.filter(Boolean) : [];
+    card.append(
+      el(
+        "div",
+        null,
+        `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📓 Yesterday, in short</h3>
+         ${h.rule ? `<p style="margin:0 0 8px; font-size:1.1rem; font-weight:800; color:#0f766e;">${esc(h.rule)}</p>` : ""}
+         ${
+           h.formula
+             ? `<p style="margin:0 0 12px; padding:12px 16px; background:#f0fdfa; border-left:4px solid #0f766e; border-radius:10px; font-size:1.15rem; font-weight:700; color:#0f172a;">${esc(h.formula)}</p>`
+             : ""
+}
+         ${
+           steps.length
+             ? `<ol style="margin:0; padding-left:22px; display:flex; flex-direction:column; gap:6px;">${steps
+                 .map(
+                   (t) =>
+                     `<li style="font-size:1.02rem; line-height:1.5; color:#0f172a;">${esc(String(t).replace(/^\d+\.\s*/, ""))}</li>`,
+                 )
+                 .join("")}</ol>`
+             : ""
+}
+         ${
+           h.watchOut
+             ? `<p style="margin:14px 0 0; padding:12px 16px; background:#fff7ed; border-left:4px solid #ea580c; border-radius:10px; font-size:1rem; color:#0f172a; line-height:1.55;"><strong>⚠️ Watch out:</strong> ${esc(h.watchOut)}</p>`
+             : ""
+}`,
+      ),
+    );
+    host.append(card);
+  }
 
   const vocab = Array.isArray(config.vocabulary)
     ? config.vocabulary.filter((v) => v && v.term)
@@ -166,23 +205,31 @@ function renderReview(host, state, ctx, config) {
     host.append(vcard);
   }
 
-  // One autograded question, reusing the core lesson's own on-level practice so
-  // Part 2 invents no mathematics of its own.
-  const check = config.reviewCheck;
-  if (check && (check.stem || check.prompt)) {
-    const ccard = el("section", "card");
-    ccard.append(
+  // A WARM-UP, not a single quick check: three autograded questions from
+  // yesterday's own practice set, easiest first, so every student gets in.
+  const warmup = config.reviewWarmup;
+  const questions = warmup && Array.isArray(warmup.questions) ? warmup.questions : [];
+  if (questions.length) {
+    const wcard = el("section", "card");
+    wcard.append(
       el(
         "div",
         null,
-        `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">⚡ Quick check</h3>
-         <p style="margin:0 0 12px; font-size:1rem; color:#475569;">One question from yesterday. Get it right and you are ready for today's problem.</p>`,
+        `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">⚡ ${esc(warmup.title || "Warm-Up")}</h3>
+         <p style="margin:0 0 14px; font-size:1rem; color:#475569;">${questions.length} questions from yesterday${warmup.prevLessonTitle ? ` — <strong>${esc(warmup.prevLessonTitle)}</strong>` : ""}. Autograded.</p>`,
       ),
     );
-    const slot = el("div");
-    ccard.append(slot);
-    renderComponent(slot, check, () => {}, { number: 1, total: 1, tier: "onLevel" });
-    host.append(ccard);
+    questions.forEach((q, i) => {
+      const slot = el("div");
+      slot.style.marginBottom = "14px";
+      wcard.append(slot);
+      renderComponent(slot, q, () => {}, {
+        number: i + 1,
+        total: questions.length,
+        tier: "onLevel",
+      });
+    });
+    host.append(wcard);
   }
 
   host.append(advanceButton("See today's problem 📋 →", state, ctx, 0));
@@ -261,19 +308,34 @@ function renderProblem(host, state, ctx, config) {
   }
   host.append(card);
 
+  // THE PROBLEM HAS TO BE SOLVABLE HERE (Joel, 2026-08-26: "either guided steps
+  // or space to solve it and work on it"). Reading it and then being sent to a
+  // group left the one problem the day is built around with nowhere to do it.
+  // These are the same guided moves Part 1's Show Your Work uses — know, need,
+  // plan, work, answer, how-I-know — persisted on this phase.
   const think = el("section", "card");
   think.append(
     el(
       "div",
       null,
-      `<h3 style="margin:0 0 10px; font-size:1.25rem; color:#0f172a;">🧭 Before you solve</h3>`,
+      `<h3 style="margin:0 0 4px; font-size:1.25rem; color:#0f172a;">🧭 Solve it</h3>
+       <p style="margin:0 0 12px; font-size:1rem; color:#475569;">Work through it on your own first. You will compare with your group next.</p>`,
     ),
   );
+  // The same "I'm stuck" bar the rest of the engine offers, on the problem that
+  // is on this screen — `config.revealWordProblem` IS what is being solved here.
+  mountStuckSupport(think, { config, state });
   think.append(
-    field(state, 1, "know", "1 · What we KNOW", "The numbers and facts the problem gives us…"),
+    field(state, 1, "know", "1 · What I KNOW", "The numbers and facts the problem gives me…"),
   );
   think.append(
-    field(state, 1, "need", "2 · What we NEED to find", "What is the problem actually asking for?"),
+    field(state, 1, "need", "2 · What I NEED to find", "What is the problem actually asking for?"),
+  );
+  think.append(field(state, 1, "plan", "3 · My plan", "First I will… then I will…"));
+  think.append(field(state, 1, "work", "4 · My work", "Show every step.", 6));
+  think.append(field(state, 1, "answer", "5 · My answer", "Include the units.", 2));
+  think.append(
+    field(state, 1, "why", "6 · How I know it is reasonable", "Compare it to an estimate.", 3),
   );
   host.append(think);
 
@@ -288,7 +350,7 @@ function renderGroups(host, state, _ctx, config) {
     3,
     "👥",
     "Group Work",
-    "Everyone in the group solves the same problem. Each person has one job.",
+    "Each person has one job. Work your table's problem set, then bring today's problem back together.",
   );
 
   const picked = (state.getResponse && state.getResponse(2, "role")) || "";
@@ -337,13 +399,23 @@ function renderGroups(host, state, _ctx, config) {
   roleCard.append(grid);
   host.append(roleCard);
 
+  // ── Leveled practice ──────────────────────────────────────────────────────
+  // Three sets, one per level, each opening from its own chip (Joel: "Group
+  // work should be leveled (with subcards) having different levels and
+  // different modifications/problems included"). Every problem is AUTHORED —
+  // assembled by scripts/generate-part-two.mjs from the core lesson and its own
+  // small-group variants, about 45 per lesson — so nothing here can be wrong in
+  // a way an author did not write. The MODIFICATION line under each chip is
+  // what that table does differently, not a different subject.
+  renderLevels(host, state, config);
+
   const solve = el("section", "card");
   solve.append(
     el(
       "div",
       null,
-      `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📝 Our group's work</h3>
-       <p style="margin:0 0 12px; font-size:1rem; color:#475569;">Fill this in together. One answer for the group.</p>`,
+      `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📝 Our group's work on today's problem</h3>
+       <p style="margin:0 0 12px; font-size:1rem; color:#475569;">After your set: bring the Apply problem back together and agree on one answer.</p>`,
     ),
   );
   // The same "I'm stuck" bar Part 1 offers, pointed at the problem on THIS page:
@@ -405,6 +477,126 @@ function renderGroups(host, state, _ctx, config) {
     done.disabled = true;
   });
   host.append(done);
+}
+
+const LEVELS = [
+  {
+    key: "level1",
+    icon: "🟢",
+    name: "Level 1",
+    tag: "Build it",
+    accent: "#0f766e",
+    tint: "#f0fdfa",
+    modification:
+      "Do the first problem together out loud before anyone writes. Keep the model or chart open the whole time, and say each step before you do it.",
+  },
+  {
+    key: "level2",
+    icon: "🔵",
+    name: "Level 2",
+    tag: "Grade level",
+    accent: "#1d4ed8",
+    tint: "#eff6ff",
+    modification:
+      "Solve, then swap papers and check each other's work before moving on. Anyone who disagrees explains why before you fix it.",
+  },
+  {
+    key: "level3",
+    icon: "🟣",
+    name: "Level 3",
+    tag: "Stretch",
+    accent: "#7e22ce",
+    tint: "#faf5ff",
+    modification:
+      "Write the reason beside every answer. For at least one problem, invent a wrong answer someone could give and explain what they did.",
+  },
+];
+
+/**
+ * The leveled sets, one chip each, one panel visible at a time. Panels are all
+ * built up front and hidden — the same eager-render-then-hide the act step
+ * strip uses, so save/resume and graders keep working on the sets nobody is
+ * looking at.
+ */
+function renderLevels(host, state, config) {
+  const banks = config.groupLevels || {};
+  const available = LEVELS.filter((l) => Array.isArray(banks[l.key]) && banks[l.key].length);
+  if (!available.length) return;
+
+  const card = el("section", "card");
+  card.append(
+    el(
+      "div",
+      null,
+      `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">🧗 Your group's problem set</h3>
+       <p style="margin:0 0 14px; font-size:1rem; color:#475569;">Your teacher will tell you which level your table is on. Every level practises the same skill.</p>`,
+    ),
+  );
+
+  const chips = el("div");
+  chips.style.cssText = "display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;";
+  const panels = el("div");
+  const nodes = [];
+
+  available.forEach((level) => {
+    const items = banks[level.key];
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "btn";
+    chip.setAttribute("aria-pressed", "false");
+    chip.style.cssText = `padding:10px 18px; font-weight:800; border-radius:12px; border:2px solid ${level.accent}; background:#ffffff; color:${level.accent}; cursor:pointer;`;
+    chip.innerHTML = `${level.icon} ${esc(level.name)} · ${esc(level.tag)} <span style="font-weight:600; opacity:.75;">(${items.length})</span>`;
+    chips.append(chip);
+
+    const panel = el("div");
+    // Both, deliberately: a stylesheet `display:` on any class this div later
+    // picks up would outrank the UA's [hidden] rule and the panel would stay on
+    // screen with `hidden` set and nothing to show for it.
+    panel.hidden = true;
+    panel.style.display = "none";
+    panel.append(
+      el(
+        "div",
+        null,
+        `<p style="margin:0 0 14px; padding:12px 16px; background:${level.tint}; border-left:4px solid ${level.accent}; border-radius:10px; font-size:1rem; line-height:1.55; color:#0f172a;"><strong>${level.icon} What this table does differently:</strong> ${esc(level.modification)}</p>`,
+      ),
+    );
+    items.forEach((item, n) => {
+      const slot = el("div");
+      slot.style.marginBottom = "14px";
+      panel.append(slot);
+      renderComponent(slot, item, () => {}, {
+        number: n + 1,
+        total: items.length,
+        tier: level.key,
+      });
+    });
+    panels.append(panel);
+    nodes.push({ chip, panel, level });
+  });
+
+  const show = (idx) => {
+    nodes.forEach((n, i) => {
+      const on = i === idx;
+      n.panel.hidden = !on;
+      n.panel.style.display = on ? "" : "none";
+      n.chip.setAttribute("aria-pressed", String(on));
+      n.chip.style.background = on ? n.level.accent : "#ffffff";
+      n.chip.style.color = on ? "#ffffff" : n.level.accent;
+    });
+    if (state.saveResponse) state.saveResponse(2, "level", nodes[idx].level.key);
+  };
+  nodes.forEach((n, i) => n.chip.addEventListener("click", () => show(i)));
+
+  card.append(chips, panels);
+  host.append(card);
+
+  const saved = state.getResponse && state.getResponse(2, "level");
+  const start = Math.max(
+    0,
+    nodes.findIndex((n) => n.level.key === saved),
+  );
+  show(start);
 }
 
 /* ── Shared ───────────────────────────────────────────────────────────────── */

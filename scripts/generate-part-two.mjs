@@ -50,6 +50,7 @@ const CARRIED = [
   "vocabulary",
   "notebook",
   "revealWordProblem",
+  "commonMistake",
   "contentVisualImg",
   "contentVisualCaption",
   "languageVisualImg",
@@ -57,24 +58,208 @@ const CARRIED = [
 ];
 
 /**
- * The one autograded question the Review phase asks. On-level first — Part 2's
- * warm-up is "do you still have yesterday", not a placement test — and only a
- * self-grading item, because nobody is at the front of the room to mark it.
+ * The `visual.kind`s the WHOLE-LESSON renderer can actually draw, read out of
+ * `buildVisual()`'s own switch plus its explicit `.kind === "…"` comparisons.
+ * Parsed rather than listed so it cannot drift from the engine — the same
+ * source of truth scripts/validate-lesson-visuals.mjs reads.
+ *
+ * This matters because the level banks below draw on the SMALL-GROUP variants,
+ * and those render their figures through a different dispatcher with its own
+ * kinds (factor-table, volume-prism, multiple-lanes, …). Carried into Part 2,
+ * which renders through buildVisual, those problems would show a blank gap
+ * where their figure should be — and a problem whose numbers live in the figure
+ * is then unsolvable.
  */
-function pickReviewCheck(config) {
-  const p = config.practice || {};
-  const gradable = (item) =>
-    item &&
-    typeof item === "object" &&
-    (item.stem || item.prompt) &&
-    Array.isArray(item.choices) &&
-    item.choices.length >= 2 &&
-    Number.isInteger(item.correctIndex);
-  for (const tier of ["onLevel", "approaching", "extending"]) {
-    const found = (Array.isArray(p[tier]) ? p[tier] : []).find(gradable);
-    if (found) return found;
+function renderableVisualKinds() {
+  const src = readFileSync(join(ROOT, "engine/core/lesson-renderer.js"), "utf8");
+  const start = src.indexOf("function buildVisual(");
+  if (start < 0) throw new Error("buildVisual() not found in lesson-renderer.js");
+  let depth = 0;
+  const open = src.indexOf("{", start);
+  let end = -1;
+  for (let i = open; i < src.length; i += 1) {
+    if (src[i] === "{") depth += 1;
+    else if (src[i] === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        end = i;
+        break;
+      }
+    }
   }
-  return null;
+  const kinds = new Set([
+    ...[...src.slice(open, end).matchAll(/case "([^"]+)"/g)].map((m) => m[1]),
+    ...[...src.matchAll(/\.kind === "([a-z0-9-]+)"/g)].map((m) => m[1]),
+  ]);
+  if (kinds.size < 10) {
+    throw new Error(`only ${kinds.size} renderable visual kinds parsed — the engine moved`);
+  }
+  return kinds;
+}
+
+const RENDERABLE_KINDS = renderableVisualKinds();
+
+/** True when this renderer can draw whatever figure the item declares. */
+function visualRenders(item) {
+  const kind = item && item.visual && item.visual.kind;
+  return !kind || RENDERABLE_KINDS.has(String(kind));
+}
+
+/** A self-grading multiple-choice item — the only kind a warm-up can mark. */
+function gradable(item) {
+  return Boolean(
+    item &&
+      typeof item === "object" &&
+      (item.stem || item.prompt) &&
+      Array.isArray(item.choices) &&
+      item.choices.length >= 2 &&
+      Number.isInteger(item.correctIndex),
+  );
+}
+
+/**
+ * Part 2 opens with a WARM-UP on yesterday's lesson, not a single quick check
+ * (Joel, 2026-08-26: "instead of quick check ... have a warmup part"). Every
+ * question is one the core lesson already wrote, so Part 2 still authors no
+ * mathematics.
+ *
+ * IT IS NOT `config.warmup`, and the field is called `reviewWarmup` to keep
+ * that clear. `warmup` is a defined contract in this repo: it reviews the
+ * PREVIOUS lesson, and tools/warmup-sequencing.test.mjs holds a variant to its
+ * parent's copy because a variant must not author its own. Part 2's warm-up
+ * reviews THIS lesson — the one taught yesterday — so inheriting the parent's
+ * would point students at the wrong day. Different meaning, different name.
+ *
+ * Easiest first: this is a "do you still have yesterday" check at the start of
+ * a second day, so it opens where every student can get in.
+ */
+function buildWarmup(config, title) {
+  const p = config.practice || {};
+  const seen = new Set();
+  const questions = [];
+  for (const tier of ["approaching", "onLevel", "extending"]) {
+    for (const item of Array.isArray(p[tier]) ? p[tier] : []) {
+      if (questions.length >= 3 || !gradable(item) || !visualRenders(item)) continue;
+      const key = String(item.stem || item.prompt);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      questions.push(item);
+    }
+  }
+  if (!questions.length) return null;
+  return {
+    title: "Warm-Up: Yesterday's Lesson",
+    kind: "previous",
+    prevLessonTitle: title,
+    questions,
+  };
+}
+
+/**
+ * The "what we did yesterday" recap, as a FEW HIGHLIGHTS rather than the whole
+ * notes page (Joel: "it should be a simplified (quick version of the day
+ * before or a few highlights of it)"). Everything here is lifted from the core
+ * lesson: the rule its notebook page anchors on, the numbered steps under that
+ * rule, and the mistake it told students to watch for.
+ */
+function buildHighlights(config) {
+  const boxes = ((config.notebook || {}).checkpoints || []).filter(Boolean);
+  const anchor = boxes.find((b) => b && b.copyPanel && b.copyPanel.rule);
+  const panel = anchor ? anchor.copyPanel : null;
+  const out = {};
+  if (panel) {
+    if (panel.rule) out.rule = String(panel.rule);
+    if (panel.formula) out.formula = String(panel.formula);
+    if (Array.isArray(panel.steps) && panel.steps.length) {
+      out.steps = panel.steps.map(String).slice(0, 4);
+    }
+  }
+  const mistake = (config.practice || {}).commonMistake;
+  if (mistake) out.watchOut = String(mistake);
+  return Object.keys(out).length ? out : null;
+}
+
+/**
+ * The leveled problem sets Part 2's group work runs on (Joel: "Group work
+ * should be leveled (with subcards) having different levels and different
+ * modifications/problems included").
+ *
+ * Every problem is AUTHORED — pulled from the core lesson and from its own
+ * small-group variants, which between them already carry a large bank per
+ * lesson (core practice, each group's practice, and each group's 12-item
+ * parallel-practice set). Nothing here is generated, so nothing here can be
+ * wrong in a way an author did not write.
+ *
+ *   🟢 Level 1  the scaffolded end — approaching items and Group 1's bank
+ *   🔵 Level 2  grade level — on-level items from the lesson and both groups
+ *   🟣 Level 3  the stretch — extending items and Group 2's bank
+ */
+function buildGroupLevels(id, config, readVariant) {
+  const g1 = readVariant(`${id}-group1`);
+  const g2 = readVariant(`${id}-group2`);
+  const cu = readVariant(`${id}-catchup`);
+  const tier = (cfg, name) =>
+    cfg && Array.isArray((cfg.practice || {})[name]) ? cfg.practice[name] : [];
+  const parallel = (cfg) =>
+    cfg && Array.isArray(cfg.parallelPractice) ? cfg.parallelPractice : [];
+
+  // Each group's 12-item parallel bank is a ramp of the same skill. Group 1's
+  // runs scaffolded → on-level and Group 2's runs on-level → challenge, so each
+  // is split at the middle: the easy half of Group 1's and the hard half of
+  // Group 2's anchor the outer levels, and the two inner halves — which are
+  // both plainly grade-level — thicken the middle, which is otherwise the
+  // thinnest bank in the repo (every variant inherits the core's on-level set,
+  // so those four configs hold about five distinct problems between them).
+  const p1 = parallel(g1);
+  const p2 = parallel(g2);
+  const h1 = Math.floor(p1.length / 2);
+  const h2 = Math.floor(p2.length / 2);
+
+  const levels = {
+    level1: [
+      ...tier(config, "approaching"),
+      ...tier(g1, "approaching"),
+      ...tier(cu, "approaching"),
+      ...p1.slice(0, h1),
+    ],
+    level2: [
+      ...tier(config, "onLevel"),
+      ...tier(g1, "onLevel"),
+      ...tier(g2, "onLevel"),
+      ...tier(cu, "onLevel"),
+      ...tier(config, "optional"),
+      ...p1.slice(h1),
+      ...p2.slice(0, h2),
+    ],
+    level3: [
+      ...tier(config, "extending"),
+      ...tier(g2, "extending"),
+      ...tier(cu, "extending"),
+      ...p2.slice(h2),
+    ],
+  };
+
+  // Deduped WITHIN a level, not across them. The three levels run at the same
+  // time at different tables, so a problem serving two of them is invisible;
+  // deduping globally instead let the first level drain the pool and left 27
+  // lessons with an empty challenge set.
+  const out = {};
+  for (const [key, items] of Object.entries(levels)) {
+    const seen = new Set();
+    const kept = [];
+    for (const item of items) {
+      if (!item || typeof item !== "object") continue;
+      const stem = String(item.stem || item.prompt || "").trim();
+      if (!stem || seen.has(stem)) continue;
+      // Drop rather than de-figure: a problem whose numbers are in the picture
+      // is unsolvable without it, and this renderer cannot draw that picture.
+      if (!visualRenders(item)) continue;
+      seen.add(stem);
+      kept.push(item);
+    }
+    if (kept.length) out[key] = kept;
+  }
+  return Object.keys(out).length ? out : null;
 }
 
 /** "5.3 Determine the Area of Trapezoids" → the Part 2 display title. */
@@ -82,7 +267,7 @@ function partTwoTitle(config) {
   return `${config.title} · Part 2`;
 }
 
-function buildConfig(id, core) {
+function buildConfig(id, core, readVariant) {
   const out = {
     lessonId: `${id}-part2`,
     baseLessonId: id,
@@ -95,9 +280,24 @@ function buildConfig(id, core) {
   for (const key of CARRIED) {
     if (core[key] !== undefined) out[key] = core[key];
   }
-  const check = pickReviewCheck(core);
-  if (check) out.reviewCheck = check;
+  const warmup = buildWarmup(core, core.title);
+  if (warmup) out.reviewWarmup = warmup;
+  const highlights = buildHighlights(core);
+  if (highlights) out.reviewHighlights = highlights;
+  const levels = buildGroupLevels(id, core, readVariant);
+  if (levels) out.groupLevels = levels;
   return out;
+}
+
+/** A sibling variant's config, or null when the lesson has no such variant. */
+function readVariantConfig(variantId) {
+  const path = join(LESSONS, variantId, "config.json");
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -183,7 +383,7 @@ for (const dir of readdirSync(LESSONS).sort()) {
   const changed =
     put(
       join(outDir, "config.json"),
-      `${JSON.stringify(buildConfig(dir, core), null, 2)}\n`,
+      `${JSON.stringify(buildConfig(dir, core, readVariantConfig), null, 2)}\n`,
       stale,
     ) |
     put(join(outDir, "index.html"), buildShell(dir, core, readFileSync(shellPath, "utf8")), stale) |
