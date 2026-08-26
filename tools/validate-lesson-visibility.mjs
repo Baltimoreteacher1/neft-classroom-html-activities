@@ -24,6 +24,15 @@
  *   3. Exactly one visible forward button per act — two ways forward was its
  *      own shipped bug.
  *   4. Part 2's warm-up carries no interactive division lab.
+ *   5. The WARM-UP IS ANSWERABLE. Every lesson opens on it, so it is the first
+ *      thing that can be broken and the last thing anyone looks at. This asserts
+ *      the geometry AND the behaviour a student needs: at least four answer
+ *      controls with real painted boxes (not merely present in the DOM), a
+ *      Submit button big enough to hit, and — after actually selecting answers
+ *      and clicking it — a visible score. Presence proves none of those: a
+ *      radio inside a zero-height card, a Submit under a fixed footer, and a
+ *      submit handler that throws before writing the badge all pass a DOM probe
+ *      and all leave a student unable to start the day.
  *
  * Plus two STATIC pins that need no browser:
  *   • the takeover offset reads var(--nt-rail-w) — it was a hardcoded copy of
@@ -40,6 +49,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const DIST = join(ROOT, "dist");
@@ -50,6 +60,11 @@ const BOOT_TIMEOUT = 30000;
 // shell, not a fleet sweep — every lesson rides the same panels.
 const SAMPLE = ["2-7", "5-3", "6-1"];
 const PART2 = "2-7-part2";
+/* The warm-up canary. 2-7 is the long-division lesson whose warm-up was rebuilt
+ * as an on-ramp; 6-1 is decimal division. Two is deliberate — every lesson rides
+ * the same renderWarmupPhase() card, so this is a canary for that shared shell,
+ * not a fleet sweep. */
+const WARMUP_SAMPLE = ["2-7", "6-1"];
 
 let failures = 0;
 const fail = (msg) => {
@@ -75,6 +90,38 @@ const note = (msg) => console.log(`  ok    ${msg}`);
     );
   }
   if (!failures) note("static pins — rail variable + anti-compression rules present");
+}
+
+/* ── what a student can actually click ────────────────────────────────────────
+ * ONE definition, used by both warm-up probes, because they render through
+ * different components and a second copy would drift.
+ *
+ * The clickable target is NOT always the radio. Act 1's own warm-up card styles
+ * native 20x20 inputs directly, but the practice renderer Part 2 uses puts a
+ * VISUALLY HIDDEN input inside a painted `label.mc-option-label` — the standard
+ * accessible pattern. Measuring the input there counts 0 and reads as a broken
+ * page; measuring `input[type=radio], label` in the DOM (what this file used to
+ * do) counts anything at all and reads as a working one. Neither is the
+ * question. The question is whether the thing a student presses has pixels, so
+ * each radio is mapped to its label when it has one, and THAT is measured.
+ * -------------------------------------------------------------------------- */
+function countAnswerTargets(rootSelector) {
+  const painted = (node, min = 10) => {
+    if (!node || !node.getClientRects().length) return false;
+    const box = node.getBoundingClientRect();
+    if (box.width < min || box.height < min) return false;
+    const style = getComputedStyle(node);
+    return style.visibility !== "hidden" && Number(style.opacity) > 0.05;
+  };
+  const root = document.querySelector(rootSelector);
+  if (!root) return { root: false, found: 0, visible: 0 };
+  const radios = [...root.querySelectorAll("input[type=radio]")];
+  const targets = radios.map((radio) => radio.closest("label") || radio);
+  return {
+    root: true,
+    found: targets.length,
+    visible: targets.filter((t) => painted(t)).length,
+  };
 }
 
 /* ── serve dist ───────────────────────────────────────────────────────────── */
@@ -109,8 +156,28 @@ const server = createServer((req, res) => {
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const BASE = `http://127.0.0.1:${server.address().port}`;
 
+/* A missing browser is a SKIP, never a pass, and never an uncaught throw.
+ * Before this, a container whose pinned Chromium build did not match the
+ * installed one died with a raw stack trace after the static pins had already
+ * printed "ok" — which reads, in a scrolling qa:loop, like the gate ran.
+ * PW_CHROMIUM_PATH points at a system Chromium when the Playwright-managed
+ * download is missing or version-mismatched, the same lever every other
+ * browser-driving check here uses. */
 const { chromium } = await import("playwright");
-const browser = await chromium.launch();
+let browser;
+try {
+  browser = await chromium.launch(
+    process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+  );
+} catch (error) {
+  server.close();
+  process.exit(
+    skipExit(
+      `Chromium could not be launched (${error.message.split("\n")[0]})`,
+      "Install a browser (npx playwright install chromium) or set PW_CHROMIUM_PATH.",
+    ),
+  );
+}
 
 async function open(id) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
@@ -219,25 +286,144 @@ for (const id of SAMPLE) {
   await page.close();
 }
 
+/* ── the warm-up is answerable ────────────────────────────────────────────────
+ * Measured, not counted: `getClientRects()` plus a real painted box, because
+ * the compression bug this file exists for produced elements that existed,
+ * matched their selector, and occupied no pixels.
+ * -------------------------------------------------------------------------- */
+for (const id of WARMUP_SAMPLE) {
+  const page = await open(id);
+
+  const shape = await page.evaluate(() => {
+    /* Visible means PAINTED: laid out, non-zero, not hidden, not transparent. */
+    const painted = (node, min = 8) => {
+      if (!node || !node.getClientRects().length) return false;
+      const box = node.getBoundingClientRect();
+      if (box.width < min || box.height < min) return false;
+      const style = getComputedStyle(node);
+      return style.visibility !== "hidden" && Number(style.opacity) > 0.05;
+    };
+    const card = document.querySelector(".card-warmup-phase");
+    if (!card) return { card: false };
+    const radios = [...card.querySelectorAll("input[type=radio]")];
+    const targets = radios.map((radio) => radio.closest("label") || radio);
+    const submit = [...card.querySelectorAll("button")].find((b) =>
+      /submit warmup|enviar respuestas/i.test(b.textContent || ""),
+    );
+    const badge = card.querySelector("#warmupScoreBadge");
+    return {
+      card: true,
+      cardH: Math.round(card.getBoundingClientRect().height),
+      radios: targets.length,
+      visibleRadios: targets.filter((t) => painted(t, 10)).length,
+      submit: !!submit,
+      submitVisible: submit ? painted(submit, 40) : false,
+      submitBox: submit
+        ? `${Math.round(submit.getBoundingClientRect().width)}×${Math.round(submit.getBoundingClientRect().height)}`
+        : "—",
+      badgeVisible: painted(badge, 20),
+      badgeText: badge ? badge.textContent.replace(/\s+/g, " ").trim() : "",
+    };
+  });
+
+  if (!shape.card) {
+    /* Zero-match is a FAILURE. A renamed card class must not read as a lesson
+     * that simply has no warm-up. */
+    fail(`${id}: no .card-warmup-phase rendered — the warm-up did not draw at all`);
+    await page.close();
+    continue;
+  }
+  if (shape.visibleRadios < 4)
+    fail(
+      `${id}: warm-up shows ${shape.visibleRadios} visible answer controls ` +
+        `(${shape.radios} in the DOM) inside a ${shape.cardH}px card — a student cannot answer it`,
+    );
+  if (!shape.submit) fail(`${id}: warm-up has no Submit button`);
+  else if (!shape.submitVisible)
+    fail(`${id}: the warm-up Submit button measures ${shape.submitBox} — it cannot be pressed`);
+  if (!shape.badgeVisible) fail(`${id}: the warm-up score badge is not visible before submitting`);
+
+  /* BEHAVIOUR. Answer every question, submit, and require a real score. The
+   * badge starts as "N Questions · Autograded", so asserting it merely CHANGED
+   * would pass on any rewrite; it has to state a score out of the question
+   * count. */
+  const scored = await page.evaluate(async () => {
+    const card = document.querySelector(".card-warmup-phase");
+    const groups = new Map();
+    for (const radio of card.querySelectorAll("input[type=radio]")) {
+      if (!groups.has(radio.name)) groups.set(radio.name, radio);
+    }
+    for (const first of groups.values()) {
+      first.click();
+    }
+    const submit = [...card.querySelectorAll("button")].find((b) =>
+      /submit warmup|enviar respuestas/i.test(b.textContent || ""),
+    );
+    if (!submit) return { clicked: false };
+    submit.click();
+    await new Promise((r) => setTimeout(r, 400));
+    const badge = card.querySelector("#warmupScoreBadge");
+    return {
+      clicked: true,
+      answered: groups.size,
+      badgeText: badge ? badge.textContent.replace(/\s+/g, " ").trim() : "",
+      badgePainted: badge ? badge.getClientRects().length > 0 : false,
+      submitDisabled: submit.disabled,
+    };
+  });
+
+  const SCORE = /Final Score:\s*(\d+)\s*\/\s*(\d+)/i;
+  const match = SCORE.exec(scored.badgeText || "");
+  if (!scored.clicked) {
+    fail(`${id}: could not press Submit on the warm-up`);
+  } else if (!match) {
+    fail(
+      `${id}: submitting the warm-up left the badge reading "${scored.badgeText}" — no score was shown`,
+    );
+  } else if (!scored.badgePainted) {
+    fail(`${id}: the warm-up score was written but is not painted`);
+  } else if (Number(match[2]) !== scored.answered) {
+    fail(
+      `${id}: scored out of ${match[2]} but ${scored.answered} questions were answered — ` +
+        "the score does not cover the warm-up",
+    );
+  } else {
+    note(
+      `${id}: warm-up answerable — ${shape.visibleRadios} visible controls, Submit ${shape.submitBox}, scored ${match[0]}`,
+    );
+  }
+  await page.close();
+}
+
 /* Part 2: the warm-up is a quick check, never a lab session. */
 {
   const page = await open(PART2);
+  const controls = await page.evaluate(countAnswerTargets, ".phase.active");
   const g = await page.evaluate(() => {
     const p = document.querySelector(".phase.active");
     return {
       labs: p ? p.querySelectorAll(".ldl").length : -1,
-      answerable: p ? p.querySelectorAll("input[type=radio], label").length : 0,
       name: [...document.querySelectorAll(".sidebar .phase-btn")]
         .filter((b) => !b.classList.contains("phase-subtab"))[0]
         ?.textContent.replace(/\s+/g, " ")
         .trim(),
     };
   });
+  /* Zero-match is a FAILURE: a renamed option class must not read as a clean
+   * page. `found` is the DOM count, `visible` the painted one — reporting both
+   * says whether the controls are missing or merely invisible. */
+  if (!controls.root) fail(`${PART2}: no active phase rendered`);
+  if (controls.found === 0)
+    fail(`${PART2}: found NO answer controls at all — the selector matched nothing`);
+  g.answerable = controls.visible;
   if (g.labs !== 0) fail(`${PART2}: warm-up carries ${g.labs} interactive lab(s)`);
-  if (g.answerable < 4) fail(`${PART2}: warm-up has only ${g.answerable} answer controls`);
+  if (controls.found && g.answerable < 4)
+    fail(
+      `${PART2}: warm-up has ${g.answerable} VISIBLE answer controls of ${controls.found} in the DOM`,
+    );
   if (!/Warm-Up/.test(g.name || "")) fail(`${PART2}: phase 1 is "${g.name}", not Warm-Up`);
   if (g.labs === 0 && g.answerable >= 4)
-    note(`${PART2}: warm-up clean (0 labs, ${g.answerable} controls)`);
+    note(`${PART2}: warm-up clean (0 labs, ${g.answerable} visible controls)`);
   await page.close();
 }
 
