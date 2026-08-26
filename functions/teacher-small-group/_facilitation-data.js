@@ -1360,7 +1360,7 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying; Flipped the ratio. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the tape diagram, how many TIMES bigger did the first amount get?",
+      ask: "On the ratio table, how many TIMES bigger did the first amount get?",
       lookFor:
         "Watch for the “Scaled a ratio by adding instead of multiplying” error — that is the one this lesson's check diagnoses.",
       ifStuck:
@@ -1388,7 +1388,7 @@ export const FACILITATION_BY_LESSON = {
       lookFor:
         "A student who can explain why the “Scaled a ratio by adding instead of multiplying” error fails in every case, not just this one.",
       ifStuck:
-        "Give them a 1-to-something row on the tape diagram and ask what one step of scaling does.",
+        "Give them a 1-to-something row on the ratio table and ask what one step of scaling does.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
     frames: [
@@ -2842,7 +2842,7 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the tape diagram, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "On the model, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
         "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",

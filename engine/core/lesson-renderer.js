@@ -3403,17 +3403,47 @@ export function renderLearnItExtrasInto(learnHost, config, state) {
   const cfg = config.launch;
 
   // 1) The application scenario card (the word problem + optional theme art).
+  learnHost.append(buildLaunchProblemCard(config));
+
+  // Tap-to-reveal story beats: the same narrative chunked into labeled parts
+  // for readers who lose the thread in the full paragraph.
+  renderLaunchStoryBeats(learnHost, config);
+
+  // 2) Inline Reveal Math slides for the launch + instruction sections.
+  renderRevealSlides(learnHost, config, ["launch", "instruction"]);
+
+  // 3) Show Your Work — the application problem + a guided, typeable solve-it
+  //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
+  renderShowYourWork(learnHost, config, state);
+
+  // 4) Let students mark up the word problems (highlight / underline / bold).
+  enableWordProblemAnnotation(learnHost);
+}
+
+/**
+ * TODAY'S WORD PROBLEM, as a card: its name, its words, and its figure.
+ *
+ * One implementation, two call sites — the Launch step of Act 1 and the Apply
+ * It step under Learn It. It used to exist only under Learn It, four clicks
+ * deep, which is why the official figures adopted in
+ * scripts/adopt-official-launch-problems.mjs were invisible to anyone opening
+ * the lesson and reading down (Joel, 2026-08-26: "I'm still not seeing images
+ * from the slides in the word problems"). A lesson's launch IS its problem, so
+ * the Launch step shows it, and the solve step shows it again beside the
+ * workspace — the same thing the deck does.
+ */
+function buildLaunchProblemCard(config) {
+  const cfg = (config && config.launch) || {};
   const scenario = document.createElement("div");
   scenario.className = "card launch-scenario-card";
   scenario.innerHTML = `
       <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
       <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-  // The official Reveal figure for THIS problem, when the lesson has adopted the
-  // deck's opening problem (scripts/adopt-official-launch-problems.mjs). These
-  // problems keep their numbers in the picture — "as shown in the order form",
-  // "the temperatures … are shown" — so without it there is nothing to solve.
-  // It replaces the decorative theme art rather than joining it: two pictures
-  // above one problem is a student asking which one to read.
+  // The official Reveal figure for THIS problem. These problems keep their
+  // numbers in the picture — "as shown in the order form", "the temperatures …
+  // are shown" — so without it there is nothing to solve. It REPLACES the
+  // decorative theme art rather than joining it: two pictures above one problem
+  // is a student asking which one to read.
   if (cfg.problemImage) {
     const fig = document.createElement("figure");
     fig.className = "launch-problem-figure";
@@ -3429,21 +3459,7 @@ export function renderLearnItExtrasInto(learnHost, config, state) {
   } else if (cfg.contextImage || config.theme || config.heroFigure) {
     renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
   }
-  learnHost.append(scenario);
-
-  // Tap-to-reveal story beats: the same narrative chunked into labeled parts
-  // for readers who lose the thread in the full paragraph.
-  renderLaunchStoryBeats(learnHost, config);
-
-  // 2) Inline Reveal Math slides for the launch + instruction sections.
-  renderRevealSlides(learnHost, config, ["launch", "instruction"]);
-
-  // 3) Show Your Work — the application problem + a guided, typeable solve-it
-  //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
-  renderShowYourWork(learnHost, config, state);
-
-  // 4) Let students mark up the word problems (highlight / underline / bold).
-  enableWordProblemAnnotation(learnHost);
+  return scenario;
 }
 
 function renderLaunchPhase(el, state, ctx, config, opts = {}) {
@@ -3467,11 +3483,12 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
     );
   }
 
-  // The observation visual (the scene students look at) renders FIRST, so the
-  // "I notice / I wonder" prompts have something concrete to observe and the
-  // sentence starters / academic vocabulary can sit directly beneath the boxes.
+  // The observation visual (the scene students look at) belongs WITH the
+  // notice/wonder boxes — it is the thing being noticed — so it rides the same
+  // `curious` gate. Without that gate it rendered in the Notice & Wonder step
+  // AND again in the Launch step, which is how 2-7 showed its number line twice.
   // Opt-in; no-op when the lesson has no launch visual.
-  renderLaunchVisual(el, cfg.visual);
+  if (opts.curious !== false) renderLaunchVisual(el, cfg.visual);
 
   // Which One Doesn't Belong — a low-floor argument before any notation appears.
   // It warms up the same justification move the notice/wonder boxes ask for, but
@@ -3579,6 +3596,11 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
   // The hook closes over this lesson's cfg / config / state. Show Your Work still
   // reads and writes on phase index 0 (Launch) — see renderShowYourWork — so any
   // work a student saved persists exactly as before, wherever it is rendered.
+  // The Launch step opens on today's problem. Everything a student needs to
+  // read it is here; the typeable solve stays under Learn It, where the
+  // scaffold and the "I'm stuck" bar live.
+  if (cfg.narrative) el.append(buildLaunchProblemCard(config));
+
   ctx.renderLearnItExtras = (learnHost) => renderLearnItExtrasInto(learnHost, config, state);
 
   const isEs = getPreferredLang() === "es";

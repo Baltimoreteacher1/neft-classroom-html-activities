@@ -1314,6 +1314,22 @@ function injectVocabLearnStyles() {
        the steps beside it, because the whole point is that the steps happen ON
        this problem. Sticky only where there is a second column to scroll past
        it — on one column it just sits at the top like any other figure. */
+    /* The move this step makes — DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN — as a
+       chip at the head of the step, so the four-move cycle is visible as a
+       shape instead of being buried at the front of a sentence. */
+    .vl-step-move {
+      display: inline-block;
+      margin-bottom: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #0f766e;
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
     .vl-livefig {
       margin: 0;
       border: none;
@@ -1564,6 +1580,38 @@ function seedAreaMorph(iv, text) {
   if (base) out.b = base;
   if (height) out.h = height;
   return out;
+}
+
+/**
+ * Pull a worked step apart into its MOVE and its sentence.
+ *
+ * Authored steps carry two things the UI was printing raw:
+ *
+ *   "STEP 0 — MOVE THE POINT: I move the decimal point 1 place right…"
+ *   "DIVIDE: 63 does not fit into 1 or 18, so my first working number is 189…"
+ *
+ * The leading "STEP 0 —" fought the panel's OWN step number: the card headed
+ * "Step 2" opened with the words "STEP 0", which is the first thing a reader
+ * trips over. And the move name — DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN — was
+ * buried at the front of a sentence, so the four-move cycle a student is
+ * supposed to SEE repeating was invisible in a column of prose (Joel,
+ * 2026-08-26: "the watch me solve it steps did not address the concern — it's
+ * hard to follow the way it goes now").
+ *
+ * Returns `{ move, text }`. `move` is null when the step names no move, which
+ * is most of them in most lessons — this changes nothing for those.
+ */
+function splitStepMove(line) {
+  const raw = String(line || "").trim();
+  // Drop an authored "STEP n —" / "STEP n:" opener; the panel numbers the step.
+  const noStep = raw.replace(/^step\s*\d+\s*[—:-]\s*/i, "");
+  // A short ALL-CAPS label followed by a colon is a named move.
+  const m = noStep.match(/^([A-Z][A-Z '’]{1,22}):\s*(.+)$/s);
+  if (!m) return { move: null, text: noStep };
+  // "BRING DOWN: there are no digits left…" must not become a sentence that
+  // starts lowercase once the label is lifted off it.
+  const rest = m[2].trim();
+  return { move: m[1].trim(), text: rest.charAt(0).toUpperCase() + rest.slice(1) };
 }
 
 function seedVisualFromWorkedExample(iv, lines) {
@@ -2011,7 +2059,11 @@ export function renderLearnItPanel(container, config, options = {}) {
               <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
                 <span class="vl-step-num">${isEs ? "Paso" : "Step"} ${idx + 1}</span>
                 <div class="vl-solve-body">
-                  <span class="vl-step-text">${renderMathText(shown(iLinesEs, idx, line))}</span>
+                  ${(() => {
+                    const { move } = splitStepMove(line);
+                    return move ? `<span class="vl-step-move">${escHtml(move)}</span>` : "";
+                  })()}
+                  <span class="vl-step-text">${renderMathText(splitStepMove(shown(iLinesEs, idx, line)).text)}</span>
                   ${lineEquation(line)}
                   ${(() => {
                     // The live figure on the left is already showing the
@@ -2025,7 +2077,7 @@ export function renderLearnItPanel(container, config, options = {}) {
                   })()}
                   ${stepMoves[idx] ? `<div class="vl-stepwork" data-step-work="${idx}"></div>` : ""}
                 </div>
-                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(shown(iLinesEs, idx, line))}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
+                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(splitStepMove(shown(iLinesEs, idx, line)).text)}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
               </li>`,
               )
               .join("")}

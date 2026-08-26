@@ -59,6 +59,18 @@ const ADOPTIONS = [
   {
     lesson: "2-7",
     badge: "Textbook Purchases",
+    // The worked example's last line read "Correct — 3 pods can be filled",
+    // which named the space-station story this script replaces and nothing else
+    // in the lesson mentions any more. Every other migrated lesson's worked
+    // example introduces its own context (a pancake recipe, Chef Reyes's cocoa,
+    // a detective's clue) and stands on its own; this was the one dangling
+    // reference. The mathematics is untouched.
+    idoReplace: [
+      [
+        "I check by multiplying: 6.3 × 3 = 18.9. Correct — 3 pods can be filled.",
+        "I check by multiplying: 6.3 × 3 = 18.9. Correct — 18.9 ÷ 6.3 = 3.",
+      ],
+    ],
     deck: "2_7",
     img: "s06-3cb6388c84c3.png",
     text: "A school bought new math workbooks as shown in the order form. What is the cost of each workbook?",
@@ -206,6 +218,27 @@ for (const entry of ADOPTIONS) {
   // one ("SPACE STATION POD SPLITTER") sitting above an order form for math
   // workbooks is the mismatch this script exists to end, one line higher up.
   if (entry.badge) config.launch.badge = entry.badge;
+
+  // The observation widget goes with the story. Every one of these was built
+  // for the narrative this script just replaced — 2-7 had a number line
+  // "Filling 6.3 kg pods from 18.9 kg" sitting above an order form for math
+  // workbooks, 3-2 an arcade-booth bar chart above a map of the Boston to
+  // Washington rail line, 7-3 "Captain Vega's Treasure Sites" above two lab
+  // beakers (Joel, 2026-08-26: "it shouldn't be part of 2.7"). What students
+  // observe now is the Notice & Wonder image and the problem's own figure, both
+  // of which are about today's story.
+  if (config.launch.visual) delete config.launch.visual;
+
+  // A worked-example line that named the replaced story, repaired verbatim.
+  // Exact-match only: a line that has already been edited is left alone rather
+  // than half-rewritten.
+  const ido = ((config.launch.conceptIntro || {}).iDo || {}).lines;
+  if (Array.isArray(ido) && Array.isArray(entry.idoReplace)) {
+    for (const [from, to] of entry.idoReplace) {
+      const at = ido.indexOf(from);
+      if (at >= 0) ido[at] = to;
+    }
+  }
 
   if (entry.img) {
     const src = join(EXTRACT, entry.deck, "img", entry.img);
