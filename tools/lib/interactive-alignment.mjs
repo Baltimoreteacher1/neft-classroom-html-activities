@@ -480,7 +480,13 @@ export function topicAgrees(toolKey, standard, standardTopics) {
 
 /* ── Fleet walk ────────────────────────────────────────────────────────────── */
 
-const VARIANT = /-(group[12]|catchup)$/;
+// A lesson directory that is a VARIANT of a core lesson rather than a lesson in
+// its own right: it inherits the parent's standard, title and interactive
+// decision, so resolving a tool for it would report one mapping four times.
+// `part2` is here for a stronger reason than inheritance — it renders no
+// Learn-It tool at all, so every mapping the resolver produced for it was for a
+// tool that is not on the page.
+const VARIANT = /-(group[12]|catchup|part2)$/;
 
 export function readFleet(root) {
   const dir = join(root, "lessons");

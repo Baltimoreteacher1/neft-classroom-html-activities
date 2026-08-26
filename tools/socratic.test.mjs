@@ -175,21 +175,24 @@ let checks = 0;
     stuck.includes("o.mount ? Boolean(socraticItem)"),
     "the chip is hidden when there is no problem text to ask about",
   );
-  // Regression guard. The bar's only caller passes no `item` — it mounts beside
-  // the Show Your Work solve, whose problem is config.revealWordProblem. Gating
-  // the chip on `item` alone made it unreachable on every lesson in the fleet
-  // while every unit test still passed, because the tests supplied an item.
+  // Regression guard. The bar's callers pass no `item`, so gating the chip on
+  // `item` alone made it unreachable on every lesson in the fleet while every
+  // unit test still passed, because the tests supplied an item. The text must
+  // therefore resolve from the caller's `problem` (Part 1's Launch scenario) or
+  // from config.revealWordProblem (Part 2's Apply solve).
   checks += 1;
   assert.ok(
-    /const problemText =[\s\S]{0,160}config\?\.revealWordProblem\?\.text/.test(stuck),
-    "the problem text must fall back to the lesson word problem, or the chip never renders",
+    /const problemText =[\s\S]{0,200}problem \|\|[\s\S]{0,80}config\?\.revealWordProblem\?\.text/.test(
+      stuck,
+    ),
+    "the problem text must fall back to the caller's problem or the lesson word problem, or the chip never renders",
   );
   checks += 1;
   assert.ok(
-    /mountStuckSupport\(card, \{ config, state \}\)/.test(
+    /mountStuckSupport\(card, \{ config, state, problem: launchScenario \}\)/.test(
       readFileSync(new URL("../engine/core/lesson-renderer.js", import.meta.url), "utf8"),
     ),
-    "…which is the shape the sole call site actually uses",
+    "…and Part 1 names the scenario on screen, not the Apply problem that moved to Part 2",
   );
 }
 

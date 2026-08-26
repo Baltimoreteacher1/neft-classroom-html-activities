@@ -266,9 +266,11 @@ const STRINGS = {
     en: "Continue to Phase 2: Objectives 🎯",
     es: "Continuar a la fase 2: Objetivos 🎯",
   },
+  // No phase number: in the 3-Act flow the Launch is a STEP inside Act 1, not a
+  // phase of its own, and the old "Phase 3" was left over from the 5-phase era.
   continueToLaunch: {
-    en: "Continue to Phase 3: Launch 🚀",
-    es: "Continuar a la fase 3: Inicio 🚀",
+    en: "Continue to Launch 🚀",
+    es: "Continuar al Inicio 🚀",
   },
   readyForLaunch: {
     en: "Great job! You're ready for Phase 2: Launch 🚀",

@@ -205,8 +205,13 @@ assert.equal(REQUIRED_FIELDS.manip.ok({ manip: "no-such-widget" }), false);
 assert.equal(REQUIRED_FIELDS["long-division-builder"].ok({ dividend: 10, divisor: 0 }), false);
 
 // ── Fleet sweep ────────────────────────────────────────────────────────────
+// `-part2` is excluded for the same reason `_template` is: it is not a lesson
+// with a tools mode. A Part 2 page is one Reveal Apply word problem plus group
+// roles — it authors no explore/practice tool, mounts no manipulative drawer,
+// and has no `?mode=tools` surface for a tool to be invisible on. Sweeping it
+// would report 76 lessons as missing a tool that was never meant to be there.
 const lessonIds = readdirSync(url("../lessons"), { withFileTypes: true })
-  .filter((e) => e.isDirectory() && e.name !== "_template")
+  .filter((e) => e.isDirectory() && e.name !== "_template" && !e.name.endsWith("-part2"))
   .map((e) => e.name)
   .sort();
 

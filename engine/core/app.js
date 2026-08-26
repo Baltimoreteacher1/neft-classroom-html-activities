@@ -844,6 +844,9 @@ function playLessonEntrance(config, name, boot) {
 // scrolled to cards that now live inside the in-act step panels (hidden until
 // their step is active), and the level pickers already sit at the top of the
 // Practice step itself.
+// A surface may override this wholesale with `config.phaseSubtabs` (same shape,
+// keyed by phase index) — see subtabsFor(). Part 2 uses that to offer Math
+// Notes + Objectives on its Review phase and nothing on the other two.
 const PHASE_SUBTABS = {
   0: [
     { extra: "mathnotes", icon: "📓", label: "Math Notes" },
@@ -855,6 +858,17 @@ const PHASE_SUBTABS = {
     { extra: "watchme", icon: "👀", label: "Watch Me" },
   ],
 };
+
+/**
+ * Subcard chips for one phase: the surface's own `config.phaseSubtabs` when it
+ * declares them, else the default 3-Act map. Always an array.
+ */
+function subtabsFor(config, index) {
+  const override = config && config.phaseSubtabs;
+  const table = override && typeof override === "object" ? override : PHASE_SUBTABS;
+  const list = table[index];
+  return Array.isArray(list) ? list : [];
+}
 
 function initMainApp(root, config, studentId, studentName, studentPeriod) {
   const state = createState(config.lessonId, studentId);
@@ -964,11 +978,21 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   const PHASE_LAUNCH = 0;
   const PHASE_EXPLORE = 1;
 
-  const phaseConfigs = [
-    { name: phaseName(0), icon: "🚀" }, // Act 1: Launch & Focus
-    { name: phaseName(1), icon: "📐" }, // Act 2: Interactive Studio
-    { name: phaseName(2), icon: "📝" }, // Act 3: Exit Ticket
-  ];
+  // The 3-Act names are the default because that is what a Reveal lesson is.
+  // A lesson surface with a genuinely different shape — Part 2, whose three
+  // phases are Review / Today's Problem / Group Work — names its own phases via
+  // `config.phaseMeta`, so the sidebar, the phase strip and every aria-label
+  // read the truth instead of "Act 2: Interactive Studio".
+  const phaseConfigs = Array.isArray(config.phaseMeta)
+    ? config.phaseMeta.map((m, i) => ({
+        name: String(m?.name || phaseName(i)),
+        icon: String(m?.icon || "📘"),
+      }))
+    : [
+        { name: phaseName(0), icon: "🚀" }, // Act 1: Launch & Focus
+        { name: phaseName(1), icon: "📐" }, // Act 2: Interactive Studio
+        { name: phaseName(2), icon: "📝" }, // Act 3: Exit Ticket
+      ];
 
   state.initPhases(phaseConfigs);
 
@@ -1333,7 +1357,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   }
 
   state.subscribe(() => {
-    updateSidebar(sidebar, state, phaseConfigs);
+    updateSidebar(sidebar, state, phaseConfigs, config);
     updateLessonHero(lessonHero, state, phaseConfigs);
     updateMinimap();
   });
@@ -1366,7 +1390,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     }
   });
 
-  updateSidebar(sidebar, state, phaseConfigs);
+  updateSidebar(sidebar, state, phaseConfigs, config);
   updateLessonHero(lessonHero, state, phaseConfigs);
   updateMinimap();
 
@@ -1401,7 +1425,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       renderFn(el, state, this);
 
       // Mount subcards ribbon for 1-click jumps between lesson parts
-      const subcards = PHASE_SUBTABS[index] || [];
+      const subcards = subtabsFor(config, index);
       if (subcards.length > 0) {
         const isEs = getPreferredLang() === "es";
         const ribbon = document.createElement("div");
@@ -2482,7 +2506,7 @@ function updateLessonHero(hero, state, _phaseConfigs) {
   if (coins) coins.textContent = String(s.coins || 0);
 }
 
-function updateSidebar(sidebar, state, phaseConfigs) {
+function updateSidebar(sidebar, state, phaseConfigs, config) {
   const s = state.get();
 
   const xpVal = sidebar.querySelector('[data-bind="xp"]');
@@ -2528,7 +2552,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
       </button>
     `;
 
-      const subList = PHASE_SUBTABS[i] || [];
+      const subList = subtabsFor(config, i);
       const subTabsHtml = subList
         .map(
           (t) =>

@@ -273,10 +273,15 @@ const BOOTS = {
   "@engine/core/lesson-renderer.js": "bootLesson",
   "@engine/templates/flagship/flagship.js": "bootFlagship",
   "@engine/core/small-group-renderer.js": "bootSmallGroup",
+  "@engine/core/part-two-renderer.js": "bootPartTwo",
 };
 // Both renderers must call the shared hook; flagship inherits it by delegating
 // to bootLesson, which is asserted rather than assumed.
-for (const f of ["engine/core/lesson-renderer.js", "engine/core/small-group-renderer.js"]) {
+for (const f of [
+  "engine/core/lesson-renderer.js",
+  "engine/core/small-group-renderer.js",
+  "engine/core/part-two-renderer.js",
+]) {
   const src = read(f);
   if (!/import \{ ensureCanvasBridge \}/.test(src) || !/ensureCanvasBridge\(config\)/.test(src))
     fail(`${f}: does not reach the shared Canvas bridge hook — engine lessons lose SCORM resume`);
@@ -294,6 +299,7 @@ const PATHWAY_SETS = [
   ["lesson", launch.lessons || []],
   ["smallGroup", launch.smallGroups || []],
   ["catchUp", launch.catchUps || []],
+  ["partTwo", launch.partTwo || []],
   ["endOfUnit", launch.endOfUnit || []],
 ];
 for (const [kind, arr] of PATHWAY_SETS) {
@@ -367,6 +373,7 @@ const allEnginePathways = [
   ...(launch.lessons || []),
   ...(launch.smallGroups || []),
   ...(launch.catchUps || []),
+  ...(launch.partTwo || []),
 ];
 const manifestIds = new Set(allEnginePathways.map((l) => l.id));
 const undeclared = onDisk.filter((d) => !manifestIds.has(d) && !DECLARED_NON_PATHWAYS.has(d));

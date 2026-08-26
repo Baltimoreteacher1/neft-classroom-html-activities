@@ -1701,16 +1701,26 @@ function renderNoticeAndWonder(host, config, state) {
 //   • TEACH 4 (L4): students CORRECT/CLARIFY/EXPAND/REDO work
 //     in response to feedback                                   → self-check + Revise
 //
-// The problem text/image come from `config.revealWordProblem` when present (the
-// 52 lessons that ship an authored Apply problem); otherwise the scaffold points
-// back at the Launch scenario already shown above, so EVERY lesson gets a
-// typeable show-your-work area. All fields persist via the lesson's canonical
+// THE PROBLEM WORKED HERE IS THE LAUNCH SCENARIO printed directly above this
+// card by renderLearnItExtrasInto — not the Reveal "Apply" word problem. Apply
+// used to render here, which put the lesson's richest, messiest, most
+// real-world problem in the last minutes of a 45-minute period, where it was
+// reliably rushed. It now has its own day at /lessons/<id>-part2/
+// (engine/core/part-two-renderer.js), where a whole class period and four named
+// group jobs are pointed at it. Reading `config.revealWordProblem` here again
+// would put it back in both places and undo the point of Part 2.
+//
+// The 8 core lessons that ship no Apply problem always used this scaffold, so
+// nothing about them changes. All fields persist via the lesson's canonical
 // save/resume API on phaseId 0 (Launch) with stable keys.
 function renderShowYourWork(host, config, state) {
-  const wp = config && config.revealWordProblem;
-  const hasAuthored = wp && typeof wp === "object" && (wp.text || wp.image);
   const get = (k) => (state && state.getResponse && state.getResponse(0, k)) || "";
   const set = (k, v) => state && state.saveResponse && state.saveResponse(0, k, v);
+  // The scenario the student can actually see on this screen — the same
+  // `config.launch.narrative` the card above prints. This is what the Socratic
+  // tutor and the "simpler words" chip must talk about; pointing them at
+  // anything else asks questions about a problem that is not on the page.
+  const launchScenario = String((config && config.launch && config.launch.narrative) || "");
 
   const card = document.createElement("section");
   card.className = "card wp-card syw-card";
@@ -1719,39 +1729,15 @@ function renderShowYourWork(host, config, state) {
   const head = document.createElement("div");
   head.className = "wp-head";
   head.innerHTML = `
-    <span class="wp-badge" aria-hidden="true">✏️ Apply</span>
-    <h3 class="wp-title">${esc((hasAuthored && wp.title) || "Show Your Work")}</h3>`;
+    <span class="wp-badge" aria-hidden="true">✏️ Solve</span>
+    <h3 class="wp-title">Show Your Work</h3>`;
   card.append(head);
 
-  // The problem to solve.
-  if (hasAuthored && wp.text) {
-    const p = document.createElement("p");
-    p.className = "wp-text";
-    p.setAttribute("data-annotate", "word-problem");
-    p.textContent = String(wp.text);
-    card.append(p);
-  } else {
-    const p = document.createElement("p");
-    p.className = "wp-text";
-    p.innerHTML = stack("scenarioWorkBelow", { html: true });
-    card.append(p);
-  }
-  if (hasAuthored && wp.image) {
-    const fig = document.createElement("figure");
-    fig.className = "wp-figure";
-    const img = document.createElement("img");
-    img.className = "wp-img";
-    img.setAttribute("loading", "lazy");
-    img.setAttribute("decoding", "async");
-    img.src = String(wp.image);
-    // The authored description first. A title alone ("Apply: Snack Bags") tells a
-    // screen-reader user nothing about the figure, and the figure is where this
-    // problem keeps its numbers.
-    img.alt = String(wp.imageAlt || wp.title || "Figure for this word problem");
-    fig.append(img);
-    attachImageZoom(img);
-    card.append(fig);
-  }
+  // The problem to solve: the Launch scenario already shown above.
+  const p = document.createElement("p");
+  p.className = "wp-text";
+  p.innerHTML = stack("scenarioWorkBelow", { html: true });
+  card.append(p);
 
   // Helper: a labeled, persisted text field (textarea or single-line input).
   const field = (key, label, hint, opts = {}) => {
@@ -1792,7 +1778,7 @@ function renderShowYourWork(host, config, state) {
 
   // Shared "I'm stuck" support bar — hint / first step / example / vocab /
   // sentence starter / simpler words, available on every lesson's solve.
-  mountStuckSupport(card, { config, state });
+  mountStuckSupport(card, { config, state, problem: launchScenario });
 
   const steps = document.createElement("div");
   steps.className = "syw-steps";
@@ -3192,19 +3178,30 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     }
   });
 
-  const nextBtn = document.createElement("button");
-  nextBtn.type = "button";
-  nextBtn.className = "btn btn-teal";
-  nextBtn.style.cssText =
-    "padding:12px 26px; font-weight:700; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  nextBtn.innerHTML = stack("continueToObjectives", { html: true });
-  nextBtn.addEventListener("click", () => {
-    if (ctx && typeof ctx.nextPhase === "function") {
-      ctx.nextPhase();
-    }
-  });
+  btnRow.append(checkBtn);
 
-  btnRow.append(checkBtn, nextBtn);
+  // A second advance button used to sit beside Check Answers reading "Continue
+  // to Phase 2: Objectives" and calling ctx.nextPhase(). Both halves are now
+  // wrong inside the 3-Act flow: there is no Objectives phase to continue to,
+  // and nextPhase() from here leaves Act 1 entirely — skipping the Launch step
+  // that comes after the Warm-Up in the same act. The step strip's own
+  // "Next: 🚀 Launch →" is the correct move and is already on screen, so the
+  // stale button is gone rather than relabelled. A standalone warm-up page (no
+  // step strip around it) still needs a way out, so it keeps one.
+  if (opts.standalone !== false) {
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "btn btn-teal";
+    nextBtn.style.cssText =
+      "padding:12px 26px; font-weight:700; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+    nextBtn.innerHTML = stack("continueToLaunch", { html: true });
+    nextBtn.addEventListener("click", () => {
+      if (ctx && typeof ctx.nextPhase === "function") {
+        ctx.nextPhase();
+      }
+    });
+    btnRow.append(nextBtn);
+  }
   card.append(questionsContainer);
   card.append(btnRow);
 
@@ -5807,20 +5804,25 @@ export function renderAct1Launch(el, state, ctx, config) {
     "1",
     "section-icon-teal",
     "Act 1: Launch & Focus",
-    "Today's goals are posted below. Warm up, then explore the launch scene.",
+    "Warm up first, then explore the launch scene. Today's goals are on the 🎯 Objectives card.",
   );
 
   // Identity & homework header stays above the steps — it is who you are, not
   // a moment in the lesson.
   renderLaunchHeader(el, state, config);
 
-  // Today's objectives are POSTED, not stepped through. As a step they sat
-  // behind the Warm-Up in a one-panel-at-a-time strip, so a student who never
-  // clicked chip 2 finished Act 1 without ever seeing what the lesson was for
-  // (Joel, 2026-08-25: "I am not seeing the objectives"). A posted goal is also
-  // what the BCPS framework asks for, so it stays on screen for the whole Act
-  // rather than being one moment inside it.
-  renderObjectives(el, config, state);
+  // Today's objectives are NOT rendered here. Posting the full two-card
+  // objectives block at the top of Act 1 pushed the Warm-Up — the first thing a
+  // student is supposed to do — most of a screen below the fold, so Act 1 read
+  // as if it had no warm-up at all (Joel, 2026-08-26: "the launch and focus is
+  // now missing the warmup part … the launch and focus should be the warmup").
+  //
+  // The objectives did not go away: they are the 🎯 Objectives subcard that sits
+  // beside 📓 Math Notes on this same phase (PHASE_SUBTABS[0] in
+  // engine/core/app.js), one tap from here and still posted for the whole Act.
+  // They are also re-rendered in full at the Act 3 Mastery Check
+  // (renderObjectivesReviewPhase), which is where the BCPS framework wants the
+  // did-we-get-there conversation.
 
   // The Act-advance button lives INSIDE the last step, so it appears when the
   // student gets there rather than inviting a skip from step 1.

@@ -82,9 +82,9 @@ function buildSentenceStarter(item, config) {
 // steps. It now runs the problem's own stem through the shared plain-language
 // rewriter — the same one behind the lesson-wide "Plain words" toggle — so there
 // is one implementation and the chip actually restates THIS problem.
-function buildSimpler(item, config) {
+function buildSimpler(item, config, problemText) {
   if (item?.simpler) return item.simpler;
-  const stem = item?.stem || item?.prompt || config?.revealWordProblem?.text || "";
+  const stem = item?.stem || item?.prompt || problemText || config?.revealWordProblem?.text || "";
   const terms = (config?.vocabulary || []).map((v) => v?.term).filter(Boolean);
   const { text, changed } = toPlainLanguage(stem, terms);
   if (changed) {
@@ -133,14 +133,21 @@ function buildFixIt(item, config, state) {
 
 export function mountStuckSupport(host, opts = {}) {
   if (!host) return null;
-  const { config = {}, item = null, state = null } = opts;
+  const { config = {}, item = null, state = null, problem = "" } = opts;
 
-  // The bar's only caller mounts it beside the "Show Your Work" solve and passes
-  // no per-item object, because the problem being worked there is the lesson's
-  // own `revealWordProblem`. Anything that needs the PROBLEM TEXT (rather than an
-  // item's authored hints) has to fall back to it, or it silently never appears —
-  // which is exactly what happened to the Socratic option on first wiring.
-  const problemText = item?.stem || item?.prompt || config?.revealWordProblem?.text || "";
+  // Anything that needs the PROBLEM TEXT (rather than an item's authored hints)
+  // has to resolve it here, or the Socratic chip silently never appears — which
+  // is exactly what happened on its first wiring, because the bar's callers pass
+  // no per-item object.
+  //
+  // `problem` is how a caller names the problem the student is actually looking
+  // at. Part 1's Show Your Work passes its Launch scenario: since the Apply word
+  // problem moved to Part 2, falling through to `config.revealWordProblem` there
+  // would have the tutor ask Socratic questions about a problem that is not on
+  // the screen. The revealWordProblem fallback stays for Part 2, whose solve IS
+  // that problem.
+  const problemText =
+    item?.stem || item?.prompt || problem || config?.revealWordProblem?.text || "";
   const socraticItem = problemText ? { ...(item || {}), stem: problemText } : null;
 
   const options = [
@@ -184,7 +191,7 @@ export function mountStuckSupport(host, opts = {}) {
       key: "simpler",
       icon: "🔤",
       label: "Explain it in simpler words",
-      html: `<p>${buildSimpler(item, config)}</p>`,
+      html: `<p>${buildSimpler(item, config, problemText)}</p>`,
     },
     // Every other option on this bar TELLS the student something. This one is
     // the opposite move and belongs last, after the ones that unstick a student
