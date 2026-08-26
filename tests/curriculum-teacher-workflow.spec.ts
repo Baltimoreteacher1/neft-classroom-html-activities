@@ -15,7 +15,10 @@ test.describe("teacher command center", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       try {
-        localStorage.setItem("neft_teacher_mode_v1", "1");
+        // The real key — STORAGE_MODE in assets/curriculum-enhancements.js,
+        // TEACHER_KEY in engine/core/teacher-mode.js. `neft_teacher_mode_v1`,
+        // which this used to write, is read by nothing that ships.
+        localStorage.setItem("nt-teacher-mode", "1");
       } catch {}
     });
     await page.goto("/curriculum/");

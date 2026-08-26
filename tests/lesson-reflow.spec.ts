@@ -25,6 +25,19 @@ async function enterLesson(page: import("@playwright/test").Page) {
   await page.locator(".sidebar").waitFor();
 }
 
+/**
+ * Which ACT the shell says the student is on.
+ *
+ * Scoped away from `.phase-subtab` deliberately. The subcard chips (Vocab,
+ * Learn It, Watch Me …) are rendered with the same `.phase-btn` class and take
+ * `.active` too, so a bare `.phase-btn.active` matches BOTH the act button and
+ * the open subcard from the Vocab hop onward — a strict-mode violation, not an
+ * assertion. The act button is the shell's answer to "where am I?"; the chip is
+ * its answer to "which card is open?", and this file asks the first question.
+ */
+const activeAct = (page: import("@playwright/test").Page) =>
+  page.locator(".phase-btn:not(.phase-subtab).active");
+
 test.describe("shared lesson shell reflow", () => {
   for (const lessonPath of ["/lessons/1-1/", "/lessons/10-3/"]) {
     test(`bottom Continue buttons advance each shared lesson phase: ${lessonPath}`, async ({
@@ -33,44 +46,45 @@ test.describe("shared lesson shell reflow", () => {
       await page.goto(`${lessonPath}?sn=Navigation%20Tester`, { waitUntil: "networkidle" });
       await enterLesson(page);
 
-      // The hero stopped binding a phase name (it shows title/standard now);
-      // the shell's statement of "which phase am I on" is the active sidebar
-      // phase button, so that is what this spec reads.
-      await expect(page.locator(".phase-btn.active")).toContainText("Warmup");
-      await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Objectives");
-
-      await page.getByRole("button", { name: "Continue to Phase 3: Launch 🚀" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Launch");
-
-      // Address these boxes by what they ARE, not by where they sit. This used
-      // to take `.phase textarea` nth(0)/nth(1), which silently assumed the
-      // notice/wonder boxes were the first two textareas in the phase. The
-      // Which One Doesn't Belong opener now renders above them by design, and
-      // its textarea is collapsed until opened — so nth(0) resolved to a hidden
-      // element and the fill retried until the test timed out.
-      await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
-      await page.locator("#nw-wonder").fill("I wonder how the pattern will help me solve it.");
-
-      // The taught order: Launch → Vocab → Learn It → Explore → Practice. Every
-      // hop is a real button a student can press, which is the point — Vocab and
+      // THE CHAIN IS THE THREE ACTS, and every hop below is a real button a
+      // student can press. That is the whole property: no dead ends. Vocab and
       // Learn It used to advance ONLY by completing their activity, so a student
-      // who read the page without finishing it had no way forward.
+      // who read the card without finishing it had nowhere to go.
       //
-      // Explore belongs in that chain, and this spec used to leave it out: it
-      // went Learn It → Practice and then failed waiting for a "Continue to
-      // Practice" button that is not on the Learn It panel and should not be.
-      // Learn It is pre-work FOR Explore, so it hands off to Explore — see the
-      // canonical-order comment in openExtra("learn") in engine/core/app.js —
-      // and jumping straight to Practice is the skipped-phase bug that hand-off
-      // exists to prevent. The spec was pinning the old behaviour, so the shell
-      // was reported broken for doing the right thing.
-      await page.getByRole("button", { name: "Continue to Vocab →" }).click();
+      // This spec used to walk a five-phase sidebar — Warmup → Objectives →
+      // Launch → Vocab → Learn It → Explore → Practice, each its own phase
+      // button. The shell is 3-Act now (engine/core/app.js `phaseConfigs`):
+      // Act 1 Warm-Up, Act 2 Lesson, Act 3 Exit Ticket, with Objectives, Notice
+      // & Wonder, Vocab, Launch, Learn It and Watch Me demoted to SUBCARDS
+      // inside them (PHASE_SUBTABS). So "Objectives" and "Launch" are no longer
+      // answers to "which act am I on" and cannot be asserted as if they were.
+      //
+      // The two buttons it pressed are gone as well, and neither was renamed:
+      //   • "Continue to Phase 2: Objectives 🎯" renders ONLY on a lesson with
+      //     no authored warm-up (renderWarmupPhase's empty branch). Every core
+      //     lesson has one, so on a real lesson it never appears.
+      //   • "Continue to Phase 3: Launch 🚀" lost its phase number when the
+      //     Launch became a step rather than a phase — see the comment on
+      //     `continueToLaunch` in engine/core/i18n.js.
+      await expect(activeAct(page)).toContainText("Warm-Up");
+
+      await page.getByRole("button", { name: "Continue to Vocabulary 🔑" }).click();
+      await expect(activeAct(page)).toContainText("Lesson");
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocabulary");
+
+      // Learn It is pre-work FOR Explore, so it hands off to Explore rather than
+      // to Practice — see the canonical-order comment in openExtra("learn") in
+      // engine/core/app.js. Jumping straight to Practice is the skipped-phase
+      // bug that hand-off exists to prevent.
       await page.getByRole("button", { name: "Continue to Learn It" }).click();
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
       await page.getByRole("button", { name: "Continue to Explore" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Explore");
+      // Explore is part of Act 2, so the act does not change here — what changes
+      // is that the subcard closes and the student is back on the act's own
+      // content. Asserting the act again would pass whether or not the button
+      // did anything, so the observable claim is the panel closing.
+      await expect(page.locator(".extra-panel")).toHaveCount(0);
+      await expect(activeAct(page)).toContainText("Lesson");
 
       // Explore is the first GRADED phase in the chain, so it is the first hop
       // with no labelled "Continue to …" of its own on these lessons: that
@@ -79,7 +93,34 @@ test.describe("shared lesson shell reflow", () => {
       // student who has read the phase without finishing the activity uses, and
       // the no-dead-ends property this spec is really about is that it works.
       await page.getByRole("button", { name: "Go to the next part of the lesson" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Practice");
+      await expect(activeAct(page)).toContainText("Exit Ticket");
+    });
+
+    test(`Notice & Wonder takes the student's own words: ${lessonPath}`, async ({ page }) => {
+      await page.goto(`${lessonPath}?sn=Navigation%20Tester`, { waitUntil: "networkidle" });
+      await enterLesson(page);
+
+      // Notice & Wonder is a SUBCARD of Act 1 now, not a phase the forward chain
+      // walks through, so it gets its own test rather than a detour inside the
+      // chain above. Reaching it is part of the claim: a card a student cannot
+      // open is not a card.
+      await page.locator(".phase-subtab", { hasText: "Notice & Wonder" }).first().click();
+      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Notice and Wonder");
+
+      // Address these boxes by what they ARE, not by where they sit. This used
+      // to take `.phase textarea` nth(0)/nth(1), which silently assumed the
+      // notice/wonder boxes were the first two textareas in the phase. The
+      // Which One Doesn't Belong opener now renders above them by design, and
+      // its textarea is collapsed until opened — so nth(0) resolved to a hidden
+      // element and the fill retried until the test timed out.
+      const notice = page.locator("#nw-notice");
+      const wonder = page.locator("#nw-wonder");
+      await notice.fill("I notice a math pattern in the example.");
+      await wonder.fill("I wonder how the pattern will help me solve it.");
+      // Typed AND kept. A fill() against a disabled or immediately-rerendered
+      // box succeeds and leaves the student's sentence nowhere.
+      await expect(notice).toHaveValue("I notice a math pattern in the example.");
+      await expect(wonder).toHaveValue("I wonder how the pattern will help me solve it.");
     });
   }
 
