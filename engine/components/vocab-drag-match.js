@@ -175,6 +175,15 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
 
   const board = document.createElement("div");
   board.className = "vdm-board";
+  // The activity mounts a long way down the Vocab panel (2,339px on 5-3), so
+  // the student who just chose it has to hunt for it. Bring it to them.
+  requestAnimationFrame(() => {
+    try {
+      board.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (_) {
+      /* older browsers ignore the options object; position is cosmetic */
+    }
+  });
   board.style.cssText =
     // FITTING THE BOARD ON ONE SCREEN. With 8 pairs this ran past 1,000px —
     // taller than a classroom laptop — so a student could not see the options
@@ -185,7 +194,12 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     // row, NOT from the type, so the type is untouched and the padding is not.
     // The arrow gutter drops 44px → 26px, which also gives the text more width
     // and so fewer wrapped lines.
-    "display:grid; grid-template-columns:minmax(0, 1fr) 26px minmax(0, 1fr); gap:10px; align-items:start;";
+    // The DEFINITION column gets the width. Terms are one or two words
+    // ("Trapezoid", "Height"); definitions are sentences, and at an equal split
+    // they wrapped to three lines and made every row 123px tall. Measured on
+    // 5-3, eight pairs: 878px of board in a 900px viewport, with nothing else
+    // able to fit beside it.
+    "display:grid; grid-template-columns:minmax(0, 0.72fr) 26px minmax(0, 1.28fr); gap:10px; align-items:start;";
 
   const termsCol = document.createElement("div");
   termsCol.style.cssText = "display:flex; flex-direction:column; gap:8px; min-width:0;";
