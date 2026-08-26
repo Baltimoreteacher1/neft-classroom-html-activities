@@ -4919,11 +4919,17 @@ html[lang^="es"] .i18n-es {
 .wp-figure {
   margin: var(--sp-4) 0 0;
 }
+/* Bounded in BOTH directions. `width: 100%` alone blew a 537px snack-bag
+   figure up to 800px on a laptop — soft and pixelated — and let a portrait
+   photo (8-2's bulldog is 650x1126) push the "What I know" box a full screen
+   below the problem it belongs to. Height is the real constraint: cap it, and
+   let width follow the picture's own aspect ratio. */
 .wp-img {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
-  max-width: 640px;
+  max-height: 340px;
   margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);

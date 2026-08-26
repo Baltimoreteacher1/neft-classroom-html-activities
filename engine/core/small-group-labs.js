@@ -574,6 +574,19 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
   read.onclick = () => speak(problem.text, read);
   tools.appendChild(read);
   understand.appendChild(tools);
+  // The Reveal figure this problem was written for. Most Apply problems say
+  // "the packs shown" or "the table shown" — without the picture the numbers
+  // are simply not on the page, and the group has nothing to solve.
+  if (problem.image) {
+    const fig = el("figure", "sg-apply-figure");
+    const img = document.createElement("img");
+    img.src = String(problem.image);
+    img.alt = String(problem.imageAlt || problem.title || "Figure for this word problem");
+    img.loading = "lazy";
+    img.decoding = "async";
+    fig.appendChild(img);
+    understand.appendChild(fig);
+  }
   understand.appendChild(el("p", "block-lab", "Tap every number you think the problem needs"));
   let tapped = false;
   understand.appendChild(

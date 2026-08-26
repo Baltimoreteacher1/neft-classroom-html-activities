@@ -827,6 +827,71 @@ function buildSentenceExpansionSlide(
   return refTwoColumn(main, side, "🌱 Expand the Sentence");
 }
 
+/**
+ * Summarize — the Reveal deck's second-to-last teaching beat. Reveal closes the
+ * Explore & Develop arc with a "Summarize: <lesson>" Key Concept slide BEFORE the
+ * Apply task, so the interactive deck does the same: restate the key idea, name
+ * the words that carry it, then hand the class one real problem.
+ */
+function buildSummarizeSlide(title, keyIdea, _vocabList, contentObj) {
+  // No term chips here: the writing box below already carries this lesson's own
+  // word bank, and printing the same six words twice on one projected slide is
+  // noise, not emphasis.
+  return `
+    ${learningHeader(contentObj)}
+    ${refTwoColumn(
+      `
+      <span class="ref-prompt-badge">Key Concept</span>
+      <h2 class="card-title">Summarize: ${esc(title)}</h2>
+      <p class="sum-keyidea">${esc(keyIdea)}${readAloudBtn(keyIdea, { label: "Read the key concept aloud" })}</p>
+      <p class="ref-instruction">In your own words:</p>
+      <textarea class="ref-lined-input" rows="3" placeholder="The big idea today is..."></textarea>`,
+      `
+      ${refTeacherNote("say", "Restate the key concept together before the Apply task.")}
+      ${refTeacherNote("ask", "Which word in the key concept is doing the most work? Why?")}`,
+      "💬 Say It Back",
+    )}`;
+}
+
+/**
+ * Apply — the Reveal deck's culminating word problem, figure and all. The text,
+ * title and artwork come from `config.revealWordProblem`, which is sourced from
+ * the official Reveal "Apply: <name>" slide, so the picture on screen always
+ * belongs to the numbers in the problem. Slide is skipped when a lesson has no
+ * authored Apply problem.
+ */
+function buildApplySlide(wp, themeEmoji, themeName, contentObj) {
+  const title =
+    String(wp.title || "")
+      .replace(/^apply:\s*/i, "")
+      .trim() || "Apply";
+  const text = String(wp.text || "");
+  // Reveal writes the ask as a trailing "Question: ..." line. Splitting it out
+  // lets the question sit in its own emphasised block instead of being buried.
+  const qm = text.match(/(^|\n)\s*Question\s*\d*\s*:\s*([\s\S]+)$/i);
+  const body = (qm ? text.slice(0, qm.index) : text).trim();
+  const question = qm ? qm[2].trim() : "";
+  const figure = wp.image
+    ? `<figure class="apply-figure"><img src="${esc(wp.image)}" alt="${esc(wp.imageAlt || title)}" loading="lazy" decoding="async" /></figure>`
+    : "";
+  return `
+    ${learningHeader(contentObj)}
+    ${slideHeader(themeEmoji, themeName, `Apply: ${title}`)}
+    <div class="apply-layout${figure ? "" : " apply-layout-solo"}">
+      <div class="slide-card apply-problem">
+        <span class="slide-badge badge-amber">🌍 APPLY</span>
+        <p class="apply-text">${esc(body)}${readAloudBtn(body, { label: "Read the problem aloud" })}</p>
+        ${question ? `<p class="apply-question"><strong>Question:</strong> ${esc(question)}${readAloudBtn(question, { label: "Read the question aloud" })}</p>` : ""}
+      </div>
+      ${figure ? `<div class="slide-card apply-visual">${figure}</div>` : ""}
+      <div class="slide-card card-teal-light apply-work">
+        <h2 class="card-title">✍️ Show your work</h2>
+        <textarea class="ref-lined-input" rows="3" placeholder="Plan, solve, then explain how you know..."></textarea>
+        ${wp.sampleAnswer ? `<details class="apply-sample"><summary>Sample answer (teacher)</summary><p>${esc(wp.sampleAnswer)}</p></details>` : ""}
+      </div>
+    </div>`;
+}
+
 function buildGoalTrackerSlide(contentObj, _themeEmoji, _themeName) {
   const levels = [
     { num: 1, label: "Not Yet", desc: "I need more help. The idea does not make sense to me yet." },
@@ -1639,6 +1704,36 @@ export function buildTptSlideDeckV3(ctx) {
   );
   if (ttConnect)
     add("🗣️ Connect", "Discuss Connect", ttConnect, { type: "turn-talk-timer", section: "connect" });
+
+  // Summarize → Apply. This is the Reveal deck's own closing arc: the official
+  // PPTX runs Explore & Develop → "Summarize: <lesson>" → "Apply: <name>" →
+  // Learning Targets. The interactive deck now walks the same beats, and the
+  // Apply slide is the one place a Reveal figure is shown, beside the word
+  // problem it was drawn for.
+  if (conceptKeyIdea) {
+    add(
+      "🧠 Summarize",
+      "Summarize",
+      buildSummarizeSlide(data.title || title, conceptKeyIdea, vocabList, contentObj),
+      {
+        type: "summarize",
+        section: "connect",
+        notes: "Key Concept recap. Students say the big idea back before applying it.",
+      },
+    );
+  }
+
+  const applyProblem = data.revealWordProblem;
+  if (applyProblem && (applyProblem.text || applyProblem.image)) {
+    add("🌍 Apply", "Apply", buildApplySlide(applyProblem, themeEmoji, themeName, contentObj), {
+      type: "apply",
+      section: "connect",
+      slideTitle: "Apply",
+      notes:
+        "The Reveal Apply task. Give students quiet think time first, then partner talk, then share strategies.",
+    });
+    maybeCfu("Thumbs up when you have a plan for the Apply problem.");
+  }
 
   // Section: Closure
   add("✅ Close", "Closure Section", buildSectionDivider("CLOSURE &amp; REFLECT", 8, "✅"), {

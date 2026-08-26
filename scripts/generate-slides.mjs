@@ -3866,6 +3866,14 @@ ${deck.thumbnailsHtml}
        Both the links AND this tag must come from the generator: when the tag was
        only ever added by a one-shot decorate pass, regenerating a deck silently
        removed openVocabModal and every vocab link on the page became dead. -->
+  <!-- This deck's OWN vocabulary, for the Quick Response Helpers word bank in
+       formula-popup.js. Without it that toolbar fell back to a hardcoded
+       geometry list (base, trapezoid, height, area, parallel, formula,
+       dimension) and printed "trapezoid" under the writing box of every
+       lesson in the curriculum, including statistics and equations. -->
+  <script>window.NT_LESSON_VOCAB = ${JSON.stringify(
+    (data.vocabulary || []).map((v) => String(v.term || "").trim()).filter(Boolean),
+  )};</script>
   <script src="/assets/formula-popup.js" defer></script>
 </body>
 </html>

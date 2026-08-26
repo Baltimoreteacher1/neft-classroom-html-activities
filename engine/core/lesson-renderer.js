@@ -1744,7 +1744,10 @@ function renderShowYourWork(host, config, state) {
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
     img.src = String(wp.image);
-    img.alt = wp.title ? String(wp.title) : "Word problem image";
+    // The authored description first. A title alone ("Apply: Snack Bags") tells a
+    // screen-reader user nothing about the figure, and the figure is where this
+    // problem keeps its numbers.
+    img.alt = String(wp.imageAlt || wp.title || "Figure for this word problem");
     fig.append(img);
     attachImageZoom(img);
     card.append(fig);

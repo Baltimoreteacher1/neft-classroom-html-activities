@@ -471,6 +471,34 @@
     }
   };
 
+  /**
+   * The vocabulary the CURRENT page teaches, most trustworthy source first.
+   * Returns at most 7 terms; short function words are dropped so the chips stay
+   * scannable on a projector.
+   */
+  function lessonVocabWords() {
+    const clean = (list) =>
+      list
+        .map((w) => String(w || "").trim())
+        .filter((w) => w.length > 1 && w.length <= 28)
+        .filter((w, i, a) => a.indexOf(w) === i)
+        .slice(0, 7);
+
+    const declared = /** @type {string[]|undefined} */ (window["NT_LESSON_VOCAB"]);
+    if (Array.isArray(declared) && declared.length) {
+      const words = clean(declared);
+      if (words.length) return words;
+    }
+
+    const onPage = [...document.querySelectorAll(".ref-vocab-term, .vocab-word")].map((el) =>
+      (el.textContent || "").replace(/\s+/g, " ").trim(),
+    );
+    const scraped = clean(onPage);
+    if (scraped.length) return scraped;
+
+    return ["explain", "because", "strategy", "evidence"];
+  }
+
   // 5. Docked Notice/Wonder Scaffold & Word Bank Toolbar Auto-Injector
   function initNoticeWonderScaffolds() {
     const textareas = /** @type {NodeListOf<HTMLTextAreaElement>} */ (
@@ -489,17 +517,15 @@
 
       const starters = isWonder
         ? ["I wonder why...", "What would happen if...", "How does...", "Why are..."]
-        : ["I notice that...", "I observe...", "The shape has...", "The dimensions show..."];
+        : ["I notice that...", "I observe...", "One pattern I see is...", "The numbers show..."];
 
-      const vocabWords = [
-        "base",
-        "trapezoid",
-        "height",
-        "area",
-        "parallel",
-        "formula",
-        "dimension",
-      ];
+      // The word bank must be THIS lesson's vocabulary. It used to be a fixed
+      // geometry list, so a statistics or equations deck offered students
+      // "trapezoid" and "parallel" under its writing box. The deck states its
+      // own terms in window.NT_LESSON_VOCAB; the vocabulary slide's own cells
+      // are the fallback, and a neutral bank is the last resort — never a
+      // bank belonging to some other lesson.
+      const vocabWords = lessonVocabWords();
 
       const bar = document.createElement("div");
       bar.className = "nw-scaffold-toolbar";
