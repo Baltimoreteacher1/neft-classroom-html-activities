@@ -845,7 +845,10 @@ function playLessonEntrance(config, name, boot) {
 // their step is active), and the level pickers already sit at the top of the
 // Practice step itself.
 const PHASE_SUBTABS = {
-  0: [{ extra: "mathnotes", icon: "📓", label: "Math Notes" }],
+  0: [
+    { extra: "mathnotes", icon: "📓", label: "Math Notes" },
+    { extra: "objectives", icon: "🎯", label: "Objectives" },
+  ],
   1: [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
     { extra: "learn", icon: "💡", label: "Learn It" },
@@ -1532,7 +1535,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // clears the lock.
       document.documentElement.classList.toggle(
         "nt-extra-fullpage-open",
-        kind === "vocab" || kind === "learn" || kind === "notes",
+        kind === "vocab" || kind === "learn" || kind === "notes" || kind === "objectives",
       );
     },
     clearExtraActive() {
@@ -1826,7 +1829,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       this.setExtraActive("objectives");
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
-      el.className = "phase active extra-panel";
+      el.className = "phase active extra-panel extra-panel--fullpage";
+      el.tabIndex = -1;
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", "Objectives");
 
@@ -1863,10 +1867,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       el.innerHTML = `
         <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:700; color:var(--navy, #264653); }</style>
-        <div class="extra-head" style="margin-bottom:var(--sp-4, 18px);">
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-4, 18px); padding-right:110px;">
           <div>
             <div class="section-title" style="font-size:2rem;">🎯 Today's Goals</div>
             <div class="section-desc" style="font-size:1.1rem;">Read each goal. <strong>Tap</strong> an <u class="obj-key">underlined</u> word to see what it means in English and Spanish. Check a box before we start, and again at the end.</div>
+          </div>
+          <div>
+            <button class="btn btn-secondary" data-act="close">✕ Close</button>
           </div>
         </div>
         ${objectiveCard({
@@ -1893,6 +1900,27 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         })}
       `;
       phaseContainer.append(el);
+
+      const closeToLesson = () => this.navigateTo(state.get().currentPhase ?? 0);
+      const closeBtn = el.querySelector('[data-act="close"]');
+      if (closeBtn) closeBtn.addEventListener("click", closeToLesson);
+      const onKey = (e) => {
+        if (!document.body.contains(el)) {
+          document.removeEventListener("keydown", onKey);
+          return;
+        }
+        if (e.key === "Escape") {
+          document.removeEventListener("keydown", onKey);
+          closeToLesson();
+        }
+      };
+      document.addEventListener("keydown", onKey);
+
+      el.append(
+        chainContinueButton("Continue to Lesson 🚀 →", () =>
+          this.navigateTo(state.get().currentPhase ?? 0),
+        ),
+      );
 
       // Make the underlined vocab terms tap-to-open the glossary popup here too,
       // exactly like the Launch objectives (shared engine machinery) —
