@@ -32,6 +32,27 @@
  *     run Cloudflare Functions. Production answers 400. Ignored by name so a
  *     preview artifact never reads as a live outage.
  *
+ *  5. TABS ARE NESTED — walk them the way a student does. The phase tablist
+ *     owns three panels, and each panel carries its OWN sub-step tablist
+ *     (`.sg-substeps`, shipped 2026-08-25). A flat `[role="tab"]` walk clicked
+ *     the chips belonging to the two phases you are not in; those measure 0x0
+ *     because their panel is hidden, so every one of them reported "tab not
+ *     clickable" — 20 of the 22 findings on 2026-08-25, and the reason a
+ *     report-only tool read as a broken page. The fix is not an ignore rule:
+ *     activate a phase, THEN walk the sub-steps that phase reveals. That
+ *     removes the false positives by construction and, for the first time,
+ *     actually measures each sub-step panel.
+ *
+ *  6. ANIMATION IS NOT A DEFECT — a sub-step click calls
+ *     `panel.scrollIntoView({ behavior: "smooth" })`, and Playwright's
+ *     actionability check requires a box that has stopped moving. The default
+ *     click therefore timed out mid-scroll on a control a student can hit
+ *     perfectly well (2 of the 22). Motion is reduced and transitions are
+ *     zeroed for the sweep, and the click is given a bounded 4s to let any
+ *     remaining scroll settle. Deliberately NOT `{ force: true }` — that would
+ *     also swallow a control genuinely covered by an overlay, which is a real
+ *     finding this sweep exists to catch.
+ *
  * Two more properties verified by hand during the 2026-08-10 pass and worth
  * re-checking rather than automating badly: the phase tablist uses a roving
  * tabindex (only the active tab is in the tab order — arrow keys move between
@@ -58,6 +79,59 @@ const IGNORED_CONSOLE = [/sg-room/, /favicon/];
 
 const findings = [];
 const note = (ctx, msg) => findings.push(`${ctx} :: ${msg}`);
+/* Coverage, not decoration. "0 findings" and "walked nothing" print the same
+   line otherwise, and narrowing the walk is exactly how this sweep could stop
+   covering the sub-steps it was just taught to reach. Reported on every run,
+   and a run that reaches no phase at all EXITS NON-ZERO — that is broken
+   discovery, not a clean result. */
+const walked = { phases: 0, steps: 0 };
+
+/**
+ * Label each tablist `outer` (the phase bar) or `inner` (a sub-step strip
+ * living inside a phase's panel) — note 5. Structural, not class-name based, so
+ * renaming `.sg-substeps` cannot quietly turn the sub-step walk back off.
+ * Re-run after every phase activation: the panel re-renders, so tags placed
+ * before the click are gone.
+ */
+const tagTablists = (page) =>
+  page.evaluate(() => {
+    for (const tl of document.querySelectorAll('[role="tablist"]')) {
+      const inside = tl.closest('[role="tabpanel"], .sg-tabpanel, .sg-panel');
+      tl.setAttribute("data-ux-tablist", inside ? "inner" : "outer");
+    }
+  });
+
+/**
+ * Is this control on screen RIGHT NOW? A sub-step chip belonging to a phase you
+ * are not in is 0x0 inside a hidden panel. That is the panel being hidden — the
+ * behaviour the step strip is built on — not a control a student cannot reach.
+ */
+const isOnScreen = (locator) =>
+  locator.evaluate((el) => {
+    if (el.closest("[hidden]")) return false;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) return false;
+    const cs = getComputedStyle(el);
+    return cs.visibility !== "hidden" && cs.display !== "none";
+  });
+
+/**
+ * Click a tab that is supposed to be reachable, and report it when it is not.
+ * The 4s bound is note 6: long enough for a smooth scroll to settle, short
+ * enough that a control pinned under an overlay still fails fast. The failure
+ * message carries Playwright's own first line, because "not clickable" alone
+ * does not say whether the thing was covered, disabled, or still moving.
+ */
+async function activateTab(locator, ctx) {
+  try {
+    await locator.click({ timeout: 4000 });
+  } catch (e) {
+    const why = String(e.message || e)
+      .split("\n")
+      .find((l) => /intercept|not (visible|enabled|stable)|outside of the viewport/i.test(l));
+    note(ctx, `tab not clickable${why ? ` — ${why.trim()}` : ""}`);
+  }
+}
 
 /* The preview server is this sweep's subject; without it there is nothing to
  * report. It used to proceed anyway and die on the first locator with an
@@ -115,12 +189,73 @@ const browser = await chromium.launch();
     await browser.close();
     process.exit(1);
   }
-  console.log("self-test: detectors fire (overflow + tap target), label exemption holds.\n");
+  /* The tab walk itself — note 5 and note 6. Narrowing a walk is how a sweep
+     quietly stops covering the thing it was written for, so both directions are
+     pinned: a chip in a hidden panel must be SKIPPED, and a visible chip that a
+     student genuinely cannot reach must still be REPORTED. Without the second
+     case the fix for the false positives would also silence the true ones. */
+  const walkPage = await browser.newPage({ viewport: { width: 800, height: 600 } });
+  await walkPage.setContent(`<body style="margin:0">
+    <div role="tablist"><button role="tab" id="phase">Phase</button></div>
+    <div class="sg-tabpanel" id="shown">
+      <div role="tablist"><button role="tab" id="chip-shown">shown chip</button></div>
+    </div>
+    <div class="sg-tabpanel" id="other" hidden>
+      <div role="tablist"><button role="tab" id="chip-hidden">hidden chip</button></div>
+    </div>
+    <div role="tablist"><button role="tab" id="chip-blocked">blocked chip</button></div>
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,.2)"></div>
+  </body>`);
+  await tagTablists(walkPage);
+  const outerCount = await walkPage.locator('[data-ux-tablist="outer"] [role="tab"]').count();
+  const shown = await isOnScreen(walkPage.locator("#chip-shown"));
+  const hidden = await isOnScreen(walkPage.locator("#chip-hidden"));
+  const before = findings.length;
+  await activateTab(walkPage.locator("#chip-blocked"), "selftest");
+  const reportedBlocked = findings.length > before;
+  findings.length = before; // fixture findings are not real findings
+  await walkPage.close();
+
+  const walkProblems = [];
+  if (outerCount !== 2)
+    walkProblems.push(
+      `tablist tagging found ${outerCount} outer tab(s), expected 2 (the phase tab and the blocked chip, whose tablist is in no panel)`,
+    );
+  if (!shown) walkProblems.push("a chip in the SHOWING panel was classified off screen");
+  if (hidden)
+    walkProblems.push(
+      "a chip in a HIDDEN panel was classified on screen — the false positives are back",
+    );
+  if (!reportedBlocked)
+    walkProblems.push(
+      "a visible chip covered by a fixed overlay was NOT reported — real findings are being swallowed",
+    );
+  if (walkProblems.length) {
+    console.error("SELF-TEST FAILED — the tab walk would misreport:");
+    for (const p of walkProblems) console.error(`  - ${p}`);
+    await browser.close();
+    process.exit(1);
+  }
+  console.log(
+    "self-test: detectors fire (overflow + tap target), label exemption holds, hidden-panel chips skipped and a blocked chip still reported.\n",
+  );
 }
 
 for (const size of SIZES) {
   for (const id of LESSONS) {
     const page = await browser.newPage({ viewport: { width: size.width, height: size.height } });
+    /* note 6 — the sweep measures layout, not animation. Reduced motion plus a
+       zeroed transition/scroll duration means a control is judged on where it
+       comes to rest, not on whether it happened to be mid-scroll. */
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.addInitScript(() => {
+      document.addEventListener("DOMContentLoaded", () => {
+        const s = document.createElement("style");
+        s.textContent =
+          "*,*::before,*::after{scroll-behavior:auto !important;animation-duration:0s !important;transition-duration:0s !important}";
+        document.head.appendChild(s);
+      });
+    });
     const ctxBase = `[${size.name}] ${id}`;
     const errors = new Set();
     // The browser's generic "Failed to load resource" console line carries NO
@@ -165,74 +300,38 @@ for (const size of SIZES) {
       await page.waitForTimeout(1500);
     }
 
-    const tabs = page.locator('[role="tab"]');
-    const count = await tabs.count();
-    if (!count) note(ctxBase, "NO PHASE TABS FOUND");
+    await tagTablists(page);
+    const phaseTabs = page.locator('[data-ux-tablist="outer"] [role="tab"]');
+    const phaseCount = await phaseTabs.count();
+    if (!phaseCount) note(ctxBase, "NO PHASE TABS FOUND");
 
-    for (let i = 0; i < count; i++) {
-      const tab = tabs.nth(i);
+    for (let i = 0; i < phaseCount; i++) {
+      const tab = phaseTabs.nth(i);
       const label = (await tab.innerText()).replace(/\s+/g, " ").trim().slice(0, 28);
       const ctx = `${ctxBase} > ${label}`;
-      await tab.click().catch(() => note(ctx, "tab not clickable"));
+      await activateTab(tab, ctx);
+      walked.phases += 1;
       await page.waitForTimeout(900);
+      await measurePanel(page, ctx);
 
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      );
-      if (overflow > 2) note(ctx, `page scrolls horizontally by ${overflow}px`);
-
-      const wide = await page.evaluate(() => {
-        const vw = document.documentElement.clientWidth;
-        const out = [];
-        for (const el of document.querySelectorAll("body *")) {
-          const r = el.getBoundingClientRect();
-          if (r.width === 0 || r.height === 0) continue;
-          if (getComputedStyle(el).visibility === "hidden") continue;
-          let fixed = false;
-          for (let a = el; a && a !== document.body; a = a.parentElement) {
-            if (getComputedStyle(a).position === "fixed") {
-              fixed = true;
-              break;
-            }
-          }
-          if (fixed) continue; // note 1
-          if (r.right > vw + 2) {
-            const cls = (el.className || "").toString().split(" ")[0];
-            out.push(`${el.tagName.toLowerCase()}.${cls} +${Math.round(r.right - vw)}px`);
-          }
-        }
-        return [...new Set(out)].slice(0, 4);
-      });
-      for (const w of wide) note(ctx, `overflows right: ${w}`);
-
-      const small = await page.evaluate(() => {
-        const out = [];
-        for (const el of document.querySelectorAll(
-          "button, a[href], input, select, [role=button]",
-        )) {
-          if (el.closest(".sg-vocab-inline") || el.classList.contains("sg-vocab-inline")) continue; // note 3
-          // note 2 — a wrapping <label> is the real target for a bare control.
-          const target = el.closest("label") || el;
-          const r = target.getBoundingClientRect();
-          if (r.width === 0 || r.height === 0) continue;
-          if (getComputedStyle(target).visibility === "hidden") continue;
-          if (r.height < 24 || r.width < 24) {
-            const cls = (target.className || "").toString().split(" ")[0];
-            out.push(
-              `${target.tagName.toLowerCase()}.${cls} ${Math.round(r.width)}x${Math.round(r.height)}`,
-            );
-          }
-        }
-        return [...new Set(out)].slice(0, 5);
-      });
-      for (const s of small) note(ctx, `tap target under WCAG 2.5.8 24px: ${s}`);
-
-      const chars = await page.evaluate(() => {
-        const panel = document.querySelector(".sg-tabpanel:not([hidden])");
-        return panel ? (panel.innerText || "").trim().length : -1;
-      });
-      if (chars === 0) note(ctx, "ACTIVE PANEL IS EMPTY");
-      else if (chars > 0 && chars < 40) note(ctx, `panel has almost no content (${chars} chars)`);
+      /* This phase's own sub-steps — note 5. Re-tag first: activating a phase
+       * re-renders its panel, so tablist handles from before the click are
+       * stale. Chips still off screen belong to another phase and are skipped
+       * without comment; there is nothing to report about a panel that is
+       * correctly not showing. */
+      await tagTablists(page);
+      const steps = page.locator('[data-ux-tablist="inner"] [role="tab"]');
+      const stepCount = await steps.count();
+      for (let j = 0; j < stepCount; j++) {
+        const chip = steps.nth(j);
+        if (!(await isOnScreen(chip))) continue;
+        const stepLabel = (await chip.innerText()).replace(/\s+/g, " ").trim().slice(0, 24);
+        const sctx = `${ctx} > ${stepLabel}`;
+        await activateTab(chip, sctx);
+        walked.steps += 1;
+        await page.waitForTimeout(500);
+        await measurePanel(page, sctx);
+      }
     }
 
     for (const e of errors) note(ctxBase, `console: ${e}`);
@@ -246,5 +345,75 @@ console.log(
   findings.length ? findings.join("\n") : "No findings — every phase clean at both widths.",
 );
 console.log(
-  `\n--- ${findings.length} finding(s) across ${LESSONS.length} lessons x ${SIZES.length} widths`,
+  `\n--- ${findings.length} finding(s) across ${LESSONS.length} lessons x ${SIZES.length} widths` +
+    ` · walked ${walked.phases} phase panel(s) and ${walked.steps} sub-step panel(s)`,
 );
+if (walked.phases === 0) {
+  console.error(
+    "\nFAIL: the sweep reached no phase panel at all. It has verified nothing, and a clean" +
+      " report here would be a lie about coverage, not a finding about the lessons.",
+  );
+  process.exit(1);
+}
+
+/* ── the measurements, shared by phase tabs and sub-step chips ───────────── */
+
+async function measurePanel(page, ctx) {
+  {
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    if (overflow > 2) note(ctx, `page scrolls horizontally by ${overflow}px`);
+
+    const wide = await page.evaluate(() => {
+      const vw = document.documentElement.clientWidth;
+      const out = [];
+      for (const el of document.querySelectorAll("body *")) {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) continue;
+        if (getComputedStyle(el).visibility === "hidden") continue;
+        let fixed = false;
+        for (let a = el; a && a !== document.body; a = a.parentElement) {
+          if (getComputedStyle(a).position === "fixed") {
+            fixed = true;
+            break;
+          }
+        }
+        if (fixed) continue; // note 1
+        if (r.right > vw + 2) {
+          const cls = (el.className || "").toString().split(" ")[0];
+          out.push(`${el.tagName.toLowerCase()}.${cls} +${Math.round(r.right - vw)}px`);
+        }
+      }
+      return [...new Set(out)].slice(0, 4);
+    });
+    for (const w of wide) note(ctx, `overflows right: ${w}`);
+
+    const small = await page.evaluate(() => {
+      const out = [];
+      for (const el of document.querySelectorAll("button, a[href], input, select, [role=button]")) {
+        if (el.closest(".sg-vocab-inline") || el.classList.contains("sg-vocab-inline")) continue; // note 3
+        // note 2 — a wrapping <label> is the real target for a bare control.
+        const target = el.closest("label") || el;
+        const r = target.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) continue;
+        if (getComputedStyle(target).visibility === "hidden") continue;
+        if (r.height < 24 || r.width < 24) {
+          const cls = (target.className || "").toString().split(" ")[0];
+          out.push(
+            `${target.tagName.toLowerCase()}.${cls} ${Math.round(r.width)}x${Math.round(r.height)}`,
+          );
+        }
+      }
+      return [...new Set(out)].slice(0, 5);
+    });
+    for (const s of small) note(ctx, `tap target under WCAG 2.5.8 24px: ${s}`);
+
+    const chars = await page.evaluate(() => {
+      const panel = document.querySelector(".sg-tabpanel:not([hidden])");
+      return panel ? (panel.innerText || "").trim().length : -1;
+    });
+    if (chars === 0) note(ctx, "ACTIVE PANEL IS EMPTY");
+    else if (chars > 0 && chars < 40) note(ctx, `panel has almost no content (${chars} chars)`);
+  }
+}
