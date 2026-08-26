@@ -24,6 +24,23 @@
 // lessons and their small-group / catch-up variants together.
 //
 // Idempotent: re-running writes nothing once the easier set is in place.
+//
+// SUPERSEDED 2026-08-26 — this script no longer writes. Read the guard below
+// before removing it.
+//
+// The Unit 1 warmups this file authored have since gained Spanish (stemEs,
+// choicesEs, explanationEs) and per-choice misconceptionTags, and a third
+// question each. NONE of that exists in the WARMUPS literal below, and the
+// write path replaces `questions` wholesale — so running this file today would
+// silently strip the Spanish and the tags off all six Unit 1 lessons and their
+// variants, and no gate would say so, because the result is still a valid,
+// well-ordered, easy warmup. That is the same shape as this repo's other
+// two-owners-drifting failures.
+//
+// scripts/soften-warmup-onramps.mjs is now the single owner of these warmups
+// and carries the current content. This file is kept for its history — the
+// reasoning above is the record of WHY Unit 1 opens the way it does — and is
+// inert.
 
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -147,6 +164,16 @@ const WARMUPS = {
   },
 };
 
+/* The guard. Not a comment — a comment does not stop `node scripts/…`. */
+console.error(
+  "soften-unit1-warmups.mjs is SUPERSEDED and will not write.\n" +
+    "  Its WARMUPS literal predates the Spanish and the misconceptionTags now on\n" +
+    "  these lessons, so writing it would strip both. The current owner is\n" +
+    "  scripts/soften-warmup-onramps.mjs — run that instead.",
+);
+process.exit(0);
+
+// eslint-disable-next-line no-unreachable
 let files = 0;
 for (const folder of readdirSync(LESSONS).sort()) {
   const match = folder.match(UNIT_1);
