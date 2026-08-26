@@ -17,6 +17,7 @@ import { createServer } from "node:http";
 import { dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -86,11 +87,28 @@ if (baseArg) {
 
 const BOOT_TIMEOUT = 12000;
 
+let browser;
 try {
-  const browser = await chromium.launch({
+  /* PW_CHROMIUM_PATH points at a system Chromium when the Playwright-managed
+   * download is missing or version-mismatched, as in sandboxed containers —
+   * the same lever smoke-lesson-boot, audit:a11y and validate:lesson-visuals
+   * already take. Without it this gate died with a raw stack trace and took
+   * all of validate:hub down with it, which reads as a content failure. */
+  browser = await chromium.launch({
     headless: true,
+    ...(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {}),
   });
+} catch (error) {
+  /* A browser that will not start is a SKIP, never a pass and never a crash. */
+  process.exit(
+    skipExit(
+      `Chromium could not be launched (${error.message.split("\n")[0]})`,
+      "Install a browser (npx playwright install chromium) or set PW_CHROMIUM_PATH.",
+    ),
+  );
+}
 
+try {
   console.log(
     "\nvalidate:notebook-render — probing " +
       SAMPLE_LESSONS.length +
