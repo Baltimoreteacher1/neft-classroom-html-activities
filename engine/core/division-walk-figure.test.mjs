@@ -8,7 +8,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
-import { carriedDivisionFigures, divisionStepFigures } from "./division-walk-figure.js";
+import { carriedDivisionFigures, decimalShiftFigure, divisionStepFigures } from "./division-walk-figure.js";
 
 const lessonLines = (id) => {
   const cfg = JSON.parse(readFileSync(new URL(`../../lessons/${id}/config.json`, import.meta.url), "utf8"));
@@ -144,4 +144,38 @@ test("a worked example the algorithm cannot verify carries nothing", () => {
   assert.deepEqual(carriedDivisionFigures(["Add 2 and 3 to get 5.", "Now double it."]), []);
   assert.deepEqual(carriedDivisionFigures([]), []);
   assert.deepEqual(carriedDivisionFigures(null), []);
+});
+
+test("decimalShiftFigure: 2-7 draws the move-the-point model from its own numbers", () => {
+  // The notebook copy model for a decimal-division lesson is the decimal
+  // problem, an arrow per decimal point, and the whole-number problem it
+  // becomes (Joel, 2026-08-26: "just have a division problem with decimals
+  // and then an arrow showing the decimals moved"). Every number drawn must
+  // be stated by the lesson's own lines.
+  const svg = decimalShiftFigure(lessonLines("2-7"));
+  assert.ok(svg, "2-7 states 18.9 ÷ 6.3 with a decimal divisor, so it gets the shift model");
+  assert.match(svg, /18\.9/, "the decimal dividend as the student meets it");
+  assert.match(svg, /6\.3/, "the decimal divisor as the student meets it");
+  assert.match(
+    svg,
+    /becomes 189 ÷ 63 = 3/,
+    "the shifted problem and the answer the lesson itself states",
+  );
+  assert.match(svg, /dwf-shift-arrow/, "an arrow shows each point moving");
+  assert.equal((svg.match(/dwf-shift-arrow/g) || []).length, 2, "one arrow per decimal point");
+  assert.match(svg, /Move both decimal points 1 place/, "the move is named with the stated place count");
+  assert.match(svg, /aria-label="/, "accessible");
+  assert.equal((svg.match(/<svg/g) || []).length, (svg.match(/<\/svg>/g) || []).length);
+  // Spanish variant carries the Spanish label, same numbers.
+  const es = decimalShiftFigure(lessonLines("2-7"), { isEs: true });
+  assert.match(es, /Mueve ambos puntos decimales 1 lugar/);
+});
+
+test("decimalShiftFigure: a whole-number walk gets no shift model", () => {
+  // 2-6 divides 1,344 ÷ 12 — no decimal to move, so the shift model would be
+  // a picture of a move the lesson never makes.
+  assert.equal(decimalShiftFigure(lessonLines("2-6")), null);
+  assert.equal(decimalShiftFigure(["Add 2 and 3 to get 5."]), null);
+  assert.equal(decimalShiftFigure([]), null);
+  assert.equal(decimalShiftFigure(null), null);
 });

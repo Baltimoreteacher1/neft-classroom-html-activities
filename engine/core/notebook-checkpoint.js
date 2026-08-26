@@ -27,7 +27,11 @@
 // Phase identity in this engine is POSITIONAL: lesson-renderer.js hands
 // createApp a fixed 8-slot array of render functions. These names are the
 // stable ids lesson data refers to, mapped to those slots.
-import { carriedDivisionFigures, DIVISION_FIGURE_CSS } from "./division-walk-figure.js";
+import {
+  carriedDivisionFigures,
+  DIVISION_FIGURE_CSS,
+  decimalShiftFigure,
+} from "./division-walk-figure.js";
 import { attachImageZoomAll } from "./image-zoom.js";
 import { vocabImageAlt } from "./vocab-images.js";
 
@@ -541,16 +545,24 @@ function renderCopyPanelHtml(cp, isEs = false, config = null) {
     // the divisor a whole number: slide its decimal point…") as the thing to
     // copy into a notebook (Joel, 2026-08-26: "students should just copy a
     // simple model of this — not write out 3 separate things that are
-    // unclear"). When the lesson's own worked example yields a completed
-    // division tableau, THAT is the copy task — the picture of the algorithm,
-    // drawn from this lesson's numbers — and the prose steps are dropped. A
-    // lesson with no drawable model keeps its steps unchanged.
+    // unclear"). When the lesson's own worked example yields a drawable model,
+    // THAT is the copy task and the prose steps are dropped. A lesson with no
+    // drawable model keeps its steps unchanged.
+    //
+    // A DECIMAL-division lesson gets the move-the-point figure, not the
+    // finished tableau: the tableau for 2-7 showed 189 ÷ 63 = 3 — whole
+    // numbers only — so the model to copy contained no decimal and none of
+    // the move this lesson exists to teach (Joel, 2026-08-26: "the problem
+    // below is just confusing. Maybe just have a division problem with
+    // decimals and then an arrow showing the decimals moved").
     let modelHtml = "";
     let steps = Array.isArray(cp.copyPanel.steps) ? cp.copyPanel.steps : [];
     if (steps.length && config?.launch?.conceptIntro?.iDo?.lines) {
       try {
-        const figs = carriedDivisionFigures(config.launch.conceptIntro.iDo.lines);
-        const finished = figs ? [...figs].reverse().find(Boolean) : null;
+        const iDoLines = config.launch.conceptIntro.iDo.lines;
+        const shift = decimalShiftFigure(iDoLines, { isEs });
+        const figs = shift ? null : carriedDivisionFigures(iDoLines);
+        const finished = shift || (figs ? [...figs].reverse().find(Boolean) : null);
         if (finished) {
           modelHtml = `<style>${DIVISION_FIGURE_CSS}</style>
             <figure class="nt-nb-copy-model" style="margin:10px auto 4px; text-align:center;">
