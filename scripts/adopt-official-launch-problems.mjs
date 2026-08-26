@@ -25,6 +25,15 @@
  * problem. Those are here. Every other lesson's opener is repo-authored on
  * purpose and is left alone.
  *
+ * NOT THE FLAGSHIP LESSONS. 3-1, 3-2 and 8-1 open on an authored mission cover
+ * — "ARCADE BUILDER MISSION · Best Booth in the Arcade", "COLD CASE MISSION ·
+ * The Equation Vault" — which is the first screen a student sees and which
+ * frames the whole lesson. Swapping the launch problem underneath one of those
+ * leaves the cover announcing an arcade and the first problem showing a map of
+ * the Boston-to-Washington rail line. A themed mission is a designed
+ * experience, not decoration, so those three keep theirs whole rather than
+ * being half-migrated.
+ *
  * ALT TEXT IS HAND-WRITTEN, from looking at each figure. These problems keep
  * their numbers IN the picture ("as shown in the order form", "the temperatures
  * … are shown"), so a screen-reader user given only "Figure for this problem"
@@ -93,22 +102,6 @@ const ADOPTIONS = [
     alt: "",
   },
   {
-    lesson: "3-1",
-    badge: "Making a Fruit Drink",
-    deck: "3_1",
-    img: "s06-c77f51c46dea.png",
-    text: "The recipe shows the ingredients needed to make one batch of sparkling cranberry-apple fruit drink. How can you describe the relationship between the apple juice and the fruit drink? Between the apple juice and the sparkling water?",
-    alt: "A bottle labelled Apple-Cran Fizz with its recipe: apple juice 2 cups, cranberry juice 1 cup, sparkling water 7 cups.",
-  },
-  {
-    lesson: "3-2",
-    badge: "Metro Trains",
-    deck: "3_2",
-    img: "s06-887ca06951d1.png",
-    text: "A high-speed train can travel at a maximum speed of 150 miles per hour. In many places, the tracks do not allow the train to travel at its maximum speed. If the train were able to travel at its maximum speed for the 450 miles between Boston and Washington D.C., how long would the trip take?",
-    alt: "A map of the northeastern United States with a rail line running from Washington D.C. through Philadelphia and New York to Boston, labelled 450 miles.",
-  },
-  {
     lesson: "3-3",
     badge: "Making Homemade Clay",
     deck: "3_3",
@@ -163,14 +156,6 @@ const ADOPTIONS = [
     img: "s06-0dcdf59e4f9a.png",
     text: "Lucy and Yuzuki are playing a trivia game with these rules: if a player answers a question correctly, they receive 1 point; if they answer incorrectly, they lose 0.25 point. The player with the greatest score wins the game. The final scores for two games are shown in the table. Who is the winner of each game?",
     alt: "A Trivia Night score table. Game 1: Lucy 2, Yuzuki negative 1. Game 2: Lucy negative 0.5, Yuzuki negative 0.75.",
-  },
-  {
-    lesson: "8-1",
-    badge: "Building a Door",
-    deck: "8_1",
-    img: "s06-420a2a9f0241.png",
-    text: "Shanice is building a door from planks cut out of one wide board. How can Shanice determine the number of planks needed?",
-    alt: "A rectangular board 36 inches wide. One plank is shaded along the left edge and labelled 4 and one half inches wide.",
   },
   {
     lesson: "9-2",
