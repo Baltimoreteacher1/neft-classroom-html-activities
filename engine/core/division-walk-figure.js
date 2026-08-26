@@ -428,6 +428,104 @@ export function carriedDivisionFigures(lines) {
 }
 
 /**
+ * The move-the-point model, on the lesson's own numbers: the decimal problem
+ * as the student meets it, an arrow under each decimal point hopping it right,
+ * and the equivalent whole-number problem it becomes. This is the ONE picture
+ * a decimal-division lesson asks students to copy into their notebook — the
+ * finished 189÷63 tableau it used to show carried no decimal anywhere, so the
+ * model omitted the exact move the lesson exists to teach (Joel, 2026-08-26:
+ * "just have a division problem with decimals and then an arrow showing the
+ * decimals moved").
+ *
+ * Every number drawn is stated by the lesson: the decimal pair and its shifted
+ * integers come from findProblem (which demands the lesson's own "6.3 becomes
+ * 63" lines), and the answer renders only when a line literally states
+ * "18.9 ÷ 6.3 = 3". Returns null for a walk with no decimal shift — those
+ * lessons keep whatever model they had.
+ *
+ * @param {string[]} rawLines the worked example's authored lines
+ * @param {{isEs?: boolean}} [opts]
+ * @returns {string | null}
+ */
+export function decimalShiftFigure(rawLines, opts = {}) {
+  const lines = (Array.isArray(rawLines) ? rawLines : []).filter(
+    (l) => typeof l === "string" && l.trim(),
+  );
+  if (!lines.length) return null;
+  let problem = null;
+  try {
+    problem = findProblem(lines);
+  } catch {
+    return null;
+  }
+  if (!problem || !problem.originalDividendText || !problem.originalDivisorText) return null;
+  const origDvd = problem.originalDividendText;
+  const origDvs = problem.originalDivisorText;
+  const places = (origDvs.split(".")[1] || "").length;
+  if (!places) return null;
+
+  const text = lines.join(" ");
+  const ansMatch = text.match(
+    new RegExp(`${escapeReg(origDvd)}\\s*÷\\s*${escapeReg(origDvs)}\\s*=\\s*([\\d,]+(?:\\.\\d+)?)`),
+  );
+  const answer = ansMatch ? ansMatch[1] : null;
+
+  const isEs = !!opts.isEs;
+  const label = isEs
+    ? `Mueve ambos puntos decimales ${places} ${places === 1 ? "lugar" : "lugares"} a la derecha.`
+    : `Move both decimal points ${places} ${places === 1 ? "place" : "places"} to the right.`;
+
+  // Character layout: digits get a full column, decimal points a narrow one.
+  const cw = (ch) => (ch === "." ? U * 0.45 : U);
+  const layoutRow = (str, y, cls) => {
+    let x = U / 2;
+    const parts = [];
+    const pointXs = [];
+    for (const ch of String(str)) {
+      const w = cw(ch);
+      parts.push(svgText(x + w / 2, y, ch, ch === "." ? `dwf-point ${cls}` : cls));
+      if (ch === ".") pointXs.push(x + w / 2);
+      x += w;
+    }
+    return { svg: parts.join(""), width: x + U / 2, pointXs };
+  };
+
+  const topY = 34;
+  const bottomY = 128;
+  const top = layoutRow(`${origDvd} ÷ ${origDvs}`, topY, "dwf-old");
+  const bottomStr = `${problem.dividend} ÷ ${problem.divisor}${answer ? ` = ${answer}` : ""}`;
+  const bottom = layoutRow(bottomStr, bottomY, "dwf-new");
+  const width = Math.max(top.width, bottom.width);
+  const height = bottomY + 14;
+
+  // One hop arrow per decimal point, arcing right the number of places moved.
+  const arrows = top.pointXs
+    .map((px) => {
+      const span = places * U;
+      const y = topY + 8;
+      return (
+        `<path d="M ${px} ${y} q ${span / 2} 18 ${span} 0" class="dwf-shift-arrow" fill="none"/>` +
+        `<path d="M ${px + span} ${y} l -7 8 l 9 2 z" class="dwf-shift-head"/>`
+      );
+    })
+    .join("");
+
+  const labelSvg = `<text x="${width / 2}" y="82" class="dwf-shift-label" text-anchor="middle">${label}</text>`;
+  const alt = isEs
+    ? `${origDvd} ÷ ${origDvs}: mueve ambos puntos decimales ${places} ${places === 1 ? "lugar" : "lugares"} a la derecha y el problema se convierte en ${bottomStr}.`
+    : `${origDvd} ÷ ${origDvs}: move both decimal points ${places} ${places === 1 ? "place" : "places"} right and the problem becomes ${bottomStr}.`;
+  return (
+    `<svg class="dwf dwf-shift" viewBox="0 0 ${width} ${height}" role="img" aria-label="${alt}" ` +
+    `style="max-width:${Math.min(width, 380)}px">` +
+    top.svg +
+    arrows +
+    labelSvg +
+    bottom.svg +
+    `</svg>`
+  );
+}
+
+/**
  * The stroke and fill this figure's own classes need, owned by the module that
  * writes them.
  *
@@ -452,4 +550,24 @@ export const DIVISION_FIGURE_CSS = `
   .dwf .dwf-q { font-weight: 700; }
   .dwf .dwf-bring { fill: #b45309; }
   .dwf .dwf-new { fill: #0d7a76; font-weight: 700; }
+`;
+
+/**
+ * The decimalShiftFigure's own classes, SEPARATE from DIVISION_FIGURE_CSS on
+ * purpose: generate-worksheets.mjs bakes DIVISION_FIGURE_CSS into all 576
+ * committed worksheet pages, so adding these rules there made every worksheet
+ * stale against its generator and turned `generated-pages-fresh` red at the
+ * ship gate — a 576-file regeneration for CSS no worksheet uses. Only the
+ * surfaces that render the shift figure interpolate this string.
+ */
+export const DECIMAL_SHIFT_FIGURE_CSS = `
+  .dwf .dwf-point { fill: #b91c1c; font-weight: 700; }
+  .dwf .dwf-shift-arrow { stroke: #b91c1c; stroke-width: 2.5; fill: none; }
+  .dwf .dwf-shift-head { fill: #b91c1c; }
+  .dwf .dwf-shift-label {
+    font-family: Outfit, system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    fill: #475569;
+  }
 `;

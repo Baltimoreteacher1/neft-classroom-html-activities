@@ -262,9 +262,9 @@ export function auditLesson(id, cfg, deckHtml) {
     }
   }
 
-  // The scenario ("Today's problem"). Learn It's Step 1 opens with
-  // launch.narrative verbatim and Step 6 solves it; the deck prints the same
-  // field on its Scenario Launch slide, HTML-escaped. The committed deck must
+  // The scenario ("Today's problem"). The lesson's Launch step prints
+  // launch.narrative verbatim and the Learn It solve works it; the deck prints
+  // the same field on its Scenario Launch slide, HTML-escaped. The committed deck must
   // therefore CONTAIN the normalized narrative — a deck telling a different
   // story than the strip that says "today's problem" is the scenario version
   // of the 936 ÷ 4 substitution.

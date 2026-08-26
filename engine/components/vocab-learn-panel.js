@@ -755,31 +755,6 @@ function injectVocabLearnStyles() {
       padding: 24px 26px;
       box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
     }
-    .vl-today-problem {
-      margin: 0 0 18px;
-      padding: 12px 16px 12px 18px;
-      border-left: 4px solid #0d7a76;
-      background: #f7faf9;
-      border-radius: 0 12px 12px 0;
-    }
-    .vl-today-label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #0d7a76;
-      margin-bottom: 4px;
-    }
-    .vl-today-text {
-      margin: 0;
-      /* Same scale and weight as .vl-bigidea-text — the scenario IS lesson
-         content, and at 1.05rem it read as fine print under the question. */
-      font-size: clamp(1.1rem, 1.8vw, 1.3rem);
-      font-weight: 600;
-      line-height: 1.6;
-      color: #0f172a;
-    }
     .vl-step-question {
       margin: 0 0 12px;
       font-family: "Outfit", "Hanken Grotesk", sans-serif;
@@ -1791,13 +1766,14 @@ export function renderLearnItPanel(container, config, options = {}) {
   /** @type {Array<{icon:string,label:string,sub:string,build:(host:HTMLElement)=>void,onFirstShow?:(host:HTMLElement)=>void}>} */
   const steps = [];
 
-  // ① The Big Idea — what are we learning? Short, math first. It OPENS with
-  // the lesson's own scenario — the same problem the teacher just projected
-  // from the Launch slide — so the steps that follow read as "here is how we
-  // crack today's problem", not as a brand-new abstract exercise. Rendered
-  // verbatim from launch.narrative (the canonical field the deck's Scenario
-  // Launch slide prints), never paraphrased; Step 6 returns to solve it.
-  const todaysProblem = String(config.launch?.narrative || "").trim();
+  // ① The Big Idea — what are we learning? Short, math first. It used to OPEN
+  // with launch.narrative reprinted verbatim as "Today's problem", for
+  // continuity with the Launch step — but the Launch step the student just
+  // left IS that problem card, so the two screens read as the same card twice
+  // (Joel, 2026-08-26: "the big idea is the same as the launch"). The problem
+  // still lives where it is worked: the Launch step before this panel, and the
+  // solve rendered under it (renderLearnItExtras). This step leads with the
+  // mathematics — the heading, the idea, and the rule.
   // "See How It Works" listed the rule as numbered prose and then "Watch Me
   // Solve It" walked those same moves against the real problem — the same
   // teaching twice, the weaker copy first. Where a walkthrough exists the
@@ -1836,14 +1812,6 @@ export function renderLearnItPanel(container, config, options = {}) {
     sub: isEs ? "¿Qué vamos a aprender?" : "What are we learning?",
     build(host) {
       host.innerHTML = `
-        ${
-          todaysProblem
-            ? `<div class="vl-today-problem">
-                 <span class="vl-today-label">📌 ${isEs ? "El problema de hoy" : "Today's problem"}</span>
-                 <p class="vl-today-text">${renderMathText(todaysProblem)}</p>
-               </div>`
-            : ""
-        }
         <h4 class="vl-step-question">${renderMathText(heading)}</h4>
         ${intro ? `<p class="vl-bigidea-text">${renderMathText(intro)}</p>` : ""}
         ${cycleHtml}

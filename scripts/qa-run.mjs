@@ -159,8 +159,11 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * destination against __dirname/dist, so `--outDir` does not redirect it, and
  * repointing it is a deploy-config change. Serialising here is the honest fix —
  * `test` is a tree WRITER, so it takes its turn against the tree READERS rather
- * than running under them. Costs nothing measurable: `test` is the gate's long
- * pole either way, and the three browser checks together add ~33s to it. */
+ * than running under them. Cost: 30s of wall, measured — 233.3s against 203s.
+ * `test` is the gate's long pole either way (160s) and the three browser checks
+ * now queue behind it instead of beside it. Worth it: the alternative is a gate
+ * that fails ~1 check in 104 for a reason nobody can reproduce, which is how
+ * `--no-verify` becomes a habit and the whole gate stops running. */
 const EXCLUSIVE = new Set([
   "validate:lesson-boot",
   "smoke:injection",
