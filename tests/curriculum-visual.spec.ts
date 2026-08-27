@@ -43,7 +43,12 @@ import { expect, type Page, test } from "@playwright/test";
 async function openConsole(page: Page) {
   await page.addInitScript(() => {
     try {
-      localStorage.setItem("neft_teacher_mode_v1", "1");
+      // The real key — STORAGE_MODE in assets/curriculum-enhancements.js,
+      // TEACHER_KEY in engine/core/teacher-mode.js. `neft_teacher_mode_v1`,
+      // which this used to write, is read by nothing that ships, so the console
+      // rendered in Student view and the two teacher screenshots below could
+      // not even reach their guide button.
+      localStorage.setItem("nt-teacher-mode", "1");
     } catch {
       /* blocked storage is already a clean slate */
     }

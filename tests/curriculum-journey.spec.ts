@@ -32,7 +32,14 @@ import { expect, test, type Page } from "@playwright/test";
 async function enterTeacherMode(page: Page) {
   await page.addInitScript(() => {
     try {
-      localStorage.setItem("neft_teacher_mode_v1", "1");
+      // `nt-teacher-mode` is the real key, and the only one. It is declared as
+      // STORAGE_MODE in assets/curriculum-enhancements.js and as TEACHER_KEY in
+      // engine/core/teacher-mode.js precisely so ONE toggle flips the hub and
+      // every lesson together. This seed used to write `neft_teacher_mode_v1`,
+      // a name no shipped file has ever read — so the page booted in Student
+      // view, `body.teacher-mode` never appeared, and every teacher journey
+      // below failed on a console that was working correctly.
+      localStorage.setItem("nt-teacher-mode", "1");
     } catch {}
   });
   await page.goto("/curriculum/");
