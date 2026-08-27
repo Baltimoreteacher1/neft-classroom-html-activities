@@ -50,6 +50,10 @@ const TAG_LABELS = {
     "Stopped factoring before every factor was prime",
     "Dejó de factorizar antes de que todos los factores fueran primos",
   ],
+  "pattern-unit-position-miscounted": [
+    "Landed on the wrong place in the repeating unit",
+    "Cayó en el lugar equivocado dentro de la unidad que se repite",
+  ],
   "stat-question-no-variability": [
     "Chose a question with only one fixed answer",
     "Escogió una pregunta con una sola respuesta fija",
@@ -194,6 +198,7 @@ const TAG_STANDARDS = {
   "property-order-vs-grouping": ["6.AT.7"],
   "division-quotient-missing-zero": ["6.NOS.2"],
   "factorization-stopped-early": ["6.NOS.4"],
+  "pattern-unit-position-miscounted": ["6.NOS.2"],
   "stat-question-no-variability": ["6.DS.1"],
   "ratio-compared-without-common-basis": ["6.AT.3"],
   "decimal-place-value": ["6.NOS.3"],

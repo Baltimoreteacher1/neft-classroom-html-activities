@@ -73,13 +73,17 @@ const {
 // ratio-compared-without-common-basis). Each was authored with its own family
 // label AND its own kitchen-table activity before this number moved, which is
 // the only reason moving it is legitimate.
+// Bumped 43 → 44 on 2026-08-27 for pattern-unit-position-miscounted, which made
+// 10-5 "Math is Boundless" diagnosable at all — its wrong answers are positions
+// in a repeating unit, and nothing in the taxonomy could name that. Its label,
+// both languages, and the kitchen-table activity were authored first.
 // Bumped 42 → 43 on 2026-08-24 for division-quotient-missing-zero, the error
 // lesson 2-6 names in its own commonMistake and had been borrowing
 // decimal-place-value for. Same rule honoured: family label, watchFor in both
 // languages, and a five-minute kitchen-table activity were authored first.
-if (canonicalTags.length !== 43) {
+if (canonicalTags.length !== 44) {
   fail(
-    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 43 — update this validator deliberately, not by accident`,
+    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 44 — update this validator deliberately, not by accident`,
   );
 }
 

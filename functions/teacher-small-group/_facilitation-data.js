@@ -481,13 +481,13 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Landed on the wrong place in the repeating unit. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Show me on the bar graph where your numbers came from.",
       lookFor:
-        "Watch for: calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular orde….",
+        "Watch for the “Landed on the wrong place in the repeating unit” error — that is the one this lesson's check diagnoses.",
       ifStuck:
-        "Work the first step together on the bar graph, then hand the second one back to them.",
+        "Ask them to divide by the unit length out loud and say what the remainder points at.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -508,7 +508,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
       ask: "Would this strategy always work? How do you know?",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      lookFor:
+        "A student who can explain why the “Landed on the wrong place in the repeating unit” error fails in every case, not just this one.",
       ifStuck: "Ask for a second representation on the bar graph before any more explaining.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },

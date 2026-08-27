@@ -46,6 +46,7 @@ export const BOSS_TAGS = [
   "property-order-vs-grouping",
   "ratio-compared-without-common-basis",
   "stat-question-no-variability",
+  "pattern-unit-position-miscounted",
   "geom-triangle-area-no-half",
   "geom-surface-area-as-volume",
   "geom-volume-added-dimensions",
@@ -2620,6 +2621,55 @@ export const QUESTION_BANK = {
   ],
 
   /* --- Chose a question with only one fixed answer ------------------------ */
+  // Divide the position by the unit length; the remainder names the place, and a
+  // remainder of 0 is the LAST shape of the unit. Each distractor below is the
+  // shape at the WRONG remainder — the error itself, not a random wrong answer.
+  "pattern-unit-position-miscounted": [
+    T("pu-cst-12", () => ({
+      // circle·square·triangle, 12 ÷ 3 = 4 r0 → the 3rd shape.
+      values: { position: 12, unit: "circle, square, triangle" },
+      correct: "triangle",
+      distractor: "square",
+      decoys: ["circle", "it cannot be determined"],
+      prompt: {
+        en: "The pattern repeats in a unit. Which shape is at that position?",
+        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+      },
+    })),
+    T("pu-cst-20", () => ({
+      // 20 ÷ 3 = 6 r2 → the 2nd shape.
+      values: { position: 20, unit: "circle, square, triangle" },
+      correct: "square",
+      distractor: "circle",
+      decoys: ["triangle", "the pattern starts over"],
+      prompt: {
+        en: "The pattern repeats in a unit. Which shape is at that position?",
+        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+      },
+    })),
+    T("pu-cst-25", () => ({
+      // 25 ÷ 3 = 8 r1 → the 1st shape.
+      values: { position: 25, unit: "circle, square, triangle" },
+      correct: "circle",
+      distractor: "triangle",
+      decoys: ["square", "there is no shape 25"],
+      prompt: {
+        en: "The pattern repeats in a unit. Which shape is at that position?",
+        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+      },
+    })),
+    T("pu-rbgy-14", () => ({
+      // red·blue·green·yellow, 14 ÷ 4 = 3 r2 → the 2nd shape.
+      values: { position: 14, unit: "red, blue, green, yellow" },
+      correct: "blue",
+      distractor: "red",
+      decoys: ["green", "yellow"],
+      prompt: {
+        en: "The pattern repeats in a unit. Which shape is at that position?",
+        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+      },
+    })),
+  ],
   "stat-question-no-variability": [
     T("sq-heights", () => ({
       // `options` lets the validator pick the statistical question BY RULE

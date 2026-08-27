@@ -598,6 +598,15 @@ export const TAGS = Object.freeze({
     watchForEs: "Señale cada factor y pregunte: ¿este todavía se puede separar?",
     standards: ["6.NOS.4"],
   },
+  "pattern-unit-position-miscounted": {
+    label: "Landed on the wrong place in the repeating unit",
+    labelEs: "Cayó en el lugar equivocado dentro de la unidad que se repite",
+    watchFor:
+      "Ask them to divide by the unit length out loud and say what the remainder points at.",
+    watchForEs:
+      "Pídale que divida en voz alta entre la longitud de la unidad y diga a qué apunta el residuo.",
+    standards: ["6.NOS.2"],
+  },
   "stat-question-no-variability": {
     label: "Chose a question with only one fixed answer",
     labelEs: "Escogió una pregunta con una sola respuesta fija",
@@ -1052,6 +1061,30 @@ export const KITCHEN_TABLE = Object.freeze({
     why: "Asking 'can this one split again?' at every branch is the whole method — the tree ends when the answer is no.",
     whyEs:
       "Preguntar «¿este se puede separar otra vez?» en cada rama es todo el método: el árbol termina cuando la respuesta es no.",
+  },
+  "pattern-unit-position-miscounted": {
+    minutes: 5,
+    title: "The twelfth spoon",
+    titleEs: "La cuchara número doce",
+    materials: "Three kinds of small object — spoons, forks, and cups work.",
+    materialsEs: "Tres tipos de objetos pequeños: cucharas, tenedores y vasos sirven.",
+    steps: [
+      "Lay out a repeating line on the table: spoon, fork, cup, spoon, fork, cup — keep going to about nine.",
+      "Ask your student: without laying out any more, what is number 12?",
+      "Then ask HOW they know. If the answer is 'because 12 is even', lay out three more and count together.",
+      "Now do it their way and the counting way, and compare: 12 ÷ 3 = 4 with nothing left over, and four complete rounds end on the cup.",
+      "Try one more they cannot count quickly — number 25 — and check it with the same two steps.",
+    ],
+    stepsEs: [
+      "Pongan una fila que se repita sobre la mesa: cuchara, tenedor, vaso, cuchara, tenedor, vaso — sigan hasta unos nueve.",
+      "Pregunte a su estudiante: sin poner más, ¿cuál es el número 12?",
+      "Después pregunte CÓMO lo sabe. Si responde «porque 12 es par», pongan tres más y cuenten juntos.",
+      "Ahora háganlo a su manera y contando, y comparen: 12 ÷ 3 = 4 sin que sobre nada, y cuatro rondas completas terminan en el vaso.",
+      "Prueben uno que no se pueda contar rápido — el número 25 — y compruébenlo con los mismos dos pasos.",
+    ],
+    why: "Even and odd cannot decide it when the pattern is three long. Dividing by the length of one round, and asking what is left over, works for any position — including ones too far out to count.",
+    whyEs:
+      "Par o impar no lo puede decidir cuando el patrón mide tres. Dividir entre la longitud de una ronda, y preguntar qué sobra, funciona para cualquier posición — incluso para las que quedan demasiado lejos para contarlas.",
   },
   "stat-question-no-variability": {
     minutes: 5,

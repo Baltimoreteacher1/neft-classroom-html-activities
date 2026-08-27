@@ -87,6 +87,17 @@ function primeFactorCount(n) {
  * statistical question asks about EACH member of a group, so its answers vary.
  * Returns [statistical, fixed] — the reverse of what the bank claims fails.
  */
+function patternUnitPair(v) {
+  const shapes = String(v.unit)
+    .split(",")
+    .map((x) => x.trim());
+  const n = shapes.length;
+  const r = Number(v.position) % n;
+  const place = r === 0 ? n : r; // 1-based place inside the unit
+  const off = ((place - 2 + n) % n) + 1; // one earlier, wrapping
+  return [shapes[place - 1], shapes[off - 1]];
+}
+
 function statisticalPair(options) {
   const list = Array.isArray(options) ? options.map(String) : [];
   const varying = list.find((q) => /\beach\b/i.test(q));
@@ -328,6 +339,16 @@ const EXPECT = {
   // stat-question-no-variability — the validator picks the statistical question
   // BY RULE (the one asking about EACH member of a group, so answers vary),
   // never by reading which one the template called correct.
+  // pattern-unit-position-miscounted — the validator recomputes the position
+  // from the unit itself: divide, and let the remainder pick the shape (a
+  // remainder of 0 is the LAST shape of the unit). The error is the classic
+  // off-by-one — counting as though the first shape were position 0 — so the
+  // expected distractor is always the shape one place EARLIER, wrapping.
+  "pu-cst-12": (v) => patternUnitPair(v),
+  "pu-cst-20": (v) => patternUnitPair(v),
+  "pu-cst-25": (v) => patternUnitPair(v),
+  "pu-rbgy-14": (v) => patternUnitPair(v),
+
   "sq-heights": (v) => statisticalPair(v.options),
   "sq-minutes": (v) => statisticalPair(v.options),
   "sq-shoes": (v) => statisticalPair(v.options),

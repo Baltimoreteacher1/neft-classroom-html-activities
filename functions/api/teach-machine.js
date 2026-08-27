@@ -73,6 +73,7 @@ const ALLOWED_TAGS = [
   "property-order-vs-grouping",
   "ratio-compared-without-common-basis",
   "stat-question-no-variability",
+  "pattern-unit-position-miscounted",
   "coord-xy-swapped",
   "equation-answered-with-given-number",
   "equation-not-inverse-operation",

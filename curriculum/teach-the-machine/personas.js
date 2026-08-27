@@ -44,6 +44,7 @@ export const TAGS = [
   "property-order-vs-grouping",
   "ratio-compared-without-common-basis",
   "stat-question-no-variability",
+  "pattern-unit-position-miscounted",
   "algebra-distributive-partial",
   "decimal-place-value",
   "exponent-as-multiplication",
@@ -3183,6 +3184,68 @@ export const PERSONAS = {
       "2 × 6 es un par de factores correcto, pero el 6 no es primo: se separa en 2 × 3. Al reemplazar el 6 queda 2 × 2 × 3, y ahora todos los factores son primos, así que el árbol terminó. Multiplica de regreso para comprobar: 2 × 2 × 3 = 12.",
     wordBank: ["prime", "composite", "factor tree", "branch", "product", "divides"],
     wordBankEs: ["primo", "compuesto", "árbol de factores", "rama", "producto", "divide"],
+  },
+
+  "pattern-unit-position-miscounted": {
+    tag: "pattern-unit-position-miscounted",
+    standards: ["6.NOS.2"],
+    persona: {
+      name: "Loop",
+      blurb: "Spots the repeating pattern, then lands on the wrong shape inside it.",
+      blurbEs: "Encuentra el patrón que se repite y luego cae en la figura equivocada dentro de él.",
+    },
+    wrongIdea:
+      "once you know a pattern repeats, you can name the shape at any position by whether the number is even or odd",
+    wrongIdeaEs:
+      "una vez que sabes que un patrón se repite, puedes nombrar la figura de cualquier posición según si el número es par o impar",
+    openingLine:
+      "The border repeats circle, square, triangle. Shape number 12 has to be the purple square — 12 is even, and squares are the even ones.",
+    openingLineEs:
+      "La cenefa repite círculo, cuadrado, triángulo. La figura número 12 tiene que ser el cuadrado morado — 12 es par, y los cuadrados son los pares.",
+    probes: [
+      "How many shapes are in ONE unit of this pattern? What is 12 divided by that number?",
+      "Count the first six shapes out on paper. Which one lands on 3, and which lands on 6? What does that tell you about every third position?",
+      "Try it on a shape you can count by hand, like shape 5. Does your rule get the same answer as counting?",
+    ],
+    probesEs: [
+      "¿Cuántas figuras tiene UNA unidad de este patrón? ¿Cuánto es 12 dividido entre ese número?",
+      "Cuenta en papel las primeras seis figuras. ¿Cuál cae en la 3 y cuál en la 6? ¿Qué te dice eso sobre cada tercera posición?",
+      "Pruébalo con una figura que puedas contar a mano, como la figura 5. ¿Tu regla da lo mismo que contar?",
+    ],
+    mustAddress: [
+      A(
+        "divide-by-unit-length",
+        "Divide the position by how many shapes are in ONE unit",
+        "Divide la posición entre cuántas figuras tiene UNA unidad",
+        [["divide"], ["unit"], ["three"], ["divid"], ["unidad"], ["tres"]],
+      ),
+      A(
+        "remainder-names-the-place",
+        "The remainder names the place inside the unit, and a remainder of 0 is the LAST shape",
+        "El residuo indica el lugar dentro de la unidad, y un residuo de 0 es la ÚLTIMA figura",
+        [["remainder"], ["left over"], ["residuo"], ["sobra"], ["último"], ["ultima"]],
+      ),
+      A(
+        "even-odd-does-not-decide",
+        "Even or odd cannot decide it when the unit has three shapes",
+        "Par o impar no lo decide cuando la unidad tiene tres figuras",
+        [["even"], ["odd"], ["par"], ["impar"]],
+      ),
+    ],
+    giveawayPhrases: ["remainder", "residuo", "pattern unit", "unidad del patrón"],
+    worked:
+      "The unit is circle, square, triangle — three shapes, so the pattern resets every three. For shape 12: 12 ÷ 3 = 4 with remainder 0. Four complete units finish exactly on the third shape, so shape 12 is the blue triangle, not the square. Even and odd cannot decide it, because the unit is three long and evenness repeats every two. Check the rule on one you can count: shape 5 gives 5 ÷ 3 = 1 remainder 2, the second shape — circle, square, triangle, circle, square. It is the square.",
+    workedEs:
+      "La unidad es círculo, cuadrado, triángulo — tres figuras, así que el patrón se reinicia cada tres. Para la figura 12: 12 ÷ 3 = 4 con residuo 0. Cuatro unidades completas terminan justo en la tercera figura, así que la figura 12 es el triángulo azul, no el cuadrado. Par o impar no lo puede decidir, porque la unidad mide tres y la paridad se repite cada dos. Comprueba la regla con una que puedas contar: la figura 5 da 5 ÷ 3 = 1 con residuo 2, la segunda figura — círculo, cuadrado, triángulo, círculo, cuadrado. Es el cuadrado.",
+    wordBank: ["pattern unit", "position", "divide", "remainder", "repeats", "unit length"],
+    wordBankEs: [
+      "unidad del patrón",
+      "posición",
+      "dividir",
+      "residuo",
+      "se repite",
+      "longitud de la unidad",
+    ],
   },
 
   "stat-question-no-variability": {

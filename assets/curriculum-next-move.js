@@ -67,6 +67,7 @@
     "property-order-vs-grouping": "Confused the commutative and associative properties",
     "division-quotient-missing-zero": "Dropped a placeholder zero in the quotient",
     "factorization-stopped-early": "Stopped factoring before every factor was prime",
+    "pattern-unit-position-miscounted": "Landed on the wrong place in the repeating unit",
     "stat-question-no-variability": "Chose a question with only one fixed answer",
     "ratio-compared-without-common-basis": "Compared two ratios without a common basis",
   };
@@ -137,6 +138,8 @@
       "Have them estimate before dividing, then check the answer is that size.",
     "factorization-stopped-early":
       "Point at each factor and ask: can this one still be broken apart?",
+    "pattern-unit-position-miscounted":
+      "Ask them to divide by the unit length out loud and say what the remainder points at.",
     "stat-question-no-variability": "Ask: would two different people give two different answers?",
     "ratio-compared-without-common-basis":
       "Ask what ONE of each is worth before either ratio is compared.",

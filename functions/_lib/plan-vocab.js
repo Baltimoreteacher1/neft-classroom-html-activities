@@ -113,6 +113,11 @@ export const MISCONCEPTIONS = {
     label: "Worked left to right instead of by operation order",
     watchFor: "Have them circle the operation that must go first, then compute.",
   },
+  "pattern-unit-position-miscounted": {
+    label: "Landed on the wrong place in the repeating unit",
+    watchFor:
+      "Ask them to divide by the unit length out loud and say what the remainder points at.",
+  },
   "percent-scale-off-by-100": {
     label: "Percent answer off by a factor of 100",
     watchFor: "Benchmark against 50% and 10% before trusting the number.",

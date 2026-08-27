@@ -494,6 +494,22 @@ export const MISCONCEPTIONS = {
     studentEs:
       "Ese es un par de factores correcto, pero no la descomposición en factores PRIMOS: al menos uno de tus factores todavía se puede separar. Sigue separando cada rama hasta que termine en un primo.",
   },
+  // Repeating-pattern lessons (10-5 "Math is Boundless") ask which shape sits at
+  // position n of a repeating unit. Every wrong answer there is the same error —
+  // the student found the pattern and then landed on the wrong shape inside it,
+  // because the remainder was mishandled. It is not arithmetic in the sense the
+  // rest of this taxonomy means, which is why those lessons could diagnose
+  // nothing at all until this entry existed.
+  "pattern-unit-position-miscounted": {
+    label: "Landed on the wrong place in the repeating unit",
+    labelEs: "Cayó en el lugar equivocado dentro de la unidad que se repite",
+    watchFor:
+      "Ask them to divide by the unit length out loud and say what the remainder points at.",
+    student:
+      "You have the right pattern — this is about landing in the right place inside it. Divide the shape number by how many shapes are in ONE unit. The remainder tells you how far into the next unit you land: remainder 1 is the first shape, remainder 2 the second, and a remainder of 0 means you finished exactly on the LAST shape of a unit.",
+    studentEs:
+      "Tienes el patrón correcto — se trata de caer en el lugar correcto dentro de él. Divide el número de la figura entre cuántas figuras tiene UNA unidad. El residuo te dice qué tan adentro de la siguiente unidad caes: residuo 1 es la primera figura, residuo 2 la segunda, y un residuo de 0 significa que terminaste justo en la ÚLTIMA figura de una unidad.",
+  },
   "stat-question-no-variability": {
     label: "Chose a question with only one fixed answer",
     labelEs: "Escogió una pregunta con una sola respuesta fija",

@@ -321,6 +321,15 @@ export const INTERVENTIONS = {
     rejects: ["yes", "sí", "si"],
     then: "Everyone answers 60, so there is nothing to collect. A statistical question is one where the answers VARY from person to person.",
   },
+  "pattern-unit-position-miscounted": {
+    // The unit is three long, so 9 lands exactly on the last shape of a round.
+    // A student who is off by one will say the second shape or the first.
+    probe:
+      "Quick one: the border repeats circle, square, triangle. Counting from the start, which shape is number 9?",
+    accept: ["triangle", "triángulo", "triangulo", "the triangle", "el triángulo"],
+    rejects: ["circle", "square", "círculo", "circulo", "cuadrado"],
+    then: "9 ÷ 3 = 3 with nothing left over, so three complete rounds end exactly on the LAST shape of the unit — the triangle. When there IS something left over, that leftover counts forward from the start of the next round.",
+  },
   "ratio-compared-without-common-basis": {
     probe: "Quick one: 6 apples for $3. What does ONE apple cost, in dollars?",
     accept: ["0.5", ".5", "0.50", "$0.50", "1/2"],
