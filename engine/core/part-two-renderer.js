@@ -29,6 +29,7 @@
 
 import { createApp } from "./app.js";
 import { attachImageZoom, observeContentImageZoom } from "./image-zoom.js";
+import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import {
   renderComponent,
   resolveContentObjective,
@@ -312,6 +313,35 @@ function renderProblem(host, state, ctx, config) {
     );
   }
   host.append(card);
+
+  // AND IT HAS TO BE SOLVABLE WITH SOMETHING. Every interaction on this page
+  // used to be answer entry, which is why the interaction-quality audit graded
+  // all 66 of these pages D: "no manipulable representation". `config.tool` is
+  // the core lesson's own model, carried here by generate-part-two.mjs, so the
+  // student reaches for the thing they already know how to use. It sits above
+  // the written work on purpose — you try it, then you write down what it told
+  // you. Absent tool, absent section: pages without a model are unchanged.
+  if (config.tool) {
+    const toolCard = el("section", "card");
+    toolCard.append(
+      el(
+        "div",
+        null,
+        `<h3 style="margin:0 0 4px; font-size:1.25rem; color:#0f172a;">🖌️ Work it with the model</h3>
+         <p style="margin:0 0 12px; font-size:1rem; color:#475569;">The same tool from Part 1. Try the numbers in today's problem, then write what you found below.</p>`,
+      ),
+    );
+    const mount = document.createElement("div");
+    mount.innerHTML = interactiveVisualHost(config.tool, {
+      ariaLabel: `Interactive model for ${config.title || "today's problem"}`,
+      fallback: "Turn on JavaScript to use this model. The steps below work on paper too.",
+    });
+    toolCard.append(mount);
+    host.append(toolCard);
+    // Hydrate only after the card is in the document — a component measured
+    // while detached lays out at zero width.
+    queueMicrotask(() => mountInteractiveVisuals(mount));
+  }
 
   // THE PROBLEM HAS TO BE SOLVABLE HERE (Joel, 2026-08-26: "either guided steps
   // or space to solve it and work on it"). Reading it and then being sent to a

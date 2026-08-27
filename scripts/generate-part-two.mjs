@@ -36,6 +36,42 @@ const LESSONS = join(ROOT, "lessons");
 const CORE = /^\d+-\d+$/;
 const CHECK = process.argv.includes("--check");
 
+/**
+ * The core lesson's own interactive model, carried onto Part 2 so the Apply
+ * problem can be worked with something other than a text box.
+ *
+ * WHY. Part 2 is where the day's richest problem finally gets its time, but
+ * every interaction on the page was answer entry — the interaction-quality
+ * audit graded all 66 of these pages D, "no manipulable representation". The
+ * tool that taught the concept in Part 1 is the right one to reach for here;
+ * a second, Part-2-only manipulative would be a new thing to learn on the day
+ * students should be applying what they already know.
+ *
+ * Priority matches the homework and family-page generators — practice first,
+ * then explore, connect, and the launch visual — so one lesson shows one tool
+ * on every surface. Copied verbatim, like every other carried field: this
+ * generator authors no mathematics.
+ */
+function selectTool(core) {
+  const candidates = [];
+  const add = (value) => {
+    if (Array.isArray(value)) value.forEach(add);
+    else if (value && typeof value === "object" && typeof value.kind === "string")
+      candidates.push(value);
+  };
+  add(core.practice?.diagram);
+  add(core.explore?.diagram);
+  add(core.connect?.diagram);
+  add(core.launch?.visual);
+
+  for (const candidate of candidates) {
+    // INTERACTIVE_KINDS is the engine's own registry, read at build time — a
+    // kind that only draws a picture is not a tool and must not claim to be one.
+    if (INTERACTIVE_KINDS.has(String(candidate.kind))) return candidate;
+  }
+  return null;
+}
+
 /** Fields Part 2 needs from the core lesson, copied verbatim. */
 const CARRIED = [
   "standard",
@@ -70,6 +106,40 @@ const CARRIED = [
  * where their figure should be — and a problem whose numbers live in the figure
  * is then unsolvable.
  */
+/**
+ * The interactive-visual REGISTRY keys, parsed from the engine at build time.
+ * Mirrors renderableVisualKinds(): read the engine rather than keep a second
+ * list here, so a kind added to the registry reaches Part 2 without anyone
+ * remembering to update this file. Throws if the parse collapses, because a
+ * silently-empty set would quietly drop the tool from every page.
+ */
+function interactiveKinds() {
+  const src = readFileSync(join(ROOT, "engine/core/interactive-visual.js"), "utf8");
+  const start = src.indexOf("const REGISTRY = {");
+  if (start < 0) throw new Error("REGISTRY not found in interactive-visual.js");
+  const open = src.indexOf("{", start);
+  let depth = 0;
+  let end = -1;
+  for (let i = open; i < src.length; i += 1) {
+    if (src[i] === "{") depth += 1;
+    else if (src[i] === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        end = i;
+        break;
+      }
+    }
+  }
+  const body = src.slice(open, end);
+  // Only top-level keys of the registry object literal are kinds; nested config
+  // object keys sit at deeper indentation.
+  const kinds = new Set([...body.matchAll(/^  "([a-z0-9-]+)":/gm)].map((m) => m[1]));
+  if (kinds.size < 10) {
+    throw new Error(`only ${kinds.size} interactive kinds parsed — the registry moved`);
+  }
+  return kinds;
+}
+
 function renderableVisualKinds() {
   const src = readFileSync(join(ROOT, "engine/core/lesson-renderer.js"), "utf8");
   const start = src.indexOf("function buildVisual(");
@@ -98,6 +168,7 @@ function renderableVisualKinds() {
 }
 
 const RENDERABLE_KINDS = renderableVisualKinds();
+const INTERACTIVE_KINDS = interactiveKinds();
 
 /** True when this renderer can draw whatever figure the item declares. */
 function visualRenders(item) {
@@ -291,6 +362,8 @@ function buildConfig(id, core, readVariant) {
   if (highlights) out.reviewHighlights = highlights;
   const levels = buildGroupLevels(id, core, readVariant);
   if (levels) out.groupLevels = levels;
+  const tool = selectTool(core);
+  if (tool) out.tool = tool;
   return out;
 }
 
