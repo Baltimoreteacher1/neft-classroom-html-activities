@@ -885,10 +885,95 @@ function conceptAnchorBox(cfg, isGroup1 = true) {
   `;
 }
 
+function getTWRStems(standard, topic) {
+  const std = String(standard || "").toUpperCase();
+  if (std.includes("DS") || std.includes("SP") || std.includes("STAT")) {
+    return {
+      because: "A question is statistical because it expects varied responses across different subjects rather than a single fixed value.",
+      but: "A question might gather numbers, but it is not statistical if there is only one exact unchanging answer.",
+      so: "The researcher needed to understand group variation, so she collected data using a statistical survey question."
+    };
+  }
+  if (std.includes("RP") || std.includes("AT") || std.includes("RATIO") || std.includes("RATE")) {
+    return {
+      because: "The ratio remains equivalent because both quantities are scaled by the exact same multiplicative factor.",
+      but: "Two ratios may look similar, but inverting the order of terms fundamentally changes the comparison.",
+      so: "The recipe requires 3 parts flour to 2 parts water, so the unit rate is 1.5 cups of flour per cup of water."
+    };
+  }
+  if (std.includes("PERC") || std.includes("RP.3C")) {
+    return {
+      because: "A percent represents a rate per 100 because the term percent literally means 'per hundred'.",
+      but: "A percent can be greater than 100%, but it still represents a proportional ratio based on 100 equal parts.",
+      so: "The student answered 18 out of 20 correctly, so the final score was 90% because 18/20 = 90/100."
+    };
+  }
+  if (std.includes("G.") || std.includes("AREA") || std.includes("VOL")) {
+    return {
+      because: "The area formula base × height applies because a decomposed triangle translates to complete a rectangle.",
+      but: "A slanted side has length, but it cannot be used as height because height must be perpendicular (at 90°) to the base.",
+      so: "The dimensions are 12 cm base by 7 cm perpendicular height, so the total area is 84 cm²."
+    };
+  }
+  if (std.includes("NS.1") || std.includes("FRAC")) {
+    return {
+      because: "Dividing by a unit fraction yields a larger quotient because smaller fractional pieces are being counted within the whole.",
+      but: "Multiplying fractions produces smaller values, but dividing fractions counts the number of groups that fit inside.",
+      so: "The chef has 4 cups of sugar and each batch needs 1/2 cup, so 8 full batches can be prepared."
+    };
+  }
+  if (std.includes("NS") || std.includes("INT") || std.includes("COORD")) {
+    return {
+      because: "Opposite integers have the same absolute value because they are equidistant from zero on the number line.",
+      but: "Zero is an integer, but it is neither positive nor negative because it serves as the neutral origin point.",
+      so: "The elevation dropped 25 feet below sea level, so the depth is represented by the integer -25."
+    };
+  }
+  if (std.includes("EE") || std.includes("EQ") || std.includes("EXP")) {
+    return {
+      because: "The equation remains balanced because the exact same inverse operation is applied to both sides.",
+      but: "An expression contains variables and constants, but it cannot be solved for a single value without an equal sign.",
+      so: "The total cost was $45 for 3 tickets, so the algebraic equation is 3t = 45 and each ticket costs $15."
+    };
+  }
+  return {
+    because: "The mathematical model proves the solution because each step preserves quantitative equivalence.",
+    but: "An estimate provides a quick benchmark, but an exact proof is required for precision.",
+    so: "The quantities follow the standard rule, so the final result is verified with certainty."
+  };
+}
+
+function renderTWRSection(cfg) {
+  const stems = getTWRStems(cfg.standard, cfg.title);
+  return `
+    <section class="ws-twr-section" style="background:#f8fafc;border:1.5px solid #cbd5e1;border-left:5px solid #0f766e;border-radius:8px;padding:12px 16px;margin:14px 0;page-break-inside:avoid;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:11px;font-weight:800;color:#0f766e;letter-spacing:0.04em;text-transform:uppercase;">✍️ The Writing Revolution (TWR) · Sentence Expansion</span>
+        <span style="font-size:10px;font-weight:700;color:#475569;">Because · But · So</span>
+      </div>
+      <p style="font-size:12px;font-weight:600;color:#1e293b;margin-bottom:8px;">Complete each sentence stem to demonstrate precise mathematical reasoning:</p>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:11.5px;">
+          <span style="display:inline-block;background:#ccfbf1;color:#0f766e;font-weight:800;padding:1px 5px;border-radius:4px;font-size:10px;margin-right:4px;">BECAUSE</span>
+          ${esc(stems.because)}
+        </div>
+        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:11.5px;">
+          <span style="display:inline-block;background:#fef3c7;color:#b45309;font-weight:800;padding:1px 5px;border-radius:4px;font-size:10px;margin-right:4px;">BUT</span>
+          ${esc(stems.but)}
+        </div>
+        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:11.5px;">
+          <span style="display:inline-block;background:#eff6ff;color:#1d4ed8;font-weight:800;padding:1px 5px;border-radius:4px;font-size:10px;margin-right:4px;">SO</span>
+          ${esc(stems.so)}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function discourseCard(discourse, _isGroup1 = true) {
   const q = discourse?.question || "How does your visual model justify your mathematical solution?";
-  const pA = discourse?.partnerA || 'Partner A: "I modeled this by..."';
-  const pB = discourse?.partnerB || 'Partner B: "I agree/disagree with your step because..."';
+  const pA = discourse?.partnerA || 'Partner A: "I modeled this by identifying the relationship and..."';
+  const pB = discourse?.partnerB || 'Partner B: "I agree with your step because the standard mathematical rule states..."';
   return `
     <section class="ws-discourse-box">
       <div class="ws-disc-header">
@@ -904,23 +989,23 @@ function discourseCard(discourse, _isGroup1 = true) {
   `;
 }
 
-function cerWritingMatrix(cerData, isGroup1 = true) {
+function cerWritingMatrix(cerData, isGroup1 = true, cfg = {}) {
   const q = cerData?.question || "Justify why your mathematical solution is accurate and complete.";
   const claimHint = isGroup1
-    ? "Sentence Starter: My mathematical claim is that..."
+    ? "Starter: My mathematical claim is that the solution is..."
     : "State your direct mathematical answer/claim with units.";
   const evidHint = isGroup1
-    ? "Sentence Starter: The evidence from the model/calculation shows..."
+    ? "Starter: The evidence from the model/table demonstrates that..."
     : "Cite exact numbers, calculations, dimensions, or graph data.";
   const reasHint = isGroup1
-    ? "Sentence Starter: This proves my answer because the math rule states..."
+    ? "Starter: This proves my answer because the standard mathematical definition of..."
     : "Explain the mathematical theorem, property, or definition connecting evidence to claim.";
 
   return `
     <section class="ws-cer-section">
       <div class="ws-cer-header">
-        <span class="ws-cer-badge">📐 CER MATHEMATICAL PROOF MATRIX</span>
-        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">Claim · Evidence · Reasoning</span>
+        <span class="ws-cer-badge">📐 CER MATHEMATICAL PROOF MATRIX (CER 2.0)</span>
+        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">SMP.3 / Proof &amp; Justification</span>
       </div>
       <p class="ws-cer-prompt"><b>Writing Task:</b> ${esc(q)}</p>
       <div class="ws-cer-table">
@@ -1014,7 +1099,8 @@ function buildGroup1SupportWorksheet(cfg, isKey = false) {
   const anchorHtml = !isKey ? conceptAnchorBox(cfg, true) : "";
   const bankHtml = !isKey ? wordBank(cfg.vocabulary) : "";
   const discHtml = cfg.explore?.discourse ? discourseCard(cfg.explore.discourse, true) : "";
-  const cerHtml = cerWritingMatrix(cfg.cerWriting, true);
+  const cerHtml = cerWritingMatrix(cfg.cerWriting, true, cfg);
+  const twrHtml = renderTWRSection(cfg);
 
   return `
     <section class="ws-page ws-group1-page">
@@ -1023,6 +1109,7 @@ function buildGroup1SupportWorksheet(cfg, isKey = false) {
       ${bankHtml}
       <ol class="ws-problems-grid">${itemsHtml}</ol>
       ${discHtml}
+      ${twrHtml}
       ${cerHtml}
       ${!isKey ? studentSelfCheckBar() : ""}
     </section>
@@ -1044,7 +1131,8 @@ function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
 
   const anchorHtml = !isKey ? conceptAnchorBox(cfg, false) : "";
   const discHtml = cfg.explore?.discourse ? discourseCard(cfg.explore.discourse, false) : "";
-  const cerHtml = cerWritingMatrix(cfg.cerWriting, false);
+  const cerHtml = cerWritingMatrix(cfg.cerWriting, false, cfg);
+  const twrHtml = renderTWRSection(cfg);
 
   const authorBox = !isKey
     ? `
@@ -1062,6 +1150,7 @@ function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
       ${anchorHtml}
       <ol class="ws-problems-grid">${itemsHtml}</ol>
       ${discHtml}
+      ${twrHtml}
       ${cerHtml}
       ${authorBox}
       ${!isKey ? studentSelfCheckBar() : ""}
