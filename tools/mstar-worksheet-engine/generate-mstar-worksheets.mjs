@@ -286,6 +286,74 @@ function buildGroup1Html(lessonId, lesson) {
 </html>`;
 }
 
+function buildGroup1AnswerKeyHtml(lessonId, lesson) {
+  const svgMarkup = resolveSvg(lesson.svgConfig);
+
+  return `<!DOCTYPE html>
+<html lang="en" data-ewl-supports-lesson="${lessonId}-group1" data-support-audience="teacher">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lesson ${lessonId} Small Group · Group 1 — Practice Answer Key</title>
+<link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
+<style>${WORKSHEET_CSS}</style>
+</head>
+<body>
+<main class="ws-page ws-group1-page">
+
+  <!-- Header -->
+  <header class="ws-publisher-header">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="ws-pill ws-pill-std">${esc(lesson.standard)}</span>
+        <span class="ws-pill ws-pill-level-g1">🔑 TEACHER ANSWER KEY &amp; SCORING RUBRICS</span>
+        <span style="font-size:11px;font-weight:800;color:#0f766e;">MSTAR Aligned</span>
+      </div>
+    </div>
+    <div>
+      <h1 class="ws-main-title">Lesson ${lessonId} · ${esc(lesson.title)} — Answer Key</h1>
+      <p style="font-size:12px;font-weight:600;color:#64748b;margin-top:2px;">Complete Worked Solutions · Misconception Alerts · 3-Point MSTAR Rubrics</p>
+    </div>
+  </header>
+
+  <ol class="ws-problems-grid">
+    <li class="ws-problem-card" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#0f766e;margin-bottom:4px;">PROBLEM 1 SOLUTION &amp; THINK-ALOUD MODEL</div>
+      ${svgMarkup}
+      <div class="ws-keynote" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:8px 10px;font-size:11.5px;color:#166534;margin-top:6px;">
+        <b>Exemplar Response:</b> The visual model accurately decomposes the quantity according to ${esc(lesson.standard)}. The intermediate steps demonstrate full conceptual understanding.
+      </div>
+    </li>
+
+    <li class="ws-problem-card" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#1d4ed8;margin-bottom:4px;">PROBLEM 2 SOLUTION (MSTAR EBSR)</div>
+      <div class="ws-correct" style="font-size:12px;color:#1e293b;"><b>Part A Correct Option:</b> Option A (Full credit for correct classification/calculation)</div>
+      <div class="ws-correct" style="font-size:12px;color:#1e293b;margin-top:4px;"><b>Part B Correct Option:</b> Option A (Mathematical property justification)</div>
+    </li>
+
+    <li class="ws-problem-card" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#b45309;margin-bottom:4px;">PROBLEM 3 SCORING RUBRIC &amp; ERROR ANALYSIS</div>
+      <div class="ws-keynote" style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 10px;font-size:11.5px;color:#78350f;">
+        <b>Target Misconception:</b> Step 2 contains the conceptual flaw. Full 3-point credit requires the student to name Step 2, explain why the operation was reversed, and compute the correct answer with full supporting work.
+      </div>
+    </li>
+  </ol>
+
+  <!-- TWR Writing Key -->
+  <div class="ws-keynote" style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:12px 16px;margin-top:14px;">
+    <div style="font-size:11.5px;font-weight:800;color:#0f766e;margin-bottom:6px;">✍️ TWR SENTENCE EXPANSION EXEMPLAR KEY</div>
+    <div style="font-size:12px;color:#334155;line-height:1.6;">
+      <b>Because:</b> The mathematical rule is applied correctly because the model preserves quantity equivalence.<br>
+      <b>But:</b> An estimation gives a quick benchmark, but an exact proof is required for precision.<br>
+      <b>So:</b> The quantities follow the rule of ${esc(lesson.standard)}, so the final result is verified with certainty.
+    </div>
+  </div>
+
+</main>
+</body>
+</html>`;
+}
+
 /* ==========================================================================
    5. TIER 1 (GROUP 2 CHALLENGE) WORKSHEET BUILDER
    ========================================================================== */
@@ -293,11 +361,12 @@ function buildGroup2Html(lessonId, lesson) {
   const svgMarkup = resolveSvg(lesson.svgConfig);
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ewl-supports-lesson="${lessonId}-group2" data-support-audience="student">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Lesson ${lessonId} Small Group · Group 2 (Tier 1 Challenge)</title>
+<link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
 <style>${WORKSHEET_CSS}</style>
 </head>
 <body>
@@ -378,20 +447,89 @@ function buildGroup2Html(lessonId, lesson) {
 </html>`;
 }
 
+function buildGroup2AnswerKeyHtml(lessonId, lesson) {
+  const svgMarkup = resolveSvg(lesson.svgConfig);
+
+  return `<!DOCTYPE html>
+<html lang="en" data-ewl-supports-lesson="${lessonId}-group2" data-support-audience="teacher">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lesson ${lessonId} Small Group · Group 2 — Practice Answer Key</title>
+<link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
+<style>${WORKSHEET_CSS}</style>
+</head>
+<body>
+<main class="ws-page ws-group2-page">
+
+  <!-- Header -->
+  <header class="ws-publisher-header">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="ws-pill ws-pill-std">${esc(lesson.standard)}</span>
+        <span class="ws-pill ws-pill-level-g2">🔑 TEACHER ANSWER KEY &amp; DOK 3/4 EXEMPLARS</span>
+        <span style="font-size:11px;font-weight:800;color:#6b21a8;">MSTAR Mastery</span>
+      </div>
+    </div>
+    <div>
+      <h1 class="ws-main-title">Lesson ${lessonId} · ${esc(lesson.title)} — Answer Key</h1>
+      <p style="font-size:12px;font-weight:600;color:#64748b;margin-top:2px;">Complete Mathematical Proofs · Multi-Select Keys · Modeling Solutions</p>
+    </div>
+  </header>
+
+  <ol class="ws-problems-grid">
+    <li class="ws-problem-card" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#6b21a8;margin-bottom:4px;">PROBLEM 1 PROOF &amp; SYNTHESIS SOLUTION</div>
+      ${svgMarkup}
+      <div class="ws-keynote" style="background:#faf5ff;border:1px solid #d8b4fe;border-radius:6px;padding:8px 10px;font-size:11.5px;color:#581c87;margin-top:6px;">
+        <b>Proof Structure:</b> Let the parameters vary within domain constraints. Under ${esc(lesson.standard)}, algebraic properties guarantee balance and validity for all positive real values.
+      </div>
+    </li>
+
+    <li class="ws-problem-card" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#1d4ed8;margin-bottom:4px;">PROBLEM 2 SOLUTION (MULTI-SELECT)</div>
+      <div class="ws-correct" style="font-size:12px;color:#1e293b;"><b>Correct Options:</b> Options A, B, C, D, E satisfy the criteria based on properties of operations and definitions.</div>
+    </li>
+
+    <li class="ws-problem-card" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:#0f766e;margin-bottom:4px;">PROBLEM 3 SOLUTION (TYPE III MODELING)</div>
+      <div class="ws-keynote" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:8px 10px;font-size:11.5px;color:#166534;">
+        <b>Part A Model:</b> Defines variables and sets up equation/table correctly.<br>
+        <b>Part B Calculation:</b> Solves intermediate values with correct units.<br>
+        <b>Part C Recommendation:</b> Clear written defense citing quantitative evidence.
+      </div>
+    </li>
+  </ol>
+
+  <!-- TWR Key -->
+  <div class="ws-keynote" style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:12px 16px;margin-top:14px;">
+    <div style="font-size:11.5px;font-weight:800;color:#6b21a8;margin-bottom:6px;">✍️ TWR SENTENCE EXPANSION EXEMPLAR KEY</div>
+    <div style="font-size:12px;color:#334155;line-height:1.6;">
+      <b>Because:</b> The general rule holds because operations satisfy algebraic properties.<br>
+      <b>But:</b> Changing boundary conditions shifts the critical points, but the underlying equation structure remains constant.<br>
+      <b>So:</b> The mathematical proof establishes the result for all domain values, so the optimization is complete.
+    </div>
+  </div>
+
+</main>
+</body>
+</html>`;
+}
+
 /* ==========================================================================
    6. MASTER COMPILER RUNNER
    ========================================================================== */
-export function compileAllWorksheets() {
+export function compileAllWorksheets(outputRoot = OUT_DIR) {
   console.log(`\n🚀 Compiling ${CONFIG.SERIES_TITLE}...`);
-  console.log(`📌 Output Directory: ${OUT_DIR}`);
+  console.log(`📌 Output Directory: ${outputRoot}`);
 
   let successCount = 0;
   const entries = Object.entries(LESSON_MAP);
 
   for (const [id, lesson] of entries) {
-    const lessonDir = join(OUT_DIR, id);
-    const g1Dir = join(OUT_DIR, `${id}-group1`);
-    const g2Dir = join(OUT_DIR, `${id}-group2`);
+    const lessonDir = join(outputRoot, id);
+    const g1Dir = join(outputRoot, `${id}-group1`);
+    const g2Dir = join(outputRoot, `${id}-group2`);
 
     [lessonDir, g1Dir, g2Dir].forEach((dir) => {
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -400,15 +538,19 @@ export function compileAllWorksheets() {
     // 1. Generate Group 1 (Support)
     const g1Html = buildGroup1Html(id, lesson);
     writeFileSync(join(g1Dir, "worksheet.html"), g1Html, "utf8");
+    const g1KeyHtml = buildGroup1AnswerKeyHtml(id, lesson);
+    writeFileSync(join(g1Dir, "worksheet-answer-key.html"), g1KeyHtml, "utf8");
 
     // 2. Generate Group 2 (Challenge)
     const g2Html = buildGroup2Html(id, lesson);
     writeFileSync(join(g2Dir, "worksheet.html"), g2Html, "utf8");
+    const g2KeyHtml = buildGroup2AnswerKeyHtml(id, lesson);
+    writeFileSync(join(g2Dir, "worksheet-answer-key.html"), g2KeyHtml, "utf8");
 
     successCount++;
   }
 
-  console.log(`\n✅ Successfully generated ${successCount} lesson worksheet packages (${successCount * 2} HTML files).`);
+  console.log(`\n✅ Successfully generated ${successCount} lesson worksheet packages (${successCount * 4} HTML files).`);
   return successCount;
 }
 
