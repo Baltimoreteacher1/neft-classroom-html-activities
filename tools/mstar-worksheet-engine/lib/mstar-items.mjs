@@ -22,11 +22,11 @@ const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 export function renderEBSRItemHtml(pNum, item = {}) {
   const partA = item.partA || {
     prompt: "Solve the problem or choose the correct statement.",
-    options: ["Option A", "Option B", "Option C", "Option D"]
+    options: ["Option A", "Option B", "Option C", "Option D"],
   };
   const partB = item.partB || {
     prompt: "Which statement or mathematical equation best supports your answer in Part A?",
-    options: ["Evidence A", "Evidence B", "Evidence C", "Evidence D"]
+    options: ["Evidence A", "Evidence B", "Evidence C", "Evidence D"],
   };
 
   const renderOpts = (opts) =>
@@ -37,7 +37,7 @@ export function renderEBSRItemHtml(pNum, item = {}) {
         <li style="display:flex;align-items:flex-start;gap:8px;">
           <span style="flex:0 0 auto;width:20px;height:20px;border:1.8px solid #0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:10.5px;">${LETTERS[i]}</span>
           <span style="font-size:12px;font-weight:500;color:#1e293b;">${esc(opt)}</span>
-        </li>`
+        </li>`,
       )
       .join("") +
     `</ol>`;
@@ -83,7 +83,7 @@ export function renderMultiSelectItemHtml(pNum, item = {}) {
       <li style="display:flex;align-items:flex-start;gap:8px;padding:3px 0;">
         <span style="flex:0 0 auto;width:18px;height:18px;border:1.8px solid #0f172a;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;">${LETTERS[i]}</span>
         <span style="font-size:12px;font-weight:500;color:#1e293b;">${esc(opt)}</span>
-      </li>`
+      </li>`,
     )
     .join("");
 
@@ -110,11 +110,17 @@ export function renderMultiSelectItemHtml(pNum, item = {}) {
  */
 export function renderTypeIIReasoningItemHtml(pNum, item = {}) {
   const title = item.title || "Analyze Student Reasoning & Critique Misconception";
-  const scenario = item.scenario || "A student was asked to solve the problem below. Review their steps and identify the error.";
+  const scenario =
+    item.scenario ||
+    "A student was asked to solve the problem below. Review their steps and identify the error.";
   const steps = item.steps || [
     { num: 1, label: "Step 1", text: "Identified the numbers in the problem." },
-    { num: 2, label: "Step 2 (Student Error)", text: "Applied the wrong operation or inverted the rule." },
-    { num: 3, label: "Step 3", text: "Computed the final incorrect value." }
+    {
+      num: 2,
+      label: "Step 2 (Student Error)",
+      text: "Applied the wrong operation or inverted the rule.",
+    },
+    { num: 3, label: "Step 3", text: "Computed the final incorrect value." },
   ];
 
   const stepsHtml = steps
@@ -124,7 +130,7 @@ export function renderTypeIIReasoningItemHtml(pNum, item = {}) {
         <span style="flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:#e2e8f0;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">${s.num}</span>
         <span style="font-weight:700;color:#0f172a;min-width:70px;">${esc(s.label)}:</span>
         <span style="color:#334155;font-family:'SFMono-Regular',Consolas,monospace;">${esc(s.text)}</span>
-      </li>`
+      </li>`,
     )
     .join("");
 
@@ -180,11 +186,19 @@ export function renderTypeIIReasoningItemHtml(pNum, item = {}) {
  */
 export function renderTypeIIIModelingItemHtml(pNum, item = {}) {
   const title = item.title || "Real-World Mathematical Modeling Challenge";
-  const scenario = item.scenario || "Use mathematical modeling, tables, or equations to solve the multi-step real-world situation.";
+  const scenario =
+    item.scenario ||
+    "Use mathematical modeling, tables, or equations to solve the multi-step real-world situation.";
   const parts = item.parts || [
-    { letter: "A", prompt: "Define variables and write a mathematical model (equation, table, or diagram)." },
+    {
+      letter: "A",
+      prompt: "Define variables and write a mathematical model (equation, table, or diagram).",
+    },
     { letter: "B", prompt: "Compute the intermediate values and show all operations." },
-    { letter: "C", prompt: "Interpret your final result in the context of the problem and write a conclusion." }
+    {
+      letter: "C",
+      prompt: "Interpret your final result in the context of the problem and write a conclusion.",
+    },
   ];
 
   const partsHtml = parts
@@ -197,7 +211,7 @@ export function renderTypeIIIModelingItemHtml(pNum, item = {}) {
         <div style="border:1.5px dashed #cbd5e1;border-radius:4px;min-height:55px;padding:6px 8px;background:#ffffff;">
           <span style="font-size:9.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;">✏️ Show work &amp; reasoning for Part ${p.letter}</span>
         </div>
-      </div>`
+      </div>`,
     )
     .join("");
 

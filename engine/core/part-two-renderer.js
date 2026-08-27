@@ -192,7 +192,7 @@ function renderReview(host, state, ctx, config) {
            h.formula
              ? `<p style="margin:0 0 12px; padding:12px 16px; background:#f0fdfa; border-left:4px solid #0f766e; border-radius:10px; font-size:1.15rem; font-weight:700; color:#0f172a;">${esc(h.formula)}</p>`
              : ""
-         }
+}
          ${
            steps.length
              ? `<ol style="margin:0; padding-left:22px; display:flex; flex-direction:column; gap:6px;">${steps
@@ -202,12 +202,12 @@ function renderReview(host, state, ctx, config) {
                  )
                  .join("")}</ol>`
              : ""
-         }
+}
          ${
            h.watchOut
              ? `<p style="margin:14px 0 0; padding:12px 16px; background:#fff7ed; border-left:4px solid #ea580c; border-radius:10px; font-size:1rem; color:#0f172a; line-height:1.55;"><strong>⚠️ Watch out:</strong> ${esc(h.watchOut)}</p>`
              : ""
-         }`,
+}`,
       ),
     );
     host.append(card);

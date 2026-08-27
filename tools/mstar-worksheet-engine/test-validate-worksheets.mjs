@@ -51,13 +51,20 @@ function runValidation() {
     const content = readFileSync(wsPath, "utf8");
 
     // Check 1: Empty Sorting Lists
-    if (content.includes('<ul class="ws-sort-list"></ul>') || content.includes('<ul class="ws-sort-list"> </ul>')) {
+    if (
+      content.includes('<ul class="ws-sort-list"></ul>') ||
+      content.includes('<ul class="ws-sort-list"> </ul>')
+    ) {
       console.error(`❌ [${dir}] Found empty sort list!`);
       totalErrors++;
     }
 
     // Check 2: Double-Escaped HTML Entities
-    if (content.includes("&amp;amp;") || content.includes("&amp;lt;") || content.includes("&amp;gt;")) {
+    if (
+      content.includes("&amp;amp;") ||
+      content.includes("&amp;lt;") ||
+      content.includes("&amp;gt;")
+    ) {
       console.error(`❌ [${dir}] Found double-escaped HTML entity!`);
       totalErrors++;
     }
@@ -66,7 +73,7 @@ function runValidation() {
     const forbiddenPhrases = [
       "TODO",
       "<!-- more items",
-      "Solve the mathematical problem. Show all of your work and reasoning."
+      "Solve the mathematical problem. Show all of your work and reasoning.",
     ];
     for (const phrase of forbiddenPhrases) {
       if (content.includes(phrase)) {
@@ -90,12 +97,21 @@ function runValidation() {
     }
 
     // Check 5: TWR Writing Integration
-    if (content.includes("The Writing Revolution") && content.includes("BECAUSE") && content.includes("BUT") && content.includes("SO")) {
+    if (
+      content.includes("The Writing Revolution") &&
+      content.includes("BECAUSE") &&
+      content.includes("BUT") &&
+      content.includes("SO")
+    ) {
       totalTWRFound++;
     }
 
     // Check 6: MSTAR Item Integration
-    if (content.includes("MSTAR") || content.includes("EVIDENCE-BASED SELECTED RESPONSE") || content.includes("REASONING &amp; ERROR ANALYSIS")) {
+    if (
+      content.includes("MSTAR") ||
+      content.includes("EVIDENCE-BASED SELECTED RESPONSE") ||
+      content.includes("REASONING &amp; ERROR ANALYSIS")
+    ) {
       totalMSTARFound++;
     }
   }

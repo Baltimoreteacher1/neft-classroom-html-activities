@@ -889,57 +889,65 @@ function getTWRStems(standard, topic) {
   const std = String(standard || "").toUpperCase();
   if (std.includes("DS") || std.includes("SP") || std.includes("STAT")) {
     return {
-      because: "A question is statistical because it expects varied responses across different subjects rather than a single fixed value.",
+      because:
+        "A question is statistical because it expects varied responses across different subjects rather than a single fixed value.",
       but: "A question might gather numbers, but it is not statistical if there is only one exact unchanging answer.",
-      so: "The researcher needed to understand group variation, so she collected data using a statistical survey question."
+      so: "The researcher needed to understand group variation, so she collected data using a statistical survey question.",
     };
   }
   if (std.includes("RP") || std.includes("AT") || std.includes("RATIO") || std.includes("RATE")) {
     return {
-      because: "The ratio remains equivalent because both quantities are scaled by the exact same multiplicative factor.",
+      because:
+        "The ratio remains equivalent because both quantities are scaled by the exact same multiplicative factor.",
       but: "Two ratios may look similar, but inverting the order of terms fundamentally changes the comparison.",
-      so: "The recipe requires 3 parts flour to 2 parts water, so the unit rate is 1.5 cups of flour per cup of water."
+      so: "The recipe requires 3 parts flour to 2 parts water, so the unit rate is 1.5 cups of flour per cup of water.",
     };
   }
   if (std.includes("PERC") || std.includes("RP.3C")) {
     return {
-      because: "A percent represents a rate per 100 because the term percent literally means 'per hundred'.",
+      because:
+        "A percent represents a rate per 100 because the term percent literally means 'per hundred'.",
       but: "A percent can be greater than 100%, but it still represents a proportional ratio based on 100 equal parts.",
-      so: "The student answered 18 out of 20 correctly, so the final score was 90% because 18/20 = 90/100."
+      so: "The student answered 18 out of 20 correctly, so the final score was 90% because 18/20 = 90/100.",
     };
   }
   if (std.includes("G.") || std.includes("AREA") || std.includes("VOL")) {
     return {
-      because: "The area formula base × height applies because a decomposed triangle translates to complete a rectangle.",
+      because:
+        "The area formula base × height applies because a decomposed triangle translates to complete a rectangle.",
       but: "A slanted side has length, but it cannot be used as height because height must be perpendicular (at 90°) to the base.",
-      so: "The dimensions are 12 cm base by 7 cm perpendicular height, so the total area is 84 cm²."
+      so: "The dimensions are 12 cm base by 7 cm perpendicular height, so the total area is 84 cm².",
     };
   }
   if (std.includes("NS.1") || std.includes("FRAC")) {
     return {
-      because: "Dividing by a unit fraction yields a larger quotient because smaller fractional pieces are being counted within the whole.",
+      because:
+        "Dividing by a unit fraction yields a larger quotient because smaller fractional pieces are being counted within the whole.",
       but: "Multiplying fractions produces smaller values, but dividing fractions counts the number of groups that fit inside.",
-      so: "The chef has 4 cups of sugar and each batch needs 1/2 cup, so 8 full batches can be prepared."
+      so: "The chef has 4 cups of sugar and each batch needs 1/2 cup, so 8 full batches can be prepared.",
     };
   }
   if (std.includes("NS") || std.includes("INT") || std.includes("COORD")) {
     return {
-      because: "Opposite integers have the same absolute value because they are equidistant from zero on the number line.",
+      because:
+        "Opposite integers have the same absolute value because they are equidistant from zero on the number line.",
       but: "Zero is an integer, but it is neither positive nor negative because it serves as the neutral origin point.",
-      so: "The elevation dropped 25 feet below sea level, so the depth is represented by the integer -25."
+      so: "The elevation dropped 25 feet below sea level, so the depth is represented by the integer -25.",
     };
   }
   if (std.includes("EE") || std.includes("EQ") || std.includes("EXP")) {
     return {
-      because: "The equation remains balanced because the exact same inverse operation is applied to both sides.",
+      because:
+        "The equation remains balanced because the exact same inverse operation is applied to both sides.",
       but: "An expression contains variables and constants, but it cannot be solved for a single value without an equal sign.",
-      so: "The total cost was $45 for 3 tickets, so the algebraic equation is 3t = 45 and each ticket costs $15."
+      so: "The total cost was $45 for 3 tickets, so the algebraic equation is 3t = 45 and each ticket costs $15.",
     };
   }
   return {
-    because: "The mathematical model proves the solution because each step preserves quantitative equivalence.",
+    because:
+      "The mathematical model proves the solution because each step preserves quantitative equivalence.",
     but: "An estimate provides a quick benchmark, but an exact proof is required for precision.",
-    so: "The quantities follow the standard rule, so the final result is verified with certainty."
+    so: "The quantities follow the standard rule, so the final result is verified with certainty.",
   };
 }
 
@@ -972,8 +980,11 @@ function renderTWRSection(cfg) {
 
 function discourseCard(discourse, _isGroup1 = true) {
   const q = discourse?.question || "How does your visual model justify your mathematical solution?";
-  const pA = discourse?.partnerA || 'Partner A: "I modeled this by identifying the relationship and..."';
-  const pB = discourse?.partnerB || 'Partner B: "I agree with your step because the standard mathematical rule states..."';
+  const pA =
+    discourse?.partnerA || 'Partner A: "I modeled this by identifying the relationship and..."';
+  const pB =
+    discourse?.partnerB ||
+    'Partner B: "I agree with your step because the standard mathematical rule states..."';
   return `
     <section class="ws-discourse-box">
       <div class="ws-disc-header">

@@ -35,7 +35,7 @@ const BRAND = {
   clay: "#c2603f",
   gray: "#64748b",
   grayLight: "#e2e8f0",
-  line: "#cbd5e1"
+  line: "#cbd5e1",
 };
 
 export function wrapFigure(svgHtml, title = "", caption = "") {
@@ -54,7 +54,11 @@ export function renderNumberLineSvg(cfg = {}) {
   const min = Number(cfg.min ?? -5);
   const max = Number(cfg.max ?? 5);
   const step = Number(cfg.step ?? 1);
-  const W = 460, H = 80, padL = 30, padR = 30, y = 38;
+  const W = 460,
+    H = 80,
+    padL = 30,
+    padR = 30,
+    y = 38;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
@@ -68,8 +72,13 @@ export function renderNumberLineSvg(cfg = {}) {
     const strokeW = isZero ? 2.4 : 1.4;
     const strokeColor = isZero ? BRAND.teal : BRAND.navyLight;
     ticks += `<line x1="${px.toFixed(1)}" y1="${y - tickH}" x2="${px.toFixed(1)}" y2="${y + tickH}" stroke="${strokeColor}" stroke-width="${strokeW}"/>`;
-    
-    if (Math.abs(Math.round((v - min) / stride) * stride - (v - min)) < 1e-6 || v === min || v === max || isZero) {
+
+    if (
+      Math.abs(Math.round((v - min) / stride) * stride - (v - min)) < 1e-6 ||
+      v === min ||
+      v === max ||
+      isZero
+    ) {
       ticks += `<text x="${px.toFixed(1)}" y="${y + 20}" text-anchor="middle" font-size="${isZero ? 11.5 : 10}" font-weight="${isZero ? 800 : 600}" fill="${isZero ? BRAND.teal : BRAND.navyLight}" font-family="'Hanken Grotesk',Arial,sans-serif">${+v.toFixed(2)}</text>`;
     }
   }
@@ -79,8 +88,10 @@ export function renderNumberLineSvg(cfg = {}) {
   if (cfg.inequality) {
     const val = Number(cfg.inequality.value ?? 0);
     const px = xOf(val);
-    const isGreater = cfg.inequality.op === ">" || cfg.inequality.op === ">=" || cfg.inequality.dir === "right";
-    const isClosed = cfg.inequality.op === ">=" || cfg.inequality.op === "<=" || cfg.inequality.closed;
+    const isGreater =
+      cfg.inequality.op === ">" || cfg.inequality.op === ">=" || cfg.inequality.dir === "right";
+    const isClosed =
+      cfg.inequality.op === ">=" || cfg.inequality.op === "<=" || cfg.inequality.closed;
     const endX = isGreater ? W - padR + 12 : padL - 12;
     rayHtml += `<line x1="${px.toFixed(1)}" y1="${y}" x2="${endX}" y2="${y}" stroke="${BRAND.blue}" stroke-width="4.5" stroke-linecap="round"/>`;
     if (isGreater) {
@@ -88,7 +99,7 @@ export function renderNumberLineSvg(cfg = {}) {
     } else {
       rayHtml += `<polygon points="${endX - 6},${y} ${endX + 3},${y - 5} ${endX + 3},${y + 5}" fill="${BRAND.blue}"/>`;
     }
-    rayHtml += `<circle cx="${px.toFixed(1)}" cy="${y}" r="6" fill="${isClosed ? BRAND.blue : '#ffffff'}" stroke="${BRAND.blue}" stroke-width="2.5"/>`;
+    rayHtml += `<circle cx="${px.toFixed(1)}" cy="${y}" r="6" fill="${isClosed ? BRAND.blue : "#ffffff"}" stroke="${BRAND.blue}" stroke-width="2.5"/>`;
   }
 
   // Highlight Points
@@ -117,7 +128,11 @@ export function renderVerticalNumberLineSvg(cfg = {}) {
   const min = Number(cfg.min ?? -10);
   const max = Number(cfg.max ?? 10);
   const step = Number(cfg.step ?? 2);
-  const W = 140, H = 220, x = 60, padT = 24, padB = 24;
+  const W = 140,
+    H = 220,
+    x = 60,
+    padT = 24,
+    padB = 24;
   const span = Math.max(1, max - min);
   const plotH = H - padT - padB;
   const yOf = (v) => padT + ((max - v) / span) * plotH;
@@ -142,11 +157,14 @@ export function renderVerticalNumberLineSvg(cfg = {}) {
 /* ── 2. COORDINATE PLANES ─────────────────────────────────────────────────── */
 export function renderCoordPlaneSvg(cfg = {}) {
   const m = Number(cfg.max ?? 5);
-  const W = 280, H = 280, pad = 24;
+  const W = 280,
+    H = 280,
+    pad = 24;
   const span = 2 * m;
   const plot = W - 2 * pad;
   const unit = plot / span;
-  const cx = pad + m * unit, cy = pad + m * unit;
+  const cx = pad + m * unit,
+    cy = pad + m * unit;
   const X = (x) => pad + (x + m) * unit;
   const Y = (y) => pad + (m - y) * unit;
   const stride = m > 6 ? 2 : 1;
@@ -177,13 +195,16 @@ export function renderCoordPlaneSvg(cfg = {}) {
 
   let polyHtml = "";
   if (Array.isArray(cfg.polygon) && cfg.polygon.length >= 3) {
-    const pointsStr = cfg.polygon.map(pt => `${X(pt[0]).toFixed(1)},${Y(pt[1]).toFixed(1)}`).join(" ");
+    const pointsStr = cfg.polygon
+      .map((pt) => `${X(pt[0]).toFixed(1)},${Y(pt[1]).toFixed(1)}`)
+      .join(" ");
     polyHtml = `<polygon points="${pointsStr}" fill="rgba(15,118,110,0.14)" stroke="${BRAND.teal}" stroke-width="2"/>`;
   }
 
   let pts = "";
   (cfg.points || []).forEach((p) => {
-    const px = X(p.x), py = Y(p.y);
+    const px = X(p.x),
+      py = Y(p.y);
     const lbl = p.label || `(${p.x}, ${p.y})`;
     pts += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4.5" fill="${BRAND.amber}" stroke="#fff" stroke-width="1.8"/>`;
     pts += `<text x="${(px + 6).toFixed(1)}" y="${(py - 5).toFixed(1)}" font-size="9" font-weight="800" fill="${BRAND.navy}" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(lbl)}</text>`;
@@ -197,10 +218,18 @@ export function renderCoordPlaneSvg(cfg = {}) {
 export function renderTapeDiagramSvg(cfg = {}) {
   const rows = Array.isArray(cfg.rows) ? cfg.rows : [];
   if (!rows.length) return "";
-  const W = 460, padL = 12, padR = 12, rowH = 32, gap = 14, labelW = 90;
+  const W = 460,
+    padL = 12,
+    padR = 12,
+    rowH = 32,
+    gap = 14,
+    labelW = 90;
   const H = 16 + rows.length * (rowH + gap);
   const trackW = W - padL - padR - labelW;
-  const maxVal = Math.max(...rows.map(r => (r.parts || []).reduce((s, p) => s + Number(p.value ?? p), 0)), 1);
+  const maxVal = Math.max(
+    ...rows.map((r) => (r.parts || []).reduce((s, p) => s + Number(p.value ?? p), 0)),
+    1,
+  );
 
   let y = 10;
   let body = "";
@@ -225,7 +254,12 @@ export function renderTapeDiagramSvg(cfg = {}) {
 }
 
 export function renderDoubleNumberLineSvg(cfg = {}) {
-  const W = 460, H = 100, padL = 80, padR = 24, y1 = 30, y2 = 70;
+  const W = 460,
+    H = 100,
+    padL = 80,
+    padR = 24,
+    y1 = 30,
+    y2 = 70;
   const ticks1 = cfg.topTicks || [0, 2, 4, 6, 8];
   const ticks2 = cfg.bottomTicks || [0, 5, 10, 15, 20];
   const n = Math.min(ticks1.length, ticks2.length);
@@ -256,8 +290,10 @@ export function renderDoubleNumberLineSvg(cfg = {}) {
 /* ── 4. PERCENTS: 10x10 GRIDS & BENCHMARK BARS ────────────────────────────── */
 export function renderDecimalGridSvg(cfg = {}) {
   const shaded = Math.min(100, Math.max(0, Number(cfg.shaded ?? 65)));
-  const size = 18, pad = 12;
-  const W = size * 10 + pad * 2, H = size * 10 + pad * 2;
+  const size = 18,
+    pad = 12;
+  const W = size * 10 + pad * 2,
+    H = size * 10 + pad * 2;
   let cells = "";
 
   for (let r = 0; r < 10; r++) {
@@ -266,7 +302,7 @@ export function renderDecimalGridSvg(cfg = {}) {
       const isShaded = idx < shaded;
       const x = pad + c * size;
       const y = pad + r * size;
-      cells += `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${isShaded ? BRAND.teal : '#ffffff'}" stroke="${BRAND.line}" stroke-width="1"/>`;
+      cells += `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${isShaded ? BRAND.teal : "#ffffff"}" stroke="${BRAND.line}" stroke-width="1"/>`;
     }
   }
 
@@ -277,7 +313,12 @@ export function renderDecimalGridSvg(cfg = {}) {
 
 export function renderPercentBarSvg(cfg = {}) {
   const percent = Number(cfg.percent ?? 75);
-  const W = 420, H = 64, padL = 20, padR = 20, y = 20, barH = 22;
+  const W = 420,
+    H = 64,
+    padL = 20,
+    padR = 20,
+    y = 20,
+    barH = 22;
   const plotW = W - padL - padR;
   const fillW = Math.min(plotW, (percent / 100) * plotW);
 
@@ -305,13 +346,22 @@ export function renderParallelogramDecompSvg(cfg = {}) {
   const b = Number(cfg.base ?? 10);
   const h = Number(cfg.height ?? 6);
   const s = Number(cfg.slant ?? 3);
-  const W = 320, H = 180, padX = 40, padY = 30;
+  const W = 320,
+    H = 180,
+    padX = 40,
+    padY = 30;
   const scale = 220 / (b + s);
-  const bx = b * scale, hx = h * scale, sx = s * scale;
-  const x1 = padX, y1 = H - padY;
-  const x2 = padX + bx, y2 = H - padY;
-  const x3 = padX + bx + sx, y3 = H - padY - hx;
-  const x4 = padX + sx, y4 = H - padY - hx;
+  const bx = b * scale,
+    hx = h * scale,
+    sx = s * scale;
+  const x1 = padX,
+    y1 = H - padY;
+  const x2 = padX + bx,
+    y2 = H - padY;
+  const x3 = padX + bx + sx,
+    y3 = H - padY - hx;
+  const x4 = padX + sx,
+    y4 = H - padY - hx;
 
   const poly = `<polygon points="${x1},${y1} ${x2},${y2} ${x3},${y3} ${x4},${y4}" fill="rgba(15,118,110,0.12)" stroke="${BRAND.teal}" stroke-width="2.5"/>`;
   const heightLine = `<line x1="${x4}" y1="${y4}" x2="${x4}" y2="${y1}" stroke="${BRAND.amber}" stroke-width="2" stroke-dasharray="4 3"/>`;
@@ -329,12 +379,19 @@ export function renderParallelogramDecompSvg(cfg = {}) {
 export function renderTriangleDecompSvg(cfg = {}) {
   const b = Number(cfg.base ?? 8);
   const h = Number(cfg.height ?? 5);
-  const W = 300, H = 170, padX = 40, padY = 28;
+  const W = 300,
+    H = 170,
+    padX = 40,
+    padY = 28;
   const scale = 200 / b;
-  const bx = b * scale, hx = h * scale;
-  const x1 = padX, y1 = H - padY;
-  const x2 = padX + bx, y2 = H - padY;
-  const x3 = padX + bx * 0.4, y3 = H - padY - hx;
+  const bx = b * scale,
+    hx = h * scale;
+  const x1 = padX,
+    y1 = H - padY;
+  const x2 = padX + bx,
+    y2 = H - padY;
+  const x3 = padX + bx * 0.4,
+    y3 = H - padY - hx;
 
   const triangle = `<polygon points="${x1},${y1} ${x2},${y2} ${x3},${y3}" fill="rgba(107,33,168,0.12)" stroke="${BRAND.purple}" stroke-width="2.5"/>`;
   const heightLine = `<line x1="${x3}" y1="${y3}" x2="${x3}" y2="${y1}" stroke="${BRAND.amber}" stroke-width="2" stroke-dasharray="4 3"/>`;
@@ -350,9 +407,13 @@ export function renderTriangleDecompSvg(cfg = {}) {
 }
 
 export function renderNetPrismSvg(cfg = {}) {
-  const W = 320, H = 220;
-  const w = 60, l = 90, h = 45;
-  const cx = 110, cy = 90;
+  const W = 320,
+    H = 220;
+  const w = 60,
+    l = 90,
+    h = 45;
+  const cx = 110,
+    cy = 90;
 
   const net = `
     <!-- Top Face -->
@@ -380,7 +441,12 @@ export function renderNetPrismSvg(cfg = {}) {
 export function renderFractionDivisionModelSvg(cfg = {}) {
   const whole = Number(cfg.whole ?? 3);
   const fracDenom = Number(cfg.denom ?? 4);
-  const W = 460, H = 110, padL = 30, padR = 30, y = 20, barH = 34;
+  const W = 460,
+    H = 110,
+    padL = 30,
+    padR = 30,
+    y = 20,
+    barH = 34;
   const plotW = W - padL - padR;
   const unitW = plotW / whole;
   const partW = unitW / fracDenom;
@@ -396,7 +462,7 @@ export function renderFractionDivisionModelSvg(cfg = {}) {
   const totalParts = whole * fracDenom;
   for (let i = 0; i < totalParts; i++) {
     const px = padL + i * partW;
-    parts += `<rect x="${px}" y="${y + barH + 12}" width="${partW}" height="${barH}" fill="${i % 2 === 0 ? BRAND.tealLight : '#ffffff'}" stroke="${BRAND.teal}" stroke-width="1.5"/>`;
+    parts += `<rect x="${px}" y="${y + barH + 12}" width="${partW}" height="${barH}" fill="${i % 2 === 0 ? BRAND.tealLight : "#ffffff"}" stroke="${BRAND.teal}" stroke-width="1.5"/>`;
     parts += `<text x="${px + partW / 2}" y="${y + barH + 12 + barH / 2 + 4}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${BRAND.teal}">1/${fracDenom}</text>`;
   }
 
@@ -409,8 +475,13 @@ export function renderDistributiveAreaSvg(cfg = {}) {
   const a = Number(cfg.a ?? 4);
   const b = Number(cfg.b ?? 10);
   const c = Number(cfg.c ?? 3);
-  const W = 320, H = 150, padL = 36, padT = 24;
-  const w1 = 160, w2 = 70, h = 80;
+  const W = 320,
+    H = 150,
+    padL = 36,
+    padT = 24;
+  const w1 = 160,
+    w2 = 70,
+    h = 80;
 
   const rects = `
     <!-- Rect 1 -->
@@ -432,8 +503,10 @@ export function renderDistributiveAreaSvg(cfg = {}) {
 
 /* ── 7. EQUATIONS: BALANCE SCALES ─────────────────────────────────────────── */
 export function renderBalanceScaleSvg(cfg = {}) {
-  const W = 360, H = 160;
-  const fulcrumX = 180, fulcrumY = 120;
+  const W = 360,
+    H = 160;
+  const fulcrumX = 180,
+    fulcrumY = 120;
   const beamY = 50;
 
   const scale = `
@@ -465,7 +538,11 @@ export function renderDotPlotSvg(cfg = {}) {
   const max = Number(cfg.max ?? 10);
   const step = Number(cfg.step ?? 1);
   const data = Array.isArray(cfg.data) ? cfg.data : [1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 5, 6, 7];
-  const W = 460, H = 140, padL = 32, padR = 32, axisY = 110;
+  const W = 460,
+    H = 140,
+    padL = 32,
+    padR = 32,
+    axisY = 110;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
@@ -506,7 +583,13 @@ export function renderBoxPlotSvg(cfg = {}) {
   const axisMin = Number(cfg.axisMin ?? Math.floor(min / 10) * 10);
   const axisMax = Number(cfg.axisMax ?? Math.ceil(max / 10) * 10);
 
-  const W = 460, H = 120, padL = 32, padR = 32, axisY = 90, boxY = 32, boxH = 34;
+  const W = 460,
+    H = 120,
+    padL = 32,
+    padR = 32,
+    axisY = 90,
+    boxY = 32,
+    boxH = 34;
   const span = Math.max(1, axisMax - axisMin);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - axisMin) / span) * plotW;

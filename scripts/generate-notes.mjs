@@ -404,14 +404,12 @@ function lessonConfigs() {
 
 /* ---------- section builders ---------- */
 
-
 function choiceOl(choices) {
   if (!Array.isArray(choices) || !choices.length) return "";
   return `<ol class="try-choices" type="A">${choices
     .map((c) => `<li>${esc(c)}</li>`)
     .join("")}</ol>`;
 }
-
 
 // Build the heart of the guided notes: fill-in-the-blank concept sentences.
 // Each vocabulary item already ships a `cloze` sentence (the blank is the term);
@@ -882,7 +880,10 @@ function liMistakes(cfg = {}) {
 function renderKeyIdea(text, kiMath) {
   let prose = String(text).trim();
   if (kiMath && kiMath.math) {
-    prose = prose.replace(/\s*Formula:\s*[^.]*\.?/i, " ").replace(/\s{2,}/g, " ").trim();
+    prose = prose
+      .replace(/\s*Formula:\s*[^.]*\.?/i, " ")
+      .replace(/\s{2,}/g, " ")
+      .trim();
   }
   // Split a trailing inline enumeration into list items. Only treat it as an
   // enumeration when step 1 AND step 2 both appear — a lone "1." is prose.
@@ -1321,9 +1322,6 @@ function gatherPractice(practice = {}) {
     practice.optional || [],
   );
 }
-
-
-
 
 // Per-distractor "why this is wrong" guidance for an MCQ, rendered only for the
 // incorrect choices (keyed off correctIndex) and only when the config supplies

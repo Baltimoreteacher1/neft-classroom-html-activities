@@ -5021,9 +5021,7 @@ function renderConnectPhase(el, state, ctx, config, opts = {}) {
 
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
-  const promptText =
-    cfg.promptQuestion ||
-    "Explain how you solved it:";
+  const promptText = cfg.promptQuestion || "Explain how you solved it:";
 
   const respCard = document.createElement("div");
   respCard.className = "card card-teal";

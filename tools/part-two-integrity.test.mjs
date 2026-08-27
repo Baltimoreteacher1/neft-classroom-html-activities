@@ -61,7 +61,10 @@ assert.equal(
   1,
   "the level cap detector stopped firing",
 );
-assert.equal(auditConfig({ groupLevels: { level1: [{ stem: "One" }, { stem: "Two" }] } }).length, 0);
+assert.equal(
+  auditConfig({ groupLevels: { level1: [{ stem: "One" }, { stem: "Two" }] } }).length,
+  0,
+);
 
 // ── The real sweep ──
 const ids = readdirSync(lessonsDir).filter((d) => /-part2$/.test(d));

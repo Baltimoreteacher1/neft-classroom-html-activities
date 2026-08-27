@@ -27,7 +27,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
     return {
       because: `A question is statistical **because** it expects varied answers from different people rather than a single fixed fact.`,
       but: `"What time does school start?" is about our school, **but** it is not statistical **because** there is only one exact answer.`,
-      so: `The athletic coach wants to know how active the team is outside of practice, **so** he asked the statistical question: "How many hours do you exercise each week?"`
+      so: `The athletic coach wants to know how active the team is outside of practice, **so** he asked the statistical question: "How many hours do you exercise each week?"`,
     };
   }
 
@@ -35,7 +35,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
     return {
       because: `The ratio of green beads to red beads is 3:5 **because** for every 3 green beads, there are exactly 5 red beads.`,
       but: `A ratio compares two quantities, **but** changing the order of the numbers changes the meaning of the comparison.`,
-      so: `The store sells 4 juice bottles for $8, **so** the unit rate is $2 per bottle because $8 divided by 4 equals $2.`
+      so: `The store sells 4 juice bottles for $8, **so** the unit rate is $2 per bottle because $8 divided by 4 equals $2.`,
     };
   }
 
@@ -43,7 +43,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
     return {
       because: `A percent represents a rate per 100 **because** the word percent literally means "per hundred" (out of 100 equal parts).`,
       but: `120% is greater than 100%, **but** it is still a valid percent because it describes an amount that is larger than one whole.`,
-      so: `The student got 18 out of 20 questions correct, **so** her score was 90% because multiplying both terms by 5 gives 90/100.`
+      so: `The student got 18 out of 20 questions correct, **so** her score was 90% because multiplying both terms by 5 gives 90/100.`,
     };
   }
 
@@ -51,7 +51,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
     return {
       because: `The area of a parallelogram is calculated using base × perpendicular height **because** a triangle cut from one side can slide to form a rectangle.`,
       but: `The slanted side of a parallelogram has a length, **but** it cannot be used as the height because height must be measured perpendicular (at 90°) to the base.`,
-      so: `The base is 10 cm and the perpendicular height is 6 cm, **so** the total area is 60 cm² because 10 × 6 = 60.`
+      so: `The base is 10 cm and the perpendicular height is 6 cm, **so** the total area is 60 cm² because 10 × 6 = 60.`,
     };
   }
 
@@ -59,7 +59,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
     return {
       because: `Dividing 3 by 1/4 equals 12 **because** twelve 1/4-sized pieces fit inside 3 whole units.`,
       but: `Multiplying by a whole number makes a value larger, **but** dividing by a unit fraction (less than 1) creates a larger quotient because smaller pieces are being counted.`,
-      so: `Chef Mia has 4 cups of sugar and each cake needs 1/2 cup, **so** she can bake 8 cakes because 4 ÷ (1/2) = 8.`
+      so: `Chef Mia has 4 cups of sugar and each cake needs 1/2 cup, **so** she can bake 8 cakes because 4 ÷ (1/2) = 8.`,
     };
   }
 
@@ -67,7 +67,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
     return {
       because: `The opposite of -8 is +8 **because** both numbers are exactly 8 units away from 0 on the number line in opposite directions.`,
       but: `Zero is an integer, **but** it is neither positive nor negative because it serves as the neutral origin point.`,
-      so: `The diver descended 25 feet below sea level, **so** her elevation is represented by the integer -25 because sea level is 0.`
+      so: `The diver descended 25 feet below sea level, **so** her elevation is represented by the integer -25 because sea level is 0.`,
     };
   }
 
@@ -75,7 +75,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
     return {
       because: `The equation x + 7 = 15 is balanced **because** performing the inverse operation of subtracting 7 from both sides isolates x = 8.`,
       but: `An expression like 3x + 5 has numbers and a variable, **but** it cannot be solved for a single value because it has no equal sign.`,
-      so: `A movie ticket costs $12 and the group spent $60, **so** the equation is 12t = 60 and the number of tickets purchased is 5.`
+      so: `A movie ticket costs $12 and the group spent $60, **so** the equation is 12t = 60 and the number of tickets purchased is 5.`,
     };
   }
 
@@ -83,7 +83,7 @@ export function getTWRStems(standard, topic, lessonData = {}) {
   return {
     because: `This mathematical model proves the solution **because** each step follows the precise rules of operations and properties of equality.`,
     but: `An estimate gives a quick check, **but** exact calculation is required to verify precision and units.`,
-    so: `The student organized the given facts into a structured diagram, **so** the unknown value could be determined with certainty.`
+    so: `The student organized the given facts into a structured diagram, **so** the unknown value could be determined with certainty.`,
   };
 }
 
@@ -133,7 +133,8 @@ export function renderTWRSectionHtml(standard, topic, lessonData = {}) {
 export function renderDomainCERHtml(cfg = {}) {
   const claimPrompt = cfg.claimPrompt || "My mathematical claim is that the solution is...";
   const evidencePrompt = cfg.evidencePrompt || "The evidence from the model/table shows that...";
-  const reasoningPrompt = cfg.reasoningPrompt || "This proves my claim because the mathematical definition of...";
+  const reasoningPrompt =
+    cfg.reasoningPrompt || "This proves my claim because the mathematical definition of...";
 
   return `
     <section class="ws-cer-section" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:14px 18px;margin:16px 0;page-break-inside:avoid;">

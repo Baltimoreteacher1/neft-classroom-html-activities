@@ -23,8 +23,8 @@ import { LESSON_MAP, UNITS } from "./lib/lesson-data-map.mjs";
 import {
   renderEBSRItemHtml,
   renderMultiSelectItemHtml,
+  renderTypeIIIModelingItemHtml,
   renderTypeIIReasoningItemHtml,
-  renderTypeIIIModelingItemHtml
 } from "./lib/mstar-items.mjs";
 import {
   renderBalanceScaleSvg,
@@ -42,12 +42,12 @@ import {
   renderTapeDiagramSvg,
   renderTriangleDecompSvg,
   renderVerticalNumberLineSvg,
-  wrapFigure
+  wrapFigure,
 } from "./lib/svg-manipulatives.mjs";
 import {
   renderContextualDiscourseHtml,
   renderDomainCERHtml,
-  renderTWRSectionHtml
+  renderTWRSectionHtml,
 } from "./lib/twr-writing.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -59,7 +59,7 @@ const OUT_DIR = join(__dirname, "dist", "lessons");
 const CONFIG = Object.freeze({
   SERIES_TITLE: "EduWonderLab MSTAR Grade 6 Mathematics",
   EDITION: "2026 Publisher Edition · MSTAR / MCAP Aligned",
-  FONTS_CSS: "/assets/fonts/worksheet-pages.css"
+  FONTS_CSS: "/assets/fonts/worksheet-pages.css",
 });
 
 const esc = (s) =>
@@ -196,7 +196,7 @@ function buildGroup1Html(lessonId, lesson) {
       <div style="background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 10px;font-size:11.5px;">
         <span style="font-weight:800;color:#0f766e;">${esc(v.en)} <span style="color:#64748b;font-style:italic;font-weight:500;">(${esc(v.es)})</span></span>
         <span style="color:#475569;display:block;margin-top:2px;">— ${esc(v.def)}</span>
-      </div>`
+      </div>`,
     )
     .join("");
 
@@ -271,14 +271,14 @@ function buildGroup1Html(lessonId, lesson) {
   ${renderDomainCERHtml({
     claimPrompt: `My mathematical claim for Lesson ${lessonId} is that...`,
     evidencePrompt: `The evidence from the model/calculation demonstrates that...`,
-    reasoningPrompt: `This proves my answer because the standard mathematical rule states...`
+    reasoningPrompt: `This proves my answer because the standard mathematical rule states...`,
   })}
 
   <!-- Contextual Discourse Talk Moves -->
   ${renderContextualDiscourseHtml(
     `How does your mathematical model justify your solution for ${lesson.title}?`,
     `I represented this by identifying the relationship and modeling...`,
-    `I agree with your reasoning because the standard rule for ${lesson.standard} requires...`
+    `I agree with your reasoning because the standard rule for ${lesson.standard} requires...`,
   )}
 
 </main>
@@ -413,17 +413,24 @@ function buildGroup2Html(lessonId, lesson) {
     </li>
 
     <!-- Problem 2: MSTAR Type I Multi-Select -->
-    ${lesson.mstarMultiSelect ? renderMultiSelectItemHtml(2, lesson.mstarMultiSelect) : (lesson.mstarEBSR ? renderEBSRItemHtml(2, lesson.mstarEBSR) : "")}
+    ${lesson.mstarMultiSelect ? renderMultiSelectItemHtml(2, lesson.mstarMultiSelect) : lesson.mstarEBSR ? renderEBSRItemHtml(2, lesson.mstarEBSR) : ""}
 
     <!-- Problem 3: MSTAR Type III Modeling Challenge -->
     ${renderTypeIIIModelingItemHtml(3, {
       title: `Real-World Application Challenge: ${lesson.title}`,
       scenario: `A city planning team must apply ${lesson.standard} to optimize resources under complex budget and spatial constraints.`,
       parts: [
-        { letter: "A", prompt: "Formulate an algebraic equation or ratio table representing the constraints." },
+        {
+          letter: "A",
+          prompt: "Formulate an algebraic equation or ratio table representing the constraints.",
+        },
         { letter: "B", prompt: "Calculate the optimal solution and show all intermediate steps." },
-        { letter: "C", prompt: "Write an evidence-based recommendation to the city committee defending your result." }
-      ]
+        {
+          letter: "C",
+          prompt:
+            "Write an evidence-based recommendation to the city committee defending your result.",
+        },
+      ],
     })}
 
     <!-- Problem 4: Author Challenge (Student Problem Creation) -->
@@ -550,7 +557,9 @@ export function compileAllWorksheets(outputRoot = OUT_DIR) {
     successCount++;
   }
 
-  console.log(`\n✅ Successfully generated ${successCount} lesson worksheet packages (${successCount * 4} HTML files).`);
+  console.log(
+    `\n✅ Successfully generated ${successCount} lesson worksheet packages (${successCount * 4} HTML files).`,
+  );
   return successCount;
 }
 
