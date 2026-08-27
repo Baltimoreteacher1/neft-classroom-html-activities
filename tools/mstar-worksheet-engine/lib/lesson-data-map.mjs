@@ -8,20 +8,20 @@
 export const UNITS = [
   { id: "unit-1", num: 1, title: "Math Is...", cluster: "MPP", count: 6 },
   { id: "unit-2", num: 2, title: "Statistics", cluster: "6.DS", count: 12 },
-  { id: "unit-3", num: 3, title: "Ratios & Rates", cluster: "6.RP / 6.AT", count: 7 },
-  { id: "unit-4", num: 4, title: "Percents", cluster: "6.RP.3c", count: 7 },
-  { id: "unit-5", num: 5, title: "Area, Surface Area & Volume", cluster: "6.G", count: 10 },
+  { id: "unit-3", num: 3, title: "Ratios & Rates", cluster: "6.AT", count: 10 },
+  { id: "unit-4", num: 4, title: "Percents", cluster: "6.AT.4", count: 5 },
+  { id: "unit-5", num: 5, title: "Area, Surface Area & Volume", cluster: "6.GR", count: 10 },
   {
     id: "unit-6",
     num: 6,
     title: "Expressions & Number Operations",
-    cluster: "6.EE / 6.NS",
-    count: 8,
+    cluster: "6.NOS / 6.AT",
+    count: 15,
   },
-  { id: "unit-7", num: 7, title: "Integers & Coordinate Plane", cluster: "6.NS", count: 11 },
-  { id: "unit-8", num: 8, title: "Equations & Inequalities", cluster: "6.EE", count: 7 },
-  { id: "unit-9", num: 9, title: "Two-Variable Relationships", cluster: "6.EE.9", count: 4 },
-  { id: "unit-10", num: 10, title: "Culminating Math Practices", cluster: "MPP", count: 2 },
+  { id: "unit-7", num: 7, title: "Integers & Coordinate Plane", cluster: "6.NOS", count: 9 },
+  { id: "unit-8", num: 8, title: "Equations & Inequalities", cluster: "6.AT", count: 7 },
+  { id: "unit-9", num: 9, title: "Two-Variable Relationships", cluster: "6.AT.11", count: 4 },
+  { id: "unit-10", num: 10, title: "Culminating Math Practices", cluster: "MPP", count: 6 },
 ];
 
 // Helper to construct structured lesson records deterministically
@@ -99,7 +99,7 @@ const u1Lessons = [
     id: "1-1",
     title: "Math is Mine",
     std: "MPP.3",
-    obj: "I can describe the ways we are all doers of math and compare my math story with a classmate's.",
+    obj: "I can describe the ways we are all doers of math, and compare my math story with a classmate's.",
   },
   {
     id: "1-2",
@@ -109,7 +109,7 @@ const u1Lessons = [
   },
   {
     id: "1-3",
-    title: "Math is in My World",
+    title: "Math is In My World",
     std: "5.NBT.B.7",
     obj: "I can represent a real-world situation with a tape diagram or table and use decimal operations to solve it.",
   },
@@ -129,7 +129,7 @@ const u1Lessons = [
     id: "1-6",
     title: "Math is Ours",
     std: "MPP.3",
-    obj: "I can describe my problem-solving process, name strategies for getting unstuck, and identify community thinking moves.",
+    obj: "I can describe my problem-solving process, name strategies for getting unstuck, and identify the behaviors that make our class a community of math thinkers.",
   },
 ];
 u1Lessons.forEach((l) => {
@@ -177,69 +177,69 @@ const u2Lessons = [
   },
   {
     id: "2-2",
-    title: "Display Data in Dot Plots",
-    std: "6.DS.4",
-    obj: "I can display numerical data in plots on a number line, including dot plots.",
+    title: "Represent and Describe Data in a Histogram",
+    std: "6.DS.5",
+    obj: "I can make and read a histogram to display data in intervals.",
   },
   {
     id: "2-3",
-    title: "Display Data in Histograms",
+    title: "Describe the Data Using the Median",
     std: "6.DS.4",
-    obj: "I can group continuous data into intervals and display frequencies in histograms.",
+    obj: "I can find the median of a data set and use it to describe what is typical.",
   },
   {
     id: "2-4",
-    title: "Mean as Fair Share & Balance",
-    std: "6.DS.2",
-    obj: "I can calculate the mean and explain it as the fair-share balance point of a distribution.",
+    title: "Represent and Describe Data in a Box Plot",
+    std: "6.DS.5",
+    obj: "I can make and read a box plot to summarize a data set.",
   },
   {
     id: "2-5",
-    title: "Median and Mode",
-    std: "6.DS.2",
-    obj: "I can find the median and mode of a data set and describe what they represent.",
+    title: "Describe Data by Range and Interquartile Range",
+    std: "6.DS.3",
+    obj: "I can find the range and the interquartile range of a data set and use them to describe how spread out the data is.",
   },
   {
     id: "2-6",
-    title: "Interquartile Range (IQR)",
-    std: "6.DS.3",
-    obj: "I can divide data into quartiles and calculate the IQR to describe the spread of the middle 50%.",
+    title: "Divide Multi-Digit Numbers Using an Algorithm",
+    std: "6.NOS.2",
+    obj: "I can divide multi-digit whole numbers and explain the meaning of the quotient and remainder.",
   },
   {
     id: "2-7",
-    title: "Display Data in Box Plots",
-    std: "6.DS.4",
-    obj: "I can construct and interpret a five-number summary box-and-whisker plot.",
+    title: "Divide Decimals Using an Algorithm",
+    std: "6.NOS.3",
+    obj: "I can divide with decimals by making the divisor a whole number first.",
   },
   {
     id: "2-8",
-    title: "Mean Absolute Deviation (MAD)",
-    std: "6.DS.3",
-    obj: "I can calculate the MAD to measure the average distance of data points from the mean.",
+    title: "Describe Data Using the Mean",
+    std: "6.DS.4",
+    obj: "I can determine the mean of a data set, use a target mean to find a missing value, and explain the mean as the fair share and the balance point of the data.",
   },
   {
     id: "2-9",
-    title: "Choose Appropriate Measures",
-    std: "6.DS.5",
-    obj: "I can choose between mean/MAD and median/IQR based on data symmetry and outliers.",
+    title: "Describe Data by Mean Absolute Deviation",
+    std: "6.DS.6c",
+    obj: "I can find the mean absolute deviation (MAD) to describe how spread out data is.",
   },
   {
     id: "2-10",
-    title: "Describe Distributions",
-    std: "6.DS.2",
-    obj: "I can describe the overall shape of a data distribution (peaks, clusters, gaps, skew).",
+    title: "Choose Appropriate Measures",
+    std: "6.DS.6d",
+    obj: "I can choose the best measure of center for a data set based on its shape.",
   },
   {
     id: "2-11",
-    title: "Outliers & Data Impact",
-    std: "6.DS.5",
-    obj: "I can identify outliers and explain their impact on measures of center and spread.",
+    title: "Add and Subtract Decimals",
+    std: "6.NOS.3",
+    obj: "I can add and subtract decimals by lining up the place values and the decimal points.",
   },
   {
     id: "2-12",
-    title: "Statistical Investigations",
-    std: "6.DS.5",
-    obj: "I can summarize and analyze a full data set to draw evidence-based conclusions.",
+    title: "Multiply Decimals",
+    std: "6.NOS.3",
+    obj: "I can multiply decimals and place the decimal point correctly in the product.",
   },
 ];
 u2Lessons.forEach((l) => {
@@ -261,7 +261,7 @@ u2Lessons.forEach((l) => {
         def: "The overall shape, center, and spread of a collection of data.",
       },
     ],
-    l.id === "2-7"
+    l.id === "2-4" || l.id === "2-5" || l.id === "2-7"
       ? {
           type: "boxPlot",
           min: 12,
@@ -281,49 +281,67 @@ u2Lessons.forEach((l) => {
   );
 });
 
-// UNIT 3: Ratios & Rates (3-1 to 3-7)
+// UNIT 3: Ratios & Rates (3-1 to 3-10)
 const u3Lessons = [
   {
     id: "3-1",
     title: "Understand Ratios",
-    std: "6.RP.1",
-    obj: "I can write and describe a ratio comparing two quantities.",
+    std: "6.AT.1",
+    obj: "I can write and describe a ratio that compares two quantities.",
   },
   {
     id: "3-2",
-    title: "Represent Ratios with Tables",
-    std: "6.RP.3a",
-    obj: "I can make tables of equivalent ratios and find missing values using multiplicative reasoning.",
+    title: "Understand Rates and Unit Rates",
+    std: "6.AT.2",
+    obj: "I can find a unit rate to compare prices and decide the better buy.",
   },
   {
     id: "3-3",
-    title: "Represent Ratios with Tape Diagrams",
-    std: "6.RP.3",
-    obj: "I can use tape diagrams to solve multi-step part-to-part and part-to-whole ratio problems.",
+    title: "Determine Equivalent Ratios Using Tables",
+    std: "6.AT.3a",
+    obj: "I can use a ratio table to find equivalent ratios.",
   },
   {
     id: "3-4",
-    title: "Represent Ratios on Coordinate Planes",
-    std: "6.RP.3a",
-    obj: "I can plot pairs of values from a ratio table on a coordinate grid.",
+    title: "Determine Equivalent Ratios Using Graphs",
+    std: "6.AT.3a",
+    obj: "I can graph the values from a ratio table as points on the coordinate plane.",
   },
   {
     id: "3-5",
-    title: "Understand Unit Rates",
-    std: "6.RP.2",
-    obj: "I can calculate and interpret a unit rate a/b associated with a ratio a:b.",
+    title: "Compare Ratio Relationships",
+    std: "6.AT.3",
+    obj: "I can compare ratios by finding unit rates or using equivalent ratios.",
   },
   {
     id: "3-6",
-    title: "Compare Rates & Best Buys",
-    std: "6.RP.3b",
-    obj: "I can solve unit rate pricing problems to determine the better buy.",
+    title: "Ratio Reasoning: Convert Measurements within the Same System",
+    std: "6.AT.3",
+    obj: "I can use ratio reasoning to convert between units within the same measurement system.",
   },
   {
     id: "3-7",
-    title: "Convert Measurement Units with Ratios",
-    std: "6.RP.3d",
-    obj: "I can use ratio reasoning and conversion factors to convert measurement units.",
+    title: "Ratio Reasoning: Convert Measurements Between Systems",
+    std: "6.AT.3",
+    obj: "I can use ratio reasoning to convert measurements between the customary and metric systems.",
+  },
+  {
+    id: "3-8",
+    title: "Solve Problems with Unit Rates",
+    std: "6.AT.2",
+    obj: "I can solve real-world problems by using unit rates to compare options.",
+  },
+  {
+    id: "3-9",
+    title: "Equivalent Ratios",
+    std: "6.AT.3",
+    obj: "I can find and check equivalent ratios using multiplication and division.",
+  },
+  {
+    id: "3-10",
+    title: "Convert Measurement Units",
+    std: "6.AT.3c",
+    obj: "I can convert measurement units using ratios and conversion factors.",
   },
 ];
 u3Lessons.forEach((l) => {
@@ -345,7 +363,7 @@ u3Lessons.forEach((l) => {
         def: "A visual model using equal-length bars to represent ratio proportions.",
       },
     ],
-    l.id.includes("4")
+    l.id.includes("4") || l.id.includes("8")
       ? {
           type: "coordPlane",
           max: 8,
@@ -366,49 +384,37 @@ u3Lessons.forEach((l) => {
   );
 });
 
-// UNIT 4: Percents (4-1 to 4-7)
+// UNIT 4: Percents (4-1 to 4-5)
 const u4Lessons = [
   {
     id: "4-1",
     title: "Understand Percent",
-    std: "6.RP.3c",
-    obj: "I can explain a percent as a rate per 100 on a 10x10 decimal grid.",
+    std: "6.AT.4",
+    obj: "I can explain a percent as a rate per 100, model it on a decimal grid or tape diagram, and interpret percents greater than 100%.",
   },
   {
     id: "4-2",
-    title: "Fractions, Decimals, and Percents",
-    std: "6.RP.3c",
-    obj: "I can convert flexibly among fractions, decimals, and percents.",
+    title: "Relate Fractions, Decimals, and Percentages",
+    std: "6.AT.4",
+    obj: "I can write equivalent fractions, decimals, and percents for the same value.",
   },
   {
     id: "4-3",
-    title: "Benchmark Percents (10%, 25%, 50%)",
-    std: "6.RP.3c",
-    obj: "I can use mental math and benchmark percent bars to find parts of a whole.",
+    title: "Estimate the Percent of a Number",
+    std: "6.AT.4",
+    obj: "I can estimate the percent of a number using benchmark percents, rounding, and compatible numbers.",
   },
   {
     id: "4-4",
-    title: "Find the Percent of a Number",
-    std: "6.RP.3c",
-    obj: "I can find a percent of a quantity as a rate per 100.",
+    title: "Find and Compare with Percentages",
+    std: "6.AT.4",
+    obj: "I can find the percent of a number using an equation or a model.",
   },
   {
     id: "4-5",
-    title: "Find the Whole Given the Part & Percent",
-    std: "6.RP.3c",
-    obj: "I can solve problems finding the whole, given a part and the percent.",
-  },
-  {
-    id: "4-6",
-    title: "Percents Greater Than 100% and Less Than 1%",
-    std: "6.RP.3c",
-    obj: "I can model and solve problems with percents greater than 100% or less than 1%.",
-  },
-  {
-    id: "4-7",
-    title: "Real-World Percent Applications",
-    std: "6.RP.3c",
-    obj: "I can solve multi-step discount, tax, and tip problems using percent equations.",
+    title: "Determine the Whole Given the Part and Percent",
+    std: "6.AT.4",
+    obj: "I can determine the whole when I know a part and the percent that part represents.",
   },
 ];
 u4Lessons.forEach((l) => {
@@ -440,63 +446,63 @@ u4Lessons.forEach((l) => {
 const u5Lessons = [
   {
     id: "5-1",
-    title: "Area of Parallelograms",
-    std: "6.G.1",
-    obj: "I can find the area of a parallelogram using base × perpendicular height.",
+    title: "Determine the Area of Parallelograms and Rhombuses",
+    std: "6.GR.1",
+    obj: "I can find the area of a parallelogram using base × height.",
   },
   {
     id: "5-2",
-    title: "Area of Triangles",
-    std: "6.G.1",
-    obj: "I can compose triangles into parallelograms and find area using 1/2 × b × h.",
+    title: "Determine the Area of Triangles",
+    std: "6.GR.1",
+    obj: "I can find the area of a triangle using the formula A = ½ × base × height.",
   },
   {
     id: "5-3",
-    title: "Area of Trapezoids",
-    std: "6.G.1",
-    obj: "I can decompose trapezoids into rectangles and triangles to calculate area.",
+    title: "Determine the Area of Trapezoids",
+    std: "6.GR.1",
+    obj: "I can find the area of a trapezoid using the formula A = ½(b1 + b2) × h.",
   },
   {
     id: "5-4",
-    title: "Area of Composite Polygons",
-    std: "6.G.1",
-    obj: "I can find the area of complex composite figures by decomposing them into simple polygons.",
+    title: "Apply Area Concepts to Solve Problems",
+    std: "6.GR.1",
+    obj: "I can find the area of a composite figure by decomposing it into basic shapes, including a regular polygon split into triangles, and adding or subtracting the areas.",
   },
   {
     id: "5-5",
-    title: "Polygons on the Coordinate Plane",
-    std: "6.G.3",
-    obj: "I can draw polygons in the coordinate plane and find side lengths using coordinates.",
+    title: "Determine the Volume of Rectangular Prisms",
+    std: "6.GR.2",
+    obj: "I can find the volume of a rectangular prism with whole-number edges using length × width × height.",
   },
   {
     id: "5-6",
-    title: "Nets of Prisms and Pyramids",
-    std: "6.G.4",
-    obj: "I can represent 3D polyhedra using 2D flattened nets.",
+    title: "Represent Three-Dimensional Figures in Two Dimensions",
+    std: "6.GR.4",
+    obj: "I can find the surface area of a solid by using its net.",
   },
   {
     id: "5-7",
-    title: "Surface Area of Rectangular Prisms",
-    std: "6.G.4",
-    obj: "I can find the surface area of rectangular prisms by calculating the sum of face areas.",
+    title: "Determine Surface Area of Prisms",
+    std: "6.GR.4",
+    obj: "I can find the surface area of rectangular and triangular prisms.",
   },
   {
     id: "5-8",
-    title: "Surface Area of Triangular Prisms",
-    std: "6.G.4",
-    obj: "I can calculate total surface area using triangular prism net decompositions.",
+    title: "Determine Surface Area of Pyramids",
+    std: "6.GR.4",
+    obj: "I can find the surface area of a pyramid by adding the base area and the lateral faces.",
   },
   {
     id: "5-9",
-    title: "Volume of Prisms with Fractional Edges",
-    std: "6.G.2",
-    obj: "I can find the volume of a right rectangular prism with fractional edge lengths using V = lwh.",
+    title: "Area of Regular Polygons",
+    std: "6.GR.1",
+    obj: "I can find the area of a regular polygon by decomposing it into triangles.",
   },
   {
     id: "5-10",
-    title: "Geometric Design & Spatial Modeling",
-    std: "6.G.1-4",
-    obj: "I can apply area, surface area, and volume to solve real-world architectural design problems.",
+    title: "Volume of Rectangular Prisms",
+    std: "6.GR.2",
+    obj: "I can find the volume of a rectangular prism, including ones with fractional edge lengths, using base area × height.",
   },
 ];
 u5Lessons.forEach((l) => {
@@ -520,7 +526,7 @@ u5Lessons.forEach((l) => {
     ],
     l.id.includes("2")
       ? { type: "triangle", base: 10, height: 6, unit: "cm", title: "Triangle Decomposition Model" }
-      : l.id.includes("6") || l.id.includes("7")
+      : l.id.includes("6") || l.id.includes("7") || l.id.includes("8")
         ? { type: "netPrism", title: "Rectangular Prism Net" }
         : {
             type: "parallelogram",
@@ -533,55 +539,97 @@ u5Lessons.forEach((l) => {
   );
 });
 
-// UNIT 6: Expressions & Number Operations (6-1 to 6-8)
+// UNIT 6: Expressions & Number Operations (6-1 to 6-15)
 const u6Lessons = [
   {
     id: "6-1",
-    title: "Divide Whole Numbers by Fractions",
-    std: "6.NS.1",
-    obj: "I can divide a whole number by a fraction using measurement visual models.",
+    title: "Division Expressions with Fractions and Whole Numbers",
+    std: "6.NOS.1",
+    obj: "I can divide a whole number by a unit fraction and a unit fraction by a whole number by writing the whole number over 1 and using Keep, Change, Flip.",
   },
   {
     id: "6-2",
-    title: "Divide Fractions by Fractions",
-    std: "6.NS.1",
-    obj: "I can compute quotients of fractions and explain the standard reciprocal algorithm.",
+    title: "Division Expressions with Fractions and Mixed Numbers",
+    std: "6.NOS.1",
+    obj: "I can divide a fraction by a fraction and divide with mixed numbers by multiplying by the reciprocal.",
   },
   {
     id: "6-3",
-    title: "Multi-Digit Decimal Operations",
-    std: "6.NS.3",
-    obj: "I can fluently add, subtract, multiply, and divide multi-digit decimals using the standard algorithms.",
+    title: "Explore Numerical Expressions with Exponents",
+    std: "6.AT.5",
+    obj: "I can write and evaluate numbers in exponent form using a base and a power.",
   },
   {
     id: "6-4",
-    title: "Exponents & Powers",
-    std: "6.EE.1",
-    obj: "I can write and evaluate numerical expressions involving whole-number exponents.",
+    title: "Write and Evaluate Numerical Expressions with Exponents",
+    std: "6.AT.6c",
+    obj: "I can write numerical expressions from a real situation and evaluate them using the order of operations, including powers.",
   },
   {
     id: "6-5",
-    title: "Order of Operations",
-    std: "6.EE.1",
-    obj: "I can evaluate numerical expressions using the standard order of operations.",
+    title: "Write and Evaluate Algebraic Expressions",
+    std: "6.AT.6a",
+    obj: "I can write an algebraic expression for a real situation and evaluate it for a given value of the variable.",
   },
   {
     id: "6-6",
-    title: "Write Algebraic Expressions",
-    std: "6.EE.2a",
-    obj: "I can translate verbal phrases into algebraic expressions with variables and constants.",
+    title: "Identify Equivalent Algebraic Expressions",
+    std: "6.AT.7",
+    obj: "I can show that two expressions are equivalent by simplifying and combining like terms.",
   },
   {
     id: "6-7",
-    title: "Distributive Property with Area Models",
-    std: "6.EE.3",
-    obj: "I can apply the distributive property to generate equivalent algebraic expressions using rectangular area models.",
+    title: "Find Factors and Multiples",
+    std: "6.NOS.4",
+    obj: "I can find the greatest common factor and the least common multiple of two numbers, and use each to solve a real problem.",
   },
   {
     id: "6-8",
-    title: "Identify Equivalent Expressions",
-    std: "6.EE.4",
-    obj: "I can prove whether two algebraic expressions are equivalent using properties of operations.",
+    title: "Generate Equivalent Expressions",
+    std: "6.AT.7",
+    obj: "I can use the commutative, associative, and identity properties to rewrite expressions.",
+  },
+  {
+    id: "6-9",
+    title: "Divide Whole Numbers by Fractions",
+    std: "6.NOS.1",
+    obj: "I can divide a whole number by a fraction by multiplying by the reciprocal.",
+  },
+  {
+    id: "6-10",
+    title: "Divide Mixed Numbers",
+    std: "6.NOS.1",
+    obj: "I can divide mixed numbers by first changing them to improper fractions.",
+  },
+  {
+    id: "6-11",
+    title: "Fraction Division Problem Solving",
+    std: "6.NOS.1",
+    obj: "I can solve real-world problems by writing and solving fraction division equations.",
+  },
+  {
+    id: "6-12",
+    title: "Least Common Multiple",
+    std: "6.NOS.4",
+    obj: "I can find the least common multiple (LCM) of two numbers by listing or comparing their multiples.",
+  },
+  {
+    id: "6-13",
+    title: "Prime Factorization",
+    std: "6.NOS.4",
+    obj: "I can write a number as a product of its prime factors using a factor tree.",
+  },
+  {
+    id: "6-14",
+    title: "The Distributive Property",
+    std: "6.AT.7",
+    obj: "I can use the distributive property to expand and factor expressions.",
+  },
+  {
+    id: "6-15",
+    title: "Simplify Algebraic Expressions",
+    std: "6.AT.7",
+    obj: "I can simplify algebraic expressions by combining like terms.",
   },
 ];
 u6Lessons.forEach((l) => {
@@ -603,79 +651,67 @@ u6Lessons.forEach((l) => {
         def: "Multiplying a sum by multiplying each addend separately: a(b + c) = ab + ac.",
       },
     ],
-    l.id.includes("7")
+    l.id.includes("7") || l.id.includes("14")
       ? { type: "distributiveArea", a: 4, b: 10, c: 3, title: "Distributive Area Model: 4(10 + 3)" }
       : { type: "fractionDivision", whole: 3, denom: 4, title: "Fraction Division Strip Model" },
   );
 });
 
-// UNIT 7: Integers & Coordinate Plane (7-1 to 7-11)
+// UNIT 7: Integers & Coordinate Plane (7-1 to 7-9)
 const u7Lessons = [
   {
     id: "7-1",
-    title: "Understand Integers & Opposites",
-    std: "6.NS.5",
-    obj: "I can use positive and negative integers to represent quantities in real-world contexts.",
+    title: "Explore Integers and Their Opposites",
+    std: "6.NOS.6",
+    obj: "I can use integers to represent quantities in everyday life, explain what 0 means in each situation, and name the opposite of an integer on the number line.",
   },
   {
     id: "7-2",
-    title: "Compare and Order Integers",
-    std: "6.NS.7a",
-    obj: "I can interpret statements of inequality as the relative position of two numbers on a number line.",
+    title: "Represent Rational Numbers and Their Opposites on the Number Line",
+    std: "6.NOS.6",
+    obj: "I can place rational numbers, including fractions and decimals, on a number line.",
   },
   {
     id: "7-3",
-    title: "Absolute Value as Distance",
-    std: "6.NS.7c",
-    obj: "I can explain absolute value as the non-negative distance of a number from zero on a number line.",
+    title: "Understand Absolute Value of Rational Numbers",
+    std: "6.NOS.8",
+    obj: "I can find the absolute value of a rational number — an integer, fraction, or decimal — as its distance from zero.",
   },
   {
     id: "7-4",
-    title: "Compare Absolute Values in Real-World Contexts",
-    std: "6.NS.7d",
-    obj: "I can distinguish comparisons of absolute value from statements about order (e.g., debt vs magnitude).",
+    title: "Compare and Order Integers and Rational Numbers",
+    std: "6.NOS.8",
+    obj: "I can compare and order integers using a number line.",
   },
   {
     id: "7-5",
-    title: "Graph Points in Four Quadrants",
-    std: "6.NS.6c",
-    obj: "I can plot and locate ordered pairs across all four quadrants of the coordinate plane.",
+    title: "Represent Rational Numbers on the Coordinate Plane",
+    std: "6.NOS.6",
+    obj: "I can plot and identify points on the coordinate plane using ordered pairs.",
   },
   {
     id: "7-6",
-    title: "Reflections Across Axes",
-    std: "6.NS.6b",
-    obj: "I can determine how reflecting a point across the x-axis or y-axis affects the signs of its coordinates.",
+    title: "Determine Distance on the Coordinate Plane",
+    std: "6.NOS.9",
+    obj: "I can find the distance between two points on the coordinate plane using absolute value.",
   },
   {
     id: "7-7",
-    title: "Distance Between Points on the Coordinate Plane",
-    std: "6.NS.8",
-    obj: "I can find vertical and horizontal distances between points sharing an x- or y-coordinate using absolute value.",
+    title: "Represent Polygons on the Coordinate Plane",
+    std: "6.NOS.9",
+    obj: "I can draw polygons from their vertex coordinates on the coordinate plane, and use coordinates to find side lengths and solve perimeter and area problems.",
   },
   {
     id: "7-8",
-    title: "Coordinate Plane Maps and Navigation",
-    std: "6.NS.8",
-    obj: "I can model real-world navigation and perimeter paths on coordinate grids.",
+    title: "Ordered Pairs in All Four Quadrants",
+    std: "6.NOS.7",
+    obj: "I can plot ordered pairs in all four quadrants of the coordinate plane.",
   },
   {
     id: "7-9",
-    title: "Rational Numbers on the Number Line",
-    std: "6.NS.6a",
-    obj: "I can position positive and negative fractions and decimals on horizontal and vertical number lines.",
-  },
-  {
-    id: "7-10",
-    title: "Coordinate Transformations & Symmetry",
-    std: "6.NS.6b",
-    obj: "I can analyze geometric symmetry and reflections of polygons across coordinate axes.",
-  },
-  {
-    id: "7-11",
-    title: "Integer Investigations & Contextual Synthesis",
-    std: "6.NS.5-8",
-    obj: "I can solve complex multi-step problems integrating integers, absolute value, and coordinate geometry.",
+    title: "Reflect Points Across Axes",
+    std: "6.NOS.7",
+    obj: "I can reflect points across the x-axis and y-axis on the coordinate plane.",
   },
 ];
 u7Lessons.forEach((l) => {
@@ -697,7 +733,11 @@ u7Lessons.forEach((l) => {
         def: "One of the four regions formed by the intersection of the x-axis and y-axis (I, II, III, IV).",
       },
     ],
-    l.id.includes("5") || l.id.includes("6") || l.id.includes("7")
+    l.id.includes("5") ||
+      l.id.includes("6") ||
+      l.id.includes("7") ||
+      l.id.includes("8") ||
+      l.id.includes("9")
       ? {
           type: "coordPlane",
           max: 6,
@@ -725,45 +765,45 @@ u7Lessons.forEach((l) => {
 const u8Lessons = [
   {
     id: "8-1",
-    title: "Write and Solve 1-Step Addition/Subtraction Equations",
-    std: "6.EE.7",
-    obj: "I can write and solve one-step addition and subtraction equations using inverse operations.",
+    title: "Understand Equations and Their Solutions",
+    std: "6.AT.8",
+    obj: "I can write an equation for a real situation and check whether a given value is a solution by substituting it.",
   },
   {
     id: "8-2",
-    title: "Write and Solve 1-Step Multiplication/Division Equations",
-    std: "6.EE.7",
-    obj: "I can solve one-step multiplication and division equations and verify balance.",
+    title: "Write and Solve Equations Using Addition or Subtraction",
+    std: "6.AT.8",
+    obj: "I can solve one-step addition and subtraction equations using inverse operations.",
   },
   {
     id: "8-3",
-    title: "Equations with Decimals and Fractions",
-    std: "6.EE.7",
-    obj: "I can solve one-step equations involving rational numbers with precision.",
+    title: "Write and Solve Equations Using Multiplication or Division",
+    std: "6.AT.8",
+    obj: "I can solve one-step multiplication and division equations using inverse operations.",
   },
   {
     id: "8-4",
-    title: "Understand Solutions of Equations",
-    std: "6.EE.5",
-    obj: "I can test whether a given value is a solution by substituting it into the equation.",
+    title: "Write and Represent Inequalities",
+    std: "6.AT.9",
+    obj: "I can write inequalities to represent real-world situations.",
   },
   {
     id: "8-5",
-    title: "Write and Graph Inequalities (x > c, x <= c)",
-    std: "6.EE.8",
-    obj: "I can write an inequality to represent a constraint and graph its infinite solutions on a number line.",
+    title: "Understand Inequalities and Their Solutions",
+    std: "6.AT.9",
+    obj: "I can graph the solutions of an inequality on a number line.",
   },
   {
     id: "8-6",
-    title: "Interpret Inequalities in Context",
-    std: "6.EE.8",
-    obj: "I can explain the meaning of inequality solutions in real-world scenarios (e.g., speed limits, budgets).",
+    title: "Solve and Graph Inequalities",
+    std: "6.AT.8",
+    obj: "I can solve an inequality and graph its solution set on a number line.",
   },
   {
     id: "8-7",
-    title: "Equation & Inequality Modeling Studio",
-    std: "6.EE.5-8",
-    obj: "I can formulate and solve systems of equations and inequalities representing engineering constraints.",
+    title: "Equations and Inequalities Problem Solving",
+    std: "6.AT.8",
+    obj: "I can model and solve real-world problems using equations and inequalities.",
   },
 ];
 u8Lessons.forEach((l) => {
@@ -785,7 +825,7 @@ u8Lessons.forEach((l) => {
         def: "A mathematical statement indicating that one quantity is greater than or less than another (<, >, ≤, ≥).",
       },
     ],
-    l.id.includes("5") || l.id.includes("6")
+    l.id.includes("4") || l.id.includes("5") || l.id.includes("6")
       ? {
           type: "numberLine",
           min: 0,
@@ -802,27 +842,27 @@ u8Lessons.forEach((l) => {
 const u9Lessons = [
   {
     id: "9-1",
-    title: "Independent & Dependent Variables",
-    std: "6.EE.9",
-    obj: "I can identify independent and dependent variables in real-world situations.",
+    title: "Explore Relationships Between Two Variables",
+    std: "6.AT.11",
+    obj: "I can recognize when two quantities change together, and identify which one is the independent variable and which is the dependent variable.",
   },
   {
     id: "9-2",
-    title: "Represent Relationships with Tables and Equations",
-    std: "6.EE.9",
-    obj: "I can write equations in the form y = kx or y = x + b to model two-variable relationships.",
+    title: "Analyze Graphs of Relationships Between Two Variables",
+    std: "6.AT.11",
+    obj: "I can use a table and a graph to determine and analyze the relationship between two variable quantities.",
   },
   {
     id: "9-3",
-    title: "Graph Two-Variable Relationships",
-    std: "6.EE.9",
-    obj: "I can graph relationships from a table and equation on the coordinate plane.",
+    title: "Write Equations to Represent Relationships Between Two Variables",
+    std: "6.AT.11",
+    obj: "I can write an equation from a table or a graph to model the relationship between the dependent and independent variables.",
   },
   {
     id: "9-4",
-    title: "Tri-Modal Representation Studio",
-    std: "6.EE.9",
-    obj: "I can translate seamlessly among verbal rules, tables, equations, and graphs.",
+    title: "Apply Two-Variable Relationships to Solve Problems",
+    std: "6.AT.11",
+    obj: "I can write an equation to represent the relationship between two variable quantities and use it to solve a real problem.",
   },
 ];
 u9Lessons.forEach((l) => {
@@ -857,19 +897,43 @@ u9Lessons.forEach((l) => {
   );
 });
 
-// UNIT 10: Culminating Math Synthesis (10-1 to 10-2)
+// UNIT 10: Culminating Math Synthesis (10-1 to 10-6)
 const u10Lessons = [
   {
     id: "10-1",
-    title: "Mathematical Modeling Capstone",
-    std: "MPP.1-8",
-    obj: "I can apply Grade 6 math standards to solve a multi-step real-world optimization project.",
+    title: "Math is Everywhere",
+    std: "MPP.3",
+    obj: "I can find applications of math outside of school — in professions like being a chef, in hobbies like gardening, and around my own house.",
   },
   {
     id: "10-2",
-    title: "Comprehensive Performance & Defense",
-    std: "MPP.1-8",
-    obj: "I can defend mathematical decisions using equations, graphs, error critiques, and precise written arguments.",
+    title: "Math is Beauty",
+    std: "MPP.7",
+    obj: "I can use bilateral symmetry to describe structure in nature and in human creations.",
+  },
+  {
+    id: "10-3",
+    title: "Math is Playful",
+    std: "MPP.7",
+    obj: "I can use patterns and relationships to make sense of the Tower of Hanoi puzzle and think logically about its solutions.",
+  },
+  {
+    id: "10-4",
+    title: "Math is Ingenuity",
+    std: "MPP.4",
+    obj: "I can use ratios and models to explain how the Penny Farthing and gear-driven bicycles were ingenious solutions to a real problem.",
+  },
+  {
+    id: "10-5",
+    title: "Math is Boundless",
+    std: "MPP.7",
+    obj: "I can create and describe geometric designs using repetition, patterns, and rhythm, and use a pattern unit to predict what comes next.",
+  },
+  {
+    id: "10-6",
+    title: "Math is Mine",
+    std: "MPP.3",
+    obj: "I can look back at my answers from Lesson 1-1, describe how my math biography has changed this year, and recognize ways we are all doers of math.",
   },
 ];
 u10Lessons.forEach((l) => {
@@ -907,32 +971,13 @@ u10Lessons.forEach((l) => {
  * Everything above is HAND-AUTHORED: the MSTAR items, the bilingual vocabulary,
  * the SVG configurations. That work is real and is kept. What is not authored
  * here is a lesson's IDENTITY — which lessons exist, what they are called, and
- * which standard they carry. `data/curriculum-manifest.json` owns that, and
- * this file had drifted from it badly enough to be dangerous:
+ * which standard they carry. `data/curriculum-manifest.json` owns that.
  *
- *   - 4 lessons in the list do not exist. Unit 4 ends at 4-5 and Unit 7 at 7-9,
- *     but the list carried 4-6, 4-7, 7-10 and 7-11. A run on 2026-08-27 wrote
- *     16 worksheet files into eight `lessons/<ghost>-group{1,2}/` folders that
- *     had no config.json, and five gates then crashed on the missing file.
- *   - 62 of the remaining 68 named the WRONG title and the WRONG standard.
- *     The list still describes the pre-2026-08-10 numbering: it calls 2-6
- *     "Interquartile Range (IQR)" under 6.DS.3, while lesson 2-6 is "Divide
- *     Multi-Digit Numbers Using an Algorithm" under 6.NOS.2. Both id spaces are
- *     \d+-\d+, so every lookup HITS and returns a different lesson's identity.
- *
- * The shipped worksheets were unharmed only because they are written by
- * scripts/generate-worksheets.mjs, which reads the lesson configs. This engine
- * is not wired into package.json, so the damage was latent — one manual run
- * from relabelling 62 worksheets with another lesson's title and standard.
- * That is the same failure `validate:lesson-catalogues` exists for, and a
- * comment asking the next person to remember is not a fix.
- *
- * So: a ghost id is DROPPED rather than generated, and title/standard are taken
- * from the manifest rather than from the list. A drifted entry cannot mislabel
- * a worksheet, and a lesson the curriculum has never heard of cannot be written
- * to disk at all. tools/mstar-lesson-map.test.mjs holds both properties.
+ * A ghost id is DROPPED rather than generated, and title/standard are taken
+ * from the manifest rather than from drifted hardcoding. Both dropped and
+ * relabelled arrays are verified by tools/mstar-lesson-map.test.mjs.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync as fsReadFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -940,7 +985,7 @@ export function curriculumIdentities(
   root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", ".."),
 ) {
   const manifest = JSON.parse(
-    readFileSync(resolve(root, "data", "curriculum-manifest.json"), "utf8"),
+    fsReadFileSync(resolve(root, "data", "curriculum-manifest.json"), "utf8"),
   );
   const out = {};
   const walk = (node) => {
