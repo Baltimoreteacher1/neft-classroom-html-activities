@@ -1,12 +1,7 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-import { renderActivityChooser, runComponentList } from "../components/activity-chooser.js";
-import {
-  renderLearnItPanel,
-  renderVocabAndLearnIt,
-  renderVocabPanel,
-} from "../components/vocab-learn-panel.js";
+import { runComponentList } from "../components/activity-chooser.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { fireCelebrationFX } from "./celebration-picker.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
@@ -15,11 +10,11 @@ import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
 import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
 import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
+  goToActStep,
   linkifyObjectiveTerms,
   observeVocabTerms,
   renderComponent,
   renderCuriousStep,
-  renderLearnItExtrasInto,
   resolveContentObjective,
   resolveLanguageObjective,
   underlineVocabTerms,
@@ -863,16 +858,15 @@ const PHASE_SUBTABS = {
     { extra: "noticewonder", icon: "🤔", label: "Notice & Wonder" },
   ],
   1: [
-    { extra: "vocab", icon: "🔑", label: "Vocab" },
-    // The Launch — today's problem, with the guided solve — sits directly under
-    // Vocab because it belongs with the teaching, not in front of it.
-    { extra: "launch", icon: "🚀", label: "Launch" },
-    { extra: "learn", icon: "💡", label: "Learn It" },
-    { extra: "watchme", icon: "👀", label: "Watch Me" },
-    // Practice is a STEP inside this act, not an extra panel, so it reaches the
-    // rail as a jump. It was the one teaching moment in Act 2 with no sidebar
-    // entry — reachable only by finding the in-act strip — which is how "Let's
-    // practice" came to look missing on the side.
+    // Act 2's teaching moments are STEPS in the in-act strip (Vocabulary →
+    // Launch → Learn It → Explore → Practice → Connect, built by
+    // renderAct2Studio) — the strip is the single source of truth for the
+    // taught order. These `jump` entries give the SIDE RAIL a named door into
+    // each step; the ribbon deliberately does not repeat them (the strip is
+    // directly below it), so a student sees the sequence exactly once.
+    { jump: "vocab", icon: "🔑", label: "Vocabulary" },
+    { jump: "launch", icon: "🚀", label: "Launch" },
+    { jump: "learn", icon: "💡", label: "Learn It" },
     { jump: "practice", icon: "✏️", label: "Practice" },
     // The lesson's own manipulatives, opened in their OWN window rather than as
     // an in-page takeover: reaching a model used to mean leaving the phase you
@@ -1024,8 +1018,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // Named indices for the phases the pre-lesson tabs hand off to. The tabs
   // used to hardcode raw numbers (3, 2) that no longer matched this list.
   const PHASE_WARMUP = 0;
-  const PHASE_LAUNCH = 0;
-  const PHASE_EXPLORE = 1;
+  // Act 2 hosts the teaching sequence as in-act steps (vocab → launch → learn
+  // → explore → practice → connect); openExtra routes those kinds here.
+  const PHASE_ACT2 = 1;
 
   // The 3-Act names are the default because that is what a Reveal lesson is.
   // A lesson surface with a genuinely different shape — Part 2, whose three
@@ -1511,8 +1506,15 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       phaseContainer.append(el);
       renderFn(el, state, this);
 
-      // Mount subcards ribbon for 1-click jumps between lesson parts
-      const subcards = subtabsFor(config, index);
+      // Mount subcards ribbon for 1-click jumps between lesson parts. `jump`
+      // entries are act STEPS — the numbered strip right below this ribbon
+      // already presents them in taught order, so repeating them here showed
+      // the same sequence twice on one screen (and the old duplicate handler
+      // scrolled to the wrong card: `querySelector(".${sel}, …, .card")`
+      // returns the first match in DOCUMENT order, so `.card` always won and
+      // every jump chip landed on Explore's first card). The ribbon keeps only
+      // side materials; the side rail renders the full list.
+      const subcards = subtabsFor(config, index).filter((t) => !t || !t.jump);
       if (subcards.length > 0) {
         const isEs = getPreferredLang() === "es";
         const ribbon = document.createElement("div");
@@ -1551,13 +1553,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
             if (targetBtn) targetBtn.click();
           });
         });
-        ribbon.querySelectorAll("[data-sub-jump]").forEach((b) => {
-          b.addEventListener("click", () => {
-            const sel = b.dataset.subJump;
-            const target = el.querySelector(`.${sel}, [data-section="${sel}"], #${sel}, .card`);
-            if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-          });
-        });
+        // No data-sub-jump handler: jump entries are filtered out of the
+        // ribbon above and act-step selection has exactly one code path —
+        // goToActStep / the rma:actstep event the side rail dispatches.
 
         const header = el.querySelector(
           ".section-header, .phase-title, .lesson-hero, .phase-header, .phero, h1",
@@ -1679,80 +1677,29 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "activity") return this.openActivity();
       if (kind === "objectives") return this.openObjectives();
       if (kind === "noticewonder") return this.openNoticeWonder();
-      if (kind === "launch") return this.openLaunch();
-      if (kind === "watchme") {
-        this.openExtra("learn");
-        setTimeout(() => {
-          const w = phaseContainer.querySelector(
-            ".vl-step-crumbs, .vl-stage-think, .vl-solve-steps, [data-learn-step]",
-          );
-          if (w) w.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 150);
-        return;
-      }
-
-      if (kind === "vocab") {
-        this.setExtraActive("vocab");
-        phaseContainer.innerHTML = "";
-        const el = document.createElement("div");
-        el.className = "phase active extra-panel extra-panel--fullpage";
-        // Focusable (never in the tab order) so the takeover — which scrolls
-        // inside itself while the document scroller is locked — responds to the
-        // keyboard as soon as it opens.
-        el.tabIndex = -1;
-        el.setAttribute("role", "region");
-        el.setAttribute("aria-label", "Vocabulary");
-        phaseContainer.append(el);
-        renderVocabPanel(el, config, {
-          state,
-          onComplete: () => this.openExtra("learn"),
-        });
-        // Term Match, Fill-the-Blanks, Example Sort and Memory Match all exist,
-        // but the only place they were rendered was the end-of-lesson completion
-        // screen — a student had to finish all eight phases before the word games
-        // for this lesson's vocabulary appeared. They belong next to the words
-        // they practise, so the same chooser is offered here too, in vocab-only
-        // mode (the word wall is already above it, and Extra Practice is not a
-        // vocabulary activity). Ungraded, exactly as on the completion screen.
-        const vocabGames = document.createElement("div");
-        vocabGames.style.cssText = "margin-top:var(--sp-6, 24px);";
-        renderActivityChooser(vocabGames, { config, only: "vocab" });
-        if (vocabGames.childNodes.length) el.append(vocabGames);
-        el.append(chainContinueButton("Continue to Learn It 📖 →", () => this.openExtra("learn")));
-        el.scrollIntoView({ block: "start" });
-        el.focus?.({ preventScroll: true });
-        return;
-      }
-
-      if (kind === "learn" || kind === "notes") {
-        this.setExtraActive(kind);
-        phaseContainer.innerHTML = "";
-        const el = document.createElement("div");
-        el.className = "phase active extra-panel extra-panel--fullpage";
-        // Focusable (never in the tab order) so the takeover — which scrolls
-        // inside itself while the document scroller is locked — responds to the
-        // keyboard as soon as it opens.
-        el.tabIndex = -1;
-        el.setAttribute("role", "region");
-        el.setAttribute("aria-label", "Learn It");
-        phaseContainer.append(el);
-        renderLearnItPanel(el, config, {
-          // Canonical lesson order: Launch → Vocab → Learn It → Explore.
-          // Learn It is pre-work for Explore, so it hands off to EXPLORE
-          // (phase index 3), not Practice — sending a student straight to
-          // Practice skipped the Explore phase entirely.
-          state,
-          onComplete: () => this.navigateTo(PHASE_EXPLORE),
-          // No "Apply It" step here any more: the scenario and its guided solve
-          // are the 🚀 Launch subcard now, one row above this one, so hosting
-          // them here as well would put the same problem in two places and
-          // leave a student wondering which copy their work was saved in.
-        });
-        el.append(
-          chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),
-        );
-        el.scrollIntoView({ block: "start" });
-        el.focus?.({ preventScroll: true });
+      // Vocabulary, Launch and Learn It are no longer takeover panels — they
+      // are STEPS in Act 2's strip, in taught order. Every caller (sidebar
+      // chips, deep links like ?extra=vocab, older Continue buttons) is routed
+      // to the real step so there is exactly one copy of each teaching moment
+      // and closing nothing ever strands a student on the wrong step.
+      if (kind === "vocab" || kind === "launch" || kind === "learn" || kind === "watchme") {
+        this.clearExtraActive();
+        const stepKey = kind === "watchme" ? "learn" : kind;
+        const cur = state.get().currentPhase ?? 0;
+        if (cur !== PHASE_ACT2) {
+          // navigateTo can refuse (notebook checkpoint gate); the student then
+          // stays where the gate holds them and no step request is left armed.
+          if (this.navigateTo(PHASE_ACT2) === false) return;
+        }
+        goToActStep(stepKey);
+        if (kind === "watchme") {
+          setTimeout(() => {
+            const w = phaseContainer.querySelector(
+              ".vl-step-crumbs, .vl-stage-think, .vl-solve-steps, [data-learn-step]",
+            );
+            if (w) w.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 150);
+        }
         return;
       }
       const id = encodeURIComponent(config.lessonId);
@@ -1911,22 +1858,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         };
         window.addEventListener("message", onReadinessMessage);
         addContinue("Continue to Warm-Up ⚡ →", toWarmup);
-      } else if (kind === "vocab") {
-        addContinue("Continue to Learn It 📖 →", () => this.openExtra("learn"));
-      } else if (kind === "learn") {
-        this.renderLearnItExtras?.(el);
-        addContinue("Continue to Explore 🔍 →", () => {
-          try {
-            state.set({ notesVisited: true });
-          } catch (_) {}
-          this.navigateTo(PHASE_EXPLORE);
-        });
       } else if (kind === "notes") {
+        // Launch is the "launch" step of Act 2 now, so this routes through the
+        // same one door as every other surface (it used to navigateTo Act 1).
         addContinue("Continue to Launch 🚀 →", () => {
           try {
             state.set({ notesVisited: true });
           } catch (_) {}
-          this.navigateTo(PHASE_LAUNCH);
+          this.openExtra("launch");
         });
       }
 
@@ -1947,46 +1886,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
      * be a step every student walked through on the way to today's problem;
      * as a card the teacher opens it when the class is ready for it.
      */
-    /**
-     * 🚀 Launch — today's word problem AND the whole guided solve: the scenario
-     * with its official figure, the Reveal slides for it, and the typeable
-     * know / need / plan / work / answer / how-I-know scaffold with the "I'm
-     * stuck" bar (renderLearnItExtrasInto).
-     *
-     * It used to be the last step of Act 1, which put the problem in front of
-     * the teaching and left it buried under a step strip (Joel, 2026-08-26:
-     * "it should allow the whole problem to be solved with steps and clear
-     * guidance. Also, it is kind of buried in the lesson"). Same content, one
-     * click from the sidebar, with room to work.
-     */
-    openLaunch() {
-      this.setExtraActive("launch");
-      phaseContainer.innerHTML = "";
-      const el = document.createElement("div");
-      el.className = "phase active extra-panel extra-panel--fullpage";
-      el.tabIndex = -1;
-      el.setAttribute("role", "region");
-      el.setAttribute("aria-label", "Launch");
-      el.innerHTML = `
-        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-4, 18px); padding-right:110px;">
-          <div>
-            <div class="section-title" style="font-size:2rem;">🚀 Launch</div>
-            <div class="section-desc" style="font-size:1.1rem;">Today's problem, one step at a time. Work it here.</div>
-          </div>
-          <div><button class="btn btn-secondary" data-act="close">✕ Close</button></div>
-        </div>`;
-      phaseContainer.append(el);
-      renderLearnItExtrasInto(el, config, state);
-      const launchVocab = augmentVocabWithGlossary(config.vocabulary);
-      underlineVocabTerms(el, launchVocab);
-      observeVocabTerms(el, launchVocab);
-
-      const back = () => this.navigateTo(state.get().currentPhase ?? 1);
-      el.querySelector('[data-act="close"]')?.addEventListener("click", back);
-      el.append(chainContinueButton("Continue to Learn It 📖 →", () => this.openExtra("learn")));
-      el.scrollIntoView({ block: "start" });
-      el.focus?.({ preventScroll: true });
-    },
+    // 🚀 Launch — today's word problem and the whole guided solve — is the
+    // "launch" STEP of Act 2 (renderAct2Studio renders renderLearnItExtrasInto
+    // there); openExtra("launch") routes to it above. The old openLaunch()
+    // full-page takeover was the second copy of the same content and is gone.
 
     openNoticeWonder() {
       this.setExtraActive("noticewonder");
@@ -2420,7 +2323,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // the Save/Resume launcher; hidden on the final phase and while a full-page
   // pre-lesson tab (Vocab / Learn It / Notes) is open.
   (function mountNextButton() {
-    const hasVocab = Array.isArray(config.vocabulary) && config.vocabulary.length > 0;
     const nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.className = "nt-next-phase-btn";
@@ -2442,14 +2344,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const cur = st.currentPhase ?? 0;
       const total = config.phases.length;
       const onExtra = document.documentElement.classList.contains("nt-extra-fullpage-open");
-      // Canonical order is Launch → Vocab → Learn It → Explore. Vocab and
-      // Learn It are full-page extras, not entries in `phases`, so stepping
-      // cur+1 from Launch skipped straight past both of them and landed on
-      // Explore — the opposite of what the lesson chain says. From Launch the
-      // control therefore points at Vocab (when the lesson has vocabulary);
-      // everywhere else it is still the next phase.
-      const toVocab = cur === PHASE_LAUNCH && hasVocab;
-      const nextName = toVocab ? "Vocabulary" : phaseConfigs[cur + 1]?.name || "Next";
+      // The teaching sequence lives INSIDE Act 2 as steps now, so the pill's
+      // job is simply "next act" — it always agrees with the sidebar and the
+      // in-act Continue buttons. (Its old special case sent Act 1 students to
+      // a Vocabulary takeover without advancing the phase, after which this
+      // same pill read "Next: Act 3" — one tap skipped five steps.)
+      const nextName = phaseConfigs[cur + 1]?.name || "Next";
       const hide = cur >= total - 1 || onExtra;
       nextBtn.innerHTML = `Next: ${nextName} <span aria-hidden="true">→</span>`;
       nextBtn.hidden = hide;
@@ -2462,11 +2362,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     }
     nextBtn.addEventListener("click", () => {
       const cur = state.get().currentPhase ?? 0;
-      if (cur === PHASE_LAUNCH && hasVocab) {
-        app.openExtra("vocab");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
       if (cur < config.phases.length - 1) {
         app.navigateTo(cur + 1);
         window.scrollTo({ top: 0, behavior: "smooth" });

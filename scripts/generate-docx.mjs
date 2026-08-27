@@ -846,95 +846,53 @@ function independentPracticeBlock(cfg, excludeStems = new Set(), level = null) {
   return out;
 }
 
-// ── WRITE ABOUT THE MATH (ESOL-SCAFFOLDED) ──────────────────────────────────
+// ── WRITE ABOUT THE MATH (GUIDED WRITING) ───────────────────────────────────
+// Mirrors the compact web version (scripts/generate-notes.mjs twrSection): the
+// question, the words to use, a frame at each support level, a 3-item check.
+// Spanish appears on the sentence frames only, and the C-E-R model prints only
+// when the lesson authored one.
 function writingBlock(cfg) {
   const twr = deriveTWR(cfg);
   const out = [sectionHeading("Write About the Math")];
-  out.push(muted("Use the support level you need. Every level answers the same math question."));
 
-  out.push(subHeading("1. Understand the Question", twr.focus.action, AMBER));
   out.push(
-    calloutBox(
-      [
-        bilingual(twr.focus.questionEn, twr.focus.questionEs),
-        para(
-          [
-            new TextRun({ text: "Your job:  ", bold: true, color: NAVY, size: 20 }),
-            new TextRun({ text: twr.focus.jobEn, size: 20 }),
-            new TextRun({
-              text: twr.focus.jobEs,
-              break: 1,
-              italics: true,
-              color: MUTED,
-              size: 18,
-            }),
-          ],
-          { spacing: { after: 0 } },
-        ),
-      ],
-      { fill: TEAL_BG, border: TEAL },
-    ),
+    calloutBox([bilingual(twr.focus.questionEn, twr.focus.questionEs)], {
+      fill: TEAL_BG,
+      border: TEAL,
+    }),
   );
-
-  out.push(subHeading("2. Plan Your Math Words", "check at least two", TEAL));
+  out.push(
+    muted("Say your answer to a partner first. Then write it, using at least two of these words:"),
+  );
   for (const word of twr.vocabulary) {
     out.push(
       para(
         [
           new TextRun({ text: "☐  ", bold: true, color: TEAL, size: 22 }),
-          new TextRun({ text: `${word.term} — `, bold: true, color: NAVY, size: 20 }),
-          new TextRun({ text: word.definition, size: 20 }),
-          word.termEs || word.definitionEs
-            ? new TextRun({
-                text: `${word.termEs}${word.definitionEs ? ` — ${word.definitionEs}` : ""}`,
-                break: 1,
-                italics: true,
-                color: MUTED,
-                size: 18,
-              })
+          new TextRun({ text: word.term, bold: true, color: NAVY, size: 20 }),
+          word.termEs
+            ? new TextRun({ text: `  ·  ${word.termEs}`, italics: true, color: MUTED, size: 18 })
             : new TextRun(""),
         ],
-        { spacing: { after: 60 } },
+        { spacing: { after: 40 } },
       ),
     );
   }
-  out.push(
-    calloutBox(
-      [
-        para(
-          [
-            new TextRun({ text: "Say it first:  ", bold: true, color: TEAL, size: 20 }),
-            new TextRun({ text: twr.rehearsal.directionEn, size: 20 }),
-          ],
-          { spacing: { after: 50 } },
-        ),
-        bilingual(twr.rehearsal.frameEn, twr.rehearsal.frameEs),
-      ],
-      { fill: "F7FFFD", border: TEAL },
-    ),
-  );
 
-  out.push(subHeading("3. Build Your Explanation", "choose your support", AMBER));
-  out.push(
-    calloutBox(
-      [
-        muted(twr.model.note, { spacing: { after: 50 } }),
-        para([
-          new TextRun({ text: "Claim:  ", bold: true, color: NAVY, size: 19 }),
-          new TextRun({ text: twr.model.claim, size: 19 }),
-        ]),
-        para([
-          new TextRun({ text: "Evidence:  ", bold: true, color: NAVY, size: 19 }),
-          new TextRun({ text: twr.model.evidence, size: 19 }),
-        ]),
-        para([
-          new TextRun({ text: "Reasoning:  ", bold: true, color: NAVY, size: 19 }),
-          new TextRun({ text: twr.model.reasoning, size: 19 }),
-        ]),
-      ],
-      { fill: BOX_BG, border: BOX_BORDER },
-    ),
-  );
+  if (twr.model && twr.model.claim) {
+    out.push(
+      calloutBox(
+        [
+          para([
+            new TextRun({ text: "Model:  ", bold: true, color: NAVY, size: 19 }),
+            new TextRun({ text: `${twr.model.claim} — ${twr.model.evidence}`, size: 19 }),
+          ]),
+        ],
+        { fill: BOX_BG, border: BOX_BORDER },
+      ),
+    );
+  }
+
   for (const level of twr.levels) {
     out.push(subHeading(level.label, level.support, level.id === "start" ? TEAL : AMBER));
     out.push(bilingual(level.directionEn, level.directionEs));
@@ -942,13 +900,12 @@ function writingBlock(cfg) {
     out.push(workBox(level.id === "explain" ? 5 : 3, AMBER_BG));
   }
 
-  out.push(subHeading("4. Check Your Explanation", "five quick checks", TEAL));
+  out.push(subHeading("Check Your Explanation", "three quick checks", TEAL));
   for (const item of twr.checklist) {
     out.push(
       para([
         new TextRun({ text: "☐  ", bold: true, color: TEAL, size: 22 }),
         new TextRun({ text: item.en, size: 20 }),
-        new TextRun({ text: item.es, break: 1, italics: true, color: MUTED, size: 18 }),
       ]),
     );
   }

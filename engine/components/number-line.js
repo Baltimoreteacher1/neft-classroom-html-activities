@@ -157,7 +157,9 @@ export function renderNumberLine(container, config) {
     dotLabel.setAttribute("text-anchor", "middle");
     dotLabel.setAttribute("font-weight", "700");
 
-    const valLabel = text(g, 0, 32, "", "10px", "#5f6f80");
+    // y=44, not 32: the live value used to print directly on top of the axis
+    // tick labels (TICK_Y+26), double-printing "41" over "41" as a smear.
+    const valLabel = text(g, 0, 44, "", "10px", "#5f6f80");
     valLabel.setAttribute("text-anchor", "middle");
 
     g.append(shadow, dot, dotLabel, valLabel);
@@ -190,6 +192,15 @@ export function renderNumberLine(container, config) {
 
     function paint(x) {
       g.setAttribute("transform", `translate(${x}, ${TICK_Y})`);
+      // Edge-aware label anchoring: a centered label on a marker near either
+      // end overflows the viewBox — "C: Mode" rendered as a bare "C:" with
+      // "Mode" clipped off the right edge. The label leans back into the
+      // drawing instead of past it.
+      const nearRight = x > 600 - PAD_RIGHT - 55;
+      const nearLeft = x < PAD_LEFT + 55;
+      const anchor = nearRight ? "end" : nearLeft ? "start" : "middle";
+      dotLabel.setAttribute("text-anchor", anchor);
+      valLabel.setAttribute("text-anchor", anchor);
     }
 
     // Eased follow toward state.x for buttery drag motion. Decorative only:

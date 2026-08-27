@@ -437,3 +437,19 @@
 body:has(.bottom-status-bar) #nsr-root {
   bottom: 96px;
 }
+
+/* ── Bottom-right dock bands (2026-08-27 publisher critique) ──────────────
+ * Four floating controls self-position in this corner and were covering each
+ * other: the lesson's "Next" pill (bottom 16), the Math Workbench circle
+ * (bottom 76), the small-group station timer (bottom 18, right 86), and this
+ * launcher stack. Each occupant now claims its own band; Save/Resume, as the
+ * least-urgent control, stacks above whatever else the page runs. */
+body:has(.nt-next-phase-btn) #nsr-root {
+  bottom: 76px; /* clear the Next pill */
+}
+body:has(.nt-next-phase-btn):has(#mwb-launcher) #nsr-root {
+  bottom: 122px; /* clear the Next pill AND the Math Workbench circle */
+}
+body:has(.sg-station-timer) #nsr-root {
+  bottom: 64px; /* clear the small-group station timer row */
+}

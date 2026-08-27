@@ -4,51 +4,42 @@
 // PDF workflows all receive the same lesson-specific writing support.
 
 const FIXED_SPANISH = Object.freeze({
-  job: "Responde la pregunta. Usa evidencia matemática. Explica cómo la evidencia demuestra tu respuesta.",
-  rehearsal: "Di tu respuesta primero: Mi respuesta es ___ porque ___.",
+  job: "Responde la pregunta con evidencia matemática.",
+  rehearsal: "Mi respuesta es ___ porque ___.",
 });
 
+// Three items, each checking a DIFFERENT thing. The old five-item list said
+// "explained how the evidence proves my answer" one line after "used math
+// evidence", and spent a line on punctuation — a checklist students skim past
+// is a checklist that checks nothing.
 const CHECKLIST = Object.freeze([
   Object.freeze({
     en: "I answered the question.",
     es: "Respondí la pregunta.",
   }),
   Object.freeze({
-    en: "I used math evidence: numbers, an equation, a model, or a comparison.",
-    es: "Usé evidencia matemática: números, una ecuación, un modelo o una comparación.",
-  }),
-  Object.freeze({
-    en: "I explained how the evidence proves my answer.",
-    es: "Expliqué cómo la evidencia demuestra mi respuesta.",
+    en: "I used math evidence: numbers, an equation, or a model.",
+    es: "Usé evidencia matemática: números, una ecuación o un modelo.",
   }),
   Object.freeze({
     en: "I used at least two math words.",
     es: "Usé por lo menos dos palabras matemáticas.",
   }),
-  Object.freeze({
-    en: "I reread complete sentences and punctuation.",
-    es: "Volví a leer mis oraciones completas y la puntuación.",
-  }),
 ]);
 
+// No level repeats another level's line, and no level repeats the rehearsal
+// frame — each rung hands the student strictly MORE of the sentence to build
+// on their own. Explain has no frames on purpose: light support means writing
+// the sentences yourself.
 const SYSTEM_FRAMES = Object.freeze({
   start: Object.freeze([
-    Object.freeze({ en: "My answer is ___.", es: "Mi respuesta es ___." }),
-    Object.freeze({ en: "I know because ___.", es: "Lo sé porque ___." }),
+    Object.freeze({ en: "My answer is ___ because ___.", es: "Mi respuesta es ___ porque ___." }),
   ]),
   build: Object.freeze([
     Object.freeze({ en: "My claim is ___.", es: "Mi afirmación es ___." }),
-    Object.freeze({ en: "I know because ___.", es: "Lo sé porque ___." }),
-    Object.freeze({ en: "So ___.", es: "Entonces ___." }),
+    Object.freeze({ en: "My evidence is ___, so ___.", es: "Mi evidencia es ___, entonces ___." }),
   ]),
-  explain: Object.freeze([
-    Object.freeze({ en: "My claim is ___.", es: "Mi afirmación es ___." }),
-    Object.freeze({ en: "My math evidence is ___.", es: "Mi evidencia matemática es ___." }),
-    Object.freeze({
-      en: "This proves ___ because ___.",
-      es: "Esto demuestra ___ porque ___.",
-    }),
-  ]),
+  explain: Object.freeze([]),
 });
 
 function cleanText(value) {
@@ -116,7 +107,14 @@ function normalizeFrame(frame) {
 }
 
 function selectVocabulary(config, source) {
-  const authored = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  // A `role: "concept"` entry is the lesson TITLE dressed as a term ("Describe
+  // the Data Using the Median"). It is not a word a student can use in a
+  // sentence, and telling them to check it off as one of their "two math
+  // words" reads as machine output. The small-group generator already
+  // excludes this shape for the same reason.
+  const authored = (Array.isArray(config.vocabulary) ? config.vocabulary : []).filter(
+    (word) => word && word.role !== "concept",
+  );
   const requested = new Set(
     (Array.isArray(source?.wordBank) ? source.wordBank : []).map((word) =>
       cleanText(word).toLowerCase(),
@@ -141,7 +139,7 @@ function deriveFocus(config, source) {
   const questionEn = ensureQuestion(
     source?.question ||
       (objective
-        ? `How can you show and explain that you can ${objective}`
+        ? `How can you show that you can ${objective}`
         : `How can you explain the main idea in ${config.title || "this lesson"}`),
   );
   const questionEs = source?.questionEs ? ensureQuestion(source.questionEs) : "";
@@ -203,36 +201,22 @@ function deriveLevels(source) {
   ];
 }
 
-function mainConcept(config) {
-  const vocabulary = Array.isArray(config.vocabulary) ? config.vocabulary : [];
-  const title = cleanText(config.title).toLowerCase();
-  return (
-    vocabulary.find((word) => title.includes(cleanText(word?.term).toLowerCase())) ||
-    vocabulary[0] ||
-    null
-  );
-}
-
 function deriveModel(config, focusSource) {
+  // A model is rendered ONLY when the lesson authored one (a turn-and-talk
+  // kernel with a listen-for). The old fallback manufactured a claim from a
+  // vocabulary definition and closed with "This evidence connects the
+  // definition of <term> to the mathematical claim" — a tautology printed to
+  // students on every lesson without an authored model. No model is better
+  // than an invented one; every consumer guards on null.
   const source = selectModelSource(config, focusSource);
-  const concept = mainConcept(config);
-  const conceptTerm = cleanText(concept?.term) || cleanText(config.title) || "The math idea";
-  const conceptDefinition = cleanText(concept?.definition);
-  const claim = cleanText(source?.kernel) || `${conceptTerm} means ${conceptDefinition}`;
-  const evidence =
-    cleanText(source?.listenFor) ||
-    (conceptDefinition
-      ? `The lesson defines ${conceptTerm.toLowerCase()} as ${conceptDefinition}`
-      : "The numbers and model show the relationship.");
-  const reasoning = conceptDefinition
-    ? `This evidence connects the definition of ${conceptTerm.toLowerCase()} to the mathematical claim.`
-    : "This evidence explains how the math supports the claim.";
-
+  const claim = cleanText(source?.kernel);
+  const evidence = cleanText(source?.listenFor);
+  if (!claim || !evidence) return null;
   return {
     note: "This model shows the parts of an explanation. It does not answer your writing question.",
     claim,
     evidence,
-    reasoning,
+    reasoning: "",
   };
 }
 
@@ -248,7 +232,18 @@ export function deriveTWR(config = {}) {
     levels: deriveLevels(source),
     model: deriveModel(config, source),
     checklist,
-    teacherCriteria: checklist,
+    // What the TEACHER scores — not a reprint of the student's checklist. The
+    // old teacherCriteria WAS the checklist verbatim, so the "Teacher Copy"
+    // told a teacher nothing the student page had not already said.
+    teacherCriteria: [
+      { en: "The answer to the math question is correct." },
+      {
+        en: "The evidence is real lesson mathematics (numbers, equation, or model), not restated claim.",
+      },
+      {
+        en: "The support level changed the language scaffolding, never the mathematical expectation.",
+      },
+    ],
   };
 }
 

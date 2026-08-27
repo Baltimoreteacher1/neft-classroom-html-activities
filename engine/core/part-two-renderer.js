@@ -121,9 +121,9 @@ function renderReview(host, state, ctx, config) {
   phaseHeading(
     host,
     1,
-    "⚡",
-    "Warm-Up",
-    "Day 2. Answer these first, then check what you need from yesterday below.",
+    "🔁",
+    "Review",
+    "Day 2. Warm up with these first, then check what you need from yesterday below.",
   );
   // A WARM-UP, not a single quick check: three autograded questions from
   // yesterday's own practice set, easiest first, so every student gets in.
@@ -192,7 +192,7 @@ function renderReview(host, state, ctx, config) {
            h.formula
              ? `<p style="margin:0 0 12px; padding:12px 16px; background:#f0fdfa; border-left:4px solid #0f766e; border-radius:10px; font-size:1.15rem; font-weight:700; color:#0f172a;">${esc(h.formula)}</p>`
              : ""
-}
+         }
          ${
            steps.length
              ? `<ol style="margin:0; padding-left:22px; display:flex; flex-direction:column; gap:6px;">${steps
@@ -202,12 +202,12 @@ function renderReview(host, state, ctx, config) {
                  )
                  .join("")}</ol>`
              : ""
-}
+         }
          ${
            h.watchOut
              ? `<p style="margin:14px 0 0; padding:12px 16px; background:#fff7ed; border-left:4px solid #ea580c; border-radius:10px; font-size:1rem; color:#0f172a; line-height:1.55;"><strong>⚠️ Watch out:</strong> ${esc(h.watchOut)}</p>`
              : ""
-}`,
+         }`,
       ),
     );
     host.append(card);
@@ -327,8 +327,8 @@ function renderProblem(host, state, ctx, config) {
       el(
         "div",
         null,
-        `<h3 style="margin:0 0 4px; font-size:1.25rem; color:#0f172a;">🖌️ Work it with the model</h3>
-         <p style="margin:0 0 12px; font-size:1rem; color:#475569;">The same tool from Part 1. Try the numbers in today's problem, then write what you found below.</p>`,
+        `<h3 style="margin:0 0 4px; font-size:1.25rem; color:#0f172a;">🖌️ A reminder of how it works</h3>
+         <p style="margin:0 0 12px; font-size:1rem; color:#475569;">The same tool from Part 1, so you can see how the math behaves before you solve today's problem on paper.</p>`,
       ),
     );
     const mount = document.createElement("div");
@@ -434,16 +434,6 @@ function renderGroups(host, state, _ctx, config) {
   roleCard.append(grid);
   host.append(roleCard);
 
-  // ── Leveled practice ──────────────────────────────────────────────────────
-  // Three sets, one per level, each opening from its own chip (Joel: "Group
-  // work should be leveled (with subcards) having different levels and
-  // different modifications/problems included"). Every problem is AUTHORED —
-  // assembled by scripts/generate-part-two.mjs from the core lesson and its own
-  // small-group variants, about 45 per lesson — so nothing here can be wrong in
-  // a way an author did not write. The MODIFICATION line under each chip is
-  // what that table does differently, not a different subject.
-  renderLevels(host, state, config);
-
   const solve = el("section", "card");
   solve.append(
     el(
@@ -489,6 +479,18 @@ function renderGroups(host, state, _ctx, config) {
     field(state, 2, "share", "Our share-out sentence", "Write it out so it is ready to read.", 3),
   );
   host.append(share);
+
+  // ── Leveled practice — AFTER the group solve, not before it ───────────────
+  // Group Work is named for the collaborative problem, so the collaborative
+  // problem leads; the leveled table sets (Joel: "Group work should be leveled
+  // (with subcards) having different levels and different modifications /
+  // problems included") are what a table does when its solve and share-out are
+  // ready. They used to render first, which made this phase read as a second
+  // worksheet with the actual group artifact seven screens down. Every problem
+  // is AUTHORED — assembled by scripts/generate-part-two.mjs from the core
+  // lesson and its own small-group variants. The MODIFICATION line under each
+  // chip is what that table does differently, not a different subject.
+  renderLevels(host, state, config);
 
   const sample = config.revealWordProblem && config.revealWordProblem.sampleAnswer;
   if (sample && isTeacherMode()) {
@@ -563,8 +565,8 @@ function renderLevels(host, state, config) {
     el(
       "div",
       null,
-      `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">🧗 Your group's problem set</h3>
-       <p style="margin:0 0 14px; font-size:1rem; color:#475569;">Your teacher will tell you which level your table is on. Every level practises the same skill.</p>`,
+      `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">🧗 Table practice — after your share-out</h3>
+       <p style="margin:0 0 14px; font-size:1rem; color:#475569;">Your teacher will tell you which level your table is on. Every level practices the same skill.</p>`,
     ),
   );
 
@@ -655,7 +657,10 @@ export function bootPartTwo(config) {
   createApp({
     ...config,
     phaseMeta: [
-      { name: "Warm-Up", icon: "⚡" },
+      // Phase 0 renders renderReview — objectives, vocabulary and one carried
+      // question from Part 1. Calling it "Warm-Up" told students this was a
+      // new lesson's warm-up rather than a look back at yesterday's.
+      { name: "Review", icon: "🔁" },
       { name: "Today's Problem", icon: "📋" },
       { name: "Group Work", icon: "👥" },
     ],

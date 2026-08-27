@@ -208,6 +208,16 @@ the strongest one(s) relevant to what you changed:
 > from 108 to 127 before anyone re-read it). Several of those are RATCHETS rather than ordinary tests — they pin a
 > number so a regression cannot be absorbed silently, and each one's failure
 > message tells you exactly what to do:
+> `tools/act-flow-contract.test.mjs` (every navigation surface — act step strip,
+> ribbon, side rail, Continue buttons — presents ONE taught order,
+> Vocabulary → Launch → Learn It → Explore → Practice → Connect; written after
+> four surfaces drifted into four different orders in the 2026-08-25..27
+> 3-Act commits, mutation-proven against the exact regressions),
+> `tools/word-budget.test.mjs` (fleet-median visible words on generated
+> notes.html/learn.html may not exceed a pinned budget — the July 2026 notes
+> bloat tripled the student notes page one template paragraph at a time and no
+> gate measured reading load; raise a budget only deliberately, in the same
+> commit as the generator change, with a reason),
 > `tools/lint-coverage.test.mjs` (every shipped script must be visible to Biome),
 > `tools/typecheck-ratchet.test.mjs` (the `@ts-nocheck` count may only shrink),
 > `tools/curriculum-hub-assets.test.mjs` (the hub's extracted assets are stamped

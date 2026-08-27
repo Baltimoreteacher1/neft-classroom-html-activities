@@ -265,7 +265,7 @@ function buildHighlights(config) {
  *   🔵 Level 2  grade level — on-level items from the lesson and both groups
  *   🟣 Level 3  the stretch — extending items and Group 2's bank
  */
-function buildGroupLevels(id, config, readVariant) {
+function buildGroupLevels(id, config, readVariant, warmupStems = []) {
   const g1 = readVariant(`${id}-group1`);
   const g2 = readVariant(`${id}-group2`);
   const cu = readVariant(`${id}-catchup`);
@@ -314,14 +314,35 @@ function buildGroupLevels(id, config, readVariant) {
   // time at different tables, so a problem serving two of them is invisible;
   // deduping globally instead let the first level drain the pool and left 27
   // lessons with an empty challenge set.
+  //
+  // Two more exclusions, both from the 2026-08-27 publisher critique:
+  // - A stem the Review warm-up already asked is DROPPED — students were
+  //   meeting "Find the mean of: 10, 14, 8, 12, 16" three times in one block
+  //   (warm-up, then twice more at the table), because the catch-up variant's
+  //   pools carry the same prior-lesson items buildWarmup lifts.
+  // - Each level is CAPPED at five problems. Ten-problem sets turned Group
+  //   Work into a second worksheet and pushed the actual collaborative solve
+  //   seven screens down. Pools are ordered core-lesson-first, so the cap
+  //   keeps the items closest to today's skill.
+  // Comparison is on a NORMALIZED stem: the parallel banks label their copies
+  // "(Lesson 2.3)", so an exact-string compare saw two different problems
+  // where a student sees the same one — 36 of 76 part2 configs shipped
+  // internal duplicates that way.
+  const normStem = (s) =>
+    String(s)
+      .replace(/\(Lesson \d+\.\d+\)/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  const warmupSet = new Set(warmupStems.map(normStem).filter(Boolean));
   const out = {};
   for (const [key, items] of Object.entries(levels)) {
     const seen = new Set();
     const kept = [];
     for (const item of items) {
+      if (kept.length >= 5) break;
       if (!item || typeof item !== "object") continue;
-      const stem = String(item.stem || item.prompt || "").trim();
-      if (!stem || seen.has(stem)) continue;
+      const stem = normStem(item.stem || item.prompt || "");
+      if (!stem || seen.has(stem) || warmupSet.has(stem)) continue;
       // Drop rather than de-figure: a problem whose numbers are in the picture
       // is unsolvable without it, and this renderer cannot draw that picture.
       if (!visualRenders(item)) continue;
@@ -360,7 +381,10 @@ function buildConfig(id, core, readVariant) {
   if (warmup) out.reviewWarmup = warmup;
   const highlights = buildHighlights(core);
   if (highlights) out.reviewHighlights = highlights;
-  const levels = buildGroupLevels(id, core, readVariant);
+  const warmupStems = warmup
+    ? (warmup.questions || []).map((q) => String(q?.stem || "").trim())
+    : [];
+  const levels = buildGroupLevels(id, core, readVariant, warmupStems);
   if (levels) out.groupLevels = levels;
   const tool = selectTool(core);
   if (tool) out.tool = tool;

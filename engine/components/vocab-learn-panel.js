@@ -1385,7 +1385,11 @@ function injectVocabLearnStyles() {
 
 // ─── 1. SEPARATE VOCABULARY PANEL ───────────────────────────────────────────
 export function renderVocabPanel(container, config, options = {}) {
-  const { onComplete = () => {}, state = null } = options;
+  // nextLabel names the step onComplete actually goes to. The default matched
+  // the old takeover chain (vocab → learn); Act 2's step strip goes vocab →
+  // LAUNCH, and a button whose label disagrees with its destination is a
+  // wrong-page button.
+  const { onComplete = () => {}, state = null, nextLabel = null, nextLabelEs = null } = options;
   injectVocabLearnStyles();
   container.innerHTML = "";
 
@@ -1442,7 +1446,9 @@ export function renderVocabPanel(container, config, options = {}) {
   btn.className = "btn btn-primary btn-lg vl-continue-btn";
   btn.style.background = "linear-gradient(135deg, #b45309 0%, #0d7a76 100%)";
   btn.innerHTML = `<span>${
-    isEs ? "Siguiente: Aprender el Concepto 💡 →" : "Next: Learn It (How the Math Works) 💡 →"
+    isEs
+      ? nextLabelEs || "Siguiente: Aprender el Concepto 💡 →"
+      : nextLabel || "Next: Learn It (How the Math Works) 💡 →"
   }</span>`;
   btn.addEventListener("click", () => {
     try {
@@ -1649,7 +1655,15 @@ function seedVisualFromWorkedExample(iv, lines) {
 }
 
 export function renderLearnItPanel(container, config, options = {}) {
-  const { onComplete = () => {}, state = null, renderExtras = null } = options;
+  // nextLabel/nextLabelEs: the forward CTA must NAME the step onComplete goes
+  // to (Explore for most lessons, Practice when there is no Explore).
+  const {
+    onComplete = () => {},
+    state = null,
+    renderExtras = null,
+    nextLabel = null,
+    nextLabelEs = null,
+  } = options;
   injectVocabLearnStyles();
   container.innerHTML = "";
 
@@ -2478,8 +2492,8 @@ export function renderLearnItPanel(container, config, options = {}) {
       btn.className = "btn btn-primary btn-lg vl-continue-btn";
       btn.innerHTML = `<span>${
         isEs
-          ? "¡He aprendido el concepto — a practicar! ✏️ →"
-          : "I've learned the concept — let's practice! ✏️ →"
+          ? nextLabelEs || "¡He aprendido el concepto — a practicar! ✏️ →"
+          : nextLabel || "I've learned the concept — let's practice! ✏️ →"
       }</span>`;
       btn.addEventListener("click", () => {
         try {

@@ -21,7 +21,24 @@ import "./flagship.css";
 import { stackHtml, t } from "../../core/i18n.js";
 import { isToolsMode } from "../../core/tools-mode.js";
 
-const PHASE_KEYS = ["launch", "vocab", "explore", "practice", "connect", "reflect"];
+// The engine runs THREE acts now (Warm-Up / Lesson / Exit Ticket), not the old
+// six phases — indexing authored scenes by the old 6-entry list showed Act 3
+// students the "explore" scene and made practice/connect/reflect scenes
+// unreachable on all 30 flagship lessons. Each act picks the first scene its
+// author actually wrote, in the order that act teaches.
+const ACT_SCENE_KEYS = [
+  ["launch", "vocab"],
+  ["explore", "practice", "vocab", "connect"],
+  ["reflect", "connect"],
+];
+
+function sceneForPhase(scenes, phaseIndex) {
+  const candidates = ACT_SCENE_KEYS[phaseIndex] || ACT_SCENE_KEYS[0];
+  for (const key of candidates) {
+    if (scenes[key]) return scenes[key];
+  }
+  return null;
+}
 
 export function bootFlagship(config) {
   // Canvas/SCORM resume relay, attached BEFORE the mission intro rather than
@@ -68,10 +85,12 @@ export function bootFlagship(config) {
   });
 }
 
+const SCENE_PHASE_NAMES = ["launch", "vocab", "explore", "practice", "connect", "reflect"];
+
 function normalizeScenes(scenes) {
   const out = {};
   (scenes || []).forEach((s) => {
-    if (s && s.phase && PHASE_KEYS.includes(s.phase)) out[s.phase] = s;
+    if (s && s.phase && SCENE_PHASE_NAMES.includes(s.phase)) out[s.phase] = s;
   });
   return out;
 }
@@ -152,8 +171,7 @@ function attachSceneHud(scenes, _fl) {
   main.prepend(hud);
 
   function update(phaseIndex) {
-    const key = PHASE_KEYS[phaseIndex] || "launch";
-    const scene = scenes[key];
+    const scene = sceneForPhase(scenes, phaseIndex);
     if (!scene) {
       hud.style.display = "none";
       return;

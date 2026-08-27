@@ -404,45 +404,6 @@ function lessonConfigs() {
 
 /* ---------- section builders ---------- */
 
-function _vocabSection(vocab = []) {
-  if (!vocab.length) return "";
-  const cards = vocab
-    .map((v) => {
-      const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
-      const imgAlt = vocabImageAlt(v.term, v.definition);
-      return `<div class="vocab-card">
-  <div class="vocab-figure">
-    <img src="${imgSrc}" alt="${esc(imgAlt)}" onerror="this.style.display='none'" />
-    <p class="vocab-caption">${esc(v.visual)}</p>
-  </div>
-  <h3 class="vocab-term">${esc(v.term)}</h3>
-  <div class="vocab-def-l1">
-    <p class="vocab-def">${esc(v.definition)}</p>
-  </div>
-  <div class="vocab-def-l2">
-    <p class="vocab-def-prompt">Write the definition:</p>
-    ${blankLines(2)}
-  </div>
-  <div class="vocab-def-l3">
-    <p class="vocab-def-prompt">Explain this mathematical concept in your own words:</p>
-    ${blankLines(2)}
-  </div>
-</div>`;
-    })
-    .join("\n");
-
-  return `<section class="section vocab">
-  <h2>Key Vocabulary 
-    <span class="level-tag level-1 l1-only">Level 1 Support</span>
-    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
-    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
-  </h2>
-  <p class="level-note">Picture first, then the word, then a plain-language meaning. Say each word out loud.</p>
-  <div class="vocab-grid">
-${cards}
-  </div>
-</section>`;
-}
 
 function choiceOl(choices) {
   if (!Array.isArray(choices) || !choices.length) return "";
@@ -451,244 +412,6 @@ function choiceOl(choices) {
     .join("")}</ol>`;
 }
 
-// Render the gradual-release worked frame (I Do → We Do → You Do) using real
-// practice problems. The I-Do is fully solved in numbered steps; We-Do/You-Do
-// give the same scaffold with blank work space. Answers live in the Answer Key.
-function _workedFrame(worked) {
-  if (!worked || !worked.iDo) {
-    // No usable practice items — fall back to a generic guided frame.
-    return `<div class="notes-gradual">
-      <!-- Fallback Level 1 Support -->
-      <div class="l1-only">
-        <div class="notes-gr-step notes-gr-watch">
-          <span class="notes-gr-tag">👀 Watch</span>
-          <p class="notes-gr-cue">Watch your teacher. Circle key words in the problem.</p>
-          <div class="wk-checkboxes">
-            <label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> I listened and understood</label>
-            <label class="wk-checkbox-label"><input type="checkbox" /> I wrote down the key numbers</label>
-          </div>
-          ${blankLines(1)}
-        </div>
-        <div class="notes-gr-step notes-gr-we">
-          <span class="notes-gr-tag">🤝 We try</span>
-          <p class="notes-gr-cue">Fill in the missing words with your class.</p>
-          <p class="wk-step wk-step-blank">Step 1: First, we identify the ______ elements. Step 2: Then, we calculate the ______.</p>
-          ${blankLines(1)}
-        </div>
-        <div class="notes-gr-step notes-gr-you">
-          <span class="notes-gr-tag">✏️ You try</span>
-          <p class="notes-gr-cue">Choose the correct operation: <label class="wk-checkbox-label" style="margin-left: 8px;"><input type="checkbox" /> Add</label> &nbsp; <label class="wk-checkbox-label"><input type="checkbox" /> Subtract</label> &nbsp; <label class="wk-checkbox-label"><input type="checkbox" /> Multiply</label> &nbsp; <label class="wk-checkbox-label"><input type="checkbox" /> Divide</label></p>
-          ${blankLines(1)}
-        </div>
-      </div>
-
-      <!-- Fallback Level 2 Standard -->
-      <div class="l2-only">
-        <div class="notes-gr-step notes-gr-watch">
-          <span class="notes-gr-tag">👀 Watch</span>
-          <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-          ${blankLines(1)}
-        </div>
-        <div class="notes-gr-step notes-gr-we">
-          <span class="notes-gr-tag">🤝 We try</span>
-          <p class="notes-gr-cue">Solve the next one together as a class.</p>
-          ${blankLines(2)}
-        </div>
-        <div class="notes-gr-step notes-gr-you">
-          <span class="notes-gr-tag">✏️ You try</span>
-          <p class="notes-gr-cue">Now try one on your own.</p>
-          ${blankLines(2)}
-        </div>
-      </div>
-
-      <!-- Fallback Level 3 Enrichment -->
-      <div class="l3-only">
-        <div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
-          <span class="notes-gr-tag">🧠 Enrichment Scratchpad</span>
-          <p class="notes-gr-cue">Create your own visual model and write a word problem that fits today's learning objective.</p>
-          <div class="scratchpad"><span class="scratchpad-label">Doodle / Model Space</span></div>
-          <div class="work-space"><span class="ws-label">Write your word problem and explanation:</span>${blankLines(4)}</div>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  const { iDo, weDo, youDo } = worked;
-
-  // Level 1 Support
-  const iStepsL1 = iDo.steps
-    .map(
-      (s, i) =>
-        `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${esc(s)}</li>`,
-    )
-    .join("");
-  const iDoHtmlL1 = `<div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 I do — watch</span>
-      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
-      ${choiceOl(iDo.choices)}
-      <ol class="wk-steps">${iStepsL1}</ol>
-      ${iDo.answer ? `<p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> ${esc(iDo.answer)}</p>` : ""}
-    </div>`;
-
-  let weDoHtmlL1 = "";
-  if (weDo) {
-    const clozeSteps = iDo.steps
-      .map(
-        (s, i) =>
-          `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${clozeText(s)}</li>`,
-      )
-      .join("");
-    const checkboxHtml = weDo.choices
-      ? `<div class="wk-checkboxes" style="margin-top: 8px;">
-          <span class="wk-anslabel">Check the correct choice:</span>
-          ${weDo.choices.map((c) => `<label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> ${esc(c)}</label>`).join("")}
-        </div>`
-      : `<p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input class="writeline" style="flex: 1;" type="text" data-nt-field /></p>`;
-
-    weDoHtmlL1 = `<div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We do — together (Scaffolded)</span>
-      <p class="notes-gr-cue">Solve this with your class by filling in the missing words or values.</p>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
-      ${choiceOl(weDo.choices)}
-      <ol class="wk-steps">${clozeSteps}</ol>
-      ${checkboxHtml}
-    </div>`;
-  }
-
-  let youDoHtmlL1 = "";
-  if (youDo) {
-    const checkboxHtml = youDo.choices
-      ? `<div class="wk-checkboxes" style="margin-top: 8px; margin-bottom: 8px;">
-          <span class="wk-anslabel">Check the correct choice:</span>
-          ${youDo.choices.map((c) => `<label class="wk-checkbox-label" style="margin-right: 12px;"><input type="checkbox" /> ${esc(c)}</label>`).join("")}
-        </div>`
-      : "";
-    youDoHtmlL1 = `<div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You do — your turn (Scaffolded)</span>
-      <p class="notes-gr-cue">Try it on your own. Fill in the steps.</p>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
-      ${choiceOl(youDo.choices)}
-      ${checkboxHtml}
-      <div class="work-space">
-        <span class="ws-label">Fill in your solution path:</span>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 1</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
-        <div class="wk-step-blank" style="margin: 4px 0;"><span class="wk-steplabel" style="font-size: 11px; padding: 1px 4px;">Step 2</span> <input class="writeline" style="flex:1; height:20px;" type="text" data-nt-field /></div>
-      </div>
-    </div>`;
-  }
-
-  const l1Html = `<div class="l1-only">
-    <p class="notes-gr-intro">Watch the teacher model, fill in We Do together, and check your choice on You Do.</p>
-    ${iDoHtmlL1}
-    ${stepSorter(iDo.steps)}
-    ${weDoHtmlL1}
-    ${youDoHtmlL1}
-  </div>`;
-
-  // Level 2 Standard
-  const iStepsL2 = iDo.steps
-    .map(
-      (s, i) =>
-        `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${esc(s)}</li>`,
-    )
-    .join("");
-  const iDoHtmlL2 = `<div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 I do — watch</span>
-      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
-      ${choiceOl(iDo.choices)}
-      <ol class="wk-steps">${iStepsL2}</ol>
-      ${iDo.answer ? `<p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> ${esc(iDo.answer)}</p>` : ""}
-    </div>`;
-
-  let weDoHtmlL2 = "";
-  if (weDo) {
-    const stepCount = Math.min(Math.max(iDo.steps.length, 2), 3);
-    const blankSteps = Array.from(
-      { length: stepCount },
-      (_, i) =>
-        `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><input class="writeline" type="text" data-nt-field /></li>`,
-    ).join("");
-    weDoHtmlL2 = `<div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We do — together</span>
-      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
-      ${choiceOl(weDo.choices)}
-      <ol class="wk-steps wk-steps-blank">${blankSteps}</ol>
-      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <input class="writeline" type="text" data-nt-field /></p>
-    </div>`;
-  }
-
-  let youDoHtmlL2 = "";
-  if (youDo) {
-    youDoHtmlL2 = `<div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You do — your turn</span>
-      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
-      ${choiceOl(youDo.choices)}
-      <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(3)}</div>
-    </div>`;
-  }
-
-  const l2Html = `<div class="l2-only">
-    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
-    ${iDoHtmlL2}
-    ${stepSorter(iDo.steps)}
-    ${weDoHtmlL2}
-    ${youDoHtmlL2}
-  </div>`;
-
-  // Level 3 Enrichment
-  let iDoHtmlL3 = "";
-  if (iDo) {
-    iDoHtmlL3 = `<div class="notes-gr-step notes-gr-you" style="border-left-color: var(--teal);">
-      <span class="notes-gr-tag">🧠 Challenge 1 — Mathematical Modeling</span>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
-      ${choiceOl(iDo.choices)}
-      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Formulate a mathematical representation or model for this situation. Explain why your model is appropriate.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space">${blankLines(3)}</div>
-    </div>`;
-  }
-
-  let weDoHtmlL3 = "";
-  if (weDo) {
-    weDoHtmlL3 = `<div class="notes-gr-step notes-gr-you" style="border-left-color: var(--amber);">
-      <span class="notes-gr-tag">🧠 Challenge 2 — Error Analysis & Generalization</span>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
-      ${choiceOl(weDo.choices)}
-      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Then, write a rule or generalization that someone could use to solve any problem like this.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space">${blankLines(3)}</div>
-    </div>`;
-  }
-
-  let youDoHtmlL3 = "";
-  if (youDo) {
-    youDoHtmlL3 = `<div class="notes-gr-step notes-gr-you" style="border-left-color: var(--navy);">
-      <span class="notes-gr-tag">🧠 Challenge 3 — Synthesis & Extension</span>
-      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
-      ${choiceOl(youDo.choices)}
-      <p class="sentence-frame"><span class="ws-label">Writing Prompt:</span> Solve the problem. Create a real-world scenario that matches the operations or logic you used to solve this.</p>
-      <div class="scratchpad"><span class="scratchpad-label">Workspace / Visual Model</span></div>
-      <div class="work-space">${blankLines(3)}</div>
-    </div>`;
-  }
-
-  const l3Html = `<div class="l3-only">
-    <p class="notes-gr-intro">No worked examples. Solve the problems independently, draw visual models, and write justifications.</p>
-    ${iDoHtmlL3}
-    ${weDoHtmlL3}
-    ${youDoHtmlL3}
-  </div>`;
-
-  return `<div class="notes-gradual">
-    ${l1Html}
-    ${l2Html}
-    ${l3Html}
-  </div>`;
-}
 
 // Build the heart of the guided notes: fill-in-the-blank concept sentences.
 // Each vocabulary item already ships a `cloze` sentence (the blank is the term);
@@ -701,7 +424,10 @@ function _workedFrame(worked) {
 
 function guidedNotesFill(cfg = {}) {
   const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
-  const items = vocab.filter((v) => v && v.term);
+  // `role: "concept"` entries are the lesson TITLE posing as a term — a word
+  // bank whose first "word" is a nine-word title, and a fill-in whose expected
+  // answer is that whole title, read as machine output on all 84 packets.
+  const items = vocab.filter((v) => v && v.term && v.role !== "concept");
   if (!items.length) return { html: "", keyRows: [] };
 
   const bank = items
@@ -738,7 +464,7 @@ function guidedNotesFill(cfg = {}) {
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
       <div class="gn-bank-words">${bank}</div>
-      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
+      <p class="gn-bank-hint">👆 Tap any word to see its meaning and a picture.</p>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
     <ol class="gn-lines">${lines.join("")}</ol>
@@ -1006,7 +732,7 @@ function liFormula(text) {
 // that a student on a Chromebook cannot write in. It is a real, saved writing
 // space now, and still prints as a box.
 function liWork(key, label) {
-  return `<div class="li-work"><label class="li-work-label" for="w-${key}">${esc(label || "Show your work")}</label><textarea class="li-work-area" id="w-${key}" data-nt-field data-nt-key="${esc(key)}" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>`;
+  return `<div class="li-work"><label class="li-work-label" for="w-${key}">${esc(label || "Show your work")}</label><textarea class="li-work-area" id="w-${key}" data-nt-field data-nt-key="${esc(key)}" rows="3" placeholder="Write your thinking here…"></textarea></div>`;
 }
 
 // Render one teaching step: the sentence, then the equation from that sentence
@@ -1147,6 +873,40 @@ function liMistakes(cfg = {}) {
 //     a full gradual-release lesson with TYPEABLE boxes, a worked Example 1
 //     (Watch me), a "Notes to remember" recap, a guided "Work with me"
 //     Example 2 (fill-in each step), a "Your turn", visuals and sketch spaces.
+/**
+ * Key-idea aside for the expanded Learn It page. `text` may carry an inline
+ * enumeration ("1. … 2. …") and a "Formula: …" clause; the enumeration becomes
+ * a real ordered list, and the Formula clause is removed when the formula
+ * pull-out (`kiMath`) already prints the same equation right below.
+ */
+function renderKeyIdea(text, kiMath) {
+  let prose = String(text).trim();
+  if (kiMath && kiMath.math) {
+    prose = prose.replace(/\s*Formula:\s*[^.]*\.?/i, " ").replace(/\s{2,}/g, " ").trim();
+  }
+  // Split a trailing inline enumeration into list items. Only treat it as an
+  // enumeration when step 1 AND step 2 both appear — a lone "1." is prose.
+  let listHtml = "";
+  const enumStart = prose.search(/(?:^|\s)1\.\s/);
+  if (enumStart >= 0 && /\s2\.\s/.test(prose)) {
+    const lead = prose.slice(0, enumStart).trim();
+    const steps = prose
+      .slice(enumStart)
+      .split(/\s(?=\d+\.\s)/)
+      .map((part) => part.replace(/^\d+\.\s*/, "").trim())
+      .filter(Boolean);
+    prose = lead;
+    listHtml = `<ol class="li-keyidea-steps">${steps.map((st) => `<li>${esc(st)}</li>`).join("")}</ol>`;
+  }
+  return `<aside class="li-keyidea"><span class="li-keyidea-label">Key idea — remember this</span>${
+    prose ? `<p>${esc(prose)}</p>` : ""
+  }${listHtml}${
+    kiMath
+      ? `<p class="li-formula" role="math" aria-label="${esc(kiMath.math)}">${esc(kiMath.math)}</p>`
+      : ""
+  }</aside>`;
+}
+
 function conceptLearnBlock(cfg = {}, opts = {}) {
   const intro = (cfg.launch && cfg.launch.conceptIntro) || cfg.conceptIntro;
   if (!intro || typeof intro !== "object") return "";
@@ -1208,7 +968,6 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       ${watch}
       ${we}
       ${you}
-      <p class="learnit-bridge">✅ Got it? You're ready to practice — use these same steps on the problems.</p>
     </div>`;
   }
 
@@ -1220,13 +979,12 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   // hint ladder, and a common-mistakes card. Everything is derived from data
   // the lesson already authors — no per-lesson writing.
   const kiMath = intro.keyIdea ? liFormula(intro.keyIdea) : null;
-  const keyIdeaClean = intro.keyIdea
-    ? `<aside class="li-keyidea"><span class="li-keyidea-label">Key idea — remember this</span><p>${esc(intro.keyIdea)}</p>${
-        kiMath
-          ? `<p class="li-formula" role="math" aria-label="${esc(kiMath.math)}">${esc(kiMath.math)}</p>`
-          : ""
-      }</aside>`
-    : "";
+  // Authored key ideas often pack an enumeration ("1. Order all data values…
+  // 2. …") and a "Formula: …" clause into one paragraph. Rendered raw, that
+  // reads as one crammed sentence and then repeats the formula in the pull-out
+  // directly beneath it. Split the enumeration into a list and drop the
+  // duplicated Formula clause when the pull-out already shows it.
+  const keyIdeaClean = intro.keyIdea ? renderKeyIdea(intro.keyIdea, kiMath) : "";
 
   const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
 
@@ -1238,7 +996,6 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     ? `<section class="li-mistakes" id="li-mistakes">
         <p class="li-mistakes-head"><span aria-hidden="true">⚠️</span> Watch out — mistakes students make here</p>
         <ul>${mistakes.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>
-        <p class="li-mistakes-note">Check your work against this list before you say you are done.</p>
       </section>`
     : "";
 
@@ -1259,30 +1016,13 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
           ${nw.context ? `<figcaption><span class="li-photo-label">Where you see this in real life</span>${esc(nw.context)}</figcaption>` : ""}
         </figure>`
     : "";
+  // The vocabulary card dump that used to follow (up to 6 terms with pictures
+  // and full definitions) is GONE from this page: the Vocab tab is the words'
+  // home, and printing them again here — a third copy, after notes.html — is
+  // the cross-surface repetition Joel flagged. Picture-It shows the math, not
+  // the glossary.
   const authored = learnVisual(cfg);
-  const seenPic = new Set();
-  const picCards = [];
-  const wordRows = [];
-  vocab
-    .filter((v) => v && v.term)
-    .slice(0, 6)
-    .forEach((v) => {
-      const src = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
-      if (picCards.length < 4 && !seenPic.has(src)) {
-        seenPic.add(src);
-        picCards.push(
-          `<figure class="li-graphic"><img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">${esc(v.term)}</span>${v.definition ? `<span class="li-graphic-def">${esc(v.definition)}</span>` : ""}</figcaption></figure>`,
-        );
-        return;
-      }
-      if (v.definition)
-        wordRows.push(
-          `<li><span class="li-wordrow-term">${esc(v.term)}</span><span class="li-wordrow-def">${esc(v.definition)}</span></li>`,
-        );
-    });
-  const vocabPics = picCards.join("");
-  const vocabRows = wordRows.length ? `<ul class="li-wordrows">${wordRows.join("")}</ul>` : "";
-  if (photo || authored || vocabPics || vocabRows) {
+  if (photo || authored) {
     stages.push({
       id: "see",
       accent: "see",
@@ -1290,10 +1030,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       label: "Picture it",
       sub: "See what the math looks like before you read about it",
       body: `${photo}
-          ${authored ? `<div class="li-figure">${authored}</div>` : ""}
-          ${vocabPics || vocabRows ? `<p class="li-lead">These are the words you will use today.</p>` : ""}
-          ${vocabPics ? `<div class="li-graphics">${vocabPics}</div>` : ""}
-          ${vocabRows}`,
+          ${authored ? `<div class="li-figure">${authored}</div>` : ""}`,
     });
   }
 
@@ -1330,7 +1067,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       icon: "👀",
       label: "Watch me solve it",
       sub: "I do — read one step at a time",
-      body: `${figureCard}<p class="li-lead">Read one step, then press the button for the next one. Tap any <span class="li-pop-demo">blue word</span> to see what it means.</p>
+      body: `${figureCard}
         <ol class="li-steps li-steps-paced">${iLines.map((l, i) => `<li>${liStepBody(l, vocab)}${stepFigure(i)}</li>`).join("")}</ol>
         <div class="li-pace no-print">
           <button type="button" class="li-pace-next">Show me the next step ▸</button>
@@ -1352,7 +1089,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       label: "Try it with me",
       sub: "We do — you answer first, then check",
       practice: true,
-      body: `<p class="li-lead">Same steps, new numbers. Type your answer for each step, then open <strong>Check this step</strong> to see if you got it.</p>
+      body: `<p class="li-lead">Same steps, new numbers.</p>
         <ol class="li-steps li-steps-fill">${weLines
           .map((l, i) => {
             const g = liSplitGuided(l);
@@ -1446,18 +1183,35 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   // partner. Uses the lesson's first authored turn-and-talk item.
   const tt = Array.isArray(cfg.turnAndTalk) ? cfg.turnAndTalk.find((t) => t && t.question) : null;
   if (tt) {
-    const stems = Array.isArray(tt.stems)
-      ? tt.stems
-          .map(
-            (s) =>
-              `<li>${esc(s.en || s)}${s && s.es ? `<span class="li-stem-es" lang="es">${esc(s.es)}</span>` : ""}</li>`,
-          )
-          .join("")
-      : "";
-    const words =
+    // A Turn & Talk ALWAYS ships with sentence starters and an academic word
+    // bank — the lesson's own vocabulary terms when the author supplied no
+    // bank — so partners have specific words to argue with, not just a prompt.
+    const stemList =
+      Array.isArray(tt.stems) && tt.stems.length
+        ? tt.stems
+        : [
+            { en: "I think ___ because ___.", es: "Pienso que ___ porque ___." },
+            {
+              en: "I agree / disagree with you because ___.",
+              es: "Estoy / no estoy de acuerdo contigo porque ___.",
+            },
+          ];
+    const stems = stemList
+      .map(
+        (s) =>
+          `<li>${esc(s.en || s)}${s && s.es ? `<span class="li-stem-es" lang="es">${esc(s.es)}</span>` : ""}</li>`,
+      )
+      .join("");
+    const bankWords =
       Array.isArray(tt.wordBank) && tt.wordBank.length
-        ? `<div class="li-wordbank"><span class="li-wordbank-label">Word bank</span>${tt.wordBank.map((w) => `<span class="li-word">${esc(w)}</span>`).join("")}</div>`
-        : "";
+        ? tt.wordBank
+        : vocab
+            .filter((v) => v && v.term)
+            .slice(0, 5)
+            .map((v) => v.term);
+    const words = bankWords.length
+      ? `<div class="li-wordbank"><span class="li-wordbank-label">Use these words</span>${bankWords.map((w) => `<span class="li-word">${esc(w)}</span>`).join("")}</div>`
+      : "";
     stages.push({
       id: "talk",
       accent: "talk",
@@ -1502,15 +1256,9 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     )
     .join("");
 
-  // Confidence self-check — a saved checkbox (auto-persisted by the page's
-  // save/resume script) that turns the "you're ready" line into a small act of
-  // metacognition, plus a warm send-off into the lesson.
-  const ready = `<section class="li-ready-card" id="li-ready">
-      <p class="li-ready-head">🎉 Ready to launch?</p>
-      <label class="li-ready-check"><input type="checkbox" data-nt-field data-nt-key="ready" /> <span>I can solve one of these on my own.</span></label>
-      <p class="li-ready-note">When you can finish <strong>Try it with me</strong> without help, head to the lesson activities and show what you know!</p>
-    </section>`;
-
+  // No send-off card. "🎉 Ready to launch? … head to the lesson activities and
+  // show what you know!" was 40 more identical words on all 84 pages; the last
+  // stage (Turn & Talk) is the natural close.
   return `<article class="li" aria-label="Learn It — how the math works">
     <p class="li-kicker">Learn It</p>
     <h2 class="li-title">${heading}</h2>
@@ -1518,7 +1266,6 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     ${keyIdeaClean}
     ${journey}
     ${stageCards}
-    ${ready}
   </article>`;
 }
 
@@ -1575,78 +1322,8 @@ function gatherPractice(practice = {}) {
   );
 }
 
-function tryItProblem(it, i) {
-  let choiceHtml = "";
-  if (Array.isArray(it.choices)) {
-    choiceHtml = `<ol class="try-choices" type="A">${it.choices
-      .map((c) => `<li>${esc(c)}</li>`)
-      .join("")}</ol>`;
-  }
-  return `<div class="tryit">
-  <p class="tryit-num">${i + 1}. ${esc(it.stem)}</p>
-  ${choiceHtml}
-  <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(3)}</div>
-</div>`;
-}
 
-function _tryItSection(practice = {}, usedStems = new Set()) {
-  const items = gatherPractice(practice).filter((it) => it.stem && !usedStems.has(it.stem));
-  // Pick a couple that were not used in the guided notes frame.
-  const picks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
-  if (!picks.length) return "";
-  const probs = picks.map((it, i) => tryItProblem(it, i)).join("\n");
 
-  return `<section class="section tryit-section">
-  <h2>Try It</h2>
-  <p class="muted">Solve on your own. Check the answer key when you are done.</p>
-  ${probs}
-  ${enrichSection(practice, new Set(picks.map((p) => p.stem)))}
-</section>`;
-}
-
-// Level 2 enrichment: pull a harder challenge from the "extending" practice
-// items. Prefers an open-response prompt (with a sentence frame), then an
-// item with a stem, then an error-analysis to investigate. Always renders
-// something when extending content exists so every sheet shows Level 2.
-function enrichSection(practice = {}, usedStems = new Set()) {
-  const ext = practice.extending || [];
-  if (!ext.length) return "";
-
-  let promptHtml = "";
-  let frameHtml = "";
-  let choiceHtml = "";
-
-  const open = ext.find((it) => it.type === "open-response" && it.prompt);
-  const stemItem = ext.find((it) => it.stem && !usedStems.has(it.stem));
-  const errItem = ext.find((it) => it.type === "error-analysis");
-
-  if (open) {
-    promptHtml = `<p class="tryit-num">${esc(open.prompt)}</p>`;
-    if (open.sentenceFrame) {
-      frameHtml = `<p class="sentence-frame"><span class="ws-label">Sentence starter:</span> ${esc(open.sentenceFrame)}</p>`;
-    }
-  } else if (stemItem) {
-    promptHtml = `<p class="tryit-num">${esc(stemItem.stem)}</p>`;
-    if (Array.isArray(stemItem.choices)) {
-      choiceHtml = `<ol class="try-choices" type="A">${stemItem.choices
-        .map((c) => `<li>${esc(c)}</li>`)
-        .join("")}</ol>`;
-    }
-  } else if (errItem) {
-    promptHtml = `<p class="tryit-num">${esc(errItem.title || "Find and fix the mistake")} — find the error, then write the correct reasoning.</p>`;
-  } else {
-    return "";
-  }
-
-  return `<div class="enrich-block">
-    <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
-    <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
-    ${promptHtml}
-    ${choiceHtml}
-    ${frameHtml}
-    <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(4)}</div>
-  </div>`;
-}
 
 // Per-distractor "why this is wrong" guidance for an MCQ, rendered only for the
 // incorrect choices (keyed off correctIndex) and only when the config supplies
@@ -1909,6 +1586,8 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-keyidea-label{display:block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:var(--teal-ink);margin-bottom:6px;}
 .li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
+.li-keyidea-steps{margin:10px 0 0;padding-left:26px;}
+.li-keyidea-steps li{font-size:18px;line-height:1.6;color:var(--navy);font-weight:600;margin-bottom:4px;}
 /* The formula, pulled out of the Key Idea and printed big — the one thing a
    student should be able to find on this page in under a second. */
 /* Specificity note: a bare .li-formula loses to .li-keyidea p and gets shrunk
@@ -2686,17 +2365,19 @@ function twrSpanish(text) {
   return text ? `<span class="twr-es-support" lang="es">${esc(text)}</span>` : "";
 }
 
+// One question, the words to use, a frame at the level you need, a 3-item
+// check. The old version was a four-step guide of its own (~626 words, ~46%
+// byte-identical across all 84 lessons) that repeated the same frames across
+// levels, printed every line in two languages, and fabricated a Claim /
+// Evidence / Reasoning "model" from vocabulary definitions. Spanish stays
+// where it does the work — the sentence frames — and nowhere else.
 function twrSection(cfg, teacher = false) {
   const twr = deriveTWR(cfg);
   const words = twr.vocabulary
     .map(
       (word) => `<label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use ${esc(word.term)} in my explanation" />
-      <span><strong>${esc(word.term)}</strong> — ${esc(word.definition)}${
-        word.termEs || word.definitionEs
-          ? twrSpanish(`${word.termEs}${word.definitionEs ? ` — ${word.definitionEs}` : ""}`)
-          : ""
-      }</span>
+      <span><strong>${esc(word.term)}</strong>${word.termEs ? twrSpanish(word.termEs) : ""}</span>
     </label>`,
     )
     .join("");
@@ -2704,55 +2385,41 @@ function twrSection(cfg, teacher = false) {
     .map(
       (level) => `<div class="twr-level-card" data-support-level="${esc(level.id)}">
       <h4>${esc(level.label)}</h4>
-      <p class="twr-level-support">${esc(level.support)}</p>
       <p>${esc(level.directionEn)}${twrSpanish(level.directionEs)}</p>
-      <ul>${level.frames
-        .map((frame) => `<li><strong>${esc(frame.en)}</strong>${twrSpanish(frame.es)}</li>`)
-        .join("")}</ul>
+      ${
+        level.frames.length
+          ? `<ul>${level.frames
+              .map((frame) => `<li><strong>${esc(frame.en)}</strong>${twrSpanish(frame.es)}</li>`)
+              .join("")}</ul>`
+          : ""
+      }
       ${blankLines(level.id === "explain" ? 5 : 3)}
     </div>`,
     )
     .join("");
+  const model =
+    twr.model && twr.model.claim
+      ? `<div class="twr-model-parts">
+    <p><strong>Model:</strong> <em>${esc(twr.model.claim)}</em> — ${esc(twr.model.evidence)}</p>
+  </div>`
+      : "";
   const checklist = twr.checklist
     .map(
       (item) => `<label class="twr-check">
       <input type="checkbox" data-nt-field />
-      <span>${esc(item.en)}${twrSpanish(item.es)}</span>
+      <span>${esc(item.en)}</span>
     </label>`,
     )
     .join("");
 
   return `<section class="section twr">
-  <h2>Write About the Math <span class="twr-method">Guided writing support</span></h2>
-  <p class="level-note">Use the support level you need. Every level answers the same math question.</p>
-  <div class="twr-guide-step">
-    <h3>1. Understand the Question</h3>
-    <span class="twr-action">${esc(twr.focus.action)}</span>
-    <p class="twr-focus-question">${esc(twr.focus.questionEn)}${twrSpanish(twr.focus.questionEs)}</p>
-    <p class="twr-job"><strong>Your job:</strong> ${esc(twr.focus.jobEn)}${twrSpanish(twr.focus.jobEs)}</p>
-  </div>
-  <div class="twr-guide-step">
-    <h3>2. Plan Your Math Words</h3>
-    <p>Check at least two words you will use.</p>
-    <div class="twr-word-grid">${words}</div>
-    <div class="twr-rehearse"><strong>Say it first:</strong> ${esc(twr.rehearsal.directionEn)}${twrSpanish(
-      twr.rehearsal.directionEs,
-    )}<p><strong>${esc(twr.rehearsal.frameEn)}</strong>${twrSpanish(twr.rehearsal.frameEs)}</p></div>
-  </div>
-  <div class="twr-guide-step">
-    <h3>3. Build Your Explanation</h3>
-    <div class="twr-model-parts">
-      <p><strong>Model the parts:</strong> ${esc(twr.model.note)}</p>
-      <p><strong>Claim:</strong> ${esc(twr.model.claim)}</p>
-      <p><strong>Evidence:</strong> ${esc(twr.model.evidence)}</p>
-      <p><strong>Reasoning:</strong> ${esc(twr.model.reasoning)}</p>
-    </div>
-    <div class="twr-level-grid">${levels}</div>
-  </div>
-  <div class="twr-guide-step">
-    <h3>4. Check Your Explanation</h3>
-    <div class="twr-checklist">${checklist}</div>
-  </div>
+  <h2>Write About the Math</h2>
+  <p class="twr-focus-question">${esc(twr.focus.questionEn)}${twrSpanish(twr.focus.questionEs)}</p>
+  <p class="twr-job">Say your answer to a partner first. Then write it, using at least two of these words:</p>
+  <div class="twr-word-grid">${words}</div>
+  ${model}
+  <div class="twr-level-grid">${levels}</div>
+  <div class="twr-checklist">${checklist}</div>
 </section>${teacher ? twrTeacherGuide(cfg) : ""}`;
 }
 
@@ -2760,7 +2427,6 @@ function twrTeacherGuide(cfg) {
   const twr = deriveTWR(cfg);
   return `<section class="answer-key twr-teacher-guide">
   <h2>Writing Guide — Teacher Copy</h2>
-  <p>The support level changes the amount of language scaffolding, not the mathematical expectation. Look for the same five features in every response.</p>
   <ul class="ak-list">${twr.teacherCriteria.map((item) => `<li>${esc(item.en)}</li>`).join("")}</ul>
 </section>`;
 }
@@ -3202,7 +2868,7 @@ function buildLearnPage(id, cfg, isFlagship) {
     `<div class="learnit"><p class="learnit-eyebrow">📖 Learn It</p>
       <h3 class="learnit-head">${esc(cfg.title || "Today's math")}</h3>
       ${objectivesIntro}
-      <p class="learnit-bridge">Your teacher will walk through how to solve this together.</p>
+      <p class="learnit-bridge">Your teacher will walk you through how to solve this.</p>
     </div>`;
 
   return `<!doctype html>
@@ -3333,10 +2999,6 @@ ${pacingScript()}
     <h1>${esc(cfg.title)} ${flagBadge}</h1>
     <p class="meta">Lesson ${esc(id)} · Learn It — how the math works</p>
   </header>
-  <div class="learn-intro-note">
-    <span class="lin-icon" aria-hidden="true">🧭</span>
-    <p>Start here. This page shows you the math one step at a time — a picture first, then a worked example, then one you try with help, then one you do on your own. Take your time. When it makes sense, go do the lesson activities.</p>
-  </div>
   ${hookCard}
   <div class="learn-actions no-print">
     <button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button>
@@ -3669,7 +3331,7 @@ a:hover{text-decoration:underline;}
 <body>
 <div class="wrap">
   <h1>Notes Packets</h1>
-  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons. Each sheet includes visual vocabulary and a four-step, lesson-specific <strong>Write About the Math</strong> routine with oral rehearsal, leveled frames, and a self-check. Every packet downloads as <strong>HTML, PDF, or Word (DOCX)</strong> and prints with a branded header, footer, and page numbers.</p>
+  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons. Each packet has fill-in guided notes with a word bank, a <strong>Write About the Math</strong> task with leveled sentence frames and a self-check, plus a teacher copy with the answer key. Every packet downloads as <strong>HTML, PDF, or Word (DOCX)</strong> and prints with a branded header, footer, and page numbers.</p>
   ${groups}
 </div>
 </body>

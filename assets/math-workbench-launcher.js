@@ -147,8 +147,10 @@
       // Compact by default: a 48px icon circle that stays clear of the lesson
       // content, expanding to reveal its label on hover/focus so it no longer
       // blocks navigation as a wide pill.
+      // bottom 76px: the floating "Next" pill owns the corner (16px + 48px
+      // tall + breathing room). 64px sat flush against the pill's top edge.
       "#mwb-launcher{position:fixed;right:max(6px,env(safe-area-inset-right));" +
-      "bottom:max(64px,env(safe-area-inset-bottom));z-index:2147483000;" +
+      "bottom:max(76px,env(safe-area-inset-bottom));z-index:2147483000;" +
       "display:inline-flex;align-items:center;justify-content:center;gap:0;text-decoration:none;" +
       "width:38px;height:38px;padding:0;overflow:hidden;white-space:nowrap;" +
       "border-radius:999px;font:700 12px/1 system-ui,-apple-system,Segoe UI,sans-serif;" +

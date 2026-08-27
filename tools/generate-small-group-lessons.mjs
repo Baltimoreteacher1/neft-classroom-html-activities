@@ -584,7 +584,7 @@ function buildGroup2(base, u, m) {
   }
 
   if (out.explore?.instructions)
-    out.explore.instructions = `Go deeper: ${out.explore.instructions} As you work, ask yourself WHY it works.`;
+    out.explore.instructions = `Go deeper: ${out.explore.instructions} As you work, ask yourself why it works.`;
 
   if (out.reflect?.exitTicket) {
     out.reflect = clone(base.reflect);

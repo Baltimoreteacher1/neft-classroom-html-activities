@@ -245,8 +245,19 @@ function shell(host, cfg, ctrl) {
 function dotPlot(host, cfg, viewOpts) {
   const orig = (cfg.values || []).map(Number).filter((n) => !isNaN(n));
   let data = orig.slice();
-  const lo = () => (cfg.min != null ? Number(cfg.min) : Math.min(...data, 0));
-  const hi = () => (cfg.max != null ? Number(cfg.max) : Math.max(...data, 1));
+  // The axis domain must CONTAIN the data, whatever the config says. An
+  // authored max below max(data) drew quiz scores 92 and 95 floating past the
+  // end of an axis labeled 0-88, and the old 0-anchored default left 80% of
+  // the axis empty for a 72-95 data set — a scale-convention violation inside
+  // a statistics lesson's own worked model.
+  const lo = () => {
+    const dataLo = data.length ? Math.min(...data) : 0;
+    return cfg.min != null ? Math.min(Number(cfg.min), dataLo) : dataLo;
+  };
+  const hi = () => {
+    const dataHi = data.length ? Math.max(...data) : 1;
+    return cfg.max != null ? Math.max(Number(cfg.max), dataHi) : dataHi;
+  };
   const W = 520,
     H = 230,
     padL = 30,

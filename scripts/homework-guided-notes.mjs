@@ -909,13 +909,22 @@ function conceptVisualSvg(config) {
     // move that lesson exists to replace.
     const op = decimalOperation(config);
     if (op === "divide") {
+      // The worked form is the long-division TABLEAU, not an arrow rewrite —
+      // families should see the problem the way the student writes it. The
+      // bracket is DRAWN (vinculum + hook paths with explicit stroke); the
+      // U+27CC bracket glyph is banned — no shipped font renders it
+      // (tools/unrenderable-glyphs.test.mjs).
       return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Dividing by a decimal">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Long division: 14.4 divided by 1.2 becomes 144 divided by 12, quotient 12">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="50" y="85" font-size="24" font-weight="800" fill="#12355b">14.4 ÷ 1.2 → 144 ÷ 12</text>
-        <text x="50" y="118" font-size="13" fill="#21313f">Move the point in the divisor until it is a whole number.</text>
-        <text x="50" y="138" font-size="13" fill="#21313f">Move it the same number of places in the dividend.</text>
-        <text x="50" y="162" font-size="13" fill="#21313f" lang="es">Muevan el punto del divisor hasta que sea entero, y muévanlo igual en el dividendo.</text>
+        <text x="32" y="56" font-size="17" font-weight="800" fill="#12355b">14.4 ÷ 1.2  →  144 ÷ 12</text>
+        <text x="253" y="100" font-size="26" font-weight="800" fill="#0f766e" text-anchor="end">12</text>
+        <text x="196" y="138" font-size="26" font-weight="800" fill="#12355b" text-anchor="end">12</text>
+        <path d="M208 108 q-8 18 4 36" stroke="#12355b" stroke-width="3" fill="none"/>
+        <path d="M208 108 H 292" stroke="#12355b" stroke-width="3" fill="none"/>
+        <text x="222" y="138" font-size="26" font-weight="800" fill="#12355b">144</text>
+        <text x="32" y="163" font-size="13" fill="#21313f">Move both decimal points one place, then divide: 12 goes on top.</text>
+        <text x="32" y="177" font-size="13" fill="#21313f" lang="es">Muevan el punto en los dos números y dividan: el 12 va arriba.</text>
       </svg>`;
     }
     if (op === "multiply") {
@@ -1648,7 +1657,7 @@ export function renderMoreTab(config, lessonId) {
           <span class="ai-lab-emoji" aria-hidden="true">📝</span>
           <span class="ai-lab-text">
             <span class="lang-en"><strong>Open the Math Workbench</strong> — a digital whiteboard to draw, write, and work out problems together.</span>
-            <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
+            <span class="lang-es" lang="es"><strong>Abre la Pizarra de matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
         </a>${offlineCta}

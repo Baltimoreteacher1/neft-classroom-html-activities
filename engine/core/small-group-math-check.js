@@ -703,12 +703,23 @@ export function createMathCheckLab(config, state, onDone, store = null) {
 
   const cards = [];
   const unlock = (index) => cards[index]?.classList.remove("locked");
-  const problem = config.practice?.extending?.[0] || config.practice?.onLevel?.[0] || {};
+  // The challenge must be STATED, not referenced — "solve the most challenging
+  // problem from today's lesson" over an empty textarea sent students two tabs
+  // back to guess which problem that was. Search each tier for the first item
+  // that actually carries printable text (extending[0] alone missed lessons
+  // whose first extending item is a stemless manipulative).
+  const pools = [
+    ...(config.practice?.extending || []),
+    ...(config.practice?.onLevel || []),
+    ...(config.practice?.approaching || []),
+  ];
+  const problem = pools.find((it) => it && (it.stem || it.prompt)) || {};
+  const problemText = problem.stem || problem.prompt || "";
 
   const solve = step("1 · Solve today's challenge");
   solve.appendChild(
-    problem.stem
-      ? el("p", "sg-talk-q", esc(problem.stem))
+    problemText
+      ? el("p", "sg-talk-q", esc(problemText))
       : el("p", "block-lab", "Solve the most challenging problem from today's lesson."),
   );
   const solveWork = responseBox(

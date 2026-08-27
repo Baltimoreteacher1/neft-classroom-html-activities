@@ -43,11 +43,22 @@ for (const lessonId of lessonIds) {
     ["start", "build", "explain"],
     `${lessonId}: support levels are incomplete`,
   );
-  assert.equal(result.checklist.length, 5, `${lessonId}: checklist must have five criteria`);
-  assert.deepEqual(
+  assert.equal(result.checklist.length, 3, `${lessonId}: checklist must have three criteria`);
+  // The teacher copy must say something the student page did not — it used to
+  // be the student checklist reprinted verbatim under "Teacher Copy".
+  assert.ok(result.teacherCriteria.length >= 3, `${lessonId}: teacher criteria missing`);
+  assert.notDeepEqual(
     result.teacherCriteria,
     result.checklist,
-    `${lessonId}: student and teacher criteria must match`,
+    `${lessonId}: teacher criteria must not reprint the student checklist`,
+  );
+  // No support level may hand out a sentence frame another level already
+  // printed — duplicated frames are how the writing block read as boilerplate.
+  const frameTexts = result.levels.flatMap((level) => level.frames.map((f) => f.en));
+  assert.equal(
+    new Set(frameTexts).size,
+    frameTexts.length,
+    `${lessonId}: duplicate sentence frame across support levels`,
   );
 
   const configuredTerms = new Set(
@@ -79,10 +90,17 @@ for (const lessonId of lessonIds) {
   const sectionMatch = notes.match(/<section class="section twr">([\s\S]*?)<\/section>/);
   assert.ok(sectionMatch, `${lessonId}: generated writing section is missing`);
   const writingSection = sectionMatch[1];
-  assert.match(writingSection, /1\. Understand the Question/, `${lessonId}: missing Understand`);
-  assert.match(writingSection, /2\. Plan Your Math Words/, `${lessonId}: missing Plan`);
-  assert.match(writingSection, /3\. Build Your Explanation/, `${lessonId}: missing Build`);
-  assert.match(writingSection, /4\. Check Your Explanation/, `${lessonId}: missing Check`);
+  // Compact contract (2026-08): question → word bank → leveled frames → 3-item
+  // check, with none of the old four-step guide headers ("1. Understand the
+  // Question" …) that made the writing block a lesson of its own.
+  assert.match(writingSection, /twr-focus-question/, `${lessonId}: missing focus question`);
+  assert.match(writingSection, /twr-word-grid/, `${lessonId}: missing word bank`);
+  assert.match(writingSection, /twr-checklist/, `${lessonId}: missing checklist`);
+  assert.doesNotMatch(
+    writingSection,
+    /\d\.\s(Understand the Question|Plan Your Math Words|Build Your Explanation|Check Your Explanation)/,
+    `${lessonId}: old four-step guide headers remain`,
+  );
   assert.match(writingSection, /data-support-level="start"/, `${lessonId}: missing Start support`);
   assert.match(writingSection, /data-support-level="build"/, `${lessonId}: missing Build support`);
   assert.match(
@@ -102,10 +120,13 @@ for (const lessonId of lessonIds) {
   const documentXml = execFileSync("unzip", ["-p", docxPath, "word/document.xml"], {
     encoding: "utf8",
   });
-  assert.match(documentXml, /Understand the Question/, `${lessonId}: DOCX missing Understand`);
-  assert.match(documentXml, /Plan Your Math Words/, `${lessonId}: DOCX missing Plan`);
-  assert.match(documentXml, /Build Your Explanation/, `${lessonId}: DOCX missing Build`);
+  assert.match(documentXml, /Write About the Math/, `${lessonId}: DOCX missing writing block`);
   assert.match(documentXml, /Check Your Explanation/, `${lessonId}: DOCX missing Check`);
+  assert.doesNotMatch(
+    documentXml,
+    /1\. Understand the Question/,
+    `${lessonId}: DOCX still has the old four-step guide`,
+  );
   assert.doesNotMatch(documentXml, bannedLegacyLanguage, `${lessonId}: DOCX has old prompts`);
 }
 

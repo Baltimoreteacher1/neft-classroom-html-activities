@@ -27,6 +27,7 @@ import {
 } from "../components/index.js";
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { attachAnnotator } from "../components/scene-annotate.js";
+import { renderLearnItPanel, renderVocabPanel } from "../components/vocab-learn-panel.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
 import {
   noticeWonderCaption,
@@ -2667,13 +2668,13 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
       el,
       "1",
       "section-icon-teal",
-      "Phase 1: Warmup",
-      "There is no warmup for this lesson — go straight to Phase 2.",
+      "Act 1: Warm-Up",
+      "There is no warm-up for this lesson — head to the Objectives.",
     );
     instructionCallout(
       el,
       "🚀",
-      "This lesson starts with the learning objectives. Use the button below — or tap <strong>2 Objectives</strong> in the sidebar.",
+      "This lesson starts with the learning objectives. Use the button below.",
     );
     const go = document.createElement("button");
     go.type = "button";
@@ -2692,7 +2693,7 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
       "1",
       "section-icon-teal",
       "Act 1: Warm-Up",
-      "Complete these quick warmup questions reviewing previous lesson material.",
+      "Quick questions to get your math brain going — answer each one, then submit.",
     );
   }
 
@@ -2730,8 +2731,8 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   const spiralFrom = warmup.spiralFrom ? ` (${warmup.spiralFrom})` : "";
   const prevTitle = warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : "";
   const warmupHeading = isSpiral
-    ? `Warmup: Prerequisite Review${esc(spiralFrom)}`
-    : `Warmup: Previous Lesson Check${esc(prevTitle)}`;
+    ? `Warm-Up: Skills You Need Today${esc(spiralFrom)}`
+    : `Warm-Up: Last Lesson Check${esc(prevTitle)}`;
   const warmupLede = isSpiral
     ? "Quick check on the skills today's lesson builds on."
     : "Quick check on the last lesson — answer each one, then submit.";
@@ -5022,7 +5023,7 @@ function renderConnectPhase(el, state, ctx, config, opts = {}) {
   const minLength = 25;
   const promptText =
     cfg.promptQuestion ||
-    `Explain your mathematical solution for ${config.title || "this scenario"}:`;
+    "Explain how you solved it:";
 
   const respCard = document.createElement("div");
   respCard.className = "card card-teal";
@@ -5241,7 +5242,7 @@ function renderReflectPhase(el, state, ctx, config) {
     "🎯",
     "section-icon-navy",
     "Exit Ticket & Reflection",
-    "Complete your exit ticket questions and reflection to demonstrate today's learning!",
+    "Answer the exit ticket, then reflect on what you learned today.",
   );
 
   // Teacher-only: the Socratic question ladders this student worked through.
@@ -5733,7 +5734,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   const heading = name ? `🎯 ${esc(name)} Can Now…` : "🎯 Learning Objectives Mastery Check";
   const intro = name
     ? `Look at what ${esc(name)} could not do at the start of today's lesson — and can do now. Read each goal and check off the ones ${esc(name)} can do.`
-    : "Now that you've completed today's lesson, revisit the goals you set at the beginning and check off what you mastered!";
+    : "Now that you've finished today's lesson, look back at the goals from the start and check off the ones you can do now.";
 
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
@@ -5819,6 +5820,16 @@ if (typeof document !== "undefined" && !document.__ntActStepWired) {
   });
 }
 
+/**
+ * Select an act step by key — the one door every surface (ribbon chip, side
+ * rail, Continue button, deep link) uses, so they cannot disagree. A request
+ * that arrives before the strip mounts is remembered by the strip itself.
+ */
+export function goToActStep(key) {
+  if (!key || typeof document === "undefined") return;
+  document.dispatchEvent(new CustomEvent("rma:actstep", { detail: { key } }));
+}
+
 function renderActSteps(el, state, phaseIdx, steps) {
   if (!steps.length) return;
   injectActStepStyles();
@@ -5849,7 +5860,11 @@ function renderActSteps(el, state, phaseIdx, steps) {
     });
     visited.add(i);
     if (save) {
-      state.saveResponse(phaseIdx, "act_step", String(i));
+      // Saved by stable KEY, not index: the step list is conditional (a lesson
+      // without vocabulary has no vocab step), so a saved index silently
+      // re-points to a different step when the list changes. Old saves were
+      // numeric; the restore below still honours them.
+      state.saveResponse(phaseIdx, "act_step", steps[i].key);
       wrap.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
@@ -5882,7 +5897,10 @@ function renderActSteps(el, state, phaseIdx, steps) {
     panels.append(host);
     hosts.push(host);
     step.render(host);
-    if (i < steps.length - 1) {
+    // A step whose renderer draws its own forward control (ownNext) does not
+    // get the strip's — two Next buttons on one panel is how destinations
+    // start disagreeing.
+    if (!step.ownNext && i < steps.length - 1) {
       const row = document.createElement("div");
       row.className = "act-step-next";
       const next = document.createElement("button");
@@ -5906,8 +5924,15 @@ function renderActSteps(el, state, phaseIdx, steps) {
     return true;
   };
 
-  const saved = Number(state.getResponse(phaseIdx, "act_step"));
-  const start = Number.isInteger(saved) && saved >= 0 && saved < steps.length ? saved : 0;
+  const savedRaw = state.getResponse(phaseIdx, "act_step");
+  const byKey = steps.findIndex((st) => st && st.key === savedRaw);
+  const savedNum = Number(savedRaw);
+  const start =
+    byKey >= 0
+      ? byKey
+      : Number.isInteger(savedNum) && savedNum >= 0 && savedNum < steps.length
+        ? savedNum
+        : 0;
   for (let j = 0; j < start; j += 1) visited.add(j);
   show(start, false);
   if (pendingActStep) {
@@ -5969,18 +5994,19 @@ export function renderAct1Launch(el, state, ctx, config) {
   nextBtn.className = "btn btn-primary";
   nextBtn.style.cssText =
     "margin: 24px auto 8px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
-  // Act 2 opens on VOCABULARY, not on the interactive Explore step. The taught
-  // order is vocabulary → launch → learn it → explore, and jumping the class
-  // straight into a manipulative skips the words the rest of the lesson uses
-  // (Joel, 2026-08-26: "The lesson should go to vocabulary first (not the
-  // interactive features — it should jump into the vocabulary (and then to the
-  // launch, etc…)"). The phase still advances underneath, so the sidebar marks
-  // Act 2 active and closing the panel lands there.
+  // Act 2 opens on VOCABULARY — its first STEP, not a takeover panel. The
+  // taught order is vocabulary → launch → learn it → explore → practice →
+  // connect (Joel, 2026-08-26: "The lesson should go to vocabulary first … and
+  // then to the launch, etc"), and that order now IS Act 2's step strip, so
+  // advancing the phase and selecting the step land the student in one place.
+  // The old version advanced the phase (which opened on Explore) and then
+  // covered it with the vocab takeover — closing the panel stranded the
+  // student on Explore, skipping Launch and Learn It entirely.
   nextBtn.textContent = "Continue to Vocabulary 🔑";
   nextBtn.addEventListener("click", () => {
     state.markCompleted(0);
     if (ctx && typeof ctx.nextPhase === "function") ctx.nextPhase();
-    if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("vocab");
+    goToActStep("vocab");
   });
 
   const steps = [];
@@ -6041,7 +6067,7 @@ export function renderAct2Studio(el, state, ctx, config) {
     "2",
     "section-icon-coral",
     "Act 2: Lesson",
-    "Explore the model, then practice, then connect it to the real world.",
+    "Learn the words, meet today's problem, see it worked, then explore, practice, and connect.",
   );
 
   // 1. Dual-Track Small Group Facilitation Banner — a teacher management
@@ -6055,7 +6081,7 @@ export function renderAct2Studio(el, state, ctx, config) {
   act3Btn.className = "btn btn-primary";
   act3Btn.style.cssText =
     "margin: 24px auto 8px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
-  act3Btn.textContent = "Proceed to Act 3: Exit Ticket 📝";
+  act3Btn.textContent = "Continue to Act 3: Exit Ticket 📝";
   act3Btn.addEventListener("click", () => {
     state.markCompleted(1);
     if (ctx && typeof ctx.nextPhase === "function") {
@@ -6063,7 +6089,62 @@ export function renderAct2Studio(el, state, ctx, config) {
     }
   });
 
+  // THE canonical Act 2 sequence, as numbered steps a student walks in order:
+  // Vocabulary → Launch → Learn It → Explore → Practice → Connect. These used
+  // to be split across two surfaces — Vocab/Launch/Learn It were takeover
+  // panels outside any next-chain while the strip started at Explore — so the
+  // numbered "1, 2, 3" a student saw was not the taught order, and the three
+  // teaching moments the comments called the heart of Act 2 had no place in
+  // the flow at all. One list, one strip, every surface (ribbon, side rail,
+  // Continue buttons) selects into it by key via goToActStep.
   const steps = [];
+  if (Array.isArray(config.vocabulary) && config.vocabulary.length > 0) {
+    steps.push({
+      key: "vocab",
+      icon: "🔑",
+      label: "Vocabulary",
+      ownNext: true,
+      render: (host) => {
+        renderVocabPanel(host, config, {
+          state,
+          onComplete: () => goToActStep("launch"),
+          nextLabel: "Next: Launch (Today's Problem) 🚀 →",
+          nextLabelEs: "Siguiente: El Problema de Hoy 🚀 →",
+        });
+        // The word games belong beside the words they practise (ungraded).
+        const vocabGames = document.createElement("div");
+        vocabGames.style.cssText = "margin-top:var(--sp-6, 24px);";
+        renderActivityChooser(vocabGames, { config, only: "vocab" });
+        if (vocabGames.childNodes.length) host.append(vocabGames);
+      },
+    });
+  }
+  if (config.launch) {
+    steps.push({
+      key: "launch",
+      icon: "🚀",
+      label: "Launch",
+      render: (host) => renderLearnItExtrasInto(host, config, state),
+    });
+  }
+  steps.push({
+    key: "learn",
+    icon: "💡",
+    label: "Learn It",
+    ownNext: true,
+    render: (host) => {
+      renderLearnItPanel(host, config, {
+        state,
+        onComplete: () => goToActStep(config.explore ? "explore" : "practice"),
+        nextLabel: config.explore
+          ? "I've learned the concept — let's explore! 🔍 →"
+          : "I've learned the concept — let's practice! ✏️ →",
+        nextLabelEs: config.explore
+          ? "¡He aprendido el concepto — a explorar! 🔍 →"
+          : "¡He aprendido el concepto — a practicar! ✏️ →",
+      });
+    },
+  });
   if (config.explore) {
     steps.push({
       key: "explore",
@@ -6155,7 +6236,41 @@ export function renderAct3ExitTicket(el, state, ctx, config) {
       key: "mastery",
       icon: "🏆",
       label: "Mastery Check",
-      render: (host) => renderObjectivesReviewPhase(host, state, ctx, config),
+      render: (host) => {
+        renderObjectivesReviewPhase(host, state, ctx, config);
+        appendPartTwoForward(host, config);
+      },
     },
   ]);
+}
+
+/**
+ * Part 1 used to be a dead end: the Apply word problem moved to its own day at
+ * /lessons/<id>-part2/ (2026-08-26), and the only route there was back out
+ * through the unit hub. This card is the forward door, rendered only when the
+ * Part 2 page actually exists — the generator builds one for every CORE lesson
+ * with an authored `revealWordProblem.text` (76 of 84), which is exactly the
+ * condition tested here, so the link cannot point at a folder that is not
+ * there.
+ */
+function appendPartTwoForward(host, config) {
+  const isCore = /^\d+-\d+$/.test(String(config.lessonId || ""));
+  const hasApply =
+    config.revealWordProblem && String(config.revealWordProblem.text || "").trim().length > 0;
+  if (!isCore || !hasApply) return;
+  const card = document.createElement("div");
+  card.className = "card part-two-forward";
+  card.style.cssText =
+    "margin:26px auto 8px; max-width:560px; text-align:center; padding:22px 24px; " +
+    "border:1.5px solid #cbd5e1; border-radius:14px; background:#f8fafc;";
+  card.innerHTML = `
+    <div style="font-weight:800; font-size:1.1rem; color:#14223a; margin-bottom:6px;">Next class: Apply Day</div>
+    <p style="margin:0 0 14px; color:#475569; line-height:1.5;">
+      Part 2 is the big problem for this lesson — you will solve it with your group.
+    </p>
+    <a class="btn btn-primary" href="/lessons/${encodeURIComponent(config.lessonId)}-part2/"
+       style="display:inline-block; padding:12px 28px; font-weight:800; border-radius:12px; background:#0f766e; color:#ffffff; text-decoration:none;">
+      Continue to Part 2: Apply Day 📋 →
+    </a>`;
+  host.append(card);
 }

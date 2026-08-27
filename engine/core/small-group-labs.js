@@ -421,12 +421,13 @@ export function createModelLab(config, variant, { number, store, events, onDone 
     card.appendChild(tools);
   }
 
+  // ONE word bank, not two: attachVoiceInput below renders the target-word
+  // chips (which light up as words are used) directly after the textarea, so
+  // printing a second static copy of the same words up here doubled the bank
+  // on every worked model. The directive stays; the chips live with the box.
   const keywords = (connect.keywords || []).slice(0, 12);
   if (keywords.length) {
     card.appendChild(el("p", "block-lab", "Use at least one of these math words"));
-    const bank = el("div", "sg-wordbank");
-    keywords.forEach((word) => bank.appendChild(el("span", "sg-word", esc(word))));
-    card.appendChild(bank);
   }
 
   const response = el("textarea", "sg-ta");

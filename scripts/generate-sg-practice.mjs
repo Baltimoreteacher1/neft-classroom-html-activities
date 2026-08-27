@@ -401,7 +401,7 @@ function pageThree(ctx, counter, key) {
     items.push(
       task(
         counter(),
-        `<span class="sp-tag">Find the mistake</span>Another student made this exact mistake on this lesson. Explain why it is wrong, then write what they should have done.`,
+        `<span class="sp-tag">Find the mistake</span>Another student made this exact mistake in this lesson. Explain why it is wrong, then write what they should have done.`,
         `<div class="sp-mistake"><b>The mistake:</b> ${esc(shown)}</div>${
           key
             ? `<p class="ws-keynote">The full note above is the teacher's — the student sheet shows only the misconception, not the correction. A correct answer names the step that went wrong, states the rule it broke, and shows the fixed work.</p><p class="sp-watch"><b>Watch for:</b> a student who repeats the mistake back without naming why it is wrong.</p>`

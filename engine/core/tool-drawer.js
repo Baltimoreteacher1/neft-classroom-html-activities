@@ -212,7 +212,17 @@ function createDrawer() {
 }
 
 /** One chip row: the label, why it is here, and a button per offered tool. */
-function buildPoint(tools, hint, drawer) {
+function buildPoint(allTools, hint, drawer) {
+  // One chip per DISTINCT tool. A lesson that authors the same model in two
+  // sections used to get "Open the Data Explorer — Dot Plot" twice, side by
+  // side, in the same row.
+  const seen = new Set();
+  const tools = allTools.filter((t) => {
+    const name = toolMeta(t.v).name;
+    if (seen.has(name)) return false;
+    seen.add(name);
+    return true;
+  });
   const row = document.createElement("div");
   row.className = "nt-toolpoint";
   const label = document.createElement("span");

@@ -233,7 +233,18 @@ for (const id of SAMPLE) {
   if (fwd.length !== 1)
     fail(`${id}: Act 1 shows ${fwd.length} forward buttons (${fwd.join(" | ")})`);
 
-  // the Launch panel, measured
+  // The Launch problem, measured wherever it lives.
+  //
+  // This used to require `.extra-panel--fullpage` — the takeover container.
+  // Act 2's teaching moments became STEPS in the in-act strip (Vocabulary →
+  // Launch → Learn It → Explore → Practice → Connect) so that one taught order
+  // is presented once instead of four orders on four surfaces, and Launch now
+  // renders inline via renderLearnItExtrasInto rather than in a takeover. The
+  // container was never what this gate protects: it protects the PROBLEM being
+  // visible, uncompressed, and legible. Every measurement below is unchanged —
+  // only the box we look inside is found from the card outward instead of
+  // being named up front, so the gate follows the architecture instead of
+  // pinning one implementation of it.
   const openedLaunch = await page.evaluate(() => {
     const b = [...document.querySelectorAll(".sidebar .phase-btn.phase-subtab")].find((x) =>
       /Launch/.test(x.textContent),
@@ -247,8 +258,18 @@ for (const id of SAMPLE) {
   } else {
     await page.waitForTimeout(1600);
     const g = await page.evaluate(() => {
-      const panel = document.querySelector(".extra-panel--fullpage");
-      const card = panel?.querySelector(".launch-scenario-card");
+      // Find the card first, then the box that holds it: a takeover panel if
+      // one is open, otherwise the act-step host or the active phase. A card
+      // that exists but paints nothing must not satisfy this — getClientRects
+      // is what separates presence from visibility, which is this file's whole
+      // subject.
+      const cardEl = [...document.querySelectorAll(".launch-scenario-card")].find(
+        (c) => c.getClientRects().length,
+      );
+      const panel =
+        cardEl?.closest(".extra-panel--fullpage, .act-step-host, .act-step-body, .phase.active") ||
+        null;
+      const card = cardEl || null;
       const narrative = card?.querySelector(".launch-narrative");
       const fig = card?.querySelector(".launch-problem-img");
       const clipped = panel
@@ -262,6 +283,7 @@ for (const id of SAMPLE) {
         : ["(no panel)"];
       return {
         panel: !!panel,
+        card: !!card,
         cardH: card ? Math.round(card.getBoundingClientRect().height) : 0,
         narrativeH: narrative ? Math.round(narrative.getBoundingClientRect().height) : 0,
         fig: !!fig,
@@ -270,10 +292,11 @@ for (const id of SAMPLE) {
         clipped,
       };
     });
-    if (!g.panel) fail(`${id}: the Launch takeover never opened`);
+    if (!g.card)
+      fail(`${id}: the Launch problem never became visible — no painted .launch-scenario-card`);
     else {
       if (g.clipped.length)
-        fail(`${id}: content COMPRESSED inside the takeover — ${g.clipped.join(", ")}`);
+        fail(`${id}: content COMPRESSED around the Launch problem — ${g.clipped.join(", ")}`);
       if (g.cardH < 150)
         fail(`${id}: launch problem card is ${g.cardH}px tall — a badge over nothing`);
       if (g.narrativeH < 20) fail(`${id}: the problem's own words have no visible height`);
@@ -420,7 +443,16 @@ async function checkWarmupAnswerable(page, id) {
     fail(
       `${PART2}: warm-up has ${g.answerable} VISIBLE answer controls of ${controls.found} in the DOM`,
     );
-  if (!/Warm-Up/.test(g.name || "")) fail(`${PART2}: phase 1 is "${g.name}", not Warm-Up`);
+  /* Phase 1 must be the LOOK-BACK phase, not new content — that is the
+   * contract, and the measurements above (0 labs, answerable controls) are how
+   * it is enforced. The name is the label on that phase, and Part 2's was
+   * deliberately changed from "Warm-Up" to "Review": phase 0 renders
+   * renderReview — objectives, vocabulary and one carried question from Part 1
+   * — so "Warm-Up" told students this was a new lesson's opener rather than a
+   * look back at yesterday's. Both names name the same phase; a lab or a new
+   * teaching phase in this slot still fails, above. */
+  if (!/Warm-Up|Review/.test(g.name || ""))
+    fail(`${PART2}: phase 1 is "${g.name}", not the Warm-Up/Review look-back`);
   if (g.labs === 0 && g.answerable >= 4)
     note(`${PART2}: warm-up clean (0 labs, ${g.answerable} visible controls)`);
   await page.close();
