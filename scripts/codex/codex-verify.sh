@@ -113,7 +113,20 @@ for page in html_files:
         if clean.endswith("/"):
             target = target / "index.html"
         if not target.exists():
-            errors.append(f"Broken local {attr} in {rel} -> {ref}")
+            # Vite serves public/ AT THE SITE ROOT, so /assets/fonts/x.css is
+            # public/assets/fonts/x.css in source and only appears at the tree
+            # root after a build. Resolving against the tree root alone reports
+            # every self-hosted font link on 700+ live pages as broken in a
+            # clean checkout, which is how this check came to fail on stock
+            # main. `npm run validate:static` was taught to resolve public/;
+            # this inline copy is a second implementation that was missed.
+            alt = None
+            if clean.startswith("/"):
+                alt = root / "public" / clean.lstrip("/")
+                if clean.endswith("/"):
+                    alt = alt / "index.html"
+            if alt is None or not alt.exists():
+                errors.append(f"Broken local {attr} in {rel} -> {ref}")
 
 if errors:
     print("Static repo check failed:")

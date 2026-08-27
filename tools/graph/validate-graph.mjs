@@ -22,7 +22,8 @@
  *
  *   node tools/graph/validate-graph.mjs
  */
-import { existsSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -102,6 +103,71 @@ if (existsSync(settingsPath)) {
       continue;
     }
     pass(`hook ${match[1]} exists`);
+  }
+}
+
+/* 4. THE PUSH GATE MUST ACTUALLY BE WIRED.
+ *
+ * scripts/ship.sh states, in its own header, that "the pre-push hook runs the
+ * full QA loop first" — that hook is its ONLY gate. But the hooks live in
+ * tracked `.githooks/` and nothing installs them: there is no `prepare` or
+ * `postinstall` script, and `.git/hooks/` is not tracked. So a fresh clone —
+ * or this very machine, which was found on 2026-08-26 with core.hooksPath
+ * unset and an empty .git/hooks — can run `npm run ship` and push straight to
+ * production with NOTHING checked.
+ *
+ * That failure is silent in the worst way. An uninstalled hook does not error;
+ * git simply runs no hook, ship.sh prints "(pre-push QA loop runs first)"
+ * because that string is hardcoded in its progress output, and the push
+ * succeeds in a second. A passing deploy and an ungated deploy look identical
+ * from the terminal. This is the same class as the `.claude` hook wired to a
+ * missing script that check 3 above exists to catch, so it belongs here.
+ *
+ * CI is exempt: it never pushes to main, and installing hooks in a throwaway
+ * checkout would prove nothing. */
+{
+  const hooksDir = resolve(ROOT, ".githooks");
+  const required = ["pre-push"];
+  for (const name of required) {
+    const p = resolve(hooksDir, name);
+    if (!existsSync(p)) {
+      fail(`.githooks/${name} is missing — ship.sh depends on it as its only gate`);
+      continue;
+    }
+    // A hook that is not executable is a hook git skips, silently.
+    const mode = statSync(p).mode;
+    if (!(mode & 0o111)) {
+      fail(`.githooks/${name} is not executable, so git will skip it (chmod +x .githooks/${name})`);
+      continue;
+    }
+    pass(`.githooks/${name} exists and is executable`);
+  }
+
+  if (process.env.CI) {
+    notes.push("hook installation not required in CI (CI never pushes to main)");
+  } else {
+    let configured = "";
+    try {
+      configured = execFileSync("git", ["config", "--get", "core.hooksPath"], {
+        cwd: ROOT,
+        encoding: "utf8",
+      }).trim();
+    } catch {
+      configured = "";
+    }
+    const installedDirectly = existsSync(resolve(ROOT, ".git/hooks/pre-push"));
+    if (configured === ".githooks") {
+      pass("core.hooksPath = .githooks — the push gate is wired");
+    } else if (installedDirectly) {
+      pass(".git/hooks/pre-push is installed — the push gate is wired");
+    } else {
+      fail(
+        "the pre-push QA gate is NOT installed: core.hooksPath is " +
+          (configured ? `"${configured}"` : "unset") +
+          " and .git/hooks/pre-push does not exist, so `npm run ship` would push to " +
+          "production with nothing checked. Fix: git config core.hooksPath .githooks",
+      );
+    }
   }
 }
 

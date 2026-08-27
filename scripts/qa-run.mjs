@@ -592,6 +592,23 @@ async function main() {
     process.exit(0);
   }
 
+  /* --- Preflight: the tree must match the lockfile --------------------------
+   * Runs before `build`, which is the barrier every other check waits on. A
+   * stale node_modules makes build fail with a bundler resolve error naming the
+   * missing IMPORT and not the cause, so all 76 checks report FAILED and the
+   * branch under test gets blamed for the environment. Cost a full three-stage
+   * verification cycle on 2026-08-18. Fails fast, with the command that fixes it.
+   */
+  try {
+    execFileSync("node", [join(ROOT, "tools", "validate-deps-installed.mjs"), "--quiet"], {
+      cwd: ROOT,
+      stdio: "inherit",
+    });
+  } catch {
+    console.error("\nqa-run: preflight failed — not running the gate against a stale tree.");
+    process.exit(2);
+  }
+
   /* --- Run ------------------------------------------------------------------ */
   const LOG_DIR = join(ROOT, ".qa-logs");
   mkdirSync(LOG_DIR, { recursive: true });
