@@ -157,6 +157,20 @@ function targetExists(abs) {
 function existsExactCase(abs) {
   const rel = relative(root, abs);
   if (rel.startsWith("..")) return true; // outside root, skip
+  if (walkExactCase(rel)) return true;
+  // Same public/ rule targetExists() already applies: Vite serves everything
+  // under public/ AT the site root, so /assets/fonts/x.css lives at
+  // public/assets/fonts/x.css and nowhere else in the source tree. Without
+  // this, every such link was reported as a case mismatch that "404s on
+  // Cloudflare" — 1,627 of them, none real; the files are served and return
+  // 200. A warning list that is entirely false buries the two findings that
+  // are not, which is how this audit came to be ignored.
+  return walkExactCase(join("public", rel));
+}
+
+/** Walk a repo-relative path one segment at a time, requiring an exact-case
+ *  directory entry at every level. Returns false on the first miss. */
+function walkExactCase(rel) {
   const parts = rel.split(/[/\\]/).filter(Boolean);
   let cur = root;
   for (const part of parts) {
