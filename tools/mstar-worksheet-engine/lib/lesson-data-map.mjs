@@ -933,8 +933,8 @@ u10Lessons.forEach((l) => {
  * to disk at all. tools/mstar-lesson-map.test.mjs holds both properties.
  */
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 export function curriculumIdentities(
   root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", ".."),

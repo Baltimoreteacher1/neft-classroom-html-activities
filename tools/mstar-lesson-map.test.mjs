@@ -19,9 +19,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  curriculumIdentities,
   LESSON_MAP,
   RECONCILIATION,
-  curriculumIdentities,
   reconcileWithCurriculum,
 } from "./mstar-worksheet-engine/lib/lesson-data-map.mjs";
 
