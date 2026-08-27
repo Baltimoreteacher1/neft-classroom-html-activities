@@ -4,8 +4,24 @@ set -u
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT" || exit 1
 
-if [[ -x scripts/codex/codex-verify.sh ]]; then
+# The INNER-LOOP gate, not the deploy gate.
+#
+# This used to run scripts/codex/codex-verify.sh, which is `npm run validate`
+# plus `npm run build` — a heavier gate than the pre-push hook itself, and the
+# wrong way round. It cost 10-30 minutes per commit once the hooks were actually
+# installed (they had never been wired, so nobody had paid it). A commit gate
+# that expensive does not get respected; it gets --no-verify, and then the
+# pre-push gate is the only thing standing in front of production.
+#
+# qa:fast is this repo's own answer: change-scoped, and DEFAULT-DENY — a changed
+# path matching no rule in scripts/qa-run.mjs's COVERAGE table escalates to the
+# full gate, so it can never be less safe than running everything, only faster
+# when coverage is provable. The full sweep still runs on push (qa:loop) and in
+# CI, which is where it belongs.
+if npm run --silent qa:fast >/dev/null 2>&1; then
+  npm run qa:fast
+elif [[ -x scripts/codex/codex-verify.sh ]]; then
   scripts/codex/codex-verify.sh
 else
-  echo "No scripts/codex/codex-verify.sh found; skipping Codex pre-commit checks."
+  echo "No qa:fast script and no scripts/codex/codex-verify.sh; skipping pre-commit checks."
 fi

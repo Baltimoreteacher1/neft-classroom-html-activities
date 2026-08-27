@@ -32,7 +32,23 @@ async function enterLesson(page: Page, path: string) {
 }
 
 async function openPractice(page: Page) {
-  await page.locator(".phase-nav").getByRole("button", { name: /Practice/ }).click();
+  // Act 2 is called "Lesson", not "Practice". The 3-Act reflow (33cef3cde,
+  // "Act 1 opens on the Warm-Up, and Act 2 is called Lesson") renamed the act
+  // that carries the practice work; the phase rail now reads
+  // "1 Warm-Up / 2 Lesson / 3 Exit Ticket" and no button matches /Practice/ at
+  // all, so every test in this file timed out for 30s on a locator that can
+  // never resolve. The award layer it is checking still lives in that act.
+  await page.locator(".phase-nav").getByRole("button", { name: /Lesson/ }).click();
+  // …and then the Practice STEP inside that act. The reflow also split each act
+  // into an in-act strip ("one moment on screen at a time"), so opening the act
+  // lands on Explore and leaves Practice — and the Go Deeper Lab in it —
+  // rendered but [hidden]. Clicking the act alone got .ntgd into the DOM and
+  // never onto the screen, which reads as a missing feature rather than an
+  // unopened tab.
+  // Conditional: not every lesson renders the strip, and an unconditional click
+  // just swaps one 30s timeout for another.
+  const practiceStep = page.locator(".act-step-strip").getByRole("button", { name: /Practice/ });
+  if (await practiceStep.count()) await practiceStep.first().click();
 }
 
 async function completeGoDeeper(page: Page, root: ReturnType<Page["locator"]>) {
