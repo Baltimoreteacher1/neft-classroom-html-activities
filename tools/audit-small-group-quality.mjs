@@ -97,6 +97,13 @@ function demand(it) {
   if (
     /\balways\b.*\bsometimes\b|\bcounterexample\b|\bwill (this|it) always\b|\bin general\b|\bgeneraliz/.test(
       s,
+    ) ||
+    // A rule that must hold for UNSPECIFIED values is a generalization, not a
+    // calculation — there is no number to compute. 7-7-group2 asks "which
+    // operation gives the side length for any values", which is precisely the
+    // move from an instance to a rule.
+    /\bfor any (values?|numbers?|pair|point|case)\b|\bfor every\b|\bwill (this|that|it) (also )?work for\b|\bany rectangle\b/.test(
+      s,
     )
   )
     return "generalization";
@@ -107,17 +114,40 @@ function demand(it) {
   )
     return "reasoning";
   if (
-    /\bjustify\b|\bexplain why\b|\bprove\b|\bdefend\b|\bconvince\b|\bwhy does\b|\bwhy is\b/.test(s)
+    /\bjustify\b|\bexplain why\b|\bprove\b|\bdefend\b|\bconvince\b|\bwhy does\b|\bwhy is\b/.test(
+      s,
+    ) ||
+    // "…, and why?" is the same demand as "explain why", tacked onto a choice.
+    // 10-4-group2 asks which gear to ride up a hill "and why" — picking the
+    // gear is procedural, saying why it is easier is not.
+    /,\s*and why\b|\band why\?|\bwhy do you think\b|\bwhy might\b|\bwhy can\b/.test(s) ||
+    // Evaluating a claim or a recommendation against evidence: the student is
+    // not computing, they are deciding whether an answer or an argument holds.
+    /\bwhich reasoning is (strongest|best)\b|\bwould you recommend\b|\bmake sense\b|\bis .* reasonable\b|\brespectful response\b|\bwhat do you notice about\b/.test(
+      s,
+    )
   )
     return "reasoning";
   if (
     /\bwhich (method|strategy) is more efficient|\bcompare .* (method|strategy|approach)|\bsolve .* two ways/.test(
+      s,
+    ) ||
+    // Choosing a REPRESENTATION is a strategic decision the fleet phrases as a
+    // menu: "would you choose a table of values, a coordinate grid, or …".
+    // Weighing two tools against each other is the same act.
+    /\bwould you choose\b|\bwhich would you (choose|use)\b|\bwhat is the benefit of .* over\b|\bdescribes the two strategies\b|\bhow are the two .* (same|different)\b/.test(
       s,
     )
   )
     return "strategic";
   if (
     /\bcreate (an?|your own)\b|\bwrite a problem\b|\bdesign a\b|\bfind (another|a different) (way|answer)/.test(
+      s,
+    ) ||
+    // Same act, the verbs the fleet actually uses: "design your own version",
+    // "give three different sets of dimensions that work", "find a different
+    // combination". The narrow (way|answer) tail missed every one of them.
+    /\b(design|write|build|make) your own\b|\bgive (two|three|four) different\b|\bfind (another|a different) \w+\b/.test(
       s,
     ) ||
     // Constructing a situation to order is the same cognitive act as "create an
@@ -128,6 +158,10 @@ function demand(it) {
     return "strategic";
   if (
     /\bwhat happens if\b|\bsuppose\b|\bwould .* still\b|\bunfamiliar\b/.test(s) ||
+    // Change a condition and re-reason. "How does the answer change if/for …"
+    // is the fleet's standard phrasing and is not a re-run of the same
+    // procedure — the student has to work out what the change does first.
+    /\bhow does the answer change\b|\bhow would .* change if\b|\bhow does .* change if\b/.test(s) ||
     // Reverse-the-problem: handed the result, reconstruct the situation.
     /\bworking backwards\b|\bwork backwards\b|\bgiven the result\b/.test(s)
   )

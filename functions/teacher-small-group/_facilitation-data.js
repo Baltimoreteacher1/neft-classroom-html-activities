@@ -387,13 +387,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Show me on the bar graph where your numbers came from.",
+      ask: "On the bar graph, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
-        "Watch for: doubling the previous number of steps but forgetting to add 1 — answering 14 instead of 15 for four discs, or 30 instead of 31 for five.",
-      ifStuck:
-        "Work the first step together on the bar graph, then hand the second one back to them.",
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -413,9 +412,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Would this strategy always work? How do you know?",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
-      ifStuck: "Ask for a second representation on the bar graph before any more explaining.",
+      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      lookFor:
+        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
+      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
     frames: [
@@ -436,10 +436,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which number is being shared out, and which says how many shares?",
+      ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
       lookFor:
-        "Watch for the “Divided in the wrong order” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask “what is being split, and into how many?” before they write it.",
+        "Watch for the “Multiplied when the problem divides” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -459,10 +459,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Is division ever order-independent? Show a case or prove it never is.",
+      ask: "When does dividing make a number BIGGER? Give a case and explain it.",
       lookFor:
-        "A student who can explain why the “Divided in the wrong order” error fails in every case, not just this one.",
-      ifStuck: "Ask them to state which quantity is being shared before computing.",
+        "A student who can explain why the “Multiplied when the problem divides” error fails in every case, not just this one.",
+      ifStuck: "Ask whether the answer should grow or shrink, and why.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
     frames: [
@@ -1646,12 +1646,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the tape diagram, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "Estimate to the nearest whole first — then check where the point lands on the tape diagram.",
       lookFor:
-        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -1671,10 +1671,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Why does multiplying by a number under 1 shrink the answer? Explain with place value.",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
+        "A student who can explain why the “Right digits, wrong magnitude” error fails in every case, not just this one.",
+      ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
     frames: [
@@ -1693,13 +1693,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the percent grid, which piece is the whole, and which piece are we naming?",
+      ask: "Estimate to the nearest whole first — then check where the point lands on the percent grid.",
       lookFor:
-        'Watch for: treating the numerator and denominator as the percent\'s digits — turning 3/5 into "35%" by just reading the 3 and the 5.',
-      ifStuck:
-        "Work the first step together on the percent grid, then hand the second one back to them.",
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -1719,9 +1718,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Would this method still work if the percent were over 100? Convince me.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
-      ifStuck: "Ask for 10% first, then build the target percent from it.",
+      ask: "Why does multiplying by a number under 1 shrink the answer? Explain with place value.",
+      lookFor:
+        "A student who can explain why the “Right digits, wrong magnitude” error fails in every case, not just this one.",
+      ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
     frames: [
@@ -2793,13 +2793,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Worked left to right instead of by operation order. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which part of this expression happens first, and how do you know?",
+      ask: "Which operation has to happen first here, and how do you know?",
       lookFor:
-        "Watch for: a common mistake with powers is multiplying the base by the exponent: reading 3² as 3 × 2 = 6 instead of 3 × 3 = 9.",
-      ifStuck:
-        "Work the first step together on the step-by-step solver, then hand the second one back to them.",
+        "Watch for the “Worked left to right instead of by operation order” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Have them circle the operation that must go first, then compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2819,9 +2818,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Is there a different expression with the same value? Show why they match.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
-      ifStuck: "Ask them to substitute one number into both expressions and compare.",
+      ask: "Write an expression where left-to-right gives the same answer. Why does it?",
+      lookFor:
+        "A student who can explain why the “Worked left to right instead of by operation order” error fails in every case, not just this one.",
+      ifStuck: "Ask them to write the same expression with parentheses that force their order.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
     frames: [
@@ -3077,13 +3077,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right magnitude, lost the negative sign. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Between which two integers does this value belong? Show me on the number line.",
+      ask: "Which side of zero does this answer sit on? Point to it on the number line.",
       lookFor:
-        "Watch for: the most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of….",
-      ifStuck:
-        "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
+        "Watch for the “Right magnitude, lost the negative sign” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Place the answer on a number line — which side of zero?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -3104,8 +3103,9 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Is that true for negative numbers too, or only positive ones? Show a case.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      ask: "When is a negative number greater than another negative? Order three and justify.",
+      lookFor:
+        "A student who can explain why the “Right magnitude, lost the negative sign” error fails in every case, not just this one.",
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
@@ -3126,13 +3126,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right magnitude, lost the negative sign. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Between which two integers does this value belong? Show me on the number line.",
+      ask: "Which side of zero does this answer sit on? Point to it on the number line.",
       lookFor:
-        "Watch for: treating the numerator and denominator of a negative fraction as two separate whole numbers instead of one value between two integers — for example….",
-      ifStuck:
-        "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
+        "Watch for the “Right magnitude, lost the negative sign” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Place the answer on a number line — which side of zero?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -3153,8 +3152,9 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Is that true for negative numbers too, or only positive ones? Show a case.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      ask: "When is a negative number greater than another negative? Order three and justify.",
+      lookFor:
+        "A student who can explain why the “Right magnitude, lost the negative sign” error fails in every case, not just this one.",
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
@@ -3224,13 +3224,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right magnitude, lost the negative sign. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Between which two integers does this value belong? Show me on the number line.",
+      ask: "Which side of zero does this answer sit on? Point to it on the number line.",
       lookFor:
-        "Watch for: thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8.",
-      ifStuck:
-        "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
+        "Watch for the “Right magnitude, lost the negative sign” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Place the answer on a number line — which side of zero?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -3251,8 +3250,9 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Is that true for negative numbers too, or only positive ones? Show a case.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      ask: "When is a negative number greater than another negative? Order three and justify.",
+      lookFor:
+        "A student who can explain why the “Right magnitude, lost the negative sign” error fails in every case, not just this one.",
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
