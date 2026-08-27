@@ -5800,6 +5800,25 @@ function injectActStepStyles() {
  * @param {number} phaseIdx
  * @param {{key:string, icon:string, label:string, render:(host:HTMLElement)=>void}[]} steps
  */
+/* A step can be asked for before its strip exists.
+ *
+ * The side rail names an act STEP (Practice) the same way it names a section,
+ * but the strip is built during the phase render and the request arrives from a
+ * different code path, so the two race. Rather than guess a delay, the strip
+ * itself is the authority: a request that arrives early is REMEMBERED and
+ * applied the moment the strip mounts. */
+let pendingActStep = null;
+/** @type {((key:string)=>boolean)|null} */
+let selectActStep = null;
+if (typeof document !== "undefined" && !document.__ntActStepWired) {
+  document.__ntActStepWired = true;
+  document.addEventListener("rma:actstep", (e) => {
+    const key = e && e.detail && e.detail.key;
+    if (!key) return;
+    if (!(selectActStep && selectActStep(key))) pendingActStep = key;
+  });
+}
+
 function renderActSteps(el, state, phaseIdx, steps) {
   if (!steps.length) return;
   injectActStepStyles();
@@ -5846,6 +5865,11 @@ function renderActSteps(el, state, phaseIdx, steps) {
     const chip = document.createElement("button");
     chip.type = "button";
     chip.className = "act-step-chip";
+    // The side rail jumps to a step by key (PHASE_SUBTABS -> rma:navigate ->
+    // renderPhase's jump). Without this the only way into a step is the strip
+    // itself, which is why Practice had no sidebar entry while every other
+    // teaching moment in the act did.
+    chip.dataset.stepKey = step.key;
     chip.setAttribute("role", "tab");
     chip.innerHTML = `<span class="act-step-num">${i + 1}</span>${step.icon} ${esc(step.label)}`;
     chip.addEventListener("click", () => show(i, true));
@@ -5873,10 +5897,24 @@ function renderActSteps(el, state, phaseIdx, steps) {
     }
   });
 
+  // Expose selection for the side rail, and honour a request that arrived
+  // before this strip existed.
+  selectActStep = (key) => {
+    const i = steps.findIndex((st) => st && st.key === key);
+    if (i < 0) return false;
+    show(i, true);
+    return true;
+  };
+
   const saved = Number(state.getResponse(phaseIdx, "act_step"));
   const start = Number.isInteger(saved) && saved >= 0 && saved < steps.length ? saved : 0;
   for (let j = 0; j < start; j += 1) visited.add(j);
   show(start, false);
+  if (pendingActStep) {
+    const want = pendingActStep;
+    pendingActStep = null;
+    selectActStep(want);
+  }
 }
 
 /**

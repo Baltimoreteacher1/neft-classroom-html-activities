@@ -340,6 +340,13 @@ function renderLessonNotesHtml(config, lang = "en") {
       `Math Notes: lesson ${(config && config.lessonId) || "unknown"} declares no usable notebook data`,
     );
   }
+  // OPT-IN, per lesson: present the page as ONE section instead of the numbered
+  // Section 1 / Section 2 split. The checkpoints themselves are untouched — the
+  // notebook GATES still fire per box, and the prompts a student reads at each
+  // one are the same classroom norm as every other lesson. This changes only
+  // how the "What should my page look like?" model is laid out, for a lesson
+  // whose words and rule are one short idea rather than two.
+  const singleSection = !!(config && config.notebook && config.notebook.singleSection);
   const sections = [];
   for (const cp of cps) {
     if (cp.box === 2 && (!cp.copyPanel || !String(cp.copyPanel.rule || "").trim())) {
@@ -361,11 +368,15 @@ function renderLessonNotesHtml(config, lang = "en") {
         ? "Sección 1: Palabras de Matemáticas"
         : "Sección 2: Matemáticas de Hoy"
       : cp.heading.replace(/^Notebook time — /, "");
-    sections.push(`
+    sections.push(
+      singleSection
+        ? panel
+        : `
       <section class="nt-nb-model-section">
         <h3 class="nt-nb-model-subhead">${esc(subhead)}</h3>
         ${panel}
-      </section>`);
+      </section>`,
+    );
   }
   if (sections.length === 0) {
     throw new Error(
@@ -383,7 +394,11 @@ function renderLessonNotesHtml(config, lang = "en") {
     <div class="nt-nb-model-lesson">
       <p class="nt-nb-model-date">${dateLabel} <span class="nt-nb-model-date-blank" aria-hidden="true"></span><span class="nt-nb-visually-hidden">${datePrompt}</span></p>
       <p class="nt-nb-model-lessonlead">${title ? esc(title) : defaultTitle}</p>
-      ${sections.join("\n")}
+      ${
+        singleSection
+          ? `<section class="nt-nb-model-section">${sections.join("\n")}</section>`
+          : sections.join("\n")
+      }
     </div>`;
 }
 

@@ -869,6 +869,11 @@ const PHASE_SUBTABS = {
     { extra: "launch", icon: "🚀", label: "Launch" },
     { extra: "learn", icon: "💡", label: "Learn It" },
     { extra: "watchme", icon: "👀", label: "Watch Me" },
+    // Practice is a STEP inside this act, not an extra panel, so it reaches the
+    // rail as a jump. It was the one teaching moment in Act 2 with no sidebar
+    // entry — reachable only by finding the in-act strip — which is how "Let's
+    // practice" came to look missing on the side.
+    { jump: "practice", icon: "✏️", label: "Practice" },
     // The lesson's own manipulatives, opened in their OWN window rather than as
     // an in-page takeover: reaching a model used to mean leaving the phase you
     // were on and the problem you were part-way through. Rendered as a real <a>
@@ -890,10 +895,19 @@ function subtabsFor(config, index) {
   // A lesson with no authored manipulative gets no Interactive Studio chip. The
   // dead-button rule this file already applies everywhere else: a chip that
   // opens an empty page is worse than no chip.
-  if (list.some((t) => t && t.href === "?mode=tools") && !collectTools(config).length) {
-    return list.filter((t) => !t || t.href !== "?mode=tools");
+  let out = list;
+  if (out.some((t) => t && t.href === "?mode=tools") && !collectTools(config).length) {
+    out = out.filter((t) => !t || t.href !== "?mode=tools");
   }
-  return list;
+  // Same dead-button rule for the Practice jump: a lesson with no practice
+  // items renders a step with nothing in it, and a chip that opens an empty
+  // panel is worse than no chip.
+  const pr = config && config.practice;
+  const hasPractice =
+    !!pr &&
+    ["onLevel", "approaching", "extending"].some((k) => Array.isArray(pr[k]) && pr[k].length > 0);
+  if (!hasPractice) out = out.filter((t) => !t || t.jump !== "practice");
+  return out;
 }
 
 /** The href a subtab chip points at, resolved against the current lesson URL. */
@@ -2783,6 +2797,11 @@ function updateSidebar(sidebar, state, phaseConfigs, config) {
       document.dispatchEvent(
         new CustomEvent("rma:navigate", { detail: { phase: idx, jump: target } }),
       );
+      // A jump may name an act STEP (Practice) rather than a section. Those
+      // panels are [hidden] until their chip is pressed, so a scroll would
+      // reveal nothing. The strip owns the selection and remembers a request
+      // that arrives before it has mounted.
+      document.dispatchEvent(new CustomEvent("rma:actstep", { detail: { key: target } }));
     });
   });
 
