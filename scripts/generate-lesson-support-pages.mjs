@@ -30,6 +30,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -101,6 +102,87 @@ function vocab(cfg) {
   return Array.isArray(cfg.vocabulary) ? cfg.vocabulary.filter((v) => v.term) : [];
 }
 
+/* ---------- the lesson's own interactive tool, for families ---------- */
+
+/**
+ * The interactive models a lesson declares, in the order a family should meet
+ * them. Same priority the homework generator uses (scripts/generate-homework-html.mjs):
+ * practice is the most actionable, then explore/connect, then the launch visual —
+ * so a family opening this page gets the same tool the student used in class.
+ */
+function lessonModelCandidates(cfg) {
+  const out = [];
+  const add = (value) => {
+    if (Array.isArray(value)) value.forEach(add);
+    else if (value && typeof value === "object" && typeof value.kind === "string") out.push(value);
+  };
+  add(cfg.practice?.diagram);
+  add(cfg.explore?.diagram);
+  add(cfg.connect?.diagram);
+  add(cfg.launch?.visual);
+  return out;
+}
+
+/**
+ * Build the mount host for the first candidate that is a REGISTERED interactive
+ * kind. `interactiveVisualHost` returns "" for static/unknown kinds, so an
+ * unregistered diagram falls through instead of rendering an empty box.
+ * Returns null when the lesson has no interactive model at all.
+ */
+function selectFamilyModel(cfg) {
+  for (const candidate of lessonModelCandidates(cfg)) {
+    const html = interactiveVisualHost(candidate, {
+      ariaLabel: `Interactive ${candidate.title || cfg.title || "lesson model"}`,
+      fallback: "Turn on JavaScript to use this tool. The steps above work on paper too.",
+    });
+    if (html) return { kind: candidate.kind, title: candidate.title || "", html };
+  }
+  return null;
+}
+
+/**
+ * Family-facing name and coaching line per tool kind. A parent needs to know
+ * what the thing in front of them IS before they will touch it, so every
+ * registered kind that reaches a family page gets a plain-language label.
+ * Unlisted kinds fall back to a generic line rather than being hidden.
+ */
+const FAMILY_TOOL_COPY = {
+  "long-division-builder": {
+    name: "Long Division Calculator",
+    nameEs: "Calculadora de división larga",
+    blurb:
+      "Type any division problem and work it one step at a time. It checks each step and says what to fix.",
+    blurbEs:
+      "Escriba cualquier problema de división y resuélvalo paso a paso. Revisa cada paso y le dice qué corregir.",
+  },
+};
+
+const FAMILY_TOOL_FALLBACK = {
+  name: "Lesson Tool",
+  nameEs: "Herramienta de la lección",
+  blurb: "This is the same model your student used in class. Change it and watch what happens.",
+  blurbEs: "Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.",
+};
+
+/**
+ * The "Try the tool together" section. Rendered only when the lesson declares a
+ * registered interactive model. `data-lesson-model-host` is the hook the shared
+ * mount module (/assets/homework-lesson-models.js) looks for — the same one the
+ * homework pages use, so there is one mounting path, not two.
+ */
+function familyToolSection(model) {
+  if (!model) return "";
+  const copy = FAMILY_TOOL_COPY[model.kind] || FAMILY_TOOL_FALLBACK;
+  return `
+<section class="tool-section">
+  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
+  <p><strong>${esc(copy.name)}</strong> — ${esc(copy.blurb)}</p>
+  <p class="es-text">${esc(copy.nameEs)} — ${esc(copy.blurbEs)}</p>
+  <div class="tool-host" data-lesson-model-host>${model.html}</div>
+  <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
+</section>`;
+}
+
 /* ---------- shared page chrome ---------- */
 
 const PALETTE = `
@@ -132,10 +214,16 @@ li{margin:0 0 6px;}
 .std{display:inline-block;background:var(--teal-light);color:var(--teal-ink);border:1px solid var(--teal-ink);
   border-radius:999px;font-size:12px;font-weight:700;padding:2px 10px;margin-left:6px;vertical-align:middle;}
 footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
-@media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}}
+.tool-section{border-color:var(--teal);}
+.tool-host{margin:12px 0 6px;}
+.tool-host .interactive-visual{margin:0 !important;}
+.interactive-visual-fallback{background:var(--amber-light);border:1px solid var(--amber);border-radius:10px;padding:12px 14px;}
+.muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
+@media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
+  .tool-section{display:none;}}
 `;
 
-function page({ title, kind, head, body, id }) {
+function page({ title, kind, head, body, id, scripts = "" }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -152,6 +240,7 @@ ${kind === "family" ? "" : `<nav class="crumbs"><a href="/curriculum/">← Curri
 ${body}
 <footer>Neft Teacher · Grade 6 Math · auto-generated from the lesson plan — a teacher may edit and lock this page.</footer>
 </div>
+${scripts}
 </body>
 </html>`;
 }
@@ -160,6 +249,7 @@ ${body}
 
 function familyPage(id, cfg, unit, lesson) {
   const v = vocab(cfg);
+  const model = selectFamilyModel(cfg);
   const example = workedExampleLines(cfg);
   const { directions, problems } = practiceProblems(cfg, 3);
   const stdBadge = cfg.standard ? `<span class="std">${esc(cfg.standard)}</span>` : "";
@@ -219,6 +309,7 @@ function familyPage(id, cfg, unit, lesson) {
   <h2>Practice at home</h2>
   ${practiceHtml}
 </section>
+${familyToolSection(model)}
 <section>
   <h2>Answer check</h2>
   ${answerHtml}
@@ -255,6 +346,8 @@ function familyPage(id, cfg, unit, lesson) {
     head,
     body,
     id,
+    // Only ship the mount module on pages that actually have a tool to mount.
+    scripts: model ? `<script type="module" src="/assets/homework-lesson-models.js"></script>` : "",
   });
 }
 
