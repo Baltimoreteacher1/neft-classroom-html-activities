@@ -6,7 +6,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { detectVisualTopic, selectAlignedQuickCheckProblems } from "./homework-alignment.mjs";
+import {
+  decimalOperation,
+  detectVisualTopic,
+  selectAlignedQuickCheckProblems,
+} from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
 import { renderPlayTab } from "./homework-games.mjs";
 import {
@@ -900,8 +904,32 @@ function conceptVisualSvg(config) {
   }
 
   if (topic === "decimals") {
+    // The three 6.NOS.3 lessons do not share a rule — see decimalOperation().
+    // Stating the addition rule on the division lesson was teaching the exact
+    // move that lesson exists to replace.
+    const op = decimalOperation(config);
+    if (op === "divide") {
+      return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Dividing by a decimal">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="50" y="85" font-size="24" font-weight="800" fill="#12355b">14.4 ÷ 1.2 → 144 ÷ 12</text>
+        <text x="50" y="118" font-size="13" fill="#21313f">Move the point in the divisor until it is a whole number.</text>
+        <text x="50" y="138" font-size="13" fill="#21313f">Move it the same number of places in the dividend.</text>
+        <text x="50" y="162" font-size="13" fill="#21313f" lang="es">Muevan el punto del divisor hasta que sea entero, y muévanlo igual en el dividendo.</text>
+      </svg>`;
+    }
+    if (op === "multiply") {
+      return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Multiplying decimals">
+        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="50" y="85" font-size="24" font-weight="800" fill="#12355b">1.2 × 0.4 = 0.48</text>
+        <text x="50" y="118" font-size="13" fill="#21313f">Multiply as whole numbers: 12 × 4 = 48.</text>
+        <text x="50" y="138" font-size="13" fill="#21313f">Then count the decimal places in BOTH factors: 1 + 1 = 2.</text>
+        <text x="50" y="162" font-size="13" fill="#21313f" lang="es">Multipliquen como enteros y cuenten las cifras decimales de LOS DOS factores.</text>
+      </svg>`;
+    }
     return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Decimal operations">
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Adding and subtracting decimals">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
         <text x="50" y="90" font-size="28" font-weight="800" fill="#12355b">12.5 + 3.75</text>
         <text x="50" y="120" font-size="13" fill="#21313f">Line up decimal points before you add or subtract.</text>

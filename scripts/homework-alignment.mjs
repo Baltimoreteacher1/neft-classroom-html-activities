@@ -90,6 +90,33 @@ export function detectVisualTopic(config) {
   return "fallback";
 }
 
+/**
+ * Which decimal operation a "decimals" lesson is actually about.
+ *
+ * Standard 6.NOS.3 covers three of them — 2-11 adds and subtracts, 2-12
+ * multiplies, 2-7 divides — and detectVisualTopic() collapses all three to the
+ * single topic "decimals". That is fine for anything operation-neutral (a
+ * hundred grid, a place-value link) but wrong the moment content states a RULE,
+ * because the three rules are different and only one of them is "line up the
+ * decimal points":
+ *
+ *   add / subtract → line the points up, then add or subtract as usual
+ *   multiply       → ignore the points, multiply as whole numbers, then count
+ *                    the decimal places in BOTH factors
+ *   divide         → MOVE the point in the divisor until it is whole, and move
+ *                    the dividend the same number of places
+ *
+ * Until this existed, 2-7 and 2-12 both taught the addition rule in their
+ * homework big-idea card and their family game — 2-7 in a lesson whose entire
+ * point is that you move the point rather than line it up.
+ */
+export function decimalOperation(config) {
+  const title = String(config?.title || "").toLowerCase();
+  if (/divid/.test(title)) return "divide";
+  if (/multipl/.test(title)) return "multiply";
+  return "addsub";
+}
+
 const TOPIC_KEYWORDS = {
   exponents: ["exponent", "power", "base", "evaluate", "²", "³", "multiply", "repeated"],
   expressions: ["expression", "variable", "coefficient", "term", "evaluate", "algebraic"],

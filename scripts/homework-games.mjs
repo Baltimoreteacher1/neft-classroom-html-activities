@@ -2,7 +2,7 @@
  * Topic-matched mini-games for family homework Play tab.
  * Generator-driven HTML + inline JS — no external deps (2D/CSS fallback).
  */
-import { detectVisualTopic } from "./homework-alignment.mjs";
+import { decimalOperation, detectVisualTopic } from "./homework-alignment.mjs";
 
 // Build-time shuffles must be reproducible: with Math.random() a no-op
 // regeneration rewrote the Play-tab games in ~10 lesson files every run, which
@@ -293,7 +293,53 @@ function buildSurfaceAreaGame(_config, { title }) {
   });
 }
 
-function buildDecimalGame(_config, { title }) {
+function buildDecimalGame(config, { title }) {
+  // 6.NOS.3 is three different operations with three different rules — see
+  // decimalOperation(). A family playing the division lesson's game was being
+  // drilled on lining up decimal points, which is the addition rule.
+  const op = decimalOperation(config);
+
+  if (op === "divide") {
+    // Checked: 9.6÷0.8=12, 6.3÷0.9 → 63÷9 = 7, 5.04÷0.12 → 504÷12 = 42.
+    const rounds = [
+      { q: "9.6 ÷ 0.8 = ?", choices: ["12", "1.2", "120", "0.12"], correct: 0 },
+      {
+        q: "To divide by 0.4, first make the divisor…",
+        choices: ["A whole number: 4", "Smaller", "Zero", "A fraction"],
+        correct: 0,
+      },
+      {
+        q: "6.3 ÷ 0.9 becomes…",
+        choices: ["63 ÷ 9", "6.3 ÷ 9", "63 ÷ 0.9", "0.63 ÷ 9"],
+        correct: 0,
+      },
+      { q: "5.04 ÷ 0.12 = ?", choices: ["42", "4.2", "420", "0.42"], correct: 0 },
+    ];
+    return mcSpeedGame("decimal", title, "Move the Point!", "¡Mueve el punto!", rounds, {
+      en: "Move the point in the divisor until it is whole — then move it the same in the dividend.",
+      es: "Muevan el punto del divisor hasta que sea entero, y muévanlo igual en el dividendo.",
+    });
+  }
+
+  if (op === "multiply") {
+    // Checked: 3×2=6 with 2 places → 0.06; 15×4=60 with 1 place → 6;
+    // 2.5×0.06 has 1+2 = 3 places; 7×8=56 with 1 place → 5.6.
+    const rounds = [
+      { q: "0.3 × 0.2 = ?", choices: ["0.06", "0.6", "6", "0.006"], correct: 0 },
+      { q: "1.5 × 4 = ?", choices: ["6", "0.6", "60", "5.5"], correct: 0 },
+      {
+        q: "How many decimal places in 2.5 × 0.06?",
+        choices: ["3", "2", "1", "0"],
+        correct: 0,
+      },
+      { q: "0.7 × 8 = ?", choices: ["5.6", "56", "0.56", "5.06"], correct: 0 },
+    ];
+    return mcSpeedGame("decimal", title, "Count the Places!", "¡Cuenta las cifras!", rounds, {
+      en: "Multiply as whole numbers, then count the decimal places in BOTH factors.",
+      es: "Multipliquen como enteros y cuenten las cifras decimales de LOS DOS factores.",
+    });
+  }
+
   const rounds = [
     { q: "1.5 + 2.3 = ?", choices: ["3.8", "3.5", "4.8", "2.8"], correct: 0 },
     { q: "0.6 × 10 = ?", choices: ["6", "0.06", "60", "1.6"], correct: 0 },
