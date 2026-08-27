@@ -33,7 +33,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -67,46 +67,59 @@ function selfTest() {
   return { total: cases.length, failed: bad.length };
 }
 
-const st = selfTest();
-if (st.failed) {
-  console.error(`FAIL validate:sync-conflicts — ${st.failed}/${st.total} self-tests failed.`);
+// Importable: scripts/clean-sync-conflicts.mjs reuses isSyncConflictName, and a
+// module that sweeps and exits at import time would run the GATE instead of the
+// cleaner — which is exactly what it did on first use.
+const invokedDirectly =
+  process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (!invokedDirectly) {
+  // Nothing else to do; the pure detector above is the export.
+} else {
+  main();
+}
+
+function main() {
+  const st = selfTest();
+  if (st.failed) {
+    console.error(`FAIL validate:sync-conflicts — ${st.failed}/${st.total} self-tests failed.`);
+    process.exit(1);
+  }
+
+  const untracked = execFileSync("git", ["ls-files", "--others", "--exclude-standard"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+  })
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const hits = untracked.filter(isSyncConflictName);
+
+  if (hits.length === 0) {
+    console.log(
+      `PASS validate:sync-conflicts — no iCloud conflict copies in the tree (self-tests ${st.total}/${st.total}).`,
+    );
+    process.exit(0);
+  }
+
+  console.error(
+    `FAIL validate:sync-conflicts — ${hits.length} iCloud conflict cop(y/ies) in the tree.`,
+  );
+  console.error("");
+  console.error("  These are NOT defects in the code under test. iCloud wrote a second copy");
+  console.error("  of a file it could not reconcile, and the copies break gates that walk the");
+  console.error("  filesystem — static structure, injection sentinels, CSS integrity, and the");
+  console.error("  mutation harness's leftover-file check — as if the repo were broken.");
+  console.error("");
+  for (const h of hits.slice(0, 20)) console.error(`    ${h}`);
+  if (hits.length > 20) console.error(`    ...and ${hits.length - 20} more`);
+  console.error("");
+  console.error("  Move them out of the tree (they are untracked, so nothing is lost):");
+  console.error("    npm run clean:sync-conflicts");
+  console.error("");
+  console.error("  Permanent fix — stop syncing a git working tree through iCloud:");
+  console.error("    docs/icloud-sync.md");
+  console.error("");
   process.exit(1);
 }
-
-const untracked = execFileSync("git", ["ls-files", "--others", "--exclude-standard"], {
-  cwd: ROOT,
-  encoding: "utf8",
-  maxBuffer: 64 * 1024 * 1024,
-})
-  .split("\n")
-  .map((s) => s.trim())
-  .filter(Boolean);
-
-const hits = untracked.filter(isSyncConflictName);
-
-if (hits.length === 0) {
-  console.log(
-    `PASS validate:sync-conflicts — no iCloud conflict copies in the tree (self-tests ${st.total}/${st.total}).`,
-  );
-  process.exit(0);
-}
-
-console.error(
-  `FAIL validate:sync-conflicts — ${hits.length} iCloud conflict cop(y/ies) in the tree.`,
-);
-console.error("");
-console.error("  These are NOT defects in the code under test. iCloud wrote a second copy");
-console.error("  of a file it could not reconcile, and the copies break gates that walk the");
-console.error("  filesystem — static structure, injection sentinels, CSS integrity, and the");
-console.error("  mutation harness's leftover-file check — as if the repo were broken.");
-console.error("");
-for (const h of hits.slice(0, 20)) console.error(`    ${h}`);
-if (hits.length > 20) console.error(`    ...and ${hits.length - 20} more`);
-console.error("");
-console.error("  Move them out of the tree (they are untracked, so nothing is lost):");
-console.error("    npm run clean:sync-conflicts");
-console.error("");
-console.error("  Permanent fix — stop syncing a git working tree through iCloud:");
-console.error("    docs/icloud-sync.md");
-console.error("");
-process.exit(1);

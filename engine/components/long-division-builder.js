@@ -83,6 +83,17 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   let stepIndex = 0;
   let attempts = 0;
   let shiftDone = true;
+  /* The decimal set-up is TWO moves, not one.
+   *
+   * It used to be a single "Move the point 1 place →" button that both told the
+   * student the answer and slid BOTH points at once — the one place in the lab
+   * where the student watched instead of worked, and the step most likely to be
+   * the reason the division goes wrong. Now: stage 0 asks how many places the
+   * DIVISOR needs (they type it), stage 1 moves the DIVIDEND by that same
+   * amount, stage 2 is the cycle. `shiftDone` stays the single flag the rest of
+   * this file and the watch-mode replay already read. */
+  let shiftStage = 2;
+  let shiftEntryError = "";
   let justBrought = -1;
   /** @type {ReturnType<typeof createNarrationCursor>|null} */
   let cursor = null;
@@ -171,6 +182,8 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     justBrought = -1;
     stepIndex = 0;
     shiftDone = plan.shift === 0;
+    shiftStage = plan.shift === 0 ? 2 : 0;
+    shiftEntryError = "";
     result.hidden = true;
     result.innerHTML = "";
     feedback.className = "ldl-feedback";
@@ -199,28 +212,147 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       return;
     }
     shiftBar.hidden = false;
-    const places = plan.shift === 1 ? "1 place" : `${plan.shift} places`;
-    // Watch mode moves the point itself, so it never offers the button.
-    const button =
-      mode === "watch"
-        ? ""
-        : ` <button type="button" class="ldl-shiftgo">Move the point ${esc(places)} →</button>`;
-    shiftBar.innerHTML = shiftDone
-      ? `<span class="ldl-shift-done">✓ Point moved ${esc(places)}:</span> ` +
-        `<b>${esc(plan.dividendText)} ÷ ${esc(plan.divisorText)}</b> → ` +
-        `<b class="ldl-shift-new">${esc(plan.workingDividendText)} ÷ ${esc(plan.workingDivisorText)}</b>` +
-        ` — now it is a whole-number divisor, so the cycle works exactly the same.`
-      : `<b>Step 0 — MOVE THE POINT.</b> The divisor <b>${esc(plan.divisorText)}</b> is not a whole number. ` +
-        `Slide the point ${esc(places)} to the right in <em>both</em> numbers, then divide as usual.${button}`;
-    const go = shiftBar.querySelector(".ldl-shiftgo");
-    if (go) {
-      go.addEventListener("click", () => {
-        shiftDone = true;
-        renderShift();
-        draw();
-        answer.focus();
-      });
+    const places = plan.shift === 1 ? "1 place" : plan.shift + " places";
+
+    // Watch mode demonstrates; it never asks. Keep its single summary line.
+    if (mode === "watch") {
+      shiftBar.innerHTML = shiftDone
+        ? '<span class="ldl-shift-done">\u2713 Point moved ' +
+          esc(places) +
+          ":</span> " +
+          "<b>" +
+          esc(plan.dividendText) +
+          " \u00f7 " +
+          esc(plan.divisorText) +
+          "</b> \u2192 " +
+          '<b class="ldl-shift-new">' +
+          esc(plan.workingDividendText) +
+          " \u00f7 " +
+          esc(plan.workingDivisorText) +
+          "</b>" +
+          " \u2014 now it is a whole-number divisor, so the cycle works exactly the same."
+        : "<b>Step 0 \u2014 MOVE THE POINT.</b> The divisor <b>" +
+          esc(plan.divisorText) +
+          "</b> is not a whole number. " +
+          "Slide the point " +
+          esc(places) +
+          " to the right in <em>both</em> numbers, then divide as usual.";
+      return;
     }
+
+    if (shiftStage === 0) {
+      // STEP 1 — the divisor, and the student decides how far.
+      shiftBar.innerHTML =
+        "<b>Step 1 \u2014 MOVE THE DIVISOR.</b> The divisor <b>" +
+        esc(plan.divisorText) +
+        "</b> is not a whole number. " +
+        "How many places to the right must its decimal point move to make it whole?" +
+        '<span class="ldl-shift-ask">' +
+        '<label class="ldl-shift-label" for="ldl-shift-places">places</label>' +
+        '<input id="ldl-shift-places" class="ldl-shift-input" type="number" inputmode="numeric" min="1" max="6" step="1" />' +
+        '<button type="button" class="ldl-shiftcheck">Move the divisor \u2192</button>' +
+        "</span>" +
+        (shiftEntryError
+          ? '<span class="ldl-shift-err" role="status">' + esc(shiftEntryError) + "</span>"
+          : "");
+
+      const input = /** @type {HTMLInputElement|null} */ (
+        shiftBar.querySelector(".ldl-shift-input")
+      );
+      const check = shiftBar.querySelector(".ldl-shiftcheck");
+      const submit = () => {
+        const raw = String(input && input.value ? input.value : "").trim();
+        if (!raw) {
+          shiftEntryError = "Type how many places, then press Move the divisor.";
+          renderShift();
+          return;
+        }
+        const n = Number(raw);
+        if (!Number.isInteger(n) || n === 0) {
+          shiftEntryError = "Use a whole number of places, like 1 or 2.";
+        } else if (n !== plan.shift) {
+          // Name what their number WOULD do, rather than just marking it wrong.
+          shiftEntryError =
+            "Moving " +
+            n +
+            (n === 1 ? " place" : " places") +
+            " does not make " +
+            plan.divisorText +
+            " a whole number. Count the digits after its decimal point.";
+        } else {
+          shiftEntryError = "";
+          shiftStage = 1;
+          renderShift();
+          draw();
+          const next = shiftBar.querySelector(".ldl-shiftgo");
+          if (next) /** @type {HTMLElement} */ (next).focus();
+          return;
+        }
+        renderShift();
+        const again = /** @type {HTMLElement|null} */ (shiftBar.querySelector(".ldl-shift-input"));
+        if (again) again.focus();
+      };
+      if (check) check.addEventListener("click", submit);
+      if (input) {
+        input.addEventListener("keydown", (e) => {
+          if (/** @type {KeyboardEvent} */ (e).key === "Enter") {
+            e.preventDefault();
+            submit();
+          }
+        });
+      }
+      return;
+    }
+
+    if (shiftStage === 1) {
+      // STEP 2 — the dividend moves the SAME amount. Stated as a consequence of
+      // what they just did, which is the whole point of splitting the two.
+      shiftBar.innerHTML =
+        '<span class="ldl-shift-done">\u2713 Divisor moved ' +
+        esc(places) +
+        ":</span> " +
+        "<b>" +
+        esc(plan.divisorText) +
+        '</b> \u2192 <b class="ldl-shift-new">' +
+        esc(plan.workingDivisorText) +
+        "</b><br />" +
+        "<b>Step 2 \u2014 MOVE THE DIVIDEND.</b> Move <b>" +
+        esc(plan.dividendText) +
+        "</b> the same " +
+        esc(places) +
+        " to the right, " +
+        "so the answer does not change." +
+        ' <button type="button" class="ldl-shiftgo">Move the dividend ' +
+        esc(places) +
+        " \u2192</button>";
+      const go = shiftBar.querySelector(".ldl-shiftgo");
+      if (go) {
+        go.addEventListener("click", () => {
+          shiftStage = 2;
+          shiftDone = true;
+          renderShift();
+          draw();
+          answer.focus();
+        });
+      }
+      return;
+    }
+
+    shiftBar.innerHTML =
+      '<span class="ldl-shift-done">\u2713 Both points moved ' +
+      esc(places) +
+      ":</span> " +
+      "<b>" +
+      esc(plan.dividendText) +
+      " \u00f7 " +
+      esc(plan.divisorText) +
+      "</b> \u2192 " +
+      '<b class="ldl-shift-new">' +
+      esc(plan.workingDividendText) +
+      " \u00f7 " +
+      esc(plan.workingDivisorText) +
+      "</b>" +
+      " \u2014 now it is a whole-number divisor, so the cycle works exactly the same.";
   }
 
   // ── the notation grid ────────────────────────────────────────────────────
@@ -238,9 +370,14 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     // The digits themselves never move — only the point does — so the original
     // position is the working one minus the shift, and the divisor shows its
     // authored text until the move is made.
-    const preShift = solving && plan.shift > 0 && !shiftDone;
-    const pointAt = preShift ? plan.pointAt - plan.shift : plan.pointAt;
-    const divisorText = preShift ? plan.divisorText : plan.workingDivisorText;
+    // The two points move on their OWN steps now, so the tableau has to be able
+    // to show one moved and the other not — that half-way picture is the whole
+    // reason the step was split. Watch mode has no stages and moves both at once.
+    const staged = solving && plan.shift > 0;
+    const divisorMoved = staged ? shiftStage >= 1 : shiftDone;
+    const dividendMoved = staged ? shiftStage >= 2 : shiftDone;
+    const pointAt = dividendMoved ? plan.pointAt : plan.pointAt - plan.shift;
+    const divisorText = divisorMoved ? plan.workingDivisorText : plan.divisorText;
     const hasPoint = pointAt < n;
     const colOf = (i) => 3 + i + (hasPoint && i >= pointAt ? 1 : 0);
     const done = progress();
@@ -405,7 +542,10 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
 
   function drawPrompt(step) {
     if (!shiftDone) {
-      stepBox.textContent = "First move the decimal point, then the cycle begins.";
+      stepBox.textContent =
+        shiftStage === 1
+          ? "Now move the dividend the same number of places, then the cycle begins."
+          : "First make the divisor a whole number, then the cycle begins.";
       entry.hidden = true;
       return;
     }
@@ -441,6 +581,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     if (!ready || !cursor) return;
     frame = cursor.frame();
     shiftDone = frame.shiftDone;
+    shiftStage = shiftDone ? 2 : 0;
     stepIndex = frame.shown;
     justBrought = frame.step && frame.step.type === "bringdown" ? frame.step.cycle : -1;
     entry.hidden = true;

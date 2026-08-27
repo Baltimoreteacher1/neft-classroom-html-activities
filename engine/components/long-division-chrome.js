@@ -118,18 +118,26 @@ export function injectStyles() {
   .ldl-field{font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;}
   .ldl-num{width:96px;max-width:38vw;min-height:var(--tool-control-h);padding:8px 10px;font:inherit;font-size:1.05rem;font-weight:600;text-align:center;color:var(--tool-ink);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);background:var(--tool-surface);}
   .ldl-op{font-weight:700;color:${C.navy};font-size:1.2rem;}
-  .ldl-go,.ldl-check,.ldl-bring,.ldl-again,.ldl-shiftgo,.ldl-play button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--tool-control-h);padding:0 16px;font:inherit;font-size:.92rem;font-weight:600;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);cursor:pointer;}
+  .ldl-go,.ldl-check,.ldl-bring,.ldl-again,.ldl-shiftgo,.ldl-shiftcheck,.ldl-play button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--tool-control-h);padding:0 16px;font:inherit;font-size:.92rem;font-weight:600;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);cursor:pointer;}
   .ldl-go,.ldl-check{color:var(--tool-control-active-ink);background:var(--tool-control-active-bg);border-color:var(--tool-control-active-bg);}
   .ldl-bring,.ldl-mine{color:#fff;background:#b45309;border-color:#b45309;}
   .ldl-go:hover:not(:disabled),.ldl-check:hover:not(:disabled){background:color-mix(in srgb,#000 12%,var(--tool-control-active-bg));border-color:color-mix(in srgb,#000 12%,var(--tool-control-active-bg));}
   .ldl-bring:hover:not(:disabled),.ldl-mine:hover:not(:disabled){background:#96450a;border-color:#96450a;}
-  .ldl-again:hover:not(:disabled),.ldl-shiftgo:hover:not(:disabled),.ldl-play button:hover:not(:disabled){background:var(--tool-control-hover);border-color:var(--tool-accent);}
+  .ldl-again:hover:not(:disabled),.ldl-shiftgo:hover:not(:disabled),.ldl-shiftcheck:hover:not(:disabled),.ldl-play button:hover:not(:disabled){background:var(--tool-control-hover);border-color:var(--tool-accent);}
   .ldl :is(button,input):focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .ldl-presets{display:none;}
   .ldl-shift{margin:12px auto 0;max-width:520px;padding:10px 12px;background:#fff8ec;border:1px solid #f0d3a0;border-radius:var(--tool-radius-sm);font-size:.9rem;line-height:1.5;color:var(--tool-ink);text-align:center;}
   .ldl-shift-done{color:${C.good};font-weight:700;}
   .ldl-shift-new{color:${C.teal};}
   .ldl-shiftgo{margin-top:6px;display:inline-block;}
+  /* Step 1 asks for a number instead of announcing it, so the row needs an
+     input that reads as part of the sentence and stays tappable at 44px. */
+  .ldl-shift-ask{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;}
+  .ldl-shift-label{order:2;font-size:.9rem;font-weight:600;color:var(--tool-ink,#14223a);}
+  .ldl-shift-input{order:1;width:5.5em;min-height:var(--tool-control-h);padding:0 10px;font:inherit;font-size:1.05rem;font-weight:700;text-align:center;color:var(--tool-ink,#14223a);background:#ffffff;border:1.5px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);}
+  .ldl-shift-input:focus-visible{outline:2px solid var(--tool-accent);outline-offset:2px;}
+  .ldl-shiftcheck{order:3;}
+  .ldl-shift-err{display:block;margin-top:8px;font-size:.9rem;font-weight:600;color:#b42318;}
   .ldl-strip{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:14px auto 10px;}
   .ldl-cycle{padding:5px 12px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${C.navy};border-radius:999px;}
   .ldl-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-size:.85rem;font-weight:700;color:var(--tool-muted);background:var(--tool-canvas);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);transition:background .2s ease,border-color .2s ease,color .2s ease;}

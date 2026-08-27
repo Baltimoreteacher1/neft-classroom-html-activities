@@ -596,6 +596,9 @@ function firstEquation(iDoLines, already) {
 function main() {
   const argv = process.argv.slice(2);
   const check = argv.includes("--check");
+  const prune = argv.includes("--prune");
+  /** @type {string[]} */
+  const authoredKept = [];
   const onlyIdx = argv.indexOf("--only");
   const only = onlyIdx >= 0 ? argv[onlyIdx + 1] : null;
 
@@ -624,6 +627,25 @@ function main() {
     else none++;
 
     for (const cp of cps) {
+      // AUTHORED PANELS SURVIVE A FULL RUN.
+      //
+      // This generator rebuilds every panel from the lesson's vocabulary and
+      // writes the config whole, so anything a human decided on top of it was
+      // silently undone by the next sweep. Observed on 2-7: the panel was
+      // deliberately cut to "Divide Decimals" + "Decimal Division Algorithm"
+      // and shipped, and a later run with no --only restored Dividend and
+      // Divisor — reverting a live production change with no diff to read and
+      // no error. That is the exact failure validate:generator-safety exists
+      // for: the generator owns what it emits, and anything on disk it does not
+      // emit is authored and survives.
+      //
+      // `authored: true` is the opt-out, declared in the config beside the
+      // content it protects rather than in a list somewhere else that goes
+      // stale. --prune overrides it, for a deliberate rebuild.
+      if (cp.copyPanel && cp.copyPanel.authored === true && !prune) {
+        authoredKept.push(`${id}: box ${cp.box}`);
+        continue;
+      }
       const built = cp.box === 1 ? b1.panel : cp.box === 2 ? b2.panel : null;
       if (built) cp.copyPanel = built;
       else delete cp.copyPanel;
@@ -636,6 +658,12 @@ function main() {
     }
   }
 
+  if (authoredKept.length) {
+    console.log(
+      `Authored panels left untouched (${authoredKept.length}): ${authoredKept.join(", ")}`,
+    );
+    console.log("  Pass --prune to rebuild them from vocabulary anyway.");
+  }
   console.log(`Lessons swept: ${ids.length}`);
   console.log(`  both panels: ${both}`);
   console.log(`  one panel:   ${one}`);

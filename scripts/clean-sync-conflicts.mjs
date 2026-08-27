@@ -13,6 +13,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, renameSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isSyncConflictName } from "../tools/validate-sync-conflicts.mjs";
@@ -35,8 +36,19 @@ if (hits.length === 0) {
   process.exit(0);
 }
 
-// Stamp comes from the filesystem, not a clock call, so repeated runs nest.
-const dest = join(ROOT, ".sync-conflicts", String(process.env.SYNC_STAMP || "latest"));
+// OUTSIDE the repo, deliberately.
+//
+// The first version parked these in .sync-conflicts/ inside the tree and
+// gitignored it — which fixed nothing, because the gates that these files break
+// walk the FILESYSTEM, not the index. validate:static promptly failed on
+// ".sync-conflicts/latest/lessons/zz-gate-mutation 2.html: missing <!DOCTYPE
+// html>". A quarantine inside the quarantined area is not a quarantine.
+const dest = join(
+  homedir(),
+  ".neft-sync-conflicts",
+  "reveal-math-activities",
+  String(process.env.SYNC_STAMP || "latest"),
+);
 console.log(`${dryRun ? "[dry-run] " : ""}${hits.length} conflict cop(y/ies) -> ${dest}`);
 for (const rel of hits) {
   console.log(`  ${rel}`);
@@ -49,4 +61,4 @@ for (const rel of hits) {
   }
   renameSync(join(ROOT, rel), target);
 }
-if (!dryRun) console.log("\nMoved, not deleted. Read or restore them from .sync-conflicts/.");
+if (!dryRun) console.log(`\nMoved, not deleted. Read or restore them from ${dest}`);

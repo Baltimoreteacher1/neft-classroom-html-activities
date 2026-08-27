@@ -44,7 +44,7 @@ Neither is a cure. They make the symptom loud instead of confusing.
 
 ```
 npm run validate:sync-conflicts   # part of `validate`; names the cause in one line
-npm run clean:sync-conflicts      # MOVES copies to .sync-conflicts/, never deletes
+npm run clean:sync-conflicts      # MOVES copies to ~/.neft-sync-conflicts/, never deletes
 ```
 
 The cleanup moves rather than deletes on purpose: the copies genuinely differ
