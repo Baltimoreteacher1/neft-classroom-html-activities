@@ -106,6 +106,8 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-keyidea-label{display:block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:var(--teal-ink);margin-bottom:6px;}
 .li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
+.li-keyidea-steps{margin:10px 0 0;padding-left:26px;}
+.li-keyidea-steps li{font-size:18px;line-height:1.6;color:var(--navy);font-weight:600;margin-bottom:4px;}
 /* The formula, pulled out of the Key Idea and printed big — the one thing a
    student should be able to find on this page in under a second. */
 /* Specificity note: a bare .li-formula loses to .li-keyidea p and gets shrunk
@@ -1367,98 +1369,69 @@ header.packet h1::after{
   <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
-      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Solve One-Step Addition and Subtraction Equations" data-term-es="Resolver ecuaciones de suma y resta de un paso" data-def="Use one inverse addition or subtraction operation to isolate the variable." data-def-es="Usar una operación inversa de suma o resta para aislar la variable." data-img="../../assets/vocab-images/concept-solve-one-step-addition-and-subtraction-equations.svg" aria-label="Show the meaning and picture for Solve One-Step Addition and Subtraction Equations">Solve One-Step Addition and Subtraction Equations<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Equation" data-term-es="Ecuación" data-def="A math sentence with an equal sign showing both sides are the same." data-def-es="Una oración matemática con un signo igual que muestra que ambos lados son iguales." data-img="../../assets/vocab-images/equation-x-plus-25.svg" aria-label="Show the meaning and picture for Equation">Equation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Inverse operation" data-term-es="Operación inversa" data-def="Two math actions that undo each other, like × and ÷." data-def-es="Dos operaciones que se deshacen entre sí, como × y ÷." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Inverse operation">Inverse operation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Isolate" data-term-es="Despejar" data-def="To get the letter by itself on one side." data-def-es="Dejar la letra sola en un lado." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Isolate">Isolate<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Solution" data-term-es="Solución" data-def="A number that makes the equation or inequality true." data-def-es="Un número que hace verdadera la ecuación o desigualdad." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Solution">Solution<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="One-step equation" data-term-es="Ecuación de un paso" data-def="An equation you can solve in a single step using one inverse operation." data-def-es="Una ecuación que puedes resolver en un solo paso usando una operación inversa." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for One-step equation">One-step equation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Balance" data-term-es="Equilibrio" data-def="Keeping both sides of an equation equal by doing the same thing to each side." data-def-es="Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Balance">Balance<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
-      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
+      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Equation" data-term-es="Ecuación" data-def="A math sentence with an equal sign showing both sides are the same." data-def-es="Una oración matemática con un signo igual que muestra que ambos lados son iguales." data-img="../../assets/vocab-images/equation-x-plus-25.svg" aria-label="Show the meaning and picture for Equation">Equation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Inverse operation" data-term-es="Operación inversa" data-def="Two math actions that undo each other, like × and ÷." data-def-es="Dos operaciones que se deshacen entre sí, como × y ÷." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Inverse operation">Inverse operation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Isolate" data-term-es="Despejar" data-def="To get the letter by itself on one side." data-def-es="Dejar la letra sola en un lado." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Isolate">Isolate<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Solution" data-term-es="Solución" data-def="A number that makes the equation or inequality true." data-def-es="Un número que hace verdadera la ecuación o desigualdad." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Solution">Solution<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="One-step equation" data-term-es="Ecuación de un paso" data-def="An equation you can solve in a single step using one inverse operation." data-def-es="Una ecuación que puedes resolver en un solo paso usando una operación inversa." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for One-step equation">One-step equation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Balance" data-term-es="Equilibrio" data-def="Keeping both sides of an equation equal by doing the same thing to each side." data-def-es="Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado." data-img="../../assets/vocab-images/equation.svg" aria-label="Show the meaning and picture for Balance">Balance<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
+      <p class="gn-bank-hint">👆 Tap any word to see its meaning and a picture.</p>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
-    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">Undo an addition by <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" /> the same amount from both sides.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">A math sentence with an equal sign showing two equal amounts is an <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">An operation that undoes another, like subtraction undoing addition, is an <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">To get the variable alone on one side of the equation is to <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" /> it.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The value of the variable that makes the equation true is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">An equation solved in a single step is a <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">7</span><span class="gn-sentence">Doing the same thing to both sides to keep them equal keeps the equation in <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li></ol>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">A math sentence with an equal sign showing two equal amounts is an <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">An operation that undoes another, like subtraction undoing addition, is an <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">To get the variable alone on one side of the equation is to <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" /> it.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">The value of the variable that makes the equation true is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">An equation solved in a single step is a <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">Doing the same thing to both sides to keep them equal keeps the equation in <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li></ol>
   </div>
 </section>
   <section class="section twr">
-  <h2>Write About the Math <span class="twr-method">Guided writing support</span></h2>
-  <p class="level-note">Use the support level you need. Every level answers the same math question.</p>
-  <div class="twr-guide-step">
-    <h3>1. Understand the Question</h3>
-    <span class="twr-action">explain</span>
-    <p class="twr-focus-question">How far has the hiker walked? How did you use inverse operations?<span class="twr-es-support" lang="es">¿Qué distancia ha caminado la excursionista? ¿Cómo usaste las operaciones inversas?</span></p>
-    <p class="twr-job"><strong>Your job:</strong> Answer the question. Use math evidence. Explain how the evidence proves your answer.<span class="twr-es-support" lang="es">Responde la pregunta. Usa evidencia matemática. Explica cómo la evidencia demuestra tu respuesta.</span></p>
-  </div>
-  <div class="twr-guide-step">
-    <h3>2. Plan Your Math Words</h3>
-    <p>Check at least two words you will use.</p>
-    <div class="twr-word-grid"><label class="twr-word">
-      <input type="checkbox" data-nt-field aria-label="Use Solve One-Step Addition and Subtraction Equations in my explanation" />
-      <span><strong>Solve One-Step Addition and Subtraction Equations</strong> — Use one inverse addition or subtraction operation to isolate the variable.<span class="twr-es-support" lang="es">Resolver ecuaciones de suma y resta de un paso — Usar una operación inversa de suma o resta para aislar la variable.</span></span>
-    </label><label class="twr-word">
+  <h2>Write About the Math</h2>
+  <p class="twr-focus-question">How far has the hiker walked? How did you use inverse operations?<span class="twr-es-support" lang="es">¿Qué distancia ha caminado la excursionista? ¿Cómo usaste las operaciones inversas?</span></p>
+  <p class="twr-job">Say your answer to a partner first. Then write it, using at least two of these words:</p>
+  <div class="twr-word-grid"><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Equation in my explanation" />
-      <span><strong>Equation</strong> — A math sentence with an equal sign showing both sides are the same.<span class="twr-es-support" lang="es">Ecuación — Una oración matemática con un signo igual que muestra que ambos lados son iguales.</span></span>
+      <span><strong>Equation</strong><span class="twr-es-support" lang="es">Ecuación</span></span>
     </label><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Inverse operation in my explanation" />
-      <span><strong>Inverse operation</strong> — Two math actions that undo each other, like × and ÷.<span class="twr-es-support" lang="es">Operación inversa — Dos operaciones que se deshacen entre sí, como × y ÷.</span></span>
+      <span><strong>Inverse operation</strong><span class="twr-es-support" lang="es">Operación inversa</span></span>
     </label><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Isolate in my explanation" />
-      <span><strong>Isolate</strong> — To get the letter by itself on one side.<span class="twr-es-support" lang="es">Despejar — Dejar la letra sola en un lado.</span></span>
+      <span><strong>Isolate</strong><span class="twr-es-support" lang="es">Despejar</span></span>
     </label><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Solution in my explanation" />
-      <span><strong>Solution</strong> — A number that makes the equation or inequality true.<span class="twr-es-support" lang="es">Solución — Un número que hace verdadera la ecuación o desigualdad.</span></span>
+      <span><strong>Solution</strong><span class="twr-es-support" lang="es">Solución</span></span>
+    </label><label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use One-step equation in my explanation" />
+      <span><strong>One-step equation</strong><span class="twr-es-support" lang="es">Ecuación de un paso</span></span>
     </label></div>
-    <div class="twr-rehearse"><strong>Say it first:</strong> Say your idea to a partner or quietly to yourself before you write.<span class="twr-es-support" lang="es">Di tu idea a un compañero o en voz baja antes de escribir.</span><p><strong>The hiker walked ___ miles because d + 4.5 = 12 means d = 12 − ___ = ___.</strong><span class="twr-es-support" lang="es">Di tu respuesta primero: Mi respuesta es ___ porque ___.</span></p></div>
+  <div class="twr-model-parts">
+    <p><strong>Model:</strong> <em>I can undo the addition to get the variable by itself.</em> — Students recognize 23 is added to n and that subtracting 23 (the inverse operation) from both sides will isolate n.</p>
   </div>
-  <div class="twr-guide-step">
-    <h3>3. Build Your Explanation</h3>
-    <div class="twr-model-parts">
-      <p><strong>Model the parts:</strong> This model shows the parts of an explanation. It does not answer your writing question.</p>
-      <p><strong>Claim:</strong> I can undo the addition to get the variable by itself.</p>
-      <p><strong>Evidence:</strong> Students recognize 23 is added to n and that subtracting 23 (the inverse operation) from both sides will isolate n.</p>
-      <p><strong>Reasoning:</strong> This evidence connects the definition of equation to the mathematical claim.</p>
-    </div>
-    <div class="twr-level-grid"><div class="twr-level-card" data-support-level="start">
+  <div class="twr-level-grid"><div class="twr-level-card" data-support-level="start">
       <h4>Start</h4>
-      <p class="twr-level-support">Most language support</p>
       <p>Complete the frames. Use the word bank.<span class="twr-es-support" lang="es">Completa las oraciones. Usa el banco de palabras.</span></p>
-      <ul><li><strong>The hiker walked ___ miles because d + 4.5 = 12 means d = 12 − ___ = ___.</strong></li><li><strong>My answer is ___.</strong><span class="twr-es-support" lang="es">Mi respuesta es ___.</span></li></ul>
+      <ul><li><strong>The hiker walked ___ miles because d + 4.5 = 12 means d = 12 − ___ = ___.</strong></li><li><strong>My answer is ___ because ___.</strong><span class="twr-es-support" lang="es">Mi respuesta es ___ porque ___.</span></li></ul>
       <textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea>
     </div><div class="twr-level-card" data-support-level="build">
       <h4>Build</h4>
-      <p class="twr-level-support">Some language support</p>
       <p>Write two connected sentences. Use because, so, or but.<span class="twr-es-support" lang="es">Escribe dos oraciones conectadas. Usa porque, entonces o pero.</span></p>
-      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>I know because ___.</strong><span class="twr-es-support" lang="es">Lo sé porque ___.</span></li><li><strong>So ___.</strong><span class="twr-es-support" lang="es">Entonces ___.</span></li></ul>
+      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>My evidence is ___, so ___.</strong><span class="twr-es-support" lang="es">Mi evidencia es ___, entonces ___.</span></li></ul>
       <textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea>
     </div><div class="twr-level-card" data-support-level="explain">
       <h4>Explain</h4>
-      <p class="twr-level-support">Light language support</p>
       <p>Write a claim, give math evidence, and explain your reasoning.<span class="twr-es-support" lang="es">Escribe una afirmación, da evidencia matemática y explica tu razonamiento.</span></p>
-      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>My math evidence is ___.</strong><span class="twr-es-support" lang="es">Mi evidencia matemática es ___.</span></li><li><strong>This proves ___ because ___.</strong><span class="twr-es-support" lang="es">Esto demuestra ___ porque ___.</span></li></ul>
+      
       <textarea class="writeline-area" rows="5" data-nt-field aria-label="Write your response here"></textarea>
     </div></div>
-  </div>
-  <div class="twr-guide-step">
-    <h3>4. Check Your Explanation</h3>
-    <div class="twr-checklist"><label class="twr-check">
+  <div class="twr-checklist"><label class="twr-check">
       <input type="checkbox" data-nt-field />
-      <span>I answered the question.<span class="twr-es-support" lang="es">Respondí la pregunta.</span></span>
+      <span>I answered the question.</span>
     </label><label class="twr-check">
       <input type="checkbox" data-nt-field />
-      <span>I used math evidence: numbers, an equation, a model, or a comparison.<span class="twr-es-support" lang="es">Usé evidencia matemática: números, una ecuación, un modelo o una comparación.</span></span>
+      <span>I used math evidence: numbers, an equation, or a model.</span>
     </label><label class="twr-check">
       <input type="checkbox" data-nt-field />
-      <span>I explained how the evidence proves my answer.<span class="twr-es-support" lang="es">Expliqué cómo la evidencia demuestra mi respuesta.</span></span>
-    </label><label class="twr-check">
-      <input type="checkbox" data-nt-field />
-      <span>I used at least two math words.<span class="twr-es-support" lang="es">Usé por lo menos dos palabras matemáticas.</span></span>
-    </label><label class="twr-check">
-      <input type="checkbox" data-nt-field />
-      <span>I reread complete sentences and punctuation.<span class="twr-es-support" lang="es">Volví a leer mis oraciones completas y la puntuación.</span></span>
+      <span>I used at least two math words.</span>
     </label></div>
-  </div>
 </section><section class="answer-key twr-teacher-guide">
   <h2>Writing Guide — Teacher Copy</h2>
-  <p>The support level changes the amount of language scaffolding, not the mathematical expectation. Look for the same five features in every response.</p>
-  <ul class="ak-list"><li>I answered the question.</li><li>I used math evidence: numbers, an equation, a model, or a comparison.</li><li>I explained how the evidence proves my answer.</li><li>I used at least two math words.</li><li>I reread complete sentences and punctuation.</li></ul>
+  <ul class="ak-list"><li>The answer to the math question is correct.</li><li>The evidence is real lesson mathematics (numbers, equation, or model), not restated claim.</li><li>The support level changed the language scaffolding, never the mathematical expectation.</li></ul>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Notes 1:</strong> Solve One-Step Addition and Subtraction Equations</li><li><strong>Notes 2:</strong> Equation</li><li><strong>Notes 3:</strong> Inverse operation</li><li><strong>Notes 4:</strong> Isolate</li><li><strong>Notes 5:</strong> Solution</li><li><strong>Notes 6:</strong> One-step equation</li><li><strong>Notes 7:</strong> Balance</li><li><strong>Watch for this mistake:</strong> <span class="ak-why">A common mistake is applying the same operation instead of the inverse — for example, solving x − 7 = 15 by subtracting 7 from both sides (getting the wrong x = 8) instead of adding 7 to both sides (the correct x = 22). Another common mistake is doing the inverse operation to only one side, like solving x + 6 = 14 by subtracting 6 from the left but forgetting the right side. Before you submit, name the operation shown in the equation, choose its inverse, apply it to BOTH sides, and check by substituting your answer back into the original equation.</span></li><li><strong>Try It 1:</strong> A. n = 13 <span class="ak-why">— Add 4 to both sides: n = 9 + 4 = 13. Check: 13 − 4 = 9 ✓</span></li><li><strong>Try It 2:</strong> A. 34 <span class="ak-why">— Subtract 16 from both sides: t = 50 − 16 = 34. Check: 34 + 16 = 50 ✓</span></li></ol>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Equation</li><li><strong>Notes 2:</strong> Inverse operation</li><li><strong>Notes 3:</strong> Isolate</li><li><strong>Notes 4:</strong> Solution</li><li><strong>Notes 5:</strong> One-step equation</li><li><strong>Notes 6:</strong> Balance</li><li><strong>Watch for this mistake:</strong> <span class="ak-why">A common mistake is applying the same operation instead of the inverse — for example, solving x − 7 = 15 by subtracting 7 from both sides (getting the wrong x = 8) instead of adding 7 to both sides (the correct x = 22). Another common mistake is doing the inverse operation to only one side, like solving x + 6 = 14 by subtracting 6 from the left but forgetting the right side. Before you submit, name the operation shown in the equation, choose its inverse, apply it to BOTH sides, and check by substituting your answer back into the original equation.</span></li><li><strong>Try It 1:</strong> A. n = 13 <span class="ak-why">— Add 4 to both sides: n = 9 + 4 = 13. Check: 13 − 4 = 9 ✓</span></li><li><strong>Try It 2:</strong> A. 34 <span class="ak-why">— Subtract 16 from both sides: t = 50 − 16 = 34. Check: 34 + 16 = 50 ✓</span></li></ol>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-2 · Standard 6.AT.8 · Teacher Copy</footer>
 </main>

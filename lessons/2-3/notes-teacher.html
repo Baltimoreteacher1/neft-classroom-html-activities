@@ -106,6 +106,8 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-keyidea-label{display:block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:var(--teal-ink);margin-bottom:6px;}
 .li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
+.li-keyidea-steps{margin:10px 0 0;padding-left:26px;}
+.li-keyidea-steps li{font-size:18px;line-height:1.6;color:var(--navy);font-weight:600;margin-bottom:4px;}
 /* The formula, pulled out of the Key Idea and printed big — the one thing a
    student should be able to find on this page in under a second. */
 /* Specificity note: a bare .li-formula loses to .li-keyidea p and gets shrunk
@@ -1367,98 +1369,69 @@ header.packet h1::after{
   <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
     <div class="gn-bank">
       <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
-      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Describe the Data Using the Median" data-term-es="Describir los datos con la mediana" data-def="Using the middle value of the ordered data to say what is typical for the whole set." data-def-es="Usar el valor del medio de los datos ordenados para decir qué es típico en todo el conjunto." data-img="../../assets/vocab-images/median.svg" aria-label="Show the meaning and picture for Describe the Data Using the Median">Describe the Data Using the Median<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Median" data-term-es="Mediana" data-def="The middle number when you put them in order." data-def-es="El número del medio cuando los pones en orden." data-img="../../assets/vocab-images/median.svg" aria-label="Show the meaning and picture for Median">Median<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Mode" data-term-es="Moda" data-def="The number that shows up most often." data-def-es="El número que aparece más veces." data-img="../../assets/vocab-images/mode.svg" aria-label="Show the meaning and picture for Mode">Mode<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Outlier" data-term-es="Valor atípico" data-def="A number that is much bigger or smaller than the rest." data-def-es="Un número mucho mayor o menor que los demás." data-img="../../assets/vocab-images/outlier.svg" aria-label="Show the meaning and picture for Outlier">Outlier<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Data distribution" data-term-es="Distribución de datos" data-def="How the data looks: where it sits and how spread out it is." data-def-es="Cómo se ven los datos: dónde están y qué tan separados están." data-img="../../assets/vocab-images/distribution.svg" aria-label="Show the meaning and picture for Data distribution">Data distribution<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Variability" data-term-es="Variabilidad" data-def="How spread out the numbers are." data-def-es="Qué tan separados están los números." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Variability">Variability<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
-      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
+      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Median" data-term-es="Mediana" data-def="The middle number when you put them in order." data-def-es="El número del medio cuando los pones en orden." data-img="../../assets/vocab-images/median.svg" aria-label="Show the meaning and picture for Median">Median<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Mode" data-term-es="Moda" data-def="The number that shows up most often." data-def-es="El número que aparece más veces." data-img="../../assets/vocab-images/mode.svg" aria-label="Show the meaning and picture for Mode">Mode<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Outlier" data-term-es="Valor atípico" data-def="A number that is much bigger or smaller than the rest." data-def-es="Un número mucho mayor o menor que los demás." data-img="../../assets/vocab-images/outlier.svg" aria-label="Show the meaning and picture for Outlier">Outlier<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Data distribution" data-term-es="Distribución de datos" data-def="How the data looks: where it sits and how spread out it is." data-def-es="Cómo se ven los datos: dónde están y qué tan separados están." data-img="../../assets/vocab-images/distribution.svg" aria-label="Show the meaning and picture for Data distribution">Data distribution<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Variability" data-term-es="Variabilidad" data-def="How spread out the numbers are." data-def-es="Qué tan separados están los números." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Variability">Variability<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
+      <p class="gn-bank-hint">👆 Tap any word to see its meaning and a picture.</p>
       <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
     </div>
-    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">When one value sits far from the rest, describe the typical value with the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">The middle value of a data set when the numbers are in order is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The value that appears most often in a data set is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">A value that is much larger or smaller than the rest of the data is an <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The way data values are spread out is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">How spread out the data values are is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li></ol>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">The middle value of a data set when the numbers are in order is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">The value that appears most often in a data set is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">A value that is much larger or smaller than the rest of the data is an <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">The overall shape of where the data values fall is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">How much the data values differ from each other is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li></ol>
   </div>
 </section>
   <section class="section twr">
-  <h2>Write About the Math <span class="twr-method">Guided writing support</span></h2>
-  <p class="level-note">Use the support level you need. Every level answers the same math question.</p>
-  <div class="twr-guide-step">
-    <h3>1. Understand the Question</h3>
-    <span class="twr-action">explain</span>
-    <p class="twr-focus-question">Who is using the mean, and who is using the mode? Which is more useful here?<span class="twr-es-support" lang="es">¿Quién está usando la media y quién la moda? ¿Cuál es más útil aquí?</span></p>
-    <p class="twr-job"><strong>Your job:</strong> Answer the question. Use math evidence. Explain how the evidence proves your answer.<span class="twr-es-support" lang="es">Responde la pregunta. Usa evidencia matemática. Explica cómo la evidencia demuestra tu respuesta.</span></p>
-  </div>
-  <div class="twr-guide-step">
-    <h3>2. Plan Your Math Words</h3>
-    <p>Check at least two words you will use.</p>
-    <div class="twr-word-grid"><label class="twr-word">
-      <input type="checkbox" data-nt-field aria-label="Use Describe the Data Using the Median in my explanation" />
-      <span><strong>Describe the Data Using the Median</strong> — Using the middle value of the ordered data to say what is typical for the whole set.<span class="twr-es-support" lang="es">Describir los datos con la mediana — Usar el valor del medio de los datos ordenados para decir qué es típico en todo el conjunto.</span></span>
-    </label><label class="twr-word">
+  <h2>Write About the Math</h2>
+  <p class="twr-focus-question">Who is using the mean, and who is using the mode? Which is more useful here?<span class="twr-es-support" lang="es">¿Quién está usando la media y quién la moda? ¿Cuál es más útil aquí?</span></p>
+  <p class="twr-job">Say your answer to a partner first. Then write it, using at least two of these words:</p>
+  <div class="twr-word-grid"><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Median in my explanation" />
-      <span><strong>Median</strong> — The middle number when you put them in order.<span class="twr-es-support" lang="es">Mediana — El número del medio cuando los pones en orden.</span></span>
+      <span><strong>Median</strong><span class="twr-es-support" lang="es">Mediana</span></span>
     </label><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Mode in my explanation" />
-      <span><strong>Mode</strong> — The number that shows up most often.<span class="twr-es-support" lang="es">Moda — El número que aparece más veces.</span></span>
+      <span><strong>Mode</strong><span class="twr-es-support" lang="es">Moda</span></span>
     </label><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Outlier in my explanation" />
-      <span><strong>Outlier</strong> — A number that is much bigger or smaller than the rest.<span class="twr-es-support" lang="es">Valor atípico — Un número mucho mayor o menor que los demás.</span></span>
+      <span><strong>Outlier</strong><span class="twr-es-support" lang="es">Valor atípico</span></span>
     </label><label class="twr-word">
       <input type="checkbox" data-nt-field aria-label="Use Data distribution in my explanation" />
-      <span><strong>Data distribution</strong> — How the data looks: where it sits and how spread out it is.<span class="twr-es-support" lang="es">Distribución de datos — Cómo se ven los datos: dónde están y qué tan separados están.</span></span>
+      <span><strong>Data distribution</strong><span class="twr-es-support" lang="es">Distribución de datos</span></span>
+    </label><label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use Variability in my explanation" />
+      <span><strong>Variability</strong><span class="twr-es-support" lang="es">Variabilidad</span></span>
     </label></div>
-    <div class="twr-rehearse"><strong>Say it first:</strong> Say your idea to a partner or quietly to yourself before you write.<span class="twr-es-support" lang="es">Di tu idea a un compañero o en voz baja antes de escribir.</span><p><strong>The teacher used the ___ (about 86.6). The student used the ___ (92). The ___ is more useful here because ___.</strong><span class="twr-es-support" lang="es">Di tu respuesta primero: Mi respuesta es ___ porque ___.</span></p></div>
+  <div class="twr-model-parts">
+    <p><strong>Model:</strong> <em>Mean, median, and mode each describe the center of the data in a different way.</em> — Students distinguish the three measures and justify a choice, noting the mode (38) is the most repeated and the mean/median sit near the center.</p>
   </div>
-  <div class="twr-guide-step">
-    <h3>3. Build Your Explanation</h3>
-    <div class="twr-model-parts">
-      <p><strong>Model the parts:</strong> This model shows the parts of an explanation. It does not answer your writing question.</p>
-      <p><strong>Claim:</strong> Mean, median, and mode each describe the center of the data in a different way.</p>
-      <p><strong>Evidence:</strong> Students distinguish the three measures and justify a choice, noting the mode (38) is the most repeated and the mean/median sit near the center.</p>
-      <p><strong>Reasoning:</strong> This evidence connects the definition of describe the data using the median to the mathematical claim.</p>
-    </div>
-    <div class="twr-level-grid"><div class="twr-level-card" data-support-level="start">
+  <div class="twr-level-grid"><div class="twr-level-card" data-support-level="start">
       <h4>Start</h4>
-      <p class="twr-level-support">Most language support</p>
       <p>Complete the frames. Use the word bank.<span class="twr-es-support" lang="es">Completa las oraciones. Usa el banco de palabras.</span></p>
-      <ul><li><strong>The teacher used the ___ (about 86.6). The student used the ___ (92). The ___ is more useful here because ___.</strong></li><li><strong>My answer is ___.</strong><span class="twr-es-support" lang="es">Mi respuesta es ___.</span></li></ul>
+      <ul><li><strong>The teacher used the ___ (about 86.6). The student used the ___ (92). The ___ is more useful here because ___.</strong></li><li><strong>My answer is ___ because ___.</strong><span class="twr-es-support" lang="es">Mi respuesta es ___ porque ___.</span></li></ul>
       <textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea>
     </div><div class="twr-level-card" data-support-level="build">
       <h4>Build</h4>
-      <p class="twr-level-support">Some language support</p>
       <p>Write two connected sentences. Use because, so, or but.<span class="twr-es-support" lang="es">Escribe dos oraciones conectadas. Usa porque, entonces o pero.</span></p>
-      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>I know because ___.</strong><span class="twr-es-support" lang="es">Lo sé porque ___.</span></li><li><strong>So ___.</strong><span class="twr-es-support" lang="es">Entonces ___.</span></li></ul>
+      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>My evidence is ___, so ___.</strong><span class="twr-es-support" lang="es">Mi evidencia es ___, entonces ___.</span></li></ul>
       <textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea>
     </div><div class="twr-level-card" data-support-level="explain">
       <h4>Explain</h4>
-      <p class="twr-level-support">Light language support</p>
       <p>Write a claim, give math evidence, and explain your reasoning.<span class="twr-es-support" lang="es">Escribe una afirmación, da evidencia matemática y explica tu razonamiento.</span></p>
-      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>My math evidence is ___.</strong><span class="twr-es-support" lang="es">Mi evidencia matemática es ___.</span></li><li><strong>This proves ___ because ___.</strong><span class="twr-es-support" lang="es">Esto demuestra ___ porque ___.</span></li></ul>
+      
       <textarea class="writeline-area" rows="5" data-nt-field aria-label="Write your response here"></textarea>
     </div></div>
-  </div>
-  <div class="twr-guide-step">
-    <h3>4. Check Your Explanation</h3>
-    <div class="twr-checklist"><label class="twr-check">
+  <div class="twr-checklist"><label class="twr-check">
       <input type="checkbox" data-nt-field />
-      <span>I answered the question.<span class="twr-es-support" lang="es">Respondí la pregunta.</span></span>
+      <span>I answered the question.</span>
     </label><label class="twr-check">
       <input type="checkbox" data-nt-field />
-      <span>I used math evidence: numbers, an equation, a model, or a comparison.<span class="twr-es-support" lang="es">Usé evidencia matemática: números, una ecuación, un modelo o una comparación.</span></span>
+      <span>I used math evidence: numbers, an equation, or a model.</span>
     </label><label class="twr-check">
       <input type="checkbox" data-nt-field />
-      <span>I explained how the evidence proves my answer.<span class="twr-es-support" lang="es">Expliqué cómo la evidencia demuestra mi respuesta.</span></span>
-    </label><label class="twr-check">
-      <input type="checkbox" data-nt-field />
-      <span>I used at least two math words.<span class="twr-es-support" lang="es">Usé por lo menos dos palabras matemáticas.</span></span>
-    </label><label class="twr-check">
-      <input type="checkbox" data-nt-field />
-      <span>I reread complete sentences and punctuation.<span class="twr-es-support" lang="es">Volví a leer mis oraciones completas y la puntuación.</span></span>
+      <span>I used at least two math words.</span>
     </label></div>
-  </div>
 </section><section class="answer-key twr-teacher-guide">
   <h2>Writing Guide — Teacher Copy</h2>
-  <p>The support level changes the amount of language scaffolding, not the mathematical expectation. Look for the same five features in every response.</p>
-  <ul class="ak-list"><li>I answered the question.</li><li>I used math evidence: numbers, an equation, a model, or a comparison.</li><li>I explained how the evidence proves my answer.</li><li>I used at least two math words.</li><li>I reread complete sentences and punctuation.</li></ul>
+  <ul class="ak-list"><li>The answer to the math question is correct.</li><li>The evidence is real lesson mathematics (numbers, equation, or model), not restated claim.</li><li>The support level changed the language scaffolding, never the mathematical expectation.</li></ul>
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Notes 1:</strong> Describe the Data Using the Median</li><li><strong>Notes 2:</strong> Median</li><li><strong>Notes 3:</strong> Mode</li><li><strong>Notes 4:</strong> Outlier</li><li><strong>Notes 5:</strong> Data distribution</li><li><strong>Notes 6:</strong> Variability</li><li><strong>Watch for this mistake:</strong> <span class="ak-why">A common mistake in Mean, Median, and Mode is finding the median without ordering the data first — students pick the middle number straight from the list as given (for 9, 4, 7, 2, 6 they say the median is 7, the middle position in that original order) instead of sorting least to greatest (2, 4, 6, 7, 9) and finding the true middle value, 6. Before finalizing a median, always reorder the data smallest to largest, then count to the middle position — and if there is an even number of values, average the two middle numbers.</span></li><li><strong>Try It 1:</strong> A. 4 <span class="ak-why">— The mode is the value that appears most often. 4 shows up twice; every other value appears once. So the mode is 4.</span></li><li><strong>Try It 2:</strong> A. The median, because the outlier barely moves the middle value <span class="ak-why">— A high outlier pulls the mean upward, making it larger than most games. The median is the middle of the ordered data, so one unusual game barely changes it — it best describes a typical game.</span></li></ol>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Median</li><li><strong>Notes 2:</strong> Mode</li><li><strong>Notes 3:</strong> Outlier</li><li><strong>Notes 4:</strong> Data distribution</li><li><strong>Notes 5:</strong> Variability</li><li><strong>Watch for this mistake:</strong> <span class="ak-why">A common mistake in Mean, Median, and Mode is finding the median without ordering the data first — students pick the middle number straight from the list as given (for 9, 4, 7, 2, 6 they say the median is 7, the middle position in that original order) instead of sorting least to greatest (2, 4, 6, 7, 9) and finding the true middle value, 6. Before finalizing a median, always reorder the data smallest to largest, then count to the middle position — and if there is an even number of values, average the two middle numbers.</span></li><li><strong>Try It 1:</strong> A. 4 <span class="ak-why">— The mode is the value that appears most often. 4 shows up twice; every other value appears once. So the mode is 4.</span></li><li><strong>Try It 2:</strong> A. The median, because the outlier barely moves the middle value <span class="ak-why">— A high outlier pulls the mean upward, making it larger than most games. The median is the middle of the ordered data, so one unusual game barely changes it — it best describes a typical game.</span></li></ol>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 2-3 · Standard 6.DS.4 · Teacher Copy</footer>
 </main>
