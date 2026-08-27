@@ -26,6 +26,7 @@
     var isEs = flag && /espa|🇲🇽/i.test(flag.textContent);
     col.classList.add(isEs ? "lang-es" : "lang-en");
     col.dataset.lang = isEs ? "es" : "en";
+    col.setAttribute("lang", isEs ? "es" : "en");
   });
 
   var STR = {
@@ -55,6 +56,11 @@
   ];
   function setView(view) {
     cols.dataset.langView = view;
+    if (view === "es") {
+      document.documentElement.lang = "es";
+    } else if (view === "en") {
+      document.documentElement.lang = "en";
+    }
     Array.prototype.forEach.call(bar.querySelectorAll(".fl-seg"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.view === view));
     });
