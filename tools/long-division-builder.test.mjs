@@ -255,7 +255,17 @@ for (const t of DECIMALS) {
     const label = `${t.dividend} ÷ ${t.divisor}`;
     assert.equal(plan.shift, t.shift, `${label}: the point should move ${t.shift} place(s)`);
     assert.equal(plan.divisor, Number(t.divisor) * 10 ** t.shift, `${label}: shifted divisor`);
-    assert.equal(plan.workingDividendText, t.working, `${label}: shifted dividend`);
+    // `working` in this table is the FULL shifted dividend, annexed zeros and
+    // all — 3 ÷ 4 gives "3.00". That is the right thing to assert about the
+    // mathematics, and the wrong thing to put on the board before the student
+    // has divided, so it is now fullDividendText. What is WRITTEN at set-up is
+    // workingDividendText, and it never carries a zero the cycle has not
+    // reached yet.
+    assert.equal(plan.fullDividendText, t.working, `${label}: full shifted dividend`);
+    assert.ok(
+      t.working.startsWith(plan.workingDividendText),
+      `${label}: written dividend ${plan.workingDividendText} should be a prefix of ${t.working}`,
+    );
     assert.equal(plan.quotientText, t.quotient, `${label}: quotient`);
     // Independent check against the real value.
     assert.ok(
@@ -657,6 +667,47 @@ for (const t of ACCEPTED) {
 }
 
 // ── Report ─────────────────────────────────────────────────────────────────
+/* ANNEXED ZEROS ARE NOT PART OF THE WRITTEN DIVIDEND.
+ *
+ * 9 ÷ 0.4 is set up as 4)90 and the extra zero is written only when the cycle
+ * brings it down. The plan used to report the dividend as "90.0" — and 9 ÷ 0.8
+ * as "90.00", 1 ÷ 0.3 as "10.000" — which tells the student how many decimal
+ * places the answer will have before they have divided anything. `annexed`
+ * separates the two, `workingDividendText` is what is WRITTEN, and
+ * `fullDividendText` keeps the complete shifted number for the check line. */
+for (const [dividend, divisor, written, full, annexed] of [
+  ["9", "0.4", "90", "90.0", 1],
+  ["9", "0.8", "90", "90.00", 2],
+  ["7", "0.16", "700", "700.00", 2],
+  ["1", "0.3", "10", "10.000", 3],
+  // Divisions that need no annexing must be untouched by this.
+  ["8.4", "2.1", "84", "84", 0],
+  ["18.9", "6.3", "189", "189", 0],
+  ["1.2", "0.03", "120", "120", 0],
+  ["5", "0.25", "500", "500", 0],
+]) {
+  const plan = buildLongDivision({ dividend, divisor, decimal: true });
+  checked += 3;
+  if (plan.workingDividendText !== written) {
+    failures.push(
+      `${dividend} ÷ ${divisor}: written dividend ${plan.workingDividendText}, expected ${written}`,
+    );
+  }
+  if (plan.fullDividendText !== full) {
+    failures.push(
+      `${dividend} ÷ ${divisor}: full dividend ${plan.fullDividendText}, expected ${full}`,
+    );
+  }
+  if (plan.annexed !== annexed) {
+    failures.push(`${dividend} ÷ ${divisor}: annexed ${plan.annexed}, expected ${annexed}`);
+  }
+  // Whatever the display does, the mathematics must not move.
+  checked += 1;
+  if (!/^\d/.test(String(plan.quotientText || ""))) {
+    failures.push(`${dividend} ÷ ${divisor}: quotient went missing (${plan.quotientText})`);
+  }
+}
+
 // A test file that exercises nothing is not a passing test file.
 assert.ok(
   checked >= 70,

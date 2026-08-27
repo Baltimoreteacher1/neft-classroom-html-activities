@@ -406,9 +406,15 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     parts.push(
       `<span class="ldl-vinculum" style="grid-row:1;grid-column:2 / ${colOf(n - 1) + 1}"></span>`,
     );
+    // Annexed zeros are written WHEN THEY ARE NEEDED, not when the problem is
+    // set up. 9 ÷ 0.4 is written 4)90 and the extra zero appears only as the
+    // cycle brings it down; drawing 4)90.0 from the start tells the student how
+    // many decimal places the answer has before they have divided anything.
+    const annexedFrom = n - (plan.annexed || 0);
     for (let i = 0; i < n; i += 1) {
       const used = done.brought.has(i) || i <= (cycles[0] ? cycles[0].index : 0);
-      cell(2, colOf(i), digits[i], `ldl-digit${used ? " ldl-used" : ""}`);
+      const pending = i >= annexedFrom && !used;
+      cell(2, colOf(i), pending ? "" : digits[i], `ldl-digit${used ? " ldl-used" : ""}`);
     }
     if (hasPoint) {
       cell(2, 3 + pointAt, ".", "ldl-point");
@@ -675,10 +681,11 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     }
     attempts += 1;
     say(diagnose(step, value), attempts >= 3 ? "warn" : "bad");
-    if (attempts >= 3) {
-      answer.value = String(step.expected);
-      answer.select();
-    }
+    // No auto-fill. The third wrong try used to write step.expected into the
+    // box and select it, which ends the thinking: the student presses Check and
+    // the lab records a step they did not do. Help escalates instead — see
+    // coach() — and the box stays theirs.
+    if (attempts >= 3) answer.select();
   }
 
   /** Name the error, not just the answer. */
@@ -703,11 +710,50 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       else if (value >= v)
         why = `A difference of ${value} is not smaller than the divisor ${v}, so something is off. `;
     }
-    const tail =
-      attempts >= 3
-        ? `The answer is ${step.expected} — it is filled in for you. Read why, then press Check to place it.`
-        : step.hint;
+    const tail = attempts >= 3 ? coach(step) : step.hint;
     return `Not yet. ${why}${tail}`;
+  }
+
+  /**
+   * A way IN to the step, never the value of it.
+   *
+   * Each line names the move the student should make with the numbers already
+   * on the page. Skip-counting is the one that does the most work: it turns
+   * "guess a digit" into a countable list the student can walk, which is what a
+   * teacher does at the table.
+   */
+  function coach(step) {
+    const c = plan.cycles[step.cycle];
+    const v = plan.divisor;
+    if (step.type === "divide") {
+      const ladder = [1, 2, 3, 4]
+        .map((k) => k * v)
+        .filter((x) => x <= c.current + v)
+        .join(", ");
+      return (
+        `Try skip-counting by ${v}: ${ladder}… Stop at the last one that is not past ` +
+        `${c.current}, and count how many ${v}s that took — that count is the digit.`
+      );
+    }
+    if (step.type === "multiply") {
+      return (
+        `Multiply the digit you just wrote above the bar by the divisor ${v}. ` +
+        `If it helps, add ${v} to itself that many times.`
+      );
+    }
+    if (step.type === "subtract") {
+      return (
+        `Subtract what you just wrote (${c.product}) from the number above it (${c.current}). ` +
+        `Line the digits up in their columns first.`
+      );
+    }
+    if (step.type === "bringdown") {
+      return (
+        "Bring down the very next digit of the dividend and write it beside what is left, " +
+        "making one new number to divide."
+      );
+    }
+    return step.hint;
   }
 
   function advance(step) {

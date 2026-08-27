@@ -270,7 +270,7 @@ function drawTableau(problem, events, upTo, fresh) {
   const alt = `Long division of ${problem.dividend} by ${problem.divisor}: tableau after this step${qSoFar ? `, quotient so far ${qSoFar}` : ""}.`;
   return (
     `<svg class="dwf" viewBox="0 0 ${width} ${height}" role="img" aria-label="${alt}" ` +
-    `style="max-width:${Math.min(width, 380)}px">` +
+    `style="max-width:${Math.min(width, 460)}px">` +
     head.join("") +
     marks.join("") +
     `</svg>`
@@ -490,13 +490,64 @@ export function decimalShiftFigure(rawLines, opts = {}) {
     return { svg: parts.join(""), width: x + U / 2, pointXs };
   };
 
-  const topY = 34;
-  const bottomY = 128;
-  const top = layoutRow(`${origDvd} ÷ ${origDvs}`, topY, "dwf-old");
-  const bottomStr = `${problem.dividend} ÷ ${problem.divisor}${answer ? ` = ${answer}` : ""}`;
-  const bottom = layoutRow(bottomStr, bottomY, "dwf-new");
-  const width = Math.max(top.width, bottom.width);
-  const height = bottomY + 14;
+  /* LONG-DIVISION NOTATION, not "a \u00f7 b".
+   *
+   * The model a student copies has to look like the thing they will write. This
+   * figure used to draw "18.9 \u00f7 6.3" over "189 \u00f7 63" \u2014 correct arithmetic in
+   * the wrong handwriting, so the notebook page did not match the tableau in
+   * the lesson, the lab, or the worksheet (Joel, 2026-08-27: "look like a long
+   * division problem with the long division symbol"). Each row is now
+   * divisor, bracket, vinculum, dividend \u2014 6.3)18.9 above 63)189 \u2014 and the
+   * hop arrows still show the point moving between them. */
+  const topY = 44;
+  const bottomY = 140;
+  const BAR_RISE = 17;
+
+  /** One row of long-division notation: divisor ) dividend, with the overbar. */
+  const layoutDivision = (divisorStr, dividendStr, y, cls) => {
+    let x = U / 2;
+    const parts = [];
+    const pointXs = [];
+    for (const ch of String(divisorStr)) {
+      const w = cw(ch);
+      parts.push(svgText(x + w / 2, y, ch, ch === "." ? `dwf-point ${cls}` : cls));
+      if (ch === ".") pointXs.push(x + w / 2);
+      x += w;
+    }
+    // The bracket, drawn rather than typed: no glyph reliably joins the vinculum.
+    const bx = x + U * 0.1;
+    parts.push(
+      `<path d="M ${bx} ${y + 9} C ${bx + U * 0.5} ${y + 4}, ${bx + U * 0.62} ${y - BAR_RISE + 8}, ` +
+        `${bx + U * 0.62} ${y - BAR_RISE}" class="dwf-bracket ${cls}" fill="none"/>`,
+    );
+    x = bx + U * 0.62;
+    const barStart = x;
+    for (const ch of String(dividendStr)) {
+      const w = cw(ch);
+      parts.push(svgText(x + w / 2, y, ch, ch === "." ? `dwf-point ${cls}` : cls));
+      if (ch === ".") pointXs.push(x + w / 2);
+      x += w;
+    }
+    parts.push(
+      `<line x1="${barStart}" y1="${y - BAR_RISE}" x2="${x}" y2="${y - BAR_RISE}" class="dwf-vinculum ${cls}"/>`,
+    );
+    return { svg: parts.join(""), width: x + U / 2, pointXs };
+  };
+
+  const top = layoutDivision(origDvs, origDvd, topY, "dwf-old"); // eslint-disable-line
+  const bottomStr = `${problem.dividend} \u00f7 ${problem.divisor}${answer ? ` = ${answer}` : ""}`;
+  const bottom = layoutDivision(
+    String(problem.divisor),
+    String(problem.dividend),
+    bottomY,
+    "dwf-new",
+  );
+  // The label sits between the rows and was being CLIPPED: the viewBox was
+  // sized to the digits alone, so "move both decimal points 1 place right"
+  // ran off both ends. Size the box to the widest element, caption included.
+  const labelWidth = label.length * 6.1 + U;
+  const width = Math.max(top.width, bottom.width, labelWidth);
+  const height = bottomY + 16;
 
   // One hop arrow per decimal point, arcing right the number of places moved.
   const arrows = top.pointXs
@@ -510,17 +561,16 @@ export function decimalShiftFigure(rawLines, opts = {}) {
     })
     .join("");
 
-  const labelSvg = `<text x="${width / 2}" y="82" class="dwf-shift-label" text-anchor="middle">${label}</text>`;
+  const labelSvg = `<text x="${width / 2}" y="94" class="dwf-shift-label" text-anchor="middle">${label}</text>`;
   const alt = isEs
     ? `${origDvd} ÷ ${origDvs}: mueve ambos puntos decimales ${places} ${places === 1 ? "lugar" : "lugares"} a la derecha y el problema se convierte en ${bottomStr}.`
     : `${origDvd} ÷ ${origDvs}: move both decimal points ${places} ${places === 1 ? "place" : "places"} right and the problem becomes ${bottomStr}.`;
   return (
     `<svg class="dwf dwf-shift" viewBox="0 0 ${width} ${height}" role="img" aria-label="${alt}" ` +
     `style="max-width:${Math.min(width, 380)}px">` +
-    top.svg +
-    arrows +
+    `<g transform="translate(${(width - top.width) / 2} 0)">${top.svg}${arrows}</g>` +
     labelSvg +
-    bottom.svg +
+    `<g transform="translate(${(width - bottom.width) / 2} 0)">${bottom.svg}</g>` +
     `</svg>`
   );
 }
@@ -561,6 +611,8 @@ export const DIVISION_FIGURE_CSS = `
  * surfaces that render the shift figure interpolate this string.
  */
 export const DECIMAL_SHIFT_FIGURE_CSS = `
+  .dwf-vinculum{stroke:currentColor;stroke-width:1.6;stroke-linecap:round;}
+  .dwf-shift .dwf-bracket{stroke:currentColor;stroke-width:1.6;stroke-linecap:round;}
   .dwf .dwf-point { fill: #b91c1c; font-weight: 700; }
   .dwf .dwf-shift-arrow { stroke: #b91c1c; stroke-width: 2.5; fill: none; }
   .dwf .dwf-shift-head { fill: #b91c1c; }

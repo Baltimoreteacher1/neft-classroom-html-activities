@@ -185,11 +185,20 @@ export function buildLongDivision(options = {}) {
     ? Math.max(0, Math.min(6, Math.floor(Number(options.maxPlaces ?? 3)) || 0))
     : 0;
   let rem = 0;
+  // Count the zeros ANNEXED here, as distinct from the zeros that belong to the
+  // shifted number itself. 9 ÷ 0.4 becomes 90 ÷ 4 — that zero is part of the
+  // dividend. The zeros after it exist only because the division has a
+  // remainder, and by hand a student writes them one at a time as they are
+  // needed. Rendering them up front turned the dividend into "90.00", which
+  // announces how many decimal places the answer will have before any dividing
+  // has happened (Joel, 2026-08-27: "too many zeros at the end").
+  let annexed = 0;
   for (let i = 0; ; i += 1) {
     if (i >= digits.length) {
       if (rem === 0) break;
       if (digits.length - pointAt >= maxPlaces || digits.length >= MAX_DIGITS) break;
       digits.push(0);
+      annexed += 1;
     }
     rem = (rem * 10 + digits[i]) % divisor;
   }
@@ -233,14 +242,24 @@ export function buildLongDivision(options = {}) {
 
   const places = digits.length - pointAt;
   const quotientText = joinDigits(quotientDigits, pointAt);
-  const workingDividendText = joinDigits(digits, pointAt);
+  // The dividend as it is WRITTEN when the problem is set up: the shifted
+  // number, without the zeros the cycle will annex later. Trailing "." is
+  // trimmed, since nobody writes "90." on the board.
+  const writtenDigits = annexed ? digits.slice(0, digits.length - annexed) : digits;
+  const workingDividendText = joinDigits(
+    writtenDigits,
+    Math.min(pointAt, writtenDigits.length),
+  ).replace(/\.$/, "");
+  // The full shifted dividend, annexed zeros included — what the check line and
+  // the completed tableau legitimately refer to.
+  const fullDividendText = joinDigits(digits, pointAt);
   const remainderText = scaleDown(remainder, places);
   // When a decimal division comes out even, the honest check is against the
   // numbers the student was HANDED, not the shifted ones: 0.4 × 31.5 = 12.6.
   const checkText =
     decimal && remainder === 0
       ? `${divisorText} × ${quotientText} = ${dividendText}`
-      : `${divisor} × ${quotientText}${remainder ? ` + ${remainderText}` : ""} = ${workingDividendText}`;
+      : `${divisor} × ${quotientText}${remainder ? ` + ${remainderText}` : ""} = ${fullDividendText}`;
 
   return {
     decimal,
@@ -249,6 +268,8 @@ export function buildLongDivision(options = {}) {
     dividendText,
     divisorText,
     workingDividendText,
+    fullDividendText,
+    annexed,
     workingDivisorText: String(divisor),
     digits,
     pointAt,
