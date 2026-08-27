@@ -128,8 +128,16 @@ function inspect(config) {
         errors.push("box 1: copyPanel.items must be an array");
         hasCopyPanel = false;
       } else {
-        if (items.length < 3 || items.length > 5) {
-          errors.push(`box 1: copyPanel.items length ${items.length} not between 3 and 5`);
+        // 3-5 words is the floor for a normal Math Words section: fewer than
+        // three does not fill a notebook page and reads as a lesson that forgot
+        // its vocabulary. A lesson that opts into notebook.singleSection is
+        // explicitly saying the opposite — its words and its rule are ONE short
+        // idea on one merged page — so there the floor is 1. The ceiling still
+        // holds everywhere: a copy panel is a page a student writes by hand.
+        const merged = !!(config && config.notebook && config.notebook.singleSection);
+        const floor = merged ? 1 : 3;
+        if (items.length < floor || items.length > 5) {
+          errors.push(`box 1: copyPanel.items length ${items.length} not between ${floor} and 5`);
           hasCopyPanel = false;
         }
         for (let i = 0; i < items.length; i++) {
