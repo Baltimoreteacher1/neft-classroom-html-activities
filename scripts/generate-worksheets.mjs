@@ -885,7 +885,7 @@ function conceptAnchorBox(cfg, isGroup1 = true) {
   `;
 }
 
-function getTWRStems(standard, topic) {
+function getTWRStems(standard) {
   const std = String(standard || "").toUpperCase();
   if (std.includes("DS") || std.includes("SP") || std.includes("STAT")) {
     return {
@@ -952,7 +952,7 @@ function getTWRStems(standard, topic) {
 }
 
 function renderTWRSection(cfg) {
-  const stems = getTWRStems(cfg.standard, cfg.title);
+  const stems = getTWRStems(cfg.standard);
   return `
     <section class="ws-twr-section" style="background:#f8fafc;border:1.5px solid #cbd5e1;border-left:5px solid #0f766e;border-radius:8px;padding:12px 16px;margin:14px 0;page-break-inside:avoid;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -1000,7 +1000,7 @@ function discourseCard(discourse, _isGroup1 = true) {
   `;
 }
 
-function cerWritingMatrix(cerData, isGroup1 = true, cfg = {}) {
+function cerWritingMatrix(cerData, isGroup1 = true) {
   const q = cerData?.question || "Justify why your mathematical solution is accurate and complete.";
   const claimHint = isGroup1
     ? "Starter: My mathematical claim is that the solution is..."
@@ -1110,7 +1110,7 @@ function buildGroup1SupportWorksheet(cfg, isKey = false) {
   const anchorHtml = !isKey ? conceptAnchorBox(cfg, true) : "";
   const bankHtml = !isKey ? wordBank(cfg.vocabulary) : "";
   const discHtml = cfg.explore?.discourse ? discourseCard(cfg.explore.discourse, true) : "";
-  const cerHtml = cerWritingMatrix(cfg.cerWriting, true, cfg);
+  const cerHtml = cerWritingMatrix(cfg.cerWriting, true);
   const twrHtml = renderTWRSection(cfg);
 
   return `
@@ -1142,7 +1142,7 @@ function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
 
   const anchorHtml = !isKey ? conceptAnchorBox(cfg, false) : "";
   const discHtml = cfg.explore?.discourse ? discourseCard(cfg.explore.discourse, false) : "";
-  const cerHtml = cerWritingMatrix(cfg.cerWriting, false, cfg);
+  const cerHtml = cerWritingMatrix(cfg.cerWriting, false);
   const twrHtml = renderTWRSection(cfg);
 
   const authorBox = !isKey

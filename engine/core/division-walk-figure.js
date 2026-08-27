@@ -477,19 +477,6 @@ export function decimalShiftFigure(rawLines, opts = {}) {
 
   // Character layout: digits get a full column, decimal points a narrow one.
   const cw = (ch) => (ch === "." ? U * 0.45 : U);
-  const layoutRow = (str, y, cls) => {
-    let x = U / 2;
-    const parts = [];
-    const pointXs = [];
-    for (const ch of String(str)) {
-      const w = cw(ch);
-      parts.push(svgText(x + w / 2, y, ch, ch === "." ? `dwf-point ${cls}` : cls));
-      if (ch === ".") pointXs.push(x + w / 2);
-      x += w;
-    }
-    return { svg: parts.join(""), width: x + U / 2, pointXs };
-  };
-
   /* LONG-DIVISION NOTATION, not "a \u00f7 b".
    *
    * The model a student copies has to look like the thing they will write. This

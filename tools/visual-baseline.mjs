@@ -442,7 +442,6 @@ async function capture(surface) {
   await page.addInitScript(() => {
     const FIXED = 1756166400000; // 2025-08-26T00:00:00Z, a fixed instant
     const RealDate = Date;
-    // biome-ignore lint/suspicious/noGlobalAssign: determinism is the point
     Date = class extends RealDate {
       constructor(...args) {
         super(...(args.length ? args : [FIXED]));

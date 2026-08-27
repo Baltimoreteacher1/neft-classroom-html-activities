@@ -18,7 +18,7 @@ const esc = (s) =>
 /**
  * Generates standard-specific TWR Because/But/So sentence stems.
  */
-export function getTWRStems(standard, topic, lessonData = {}) {
+export function getTWRStems(standard, _topic, lessonData = {}) {
   if (lessonData.twrStems) return lessonData.twrStems;
 
   const std = String(standard || "").toUpperCase();

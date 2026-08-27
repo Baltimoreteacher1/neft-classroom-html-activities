@@ -236,7 +236,7 @@ export function renderTapeDiagramSvg(cfg = {}) {
   rows.forEach((r, rIdx) => {
     let x = padL + labelW;
     let segs = "";
-    (r.parts || []).forEach((p, i) => {
+    (r.parts || []).forEach((p) => {
       const val = Number(p.value ?? p);
       const w = (val / maxVal) * trackW;
       const fill = p.fill || (rIdx === 0 ? BRAND.teal : BRAND.amber);

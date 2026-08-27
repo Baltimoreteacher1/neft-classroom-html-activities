@@ -30,15 +30,6 @@ const _slug = (term) =>
 const blankLines = (n) =>
   `<textarea class="writeline-area" rows="${n}" data-nt-field aria-label="Write your response here"></textarea>`;
 
-const clozeText = (text) => {
-  return esc(text)
-    .replace(/\b\d+(\.\d+)?\b/g, "_____")
-    .replace(
-      /\b(ratio|fraction|percent|rate|unit rate|variable|equation|coordinate|coordinates|probability|median|mean|mode|range|integer|integers|negative|positive)\b/gi,
-      "_____",
-    );
-};
-
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
 // Reusable per-device auto-save for typeable [data-nt-field] inputs and
@@ -342,36 +333,6 @@ function popoverize(text, vocab) {
 // keyboard) to sequence them, then press Check for instant feedback. Touch- and
 // keyboard-accessible; the ▲▼ buttons are the reliable path on tablets, drag is
 // a progressive enhancement. State is ephemeral (a learn-by-doing check).
-function stepSorter(steps) {
-  const usable = (Array.isArray(steps) ? steps : []).filter(Boolean).slice(0, 5);
-  if (usable.length < 2) return "";
-  const items = usable
-    .map(
-      (s, i) =>
-        `<li class="ss-item" draggable="true" data-correct="${i}" tabindex="0">
-          <span class="ss-grip" aria-hidden="true">⠿</span>
-          <span class="ss-text">${esc(s)}</span>
-          <span class="ss-move no-print">
-            <button type="button" class="ss-up" aria-label="Move step up">▲</button>
-            <button type="button" class="ss-down" aria-label="Move step down">▼</button>
-          </span>
-        </li>`,
-    )
-    .join("");
-  return `<div class="notes-gr-step ss-step">
-    <span class="notes-gr-tag">🧩 Try — put the steps in order</span>
-    <p class="notes-gr-cue">Drag the cards (or use the ▲▼ buttons) to put the solution steps in the right order, then press <strong>Check</strong>.</p>
-    <div class="step-sorter" data-step-sorter>
-      <ol class="ss-list">${items}</ol>
-      <div class="ss-actions no-print">
-        <button type="button" class="ss-check">✓ Check my order</button>
-        <button type="button" class="ss-shuffle">↺ Shuffle</button>
-        <span class="ss-feedback" role="status" aria-live="polite"></span>
-      </div>
-    </div>
-  </div>`;
-}
-
 // Matches core lessons ("3-2") and flagship lessons ("3-2-flagship").
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -403,13 +364,6 @@ function lessonConfigs() {
 }
 
 /* ---------- section builders ---------- */
-
-function choiceOl(choices) {
-  if (!Array.isArray(choices) || !choices.length) return "";
-  return `<ol class="try-choices" type="A">${choices
-    .map((c) => `<li>${esc(c)}</li>`)
-    .join("")}</ol>`;
-}
 
 // Build the heart of the guided notes: fill-in-the-blank concept sentences.
 // Each vocabulary item already ships a `cloze` sentence (the blank is the term);
