@@ -673,9 +673,23 @@ async function main() {
           continue;
         }
         if (!ready(c)) continue;
+        // EXCLUSIVE means ALONE, not merely "not beside another exclusive".
+        // These checks drive a real browser against a static server they start
+        // themselves, and they lose races to ordinary CPU load, not just to
+        // each other: smoke:injection failed EVERY full run at --jobs 8 with
+        // `http404` on /games/3d/unit-2/ — a page that was on disk the whole
+        // time and served 200 the moment the check ran by itself. The same run
+        // passes 105/105 at --jobs 2. That is the failure the comment above
+        // EXCLUSIVE already describes, and it was only half-fixed: serialising
+        // the exclusives against one another still left ~100 other checks
+        // saturating the machine beside them. A gate that fails on a healthy
+        // tree is worse than a slow one — it is the reason people reach for
+        // --no-verify. Costs ~11s on a full run.
         if (EXCLUSIVE.has(c)) {
-          if (exclusiveBusy) continue;
+          if (exclusiveBusy || running.size > 0) continue;
           exclusiveBusy = true;
+        } else if (exclusiveBusy) {
+          continue;
         }
         pending.delete(c);
         running.add(c);
