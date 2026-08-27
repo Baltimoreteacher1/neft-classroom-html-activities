@@ -2388,6 +2388,11 @@
     activeSpeechUtterance = null;
   }
 
+  if (typeof window !== "undefined") {
+    window.addEventListener("beforeunload", stopSpeaking);
+    window.addEventListener("pagehide", stopSpeaking);
+  }
+
   // Copy Personalized Link
   // Download a Canvas-ready SCORM package of this lesson with the selected
   // supports baked into the launch URL, so a teacher can post a personalized
