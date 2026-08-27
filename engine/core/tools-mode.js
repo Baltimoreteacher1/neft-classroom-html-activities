@@ -101,7 +101,10 @@ export function collectTools(config) {
 
 const STYLE_ID = "nt-tools-mode-style";
 const CSS = `
-.nt-tools { max-width: 1100px; margin: 0 auto; padding: clamp(16px, 4vw, 40px) 18px 72px; }
+/* The tool IS the page here — ?mode=tools exists to give a manipulative the whole
+ * screen, so the container tracks the viewport instead of sitting at a reading
+ * width. 1100px was a prose measure inherited from the lesson body. */
+.nt-tools { max-width: min(1480px, 96vw); margin: 0 auto; padding: clamp(16px, 4vw, 40px) 18px 72px; }
 .nt-tools-head { margin-bottom: clamp(18px, 3vw, 28px); }
 .nt-tools-eyebrow { font: 700 13px/1.2 var(--font-ui, system-ui, sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--accent, #0d7a76); margin: 0 0 6px; }
 .nt-tools-title { font: 800 clamp(26px, 5vw, 40px)/1.1 var(--font-display, "Outfit", system-ui, sans-serif); color: var(--ink, #12355b); margin: 0 0 8px; }
@@ -111,7 +114,35 @@ const CSS = `
 .nt-tools-nav a:hover { background: #f2f7fb; border-color: #b9cee0; }
 .nt-tools-nav a.primary { background: var(--accent, #0d7a76); border-color: var(--accent, #0d7a76); color: #fff; }
 .nt-tools-nav a.primary:hover { filter: brightness(.95); }
-.nt-tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: clamp(16px, 2.4vw, 24px); margin-top: clamp(20px, 3vw, 30px); }
+/* One tool per row, full width.
+ *
+ * This was "auto-fill, minmax(320px, 1fr)", and both halves worked against the
+ * page. "auto-fill" MATERIALISES EMPTY TRACKS, so a lesson with one tool laid it
+ * out at 320px and left two-thirds of the container blank; "auto-fit" collapses
+ * them. And 320px is a card measure, not a workspace: lesson 2-7 carries three
+ * long-division labs, so an 1100px container cut each to ~340px — a full long
+ * division tableau, its DMSB cycle controls, the dividend/divisor inputs and the
+ * step narration, all inside a phone-width column on a desktop screen, which is
+ * what a teacher reported.
+ *
+ * The floor is now a workspace width, so these stack one per row and each gets
+ * the full container. "min(100%, 760px)" keeps the floor from exceeding the
+ * viewport on a phone — a bare 760px minimum would force a track wider than the
+ * screen and overflow horizontally, which is the usual way this pattern breaks.
+ * Above ~1520px two genuinely narrow tools can still pair up. */
+.nt-tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 760px), 1fr)); gap: clamp(16px, 2.4vw, 24px); margin-top: clamp(20px, 3vw, 30px); }
+/* Centre a fixed-width manipulative without shrinking a fluid one: the host
+ * fills the card, and only its children are centred. */
+.nt-tool-host { width: 100%; }
+.nt-tool-host > * { margin-inline: auto; }
+/* On this page the manipulative has the whole screen, so the notation itself
+ * scales up with it. The long-division board is 2.4rem where it sits inside a
+ * lesson beside prose; at a metre from a projector, in a room, that is the
+ * element everyone is reading, and it was rendering the same size in a
+ * container five times wider. Scoped to .nt-tool-host so the in-lesson and
+ * small-group renderings are untouched. The clamp floor is the existing size,
+ * so this can only grow the board, and the board keeps its own overflow-x. */
+.nt-tool-host .ldl-board { font-size: clamp(2.4rem, 4vw, 4.4rem); padding: clamp(22px, 2.6vw, 34px) clamp(30px, 3.4vw, 50px); }
 .nt-tool-card { background: #fff; border: 1px solid #e2ebf3; border-radius: 18px; padding: clamp(14px, 2.4vw, 22px); box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 8px 24px rgba(18,53,91,.05); overflow-x: auto; scroll-margin-top: 16px; }
 .nt-tool-card > h2 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font: 700 19px/1.2 var(--font-display, "Outfit", system-ui, sans-serif); color: var(--ink, #12355b); margin: 0 0 6px; }
 .nt-tool-card .nt-tool-tag { font: 600 11px/1 var(--font-ui, system-ui, sans-serif); letter-spacing: .08em; text-transform: uppercase; color: var(--accent, #0d7a76); background: #e7f4f2; padding: 4px 8px; border-radius: 6px; }
