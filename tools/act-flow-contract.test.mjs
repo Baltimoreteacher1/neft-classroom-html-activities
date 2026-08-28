@@ -71,6 +71,58 @@ const CHECKS = {
     const sorted = [...positions].sort((a, b) => a - b);
     assert.deepEqual(positions, sorted, "side rail lists act steps out of taught order");
   },
+  fivePhaseRail(rendererSrc) {
+    // Objectives Review and MSTAR Review are PHASES — their own large buttons
+    // in the side rail beside Warm-Up / Lesson / Exit Ticket (Joel,
+    // 2026-08-28) — not step chips inside Act 3. MSTAR is optional, so it is
+    // both conditional on authored items and flagged `optional` so a student
+    // who skips it still completes the lesson.
+    const start = rendererSrc.indexOf("const lessonPhases = [");
+    assert.ok(start > 0, "the lesson no longer declares its phase list");
+    const block = rendererSrc.slice(start, rendererSrc.indexOf("createApp({", start));
+    for (const fn of [
+      "renderAct1Launch",
+      "renderAct2Studio",
+      "renderAct3ExitTicket",
+      "renderObjectivesReviewAct",
+      "renderMstarReviewAct",
+    ]) {
+      assert.ok(block.includes(fn), `the phase list lost ${fn}`);
+    }
+    const keys = [...block.matchAll(/phaseNameByKey\("([a-zA-Z0-9]+)"\)/g)].map((m) => m[1]);
+    assert.deepEqual(
+      keys,
+      ["act1", "act2", "act3", "objectivesReview", "mstarReview"],
+      `phase names drifted: ${keys.join(" → ")}`,
+    );
+    assert.ok(
+      /hasMstarPractice\(config\)/.test(block) && /optional: true/.test(block),
+      "MSTAR must stay conditional AND optional — otherwise skipping it withholds the lesson's completion",
+    );
+    // Act 3 holds the exit ticket alone.
+    const a3 = rendererSrc.slice(
+      rendererSrc.indexOf("export function renderAct3ExitTicket"),
+      rendererSrc.indexOf("export function renderObjectivesReviewAct"),
+    );
+    assert.ok(
+      !/renderActSteps\(/.test(a3) && !/key:\s*"(mastery|mstar)"/.test(a3),
+      "Act 3 grew steps again — Objectives Review and MSTAR Review are their own phases",
+    );
+  },
+  studentSeesNoTimer(rendererSrc) {
+    // Every timer in an interactive lesson is a teacher facilitation tool
+    // (Joel, 2026-08-28). Both — the Warm-Up countdown and the Turn & Talk 60s
+    // timer — sit inside an isTeacherMode() gate.
+    for (const marker of ["timerBar = document.createElement", "startTimer60"]) {
+      const at = rendererSrc.indexOf(marker);
+      assert.ok(at > 0, `the timer marker ${marker} is gone — re-point this pin`);
+      const before = rendererSrc.slice(Math.max(0, at - 1200), at);
+      assert.ok(
+        before.lastIndexOf("if (isTeacherMode()) {") > before.lastIndexOf("\n}"),
+        `a timer near "${marker}" is no longer inside an isTeacherMode() gate — students would see a clock`,
+      );
+    }
+  },
   act1Strip(appSrc, rendererSrc) {
     // Act 1 walks Warm-Up → Math Notes → Objectives → Notice & Wonder as
     // STEPS, and the side rail's doors into them are jumps, never takeover
@@ -224,6 +276,20 @@ const MUTANTS = [
     ),
   // and the record itself is load-bearing: an unrecorded decision must not gate
   () => CHECKS.noPartTwoForward(renderer, null),
+  () => CHECKS.act1Strip(app, renderer.replace('key: "mathnotes"', 'key: "zz-gone"')),
+  () => CHECKS.act1Strip(app.replace('jump: "objectives"', 'extra: "objectives"'), renderer),
+  () =>
+    CHECKS.fivePhaseRail(
+      renderer.replace("renderObjectivesReviewAct(el, state, ctx, config),", ""),
+    ),
+  () => CHECKS.fivePhaseRail(renderer.replace("optional: true", "optional: false")),
+  () =>
+    CHECKS.studentSeesNoTimer(
+      renderer.replace(
+        "  if (isTeacherMode()) {\n    timerBar = document.createElement",
+        "  if (true) {\n    timerBar = document.createElement",
+      ),
+    ),
 ];
 let caught = 0;
 for (const mutate of MUTANTS) {
@@ -246,7 +312,10 @@ CHECKS.flagshipScenesPerAct(flagship);
 CHECKS.nextPillFollowsSteps(app);
 CHECKS.noPartTwoForward(renderer, APPLY_DAY);
 CHECKS.partTwoLabels(partTwo);
+CHECKS.act1Strip(app, renderer);
+CHECKS.fivePhaseRail(renderer);
+CHECKS.studentSeesNoTimer(renderer);
 
 console.log(
-  `act-flow-contract: PASS (10 checks — 9 regression pins + 1 recorded product decision, ${MUTANTS.length} mutation-proven)`,
+  `act-flow-contract: PASS (13 checks — 12 regression pins + 1 recorded product decision, ${MUTANTS.length} mutation-proven)`,
 );

@@ -1452,11 +1452,23 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     (document.querySelector(".main") || document.body).append(bar);
   }
 
+  /* A phase a lesson marks OPTIONAL (the MSTAR Review, which exists only where
+   * items were authored and which nothing in the required sequence routes
+   * through) must not hold the lesson open: before this, adding it as a phase
+   * would have meant a student who skipped optional practice never got their
+   * certificate and never reported a score. */
+  const optionalPhases = new Set(
+    (Array.isArray(config.phaseMeta) ? config.phaseMeta : []).flatMap((m, i) =>
+      m && m.optional ? [i] : [],
+    ),
+  );
+
   let scoreReported = false;
   state.subscribe(() => {
     if (scoreReported) return;
     const phases = state.get().phases;
-    if (phases.length && phases.every((p) => p.status === "completed")) {
+    const required = phases.filter((_, i) => !optionalPhases.has(i));
+    if (required.length && required.every((p) => p.status === "completed")) {
       scoreReported = true;
       if (window.AudioSynth) window.AudioSynth.tada();
       if (window.fireConfetti) window.fireConfetti();
@@ -1468,13 +1480,24 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   // Interim grade: fire to Canvas/LTI when exit ticket (Phase 7 Reflect) is done,
   // so teachers see grades without waiting for Phase 8 Objectives Review.
+  const exitPhaseIndex = (() => {
+    const named = phaseConfigs.findIndex((p) =>
+      /exit ticket|boleto de salida/i.test(String(p?.name || "")),
+    );
+    if (named >= 0) return named;
+    if (phaseConfigs.length > 6) return 6;
+    return phaseConfigs.length - 1;
+  })();
   let exitTicketReported = false;
   state.subscribe(() => {
     if (exitTicketReported) return;
     const phases = state.get().phases;
-    const isExitDone =
-      (phases.length <= 3 && phases[phases.length - 1]?.status === "completed") ||
-      (phases.length > 6 && phases[6]?.status === "completed");
+    /* Which phase IS the exit ticket differs by surface: it is the last of
+     * three on Part 2, index 6 on the legacy 8-phase lessons, and index 2 on
+     * the 3-Act lesson now that Objectives Review and MSTAR Review follow it.
+     * Ask by NAME first — a length test silently reported nothing the moment a
+     * phase was appended. */
+    const isExitDone = phases[exitPhaseIndex]?.status === "completed";
     if (isExitDone) {
       exitTicketReported = true;
       reportExitTicketScore(state, config);
@@ -1514,6 +1537,15 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
+      /* The floating pill reads the mounted act-step strip (getActStepNav).
+       * `state.subscribe` fires DURING navigateTo — before this render replaces
+       * the container — so at that moment the OUTGOING phase's strip is still
+       * connected and the pill kept naming a step from the phase the student
+       * just left ("Next: Math Notes" while standing on the Exit Ticket).
+       * Announcing after the render is what makes the pill agree with the page;
+       * a phase with no strip (Exit Ticket, Objectives Review, MSTAR Review)
+       * has no other signal at all. */
+      document.dispatchEvent(new CustomEvent("nt:phase-rendered", { detail: { index } }));
 
       // Mount subcards ribbon for 1-click jumps between lesson parts. `jump`
       // entries are act STEPS — the numbered strip right below this ribbon
@@ -2439,6 +2471,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // Selecting a step changes nothing in the state store, so the pill would
     // keep naming the destination it had when the phase mounted.
     document.addEventListener("nt:actstep-changed", refresh);
+    // A phase without a step strip announces itself here (see renderPhase).
+    document.addEventListener("nt:phase-rendered", refresh);
     // A full-page extra toggles a documentElement class outside the state store,
     // so watch that too.
     new MutationObserver(refresh).observe(document.documentElement, {

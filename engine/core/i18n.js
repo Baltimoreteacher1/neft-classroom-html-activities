@@ -389,6 +389,10 @@ const PHASE_NAMES = {
   connect: { en: "Lesson", es: "Lección" },
   reflect: { en: "Exit Ticket", es: "Boleto de Salida" },
   objectives: { en: "Objectives", es: "Objetivos" },
+  // The two closing cards are their own phases — their own large buttons in the
+  // side rail, beside Warm-Up / Lesson / Exit Ticket (Joel, 2026-08-28).
+  objectivesReview: { en: "Objectives Review", es: "Repaso de Objetivos" },
+  mstarReview: { en: "MSTAR Review", es: "Repaso MSTAR" },
 };
 
 const BADGE_NAMES = {
@@ -513,6 +517,18 @@ export function phaseName(index, lang) {
   const key = keys[index] || `act${index + 1}`;
   const entry = PHASE_NAMES[key];
   if (!entry) return `Act ${index + 1}`;
+  const l = lang || getPreferredLang();
+  return entry[l] || entry.en;
+}
+
+/**
+ * A phase's display name by KEY rather than by index — for a surface that
+ * declares its own `phaseMeta` (the 3-Act lesson now names five phases, and
+ * `phaseName(3)` still means "explore" for the legacy 8-phase surfaces).
+ */
+export function phaseNameByKey(key, lang) {
+  const entry = PHASE_NAMES[key];
+  if (!entry) return String(key);
   const l = lang || getPreferredLang();
   return entry[l] || entry.en;
 }

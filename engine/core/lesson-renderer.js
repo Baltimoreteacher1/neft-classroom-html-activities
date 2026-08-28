@@ -59,6 +59,7 @@ import {
   badgeName,
   getPreferredLang,
   phaseName,
+  phaseNameByKey,
   stack,
   stackContent,
   stackContentHtml,
@@ -154,14 +155,31 @@ export function bootLesson(config) {
     renderToolsPage(config, document.getElementById("app"));
     return;
   }
+  // Warm-Up → Lesson → Exit Ticket → Objectives Review → MSTAR Review. The last
+  // two were step chips inside Act 3 and are now phases in their own right, so
+  // each gets a large button in the side rail (Joel, 2026-08-28). MSTAR is
+  // OPTIONAL and exists only where the lesson authored items — and it is
+  // flagged `optional` so skipping it never withholds the lesson's completion.
+  const lessonPhases = [
+    (el, state, ctx) => renderAct1Launch(el, state, ctx, config),
+    (el, state, ctx) => renderAct2Studio(el, state, ctx, config),
+    (el, state, ctx) => renderAct3ExitTicket(el, state, ctx, config),
+    (el, state, ctx) => renderObjectivesReviewAct(el, state, ctx, config),
+  ];
+  const lessonPhaseMeta = [
+    { name: phaseNameByKey("act1"), icon: "⚡" },
+    { name: phaseNameByKey("act2"), icon: "📐" },
+    { name: phaseNameByKey("act3"), icon: "📝" },
+    { name: phaseNameByKey("objectivesReview"), icon: "🎯" },
+  ];
+  if (hasMstarPractice(config)) {
+    lessonPhases.push((el, state, ctx) => renderMstarReviewAct(el, state, ctx, config));
+    lessonPhaseMeta.push({ name: phaseNameByKey("mstarReview"), icon: "📋", optional: true });
+  }
   createApp({
     ...config,
-    // 3-Act Streamlined Pedagogical Flow (Warm-Up → Lesson → Exit Ticket)
-    phases: [
-      (el, state, ctx) => renderAct1Launch(el, state, ctx, config),
-      (el, state, ctx) => renderAct2Studio(el, state, ctx, config),
-      (el, state, ctx) => renderAct3ExitTicket(el, state, ctx, config),
-    ],
+    phases: lessonPhases,
+    phaseMeta: lessonPhaseMeta,
   });
 
   // Slim scroll-progress rail across the top of the lesson (additive, defensive).
@@ -925,62 +943,68 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     card.append(moreBtn);
   }
 
-  // Optional ~60s talk timer (low-friction, persistent across re-render/scroll).
-  const timerRow = document.createElement("div");
-  timerRow.style.cssText =
-    "display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-3);";
-  const timerBtn = document.createElement("button");
-  timerBtn.type = "button";
-  timerBtn.className = "btn btn-secondary";
-  timerBtn.innerHTML = stack("startTimer60", { html: true });
-  const timerLabel = document.createElement("span");
-  timerLabel.setAttribute("role", "timer");
-  timerLabel.setAttribute("aria-live", "polite");
-  timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
+  // The ~60s talk timer is a TEACHER facilitation tool, not student equipment —
+  // the same rule the Warm-Up countdown already follows (Joel, 2026-08-28:
+  // "remove the timer from the student version of the interactive lessons
+  // (only on teacher version)"). A clock on a student's screen turns a think-
+  // and-talk routine into a race; the teacher keeps time for the room.
+  if (isTeacherMode()) {
+    const timerRow = document.createElement("div");
+    timerRow.style.cssText =
+      "display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-3);";
+    const timerBtn = document.createElement("button");
+    timerBtn.type = "button";
+    timerBtn.className = "btn btn-secondary";
+    timerBtn.innerHTML = stack("startTimer60", { html: true });
+    const timerLabel = document.createElement("span");
+    timerLabel.setAttribute("role", "timer");
+    timerLabel.setAttribute("aria-live", "polite");
+    timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
 
-  window.__ntTalkTimer = window.__ntTalkTimer || {
-    isRunning: false,
-    targetEnd: 0,
-    intervalId: null,
-  };
-  const talkTimer = window.__ntTalkTimer;
+    window.__ntTalkTimer = window.__ntTalkTimer || {
+      isRunning: false,
+      targetEnd: 0,
+      intervalId: null,
+    };
+    const talkTimer = window.__ntTalkTimer;
 
-  const updateTalkDisplay = () => {
-    if (!talkTimer.isRunning) return;
-    const remaining = Math.max(0, Math.ceil((talkTimer.targetEnd - Date.now()) / 1000));
-    timerLabel.textContent = `0:${String(remaining).padStart(2, "0")}`;
-    if (remaining <= 0) {
-      clearInterval(talkTimer.intervalId);
-      talkTimer.intervalId = null;
-      talkTimer.isRunning = false;
-      timerLabel.innerHTML = stack("timeWrapUp", { html: true });
-      timerBtn.disabled = false;
-      timerBtn.style.opacity = "1";
-      timerBtn.innerHTML = stack("restartTimer60", { html: true });
+    const updateTalkDisplay = () => {
+      if (!talkTimer.isRunning) return;
+      const remaining = Math.max(0, Math.ceil((talkTimer.targetEnd - Date.now()) / 1000));
+      timerLabel.textContent = `0:${String(remaining).padStart(2, "0")}`;
+      if (remaining <= 0) {
+        clearInterval(talkTimer.intervalId);
+        talkTimer.intervalId = null;
+        talkTimer.isRunning = false;
+        timerLabel.innerHTML = stack("timeWrapUp", { html: true });
+        timerBtn.disabled = false;
+        timerBtn.style.opacity = "1";
+        timerBtn.innerHTML = stack("restartTimer60", { html: true });
+      }
+    };
+
+    if (talkTimer.isRunning) {
+      timerBtn.disabled = true;
+      timerBtn.style.opacity = "0.6";
+      updateTalkDisplay();
+      if (!talkTimer.intervalId) {
+        talkTimer.intervalId = setInterval(updateTalkDisplay, 500);
+      }
     }
-  };
 
-  if (talkTimer.isRunning) {
-    timerBtn.disabled = true;
-    timerBtn.style.opacity = "0.6";
-    updateTalkDisplay();
-    if (!talkTimer.intervalId) {
+    timerBtn.addEventListener("click", () => {
+      if (talkTimer.isRunning) return;
+      talkTimer.isRunning = true;
+      talkTimer.targetEnd = Date.now() + 60000;
+      timerBtn.disabled = true;
+      timerBtn.style.opacity = "0.6";
+      updateTalkDisplay();
+      if (talkTimer.intervalId) clearInterval(talkTimer.intervalId);
       talkTimer.intervalId = setInterval(updateTalkDisplay, 500);
-    }
+    });
+    timerRow.append(timerBtn, timerLabel);
+    card.append(timerRow);
   }
-
-  timerBtn.addEventListener("click", () => {
-    if (talkTimer.isRunning) return;
-    talkTimer.isRunning = true;
-    talkTimer.targetEnd = Date.now() + 60000;
-    timerBtn.disabled = true;
-    timerBtn.style.opacity = "0.6";
-    updateTalkDisplay();
-    if (talkTimer.intervalId) clearInterval(talkTimer.intervalId);
-    talkTimer.intervalId = setInterval(updateTalkDisplay, 500);
-  });
-  timerRow.append(timerBtn, timerLabel);
-  card.append(timerRow);
 
   const confirmBtn = document.createElement("button");
   confirmBtn.type = "button";
@@ -5668,14 +5692,20 @@ function mstarChoiceBlock(host, state, opts) {
 
   btn.addEventListener("click", () => {
     if (!chosen.size) {
+      // `.problem-check-result` is display:none until `.visible` — without it
+      // this message, and the feedback below, were written into a hidden box
+      // and Check looked like a dead button (Joel, 2026-08-28: "the MSTAR
+      // review at the end 'check' isn't working").
+      out.className = "problem-check-result visible";
       out.textContent = "Choose an answer first.";
       return;
     }
     const want = [...(opts.correct || [])].sort().join(",");
     const got = [...chosen].sort().join(",");
     const right = want === got;
-    out.classList.toggle("is-correct", right);
-    out.classList.toggle("is-wrong", !right);
+    // `is-incorrect` is the class the stylesheet defines; `is-wrong` styled
+    // nothing. `visible` is what makes the box appear at all.
+    out.className = `problem-check-result visible ${right ? "is-correct" : "is-incorrect"}`;
     out.innerHTML = right ? `✓ Correct. ${opts.explanation || ""}` : "✗ Not yet — try again.";
   });
 
@@ -6437,47 +6467,69 @@ function renderTrackBanner(el) {
 }
 
 // ── Act 3: Exit Ticket & Reflection ──
-export function renderAct3ExitTicket(el, state, ctx, config) {
-  const steps = [
-    {
-      key: "exit",
-      icon: "📝",
-      label: "Exit Ticket",
-      render: (host) => renderReflectPhase(host, state, ctx, config),
-    },
-  ];
-  // Three separate chips, in this order, each holding ONE thing (Joel,
-  // 2026-08-28: "The exit ticket button should only be the exit ticket. Then,
-  // there should be a button for Audit Can Do Now — which will be called
-  // 'Objectives Review' — and then we will move the MSTAR review to after the
-  // exit ticket and call it 'MSTAR Review' and it will be its own card/button
-  // on the side").
-  //
-  //   1. Exit Ticket      — the three ticket questions and their reflection.
-  //   2. Objectives Review — the "can do now" audit of the lesson's goals.
-  //   3. MSTAR Review      — the authored state-test-style items.
-  //
-  // MSTAR used to be a `<details>` stacked under the exit ticket, a screen and
-  // a half past the fold, and Joel — who authored the items — could not find
-  // it. A step a student cannot see is content that does not exist. It stays
-  // optional: the chip only appears on a lesson that authored items, and
-  // nothing in the required sequence routes through it. The keys are unchanged
-  // so a saved step position still resolves.
-  steps.push({
-    key: "mastery",
-    icon: "🎯",
-    label: "Objectives Review",
-    render: (host) => renderObjectivesReviewPhase(host, state, ctx, config),
+/**
+ * The forward button that closes a phase — the single door to the next large
+ * card, matching the one the act step strips render (Joel's one-button rule,
+ * 2026-08-28). Marks this phase complete on the way out, so the side rail and
+ * the progress bar agree with where the student actually is.
+ */
+function phaseAdvanceButton(label, state, ctx, phaseIdx) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn btn-primary";
+  btn.style.cssText =
+    "margin: 24px auto 8px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
+  btn.textContent = label;
+  btn.addEventListener("click", () => {
+    state.markCompleted(phaseIdx);
+    if (ctx && typeof ctx.nextPhase === "function") ctx.nextPhase();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
+  return btn;
+}
+
+// ── Act 3: Exit Ticket ──
+/**
+ * THE EXIT TICKET, AND ONLY THE EXIT TICKET.
+ *
+ * Objectives Review and MSTAR Review used to be step chips inside this act.
+ * They are now phases of their own — their own large buttons in the side rail,
+ * beside Warm-Up, Lesson and Exit Ticket (Joel, 2026-08-28: "the objectives
+ * review and MSTAR Practice should be their own large buttons on the side
+ * (same as warmup, lesson, exit ticket)"). Each closes on one forward button,
+ * which is also what the floating pill reads.
+ */
+export function renderAct3ExitTicket(el, state, ctx, config) {
+  renderReflectPhase(el, state, ctx, config);
+  el.append(phaseAdvanceButton("Continue to Objectives Review 🎯", state, ctx, 2));
+}
+
+// ── Phase 4: Objectives Review — the "can do now" audit of today's goals ──
+export function renderObjectivesReviewAct(el, state, ctx, config) {
+  phaseHeader(
+    el,
+    "🎯",
+    "section-icon-teal",
+    "Objectives Review",
+    "Look back at today's goals and check off what you can do now.",
+  );
+  renderObjectivesReviewPhase(el, state, ctx, config);
+  // Only a lesson that authored MSTAR items has a card after this one.
   if (hasMstarPractice(config)) {
-    steps.push({
-      key: "mstar",
-      icon: "📋",
-      label: "MSTAR Review",
-      render: (host) => renderMstarPractice(host, state, config, { open: true }),
-    });
+    el.append(phaseAdvanceButton("Continue to MSTAR Review 📋", state, ctx, 3));
   }
-  renderActSteps(el, state, 2, steps);
+}
+
+// ── Phase 5: MSTAR Review — optional, and only where items are authored ──
+export function renderMstarReviewAct(el, state, _ctx, config) {
+  phaseHeader(
+    el,
+    "📋",
+    "section-icon-navy",
+    "MSTAR Review",
+    "Optional state-test-style practice for today's lesson.",
+  );
+  renderMstarPractice(el, state, config, { open: true });
 }
 
 /* Part 1 deliberately does NOT link forward to Part 2.
