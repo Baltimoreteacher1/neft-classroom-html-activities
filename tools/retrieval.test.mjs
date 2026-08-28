@@ -22,7 +22,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { selectReviewItems, taughtBefore } from "../engine/core/retrieval.js";
-import { buildInstructionalSequence } from "../shared/curriculum/instructional-sequence.js";
 import {
   buildBank,
   isPortable,
@@ -30,6 +29,7 @@ import {
   reviewStem,
   serialize,
 } from "../scripts/generate-retrieval-bank.mjs";
+import { buildInstructionalSequence } from "../shared/curriculum/instructional-sequence.js";
 
 let checks = 0;
 
