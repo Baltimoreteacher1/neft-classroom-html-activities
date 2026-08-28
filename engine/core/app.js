@@ -1026,6 +1026,20 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // Named indices for the phases the pre-lesson tabs hand off to. The tabs
   // used to hardcode raw numbers (3, 2) that no longer matched this list.
   const PHASE_WARMUP = 0;
+  /**
+   * The phase whose subtab table names `kind` as a STEP, or null when no phase
+   * does. The 3-Act indices below are the default shape, not a law: Part 2's
+   * phase 0 declares mathnotes / objectives / vocabulary, and routing its
+   * Vocabulary chip to the hardcoded Act 2 index would land a student on
+   * "Today's Problem". Asking the surface which phase owns the step keeps one
+   * router working for every surface.
+   */
+  const phaseDeclaringJump = (kind) => {
+    for (let i = 0; i < (config.phases || []).length; i += 1) {
+      if (subtabsFor(config, i).some((t) => t && t.jump === kind)) return i;
+    }
+    return null;
+  };
   // Act 2 hosts the teaching sequence as in-act steps (vocab → launch → learn
   // → explore → practice → connect); openExtra routes those kinds here.
   const PHASE_ACT2 = 1;
@@ -1716,13 +1730,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // side rail, ?extra= deep link, rma:openextra — lands on the real step,
       // the way Act 2's teaching moments are routed below. A surface that still
       // declares them as extras (Part 2) keeps the dialog / takeover.
+      const jumpPhase = phaseDeclaringJump(kind);
       if (
         (kind === "mathnotes" || kind === "objectives" || kind === "noticewonder") &&
-        subtabsFor(config, PHASE_WARMUP).some((t) => t && t.jump === kind)
+        jumpPhase !== null
       ) {
         this.clearExtraActive();
-        if ((state.get().currentPhase ?? 0) !== PHASE_WARMUP) {
-          if (this.navigateTo(PHASE_WARMUP) === false) return;
+        if ((state.get().currentPhase ?? 0) !== jumpPhase) {
+          if (this.navigateTo(jumpPhase) === false) return;
         }
         goToActStep(kind);
         return;
@@ -1741,11 +1756,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "vocab" || kind === "launch" || kind === "learn" || kind === "watchme") {
         this.clearExtraActive();
         const stepKey = kind === "watchme" ? "learn" : kind;
+        // Act 2 owns these on a 3-Act lesson; Part 2 declares Vocabulary on its
+        // own phase 0, so ask the surface rather than assuming the index.
+        const target = phaseDeclaringJump(stepKey) ?? PHASE_ACT2;
         const cur = state.get().currentPhase ?? 0;
-        if (cur !== PHASE_ACT2) {
+        if (cur !== target) {
           // navigateTo can refuse (notebook checkpoint gate); the student then
           // stays where the gate holds them and no step request is left armed.
-          if (this.navigateTo(PHASE_ACT2) === false) return;
+          if (this.navigateTo(target) === false) return;
         }
         goToActStep(stepKey);
         if (kind === "watchme") {

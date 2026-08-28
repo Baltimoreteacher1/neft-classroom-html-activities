@@ -31,13 +31,16 @@ import { createApp } from "./app.js";
 import { attachImageZoom, observeContentImageZoom } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import {
+  renderActSteps,
   renderComponent,
   resolveContentObjective,
   resolveLanguageObjective,
 } from "./lesson-renderer.js";
+import { renderMathNotesStep } from "./notebook-checkpoint.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
+import { hasRealVocabImage, resolveVocabImage, vocabImageAlt } from "./vocab-images.js";
 
 function esc(value) {
   return String(value ?? "").replace(
@@ -86,76 +89,77 @@ function phaseHeading(host, num, icon, title, lede) {
 
 /* ── Phase 0 · Review ─────────────────────────────────────────────────────── */
 
-function renderReview(host, state, ctx, config) {
-  phaseHeading(
-    host,
-    1,
-    "🔁",
-    "Review",
-    "Day 2. Warm up with these first, then check what you need from yesterday below.",
-  );
-  // A WARM-UP, not a single quick check: three autograded questions from
-  // yesterday's own practice set, easiest first, so every student gets in.
+/* ── Phase 0 · Warm-Up, then the three pieces of the review ─────────────────
+ *
+ * ONE PATH, ONE FORWARD BUTTON — the same shape Act 1 got on 2026-08-28, built
+ * out of the same strip (renderActSteps, exported from lesson-renderer.js) so
+ * the two cannot drift.
+ *
+ * This phase used to stack the warm-up, the objectives, yesterday's highlights
+ * and the vocabulary into one long scroll with a single "See today's problem"
+ * button at the bottom, while Math Notes and Objectives ALSO sat above it as
+ * takeover subcards. Pressing the bottom button therefore skipped all three
+ * pieces (Joel, 2026-08-28: "the part 2 interactive lessons are having the same
+ * button problem (where the button at the bottom doesn't go to the next part)").
+ *
+ * The order Joel asked for, each piece its own step with exactly one Next:
+ *
+ *   ⚡ Warm-Up  →  📓 Math Notes Review  →  🎯 Objectives  →  🔑 Vocabulary
+ *                                                              ↓
+ *                                                     📋 Today's Problem
+ */
+
+/** ⚡ Yesterday's questions, autograded, easiest first. */
+function renderWarmupStep(host, config) {
   const warmup = config.reviewWarmup;
   const questions = warmup && Array.isArray(warmup.questions) ? warmup.questions : [];
-  if (questions.length) {
-    const wcard = el("section", "card");
-    wcard.append(
-      el(
-        "div",
-        null,
-        `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">⚡ ${esc(warmup.title || "Warm-Up")}</h3>
-         <p style="margin:0 0 14px; font-size:1rem; color:#475569;">${questions.length} questions from yesterday${warmup.prevLessonTitle ? ` — <strong>${esc(warmup.prevLessonTitle)}</strong>` : ""}. Autograded.</p>`,
-      ),
-    );
-    questions.forEach((q, i) => {
-      const slot = el("div");
-      slot.style.marginBottom = "14px";
-      wcard.append(slot);
-      // No interactive lab in the warm-up. renderComponent auto-mounts the
-      // long-division builder on any "a ÷ b" stem, so 2-7's three warm-up
-      // questions each arrived with a full lab attached — three labs before
-      // the first answer (Joel, 2026-08-26: "Do not include the interactive
-      // division lab features for the warm-up"). A warm-up is a quick
-      // autograded check; the lab lives in the group-work sets below.
-      renderComponent(slot, { ...q, suppressAutoDiagram: true }, () => {}, {
-        number: i + 1,
-        total: questions.length,
-        tier: "onLevel",
-      });
-    });
-    host.append(wcard);
-  }
-
-  // The objectives, POSTED in full — the same two cards the 🎯 Objectives page
-  // shows, because on day 2 the goal has not changed and a student walking in
-  // should see what they are still working on without opening anything.
-  // resolveContentObjective / resolveLanguageObjective return text that is
-  // ALREADY HTML-escaped, so running esc() over them again would print "&amp;".
-  const goals = el("section", "card card-teal");
-  goals.append(
+  if (!questions.length) return;
+  const card = el("section", "card");
+  card.append(
     el(
       "div",
       null,
-      `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📌 What we are still working on</h3>
-       <p style="margin:0 0 6px; font-size:1.1rem; font-weight:700; color:#0f172a; line-height:1.5;">🎯 ${resolveContentObjective(config)}</p>
-       <p style="margin:0; font-size:1.05rem; font-weight:600; color:#334155; line-height:1.5;">🗣️ ${resolveLanguageObjective(config)}</p>
-       <p style="margin:12px 0 0; font-size:.95rem; color:#475569;">Open <strong>🎯 Objectives</strong> above for the full page, or <strong>📓 Math Notes</strong> for yesterday's notebook page.</p>`,
+      `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">⚡ ${esc(warmup.title || "Warm-Up")}</h3>
+       <p style="margin:0 0 14px; font-size:1rem; color:#475569;">${questions.length} questions from yesterday${warmup.prevLessonTitle ? ` — <strong>${esc(warmup.prevLessonTitle)}</strong>` : ""}. Autograded.</p>`,
     ),
   );
-  host.append(goals);
+  questions.forEach((q, i) => {
+    const slot = el("div");
+    slot.style.marginBottom = "14px";
+    card.append(slot);
+    // No interactive lab in the warm-up. renderComponent auto-mounts the
+    // long-division builder on any "a ÷ b" stem, so 2-7's three warm-up
+    // questions each arrived with a full lab attached — three labs before
+    // the first answer (Joel, 2026-08-26: "Do not include the interactive
+    // division lab features for the warm-up"). A warm-up is a quick
+    // autograded check; the lab lives in the group-work sets below.
+    renderComponent(slot, { ...q, suppressAutoDiagram: true }, () => {}, {
+      number: i + 1,
+      total: questions.length,
+      tier: "onLevel",
+    });
+  });
+  host.append(card);
+}
 
-  // Yesterday in a few highlights, not the whole notes page: the rule the
-  // notebook anchors on, its steps, and the mistake the lesson warned about.
+/**
+ * 📓 Math Notes Review — "a simplified version of math notes from first day"
+ * (Joel, 2026-08-28). config.reviewHighlights is exactly that: the rule the
+ * notebook anchors on, the steps, and the mistake the lesson warned about,
+ * carried here by scripts/generate-part-two.mjs. A lesson with no highlights
+ * falls back to the real notebook page rather than showing an empty step.
+ */
+function renderMathNotesReviewStep(host, config) {
   const h = config.reviewHighlights;
-  if (h && (h.rule || h.formula || (h.steps && h.steps.length))) {
+  const steps = h && Array.isArray(h.steps) ? h.steps.filter(Boolean) : [];
+  if (h && (h.rule || h.formula || steps.length)) {
     const card = el("section", "card");
-    const steps = Array.isArray(h.steps) ? h.steps.filter(Boolean) : [];
     card.append(
       el(
         "div",
         null,
-        `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📓 Yesterday, in short</h3>
+        `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">📓 Yesterday, in short</h3>
+         <p style="margin:0 0 12px; font-size:1rem; color:#475569;">The short version of yesterday's Math Notes — the rule, the steps, and the trap.</p>
          ${h.rule ? `<p style="margin:0 0 8px; font-size:1.1rem; font-weight:800; color:#0f766e;">${esc(h.rule)}</p>` : ""}
          ${
            h.formula
@@ -180,34 +184,133 @@ function renderReview(host, state, ctx, config) {
       ),
     );
     host.append(card);
+    return;
   }
+  renderMathNotesStep(host, config);
+}
 
+/** 🎯 The same two goals as yesterday — they have not changed on day 2. */
+function renderObjectivesStep(host, config) {
+  // resolveContentObjective / resolveLanguageObjective return text that is
+  // ALREADY HTML-escaped, so running esc() over them again would print "&amp;".
+  const goals = el("section", "card card-teal");
+  goals.append(
+    el(
+      "div",
+      null,
+      `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📌 What we are still working on</h3>
+       <p style="margin:0 0 6px; font-size:1.1rem; font-weight:700; color:#0f172a; line-height:1.5;">🎯 ${resolveContentObjective(config)}</p>
+       <p style="margin:0; font-size:1.05rem; font-weight:600; color:#334155; line-height:1.5;">🗣️ ${resolveLanguageObjective(config)}</p>`,
+    ),
+  );
+  host.append(goals);
+}
+
+/**
+ * 🔑 Vocabulary — a card per word with its picture, the same shape Part 1's
+ * word cards use (Joel: "there should be a subcard for vocabulary (similar to
+ * part 1 of interactive lesson)"). Deliberately NOT renderVocabPanel: that is
+ * the full Learn It takeover, Watch Me Solve It and all, and re-teaching
+ * yesterday's lesson is not what a day-2 review is for.
+ */
+function renderVocabularyStep(host, config) {
   const vocab = Array.isArray(config.vocabulary)
     ? config.vocabulary.filter((v) => v && v.term)
     : [];
-  if (vocab.length) {
-    const vcard = el("section", "card card-coral");
-    vcard.append(
-      el(
-        "div",
-        null,
-        `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">🔑 Words we need today</h3>
-         <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:7px;">
-           ${vocab
-             .map(
-               (v) =>
-                 `<li style="font-size:1.02rem; line-height:1.5; color:#0f172a;"><strong>${esc(v.term)}</strong>${
-                   v.definition ? ` — ${esc(v.definition)}` : ""
-                 }</li>`,
-             )
-             .join("")}
-         </ul>`,
-      ),
-    );
-    host.append(vcard);
+  if (!vocab.length) return;
+  const card = el("section", "card card-coral");
+  card.append(
+    el(
+      "div",
+      null,
+      `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">🔑 Words we need today</h3>
+       <p style="margin:0 0 14px; font-size:1rem; color:#475569;">Yesterday's words. You will use them in your group's explanation.</p>`,
+    ),
+  );
+  const grid = el("div");
+  grid.style.cssText =
+    "display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px;";
+  vocab.forEach((v) => {
+    const src = hasRealVocabImage(v.term, v.image) ? resolveVocabImage(v.term, v.image) : "";
+    const tile = el("div");
+    tile.style.cssText =
+      "border:1.5px solid #e2e8f0; border-radius:12px; background:#ffffff; padding:12px 14px;";
+    tile.innerHTML = `
+      ${
+        src
+          ? `<img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" decoding="async"
+              style="display:block; width:100%; max-width:170px; height:auto; margin:0 auto 10px; border-radius:8px;" />`
+          : ""
+      }
+      <div style="font-size:1.08rem; font-weight:800; color:#0f172a;">${esc(v.term)}</div>
+      ${v.termEs ? `<div lang="es" style="font-size:.92rem; font-weight:700; color:#0e7490;">${esc(v.termEs)}</div>` : ""}
+      ${v.definition ? `<div style="margin-top:6px; font-size:.98rem; line-height:1.5; color:#334155;">${esc(v.definition)}</div>` : ""}
+      ${v.definitionEs ? `<div lang="es" style="margin-top:4px; font-size:.92rem; font-style:italic; line-height:1.5; color:#64748b;">${esc(v.definitionEs)}</div>` : ""}`;
+    grid.append(tile);
+  });
+  card.append(grid);
+  host.append(card);
+}
+
+function renderReview(host, state, ctx, config) {
+  phaseHeading(
+    host,
+    1,
+    "⚡",
+    "Warm-Up",
+    "Day 2. Warm up on yesterday's questions, then walk back through the notes, the goals and the words — one step at a time.",
+  );
+
+  // The phase-advance button lives INSIDE the last step, so it appears when the
+  // student gets there rather than inviting a skip from step 1.
+  const toProblem = advanceButton("See today's problem 📋 →", state, ctx, 0);
+
+  // Asked of the config, never by rendering into a throwaway node —
+  // renderComponent registers graders as a side effect, so a probe render would
+  // double every warm-up question in the answer state.
+  const hasWarmup =
+    !!config.reviewWarmup &&
+    Array.isArray(config.reviewWarmup.questions) &&
+    config.reviewWarmup.questions.length > 0;
+  const hasVocab = Array.isArray(config.vocabulary) && config.vocabulary.some((v) => v && v.term);
+
+  const steps = [];
+  if (hasWarmup) {
+    steps.push({
+      key: "warmup",
+      icon: "⚡",
+      label: "Warm-Up",
+      render: (h) => renderWarmupStep(h, config),
+    });
+  }
+  steps.push({
+    key: "mathnotes",
+    icon: "📓",
+    label: "Math Notes Review",
+    render: (h) => renderMathNotesReviewStep(h, config),
+  });
+  steps.push({
+    key: "objectives",
+    icon: "🎯",
+    label: "Objectives",
+    render: (h) => renderObjectivesStep(h, config),
+  });
+  if (hasVocab) {
+    steps.push({
+      key: "vocab",
+      icon: "🔑",
+      label: "Vocabulary",
+      render: (h) => renderVocabularyStep(h, config),
+    });
   }
 
-  host.append(advanceButton("See today's problem 📋 →", state, ctx, 0));
+  const last = steps[steps.length - 1];
+  const inner = last.render;
+  last.render = (h) => {
+    inner(h);
+    h.append(toProblem);
+  };
+  renderActSteps(host, state, 0, steps);
 }
 
 /* ── Phase 1 · Today's Problem ────────────────────────────────────────────── */
@@ -580,19 +683,24 @@ export function bootPartTwo(config) {
   createApp({
     ...config,
     phaseMeta: [
-      // Phase 0 renders renderReview — objectives, vocabulary and one carried
-      // question from Part 1. Calling it "Warm-Up" told students this was a
-      // new lesson's warm-up rather than a look back at yesterday's.
-      { name: "Review", icon: "🔁" },
+      // Phase 0 OPENS on the warm-up and then walks Math Notes Review →
+      // Objectives → Vocabulary as steps (renderReview). It was called
+      // "Review", which named the act after its later half and left the first
+      // thing a student does unnamed.
+      { name: "Warm-Up", icon: "⚡" },
       { name: "Today's Problem", icon: "📋" },
       { name: "Group Work", icon: "👥" },
     ],
-    // Math Notes and Objectives belong to the review; the other two phases have
-    // no takeover to offer, and a chip that opens nothing is worse than no chip.
+    // Doors into phase 0's STEPS for the side rail — `jump`, not `extra`, the
+    // same way Act 1 names its pieces. As takeover subcards these opened over
+    // the phase and the bottom button then skipped past all of them; the strip
+    // is the single source of truth for the order, and the ribbon does not
+    // repeat what the strip already shows directly beneath it.
     phaseSubtabs: {
       0: [
-        { extra: "mathnotes", icon: "📓", label: "Math Notes" },
-        { extra: "objectives", icon: "🎯", label: "Objectives" },
+        { jump: "mathnotes", icon: "📓", label: "Math Notes Review" },
+        { jump: "objectives", icon: "🎯", label: "Objectives" },
+        { jump: "vocab", icon: "🔑", label: "Vocabulary" },
       ],
     },
     phases: [

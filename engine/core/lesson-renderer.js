@@ -6060,7 +6060,10 @@ export function goToActStep(key) {
   document.dispatchEvent(new CustomEvent("rma:actstep", { detail: { key } }));
 }
 
-function renderActSteps(el, state, phaseIdx, steps) {
+/* Exported so Part 2 (engine/core/part-two-renderer.js) builds its Review act
+ * out of the SAME strip Act 1 and Act 2 use, rather than a second copy of the
+ * one-forward-button rule that would drift from this one. */
+export function renderActSteps(el, state, phaseIdx, steps) {
   if (!steps.length) return;
   injectActStepStyles();
   const wrap = document.createElement("div");

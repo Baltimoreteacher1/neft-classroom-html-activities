@@ -5470,6 +5470,19 @@ html.nt-extra-fullpage-open body {
    lives in this menu (Save/Resume, export toolbar, mode pill, Math Workbench,
    supports-dock trigger) or bottom-left (minimap HUD). The save-resume PANEL
    still opens from its own corner; only its launcher pill is hidden here. */
+/* How much of the top-right band the chrome row occupies: the Present pill, the
+   gap, the Tools button and the 12px edge offset. The act step strip reserves
+   it so a chip can never end up UNDER the row — the exact failure
+   tools/validate-lesson-flow-walk.mjs was written to catch when the Presenter
+   widget sat at top:14px, and the reason that widget was exiled to the right
+   edge in the first place. Docking Present here makes the row wider, so the
+   reservation is now part of the row's definition rather than a coincidence. */
+:root {
+  --nt-chrome-row-w: 262px;
+}
+body.has-nt-utility-menu .act-step-strip {
+  padding-right: var(--nt-chrome-row-w);
+}
 .nt-utility-menu {
   position: fixed;
   top: 12px;
@@ -5759,6 +5772,9 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
 @media (max-width: 640px) {
   body.has-nt-utility-menu .app .sidebar {
     padding-top: calc(var(--sp-3) + 48px);
+  }
+  :root {
+    --nt-chrome-row-w: 112px;
   }
   .nt-utility-menu {
     position: absolute !important;
