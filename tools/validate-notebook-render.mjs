@@ -4,9 +4,14 @@
  *
  * Drives a real headless browser against the built static output to assert what
  * students actually experience:
- *   1. Warmup phase (Phase 0) renders the dedicated Math Notes entry card (.card-warmup-math-notes).
- *   2. Clicking the entry card button (.warmup-open-notes-btn) opens the Math Notes modal (dialog#nt-notebook-model).
- *   3. The Math Notes modal renders the lesson's exact authored Box 1 vocabulary and Box 2 mathematical rule.
+ *   1. Act 1's step strip carries Math Notes as the step right after the Warm-Up,
+ *      and the Warm-Up's single Next button names it (Joel, 2026-08-28: one button
+ *      per piece, to the next piece — the old entry card + "Continue to
+ *      Vocabulary" pair skipped Math Notes).
+ *   2. Pressing that Next lands on the Math Notes step, rendered inline
+ *      (.nt-nb-inline), with the lesson's exact authored Box 2 mathematical rule.
+ *   3. The Math Notes dialog (window.openMathNotesModel — Part 2 and the notebook's
+ *      own trigger still use it) opens and renders the same rule.
  *   4. Inline "Notebook time" gating blockers (.nt-nb-check, .nt-nb-input) are eliminated: phases advance freely.
  *   5. The Math Notes dialog automatically closes upon phase transition.
  *
@@ -167,29 +172,74 @@ try {
     const b2 = declaredCheckpoints.find((c) => c.box === 2);
     const expectedRule = b2?.copyPanel?.rule || "";
 
-    // 2. Test Warmup Math Notes Entry Card
-    const warmupEntry = await page.evaluate(() => {
-      const card = document.querySelector(".card-warmup-math-notes");
-      const btn = card?.querySelector(".warmup-open-notes-btn");
+    // 2. Act 1's strip: Math Notes is the step after the Warm-Up, and the
+    //    Warm-Up's ONE forward button names it.
+    const warmupStrip = await page.evaluate(() => {
+      const chips = [...document.querySelectorAll(".act-step-chip")].map((c) => c.dataset.stepKey);
+      const cur = document.querySelector(".act-step-panel:not([hidden])");
+      const nexts = cur
+        ? [...cur.querySelectorAll("button")]
+            .map((b) => b.textContent.replace(/\s+/g, " ").trim())
+            .filter((t) => /^Next:|^Continue to/i.test(t))
+        : [];
       return {
-        cardPresent: !!card,
-        btnPresent: !!btn,
-        btnText: btn ? btn.textContent.trim() : "",
+        chips,
+        currentKey: document.querySelector(".act-step-chip.is-current")?.dataset.stepKey,
+        nexts,
       };
     });
-
-    if (!warmupEntry.cardPresent) {
-      fail(lessonId + ": Warmup phase missing .card-warmup-math-notes entry card");
-    } else if (!warmupEntry.btnPresent) {
-      fail(lessonId + ": Warmup entry card missing .warmup-open-notes-btn button");
+    const mathnotesAt = warmupStrip.chips.indexOf("mathnotes");
+    const warmupAt = warmupStrip.chips.indexOf("warmup");
+    if (mathnotesAt < 0 || mathnotesAt !== warmupAt + 1) {
+      fail(
+        lessonId +
+          ": Act 1 strip does not place Math Notes right after the Warm-Up (" +
+          warmupStrip.chips.join(" → ") +
+          ")",
+      );
+    } else if (warmupStrip.nexts.length !== 1 || !/Math Notes/.test(warmupStrip.nexts[0])) {
+      fail(
+        lessonId +
+          ": the Warm-Up must end on exactly ONE forward button naming Math Notes, found [" +
+          warmupStrip.nexts.join(" | ") +
+          "]",
+      );
     } else {
-      note(lessonId + ": Warmup phase renders Math Notes entry card (" + warmupEntry.btnText + ")");
+      note(lessonId + ": Warm-Up's single Next names Math Notes (" + warmupStrip.nexts[0] + ")");
     }
 
-    // 3. Test Clicking Warmup Entry Button Opens Math Notes Dialog
+    // 3. Pressing it lands on the Math Notes step, rendered inline with the rule.
     await page.evaluate(() => {
-      const btn = document.querySelector(".warmup-open-notes-btn");
+      const cur = document.querySelector(".act-step-panel:not([hidden])");
+      const btn =
+        cur && [...cur.querySelectorAll("button")].find((b) => /^Next:/.test(b.textContent.trim()));
       if (btn) btn.click();
+    });
+    await page.waitForTimeout(500);
+    const notesStep = await page.evaluate(() => {
+      const cur = document.querySelector(".act-step-panel:not([hidden])");
+      const inline = cur?.querySelector(".nt-nb-inline");
+      return {
+        currentKey: document.querySelector(".act-step-chip.is-current")?.dataset.stepKey,
+        inlinePresent: !!inline,
+        innerHTML: inline ? inline.innerHTML : "",
+      };
+    });
+    const escapedRule = expectedRule
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    if (notesStep.currentKey !== "mathnotes" || !notesStep.inlinePresent) {
+      fail(lessonId + ": Warm-Up's Next did not land on the inline Math Notes step");
+    } else if (expectedRule && !notesStep.innerHTML.includes(escapedRule)) {
+      fail(lessonId + ': Math Notes step missing expected rule "' + expectedRule + '"');
+    } else {
+      note(lessonId + ": Math Notes step renders inline with the exact mathematical rule");
+    }
+
+    // 3b. The dialog still opens for its remaining callers, with the same rule.
+    await page.evaluate(() => {
+      if (typeof window.openMathNotesModel === "function") window.openMathNotesModel();
     });
     await page.waitForTimeout(400);
 
@@ -204,18 +254,11 @@ try {
     });
 
     if (!dialogState.present || !dialogState.open) {
-      fail(lessonId + ": Math Notes modal dialog failed to open upon clicking warmup entry card");
+      fail(lessonId + ": Math Notes modal dialog failed to open via window.openMathNotesModel");
+    } else if (expectedRule && !dialogState.innerHTML.includes(escapedRule)) {
+      fail(lessonId + ': Math Notes dialog missing expected rule "' + expectedRule + '"');
     } else {
-      note(lessonId + ": Math Notes modal dialog opened successfully");
-      const escapedRule = expectedRule
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-      if (expectedRule && !dialogState.innerHTML.includes(escapedRule)) {
-        fail(lessonId + ': Math Notes dialog missing expected rule "' + expectedRule + '"');
-      } else {
-        note(lessonId + ": Math Notes dialog renders exact mathematical rule");
-      }
+      note(lessonId + ": Math Notes dialog opens and renders the exact mathematical rule");
     }
 
     // 4. Test Dialog Auto-Closing on Phase Change

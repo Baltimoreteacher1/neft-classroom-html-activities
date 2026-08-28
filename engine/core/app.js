@@ -854,9 +854,17 @@ function playLessonEntrance(config, name, boot) {
 // Notes + Objectives on its Review phase and nothing on the other two.
 const PHASE_SUBTABS = {
   0: [
-    { extra: "mathnotes", icon: "📓", label: "Math Notes" },
-    { extra: "objectives", icon: "🎯", label: "Objectives" },
-    { extra: "noticewonder", icon: "🤔", label: "Notice & Wonder" },
+    // Act 1's pieces are STEPS in its strip — Warm-Up → Math Notes →
+    // Objectives → Notice & Wonder, built by renderAct1Launch — exactly as Act
+    // 2's are. These jump entries give the side rail a door into each; the
+    // ribbon does not repeat them. They used to be takeover extras beside a
+    // "Continue to Vocabulary" button that skipped all three (Joel,
+    // 2026-08-28: "only one button at the bottom of each piece that goes to
+    // the next subcard or card … it should just go to math notes, not skip a
+    // section").
+    { jump: "mathnotes", icon: "📓", label: "Math Notes" },
+    { jump: "objectives", icon: "🎯", label: "Objectives" },
+    { jump: "noticewonder", icon: "🤔", label: "Notice & Wonder" },
   ],
   1: [
     // Act 2's teaching moments are STEPS in the in-act strip (Vocabulary →
@@ -1672,6 +1680,22 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // The canonical Math Notes model opens OVER the lesson rather than
       // replacing the phase body — a student checking the page layout has not
       // left the lesson and loses nothing on screen.
+      // Math Notes, Objectives and Notice & Wonder are STEPS of Act 1 on a
+      // surface that lists them as jumps (the 3-Act lesson). Every caller —
+      // side rail, ?extra= deep link, rma:openextra — lands on the real step,
+      // the way Act 2's teaching moments are routed below. A surface that still
+      // declares them as extras (Part 2) keeps the dialog / takeover.
+      if (
+        (kind === "mathnotes" || kind === "objectives" || kind === "noticewonder") &&
+        subtabsFor(config, PHASE_WARMUP).some((t) => t && t.jump === kind)
+      ) {
+        this.clearExtraActive();
+        if ((state.get().currentPhase ?? 0) !== PHASE_WARMUP) {
+          if (this.navigateTo(PHASE_WARMUP) === false) return;
+        }
+        goToActStep(kind);
+        return;
+      }
       if (kind === "mathnotes") return openMathNotesModel(config);
       if (kind === "projects") return this.openProjects();
       if (kind === "printables") return this.openPrintables();
@@ -1937,17 +1961,38 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.focus?.({ preventScroll: true });
     },
 
-    openObjectives() {
+    /** Notice & Wonder as an Act 1 STEP: the same routine, no takeover chrome. */
+    renderNoticeWonderStep(host) {
+      const el = document.createElement("div");
+      el.className = "noticewonder-step";
+      el.innerHTML = `
+        <div class="extra-head" style="margin-bottom:var(--sp-4, 18px);">
+          <div class="section-title" style="font-size:2rem;">🤔 Notice &amp; Wonder</div>
+          <div class="section-desc" style="font-size:1.1rem;">Look first, then argue. There is no wrong noticing here.</div>
+        </div>`;
+      host.append(el);
+      renderCuriousStep(el, state, this, config);
+      const nwVocab = augmentVocabWithGlossary(config.vocabulary);
+      underlineVocabTerms(el, nwVocab);
+      observeVocabTerms(el, nwVocab);
+    },
+
+    /**
+     * The Objectives cards. `takeover: true` is the legacy full-page panel with
+     * its own Close; `takeover: false` is the Act 1 STEP (renderObjectivesStep),
+     * whose only way forward is the strip's single Next button.
+     */
+    buildObjectivesPanel({ takeover }) {
       // resolveContentObjective / resolveLanguageObjective return text that is
       // already HTML-escaped, so insert directly (do not re-escape).
       const content = resolveContentObjective(config);
       const language = resolveLanguageObjective(config);
       const objectiveVocab = augmentVocabWithGlossary(config.vocabulary);
 
-      this.setExtraActive("objectives");
-      phaseContainer.innerHTML = "";
       const el = document.createElement("div");
-      el.className = "phase active extra-panel extra-panel--fullpage";
+      el.className = takeover
+        ? "phase active extra-panel extra-panel--fullpage"
+        : "objectives-step";
       el.tabIndex = -1;
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", "Objectives");
@@ -2006,9 +2051,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
             <div class="section-title" style="font-size:2rem;">🎯 Today's Goals</div>
             <div class="section-desc" style="font-size:1.1rem;">Read each goal. <strong>Tap</strong> an <u class="obj-key">underlined</u> word to see what it means in English and Spanish. Check a box before we start, and again at the end.</div>
           </div>
-          <div>
-            <button class="btn btn-secondary" data-act="close">✕ Close</button>
-          </div>
+          ${takeover ? '<div><button class="btn btn-secondary" data-act="close">✕ Close</button></div>' : ""}
         </div>
         ${objectiveCard({
           accent: "card-teal",
@@ -2035,6 +2078,40 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           visual: objectiveVisuals?.language,
         })}
       `;
+      // Make the underlined vocab terms tap-to-open the glossary popup here too,
+      // exactly like the Launch objectives (shared engine machinery) —
+      // definition only; the objective's picture opens from the picture itself.
+      wireObjectiveTermPopups(el, objectiveVocab);
+
+      // Persist the before/after self-check on this device.
+      const objKey = "nt-obj:" + config.lessonId;
+      let objStore = {};
+      try {
+        objStore = JSON.parse(localStorage.getItem(objKey) || "{}") || {};
+      } catch (_e) {}
+      el.querySelectorAll("[data-obj-check]").forEach((cb) => {
+        const k = cb.getAttribute("data-obj-check");
+        cb.checked = !!objStore[k];
+        cb.addEventListener("change", () => {
+          objStore[k] = cb.checked;
+          try {
+            localStorage.setItem(objKey, JSON.stringify(objStore));
+          } catch (_e) {}
+        });
+      });
+
+      return el;
+    },
+
+    /** Objectives as an Act 1 STEP: the same cards, no takeover chrome. */
+    renderObjectivesStep(host) {
+      host.append(this.buildObjectivesPanel({ takeover: false }));
+    },
+
+    openObjectives() {
+      this.setExtraActive("objectives");
+      phaseContainer.innerHTML = "";
+      const el = this.buildObjectivesPanel({ takeover: true });
       phaseContainer.append(el);
 
       const closeToLesson = () => this.navigateTo(state.get().currentPhase ?? 0);
@@ -2057,28 +2134,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           this.navigateTo(state.get().currentPhase ?? 0),
         ),
       );
-
-      // Make the underlined vocab terms tap-to-open the glossary popup here too,
-      // exactly like the Launch objectives (shared engine machinery) —
-      // definition only; the objective's picture opens from the picture itself.
-      wireObjectiveTermPopups(el, objectiveVocab);
-
-      // Persist the before/after self-check on this device.
-      const objKey = "nt-obj:" + config.lessonId;
-      let objStore = {};
-      try {
-        objStore = JSON.parse(localStorage.getItem(objKey) || "{}") || {};
-      } catch (_e) {}
-      el.querySelectorAll("[data-obj-check]").forEach((cb) => {
-        const k = cb.getAttribute("data-obj-check");
-        cb.checked = !!objStore[k];
-        cb.addEventListener("change", () => {
-          objStore[k] = cb.checked;
-          try {
-            localStorage.setItem(objKey, JSON.stringify(objStore));
-          } catch (_e) {}
-        });
-      });
 
       el.scrollIntoView({ block: "start" });
       el.focus?.({ preventScroll: true });

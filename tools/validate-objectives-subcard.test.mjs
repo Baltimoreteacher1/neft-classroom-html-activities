@@ -12,9 +12,12 @@ console.log("Testing Objectives subcard structural configuration...");
 const appJsPath = join(ROOT, "engine", "core", "app.js");
 const appJs = readFileSync(appJsPath, "utf8");
 
+// Objectives is an Act 1 STEP (Warm-Up → Math Notes → Objectives → Notice &
+// Wonder); the side rail's entry is a jump into that step, never a takeover
+// extra beside a button that skips it (Joel, 2026-08-28).
 assert.ok(
-  appJs.includes('{ extra: "objectives", icon: "🎯", label: "Objectives" }'),
-  "engine/core/app.js must include { extra: 'objectives', icon: '🎯', label: 'Objectives' } in PHASE_SUBTABS",
+  appJs.includes('{ jump: "objectives", icon: "🎯", label: "Objectives" }'),
+  "engine/core/app.js must include { jump: 'objectives', icon: '🎯', label: 'Objectives' } in PHASE_SUBTABS",
 );
 
 // Check that PHASE_SUBTABS has Math Notes followed by Objectives
@@ -38,6 +41,10 @@ assert.ok(
 
 // Check openObjectives function exists with close button and interactive cards
 assert.ok(appJs.includes("openObjectives()"), "engine/core/app.js must define openObjectives()");
+assert.ok(
+  appJs.includes("renderObjectivesStep(host)"),
+  "engine/core/app.js must define renderObjectivesStep(host) — the Act 1 step renderer",
+);
 assert.ok(
   appJs.includes('data-act="close"'),
   "openObjectives() must provide a data-act='close' button",

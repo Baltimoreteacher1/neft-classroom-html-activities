@@ -71,6 +71,33 @@ const CHECKS = {
     const sorted = [...positions].sort((a, b) => a - b);
     assert.deepEqual(positions, sorted, "side rail lists act steps out of taught order");
   },
+  act1Strip(appSrc, rendererSrc) {
+    // Act 1 walks Warm-Up → Math Notes → Objectives → Notice & Wonder as
+    // STEPS, and the side rail's doors into them are jumps, never takeover
+    // extras (the extras had a "Continue to Vocabulary" that skipped all three).
+    const fnStart = rendererSrc.indexOf("function renderAct1Launch");
+    const fnEnd = rendererSrc.indexOf("renderActSteps(el, state, 0, steps)", fnStart);
+    const order = [...rendererSrc.slice(fnStart, fnEnd).matchAll(/key:\s*"([a-z]+)"/g)].map(
+      (m) => m[1],
+    );
+    assert.deepEqual(
+      order,
+      ["warmup", "mathnotes", "objectives", "noticewonder"],
+      `Act 1 step order drifted: ${order.join(" → ")}`,
+    );
+    const start = appSrc.indexOf("const PHASE_SUBTABS");
+    const zero = appSrc.slice(appSrc.indexOf("0: [", start), appSrc.indexOf("1: [", start));
+    for (const kind of ["mathnotes", "objectives", "noticewonder"]) {
+      assert.ok(
+        new RegExp(`jump:\\s*"${kind}"`).test(zero),
+        `side rail lost its Act 1 door into ${kind}`,
+      );
+      assert.ok(
+        !new RegExp(`extra:\\s*"${kind}"`).test(zero),
+        `PHASE_SUBTABS reintroduced ${kind} as a takeover extra — it is an Act 1 STEP`,
+      );
+    }
+  },
   noTakeoverTeaching(appSrc) {
     const start = appSrc.indexOf("const PHASE_SUBTABS");
     const end = appSrc.indexOf("};", start);

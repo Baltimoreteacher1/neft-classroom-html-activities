@@ -79,7 +79,7 @@ import {
   resolveAuthoredTag,
   studentExplanation,
 } from "./misconceptions.js";
-import { mountNotebookCheckpoint, openMathNotesModel } from "./notebook-checkpoint.js";
+import { mountNotebookCheckpoint, renderMathNotesStep } from "./notebook-checkpoint.js";
 import { lessonModelFrom } from "./notebook-prompt.js";
 import {
   normalizeAcademicWord,
@@ -3207,32 +3207,9 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   card.append(questionsContainer);
   card.append(btnRow);
 
-  // Dedicated Math Notes entry card at bottom of warmup
-  const notesEntryCard = document.createElement("div");
-  notesEntryCard.className = "card card-warmup-math-notes";
-  notesEntryCard.style.cssText =
-    "margin-top:20px; border:2px solid #0f766e; border-radius:14px; padding:18px; background:#f0fdfa; box-shadow:0 1px 3px rgba(15,118,110,0.08);";
-  notesEntryCard.innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <span style="font-size:26px;" aria-hidden="true">📓</span>
-        <div>
-          <h4 style="margin:0; font-size:17px; font-weight:700; color:#0f766e;">Today's Math Notes</h4>
-          <p style="margin:4px 0 0; font-size:14px; color:#134e4a; font-weight:500;">
-            Review today's key math words and core rule before starting Launch.
-          </p>
-        </div>
-      </div>
-      <button type="button" class="btn btn-primary warmup-open-notes-btn" style="padding:10px 20px; font-size:15px; font-weight:700; background:#0f766e; color:#fff; border:none; border-radius:8px; cursor:pointer;">
-        📓 Open Math Notes →
-      </button>
-    </div>
-  `;
-  const openNotesBtn = notesEntryCard.querySelector(".warmup-open-notes-btn");
-  if (openNotesBtn) {
-    openNotesBtn.addEventListener("click", () => openMathNotesModel(config));
-  }
-  card.append(notesEntryCard);
+  // The Math Notes entry card that used to sit here is gone: Math Notes is the
+  // next STEP of Act 1, and the strip's single Next button is the one door to
+  // it (Joel, 2026-08-28).
 
   if (savedAnswers.checked) {
     let correctCount = 0;
@@ -6192,7 +6169,7 @@ export function renderAct1Launch(el, state, ctx, config) {
     "1",
     "section-icon-teal",
     "Act 1: Warm-Up",
-    "Start here. Math Notes, today's goals and Notice & Wonder are on the cards above.",
+    "Start with the Warm-Up, then Math Notes, today's goals, and Notice & Wonder — one step at a time.",
   );
 
   // Today's objectives are NOT rendered here. Posting the full two-card
@@ -6243,32 +6220,46 @@ export function renderAct1Launch(el, state, ctx, config) {
       render: (host) => renderWarmupPhase(host, state, ctx, config, { standalone: false }),
     });
   }
-  // ACT 1 IS THE WARM-UP. Its other pieces are subcards on the row above it —
-  // 📓 Math Notes, 🎯 Objectives, 🤔 Notice & Wonder — and the Launch moved to
-  // Act 2, under Vocab, because it belongs with the teaching rather than in
-  // front of it (Joel, 2026-08-26: "The launch should be right under the
-  // vocabulary (under #2) lesson … math notes, objectives, notice/wonder, then
-  // lesson, vocabulary and launch (with the problem)").
+  // ACT 1 IS THE WARM-UP, THEN ITS THREE PIECES, IN ORDER. 📓 Math Notes, 🎯
+  // Objectives and 🤔 Notice & Wonder are STEPS of this strip, not subcards on
+  // a row above it: as subcards, the Warm-Up ended on "Open Math Notes" beside
+  // "Continue to Vocabulary", and the second button skipped all three (Joel,
+  // 2026-08-28: "only one button at the bottom of each piece that goes to the
+  // next subcard or card … it should just go to math notes, not skip a
+  // section"). The strip gives every step exactly one Next, the floating pill
+  // reads the same chain, and the flow-walk gate walks it. The Launch stays in
+  // Act 2, under Vocab (Joel, 2026-08-26: "math notes, objectives,
+  // notice/wonder, then lesson, vocabulary and launch (with the problem)").
+  steps.push({
+    key: "mathnotes",
+    icon: "📓",
+    label: "Math Notes",
+    render: (host) => renderMathNotesStep(host, config),
+  });
+  steps.push({
+    key: "objectives",
+    icon: "🎯",
+    label: "Objectives",
+    render: (host) => ctx.renderObjectivesStep(host),
+  });
+  steps.push({
+    key: "noticewonder",
+    icon: "🤔",
+    label: "Notice & Wonder",
+    render: (host) => ctx.renderNoticeWonderStep(host),
+  });
   //
   // The hook Learn It needs is assigned by renderLaunchPhase, which no longer
   // runs in this act, so it is set here instead.
   ctx.renderLearnItExtras = (learnHost) => renderLearnItExtrasInto(learnHost, config, state);
-  if (steps.length) {
-    const last = steps[steps.length - 1];
-    const inner = last.render;
-    last.render = (host) => {
-      inner(host);
-      host.append(nextBtn);
-    };
-  } else {
-    // A lesson with no authored warm-up still needs a way into Act 2.
-    steps.push({
-      key: "start",
-      icon: "🚀",
-      label: "Start",
-      render: (host) => host.append(nextBtn),
-    });
-  }
+  // The Act-advance button lives INSIDE the last step, so it appears when the
+  // student gets there rather than inviting a skip from step 1.
+  const last = steps[steps.length - 1];
+  const inner = last.render;
+  last.render = (host) => {
+    inner(host);
+    host.append(nextBtn);
+  };
   renderActSteps(el, state, 0, steps);
 
   // Identity & homework header, BELOW the steps. It used to sit above them, and

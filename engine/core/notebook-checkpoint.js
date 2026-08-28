@@ -465,6 +465,48 @@ export function openMathNotesModel(config, defaultLang) {
 }
 
 /**
+ * Math Notes as an ACT 1 STEP — the same notes page the dialog shows, mounted
+ * inline in the step strip. The Warm-Up used to end on two doors, "Open Math
+ * Notes" and "Continue to Vocabulary", and the second skipped Math Notes,
+ * Objectives and Notice & Wonder outright (Joel, 2026-08-28: "only one button
+ * at the bottom of each piece that goes to the next subcard or card … it
+ * should just go to math notes, not skip a section"). One copy of the content,
+ * two doors: this step in the taught order, and the dialog above for a
+ * student checking the page from anywhere else in the lesson.
+ */
+export function renderMathNotesStep(host, config) {
+  const lessonConfig = config || activeConfig;
+  let currentLang = document.documentElement.lang === "es" ? "es" : "en";
+  const wrap = document.createElement("div");
+  wrap.className = "nt-nb-inline";
+  const paint = () => {
+    const isEs = currentLang === "es";
+    wrap.innerHTML = `
+      <div class="nt-nb-model-head nt-nb-inline-head">
+        <h2>${isEs ? "¿Cómo debe verse mi página?" : "What should my page look like?"}</h2>
+        <div class="nt-nb-lang-toggle" role="group" aria-label="Math Notes Language">
+          <button type="button" class="nt-nb-lang-btn ${!isEs ? "active" : ""}" data-lang="en">🇺🇸 EN</button>
+          <button type="button" class="nt-nb-lang-btn ${isEs ? "active" : ""}" data-lang="es">🇲🇽 ES</button>
+        </div>
+      </div>
+      ${renderLessonNotesHtml(lessonConfig, currentLang)}`;
+    wrap.querySelectorAll(".nt-nb-lang-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const targetLang = /** @type {HTMLElement} */ (e.currentTarget).dataset.lang;
+        if (targetLang && targetLang !== currentLang) {
+          currentLang = targetLang;
+          paint();
+        }
+      });
+    });
+    attachImageZoomAll(wrap, "img.nt-nb-copy-art");
+  };
+  paint();
+  host.append(wrap);
+  return wrap;
+}
+
+/**
  * The student-generated state. Shown when the lesson states no rule this
  * engine can quote with provenance — a correct outcome for 74 of 84 lessons.
  *
