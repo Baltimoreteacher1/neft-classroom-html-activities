@@ -5520,8 +5520,14 @@ function renderReflectPhase(el, state, ctx, config) {
  * official Maryland assessment items and the heading says so, because implying
  * otherwise to a teacher choosing what to assign would be a lie.
  *
- * Every Spanish field an item carries is rendered beside its English through
- * stackHtml, the same bilingual path the rest of the lesson uses.
+ * ENGLISH ONLY, in every language mode. The rest of the lesson stacks Spanish
+ * under English through stackHtml and shows it when a student toggles Spanish;
+ * this card deliberately does not. MSTAR is administered in English, and a
+ * rehearsal card that reads in two languages is not a rehearsal of the test
+ * (Joel, 2026-08-28: "make sure the MSTAR practice part isn't in Spanish on the
+ * card"). The Spanish fields once authored on these items were removed from
+ * the configs in the same change: tools/esol-lane-coverage.test.mjs requires
+ * every authored *Es field to have a renderer, and these no longer do.
  */
 function mstarPracticeItems(config) {
   const items = config?.reflect?.mstarPractice || config?.mstarPractice;
@@ -5543,11 +5549,8 @@ function renderMstarPractice(el, state, config, opts = {}) {
   // so the heading and its "optional" note still read as one block.
   if (opts.open) wrap.open = true;
   wrap.innerHTML = `<summary class="mstar-practice-summary">
-      <span class="badge badge-navy">${stackHtml("MSTAR-Style Practice", "Práctica estilo MSTAR")}</span>
-      <span class="mstar-practice-note">${stackHtml(
-        "Optional — state-test-style questions for this lesson.",
-        "Opcional — preguntas al estilo del examen estatal para esta lección.",
-      )}</span>
+      <span class="badge badge-navy">${esc("MSTAR-Style Review")}</span>
+      <span class="mstar-practice-note">${esc("Optional — state-test-style questions for this lesson.")}</span>
     </summary>`;
 
   const body = document.createElement("div");
@@ -5564,22 +5567,20 @@ function renderMstarPractice(el, state, config, opts = {}) {
     if (item.type === "ebsr" && item.partA) {
       mstarChoiceBlock(card, state, {
         key: `mstar-${n}-a`,
-        label: stackHtml("Part A", "Parte A"),
-        stem: stackHtml(item.partA.stem, item.partA.stemEs),
+        label: esc("Part A"),
+        stem: esc(item.partA.stem),
         choices: item.partA.choices,
-        choicesEs: item.partA.choicesEs,
         correct: [item.partA.correctIndex],
-        explanation: stackHtml(item.partA.explanation, item.partA.explanationEs),
+        explanation: esc(item.partA.explanation),
       });
       if (item.partB) {
         mstarChoiceBlock(card, state, {
           key: `mstar-${n}-b`,
-          label: stackHtml("Part B", "Parte B"),
-          stem: stackHtml(item.partB.stem, item.partB.stemEs),
+          label: esc("Part B"),
+          stem: esc(item.partB.stem),
           choices: item.partB.choices,
-          choicesEs: item.partB.choicesEs,
           correct: [item.partB.correctIndex],
-          explanation: stackHtml(item.partB.explanation, item.partB.explanationEs),
+          explanation: esc(item.partB.explanation),
         });
       }
       return;
@@ -5588,13 +5589,12 @@ function renderMstarPractice(el, state, config, opts = {}) {
     if (item.type === "multi-select") {
       mstarChoiceBlock(card, state, {
         key: `mstar-${n}`,
-        label: stackHtml("Select all that apply", "Selecciona todas las que apliquen"),
-        stem: stackHtml(item.stem, item.stemEs),
+        label: esc("Select all that apply"),
+        stem: esc(item.stem),
         choices: item.options,
-        choicesEs: item.optionsEs,
         correct: item.correctIndices || [],
         multi: true,
-        explanation: stackHtml(item.explanation, item.explanationEs),
+        explanation: esc(item.explanation),
       });
       return;
     }
@@ -5602,10 +5602,10 @@ function renderMstarPractice(el, state, config, opts = {}) {
     if (item.type === "error-analysis") {
       const scenario = document.createElement("p");
       scenario.className = "mstar-scenario";
-      scenario.innerHTML = stackHtml(item.scenario, item.scenarioEs);
+      scenario.textContent = item.scenario;
       const prompt = document.createElement("p");
       prompt.className = "mstar-prompt";
-      prompt.innerHTML = stackHtml(item.prompt, item.promptEs);
+      prompt.textContent = item.prompt;
       const ta = document.createElement("textarea");
       ta.className = "mstar-response";
       ta.rows = 4;
@@ -5663,7 +5663,7 @@ function mstarChoiceBlock(host, state, opts) {
     input.id = id;
     input.value = String(i);
     const text = document.createElement("span");
-    text.innerHTML = stackHtml(choice, opts.choicesEs?.[i]);
+    text.textContent = choice;
     input.addEventListener("change", () => {
       if (!opts.multi) chosen.clear();
       if (input.checked) chosen.add(i);
@@ -5680,7 +5680,7 @@ function mstarChoiceBlock(host, state, opts) {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "btn btn-secondary";
-  btn.innerHTML = stackHtml("Check", "Revisar");
+  btn.textContent = "Check";
   const out = document.createElement("div");
   out.className = "problem-check-result";
   // Feedback is announced, not just coloured — a student using a screen reader
@@ -5699,8 +5699,8 @@ function mstarChoiceBlock(host, state, opts) {
     out.classList.toggle("is-correct", right);
     out.classList.toggle("is-wrong", !right);
     out.innerHTML = right
-      ? `✓ ${stackHtml("Correct.", "Correcto.")} ${opts.explanation || ""}`
-      : `✗ ${stackHtml("Not yet — try again.", "Todavía no — inténtalo de nuevo.")}`;
+      ? `✓ Correct. ${opts.explanation || ""}`
+      : "✗ Not yet — try again.";
   });
 
   row.append(btn);
@@ -5929,7 +5929,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   // evidence of growth rather than as the same goal repeated. Falls back to the
   // original wording when the Name field on Launch was left empty.
   const name = studentFirstName(state);
-  const heading = name ? `🎯 ${esc(name)} Can Now…` : "🎯 Learning Objectives Mastery Check";
+  const heading = name ? `🎯 ${esc(name)} Can Now…` : "🎯 Objectives Review";
   const intro = name
     ? `Look at what ${esc(name)} could not do at the start of today's lesson — and can do now. Read each goal and check off the ones ${esc(name)} can do.`
     : "Now that you've finished today's lesson, look back at the goals from the start and check off the ones you can do now.";
@@ -6206,7 +6206,7 @@ export function renderAct1Launch(el, state, ctx, config) {
   // The objectives did not go away: they are the 🎯 Objectives subcard that sits
   // beside 📓 Math Notes on this same phase (PHASE_SUBTABS[0] in
   // engine/core/app.js), one tap from here and still posted for the whole Act.
-  // They are also re-rendered in full at the Act 3 Mastery Check
+  // They are also re-rendered in full at the Act 3 Objectives Review
   // (renderObjectivesReviewPhase), which is where the BCPS framework wants the
   // did-we-get-there conversation.
 
@@ -6456,28 +6456,37 @@ export function renderAct3ExitTicket(el, state, ctx, config) {
       render: (host) => renderReflectPhase(host, state, ctx, config),
     },
   ];
-  // MSTAR practice is its OWN step, not a `<details>` stacked under the exit
-  // ticket. Below three exit questions and the reflection card it sat roughly a
-  // screen and a half past the fold, collapsed, and Joel — who authored the
-  // items — could not find it (2026-08-28: "I'm also not seeing the
-  // supplemental MSTAR practice beneath the exit ticket (this should be its own
-  // button)"). A step a student cannot see is content that does not exist. It
-  // stays optional: the chip only appears on a lesson that authored items, and
-  // nothing in the required sequence routes through it.
+  // Three separate chips, in this order, each holding ONE thing (Joel,
+  // 2026-08-28: "The exit ticket button should only be the exit ticket. Then,
+  // there should be a button for Audit Can Do Now — which will be called
+  // 'Objectives Review' — and then we will move the MSTAR review to after the
+  // exit ticket and call it 'MSTAR Review' and it will be its own card/button
+  // on the side").
+  //
+  //   1. Exit Ticket      — the three ticket questions and their reflection.
+  //   2. Objectives Review — the "can do now" audit of the lesson's goals.
+  //   3. MSTAR Review      — the authored state-test-style items.
+  //
+  // MSTAR used to be a `<details>` stacked under the exit ticket, a screen and
+  // a half past the fold, and Joel — who authored the items — could not find
+  // it. A step a student cannot see is content that does not exist. It stays
+  // optional: the chip only appears on a lesson that authored items, and
+  // nothing in the required sequence routes through it. The keys are unchanged
+  // so a saved step position still resolves.
+  steps.push({
+    key: "mastery",
+    icon: "🎯",
+    label: "Objectives Review",
+    render: (host) => renderObjectivesReviewPhase(host, state, ctx, config),
+  });
   if (hasMstarPractice(config)) {
     steps.push({
       key: "mstar",
-      icon: "🎯",
-      label: "MSTAR Practice",
+      icon: "📋",
+      label: "MSTAR Review",
       render: (host) => renderMstarPractice(host, state, config, { open: true }),
     });
   }
-  steps.push({
-    key: "mastery",
-    icon: "🏆",
-    label: "Mastery Check",
-    render: (host) => renderObjectivesReviewPhase(host, state, ctx, config),
-  });
   renderActSteps(el, state, 2, steps);
 }
 
