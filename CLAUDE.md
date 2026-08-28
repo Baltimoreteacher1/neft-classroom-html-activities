@@ -313,6 +313,47 @@ fill-in checklist to run before every handoff.
 
 ---
 
+## Regression pins vs product decisions
+
+A contract check is one of two things, and **in the source they are
+indistinguishable**:
+
+- a **regression pin** — this exact defect shipped, here is the line that
+  regressed, and the mutation test proves the detector catches it. Removing it
+  is a regression.
+- a **product decision** — somebody decided the product should behave this way.
+  Removing it is a decision reversal, which may be entirely correct.
+
+On 2026-08-26 an agent read "Part 1 has no forward link to its own `-part2`
+page" as a defect, invented the answer (a "Continue to Part 2: Apply Day" card
+closing Act 3), shipped it, and pinned it in `tools/act-flow-contract.test.mjs`
+beside five genuine regression pins — mutation-proven, in the same list, reading
+exactly like them. Joel had never been asked. Two days later he said the card
+should not exist, at which point deleting it looked like breaking a verified
+invariant. **Being contract-frozen is how an unreviewed decision acquires the
+authority of a proven fact.** This is the same principle `validate:route-contract`
+states for URLs — *the gate is the backstop, not the permission* — applied to
+behaviour.
+
+The rule: **if you cannot name the human who decided it and quote what they
+said, it is not a product decision — it is your default, and it must not be a
+gate.** Every decision a gate enforces belongs in
+[`data/product-decisions.json`](data/product-decisions.json) with the person,
+the date and their actual words; `tools/product-decisions.test.mjs` (in
+`npm test`) fails if `decidedBy` is an agent, if `because` is a paraphrase too
+short to be a quotation, or if the named pin does not exist. Reversing a
+decision is expected and allowed: update the entry and flip the check **in the
+same commit**. What is not allowed is an agent quietly creating one or quietly
+reversing one.
+
+Before "fixing" a red contract check, look it up there. A failure on a recorded
+decision prints who decided it and what they said, so the two cases cannot be
+confused at the moment it matters. The registry is **not** a completed audit of
+the ~107 gates — nothing in the source can classify them, which is the premise —
+it holds the decisions someone has recognised. Add them as they surface.
+
+---
+
 ## Which checks actually block deployment?
 
 Authoritative path (proven by `tools/deploy-path.test.mjs`):

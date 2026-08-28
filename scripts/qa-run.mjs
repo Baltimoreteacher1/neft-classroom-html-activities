@@ -176,6 +176,11 @@ const COVERAGE = [
     ],
   ],
 
+  // PRODUCT DECISIONS — the registry of choices a human made that a gate now
+  // enforces, and the provenance test that keeps an agent's own default out of
+  // it. Editing either is editing what the gates are ALLOWED to insist on.
+  [/^(data\/product-decisions\.json|tools\/product-decisions\.test\.mjs)$/, ["test", "check"]],
+
   // GATE COVERAGE — the check that decides which validators are allowed not to
   // gate. Its own inputs are the gate definition and the exemption registry, so
   // a change to either must re-run it; `check` comes along because both files

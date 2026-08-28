@@ -1,0 +1,20 @@
+{
+  "_doc": "PRODUCT DECISIONS THAT A GATE ENFORCES. Read by tools/product-decisions.test.mjs, and by every gate that pins one. A contract check is one of two things, and in the source they look identical: a REGRESSION PIN ('this exact defect shipped; here is the line that regressed; the mutation test proves the detector catches it') or a PRODUCT DECISION ('somebody decided the lesson should behave this way'). Removing a regression pin is a regression. Removing a product decision is a decision reversal, which may be entirely correct — and if the pin does not say who decided it, nobody downstream can tell the difference. Every decision a gate enforces belongs here, with the person who made it and the words they used.",
+  "_why": "On 2026-08-26 an agent read 'Part 1 has no forward link to its own -part2 page' as a defect, invented the answer (a 'Continue to Part 2: Apply Day' card at the end of Act 3), shipped it, and pinned it in tools/act-flow-contract.test.mjs beside five genuine regression pins — mutation-proven, in the same list, indistinguishable. Joel had never been asked. Two days later he said the card should not exist, which meant removing it now looked like breaking a verified invariant. Being contract-frozen is how an unreviewed decision acquires the authority of a proven fact.",
+  "_rule": "If you cannot name the human who decided it and quote what they said, it is not a product decision — it is an agent's default, and it must not be a gate. `decidedBy` may not be an agent. Reversing a decision is allowed and expected: update the entry (new `decidedOn`, new `because`) and flip the check in the SAME commit. What is not allowed is an agent quietly reversing it, or quietly creating one.",
+  "_scope": "This registry holds the decisions someone has noticed and recorded. It is NOT a completed audit of the ~107 gates — other decision-shaped pins almost certainly remain, unlabelled, among the regression pins. Add them here as they surface.",
+  "schemaVersion": 1,
+  "decisions": [
+    {
+      "id": "part-one-does-not-link-to-apply-day",
+      "surface": "engine/core/lesson-renderer.js — renderAct3ExitTicket",
+      "decision": "Part 1 renders no forward link to /lessons/<id>-part2/. The -part2 pages are reached from the unit hub and the pacing planner.",
+      "decidedBy": "Joel",
+      "decidedOn": "2026-08-28",
+      "because": "there should not be a \"continue to apply day 2\" -- we will just do that the next day (no reason for a link/button on that at the end of the first lesson",
+      "pinnedBy": "tools/act-flow-contract.test.mjs",
+      "pinnedCheck": "noPartTwoForward",
+      "supersedes": "CHECKS.partTwoForward (2026-08-26) asserted the opposite — that the card must EXIST — as an agent's own answer to 'Part 1 is a dead end'. It was never put to Joel."
+    }
+  ]
+}

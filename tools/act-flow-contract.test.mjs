@@ -20,6 +20,19 @@ const app = readFileSync(join(root, "engine/core/app.js"), "utf8");
 const flagship = readFileSync(join(root, "engine/templates/flagship/flagship.js"), "utf8");
 const partTwo = readFileSync(join(root, "engine/core/part-two-renderer.js"), "utf8");
 
+/* Two kinds of check live in this file and they are not interchangeable.
+ * Everything below is a REGRESSION PIN — a defect that shipped, pinned to the
+ * line that regressed — except `noPartTwoForward`, which enforces a PRODUCT
+ * DECISION and therefore has to say whose. Provenance is held by
+ * tools/product-decisions.test.mjs; this file only reads it, so a decision
+ * whose record is deleted fails loudly instead of silently becoming an
+ * anonymous invariant again. */
+const DECISIONS = JSON.parse(
+  readFileSync(join(root, "data/product-decisions.json"), "utf8"),
+).decisions;
+const decisionById = (id) => DECISIONS.find((d) => d.id === id);
+const APPLY_DAY = decisionById("part-one-does-not-link-to-apply-day");
+
 /** Order of act-step keys as pushed inside renderAct2Studio. */
 function act2StepOrder(src) {
   const fnStart = src.indexOf("function renderAct2Studio");
@@ -125,13 +138,20 @@ const CHECKS = {
       "the Next pill no longer refreshes when the step changes — selecting a step leaves it naming a stale destination",
     );
   },
-  // Part 1 must NOT link forward to Part 2 (Joel, 2026-08-28): Apply Day is the
-  // next class and the teacher opens it. The opposite of this used to be
-  // pinned here; re-adding the card is a decision, not a regression fix.
-  noPartTwoForward(rendererSrc) {
+  /* PRODUCT DECISION, not a regression pin — see data/product-decisions.json,
+   * id `part-one-does-not-link-to-apply-day`. Every other check in this file
+   * pins a defect that shipped. This one pins a choice Joel made, and the
+   * failure message says so, because the opposite of it was pinned here for two
+   * days as though it were a proven invariant. */
+  noPartTwoForward(rendererSrc, decision) {
+    assert.ok(decision, "the Apply Day decision is not recorded in data/product-decisions.json");
     assert.ok(
       !/part-two-forward/.test(rendererSrc),
-      "the 'Continue to Part 2: Apply Day' card came back — Part 1 does not send students into tomorrow's group problem",
+      `the "Continue to Part 2: Apply Day" card came back.\n` +
+        `      This is a PRODUCT DECISION, not a defect: ${decision.decidedBy} on ${decision.decidedOn} said\n` +
+        `        "${decision.because}"\n` +
+        `      If ${decision.decidedBy} has changed his mind, update that entry and this check in the SAME commit.\n` +
+        `      If you are an agent who has not asked him, you do not have permission to change it.`,
     );
   },
   partTwoLabels(partTwoSrc) {
@@ -173,7 +193,10 @@ const MUTANTS = [
   () =>
     CHECKS.noPartTwoForward(
       renderer.replace("renderAct3ExitTicket", 'x="part-two-forward";renderAct3ExitTicket'),
+      APPLY_DAY,
     ),
+  // and the record itself is load-bearing: an unrecorded decision must not gate
+  () => CHECKS.noPartTwoForward(renderer, null),
 ];
 let caught = 0;
 for (const mutate of MUTANTS) {
@@ -194,7 +217,9 @@ CHECKS.continueLandsOnVocab(renderer);
 CHECKS.stepSavedByKey(renderer);
 CHECKS.flagshipScenesPerAct(flagship);
 CHECKS.nextPillFollowsSteps(app);
-CHECKS.noPartTwoForward(renderer);
+CHECKS.noPartTwoForward(renderer, APPLY_DAY);
 CHECKS.partTwoLabels(partTwo);
 
-console.log(`act-flow-contract: PASS (10 checks, ${MUTANTS.length} mutation-proven)`);
+console.log(
+  `act-flow-contract: PASS (10 checks — 9 regression pins + 1 recorded product decision, ${MUTANTS.length} mutation-proven)`,
+);
