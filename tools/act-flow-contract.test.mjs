@@ -233,17 +233,44 @@ const CHECKS = {
         `      If you are an agent who has not asked him, you do not have permission to change it.`,
     );
   },
+  /* Part 2's first act IS the warm-up, and its pieces are STEPS.
+   *
+   * This check used to pin the name "Review" — correctly at the time, because
+   * the rail said Review while the page heading said Warm-Up and the two had to
+   * agree. Joel settled which way on 2026-08-28: "Review (#1) should actually
+   * be called Warmup but then it should have a card at the bottom going to math
+   * notes review … after that the objectives subcard … then vocabulary … then
+   * today's problem". The invariant kept is the AGREEMENT; the name and the
+   * step order are what he chose. */
   partTwoLabels(partTwoSrc) {
-    assert.ok(/name:\s*"Review"/.test(partTwoSrc), 'Part 2 phase 0 is no longer named "Review"');
     assert.ok(
-      !/"Warm-Up",\s*\n?\s*"Day 2\./.test(partTwoSrc),
+      /name:\s*"Warm-Up"/.test(partTwoSrc),
+      'Part 2 phase 0 is no longer named "Warm-Up"',
+    );
+    assert.ok(
+      !/name:\s*"Review"/.test(partTwoSrc),
+      'Part 2 phase 0 went back to "Review" — the rail and the page heading must both say Warm-Up',
+    );
+    assert.ok(
+      /phaseHeading\([\s\S]{0,60}?"⚡",\s*\n?\s*"Warm-Up"/.test(partTwoSrc),
       "Part 2's in-page header disagrees with its sidebar label again",
+    );
+    const order = [...partTwoSrc.matchAll(/key:\s*"(warmup|mathnotes|objectives|vocab)"/g)].map(
+      (m) => m[1],
+    );
+    assert.deepEqual(
+      order,
+      ["warmup", "mathnotes", "objectives", "vocab"],
+      "Part 2's review is not Warm-Up → Math Notes Review → Objectives → Vocabulary",
     );
   },
 };
 
 // ── Mutation self-test: every detector must FAIL on the code that shipped. ──
 const MUTANTS = [
+  () => CHECKS.partTwoLabels(partTwo.replace('name: "Warm-Up"', 'name: "Review"')),
+  () =>
+    CHECKS.partTwoLabels(partTwo.replace('key: "objectives"', 'key: "zz-objectives"')),
   () => CHECKS.stripOrder(renderer.replace('key: "vocab"', 'key: "zz-removed"')),
   () => CHECKS.noTakeoverTeaching(app.replace('jump: "vocab"', 'extra: "vocab"')),
   () => CHECKS.ribbonFiltersJumps(app.replace(".filter((t) => !t || !t.jump)", "")),
