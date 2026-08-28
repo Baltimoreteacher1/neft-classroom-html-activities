@@ -411,3 +411,129 @@
   }
 }
 
+
+/* ── MSTAR-style practice ──────────────────────────────────────────────────
+ * Optional work that sits after the exit ticket, so it reads as an offer
+ * rather than another required section: collapsed by default, quieter than the
+ * cards above it. Touch targets stay at 44px because a sixth grader taps these
+ * on a Chromebook trackpad or a tablet.
+ */
+.mstar-practice {
+  margin-top: var(--sp-6, 24px);
+  border: 2px solid var(--color-border, #cbd5e1);
+}
+.mstar-practice-summary {
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  min-height: 44px;
+  padding: var(--sp-2, 8px) 0;
+  list-style: none;
+}
+.mstar-practice-summary::-webkit-details-marker {
+  display: none;
+}
+.mstar-practice-summary::before {
+  content: "▸";
+  font-size: 1.1em;
+  transition: transform 0.15s ease;
+}
+.mstar-practice[open] .mstar-practice-summary::before {
+  transform: rotate(90deg);
+}
+.mstar-practice-summary:focus-visible {
+  outline: 3px solid var(--color-focus, #2563eb);
+  outline-offset: 3px;
+}
+.mstar-practice-note {
+  font-size: var(--text-sm, 0.9rem);
+  color: var(--color-text-muted, #475569);
+}
+.mstar-practice-body {
+  margin-top: var(--sp-4, 16px);
+}
+.mstar-item {
+  margin-bottom: var(--sp-5, 20px);
+}
+.mstar-item-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-navy, #1e293b);
+  color: #fff;
+  font-weight: 800;
+}
+.mstar-part-label {
+  font-weight: 800;
+  margin: var(--sp-3, 12px) 0 var(--sp-1, 4px);
+}
+.mstar-stem,
+.mstar-scenario,
+.mstar-prompt {
+  margin: 0 0 var(--sp-3, 12px);
+  line-height: 1.55;
+}
+.mstar-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2, 8px);
+}
+.mstar-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3, 12px);
+  min-height: 44px;
+  padding: var(--sp-2, 8px) var(--sp-3, 12px);
+  border: 2px solid var(--color-border, #cbd5e1);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+}
+.mstar-choice:hover {
+  border-color: var(--color-navy, #1e293b);
+}
+.mstar-choice input {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  flex: none;
+}
+.mstar-choice:focus-within {
+  outline: 3px solid var(--color-focus, #2563eb);
+  outline-offset: 2px;
+}
+.mstar-response {
+  width: 100%;
+  padding: var(--sp-3, 12px);
+  border: 2px solid var(--color-border, #cbd5e1);
+  border-radius: var(--radius-md, 8px);
+  font: inherit;
+  line-height: 1.5;
+}
+.mstar-rubric {
+  margin-top: var(--sp-4, 16px);
+  padding: var(--sp-3, 12px);
+  border-left: 4px solid var(--color-amber, #f59e0b);
+  background: var(--color-surface-muted, #f8fafc);
+  font-size: var(--text-sm, 0.9rem);
+}
+.mstar-rubric-title {
+  font-weight: 800;
+  margin: 0 0 var(--sp-2, 8px);
+}
+@media print {
+  .mstar-practice {
+    display: none;
+  }
+}
+/* 44px on the Check buttons too — they are the control a student taps most in
+   this block, and .btn-secondary alone came in under that on a Chromebook. */
+.mstar-block .problem-check-row .btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding-inline: var(--sp-4, 16px);
+}

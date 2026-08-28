@@ -5506,6 +5506,197 @@ function renderReflectPhase(el, state, ctx, config) {
 
   el.append(reflectCard);
   el.append(finishNote, finishRow);
+
+  // MSTAR-style practice, AFTER the exit ticket and clearly optional. Authored
+  // items sat in reflect.mstarPractice with nothing reading them, which is
+  // content a student cannot reach — tools/esol-lane-coverage.test.mjs caught
+  // the authored Spanish (optionsEs) that no renderer displayed.
+  renderMstarPractice(el, state, config);
+}
+
+/* ── MSTAR-style practice ──────────────────────────────────────────────────
+ * Optional, collapsed by default, and never part of the required sequence: the
+ * exit ticket above is what the lesson asks for, and this is extra. It renders
+ * three authored shapes — EBSR (a two-part item where Part B asks which
+ * reasoning justifies Part A), multi-select, and error analysis with a rubric.
+ *
+ * These are MSTAR-STYLE items written for this curriculum. They are not
+ * official Maryland assessment items and the heading says so, because implying
+ * otherwise to a teacher choosing what to assign would be a lie.
+ *
+ * Every Spanish field an item carries is rendered beside its English through
+ * stackHtml, the same bilingual path the rest of the lesson uses.
+ */
+function renderMstarPractice(el, state, config) {
+  const items = config.reflect?.mstarPractice || config.mstarPractice;
+  if (!Array.isArray(items) || !items.length) return;
+
+  const wrap = document.createElement("details");
+  wrap.className = "card mstar-practice";
+  wrap.innerHTML = `<summary class="mstar-practice-summary">
+      <span class="badge badge-navy">${stackHtml("MSTAR-Style Practice", "Práctica estilo MSTAR")}</span>
+      <span class="mstar-practice-note">${stackHtml(
+        "Optional — state-test-style questions for this lesson.",
+        "Opcional — preguntas al estilo del examen estatal para esta lección.",
+      )}</span>
+    </summary>`;
+
+  const body = document.createElement("div");
+  body.className = "mstar-practice-body";
+  wrap.append(body);
+
+  items.forEach((item, idx) => {
+    const card = document.createElement("div");
+    card.className = "card mstar-item";
+    const n = item.itemNumber || idx + 1;
+    card.innerHTML = `<div class="mstar-item-head"><span class="mstar-item-num">${n}</span></div>`;
+    body.append(card);
+
+    if (item.type === "ebsr" && item.partA) {
+      mstarChoiceBlock(card, state, {
+        key: `mstar-${n}-a`,
+        label: stackHtml("Part A", "Parte A"),
+        stem: stackHtml(item.partA.stem, item.partA.stemEs),
+        choices: item.partA.choices,
+        choicesEs: item.partA.choicesEs,
+        correct: [item.partA.correctIndex],
+        explanation: stackHtml(item.partA.explanation, item.partA.explanationEs),
+      });
+      if (item.partB) {
+        mstarChoiceBlock(card, state, {
+          key: `mstar-${n}-b`,
+          label: stackHtml("Part B", "Parte B"),
+          stem: stackHtml(item.partB.stem, item.partB.stemEs),
+          choices: item.partB.choices,
+          choicesEs: item.partB.choicesEs,
+          correct: [item.partB.correctIndex],
+          explanation: stackHtml(item.partB.explanation, item.partB.explanationEs),
+        });
+      }
+      return;
+    }
+
+    if (item.type === "multi-select") {
+      mstarChoiceBlock(card, state, {
+        key: `mstar-${n}`,
+        label: stackHtml("Select all that apply", "Selecciona todas las que apliquen"),
+        stem: stackHtml(item.stem, item.stemEs),
+        choices: item.options,
+        choicesEs: item.optionsEs,
+        correct: item.correctIndices || [],
+        multi: true,
+        explanation: stackHtml(item.explanation, item.explanationEs),
+      });
+      return;
+    }
+
+    if (item.type === "error-analysis") {
+      const scenario = document.createElement("p");
+      scenario.className = "mstar-scenario";
+      scenario.innerHTML = stackHtml(item.scenario, item.scenarioEs);
+      const prompt = document.createElement("p");
+      prompt.className = "mstar-prompt";
+      prompt.innerHTML = stackHtml(item.prompt, item.promptEs);
+      const ta = document.createElement("textarea");
+      ta.className = "mstar-response";
+      ta.rows = 4;
+      ta.setAttribute("aria-label", "Your explanation");
+      ta.value = state.getResponse?.(4, `mstar-${n}`) || "";
+      ta.addEventListener("input", () => state.saveResponse(4, `mstar-${n}`, ta.value));
+      card.append(scenario, prompt, ta);
+
+      // The rubric and the model answer are a teacher's scoring tool, not a
+      // giveaway sitting under the question a student is still answering.
+      if (isTeacherMode() && item.rubric) {
+        const rub = document.createElement("div");
+        rub.className = "mstar-rubric";
+        rub.innerHTML =
+          `<p class="mstar-rubric-title">Scoring</p>` +
+          Object.entries(item.rubric)
+            .map(([k, v]) => `<p><b>${esc(k.replace("score", "Score "))}:</b> ${esc(v)}</p>`)
+            .join("") +
+          (item.correctAnswer ? `<p><b>Model:</b> ${esc(item.correctAnswer)}</p>` : "");
+        card.append(rub);
+      }
+    }
+  });
+
+  el.append(wrap);
+}
+
+/** One checkable block: the stem, its choices, a Check button, and feedback. */
+function mstarChoiceBlock(host, state, opts) {
+  const block = document.createElement("div");
+  block.className = "mstar-block";
+
+  const label = document.createElement("p");
+  label.className = "mstar-part-label";
+  label.innerHTML = opts.label;
+  const stem = document.createElement("p");
+  stem.className = "mstar-stem";
+  stem.innerHTML = opts.stem;
+  block.append(label, stem);
+
+  const list = document.createElement("div");
+  list.className = "mstar-choices";
+  list.setAttribute("role", opts.multi ? "group" : "radiogroup");
+  const name = `${opts.key}-${Math.random().toString(36).slice(2, 8)}`;
+  const chosen = new Set();
+
+  (opts.choices || []).forEach((choice, i) => {
+    const id = `${name}-${i}`;
+    const row = document.createElement("label");
+    row.className = "mstar-choice";
+    row.setAttribute("for", id);
+    const input = document.createElement("input");
+    input.type = opts.multi ? "checkbox" : "radio";
+    input.name = name;
+    input.id = id;
+    input.value = String(i);
+    const text = document.createElement("span");
+    text.innerHTML = stackHtml(choice, opts.choicesEs?.[i]);
+    input.addEventListener("change", () => {
+      if (!opts.multi) chosen.clear();
+      if (input.checked) chosen.add(i);
+      else chosen.delete(i);
+      state.saveResponse(4, opts.key, [...chosen].join(","));
+    });
+    row.append(input, text);
+    list.append(row);
+  });
+  block.append(list);
+
+  const row = document.createElement("div");
+  row.className = "problem-check-row";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn btn-secondary";
+  btn.innerHTML = stackHtml("Check", "Revisar");
+  const out = document.createElement("div");
+  out.className = "problem-check-result";
+  // Feedback is announced, not just coloured — a student using a screen reader
+  // gets the same result, and colour is never the only signal.
+  out.setAttribute("role", "status");
+  out.setAttribute("aria-live", "polite");
+
+  btn.addEventListener("click", () => {
+    if (!chosen.size) {
+      out.textContent = "Choose an answer first.";
+      return;
+    }
+    const want = [...(opts.correct || [])].sort().join(",");
+    const got = [...chosen].sort().join(",");
+    const right = want === got;
+    out.classList.toggle("is-correct", right);
+    out.classList.toggle("is-wrong", !right);
+    out.innerHTML = right
+      ? `✓ ${stackHtml("Correct.", "Correcto.")} ${opts.explanation || ""}`
+      : `✗ ${stackHtml("Not yet — try again.", "Todavía no — inténtalo de nuevo.")}`;
+  });
+
+  row.append(btn);
+  block.append(row, out);
+  host.append(block);
 }
 
 // End-of-lesson objective self-review ("Did I get it?"). Reuses the same
