@@ -1894,15 +1894,20 @@ export function resolveLanguageObjective(config) {
   return `I can talk and write about ${esc(config.title || "this topic")} using math words.`;
 }
 
-// Top-of-launch block: Name/Period fields and Homework download. The Content /
+// Top-of-launch block: the Name/Period fields. The Content /
 // Language objectives are rendered separately by renderObjectives so the
 // "Be Curious" (Notice & Wonder) card can sit BETWEEN the identity fields and
 // the objectives — curiosity first, then the formal "I can…" goals.
 // Pre-lesson materials (Get Ready / Notes) now live as their own sidebar tabs
 // under "Before the lesson" — see app.js preLessonNavHtml / openExtra.
+// Identity only. The homework download that used to sit beside Name/Period is
+// gone: homework is not part of the interactive lesson (Joel, 2026-08-28:
+// "remove the homework links and homework from the interactive lessons
+// (shouldn't be part of this)"). lessons/<id>/homework.docx and homework.html
+// are still generated and still linked from the curriculum hub and the family
+// pages — this removes the surface INSIDE the lesson, not the artifact.
 function renderLaunchHeader(el, state, config) {
   const s = state.get();
-  const homeworkHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.docx`;
 
   const block = document.createElement("div");
   block.className = "card launch-intro";
@@ -1928,8 +1933,6 @@ function renderLaunchHeader(el, state, config) {
           placeholder="e.g. 3" autocomplete="off"
           value="${esc(s.studentPeriod || "")}" />
       </div>
-      <a class="btn btn-secondary launch-homework-link" href="${homeworkHref}"
-        download>📄 Homework (Word doc)</a>
     </div>
   `;
   el.append(block);
@@ -3475,7 +3478,7 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
   const hasRevealNW = !!(config.noticeAndWonder && typeof config.noticeAndWonder === "object");
 
   if (opts.standalone !== false) {
-    // Top: student identity (name / period), homework link, pre-lesson hint.
+    // Top: student identity (name / period) and the pre-lesson hint.
     renderLaunchHeader(el, state, config);
 
     phaseHeader(
@@ -6293,13 +6296,12 @@ export function renderAct1Launch(el, state, ctx, config) {
   };
   renderActSteps(el, state, 0, steps);
 
-  // Identity & homework header, BELOW the steps. It used to sit above them, and
+  // Identity header, BELOW the steps. It used to sit above them, and
   // between it, the phase header, the subcard ribbon and the "New to this skill"
   // callout, the Warm-Up heading landed at the very bottom of a 900px screen —
   // so Act 1 opened on a name box the student had already filled in at the door
   // (Joel, twice: "the launch and focus should first start with the warmups").
-  // It is not deleted: the name and period still feed submissions and exports,
-  // and the homework link is the one download a teacher points at from here.
+  // It is not deleted: the name and period still feed submissions and exports.
   renderLaunchHeader(el, state, config);
 }
 

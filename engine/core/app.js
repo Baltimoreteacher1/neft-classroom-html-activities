@@ -619,7 +619,6 @@ function showIdentityScreen(root, config) {
 
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
-  const _homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
   const _handoutHref = `/lessons/${encodeURIComponent(config.lessonId)}/handout.html`;
   const _slidesHref = `/lessons/${encodeURIComponent(config.lessonId)}/slides.html`;
 

@@ -260,7 +260,6 @@ const SYNONYMS = {
   "improper-fraction": "improper-fraction",
   "mixed-number": "mixed-number",
   denominator: "denominator",
-  "unit-fraction": "fraction",
   "common-denominator": "fraction",
   "keep-change-flip": "reciprocal",
   "decimal-point": "decimal",
@@ -498,6 +497,12 @@ export function resolveVocabFallback(term) {
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
   "multi-digit",
+  // A UNIT fraction has a numerator of 1, so it cannot borrow fraction.svg —
+  // that tile shades three of four parts and captions itself "3 of 4 equal
+  // parts", which is the one thing the word does not mean (Joel, 2026-08-28:
+  // "unit fraction uses an incorrect image (it says 3/4 and shows 3/4 when it
+  // should be a numerator of 1)"). unit-fraction.svg shades one of four.
+  "unit-fraction",
   // Concept tiles that the shared math glossary points at, so words a student
   // meets in prose ("long division", "algorithm", "bring down") open a picture
   // of the actual procedure instead of the generic "#" number tile.

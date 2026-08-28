@@ -604,8 +604,11 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
   opacity: 0.8;
 }
 
-/* While presenting, the widget sits in the bottom-left corner */
-body.nt-present #nt-present-widget {
+/* While presenting, the control sits in the bottom-left corner — out of the
+   projected canvas but still reachable. Applied to the docked row and to the
+   standalone widget alike, so both mounting shapes land in the same place. */
+body.nt-present #nt-present-widget,
+body.nt-present .nt-utility-menu {
   top: auto;
   right: auto;
   left: 12px;
@@ -636,8 +639,95 @@ body.nt-present .nt-present-btn-mini {
 }
 
 body.nt-present #nt-present-widget:hover,
-body.nt-present #nt-present-widget:focus-within {
+body.nt-present #nt-present-widget:focus-within,
+body.nt-present .nt-utility-menu:hover,
+body.nt-present .nt-utility-menu:focus-within {
   opacity: 1;
+}
+
+/* ── Docked beside Tools, top-right ────────────────────────────────────────
+ *
+ * When utility-menu.js has adopted the widget into the chrome row (the normal
+ * case on a lesson page), it stops being a floating tab and becomes a pill the
+ * same size as the Tools button next to it: same padding, radius, weight and
+ * font-size, so the two read as one control group rather than two designs.
+ *
+ * The rules below are scoped to `.nt-utility-menu #nt-present-widget`, which
+ * means the standalone fallback (a page with no Tools menu — small-group
+ * renderers pass their own container) keeps the edge tab it has today. */
+.nt-utility-menu #nt-present-widget {
+  position: static;
+  top: auto;
+  right: auto;
+  z-index: auto;
+}
+
+/* Horizontal again, and stripped to just the toggle: a 44px-tall pill in a
+   fixed chrome row has nothing to minimize, and the "Presenter" caption is
+   what made the old bar 244px wide. */
+.nt-utility-menu .nt-present-label,
+.nt-utility-menu .nt-present-min-btn,
+.nt-utility-menu .nt-present-expand-icon {
+  display: none;
+}
+
+.nt-utility-menu .nt-present-bar {
+  flex-direction: row;
+  gap: 0;
+  padding: 0 !important;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 0;
+  border-radius: 999px !important;
+  box-shadow: none;
+}
+
+.nt-utility-menu .nt-present-act-btn,
+.nt-utility-menu .nt-present-btn-mini {
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  /* Matched to .nt-utility-btn — same size as the Tools button beside it. */
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px !important;
+  border: 0;
+  border-radius: 999px !important;
+  background: var(--navy, #264653);
+  color: #fff;
+  font: inherit;
+  font-weight: var(--fw-bold, 700);
+  font-size: var(--fs-sm, 0.9rem);
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(18, 53, 91, 0.22);
+}
+
+.nt-utility-menu .nt-present-act-btn:hover,
+.nt-utility-menu .nt-present-btn-mini:hover {
+  filter: brightness(1.15);
+}
+
+/* Presenting: the toggle turns into the Exit control and takes the accent, so
+   it is obvious which state the board is in. */
+.nt-utility-menu .nt-present-act-btn.is-presenting {
+  background: var(--coral, #e76f51);
+}
+
+/* Phones collapse the Tools button to a 44px icon square; the Present pill
+   matches so the row stays one height and clears the lesson heading. */
+@media (max-width: 640px) {
+  .nt-utility-menu .nt-present-act-btn,
+  .nt-utility-menu .nt-present-btn-mini {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    gap: 0;
+    padding: 0 !important;
+    overflow: hidden;
+    text-indent: -2px;
+  }
 }
 
 .nt-present-toast {
@@ -676,7 +766,6 @@ body.nt-present #nt-present-widget:focus-within {
    while Present Mode is on. */
 body.nt-present #nsr-launcher,
 body.nt-present #mwb-launcher,
-body.nt-present .nt-utility-menu,
 body.nt-present .annot-dock,
 body.nt-present .sg-annotation-tools,
 body.nt-present .ewl-supports-launcher,
@@ -685,6 +774,15 @@ body.nt-present .sg-station-timer,
 body.nt-present .class-board-strip,
 body.nt-present #nt-focus-fab,
 body.nt-present #lesson-a11y-bar {
+  display: none !important;
+}
+
+/* The chrome row itself STAYS — it is where the Present toggle is docked, and
+   that toggle is how a teacher leaves Present Mode. Only the student-facing
+   half of the row (the Tools button and its dropdown) goes. Hiding the whole
+   row here, as this list used to, would have taken Exit Present with it. */
+body.nt-present .nt-utility-menu .nt-utility-btn,
+body.nt-present .nt-utility-menu .nt-utility-pop {
   display: none !important;
 }
 

@@ -166,8 +166,35 @@ export function mountUtilityMenu() {
   root.append(btn, pop);
   document.body.appendChild(root);
 
+  // The Present toggle sits BESIDE Tools, in this same top-right row.
+  //
+  // It used to be a vertical tab pinned to the right edge at top:22% — put
+  // there because a horizontal bar at top:14px;right:180px landed on the act
+  // step strip and the problem. Docking it here removes the reason for both
+  // positions: the row is chrome the lesson content already flows under, and
+  // adjacency is guaranteed no matter how wide "Tools" renders, which guessing
+  // a `right:` offset never was (Joel, 2026-08-28: "move the present button to
+  // the top of the page (next to tools) -- and keep it the same size").
+  //
+  // ADOPTED, not reimplemented — the same rule the export toolbar and mode pill
+  // follow above: present-mode.js still owns the widget's markup, state and
+  // toggle, and this only moves the live node into the row.
+  const adoptPresent = () => {
+    const widget = document.getElementById("nt-present-widget");
+    if (widget && widget.parentElement !== root) root.insertBefore(widget, btn);
+  };
+  adoptPresent();
+  // present-mode.js mounts on teacher mode, which can be entered after us.
+  document.addEventListener("nt:present-state", adoptPresent);
+
   // Late adoption passes for controls that mount after the app boots
   // (teacher-mode pill re-renders, shared widget scripts load deferred).
-  setTimeout(adopt, 1200);
-  setTimeout(adopt, 3500);
+  setTimeout(() => {
+    adopt();
+    adoptPresent();
+  }, 1200);
+  setTimeout(() => {
+    adopt();
+    adoptPresent();
+  }, 3500);
 }

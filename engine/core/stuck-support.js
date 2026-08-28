@@ -23,28 +23,217 @@ function esc(s) {
   return d.innerHTML;
 }
 
-function buildHint(item) {
+/* ── Reading the problem that is actually on screen ────────────────────────
+ *
+ * Every chip on this bar used to fall back to advice that could have been
+ * printed on a poster: "Reread the question and underline what it is asking",
+ * "Look back at the Learn It section". Four of the eight said nothing about the
+ * problem in front of the student (Joel, 2026-08-28: "if it is going to offer
+ * help, it should actually offer help with the problem specifically (not just
+ * general). If you can build this out, do it"). The readers below pull the
+ * problem's own numbers, units and question out of its text so Hint and
+ * First step can name them, and "See an example" prints the LESSON's authored
+ * worked example instead of pointing at it.
+ *
+ * Nothing here invents mathematics — it quotes and restates what the lesson
+ * already wrote. Each reader returns "" when it cannot read the text with
+ * confidence, and the old generic wording still stands for that case. */
+
+/* Words that commonly follow a number without being its unit. */
+const NOT_A_UNIT = new Set([
+  "and",
+  "or",
+  "of",
+  "the",
+  "is",
+  "are",
+  "was",
+  "were",
+  "to",
+  "in",
+  "on",
+  "at",
+  "he",
+  "she",
+  "it",
+  "they",
+  "a",
+  "an",
+  "by",
+  "into",
+  "each",
+  "every",
+  "that",
+  "this",
+  "then",
+  "so",
+  "if",
+  "for",
+  "from",
+  "with",
+  "as",
+  "but",
+  "more",
+  "less",
+  "than",
+  "whole",
+  "wholes",
+  "equal",
+  "equally",
+  "small",
+  "smaller",
+  "total",
+  "complete",
+  "mini",
+  "premium",
+  "long",
+  "wide",
+  "tall",
+  "deep",
+  "left",
+  "remaining",
+  "other",
+  "same",
+  "new",
+  "different",
+  "how",
+  "what",
+  "when",
+  "his",
+  "her",
+  "their",
+  "its",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+]);
+
+/** Number (whole, decimal, fraction, mixed) plus the unit word that follows. */
+function readQuantities(text) {
+  const src = String(text || "");
+  const re = /(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)((?:[-\s]+[A-Za-z]+){0,2})/g;
+  const seen = new Set();
+  const out = [];
+  let m = re.exec(src);
+  while (m) {
+    const value = m[1].replace(/\s+/g, " ").trim();
+    const words = String(m[2] || "")
+      .split(/[-\s]+/)
+      .filter(Boolean);
+    // Keep every trailing word that could be part of the unit ("snack bags"),
+    // not just the first — "4 snack" reads as a typo where "4 snack bags" reads
+    // as the quantity the story actually names.
+    const unit = words
+      .filter((w) => !NOT_A_UNIT.has(w.toLowerCase()))
+      .join(" ")
+      .toLowerCase();
+    const key = `${value}|${unit}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push({ value, unit });
+    }
+    if (out.length >= 6) break;
+    m = re.exec(src);
+  }
+  return out;
+}
+
+/** How a quantity reads back to a student: "8 feet", or just "8". */
+function quantityText(q) {
+  return q.unit ? `${q.value} ${q.unit}` : q.value;
+}
+
+/** The sentence that states the job. */
+function readAsk(text) {
+  const parts = String(text || "")
+    .split(/(?<=[.?!])\s+/)
+    .map((x) => x.trim())
+    .filter(Boolean);
+  // The Reveal decks label the task sentence "Question: …"; the label is the
+  // deck's formatting, not part of what the problem asks, and quoting it back
+  // reads as a stray word.
+  const strip = (x) => x.replace(/^\s*Question:\s*/i, "").trim();
+  const question = parts.find((x) => x.endsWith("?"));
+  if (question) return strip(question);
+  const command = parts.find((x) =>
+    /^(?:Question:\s*)?(find|calculate|determine|work out|show|how many|how much|what)\b/i.test(x),
+  );
+  return command ? strip(command) : "";
+}
+
+/** The lesson's own authored worked example, printed rather than pointed at. */
+function lessonWorkedExample(config) {
+  const intro = config?.launch?.conceptIntro || config?.conceptIntro;
+  const lines = intro?.iDo?.lines;
+  if (!Array.isArray(lines) || !lines.length) return "";
+  return (
+    `<p><strong>Here is the worked example from today's lesson, one move at a time:</strong></p>` +
+    `<ol class="stuck-worked">${lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ol>` +
+    (intro.keyIdea
+      ? `<p class="stuck-keyidea"><strong>The rule:</strong> ${esc(intro.keyIdea)}</p>`
+      : "")
+  );
+}
+
+/** What this problem hands you and what it wants — in its own words. */
+function describeProblem(problemText) {
+  const quantities = readQuantities(problemText);
+  const ask = readAsk(problemText);
+  if (!quantities.length && !ask) return "";
+  const given = quantities.length
+    ? `<p><strong>This problem gives you:</strong> ${quantities
+        .map((q) => `<span class="stuck-qty">${esc(quantityText(q))}</span>`)
+        .join(" · ")}</p>`
+    : "";
+  const wants = ask ? `<p><strong>It asks:</strong> “${esc(ask)}”</p>` : "";
+  return given + wants;
+}
+
+function buildHint(item, problemText) {
   const authored = (Array.isArray(item?.hints) && item.hints[0]) || item?.hint || item?.scaffold;
-  return (
-    authored ||
-    "Reread the question and underline exactly what it is asking you to find. What information are you given?"
-  );
+  if (authored) return `<p>${esc(authored)}</p>`;
+  const described = describeProblem(problemText);
+  if (described) {
+    return (
+      described +
+      `<p>Before you compute, decide what each number <em>means</em> in the story: which one is the
+       total you start with, and which one is the size of one group? That choice is the whole problem.</p>`
+    );
+  }
+  return `<p>Reread the question and underline exactly what it is asking you to find. What information are you given?</p>`;
 }
 
-function buildFirstStep(item) {
-  return (
-    item?.scaffold ||
-    (Array.isArray(item?.hints) && item.hints[0]) ||
-    "Start by writing down what you already KNOW — list the numbers and facts from the problem. Then decide what you need to find."
-  );
+function buildFirstStep(item, config, problemText) {
+  const authored = item?.scaffold || (Array.isArray(item?.hints) && item.hints[0]);
+  if (authored) return `<p>${esc(authored)}</p>`;
+  const quantities = readQuantities(problemText);
+  const ask = readAsk(problemText);
+  if (quantities.length || ask) {
+    const know = quantities.length
+      ? `<li><strong>What I KNOW:</strong> ${quantities.map((q) => esc(quantityText(q))).join(", ")}</li>`
+      : "";
+    const need = ask ? `<li><strong>What I NEED:</strong> ${esc(ask)}</li>` : "";
+    const intro = config?.launch?.conceptIntro || config?.conceptIntro;
+    const firstMove = Array.isArray(intro?.iDo?.lines) ? intro.iDo.lines[0] : "";
+    return (
+      `<p><strong>Copy these two lines onto your paper first:</strong></p>` +
+      `<ul class="stuck-frames">${know}${need}</ul>` +
+      (firstMove
+        ? `<p><strong>Then make the same first move the lesson made:</strong> ${esc(firstMove)}</p>`
+        : "")
+    );
+  }
+  return `<p>Start by writing down what you already KNOW — list the numbers and facts from the problem. Then decide what you need to find.</p>`;
 }
 
-function buildExample(item) {
-  return (
-    item?.workedExample ||
-    item?.explanation ||
-    "Look back at the <strong>Learn It</strong> section above — it walks through a worked example of this kind of problem step by step."
-  );
+function buildExample(item, config) {
+  if (item?.workedExample) return `<p>${esc(item.workedExample)}</p>`;
+  if (item?.explanation) return `<p>${esc(item.explanation)}</p>`;
+  const worked = lessonWorkedExample(config);
+  if (worked) return worked;
+  return `<p>Look back at the <strong>Learn It</strong> section above — it walks through a worked example of this kind of problem step by step.</p>`;
 }
 
 function buildVocab(config) {
@@ -155,19 +344,19 @@ export function mountStuckSupport(host, opts = {}) {
       key: "hint",
       icon: "💡",
       label: "Hint",
-      html: `<p>${esc(buildHint(item))}</p>`,
+      html: buildHint(item, problemText),
     },
     {
       key: "first",
       icon: "👣",
       label: "Show me the first step",
-      html: `<p>${esc(buildFirstStep(item))}</p>`,
+      html: buildFirstStep(item, config, problemText),
     },
     {
       key: "example",
       icon: "📖",
       label: "See an example",
-      html: `<p>${buildExample(item)}</p>`,
+      html: buildExample(item, config),
     },
     {
       key: "vocab",

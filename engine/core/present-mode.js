@@ -143,7 +143,13 @@ export function mountPresentWidget({ container } = {}) {
   }
 
   renderWidgetContent();
-  (container || document.body).appendChild(widget);
+  // Dock into the top-right chrome row beside Tools when it already exists, so
+  // the control never appears at one position and then jumps to another.
+  // utility-menu.js adopts it the other way round when Tools mounts second.
+  const toolsRow = container ? null : document.querySelector(".nt-utility-menu");
+  const toolsBtn = toolsRow && toolsRow.querySelector(".nt-utility-btn");
+  if (toolsRow && toolsBtn) toolsRow.insertBefore(widget, toolsBtn);
+  else (container || document.body).appendChild(widget);
 
   // Keep the button label in step with Present Mode however it was entered
   // (Tools ▸ Present, ?present=1, Esc, the browser's own fullscreen exit).

@@ -4979,10 +4979,35 @@ html[lang^="es"] .i18n-es {
   margin: 0 0 var(--sp-2);
 }
 .stuck-vocab,
-.stuck-frames {
+.stuck-frames,
+.stuck-worked {
   margin: 0;
   padding-left: 1.1em;
   line-height: 1.8;
+}
+/* The lesson's own worked example, printed inside "See an example" — each
+   authored move is one numbered line, so it reads as a solution and not a
+   paragraph. */
+.stuck-worked > li {
+  margin-bottom: var(--sp-2);
+}
+/* A number the problem itself states, quoted back to the student. */
+.stuck-qty {
+  display: inline-block;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--cream, #fdf6ec);
+  border: 1px solid var(--line, #e4ddc9);
+  font-weight: var(--fw-bold);
+  color: var(--navy, #264653);
+  white-space: nowrap;
+}
+.stuck-keyidea {
+  margin-top: var(--sp-3);
+  padding: 10px 14px;
+  border-left: 4px solid var(--teal-ink, #0f766e);
+  border-radius: 10px;
+  background: #f0fdfa;
 }
 .stuck-es {
   color: var(--muted);
@@ -5450,6 +5475,13 @@ html.nt-extra-fullpage-open body {
   top: 12px;
   right: 12px;
   z-index: 9600;
+  /* A ROW, not a single button: the Present toggle is docked in here beside
+     Tools (utility-menu.js adoptPresent). Flex means adjacency survives any
+     label width or translation — the old right-edge tab had to guess an offset.
+     .nt-utility-pop is absolutely positioned, so it stays out of this flow. */
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .nt-utility-btn {
   display: inline-flex;

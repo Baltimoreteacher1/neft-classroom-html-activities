@@ -39,37 +39,6 @@ import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
 
-const ROLES = [
-  {
-    key: "estimator",
-    icon: "🎯",
-    name: "Estimator",
-    job: "Before anyone calculates: say what a reasonable answer looks like, and why.",
-    starter: "I think the answer is about ___ because ___.",
-  },
-  {
-    key: "calculator",
-    icon: "✏️",
-    name: "Calculator",
-    job: "Do the arithmetic. Write every step where the group can see it.",
-    starter: "First I ___, then I ___, so I get ___.",
-  },
-  {
-    key: "checker",
-    icon: "🔍",
-    name: "Checker",
-    job: "Test the answer against the Estimator's guess and against the problem. Does it make sense?",
-    starter: "That is close to / far from our estimate because ___.",
-  },
-  {
-    key: "presenter",
-    icon: "🗣️",
-    name: "Presenter",
-    job: "Say the group's answer to the class, and the reason behind it.",
-    starter: "Our group decided ___ because ___.",
-  },
-];
-
 function esc(value) {
   return String(value ?? "").replace(
     /[&<>"']/g,
@@ -385,54 +354,8 @@ function renderGroups(host, state, _ctx, config) {
     3,
     "👥",
     "Group Work",
-    "Each person has one job. Work your table's problem set, then bring today's problem back together.",
+    "Work your table's problem set together, then bring today's problem back and agree on one answer.",
   );
-
-  const picked = (state.getResponse && state.getResponse(2, "role")) || "";
-  const roleCard = el("section", "card");
-  roleCard.append(
-    el(
-      "div",
-      null,
-      `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">🧩 Pick your job</h3>
-       <p style="margin:0 0 14px; font-size:1rem; color:#475569;">Tap your job. Every job is needed — the group cannot finish without all four.</p>`,
-    ),
-  );
-  const grid = el("div", "grid-2");
-  grid.style.cssText =
-    "display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px;";
-  ROLES.forEach((role) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "card";
-    btn.setAttribute("aria-pressed", String(picked === role.key));
-    btn.dataset.role = role.key;
-    btn.style.cssText =
-      "text-align:left; cursor:pointer; border:2px solid transparent; padding:14px 16px; margin:0;";
-    btn.innerHTML = `
-      <div style="font-size:1.12rem; font-weight:800; color:#0f172a;">${role.icon} ${esc(role.name)}</div>
-      <div style="margin-top:6px; font-size:.98rem; color:#334155; line-height:1.5;">${esc(role.job)}</div>
-      <div style="margin-top:8px; font-size:.93rem; color:#0e7490; font-style:italic;">“${esc(role.starter)}”</div>`;
-    const paint = () => {
-      const on = btn.getAttribute("aria-pressed") === "true";
-      btn.style.borderColor = on ? "#0f766e" : "transparent";
-      btn.style.background = on ? "#f0fdfa" : "";
-    };
-    paint();
-    btn.addEventListener("click", () => {
-      grid.querySelectorAll("[data-role]").forEach((b) => {
-        b.setAttribute("aria-pressed", "false");
-        b.style.borderColor = "transparent";
-        b.style.background = "";
-      });
-      btn.setAttribute("aria-pressed", "true");
-      paint();
-      if (state.saveResponse) state.saveResponse(2, "role", role.key);
-    });
-    grid.append(btn);
-  });
-  roleCard.append(grid);
-  host.append(roleCard);
 
   const solve = el("section", "card");
   solve.append(
@@ -471,7 +394,7 @@ function renderGroups(host, state, _ctx, config) {
       "div",
       null,
       `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">🗣️ Share out</h3>
-       <p style="margin:0 0 10px; font-size:1rem; color:#334155; line-height:1.55;">Presenter, read this to the class:</p>
+       <p style="margin:0 0 10px; font-size:1rem; color:#334155; line-height:1.55;">One person from your table reads this to the class:</p>
        <p style="margin:0 0 12px; padding:12px 16px; background:#fff7ed; border-left:4px solid #ea580c; border-radius:10px; font-size:1.05rem; font-style:italic; color:#0f172a;">“Our group decided ___ . We know it is reasonable because ___ .”</p>`,
     ),
   );
