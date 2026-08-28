@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">5.8 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area of Pyramids · Pyramid · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-8-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 5.8 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the surface area of a pyramid by adding the base area and the lateral faces, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do we find the surface area of a pyramid?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Surface area of a pyramid = base area + the area of all the triangular lateral faces — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My square pyramid has a 6 in. × 6 in. base and a slant height of 8 in.</li><li>First the base area: 6 × 6 = 36.</li><li>Now one triangular face: ½ × 6 × 8 = 24. A square pyramid has 4 of them, so 4 × 24 = 96.</li><li>I add the base and the side faces: 36 + 96 = 132.</li><li>So the total surface area is 132 in². I used the slant height (8) for the triangles, not the pyramid's height.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Now a smaller square pyramid: base 4 × 4, slant height 5. What is the base area?</li><li>Right, 4 × 4 = 16. Now one triangular face: ½ × 4 × 5. What do you get?</li><li>Yes, 10. Four faces is 4 × 10 = 40. Now add the base: 16 + 40. What is the surface area?</li><li>Yes, SA = 56 in². Don't forget to add the base area!</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area of Pyramids (Área de superficie de pirámides) — The total area of a pyramid's base and triangular faces. Formula: SA = B + lateral area.</li><li>Pyramid (Pirámide) — A solid with a flat bottom and triangle sides that meet at one point on top.</li><li>Slant height (Altura inclinada (apotema)) — The height of a side triangle, measured along its slanted face.</li><li>Lateral face (Cara lateral) — A triangle side of a pyramid, not the bottom.</li><li>Base (Base) — The flat bottom of a pyramid.</li><li>Apex (Ápice) — The point at the top of a pyramid where the sides meet.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area of Pyramids is finding the four triangular lateral faces correctly (½ × base edge × slant height, times 4) and then stopping — forgetting to add the base area at the end. This leaves the total surface area too small by exactly the base's area. Before you submit, ask: 'Did I add the base area to the four lateral faces, or did I stop after the sides?'</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Find the surface area of each square pyramid.</p>
   <table class="ws-table"><thead><tr><th>Pyramid</th><th>Base Edge</th><th>Slant Height</th><th>Base Area</th><th>Total SA</th></tr></thead><tbody><tr><td>Pyramid X</td><td></td><td></td><td></td><td></td></tr><tr><td>Pyramid Y</td><td></td><td></td><td></td><td></td></tr><tr><td>Pyramid Z</td><td></td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -729,10 +815,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Total lateral area = ? in² (SA − base = 260 − 100).</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Total lateral area = ? in² (SA − base = 260 − 100).</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -740,12 +833,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Your first gift box is a square pyramid with a base edge of 7 in and a slant height of 9 in. How much wrapping paper (total surface area) covers it?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">Your first gift box is a square pyramid with a base edge of 7 in and a slant height of 9 in. How much wrapping paper (total surface area) covers it?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">175 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">126 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">144 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">175 in³</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">175 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">126 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">144 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">175 in³</span></li></ol>
+    </div></div></div>
       </div>
     </li>
   
@@ -756,12 +849,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Before adding the base, you need the area of just one triangular face of a gift box with base edge 8 in and slant height 5 in. What is it?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">Before adding the base, you need the area of just one triangular face of a gift box with base edge 8 in and slant height 5 in. What is it?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">13 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20 in³</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">13 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20 in³</span></li></ol>
+    </div></div></div>
       </div>
     </li>
   
@@ -772,15 +865,19 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A gift box is a square pyramid with a base edge of 9 in. What is the area of its square base (the part that sits on the table)?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">A gift box is a square pyramid with a base edge of 9 in. What is the area of its square base (the part that sits on the table)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">81 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">36 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">18 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">324 in²</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">81 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">36 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">18 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">324 in²</span></li></ol>
+    </div></div></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -791,7 +888,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Level 2 Extension — Slant Height vs. Base Edge</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Box:</span><span class="ws-step-w">Square pyramid gift box: base edge = 12 in, slant height = 9 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Base Area:</span><span class="ws-step-w">12 × 12 = 144 in²</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">One Triangular Face:</span><span class="ws-step-w">½ × 9 × 9 = 40.5 in² (used 9 for both numbers)</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer:</span><span class="ws-step-w">SA = 144 + 4 × 40.5 = 144 + 162 = 306 in²</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -858,7 +958,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

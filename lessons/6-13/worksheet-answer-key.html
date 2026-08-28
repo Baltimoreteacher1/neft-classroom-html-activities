@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Prime Factorization</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Prime Factorization · Prime number · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-13" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Complete Prime Factorization</span> <span class="ws-cat-pill">NOT Complete (Has Composite Factors)</span></div>
+  <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,7 +800,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -726,25 +811,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What is the prime factorization of 18?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 × 3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 18 = 2 × 9 = 2 × 3 × 3. Both 2 and 3 are prime, so 2 × 3 × 3 is the prime factorization.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Prime Factorization is stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it. For example, writing 20 = 4 × 5 as the prime factorization (4 is composite) instead of finishing with 20 = 2 × 2 × 5. Before you submit, check every number in your final answer: if any factor can still be broken into smaller factors, the tree isn't finished yet.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Complete Prime Factorization</span> <span class="ws-cat-pill">NOT Complete (Has Composite Factors)</span></div>
-  <ul class="ws-sort-list"></ul>
       </div>
     </li>
   </ol>
@@ -785,14 +857,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Prime Factorization</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Prime Factorization · Prime number · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-13" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -808,11 +881,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Complete Prime Factorization</span> <span class="ws-cat-pill">NOT Complete (Has Composite Factors)</span></div>
+  <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -823,7 +916,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -834,25 +927,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What is the prime factorization of 18?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 × 3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 18 = 2 × 9 = 2 × 3 × 3. Both 2 and 3 are prime, so 2 × 3 × 3 is the prime factorization.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Prime Factorization is stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it. For example, writing 20 = 4 × 5 as the prime factorization (4 is composite) instead of finishing with 20 = 2 × 2 × 5. Before you submit, check every number in your final answer: if any factor can still be broken into smaller factors, the tree isn't finished yet.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Complete Prime Factorization</span> <span class="ws-cat-pill">NOT Complete (Has Composite Factors)</span></div>
-  <ul class="ws-sort-list"></ul>
       </div>
     </li>
   
@@ -866,7 +946,11 @@ header.packet h1::after{
         <p class="ws-stem">Which of these numbers is composite?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">23</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">29</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">31</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 27 = 3 × 9 = 3 × 3 × 3, so it has more than two factors. 23, 29, and 31 are all prime.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Prime Factorization is stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it. For example, writing 20 = 4 × 5 as the prime factorization (4 is composite) instead of finishing with 20 = 2 × 2 × 5. Before you submit, check every number in your final answer: if any factor can still be broken into smaller factors, the tree isn't finished yet.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -918,14 +1002,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Prime Factorization</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Prime Factorization · Prime number · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-13" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -941,8 +1026,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -991,7 +1079,11 @@ header.packet h1::after{
         <p class="ws-stem">Two students found different factor trees for 60. Student A started with 2 × 30. Student B started with 6 × 10. Which statement is true?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Both get the same prime factorization: 2 × 2 × 3 × 5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Only Student A gets the correct prime factorization</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only Student B gets the correct prime factorization</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">They will get different prime factorizations</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The Fundamental Theorem of Arithmetic says every composite number has exactly one prime factorization. No matter how you start the factor tree, you always end with 2 × 2 × 3 × 5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Prime Factorization is stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it. For example, writing 20 = 4 × 5 as the prime factorization (4 is composite) instead of finishing with 20 = 2 × 2 × 5. Before you submit, check every number in your final answer: if any factor can still be broken into smaller factors, the tree isn't finished yet.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1043,14 +1135,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Prime Factorization</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Prime Factorization · Prime number · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-13" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1066,11 +1159,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Write the prime factorization using exponents.</p>
+  <table class="ws-table"><thead><tr><th>Number</th><th>Prime Factorization (expanded)</th><th>Using Exponents</th></tr></thead><tbody><tr><td>72</td><td>2 × 2 × 2 × 3 × 3</td><td>2³ × 3²</td></tr><tr><td>100</td><td>2 × 2 × 5 × 5</td><td>2² × 5²</td></tr><tr><td>54</td><td>2 × 3 × 3 × 3</td><td>2 × 3³</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1084,25 +1197,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Choose any two-digit composite number. Show TWO different factor trees that both lead to the same prime factorization. Explain why every composite number has only one prime factorization.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: factor tree, prime factorization, same, only one, composite, break down Explanation: A strong answer picks one two-digit composite number and finishes two trees that begin with different first splits — for 24, starting with 2 × 12 and starting with 4 × 6 both end at 2 × 2 × 2 × 3. The lists always match because splitting only pulls composite factors apart into primes that were already inside the number, so the set of primes cannot change.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Write the prime factorization using exponents.</p>
-  <table class="ws-table"><thead><tr><th>Number</th><th>Prime Factorization (expanded)</th><th>Using Exponents</th></tr></thead><tbody><tr><td>72</td><td>2 × 2 × 2 × 3 × 3</td><td>2³ × 3²</td></tr><tr><td>100</td><td>2 × 2 × 5 × 5</td><td>2² × 5²</td></tr><tr><td>54</td><td>2 × 3 × 3 × 3</td><td>2 × 3³</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

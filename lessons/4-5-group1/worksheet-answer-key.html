@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">4.5 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Determine the Whole Given the Part and Percent · Part · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-5-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,54 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">$20 is 50% of what number?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$40</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$25</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$70</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 50% is half, so the part is half the whole. Doubling gives the whole: 20 ÷ 0.5 = 40.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which equation says &quot;30 is 25% of some number n&quot;?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">0.25n = 30</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25n = 30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n = 0.25 × 30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n = 30 + 25</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Percent × whole = part, so 0.25 × n = 30.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">$42 is 60% of the original price. Should the original price be more or less than $42?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">More, because 60% is less than the whole</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Less, because 60 is a big number</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Exactly $42</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 60% describes only part of the original price, so the whole original price must be larger than that part.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">75 minutes is 15% of the school day. How long is the school day?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">500 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">11.25 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">90 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,125 minutes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Divide the part by the decimal: 75 ÷ 0.15 = 500 minutes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -760,7 +785,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -768,6 +793,54 @@ header.packet h1::after{
         <p class="ws-stem">$42 is 60% of the original price. Complete the ratio table to reach 100%.</p>
   <table class="ws-table"><thead><tr><th>Percent</th><th>Dollars</th></tr></thead><tbody><tr><td>60%</td><td>42</td></tr><tr><td>10%</td><td></td></tr><tr><td>100%</td><td></td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">$20 is 50% of what number?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$40</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$25</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$70</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 50% is half, so the part is half the whole. Doubling gives the whole: 20 ÷ 0.5 = 40.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which equation says &quot;30 is 25% of some number n&quot;?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">0.25n = 30</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25n = 30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n = 0.25 × 30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n = 30 + 25</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Percent × whole = part, so 0.25 × n = 30.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">$42 is 60% of the original price. Should the original price be more or less than $42?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">More, because 60% is less than the whole</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Less, because 60 is a big number</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Exactly $42</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 60% describes only part of the original price, so the whole original price must be larger than that part.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">75 minutes is 15% of the school day. How long is the school day?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">500 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">11.25 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">90 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,125 minutes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Divide the part by the decimal: 75 ÷ 0.15 = 500 minutes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</p>
       </div>
     </li>
   </ol>

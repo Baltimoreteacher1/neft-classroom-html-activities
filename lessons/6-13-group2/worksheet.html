@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">6.13 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Prime Factorization · Prime number · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-13-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,13 +773,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 6.13 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can write a number as a product of its prime factors using a factor tree, explain what each part stands for, and build one for a situation I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — What is prime factorization?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Keep breaking a number apart until every factor is a prime number you cannot split anymore — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want the prime factorization of 60. I start by splitting it: 60 = 6 × 10.</li><li>6 is not prime, so I break it: 6 = 2 × 3. Both 2 and 3 are prime, so I stop those branches.</li><li>10 is not prime, so I break it: 10 = 2 × 5. Both 2 and 5 are prime, so I stop.</li><li>Now every factor is prime: 60 = 2 × 2 × 3 × 5.</li><li>Using exponents, I write it as 2² × 3 × 5. I check: 2 × 2 × 3 × 5 = 60. Correct.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Let's factor 12 together. What is one way to split 12 into two factors? (You might say 3 × 4.)</li><li>Is 3 prime? Yes, so we keep it. Is 4 prime? No — what is 4 split apart? (4 = 2 × 2.)</li><li>So put the prime factors together: 12 = 2 × 2 × 3. Every factor is prime, so we are done.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Prime Factorization (Factorización prima) — Writing a whole number as a product of only prime numbers.</li><li>Prime number (Número primo) — A number bigger than 1 that you can only divide by 1 and itself.</li><li>Composite number (Número compuesto) — A number bigger than 1 that you can divide by more than just 1 and itself.</li><li>Factor (Factor) — A factor of a whole number divides it evenly, with no remainder. For example, 3 is a factor of 12 because 12 ÷ 3 = 4.</li><li>Factor tree (Árbol de factores) — A picture that splits a number into its prime numbers, step by step.</li><li>Exponent (Exponente) — A small number that tells how many times to multiply a number by itself.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Prime Factorization is stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it. For example, writing 20 = 4 × 5 as the prime factorization (4 is composite) instead of finishing with 20 = 2 × 2 × 5. Before you submit, check every number in your final answer: if any factor can still be broken into smaller factors, the tree isn't finished yet.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -736,10 +819,17 @@ header.packet h1::after{
         
         <p class="ws-stem">Build the factor tree. Write each number as a product of primes.</p>
   <table class="ws-table"><thead><tr><th>Number</th><th>First Split</th><th>Prime Factorization</th></tr></thead><tbody><tr><td>24</td><td></td><td></td></tr><tr><td>36</td><td></td><td></td></tr><tr><td>40</td><td></td><td></td></tr><tr><td>56</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -747,7 +837,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         <div class="ws-figure-wrap" style="margin:10px auto;display:flex;flex-direction:column;align-items:center;"><div class="ws-fig-title" style="font-weight:700;font-size:11.5px;color:var(--brand-dark,#0f172a);margin-bottom:4px;text-align:center;">Factor Tree for 90</div><svg width="320" height="160" viewBox="0 0 320 160" role="img" aria-label="Factor tree diagram" style="background:white;max-width:100%;height:auto;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;"><circle cx="160" cy="22" r="14" fill="#fbf4e6" stroke="#d4952a" stroke-width="1.8"/><text x="160" y="26" font-size="11" font-weight="800" fill="#8a5800" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">90</text><line x1="160" y1="36" x2="80" y2="50" stroke="#cbd5e1" stroke-width="2"/><circle cx="80" cy="64" r="14" fill="#fbf4e6" stroke="#d4952a" stroke-width="1.8"/><text x="80" y="68" font-size="11" font-weight="800" fill="#8a5800" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">9</text><line x1="80" y1="78" x2="40" y2="92" stroke="#cbd5e1" stroke-width="2"/><circle cx="40" cy="106" r="14" fill="#e2f9f5" stroke="#0d7a76" stroke-width="1.8"/><text x="40" y="110" font-size="11" font-weight="800" fill="#095350" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">3</text><line x1="80" y1="78" x2="120" y2="92" stroke="#cbd5e1" stroke-width="2"/><circle cx="120" cy="106" r="14" fill="#e2f9f5" stroke="#0d7a76" stroke-width="1.8"/><text x="120" y="110" font-size="11" font-weight="800" fill="#095350" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">3</text><line x1="160" y1="36" x2="240" y2="50" stroke="#cbd5e1" stroke-width="2"/><circle cx="240" cy="64" r="14" fill="#fbf4e6" stroke="#d4952a" stroke-width="1.8"/><text x="240" y="68" font-size="11" font-weight="800" fill="#8a5800" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">10</text><line x1="240" y1="78" x2="200" y2="92" stroke="#cbd5e1" stroke-width="2"/><circle cx="200" cy="106" r="14" fill="#e2f9f5" stroke="#0d7a76" stroke-width="1.8"/><text x="200" y="110" font-size="11" font-weight="800" fill="#095350" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">2</text><line x1="240" y1="78" x2="280" y2="92" stroke="#cbd5e1" stroke-width="2"/><circle cx="280" cy="106" r="14" fill="#e2f9f5" stroke="#0d7a76" stroke-width="1.8"/><text x="280" y="110" font-size="11" font-weight="800" fill="#095350" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">5</text></svg></div>
-        <p class="ws-stem">The first lock panel shows 90. What is the prime factorization of 90?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 3 × 5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 45</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9 × 10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3 × 30</span></li></ol>
+        <p class="ws-stem">The first lock panel shows 90. What is the prime factorization of 90?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 3 × 5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 45</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9 × 10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3 × 30</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -758,7 +851,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The second panel needs a number whose prime factorization is 2² × 3². Which number unlocks it?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">18</span></li></ol>
+        <p class="ws-stem">The second panel needs a number whose prime factorization is 2² × 3². Which number unlocks it?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">18</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -769,10 +865,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         <div class="ws-figure-wrap" style="margin:10px auto;display:flex;flex-direction:column;align-items:center;"><div class="ws-fig-title" style="font-weight:700;font-size:11.5px;color:var(--brand-dark,#0f172a);margin-bottom:4px;text-align:center;">Factor Tree for 78</div><svg width="320" height="160" viewBox="0 0 320 160" role="img" aria-label="Factor tree diagram" style="background:white;max-width:100%;height:auto;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;"><circle cx="160" cy="22" r="14" fill="#fbf4e6" stroke="#d4952a" stroke-width="1.8"/><text x="160" y="26" font-size="11" font-weight="800" fill="#8a5800" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">78</text><line x1="160" y1="36" x2="80" y2="50" stroke="#cbd5e1" stroke-width="2"/><circle cx="80" cy="64" r="14" fill="#fbf4e6" stroke="#d4952a" stroke-width="1.8"/><text x="80" y="68" font-size="11" font-weight="800" fill="#8a5800" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">6</text><line x1="80" y1="78" x2="40" y2="92" stroke="#cbd5e1" stroke-width="2"/><circle cx="40" cy="106" r="14" fill="#e2f9f5" stroke="#0d7a76" stroke-width="1.8"/><text x="40" y="110" font-size="11" font-weight="800" fill="#095350" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">2</text><line x1="80" y1="78" x2="120" y2="92" stroke="#cbd5e1" stroke-width="2"/><circle cx="120" cy="106" r="14" fill="#e2f9f5" stroke="#0d7a76" stroke-width="1.8"/><text x="120" y="110" font-size="11" font-weight="800" fill="#095350" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">3</text><line x1="160" y1="36" x2="240" y2="50" stroke="#cbd5e1" stroke-width="2"/><circle cx="240" cy="64" r="14" fill="#e2f9f5" stroke="#0d7a76" stroke-width="1.8"/><text x="240" y="68" font-size="11" font-weight="800" fill="#095350" text-anchor="middle" font-family="'Hanken Grotesk',Arial,sans-serif">13</text></svg></div>
-        <p class="ws-stem">The final lock asks for the prime factorization of 78 written as a product of primes. Which is correct?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 39</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 26</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 × 13</span></li></ol>
+        <p class="ws-stem">The final lock asks for the prime factorization of 78 written as a product of primes. Which is correct?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 39</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 26</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 × 13</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -783,7 +886,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Level 2 Extension — Fix the Broken Factor Tree</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Find prime factorization of 96:</span><span class="ws-step-w">Start: 96</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">First split:</span><span class="ws-step-w">96 = 8 × 12</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Break down 8:</span><span class="ws-step-w">8 = 2 × 2 × 2</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Break down 12:</span><span class="ws-step-w">12 = 2 × 6</span></li><li><span class="ws-step-n">5</span><span class="ws-step-l">Final answer:</span><span class="ws-step-w">96 = 2 × 2 × 2 × 2 × 6</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -850,7 +956,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

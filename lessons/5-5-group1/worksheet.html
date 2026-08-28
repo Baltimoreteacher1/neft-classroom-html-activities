@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">5.5 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Volume with Whole-Number Edges · Volume · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-5-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,92 +767,48 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 5.5 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can find the volume of a rectangular prism with whole-number edges using length × width × height — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — How do we find the volume of a box?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>To find the volume of a box, multiply all three edges: V = length × width × height.</div>
+        <ul class="ws-note-list"><li>Volume is how much space is inside a 3D shape. For a rectangular prism (a box), volume = length × width × height, measured in cubic units. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My time capsule box is 6 long, 4 wide, and 3 tall. I write the formula: V = length × width × height.</li><li>I put in the numbers: V = 6 × 4 × 3.</li><li>First I multiply two of them: 6 × 4 = 24.</li><li>Then I multiply by the last one: 24 × 3 = 72.</li><li>So the volume is 72 cubic units. I use cubic units because volume fills space in 3 directions.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Volume with Whole-Number Edges (Volumen con aristas de números enteros) — The number of unit cubes inside a rectangular prism. Formula: V = l × w × h.</li><li>Volume (Volumen) — How much space is inside a solid shape.</li><li>Rectangular prism (Prisma rectangular) — A solid box shape with six flat rectangle sides.</li><li>Cubic units (Unidades cúbicas) — The units used to measure space inside, like cubic inches.</li><li>Length, width, height (Largo, ancho, altura) — How long, how wide, and how tall a box is.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Volume with Whole Number Edges is multiplying only two of the three edges and stopping there — for example, seeing a box that is 6 in long, 4 in wide, and 3 in tall, multiplying just 6 × 4 = 24, and calling that the volume, when 24 is only the area of the bottom face (in square inches), not the volume of the whole box. The height must also be multiplied in: V = 6 × 4 × 3 = 72 cubic inches. A second common mistake is adding the three edges instead of multiplying them (6 + 4 + 3 = 13 instead of 6 × 4 × 3 = 72 cubic inches). Volume always MULTIPLIES all three edges, and the answer is always labeled in cubic units (in³), never square units (in²) or plain units (in).</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Volume with Whole-Number Edges <span class="ws-es-term">(Volumen con aristas de números enteros)</span></span><span class="ws-bankdef"> — The number of unit cubes inside a rectangular prism. Formula: V = l × w × h.</span></div><div class="ws-bank-card"><span class="ws-bankword">Volume <span class="ws-es-term">(Volumen)</span></span><span class="ws-bankdef"> — How much space is inside a solid shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Rectangular prism <span class="ws-es-term">(Prisma rectangular)</span></span><span class="ws-bankdef"> — A solid box shape with six flat rectangle sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Cubic units <span class="ws-es-term">(Unidades cúbicas)</span></span><span class="ws-bankdef"> — The units used to measure space inside, like cubic inches.</span></div><div class="ws-bank-card"><span class="ws-bankword">Length, width, height <span class="ws-es-term">(Largo, ancho, altura)</span></span><span class="ws-bankdef"> — How long, how wide, and how tall a box is.</span></div><div class="ws-bank-card"><span class="ws-bankword">Net <span class="ws-es-term">(Plantilla (desarrollo plano))</span></span><span class="ws-bankdef"> — A flat shape that folds up into a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Edge <span class="ws-es-term">(Arista)</span></span><span class="ws-bankdef"> — The line where two flat sides of a solid meet.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">84 in³</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14 in³</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">84 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">42 in³</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3 cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4 cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12 cm</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which unit is used for volume?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Cubic inches (in³)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Square inches (in²)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Inches (in)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Degrees (°)</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>The Forgotten Height</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">A time capsule box is 4 long, 3 wide, and 5 tall</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">V = length × width × height</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">V = 4 × 3 = 12 cubic units</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer:</span><span class="ws-step-w">Volume = 12 cubic units</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Find the volume of each rectangular prism.</p>
   <table class="ws-table"><thead><tr><th>Length</th><th>Width</th><th>Height</th><th>Volume</th></tr></thead><tbody><tr><td>5 in</td><td></td><td></td><td></td></tr><tr><td>6 cm</td><td></td><td></td><td></td></tr><tr><td>9 ft</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -795,6 +816,77 @@ header.packet h1::after{
         <p class="ws-stem">Put these steps in order for finding the volume of a box that is 8 in long, 5 in wide, and 3 in tall.</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Group 1</span> <span class="ws-cat-pill">Group 2</span></div>
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Identify: l = 8, w = 5, h = 3</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Write the formula: V = l × w × h</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Multiply: 8 × 5 = 40</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Multiply: 40 × 3 = 120</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Answer: V = 120 in³</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">84 in³</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14 in³</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">84 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">42 in³</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3 cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4 cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12 cm</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which unit is used for volume?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Cubic inches (in³)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Square inches (in²)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Inches (in)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Degrees (°)</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>The Forgotten Height</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">A time capsule box is 4 long, 3 wide, and 5 tall</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">V = length × width × height</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">V = 4 × 3 = 12 cubic units</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer:</span><span class="ws-step-w">Volume = 12 cubic units</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

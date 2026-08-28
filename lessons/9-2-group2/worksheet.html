@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">9.2 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">graph · table of values · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-2-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,35 +767,67 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 9.2 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use a table and a graph to determine and analyze the relationship between two variable quantities, explain what each part stands for, and build one for a situation I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — Two pictures of the same relationship</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Each row of the table becomes one ordered pair — (independent variable, dependent variable) — plotted as one point on the graph — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me build the ticket graph</div>
+        <ol class="ws-note-list"><li>Each ticket costs $45, so the total cost is 45 times the number of tickets: 1 ticket is $45, 2 tickets are $90, 3 tickets are $135.</li><li>The number of tickets is the independent variable, so it goes first in each ordered pair: (1, 45), (2, 90), (3, 135).</li><li>I label one axis 'Number of tickets' and the other 'Total cost ($)', then plot each pair as a point.</li><li>The points rise to the right: as the number of tickets increases, the total cost increases.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>The tram travels 1,200 feet every minute. Which quantity is independent — time or distance?</li><li>Time is independent, so our pairs look like (minutes, feet): (1, 1200), (2, 2400), (5, 6000).</li><li>The ascent takes 15 minutes, so the last point is (15, 18000) — because 15 times 1,200 is 18,000 feet.</li><li>Each point means: after THIS many minutes, the tram has traveled THIS many feet.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>graph (gráfica) — A picture on a coordinate plane that shows how two quantities are related.</li><li>table of values (tabla de valores) — A list of matched pairs of values that shows a relationship using numbers.</li><li>ordered pair (par ordenado) — Two numbers written as (x, y) that name one point on a graph. The independent variable comes first.</li><li>axis (eje) — One of the two number lines that frame a graph. Each axis is labeled with a quantity from the problem.</li><li>coordinates (coordenadas) — The numbers in an ordered pair that tell how far to move along each axis to reach a point.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">COORDINATE GRID</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Plot the ticket-cost relationship: one point for each number of tickets.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The ticket table and ticket graph are two representations. Which statement about them is true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Both show the same relationship — the table with numerical values, the graph in a more visual way</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The graph shows a different relationship than the table</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only the table can show that cost increases with tickets</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only the graph is a real mathematical representation</span></li></ol>
+        <p class="ws-stem">The ticket table and ticket graph are two representations. Which statement about them is true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Both show the same relationship — the table with numerical values, the graph in a more visual way</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The graph shows a different relationship than the table</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only the table can show that cost increases with tickets</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only the graph is a real mathematical representation</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">COORDINATE GRID</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Plot the ticket-cost relationship: one point for each number of tickets.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -738,7 +835,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Nakai earns $26.25 in simple interest every year. On the graph of years vs. interest earned, which point represents 4 years?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(4, 105)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(4, 26.25)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4, 78.75)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(4, 750)</span></li></ol>
+        <p class="ws-stem">Nakai earns $26.25 in simple interest every year. On the graph of years vs. interest earned, which point represents 4 years?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(4, 105)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(4, 26.25)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4, 78.75)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(4, 750)</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -749,7 +849,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">After 10 minutes, the Sandia Peak tram has traveled 12,000 feet. The whole ascent is 18,000 feet. How much farther must it travel to reach the top?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6,000 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12,000 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5,000 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,200 feet</span></li></ol>
+        <p class="ws-stem">After 10 minutes, the Sandia Peak tram has traveled 12,000 feet. The whole ascent is 18,000 feet. How much farther must it travel to reach the top?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6,000 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12,000 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5,000 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,200 feet</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -760,10 +863,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A second tram travels 900 feet per minute. If both trams are graphed on the same axes (minutes vs. feet), how do the graphs compare?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The Sandia Peak line (1,200 ft/min) rises more steeply than the 900 ft/min line</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The 900 ft/min line rises more steeply</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The two lines are identical</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The 900 ft/min line goes downward</span></li></ol>
+        <p class="ws-stem">A second tram travels 900 feet per minute. If both trams are graphed on the same axes (minutes vs. feet), how do the graphs compare?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The Sandia Peak line (1,200 ft/min) rises more steeply than the 900 ft/min line</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The 900 ft/min line rises more steeply</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The two lines are identical</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The 900 ft/min line goes downward</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 4</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -771,7 +881,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The ticket graph has “Number of tickets” across the bottom and “Total cost ($)” up the side. Rowan plots the first ticket as the point (45, 1). What did Rowan misunderstand — and what does his point actually claim about tickets and money?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">The ticket graph has “Number of tickets” across the bottom and “Total cost ($)” up the side. Rowan plots the first ticket as the point (45, 1). What did Rowan misunderstand — and what does his point actually claim about tickets and money?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -826,7 +939,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

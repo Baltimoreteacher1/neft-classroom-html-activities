@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🔵 Prerequisite Catch-Up &amp;amp; Skill Bridge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">6.3 · 6.4 · 6.5 Catch-Up</h1>
           <p class="ws-sub-title">Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard</p>
+          <p class="ws-strategy-line">Powers and Exponents · Exponent · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-5-catchup" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,19 +773,28 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 6.3 · 6.4 · 6.5 Catch-Up</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can show I am caught up on Lessons 6.3 · 6.4 · 6.5 by using each lesson's big idea in mixed practice.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: The Big Ideas — Lessons 6.3 · 6.4 · 6.5</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>6.3: A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2. • 6.4: Evaluate in this order: grouping symbols, then powers, then multiplication and division left to right, then addition and subtraction left to right. • 6.5: Words like “each” or “per” mean multiply and attach to the variable; a one-time amount is a constant. Once the variable has a number, substitute it in and evaluate using the order of operations.</div>
+        <ul class="ws-note-list"><li>Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — The Big Ideas (one per lesson)</div>
+        <ol class="ws-note-list"><li>Lesson 6.3 — Explore Numerical Expressions with Exponents: A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2.</li><li>Lesson 6.4 — Write and Evaluate Numerical Expressions with Exponents: Evaluate in this order: grouping symbols, then powers, then multiplication and division left to right, then addition and subtraction left to right.</li><li>Lesson 6.5 — Write and Evaluate Algebraic Expressions: Words like “each” or “per” mean multiply and attach to the variable; a one-time amount is a constant. Once the variable has a number, substitute it in and evaluate using the order of operations.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Powers and Exponents (Potencias y exponentes) — A power uses a base and an exponent to show repeated multiplication.</li><li>Exponent (Exponente) — A small number that tells how many times to multiply a number by itself.</li><li>Base (Base) — The number that gets multiplied by itself.</li><li>Power (Potencia) — A number written with a base and an exponent, like 2³.</li><li>Evaluate (Evaluar) — To find the value by putting numbers in for the letters.</li><li>Write and Evaluate Numerical Expressions with Exponents (Escribir y evaluar expresiones numéricas con exponentes) — Turning a situation into a number sentence without an equal sign, then finding its value in the correct order.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Write Algebraic Expressions is treating 'each' or 'per' as if it means add instead of multiply, and attaching the variable to the wrong number. For 'a $25 setup fee plus $8 per hour, h,' students often write 25 + 8 + h (adding all three numbers) or 25h + 8 (multiplying the flat fee by h) instead of the correct 8h + 25. Since $8 applies per hour, it must multiply the variable (8h), and the flat $25 fee is a constant added only once — check that the per-unit rate, not the flat fee, is the number multiplied by the variable.</li></ul>
+      </div>
     </section>
   
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Powers and Exponents <span class="ws-es-term">(Potencias y exponentes)</span></span><span class="ws-bankdef"> — A power uses a base and an exponent to show repeated multiplication.</span></div><div class="ws-bank-card"><span class="ws-bankword">Exponent <span class="ws-es-term">(Exponente)</span></span><span class="ws-bankdef"> — A small number that tells how many times to multiply a number by itself.</span></div><div class="ws-bank-card"><span class="ws-bankword">Base <span class="ws-es-term">(Base)</span></span><span class="ws-bankdef"> — The number that gets multiplied by itself.</span></div><div class="ws-bank-card"><span class="ws-bankword">Power <span class="ws-es-term">(Potencia)</span></span><span class="ws-bankdef"> — A number written with a base and an exponent, like 2³.</span></div><div class="ws-bank-card"><span class="ws-bankword">Evaluate <span class="ws-es-term">(Evaluar)</span></span><span class="ws-bankdef"> — To find the value by putting numbers in for the letters.</span></div><div class="ws-bank-card"><span class="ws-bankword">Write and Evaluate Numerical Expressions with Exponents <span class="ws-es-term">(Escribir y evaluar expresiones numéricas con exponentes)</span></span><span class="ws-bankdef"> — Turning a situation into a number sentence without an equal sign, then finding its value in the correct order.</span></div><div class="ws-bank-card"><span class="ws-bankword">Numerical expression <span class="ws-es-term">(Expresión numérica)</span></span><span class="ws-bankdef"> — A math phrase built from numbers and operations, with no equal sign and no variable.</span></div><div class="ws-bank-card"><span class="ws-bankword">Order of operations <span class="ws-es-term">(Orden de las operaciones)</span></span><span class="ws-bankdef"> — The agreed order for evaluating: grouping symbols, then exponents, then multiply and divide left to right, then add and subtract left to right.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -728,7 +802,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 6.3) What is the value of 4³?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">64</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">43</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7</span></li></ol>
+        <p class="ws-stem">(Lesson 6.4) What does 2³ mean?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 2 × 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 + 2 + 2</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -739,10 +816,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 6.3) What is the value of 6²?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">62</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8</span></li></ol>
+        <p class="ws-stem">(Lesson 6.5) Which expression represents 'the product of 6 and a number n'?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6n</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 + n</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n − 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n ÷ 6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -750,7 +834,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 6.4) Evaluate 3 + 4 × 2.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-cols"><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span></div><div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Line up the place values</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Line up</span><span class="wsd-step-h">Points under points.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Fill gaps</span><span class="wsd-step-h">Write in the zeros.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Right to left.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring the point down</span><span class="wsd-step-h">Straight down.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol>
+        <p class="ws-stem">(Lesson 6.3) What is the value of 4³?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">64</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">43</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -761,7 +848,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 6.4) What does 2³ mean?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 2 × 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 + 2 + 2</span></li></ol>
+        <p class="ws-stem">(Lesson 6.3) What is the value of 6²?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">62</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -772,7 +862,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 6.5) Which expression represents 'the product of 6 and a number n'?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6n</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 + n</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n − 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n ÷ 6</span></li></ol>
+        <p class="ws-stem">(Lesson 6.4) Evaluate 3 + 4 × 2.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-cols"><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span><span class="wss-col"></span></div><div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Line up the place values</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Line up</span><span class="wsd-step-h">Points under points.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Fill gaps</span><span class="wsd-step-h">Write in the zeros.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Right to left.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring the point down</span><span class="wsd-step-h">Straight down.</span></li></ol></div>
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Generate Equivalent Expressions</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Properties of Operations · Commutative Property · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,16 +773,24 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Generate Equivalent Expressions</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use the commutative, associative, and identity properties to rewrite expressions.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Properties of Operations <span class="ws-es-term">(Propiedades de las operaciones)</span></span><span class="ws-bankdef"> — Rules that let you reorder or regroup numbers without changing an expression's value.</span></div><div class="ws-bank-card"><span class="ws-bankword">Commutative Property <span class="ws-es-term">(Propiedad conmutativa)</span></span><span class="ws-bankdef"> — You can change the order and get the same answer.</span></div><div class="ws-bank-card"><span class="ws-bankword">Associative Property <span class="ws-es-term">(Propiedad asociativa)</span></span><span class="ws-bankdef"> — You can change the grouping and get the same answer.</span></div><div class="ws-bank-card"><span class="ws-bankword">Identity Property <span class="ws-es-term">(Propiedad de identidad)</span></span><span class="ws-bankdef"> — Adding 0 or multiplying by 1 keeps the same value.</span></div><div class="ws-bank-card"><span class="ws-bankword">Property <span class="ws-es-term">(Propiedad)</span></span><span class="ws-bankdef"> — A rule that is always true in math.</span></div><div class="ws-bank-card"><span class="ws-bankword">Distributive Property <span class="ws-es-term">(Propiedad distributiva)</span></span><span class="ws-bankdef"> — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: What are the properties of operations?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Properties of Operations. Formula: Commutative: a + b = b + a | Associative: (a + b) + c = a + (b + c)</div>
+        <ul class="ws-note-list"><li>Properties are math rules that are always true. The Commutative Property lets you change the order. The Associative Property lets you change the grouping (the parentheses).</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Commutative Property: Order does not change sum or product.</li><li>Associative Property: Grouping does not change sum or product.</li><li>Identity Property: a + 0 = a; a · 1 = a</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I have 3 guitarists, 5 drummers, and 2 keyboard players.</li><li>I can add them as 3 + 5 + 2, which gives 10.</li><li>The Commutative Property says order does not matter: 5 + 3 + 2 also gives 10.</li><li>The Associative Property says grouping does not matter: (3 + 5) + 2 = 3 + (5 + 2), both equal 10.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Properties of Operations (Propiedades de las operaciones) — Rules that let you reorder or regroup numbers without changing an expression's value.</li><li>Commutative Property (Propiedad conmutativa) — You can change the order and get the same answer.</li><li>Associative Property (Propiedad asociativa) — You can change the grouping and get the same answer.</li><li>Identity Property (Propiedad de identidad) — Adding 0 or multiplying by 1 keeps the same value.</li><li>Property (Propiedad) — A rule that is always true in math.</li><li>Distributive Property (Propiedad distributiva) — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Properties of Operations is applying the commutative property where it does not belong, or confusing it with the associative property. Students often assume 15 − 8 = 8 − 15 (it does not: 7 ≠ −7 — commutative only works for addition and multiplication), or they see parentheses move and call it &quot;associative&quot; even when the numbers inside just swapped places, like (2 + 3) + 4 = (3 + 2) + 4 (that is commutative — the order inside the parentheses changed, not the grouping). Before you label a property, ask: did only the order change (commutative), did only the grouping change (associative), or was a 0 or 1 involved (identity)?</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
@@ -729,7 +802,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property is shown? 5 + 13 = 13 + 5</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Which property is shown? 5 + 13 = 13 + 5</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -740,7 +816,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property is shown? (6 × 3) × 2 = 6 × (3 × 2)</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Which property is shown? (6 × 3) × 2 = 6 × (3 × 2)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,7 +830,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property is shown? 47 + 0 = 47</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Which property is shown? 47 + 0 = 47</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -762,7 +844,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property lets you rearrange 8 × 5 to 5 × 8?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Which property lets you rearrange 8 × 5 to 5 × 8?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -811,14 +896,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Generate Equivalent Expressions</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Properties of Operations · Commutative Property · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -833,31 +919,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Generate Equivalent Expressions</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use the commutative, associative, and identity properties to rewrite expressions.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: What are the properties of operations?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Properties of Operations. Formula: Commutative: a + b = b + a | Associative: (a + b) + c = a + (b + c)</div>
+        <ul class="ws-note-list"><li>Properties are math rules that are always true. The Commutative Property lets you change the order. The Associative Property lets you change the grouping (the parentheses).</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Commutative Property: Order does not change sum or product.</li><li>Associative Property: Grouping does not change sum or product.</li><li>Identity Property: a + 0 = a; a · 1 = a</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I have 3 guitarists, 5 drummers, and 2 keyboard players.</li><li>I can add them as 3 + 5 + 2, which gives 10.</li><li>The Commutative Property says order does not matter: 5 + 3 + 2 also gives 10.</li><li>The Associative Property says grouping does not matter: (3 + 5) + 2 = 3 + (5 + 2), both equal 10.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Properties of Operations (Propiedades de las operaciones) — Rules that let you reorder or regroup numbers without changing an expression's value.</li><li>Commutative Property (Propiedad conmutativa) — You can change the order and get the same answer.</li><li>Associative Property (Propiedad asociativa) — You can change the grouping and get the same answer.</li><li>Identity Property (Propiedad de identidad) — Adding 0 or multiplying by 1 keeps the same value.</li><li>Property (Propiedad) — A rule that is always true in math.</li><li>Distributive Property (Propiedad distributiva) — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Properties of Operations is applying the commutative property where it does not belong, or confusing it with the associative property. Students often assume 15 − 8 = 8 − 15 (it does not: 7 ≠ −7 — commutative only works for addition and multiplication), or they see parentheses move and call it &quot;associative&quot; even when the numbers inside just swapped places, like (2 + 3) + 4 = (3 + 2) + 4 (that is commutative — the order inside the parentheses changed, not the grouping). Before you label a property, ask: did only the order change (commutative), did only the grouping change (associative), or was a 0 or 1 involved (identity)?</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Properties of Operations <span class="ws-es-term">(Propiedades de las operaciones)</span></span><span class="ws-bankdef"> — Rules that let you reorder or regroup numbers without changing an expression's value.</span></div><div class="ws-bank-card"><span class="ws-bankword">Commutative Property <span class="ws-es-term">(Propiedad conmutativa)</span></span><span class="ws-bankdef"> — You can change the order and get the same answer.</span></div><div class="ws-bank-card"><span class="ws-bankword">Associative Property <span class="ws-es-term">(Propiedad asociativa)</span></span><span class="ws-bankdef"> — You can change the grouping and get the same answer.</span></div><div class="ws-bank-card"><span class="ws-bankword">Identity Property <span class="ws-es-term">(Propiedad de identidad)</span></span><span class="ws-bankdef"> — Adding 0 or multiplying by 1 keeps the same value.</span></div><div class="ws-bank-card"><span class="ws-bankword">Property <span class="ws-es-term">(Propiedad)</span></span><span class="ws-bankdef"> — A rule that is always true in math.</span></div><div class="ws-bank-card"><span class="ws-bankword">Distributive Property <span class="ws-es-term">(Propiedad distributiva)</span></span><span class="ws-bankdef"> — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property is shown? 5 + 13 = 13 + 5</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Sort each equation by the property it shows.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Commutative</span> <span class="ws-cat-pill">Associative</span> <span class="ws-cat-pill">Identity</span></div>
+  <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -865,7 +969,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property is shown? (6 × 3) × 2 = 6 × (3 × 2)</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Which property is shown? 5 + 13 = 13 + 5</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -876,7 +983,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property is shown? 47 + 0 = 47</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Which property is shown? (6 × 3) × 2 = 6 × (3 × 2)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -887,23 +997,31 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which property lets you rearrange 8 × 5 to 5 × 8?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol>
+        <p class="ws-stem">Which property is shown? 47 + 0 = 47</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each equation by the property it shows.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Commutative</span> <span class="ws-cat-pill">Associative</span> <span class="ws-cat-pill">Identity</span></div>
-  <ul class="ws-sort-list"></ul>
+        <p class="ws-stem">Which property lets you rearrange 8 × 5 to 5 × 8?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Commutative Property</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Associative Property</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Identity Property</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Distributive Property</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -914,7 +1032,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Statement:</span><span class="ws-step-w">4 + 0 = 4</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's label:</span><span class="ws-step-w">This shows the Commutative Property.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Reasoning:</span><span class="ws-step-w">The numbers 4 and 0 switched places, so it must be commutative.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -963,14 +1084,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Generate Equivalent Expressions</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Properties of Operations · Commutative Property · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -985,9 +1107,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: What are the properties of operations?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Properties of Operations. Formula: Commutative: a + b = b + a | Associative: (a + b) + c = a + (b + c)</div>
+        <ul class="ws-note-list"><li>Properties are math rules that are always true. The Commutative Property lets you change the order. The Associative Property lets you change the grouping (the parentheses).</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Commutative Property: Order does not change sum or product.</li><li>Associative Property: Grouping does not change sum or product.</li><li>Identity Property: a + 0 = a; a · 1 = a</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I have 3 guitarists, 5 drummers, and 2 keyboard players.</li><li>I can add them as 3 + 5 + 2, which gives 10.</li><li>The Commutative Property says order does not matter: 5 + 3 + 2 also gives 10.</li><li>The Associative Property says grouping does not matter: (3 + 5) + 2 = 3 + (5 + 2), both equal 10.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Look at 6 + 9 and 9 + 6. Do they give the same total?</li><li>6 + 9 = 15 and 9 + 6 = 15. Yes, the same.</li><li>Only the order changed, so this shows the Commutative Property.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Properties of Operations (Propiedades de las operaciones) — Rules that let you reorder or regroup numbers without changing an expression's value.</li><li>Commutative Property (Propiedad conmutativa) — You can change the order and get the same answer.</li><li>Associative Property (Propiedad asociativa) — You can change the grouping and get the same answer.</li><li>Identity Property (Propiedad de identidad) — Adding 0 or multiplying by 1 keeps the same value.</li><li>Property (Propiedad) — A rule that is always true in math.</li><li>Distributive Property (Propiedad distributiva) — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Properties of Operations is applying the commutative property where it does not belong, or confusing it with the associative property. Students often assume 15 − 8 = 8 − 15 (it does not: 7 ≠ −7 — commutative only works for addition and multiplication), or they see parentheses move and call it &quot;associative&quot; even when the numbers inside just swapped places, like (2 + 3) + 4 = (3 + 2) + 4 (that is commutative — the order inside the parentheses changed, not the grouping). Before you label a property, ask: did only the order change (commutative), did only the grouping change (associative), or was a 0 or 1 involved (identity)?</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1022,7 +1170,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Use properties to rewrite each expression in a way that makes mental math easier. Then calculate.</p>
   <table class="ws-table"><thead><tr><th>Original</th><th>Rearranged (using properties)</th><th>Value</th></tr></thead><tbody><tr><td>25 × 7 × 4</td><td></td><td></td></tr><tr><td>19 + 36 + 1</td><td></td><td></td></tr><tr><td>50 × 9 × 2</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1044,10 +1195,17 @@ header.packet h1::after{
       <rect x="210" y="76" width="100" height="28" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="4"/>
       <text x="260" y="94" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af" font-family="'Hanken Grotesk',Arial,sans-serif">3 + (8 + 2) = 13</text>
     </svg></div>
-        <p class="ws-stem">Associative Property of Addition: same value (13), different grouping</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Associative Property of Addition: same value (13), different grouping</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1058,7 +1216,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Statement:</span><span class="ws-step-w">(2 + 3) + 4 = (3 + 2) + 4</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's label:</span><span class="ws-step-w">This shows the Associative Property.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Reasoning:</span><span class="ws-step-w">There are parentheses, so the grouping must have changed.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1107,14 +1268,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Generate Equivalent Expressions</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Properties of Operations · Commutative Property · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1129,12 +1291,74 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: What are the properties of operations?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Properties of Operations. Formula: Commutative: a + b = b + a | Associative: (a + b) + c = a + (b + c)</div>
+        <ul class="ws-note-list"><li>Properties are math rules that are always true. The Commutative Property lets you change the order. The Associative Property lets you change the grouping (the parentheses).</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Commutative Property: Order does not change sum or product.</li><li>Associative Property: Grouping does not change sum or product.</li><li>Identity Property: a + 0 = a; a · 1 = a</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I have 3 guitarists, 5 drummers, and 2 keyboard players.</li><li>I can add them as 3 + 5 + 2, which gives 10.</li><li>The Commutative Property says order does not matter: 5 + 3 + 2 also gives 10.</li><li>The Associative Property says grouping does not matter: (3 + 5) + 2 = 3 + (5 + 2), both equal 10.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Look at 6 + 9 and 9 + 6. Do they give the same total?</li><li>6 + 9 = 15 and 9 + 6 = 15. Yes, the same.</li><li>Only the order changed, so this shows the Commutative Property.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Properties of Operations (Propiedades de las operaciones) — Rules that let you reorder or regroup numbers without changing an expression's value.</li><li>Commutative Property (Propiedad conmutativa) — You can change the order and get the same answer.</li><li>Associative Property (Propiedad asociativa) — You can change the grouping and get the same answer.</li><li>Identity Property (Propiedad de identidad) — Adding 0 or multiplying by 1 keeps the same value.</li><li>Property (Propiedad) — A rule that is always true in math.</li><li>Distributive Property (Propiedad distributiva) — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Properties of Operations is applying the commutative property where it does not belong, or confusing it with the associative property. Students often assume 15 − 8 = 8 − 15 (it does not: 7 ≠ −7 — commutative only works for addition and multiplication), or they see parentheses move and call it &quot;associative&quot; even when the numbers inside just swapped places, like (2 + 3) + 4 = (3 + 2) + 4 (that is commutative — the order inside the parentheses changed, not the grouping). Before you label a property, ask: did only the order change (commutative), did only the grouping change (associative), or was a 0 or 1 involved (identity)?</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">For each expression, use the commutative and/or associative properties to rearrange and simplify the mental math. Show which property you used.</p>
+  <table class="ws-table"><thead><tr><th>Expression</th><th>Rearranged</th><th>Property Used</th><th>Value</th></tr></thead><tbody><tr><td>2 × 13 × 50</td><td></td><td></td><td></td></tr><tr><td>45 + 27 + 55</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">6.AT.7 asks you to use properties to GENERATE an equivalent expression, not just to name a property — try it with variables instead of just numbers. For each expression, apply the property named to write an equivalent expression.</p>
+  <table class="ws-table"><thead><tr><th>Expression</th><th>Property to apply</th><th>Equivalent expression</th></tr></thead><tbody><tr><td>y + y + y</td><td></td><td></td></tr><tr><td>(x + 4) + 6</td><td></td><td></td></tr><tr><td>5 + n</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1142,44 +1366,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the Property Error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Statement:</span><span class="ws-step-w">15 − 8 = 8 − 15</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's claim:</span><span class="ws-step-w">This shows the Commutative Property of Subtraction.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Reasoning:</span><span class="ws-step-w">I switched the order, so it must be commutative.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Explain why the commutative property works for addition and multiplication but NOT for subtraction and division. Give a specific number example for each operation to prove your point.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">For each expression, use the commutative and/or associative properties to rearrange and simplify the mental math. Show which property you used.</p>
-  <table class="ws-table"><thead><tr><th>Expression</th><th>Rearranged</th><th>Property Used</th><th>Value</th></tr></thead><tbody><tr><td>2 × 13 × 50</td><td></td><td></td><td></td></tr><tr><td>45 + 27 + 55</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">6.AT.7 asks you to use properties to GENERATE an equivalent expression, not just to name a property — try it with variables instead of just numbers. For each expression, apply the property named to write an equivalent expression.</p>
-  <table class="ws-table"><thead><tr><th>Expression</th><th>Property to apply</th><th>Equivalent expression</th></tr></thead><tbody><tr><td>y + y + y</td><td></td><td></td></tr><tr><td>(x + 4) + 6</td><td></td><td></td></tr><tr><td>5 + n</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">Explain why the commutative property works for addition and multiplication but NOT for subtraction and division. Give a specific number example for each operation to prove your point.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Analyze Graphs of Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">graph · table of values · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -698,7 +763,6 @@ header.packet h1::after{
       </div>
     </header>
   
-      
       
       
       <ol class="ws-problems-grid">
@@ -783,14 +847,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Analyze Graphs of Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">graph · table of values · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +871,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each ordered pair (tickets, cost): on the graph, or not?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">On the ticket graph</span> <span class="ws-cat-pill">NOT on the graph</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">On the ticket graph</span><span class="ws-sort-text">(1, 45)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">On the ticket graph</span><span class="ws-sort-text">(2, 90)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">On the ticket graph</span><span class="ws-sort-text">(4, 180)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">NOT on the graph</span><span class="ws-sort-text">(3, 120)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">NOT on the graph</span><span class="ws-sort-text">(2, 100)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">NOT on the graph</span><span class="ws-sort-text">(5, 200)</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +906,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,7 +917,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -843,7 +928,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -854,7 +939,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -865,25 +950,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">7</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">As the number of tickets purchased increases, the total cost…</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">increases</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">decreases</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">stays the same</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">cannot be determined</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Every extra ticket adds another $45, so the total cost rises as the number of tickets rises.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each ordered pair (tickets, cost): on the graph, or not?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">On the ticket graph</span> <span class="ws-cat-pill">NOT on the graph</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">On the ticket graph</span><span class="ws-sort-text">(1, 45)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">On the ticket graph</span><span class="ws-sort-text">(2, 90)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">On the ticket graph</span><span class="ws-sort-text">(4, 180)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">NOT on the graph</span><span class="ws-sort-text">(3, 120)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">NOT on the graph</span><span class="ws-sort-text">(2, 100)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">NOT on the graph</span><span class="ws-sort-text">(5, 200)</span></li></ul>
       </div>
     </li>
   </ol>
@@ -924,14 +996,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Analyze Graphs of Relationships Between Two Variables</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">graph · table of values · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,55 +1020,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The Sandia Peak tram travels 1,200 feet each minute and the ascent takes 15 minutes. How long is the whole ascent in feet?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">18,000 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1,215 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12,000 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16,800 feet</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The total distance is 15 × 1,200 = 18,000 feet.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">On the tram graph with minutes on the horizontal axis and feet on the vertical axis, which ordered pair lies on the graph?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(5, 6000)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(6000, 5)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(5, 1200)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(5, 5000)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> After 5 minutes the tram has traveled 5 × 1,200 = 6,000 feet, so the point is (5, 6000).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A table pairs hours with kilometers: (1, 48), (2, 96), (5, 240). How many kilometers are traveled each hour?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">48</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">96</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">240</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">24</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each row is 48 times the number of hours: 2 × 48 = 96 and 5 × 48 = 240, so the rate is 48 kilometers per hour.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Why is the line on the football ticket graph dashed instead of solid?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">You can only buy whole numbers of tickets, so the points between whole numbers do not make sense</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The graph is unfinished</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Dashed lines always mean the cost is decreasing</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The ticket price changes between points</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> You cannot buy 2.5 tickets, so only the whole-number points represent real purchases — the dashes show the trend without claiming the in-between points are possible.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1006,18 +1038,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Using the ticket table, what are the coordinates of the point for 4 tickets?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(4, 180)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(4, 160)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(180, 4)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(4, 49)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 tickets cost 4 × 45 = 180 dollars, and tickets come first, so the point is (4, 180).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -1025,6 +1046,65 @@ header.packet h1::after{
         <p class="ws-stem">Tickets cost $45 each. Complete the table that feeds the graph.</p>
   <table class="ws-table"><thead><tr><th>Tickets (x)</th><th>Thinking</th><th>Total cost in dollars (y)</th></tr></thead><tbody><tr><td>2</td><td>2 × 45</td><td>90</td></tr><tr><td>5</td><td>5 × 45</td><td>225</td></tr><tr><td>8</td><td>8 × 45</td><td>360</td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">The Sandia Peak tram travels 1,200 feet each minute and the ascent takes 15 minutes. How long is the whole ascent in feet?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">18,000 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1,215 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12,000 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16,800 feet</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The total distance is 15 × 1,200 = 18,000 feet.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">On the tram graph with minutes on the horizontal axis and feet on the vertical axis, which ordered pair lies on the graph?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(5, 6000)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(6000, 5)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(5, 1200)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(5, 5000)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> After 5 minutes the tram has traveled 5 × 1,200 = 6,000 feet, so the point is (5, 6000).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A table pairs hours with kilometers: (1, 48), (2, 96), (5, 240). How many kilometers are traveled each hour?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">48</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">96</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">240</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">24</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each row is 48 times the number of hours: 2 × 48 = 96 and 5 × 48 = 240, so the rate is 48 kilometers per hour.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Why is the line on the football ticket graph dashed instead of solid?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">You can only buy whole numbers of tickets, so the points between whole numbers do not make sense</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The graph is unfinished</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Dashed lines always mean the cost is decreasing</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The ticket price changes between points</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> You cannot buy 2.5 tickets, so only the whole-number points represent real purchases — the dashes show the trend without claiming the in-between points are possible.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Using the ticket table, what are the coordinates of the point for 4 tickets?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(4, 180)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(4, 160)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(180, 4)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(4, 49)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 tickets cost 4 × 45 = 180 dollars, and tickets come first, so the point is (4, 180).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
       </div>
     </li>
   </ol>
@@ -1065,14 +1145,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Analyze Graphs of Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">graph · table of values · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1088,11 +1169,29 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">COORDINATE GRID</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Plot the ticket-cost relationship: one point for each number of tickets.</p><div class="ws-keynote">See standard solution method.</div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1103,7 +1202,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1114,7 +1213,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1125,23 +1224,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">A second tram travels 900 feet per minute. If both trams are graphed on the same axes (minutes vs. feet), how do the graphs compare?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The Sandia Peak line (1,200 ft/min) rises more steeply than the 900 ft/min line</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The 900 ft/min line rises more steeply</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The two lines are identical</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The 900 ft/min line goes downward</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> In one minute, the Sandia tram climbs 1,200 feet on the graph while the other climbs only 900 — a faster rate makes a steeper line.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reversing the coordinates of a point — writing (cost, tickets) instead of (tickets, cost). The independent variable always comes first in the ordered pair.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">COORDINATE GRID</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Plot the ticket-cost relationship: one point for each number of tickets.</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
   </ol>

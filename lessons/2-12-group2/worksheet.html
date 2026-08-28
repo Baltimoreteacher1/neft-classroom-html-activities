@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.12 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Multiply Decimals · Product · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-12-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 2.12 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can multiply decimals and place the decimal point correctly in the product, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do you multiply decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Multiply like whole numbers, then the product has the SAME total of decimal places as both factors combined — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 4.5 × 12.60, the cost of 4.5 meters at $12.60 each.</li><li>First I multiply without points, like whole numbers: 45 × 1260 = 56,700.</li><li>Now I count decimal places: 4.5 has 1, and 12.60 has 2, so 1 + 2 = 3 decimal places.</li><li>I put the point 3 places from the right in 56,700: that gives 56.700, or $56.70.</li><li>I check with an estimate: 5 × $13 = $65, and $56.70 is close, so my answer is reasonable.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Let's multiply 0.4 × 0.7. First multiply like whole numbers: what is 4 × 7? (28.)</li><li>Now count decimal places: 0.4 has 1 and 0.7 has 1, so that is 2 places total.</li><li>Put the point 2 places from the right in 28: 0.28. So 0.4 × 0.7 = 0.28.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Multiply Decimals (Multiplicar decimales) — Find the product of decimals, then use place value to place the decimal point.</li><li>Product (Producto) — The answer when you multiply.</li><li>Decimal point (Punto decimal) — The dot that splits the whole number from the part after it.</li><li>Estimate (Estimar) — A close answer you get by rounding first.</li><li>Place value (Valor posicional) — What a digit is worth based on where it sits in a number.</li><li>Decimal places (Cifras decimales) — How many digits come after the decimal point.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Multiply Decimals is counting decimal places from only one factor instead of adding the decimal places from BOTH factors. For example, in 0.4 × 0.06, a student multiplies 4 × 6 = 24, then places the decimal point using just one factor's place count (1 place), writing 0.24 instead of the correct answer: 0.4 has 1 decimal place and 0.06 has 2 decimal places, for a total of 3, so 24 becomes 0.024. Before you submit, count the decimal places in EACH factor separately and add them together — that total is how many decimal places belong in your final answer.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -730,10 +813,17 @@ header.packet h1::after{
         
         <p class="ws-stem">Complete each decimal multiplication.</p>
   <table class="ws-table"><thead><tr><th>Problem</th><th>Product</th></tr></thead><tbody><tr><td>6.4 × 3.5</td><td></td></tr><tr><td>0.25 × 0.4</td><td></td></tr><tr><td>8.3 × 2.1</td><td></td></tr><tr><td>12.5 × 0.8</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -741,7 +831,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A customer orders 3 taco baskets at $4.25 each. What is the total before tax?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$12.75</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12.15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$1.275</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$127.50</span></li></ol>
+        <p class="ws-stem">A customer orders 3 taco baskets at $4.25 each. What is the total before tax?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$12.75</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12.15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$1.275</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$127.50</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -752,12 +845,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Each lemonade uses 0.6 of a cup of sugar, and sugar costs $0.40 per cup. How much sugar cost is in one lemonade? (0.6 × 0.4)</p><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+        <p class="ws-stem">Each lemonade uses 0.6 of a cup of sugar, and sugar costs $0.40 per cup. How much sugar cost is in one lemonade? (0.6 × 0.4)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$0.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$2.40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$0.024</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$24.00</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$0.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$2.40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$0.024</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$24.00</span></li></ol>
+    </tbody></table></div></div>
       </div>
     </li>
   
@@ -768,10 +861,14 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The truck sells 2.5 pounds of fries, and each pound earns $1.20 in profit. What is the total profit? (2.5 × 1.2)</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$3.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$30.00</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$0.30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$3.70</span></li></ol>
+        <p class="ws-stem">The truck sells 2.5 pounds of fries, and each pound earns $1.20 in profit. What is the total profit? (2.5 × 1.2)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$3.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$30.00</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$0.30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$3.70</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -782,7 +879,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Level 2 Extension — Find the Cashier's Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Order:</span><span class="ws-step-w">2 burrito bowls at $6.45 each: 2 × 6.45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply as whole numbers:</span><span class="ws-step-w">2 × 645 = 1,290</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Count decimal places:</span><span class="ws-step-w">6.45 has 2 decimal places → 2 total</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Place the decimal point:</span><span class="ws-step-w">129.0, so the total is $129.00</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -849,7 +949,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

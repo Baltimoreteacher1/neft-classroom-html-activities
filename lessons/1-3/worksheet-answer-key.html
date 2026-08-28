@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is In My World</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">representation · tape diagram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,8 +765,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -727,22 +795,26 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">About how many coins are in the picture in your book? Explain how you estimated WITHOUT counting every coin.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> First I counted ___ .&lt;br&gt;Then I estimated about ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I counted one small stack of about 10 coins, then estimated that about 15 stacks like it fill the picture, so about 150 coins. An estimate is a reasoned answer that is close enough to be useful.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">How many minutes do 50 tram rides take, at 12.5 minutes per ride?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">625 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">62.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">600 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6,250 minutes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 12.5 × 50 = 625, just as the table shows: 1 ride → 12.5, 10 rides → 125, 50 rides → 625.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">About how many coins are in the picture in your book? Explain how you estimated WITHOUT counting every coin.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> First I counted ___ .&lt;br&gt;Then I estimated about ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I counted one small stack of about 10 coins, then estimated that about 15 stacks like it fill the picture, so about 150 coins. An estimate is a reasoned answer that is close enough to be useful.</div>
       </div>
     </li>
   </ol>
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is In My World</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">representation · tape diagram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +879,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each expression by whether it equals 125.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Equals 125</span> <span class="ws-cat-pill">Does NOT equal 125</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equals 125</span><span class="ws-sort-text">12.5 × 10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equals 125</span><span class="ws-sort-text">1.25 × 100</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equals 125</span><span class="ws-sort-text">62.5 × 2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Does NOT equal 125</span><span class="ws-sort-text">12.5 × 100</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Does NOT equal 125</span><span class="ws-sort-text">1.25 × 10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Does NOT equal 125</span><span class="ws-sort-text">12.5 + 10</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,23 +914,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Five Breaks: which of these is a correct way to decompose 12.5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">10 + 2.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10 + 2.05</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 + 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 + 2.5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 10 + 2.5 = 12.5. The parts of a decomposition must rebuild the number exactly.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">About how many coins are in the picture in your book? Explain how you estimated WITHOUT counting every coin.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> First I counted ___ .&lt;br&gt;Then I estimated about ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I counted one small stack of about 10 coins, then estimated that about 15 stacks like it fill the picture, so about 150 coins. An estimate is a reasoned answer that is close enough to be useful.</div>
       </div>
     </li>
   
@@ -862,7 +944,11 @@ header.packet h1::after{
         <p class="ws-stem">Each tram ride carries 80 passengers. How many rides are needed to transport 4,000 passengers?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">50 rides</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">500 rides</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">320,000 rides</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3,920 rides</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4,000 ÷ 80 = 50. A tape diagram of 4,000 cut into equal groups of 80 shows why this is division.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -870,20 +956,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How can a tape diagram help you visualize the tram problem of moving 4,000 passengers?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> My tape diagram shows ___ .&lt;br&gt;It helps because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I can draw one long bar labeled 4,000 and cut it into equal parts of 80, one part per tram ride. The diagram shows the total being split into equal groups, which is why division tells me the number of rides.</div>
+        <p class="ws-stem">About how many coins are in the picture in your book? Explain how you estimated WITHOUT counting every coin.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> First I counted ___ .&lt;br&gt;Then I estimated about ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I counted one small stack of about 10 coins, then estimated that about 15 stacks like it fill the picture, so about 150 coins. An estimate is a reasoned answer that is close enough to be useful.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each expression by whether it equals 125.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Equals 125</span> <span class="ws-cat-pill">Does NOT equal 125</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equals 125</span><span class="ws-sort-text">12.5 × 10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equals 125</span><span class="ws-sort-text">1.25 × 100</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equals 125</span><span class="ws-sort-text">62.5 × 2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Does NOT equal 125</span><span class="ws-sort-text">12.5 × 100</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Does NOT equal 125</span><span class="ws-sort-text">1.25 × 10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Does NOT equal 125</span><span class="ws-sort-text">12.5 + 10</span></li></ul>
+        <p class="ws-stem">How can a tape diagram help you visualize the tram problem of moving 4,000 passengers?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> My tape diagram shows ___ .&lt;br&gt;It helps because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I can draw one long bar labeled 4,000 and cut it into equal parts of 80, one part per tram ride. The diagram shows the total being split into equal groups, which is why division tells me the number of rides.</div>
       </div>
     </li>
   </ol>
@@ -924,14 +1008,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is In My World</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">representation · tape diagram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,11 +1032,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Each tram ride takes 12.5 minutes. Complete the table of total minutes.</p>
+  <table class="ws-table"><thead><tr><th>Rides</th><th>Expression</th><th>Total minutes</th></tr></thead><tbody><tr><td>10</td><td>10 × 12.5</td><td>125</td></tr><tr><td>20</td><td>20 × 12.5</td><td>250</td></tr><tr><td>50</td><td>50 × 12.5</td><td>625</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -962,7 +1067,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -973,23 +1078,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">One round trip takes 35 minutes. Using the table (35 → 1, 350 → 10, 525 → 15, 700 → 20), how many round trips does a tram car complete in 10 hours?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">17 round trips</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">20 round trips</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15 round trips</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">18 round trips</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 10 hours is 600 minutes. 17 trips take 17 × 35 = 595 minutes, and an 18th trip would need 630 — past the 600. So the tram completes 17 round trips.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The two tram problems both use the 35-minute or 12.5-minute ride times. How are the two problems the SAME, and how are they DIFFERENT?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: They are the same because both relate time to a number of tram trips and both can use a table of values. They are different because the first starts from passengers and asks for total time, while the second starts from a total time (10 hours) and asks how many round trips fit inside it.</div>
       </div>
     </li>
   
@@ -1003,7 +1097,11 @@ header.packet h1::after{
         <p class="ws-stem">The round trip is 5 miles. How far does a tram car travel in 5 round trips?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">25 miles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10 miles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1 mile</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">50 miles</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 5 round trips × 5 miles per trip = 25 miles.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -1011,20 +1109,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How does the answer change if the tram must transport 6,000 passengers? (Each ride carries 80 passengers and takes 12.5 minutes.) Show your steps.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: 6,000 ÷ 80 = 75 rides. Then 75 × 12.5 = 937.5 minutes. Dividing by 60, that is 937.5 ÷ 60 = 15.625, so about 15.63 hours — half again as long as the 10.42 hours for 4,000 passengers, which makes sense because 6,000 is one and a half times 4,000.</div>
+        <p class="ws-stem">The two tram problems both use the 35-minute or 12.5-minute ride times. How are the two problems the SAME, and how are they DIFFERENT?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: They are the same because both relate time to a number of tram trips and both can use a table of values. They are different because the first starts from passengers and asks for total time, while the second starts from a total time (10 hours) and asks how many round trips fit inside it.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Each tram ride takes 12.5 minutes. Complete the table of total minutes.</p>
-  <table class="ws-table"><thead><tr><th>Rides</th><th>Expression</th><th>Total minutes</th></tr></thead><tbody><tr><td>10</td><td>10 × 12.5</td><td>125</td></tr><tr><td>20</td><td>20 × 12.5</td><td>250</td></tr><tr><td>50</td><td>50 × 12.5</td><td>625</td></tr></tbody></table>
-  
+        <p class="ws-stem">How does the answer change if the tram must transport 6,000 passengers? (Each ride carries 80 passengers and takes 12.5 minutes.) Show your steps.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: 6,000 ÷ 80 = 75 rides. Then 75 × 12.5 = 937.5 minutes. Dividing by 60, that is 937.5 ÷ 60 = 15.625, so about 15.63 hours — half again as long as the 10.42 hours for 4,000 passengers, which makes sense because 6,000 is one and a half times 4,000.</div>
       </div>
     </li>
   </ol>
@@ -1065,14 +1161,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is In My World</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">representation · tape diagram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1088,11 +1185,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each tram question to the operation that answers it.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Minutes for 40 rides (12.5 min each)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Rides needed for 400 passengers (80 per ride)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Hours in 625 minutes</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Passengers on 30 full rides</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">40 × 12.5</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">400 ÷ 80</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">625 ÷ 60</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">30 × 80</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1103,7 +1219,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1111,10 +1227,14 @@ header.packet h1::after{
         <p class="ws-stem">How many rides would the tram need for 10,000 passengers, at 80 passengers per ride?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">125 rides</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1,250 rides</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12.5 rides</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">250 rides</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 10,000 ÷ 80 = 125 rides. Those rides would take 125 × 12.5 = 1,562.5 minutes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1125,24 +1245,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Math is in YOUR world. Describe a real situation from your life that works like the tram problem — a total split into equal groups, or a time built from equal chunks — and show the math.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: My bus ride to school takes 22.5 minutes each way, so one round trip is 45 minutes. In a 5-day school week I spend 45 × 5 = 225 minutes on the bus — that is 225 ÷ 60 = 3.75 hours, almost four hours a week, which I never realized until I did the math.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each tram question to the operation that answers it.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Minutes for 40 rides (12.5 min each)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Rides needed for 400 passengers (80 per ride)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Hours in 625 minutes</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Passengers on 30 full rides</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">40 × 12.5</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">400 ÷ 80</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">625 ÷ 60</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">30 × 80</span></li></ul></div>
       </div>
     </li>
   </ol>

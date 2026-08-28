@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.8 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Unit Rate Problem Solving · Unit Rate · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-8-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,54 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">6 for $4.50 — $0.75 each</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10 for $8.00 — $0.80 each</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They cost the same per ball</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Not enough information</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> $4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 ounces per minute</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5 ounces per minute</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15 ounces per minute</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.33 ounces per minute</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 15 ÷ 5 = 3 ounces per minute.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A printer prints 42 pages in 6 minutes. How many pages does it print in 15 minutes at the same rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">105 pages</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">90 pages</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">70 pages</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">120 pages</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Unit rate: 42 ÷ 6 = 7 pages per minute. In 15 minutes: 7 × 15 = 105 pages.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Store A sells 5 notebooks for $8. Store B sells 3 notebooks for $5.25. Which has the lower price per notebook?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Store A ($1.60 each)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Store B ($1.75 each)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Same price</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Cannot determine</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, so Store A is cheaper per notebook.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -760,7 +785,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -768,6 +793,54 @@ header.packet h1::after{
         <p class="ws-stem">Find the unit rate for each deal and identify the better buy.</p>
   <table class="ws-table"><thead><tr><th>Option</th><th>Deal</th><th>Unit Rate</th></tr></thead><tbody><tr><td>Store A Batteries</td><td>8 for $6.00</td><td></td></tr><tr><td>Store B Batteries</td><td>12 for $8.40</td><td></td></tr><tr><td>Store A Candy</td><td>15 for $6.75</td><td></td></tr><tr><td>Store B Candy</td><td>20 for $8.00</td><td></td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">6 for $4.50 — $0.75 each</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10 for $8.00 — $0.80 each</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They cost the same per ball</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Not enough information</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> $4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 ounces per minute</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5 ounces per minute</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15 ounces per minute</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.33 ounces per minute</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 15 ÷ 5 = 3 ounces per minute.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A printer prints 42 pages in 6 minutes. How many pages does it print in 15 minutes at the same rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">105 pages</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">90 pages</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">70 pages</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">120 pages</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Unit rate: 42 ÷ 6 = 7 pages per minute. In 15 minutes: 7 × 15 = 105 pages.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Store A sells 5 notebooks for $8. Store B sells 3 notebooks for $5.25. Which has the lower price per notebook?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Store A ($1.60 each)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Store B ($1.75 each)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Same price</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Cannot determine</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, so Store A is cheaper per notebook.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
       </div>
     </li>
   </ol>

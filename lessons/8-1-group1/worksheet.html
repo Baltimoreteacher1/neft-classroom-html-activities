@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">8.1 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Write Equations · Equation · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-1-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,66 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 8.1 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can write an equation for a real situation and check whether a given value is a solution by substituting it — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — How do I turn a word clue into an equation?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>An equation says two amounts are equal. A value is a SOLUTION when substituting it makes that statement true — so any guess can be checked, not just solved for.</div>
+        <ul class="ws-note-list"><li>An equation is a math sentence with an equal sign (=). To write one, I pick a letter (a variable) for the unknown number and match the words to math symbols. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Clue: 'A number of stolen gems plus 8 more equals 20 total.'</li><li>The unknown is the number of gems. I let n stand for it.</li><li>'Plus 8 more' means + 8. 'Equals 20 total' means = 20.</li><li>So my equation is n + 8 = 20.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Write Equations (Escribir ecuaciones) — Represent a relationship with expressions joined by an equal sign.</li><li>Equation (Ecuación) — A math sentence with an equal sign showing both sides are the same.</li><li>Variable (Variable) — A letter that stands for a number that is unknown or can change.</li><li>Equal sign (Signo igual) — The = sign, showing both sides are the same.</li><li>Expression (Expresión) — A math phrase with numbers and letters, but no equal sign.</li><li>Constant (Constante) — A fixed number in an expression or equation that does not change.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Write Equations is writing subtraction and division clues in the wrong order — putting the number from the clue first instead of the variable first. For 'a number decreased by 8 equals 5,' students often write 8 − n = 5 instead of the correct n − 8 = 5; for 'a number divided by 4 equals 6,' they write 4 ÷ n (or 4n) instead of n / 4 = 6. Always start with the variable, then attach the operation in the order the words describe it, and check by substituting your answer back in.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Write Equations <span class="ws-es-term">(Escribir ecuaciones)</span></span><span class="ws-bankdef"> — Represent a relationship with expressions joined by an equal sign.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equation <span class="ws-es-term">(Ecuación)</span></span><span class="ws-bankdef"> — A math sentence with an equal sign showing both sides are the same.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variable <span class="ws-es-term">(Variable)</span></span><span class="ws-bankdef"> — A letter that stands for a number that is unknown or can change.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equal sign <span class="ws-es-term">(Signo igual)</span></span><span class="ws-bankdef"> — The = sign, showing both sides are the same.</span></div><div class="ws-bank-card"><span class="ws-bankword">Expression <span class="ws-es-term">(Expresión)</span></span><span class="ws-bankdef"> — A math phrase with numbers and letters, but no equal sign.</span></div><div class="ws-bank-card"><span class="ws-bankword">Constant <span class="ws-es-term">(Constante)</span></span><span class="ws-bankdef"> — A fixed number in an expression or equation that does not change.</span></div><div class="ws-bank-card"><span class="ws-bankword">Unknown <span class="ws-es-term">(Incógnita)</span></span><span class="ws-bankdef"> — The value you are trying to find, usually shown with a variable.</span></div><div class="ws-bank-card"><span class="ws-bankword">Solution <span class="ws-es-term">(Solución)</span></span><span class="ws-bankdef"> — A value that makes an equation true when it is substituted for the variable.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which equation represents: 'A number plus 12 equals 30'?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n + 12 = 30</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n − 12 = 30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12n = 30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n / 12 = 30</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which equation represents: 'Seven less than a number is 18'?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n − 7 = 18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7 − n = 18</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n + 7 = 18</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n / 7 = 18</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which equation represents: 'Three times a number equals 21'?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3n = 21</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n + 3 = 21</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n − 3 = 21</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n / 3 = 21</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Is n = 3 a solution of n + 5 = 9?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">No, because 3 + 5 = 8, which does not equal 9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Yes, because 3 is smaller than 9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes, because 3 + 5 is close to 9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell without solving first</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -774,14 +805,77 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">For each situation, identify what the variable represents and write the equation.</p>
   <table class="ws-table"><thead><tr><th>Situation</th><th>Variable Represents</th><th>Equation</th></tr></thead><tbody><tr><td>A box holds some files. After removing 5, there are 13 left.</td><td></td><td></td></tr><tr><td>A detective split 48 photos equally into folders. Each folder has 6 photos.</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which equation represents: 'A number plus 12 equals 30'?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n + 12 = 30</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n − 12 = 30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12n = 30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n / 12 = 30</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which equation represents: 'Seven less than a number is 18'?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n − 7 = 18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7 − n = 18</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n + 7 = 18</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n / 7 = 18</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which equation represents: 'Three times a number equals 21'?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3n = 21</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n + 3 = 21</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n − 3 = 21</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n / 3 = 21</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Is n = 3 a solution of n + 5 = 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">No, because 3 + 5 = 8, which does not equal 9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Yes, because 3 is smaller than 9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes, because 3 + 5 is close to 9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell without solving first</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

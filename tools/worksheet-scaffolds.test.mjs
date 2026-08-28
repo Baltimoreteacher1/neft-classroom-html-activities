@@ -17,6 +17,11 @@
  *     equation ledger, off the verb "solve".
  *   • "A box plot shows: Min = 10, Q1 = 15, Median = 20…" → an equation
  *     ledger, because an equals sign followed by a number looked like algebra.
+ *   • "A rope is 4 feet long. How many 1/2-foot pieces can be cut from it?" →
+ *     the add/subtract fraction rail ("common denominator first, only then add
+ *     or subtract") on a DIVISION problem, because the division rule needs a ÷
+ *     sign and this one has none. Unit 6 teaches Keep-Change-Flip and nothing
+ *     else, so it gets the Keep-Change-Flip frame.
  *
  * The classifier answers with null whenever it is unsure, so the negative
  * cases matter more than the positive ones and are listed first.
@@ -34,7 +39,9 @@ const WORDS = [
 ];
 
 let failures = 0;
+let checked = 0;
 const check = (label, actual, expected) => {
+  checked += 1;
   if (actual === expected) return;
   failures += 1;
   console.error(
@@ -43,6 +50,25 @@ const check = (label, actual, expected) => {
 };
 
 console.log("worksheet scaffolds — the wrong frame is worse than none");
+
+/* ── dividing BY a fraction is never "find a common denominator" ─────────── */
+check(
+  "a fraction division word problem with no ÷ sign is not fraction addition",
+  classify(mc("A rope is 4 feet long. How many 1/2-foot pieces can be cut from it?", NUMS)),
+  "fractionDivision",
+);
+check(
+  "sharing a fraction among a whole number is fraction division",
+  classify(
+    mc("A half-pan of brownies is 1/2 pan, shared equally among 4 people. How much each?", NUMS),
+  ),
+  "fractionDivision",
+);
+check(
+  "a fraction with no division language stays fraction",
+  classify(mc("Add 1/3 and 1/4. Write the sum in simplest form.", NUMS)),
+  "fraction",
+);
 
 /* ── negatives: these must get NO computational scaffold ─────────────────── */
 check(
@@ -144,4 +170,4 @@ if (failures) {
   console.error(`worksheet scaffolds FAILED: ${failures} case(s)`);
   process.exit(1);
 }
-console.log("   ✓ 13 cases — every scaffold matches the mathematics its item asks for");
+console.log(`   ✓ ${checked} cases — every scaffold matches the mathematics its item asks for`);

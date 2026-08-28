@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">4.2 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Visual Models · Fractions, Decimals, and Percents · Percent · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-2-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,76 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 4.2 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can write equivalent fractions, decimals, and percents for the same value — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — How can one value be written as a fraction, a decimal, AND a percent?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>To turn a fraction into a percent, build an equivalent fraction with a denominator of 100: ask “what do I multiply the denominator by to get 100?” and multiply the numerator by that same number. The new numerator is the percent.</div>
+        <ul class="ws-note-list"><li>Equivalent forms name the same value in different ways. Percent means &quot;out of 100,&quot; so a fraction is already a percent once its denominator is 100. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>A player scored 3/4 of the points. Percent means out of 100, so I want an equivalent fraction with 100 on the bottom.</li><li>What do I multiply the denominator 4 by to get 100? 4 × 25 = 100, so my scale factor is 25.</li><li>I have to multiply the top by that same 25: 3 × 25 = 75. So 3/4 = 75/100.</li><li>75 out of 100 is 75%. And 75/100 as a decimal is 0.75, because hundredths sit two places after the point.</li><li>So 3/4 = 75/100 = 0.75 = 75%. All three name the same score.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Fractions, Decimals, and Percents (Fracciones, decimales y porcentajes) — Three equivalent ways to name the same part of a whole.</li><li>Percent (Porcentaje) — A way to compare a number to 100, shown with the % sign.</li><li>Decimal (Decimal) — A number with a dot, like 0.5, that shows a part less than one.</li><li>Equivalent (Equivalente) — Having the same value, just written a different way.</li><li>Benchmark (Referencia) — A familiar number you use to guess, like 50% or 1/2.</li><li>Discount (Descuento) — Money taken off the first price to make it cheaper.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Relate Fractions, Decimals, and Percents is treating the numerator and denominator as the percent's digits — turning 3/5 into &quot;35%&quot; by just reading the 3 and the 5. Percent means out of 100, so the fix is to build an equivalent fraction with denominator 100: 5 × 20 = 100, so multiply the top by 20 too — 3/5 = 60/100 = 60%. A second version of this mistake is scaling only ONE part of the fraction (writing 3/5 = 3/100 or 60/5). Whatever you multiply the denominator by, you must multiply the numerator by the same number. When a denominator will not reach 100 evenly (8, 3, 7), divide the numerator by the denominator instead and then multiply by 100.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Fractions, Decimals, and Percents <span class="ws-es-term">(Fracciones, decimales y porcentajes)</span></span><span class="ws-bankdef"> — Three equivalent ways to name the same part of a whole.</span></div><div class="ws-bank-card"><span class="ws-bankword">Percent <span class="ws-es-term">(Porcentaje)</span></span><span class="ws-bankdef"> — A way to compare a number to 100, shown with the % sign.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decimal <span class="ws-es-term">(Decimal)</span></span><span class="ws-bankdef"> — A number with a dot, like 0.5, that shows a part less than one.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equivalent <span class="ws-es-term">(Equivalente)</span></span><span class="ws-bankdef"> — Having the same value, just written a different way.</span></div><div class="ws-bank-card"><span class="ws-bankword">Benchmark <span class="ws-es-term">(Referencia)</span></span><span class="ws-bankdef"> — A familiar number you use to guess, like 50% or 1/2.</span></div><div class="ws-bank-card"><span class="ws-bankword">Discount <span class="ws-es-term">(Descuento)</span></span><span class="ws-bankdef"> — Money taken off the first price to make it cheaper.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Convert 3/5 to a percent.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Same size pieces</span><span class="wsd-step-h">Common denominator first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Only then add or subtract.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Simplify</span><span class="wsd-step-h">Divide out common factors.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">60%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">35%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">53%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">65%</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Convert 7/20 to a percent.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Same size pieces</span><span class="wsd-step-h">Common denominator first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Only then add or subtract.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Simplify</span><span class="wsd-step-h">Divide out common factors.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">35%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">14%</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which decimal is equivalent to 45%?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0.45</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.045</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">45.0</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What fraction is equal to 0.75?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3/4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7/5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7/10</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -784,12 +805,76 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">NUMBER LINE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Place each value on the number line: A = 3/8, B = 0.6, C = 85%</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Place each value on the number line: A = 3/8, B = 0.6, C = 85%</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Convert 3/5 to a percent.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">60%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">35%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">53%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">65%</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Same size pieces</span><span class="wsd-step-h">Common denominator first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Only then add or subtract.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Simplify</span><span class="wsd-step-h">Divide out common factors.</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Convert 7/20 to a percent.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">35%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">14%</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Same size pieces</span><span class="wsd-step-h">Common denominator first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Only then add or subtract.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Simplify</span><span class="wsd-step-h">Divide out common factors.</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which decimal is equivalent to 45%?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0.45</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.045</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">45.0</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What fraction is equal to 0.75?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3/4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7/5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7/10</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

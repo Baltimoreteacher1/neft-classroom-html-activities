@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Playful</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">puzzle · pattern · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -698,7 +763,6 @@ header.packet h1::after{
       </div>
     </header>
   
-      
       
       
       <ol class="ws-problems-grid">
@@ -783,14 +847,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Playful</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">puzzle · pattern · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +871,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each move: legal or against the rules?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Legal move</span> <span class="ws-cat-pill">Against the rules</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Legal move</span><span class="ws-sort-text">Move the top disc of any stack</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Legal move</span><span class="ws-sort-text">Place a small disc on a bigger disc</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Legal move</span><span class="ws-sort-text">Move exactly one disc at a time</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Against the rules</span><span class="ws-sort-text">Move two discs at once</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Against the rules</span><span class="ws-sort-text">Place a big disc on a smaller disc</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Against the rules</span><span class="ws-sort-text">Pull a disc out from the middle of a stack</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +906,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,7 +917,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -843,7 +928,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -851,10 +936,14 @@ header.packet h1::after{
         <p class="ws-stem">How many moves does a one-disc tower take? A two-disc tower?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">1 move and 3 moves</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 move and 2 moves</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 moves and 4 moves</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 move and 4 moves</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> You can solve a one-disc tower in 1 step and a two-disc tower in 3 steps.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Doubling the previous number of steps but forgetting to add 1 — answering 14 instead of 15 for four discs, or 30 instead of 31 for five.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -865,25 +954,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">7</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What does it mean to be playful with math? Use the Tower of Hanoi as your example.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> Being playful with math means ___ .&lt;br&gt;With the Tower of Hanoi, I ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Being playful with math means treating a problem like a game — imagining what the solution will look like, trying small cases, and hunting for a pattern. With the Tower of Hanoi, I played the one-disc and two-disc towers first, and the pattern I found told me about towers I never played.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each move: legal or against the rules?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Legal move</span> <span class="ws-cat-pill">Against the rules</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Legal move</span><span class="ws-sort-text">Move the top disc of any stack</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Legal move</span><span class="ws-sort-text">Place a small disc on a bigger disc</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Legal move</span><span class="ws-sort-text">Move exactly one disc at a time</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Against the rules</span><span class="ws-sort-text">Move two discs at once</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Against the rules</span><span class="ws-sort-text">Place a big disc on a smaller disc</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Against the rules</span><span class="ws-sort-text">Pull a disc out from the middle of a stack</span></li></ul>
       </div>
     </li>
   </ol>
@@ -924,14 +1000,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Playful</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">puzzle · pattern · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,11 +1024,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Use the doubling pattern to complete the table of fewest moves.</p>
+  <table class="ws-table"><thead><tr><th>Discs</th><th>Pattern: double the previous, add 1</th><th>Fewest moves</th></tr></thead><tbody><tr><td>3</td><td>2 × 3 + 1</td><td>7</td></tr><tr><td>4</td><td>2 × 7 + 1</td><td>15</td></tr><tr><td>6</td><td>2 × 31 + 1</td><td>63</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -962,7 +1059,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -973,23 +1070,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What is the minimum number of steps to solve a FIVE-disc Tower of Hanoi puzzle?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">31 steps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15 steps</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">30 steps</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">35 steps</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A four-disc tower takes 15 steps, so a five-disc tower takes 15 × 2 + 1 = 31 steps.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Doubling the previous number of steps but forgetting to add 1 — answering 14 instead of 15 for four discs, or 30 instead of 31 for five.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How can you ORGANIZE the information about discs and moves to help you see patterns?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I can create a table with one column for the number of discs and one for the number of steps: 1 and 1, 2 and 3, 3 and 7, 4 and 15, 5 and 31. With the numbers lined up in rows, I can compare each row to the next and spot the double-and-add-1 pattern.</div>
       </div>
     </li>
   
@@ -1007,17 +1093,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Before solving, the lesson asked you to DESCRIBE what the solution will look like. Why is imagining the ending a useful way to start a puzzle?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Imagining the ending gives me a target. Once I know the discs must end up smallest-on-top on a different rod, I can judge every move by whether it gets me closer to that picture. Math can help us imagine what might happen before it happens.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1025,17 +1100,30 @@ header.packet h1::after{
         <p class="ws-stem">Will the fewest number of steps for a Tower of Hanoi puzzle always be an ODD number?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Yes — doubling any whole number gives an even number, and adding 1 makes it odd</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No — every other tower size gives an even number of steps</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes — but only because 7 happens to be odd</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No — the steps alternate between odd and even</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each answer comes from doubling the one before (always even) and adding 1 (always odd): 1, 3, 7, 15, 31 are all odd, and the rule guarantees the next one will be too.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Doubling the previous number of steps but forgetting to add 1 — answering 14 instead of 15 for four discs, or 30 instead of 31 for five.</p>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How can you ORGANIZE the information about discs and moves to help you see patterns?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I can create a table with one column for the number of discs and one for the number of steps: 1 and 1, 2 and 3, 3 and 7, 4 and 15, 5 and 31. With the numbers lined up in rows, I can compare each row to the next and spot the double-and-add-1 pattern.</div>
+      </div>
+    </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">8</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Use the doubling pattern to complete the table of fewest moves.</p>
-  <table class="ws-table"><thead><tr><th>Discs</th><th>Pattern: double the previous, add 1</th><th>Fewest moves</th></tr></thead><tbody><tr><td>3</td><td>2 × 3 + 1</td><td>7</td></tr><tr><td>4</td><td>2 × 7 + 1</td><td>15</td></tr><tr><td>6</td><td>2 × 31 + 1</td><td>63</td></tr></tbody></table>
-  
+        <p class="ws-stem">Before solving, the lesson asked you to DESCRIBE what the solution will look like. Why is imagining the ending a useful way to start a puzzle?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Imagining the ending gives me a target. Once I know the discs must end up smallest-on-top on a different rod, I can judge every move by whether it gets me closer to that picture. Math can help us imagine what might happen before it happens.</div>
       </div>
     </li>
   </ol>
@@ -1076,14 +1164,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Playful</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">puzzle · pattern · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1099,11 +1188,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each tower to the calculation that gives its fewest moves.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">4-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">5-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">6-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Any n-disc tower</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">2 × 7 + 1 = 15</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">2 × 15 + 1 = 31</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">2 × 31 + 1 = 63</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Double the (n − 1)-disc answer, add 1</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1114,7 +1222,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1122,10 +1230,14 @@ header.packet h1::after{
         <p class="ws-stem">Look at the table a different way: 1 disc → 1, 2 discs → 3, 3 discs → 7, 4 discs → 15, 5 discs → 31. Which describes the relationship between the number of discs and the number of steps?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The steps are 1 less than a doubling pattern: 2, 4, 8, 16, 32 each minus 1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The steps are the number of discs multiplied by itself</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The steps are 6 times the number of discs, plus or minus 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The steps are the two previous step counts added together</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 2 − 1 = 1, 4 − 1 = 3, 8 − 1 = 7, 16 − 1 = 15, 32 − 1 = 31 — every entry is one less than the doubling pattern 2, 4, 8, 16, 32.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Doubling the previous number of steps but forgetting to add 1 — answering 14 instead of 15 for four discs, or 30 instead of 31 for five.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1136,24 +1248,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">The summary says playing with math lets us think differently by looking for patterns AND by imagining ways to visualize a problem. Describe how you used BOTH of those with the Tower of Hanoi.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I used imagination first: before moving anything, I pictured the solved puzzle — the same stack, smallest on top, standing on a different rod. Then I used patterns: I organized the small cases in a table (1 disc → 1 step, 2 → 3, 3 → 7) and found the double-and-add-1 rule, which predicted 15 steps for four discs and 31 for five. Imagining gave me the target, and the pattern gave me the count — together they solved towers I never touched.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each tower to the calculation that gives its fewest moves.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">4-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">5-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">6-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Any n-disc tower</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">2 × 7 + 1 = 15</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">2 × 15 + 1 = 31</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">2 × 31 + 1 = 63</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Double the (n − 1)-disc answer, add 1</span></li></ul></div>
       </div>
     </li>
   </ol>

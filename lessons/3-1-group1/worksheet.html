@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.1 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Understand Ratios · Ratio · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-1-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,66 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 3.1 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can write and describe a ratio that compares two quantities — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — What is a ratio?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>A ratio compares two quantities, and the order you write them in matters. You can write a ratio in words or with a colon, and you can draw it with a tape diagram or a double number line.</div>
+        <ul class="ws-note-list"><li>A ratio compares two amounts. It tells how much of one thing there is for another thing. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Chef Reyes uses 3 cups of apple juice for every 2 cups of sparkling water.</li><li>I am comparing two amounts: apple juice and sparkling water.</li><li>I write apple juice to sparkling water, in that order, as 3 to 2, or 3:2.</li><li>I can also draw the ratio. On a tape diagram I give apple juice 3 equal parts and sparkling water 2 equal parts, so one batch is 5 parts in all.</li><li>Those same 5 parts show a second ratio: apple juice to the whole fruit drink is 3 to 5.</li><li>On a double number line I line the two amounts up: 5 cups of fruit drink pairs with 3 cups of apple juice, and 10 cups of fruit drink pairs with 6 cups of apple juice.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Understand Ratios (Comprender razones) — Use a ratio to compare two quantities by division.</li><li>Ratio (Razón) — A way to compare two amounts, like 3 to 2.</li><li>Comparison (Comparación) — Looking at two or more amounts to see how they are related.</li><li>Part-to-part (Parte a parte) — A ratio comparing one part of a group to another part.</li><li>Part-to-whole (Parte a todo) — A ratio comparing one part to the whole group.</li><li>Colon notation (Notación con dos puntos) — Writing a ratio with two dots between the numbers, like 3:2.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Understand Ratios <span class="ws-es-term">(Comprender razones)</span></span><span class="ws-bankdef"> — Use a ratio to compare two quantities by division.</span></div><div class="ws-bank-card"><span class="ws-bankword">Ratio <span class="ws-es-term">(Razón)</span></span><span class="ws-bankdef"> — A way to compare two amounts, like 3 to 2.</span></div><div class="ws-bank-card"><span class="ws-bankword">Comparison <span class="ws-es-term">(Comparación)</span></span><span class="ws-bankdef"> — Looking at two or more amounts to see how they are related.</span></div><div class="ws-bank-card"><span class="ws-bankword">Part-to-part <span class="ws-es-term">(Parte a parte)</span></span><span class="ws-bankdef"> — A ratio comparing one part of a group to another part.</span></div><div class="ws-bank-card"><span class="ws-bankword">Part-to-whole <span class="ws-es-term">(Parte a todo)</span></span><span class="ws-bankdef"> — A ratio comparing one part to the whole group.</span></div><div class="ws-bank-card"><span class="ws-bankword">Colon notation <span class="ws-es-term">(Notación con dos puntos)</span></span><span class="ws-bankdef"> — Writing a ratio with two dots between the numbers, like 3:2.</span></div><div class="ws-bank-card"><span class="ws-bankword">Tape diagram <span class="ws-es-term">(Diagrama de cintas)</span></span><span class="ws-bankdef"> — A bar cut into equal parts that shows how two amounts in a ratio compare, and how they make up the whole.</span></div><div class="ws-bank-card"><span class="ws-bankword">Double number line <span class="ws-es-term">(Recta numérica doble)</span></span><span class="ws-bankdef"> — Two number lines lined up so matching tick marks show the two quantities in a ratio at the same time.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4:1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1:4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4:5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5:1</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2:8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6:2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2:6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8:2</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12:18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">18:12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">18:30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12:30</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5:9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">9:5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5:14</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">14:5</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -774,7 +805,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -782,6 +813,66 @@ header.packet h1::after{
         <p class="ws-stem">Sort each statement — is it a part-to-part ratio or a part-to-whole ratio?</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Part-to-Part</span> <span class="ws-cat-pill">Part-to-Whole</span></div>
   <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4:1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1:4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4:5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5:1</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2:8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6:2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2:6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8:2</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12:18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">18:12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">18:30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12:30</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5:9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">9:5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5:14</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">14:5</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

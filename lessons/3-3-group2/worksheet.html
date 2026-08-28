@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.3 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Ratio Tables · Ratio table · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-3-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 3.3 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use a ratio table to find equivalent ratios, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do ratio tables work?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>To keep a ratio the same, multiply both numbers by the same scale factor — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The pancake recipe is 2 cups of mix for every 3 cups of milk, so the ratio is 2:3.</li><li>To make 2 batches, my scale factor is 2.</li><li>I multiply both numbers by 2: 2 x 2 = 4 cups of mix, and 3 x 2 = 6 cups of milk.</li><li>Now my row is 4:6, which is the same ratio as 2:3.</li><li>I do NOT add 2 to each number; I multiply both by the same factor.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>A drink uses 1 cup of juice for every 4 cups of water, so the ratio is 1:4.</li><li>To double it, what scale factor do we use? We use 2.</li><li>Multiply both by 2: 1 x 2 = 2 cups of juice and 4 x 2 = 8 cups of water, giving 2:8.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Ratio Tables (Tablas de razones) — Tables that organize pairs of equivalent ratios.</li><li>Ratio table (Tabla de razones) — A table of equal ratios that shows a pattern.</li><li>Equivalent ratio (Razón equivalente) — Two ratios that mean the same thing, like 1:2 and 2:4.</li><li>Scale factor (Factor de escala) — The number you multiply both parts of a ratio by to get an equal ratio.</li><li>Pattern (Patrón) — A rule that numbers follow again and again.</li><li>Additive pattern (Patrón aditivo) — Building new rows of a ratio table by adding each column's own constant amount, so the two columns grow together.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Ratio Tables is scaling only ONE part of the ratio, or adding the scale factor to a part instead of multiplying by it — for example, turning 2:3 into 6:3 (multiplying only the first number by 3 and forgetting the second) or into 4:5 (adding the scale factor 2 to the second number instead of multiplying, since 3+2=5 but 3×2=6). Before you submit, multiply BOTH numbers by the same scale factor and check that your new ratio simplifies back to the original.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Complete the ratio table for lemon juice to water in Chef Reyes's lemonade recipe (1 cup lemon juice for every 4 cups water).</p>
   <table class="ws-table"><thead><tr><th>Pitchers</th><th>Lemon Juice (cups)</th><th>Water (cups)</th></tr></thead><tbody><tr><td>1</td><td></td><td></td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>5</td><td></td><td></td></tr><tr><td>10</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -734,15 +820,22 @@ header.packet h1::after{
   <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A recipe uses 4 cups of flour for every 3 cups of sugar. A student filled in a ratio table: 4:3, 8:6, 12:9, 14:12. Find and fix the error in the last row. Explain what went wrong.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">The food truck sells tacos at a steady rate: 2 tacos cost $5. At that rate, how much do 6 tacos cost?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$11</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$30</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -753,18 +846,28 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The food truck sells tacos at a steady rate: 2 tacos cost $5. At that rate, how much do 6 tacos cost?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$11</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$30</span></li></ol>
+        <p class="ws-stem">A smoothie recipe at the truck uses 4 cups of mango for every 3 cups of pineapple. How many cups of mango are needed for 9 cups of pineapple?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A smoothie recipe at the truck uses 4 cups of mango for every 3 cups of pineapple. How many cups of mango are needed for 9 cups of pineapple?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol>
+        <p class="ws-stem">A recipe uses 4 cups of flour for every 3 cups of sugar. A student filled in a ratio table: 4:3, 8:6, 12:9, 14:12. Find and fix the error in the last row. Explain what went wrong.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -778,7 +881,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Level 2 Extension — Catch the Food Truck Error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the order:</span><span class="ws-step-w">The hot sauce mix uses a ratio of 2 spoons of pepper to 5 spoons of tomato (2:5). Find an equivalent row for a bigger batch.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Pick a scale factor:</span><span class="ws-step-w">To make the batch bigger, Maya picks a scale factor of 3. A scale factor should multiply BOTH parts.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Scale the pepper:</span><span class="ws-step-w">2 + 1 = 3 spoons of pepper</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Scale the tomato:</span><span class="ws-step-w">5 + 1 = 6 spoons of tomato</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -845,7 +951,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Explaining and Sharing</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">argument · conjecture · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,8 +765,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -734,7 +802,11 @@ header.packet h1::after{
         <p class="ws-stem">Each jumbo box holds 400 cubic inches. How much do TWO jumbo boxes hold?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">800 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">402 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">200 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4,000 cubic inches</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Two boxes of 400 cubic inches each is 400 × 2 = 800 cubic inches.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Explaining and Sharing</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">argument · conjecture · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +879,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each question: area or volume?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Volume — cubic units</span> <span class="ws-cat-pill">Area — square units</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume — cubic units</span><span class="ws-sort-text">How much soil fills the garden bed?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume — cubic units</span><span class="ws-sort-text">How much cereal fits inside the box?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume — cubic units</span><span class="ws-sort-text">How much water fills the fish tank?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area — square units</span><span class="ws-sort-text">How much paper covers the lid of the box?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area — square units</span><span class="ws-sort-text">How much paint covers one wall?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area — square units</span><span class="ws-sort-text">How much mulch covers the top of the bed?</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +914,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,23 +925,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Each jumbo box holds 400 cubic inches. How much do TWO jumbo boxes hold?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">800 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">402 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">200 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4,000 cubic inches</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Two boxes of 400 cubic inches each is 400 × 2 = 800 cubic inches.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Yuzuki can buy three large boxes or two jumbo boxes for the same price. Give ONE reason in words (no equations) for either choice.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I recommend ___ because ___ .&lt;br&gt;A reason that is not about volume is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I recommend two jumbo boxes because there is less packaging, and two boxes are easier to store than three.</div>
       </div>
     </li>
   
@@ -862,7 +944,11 @@ header.packet h1::after{
         <p class="ws-stem">Which unit should the garden group use when reporting how much soil fills the beds?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Cubic feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Square feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Degrees</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Volume is measured in cubic units, so soil that fills a space is measured in cubic feet.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -870,20 +956,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Why does it help to explain your thinking to others instead of just giving the answer?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> Explaining helps because ___ .&lt;br&gt;When someone hears my reasons, they can ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: When I explain my thinking, classmates can decide whether my argument is convincing, catch mistakes I missed, and connect my ideas to their own.</div>
+        <p class="ws-stem">Yuzuki can buy three large boxes or two jumbo boxes for the same price. Give ONE reason in words (no equations) for either choice.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I recommend ___ because ___ .&lt;br&gt;A reason that is not about volume is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I recommend two jumbo boxes because there is less packaging, and two boxes are easier to store than three.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each question: area or volume?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Volume — cubic units</span> <span class="ws-cat-pill">Area — square units</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume — cubic units</span><span class="ws-sort-text">How much soil fills the garden bed?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume — cubic units</span><span class="ws-sort-text">How much cereal fits inside the box?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume — cubic units</span><span class="ws-sort-text">How much water fills the fish tank?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area — square units</span><span class="ws-sort-text">How much paper covers the lid of the box?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area — square units</span><span class="ws-sort-text">How much paint covers one wall?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area — square units</span><span class="ws-sort-text">How much mulch covers the top of the bed?</span></li></ul>
+        <p class="ws-stem">Why does it help to explain your thinking to others instead of just giving the answer?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> Explaining helps because ___ .&lt;br&gt;When someone hears my reasons, they can ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: When I explain my thinking, classmates can decide whether my argument is convincing, catch mistakes I missed, and connect my ideas to their own.</div>
       </div>
     </li>
   </ol>
@@ -924,14 +1008,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Explaining and Sharing</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">argument · conjecture · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,55 +1032,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Three large boxes hold 240 cubic inches each. Two jumbo boxes hold 400 cubic inches each. Which is the correct volume comparison?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">720 cubic inches vs. 800 cubic inches — the jumbo option holds more</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">720 cubic inches vs. 800 cubic inches — the large option holds more</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">240 cubic inches vs. 400 cubic inches — the jumbo option holds more</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">480 cubic inches vs. 800 cubic inches — the jumbo option holds more</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 240 × 3 = 720 and 400 × 2 = 800; since 800 &gt; 720, the two jumbo boxes hold more in total.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">One garden bed is 4 ft long, 3 ft wide, and 2 ft deep. A second bed is 6 ft long, 2 ft wide, and 2 ft deep. How much soil fills BOTH beds?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">48 cubic feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24 cubic feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">19 cubic feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">96 cubic feet</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> First bed: 4 × 3 × 2 = 24 cubic feet. Second bed: 6 × 2 × 2 = 24 cubic feet. Together: 24 + 24 = 48 cubic feet.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The group found the volume by decomposing the garden into prisms and adding. Why would they compute it a SECOND, different way?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">If both ways give the same answer, the solution is accurate</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Because the first way is always wrong</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">To get a bigger number for the soil order</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because volume changes each time you measure it</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The book models exactly this: two different decompositions both gave 48 cubic feet, so the solutions match and the answer is accurate.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A student recommends the three large boxes because the cereal stays fresher — each box is open for less time. Is this argument convincing? Explain.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: It is somewhat convincing because it uses a real reason that matters to Yuzuki, not just volume. But it would be stronger with evidence — like how long a box stays fresh once opened. An argument can be convincing without equations if the reasoning is clear.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1006,18 +1050,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Use precise vocabulary to explain how you would find the soil needed for a bed 5 ft long, 2 ft wide, and 2 ft deep. Include the answer with its unit.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I would find the volume of the rectangular prism by multiplying length × width × height: 5 × 2 × 2 = 20. Volume is measured in cubic units, so the bed needs 20 cubic feet of soil.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -1025,6 +1058,69 @@ header.packet h1::after{
         <p class="ws-stem">Compute the volume of each cereal box.</p>
   <table class="ws-table"><thead><tr><th>Box (l × w × h, inches)</th><th>Volume (cubic inches)</th></tr></thead><tbody><tr><td>8 × 3 × 10</td><td>240</td></tr><tr><td>5 × 8 × 10</td><td>400</td></tr><tr><td>6 × 4 × 5</td><td>120</td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Three large boxes hold 240 cubic inches each. Two jumbo boxes hold 400 cubic inches each. Which is the correct volume comparison?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">720 cubic inches vs. 800 cubic inches — the jumbo option holds more</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">720 cubic inches vs. 800 cubic inches — the large option holds more</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">240 cubic inches vs. 400 cubic inches — the jumbo option holds more</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">480 cubic inches vs. 800 cubic inches — the jumbo option holds more</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 240 × 3 = 720 and 400 × 2 = 800; since 800 &gt; 720, the two jumbo boxes hold more in total.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">One garden bed is 4 ft long, 3 ft wide, and 2 ft deep. A second bed is 6 ft long, 2 ft wide, and 2 ft deep. How much soil fills BOTH beds?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">48 cubic feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24 cubic feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">19 cubic feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">96 cubic feet</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> First bed: 4 × 3 × 2 = 24 cubic feet. Second bed: 6 × 2 × 2 = 24 cubic feet. Together: 24 + 24 = 48 cubic feet.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">The group found the volume by decomposing the garden into prisms and adding. Why would they compute it a SECOND, different way?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">If both ways give the same answer, the solution is accurate</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Because the first way is always wrong</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">To get a bigger number for the soil order</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because volume changes each time you measure it</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The book models exactly this: two different decompositions both gave 48 cubic feet, so the solutions match and the answer is accurate.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A student recommends the three large boxes because the cereal stays fresher — each box is open for less time. Is this argument convincing? Explain.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: It is somewhat convincing because it uses a real reason that matters to Yuzuki, not just volume. But it would be stronger with evidence — like how long a box stays fresh once opened. An argument can be convincing without equations if the reasoning is clear.</div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Use precise vocabulary to explain how you would find the soil needed for a bed 5 ft long, 2 ft wide, and 2 ft deep. Include the answer with its unit.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I would find the volume of the rectangular prism by multiplying length × width × height: 5 × 2 × 2 = 20. Volume is measured in cubic units, so the bed needs 20 cubic feet of soil.</div>
       </div>
     </li>
   </ol>
@@ -1065,14 +1161,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Explaining and Sharing</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">argument · conjecture · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1088,11 +1185,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each prism to a DIFFERENT prism with the SAME volume.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">8 × 3 × 10</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">4 × 3 × 2</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">5 × 8 × 10</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">6 × 2 × 4</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">6 × 4 × 10</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">6 × 2 × 2</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">20 × 10 × 2</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">8 × 3 × 2</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1103,7 +1219,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1111,10 +1227,14 @@ header.packet h1::after{
         <p class="ws-stem">The garden needs 48 cubic feet of soil. One decomposition used two prisms of 24 cubic feet each. Which of these is ANOTHER decomposition of the same garden volume?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">A 4 × 4 × 2 prism and a 4 × 2 × 2 prism</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A 4 × 4 × 2 prism and a 4 × 4 × 2 prism</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">A 3 × 3 × 3 prism and a 3 × 3 × 2 prism</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A 6 × 4 × 2 prism and a 2 × 2 × 2 prism</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 × 4 × 2 = 32 and 4 × 2 × 2 = 16, and 32 + 16 = 48 cubic feet — the same total by a different split.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Reporting volume without cubic units — saying the garden needs '48 feet' of soil, which is a length, or '48 square feet', which is an area.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1125,24 +1245,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Write TWO arguments for the same recommendation about Yuzuki's cereal — one using equations, one using only words. Then say which you think would convince a classmate more, and why.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Equation argument: 400 × 2 = 800 cubic inches and 240 × 3 = 720 cubic inches, and 800 &gt; 720, so the two jumbo boxes hold more. Word argument: two boxes make less packaging waste and are easier to store. I think the equation argument convinces more people because the numbers can be checked, but the word argument matters to anyone with a small pantry.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each prism to a DIFFERENT prism with the SAME volume.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">8 × 3 × 10</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">4 × 3 × 2</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">5 × 8 × 10</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">6 × 2 × 4</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">6 × 4 × 10</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">6 × 2 × 2</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">20 × 10 × 2</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">8 × 3 × 2</span></li></ul></div>
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Everywhere</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">profession · inventory · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,8 +765,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -734,7 +802,11 @@ header.packet h1::after{
         <p class="ws-stem">Leaving the water running while brushing wastes an average of 4 gallons per brushing. You brush twice a day. How much water can one person save per day by only turning the water on to rinse?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">8 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 gallons</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 gallons saved per brushing × 2 brushings a day = 8 gallons a day.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Everywhere</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">profession · inventory · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +879,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each gardening question: does it need area or volume?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Area (square feet)</span> <span class="ws-cat-pill">Volume (cubic feet)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area (square feet)</span><span class="ws-sort-text">How much ground does the planter cover?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area (square feet)</span><span class="ws-sort-text">How much mesh covers the top against birds?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area (square feet)</span><span class="ws-sort-text">How much of the yard is left uncovered?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume (cubic feet)</span><span class="ws-sort-text">How much soil fills the planter?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume (cubic feet)</span><span class="ws-sort-text">How much compost fills a second, deeper planter?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume (cubic feet)</span><span class="ws-sort-text">How much water does the full rain barrel hold?</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +914,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,23 +925,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Leaving the water running while brushing wastes an average of 4 gallons per brushing. You brush twice a day. How much water can one person save per day by only turning the water on to rinse?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">8 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 gallons</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 gallons saved per brushing × 2 brushings a day = 8 gallons a day.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Name one task a chef does that uses math, and say what math is inside it.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A chef uses math when they ___ .&lt;br&gt;The math inside it is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: A chef sets the price for each dish. That uses math because the chef has to calculate what the ingredients cost and add enough to make a profit.</div>
       </div>
     </li>
   
@@ -862,7 +944,11 @@ header.packet h1::after{
         <p class="ws-stem">Which of these is NOT one of the ways chefs use math when planning menus?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Choosing the color of the restaurant's walls</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calculating the price point for each item</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Deciding on the portion size of each item</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Projecting how much food is needed for each day</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Price points, portion sizes, and food projections are all menu-planning math. Wall color is a design choice, not a menu calculation.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -870,20 +956,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Name one way you used math around your house this week.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> At home I used math when I ___ .&lt;br&gt;It was math because I had to ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I used math when I split the last of the cereal between my brother and me so we each got the same amount.</div>
+        <p class="ws-stem">Name one task a chef does that uses math, and say what math is inside it.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A chef uses math when they ___ .&lt;br&gt;The math inside it is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: A chef sets the price for each dish. That uses math because the chef has to calculate what the ingredients cost and add enough to make a profit.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each gardening question: does it need area or volume?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Area (square feet)</span> <span class="ws-cat-pill">Volume (cubic feet)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area (square feet)</span><span class="ws-sort-text">How much ground does the planter cover?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area (square feet)</span><span class="ws-sort-text">How much mesh covers the top against birds?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Area (square feet)</span><span class="ws-sort-text">How much of the yard is left uncovered?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume (cubic feet)</span><span class="ws-sort-text">How much soil fills the planter?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume (cubic feet)</span><span class="ws-sort-text">How much compost fills a second, deeper planter?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Volume (cubic feet)</span><span class="ws-sort-text">How much water does the full rain barrel hold?</span></li></ul>
+        <p class="ws-stem">Name one way you used math around your house this week.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> At home I used math when I ___ .&lt;br&gt;It was math because I had to ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I used math when I split the last of the cereal between my brother and me so we each got the same amount.</div>
       </div>
     </li>
   </ol>
@@ -924,14 +1008,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Everywhere</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">profession · inventory · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,77 +1032,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">One person saves 8 gallons of water a day by turning the water on only to rinse. How much water does that person save in a year (365 days)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2,920 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">373 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1,460 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">365 gallons</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 8 gallons a day × 365 days = 2,920 gallons in a year.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">If each person in a house saves 2,920 gallons a year, how much does a household of 3 people save in a year?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">8,760 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2,923 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">973 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5,840 gallons</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 2,920 gallons per person × 3 people = 8,760 gallons a year.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A household of 5 saves 2,920 gallons per person per year. A household of 4 does the same. How much MORE does the household of 5 save than the household of 4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2,920 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14,600 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11,680 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 gallon</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 5 people save 5 × 2,920 = 14,600 gallons and 4 people save 4 × 2,920 = 11,680 gallons. The difference is 14,600 − 11,680 = 2,920 gallons — exactly one more person's savings.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Choose another person who works in a restaurant — not the chef — and describe the math they would use.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: A server uses math all shift. They add up each table's bill, calculate the change for customers paying cash, and figure out their tips as a percent of each check. At the end of the night they total their tips to see what they earned.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A gardener's planter has an area of 8 square feet, and each plant needs 2 square feet of space to grow. How many plants fit in the planter?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">4 plants</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">16 plants</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10 plants</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 plants</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 8 square feet ÷ 2 square feet per plant = 4 plants.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What factors do you consider to determine the number of plants you can put in a planter garden? Is the TYPE of plant a factor? Explain your thinking.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I would consider the area of the planter and how much space each plant needs between it and its neighbors. The type of plant is definitely a factor, because a tomato plant needs much more space than a radish — so the same 8-square-foot planter could hold many radishes but only a few tomato plants.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1028,7 +1050,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">8</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -1036,6 +1058,80 @@ header.packet h1::after{
         <p class="ws-stem">Each person who rinses instead of running water saves 8 gallons a day. Complete the table.</p>
   <table class="ws-table"><thead><tr><th>People in the house</th><th>Thinking</th><th>Gallons saved per day</th></tr></thead><tbody><tr><td>3</td><td>3 × 8</td><td>24</td></tr><tr><td>5</td><td>5 × 8</td><td>40</td></tr><tr><td>8</td><td>8 × 8</td><td>64</td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">One person saves 8 gallons of water a day by turning the water on only to rinse. How much water does that person save in a year (365 days)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2,920 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">373 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1,460 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">365 gallons</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 8 gallons a day × 365 days = 2,920 gallons in a year.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">If each person in a house saves 2,920 gallons a year, how much does a household of 3 people save in a year?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">8,760 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2,923 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">973 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5,840 gallons</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 2,920 gallons per person × 3 people = 8,760 gallons a year.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A household of 5 saves 2,920 gallons per person per year. A household of 4 does the same. How much MORE does the household of 5 save than the household of 4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2,920 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14,600 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11,680 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 gallon</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 5 people save 5 × 2,920 = 14,600 gallons and 4 people save 4 × 2,920 = 11,680 gallons. The difference is 14,600 − 11,680 = 2,920 gallons — exactly one more person's savings.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A gardener's planter has an area of 8 square feet, and each plant needs 2 square feet of space to grow. How many plants fit in the planter?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">4 plants</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">16 plants</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10 plants</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 plants</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 8 square feet ÷ 2 square feet per plant = 4 plants.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Choose another person who works in a restaurant — not the chef — and describe the math they would use.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: A server uses math all shift. They add up each table's bill, calculate the change for customers paying cash, and figure out their tips as a percent of each check. At the end of the night they total their tips to see what they earned.</div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">8</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What factors do you consider to determine the number of plants you can put in a planter garden? Is the TYPE of plant a factor? Explain your thinking.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I would consider the area of the planter and how much space each plant needs between it and its neighbors. The type of plant is definitely a factor, because a tomato plant needs much more space than a radish — so the same 8-square-foot planter could hold many radishes but only a few tomato plants.</div>
       </div>
     </li>
   </ol>
@@ -1076,14 +1172,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Everywhere</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">profession · inventory · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1099,27 +1196,35 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each person to the math their real-world task uses.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Chef tripling a recipe</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Gardener filling a 4 × 2 × 1 ft planter</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Family tracking water savings</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Shopper comparing two sizes</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Multiply every ingredient by 3</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Volume: 8 cubic feet of soil</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">8 gallons × 365 days</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Unit rate: price ÷ quantity</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Each person saves 2,920 gallons a year. Which correctly compares households of 3, 4, 5, and 8 people?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">8,760 · 11,680 · 14,600 · 23,360 gallons</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">8,760 · 11,680 · 14,600 · 20,440 gallons</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2,923 · 2,924 · 2,925 · 2,928 gallons</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8,760 · 11,680 · 14,600 · 46,720 gallons</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Multiply 2,920 by each household size: 3 × 2,920 = 8,760; 4 × 2,920 = 11,680; 5 × 2,920 = 14,600; 8 × 2,920 = 23,360.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Someone says, 'Math is just a school subject. I'll never use it after class.' Using the chef, the gardener, or the water problem, write what you would say back.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I would say that a chef never stops using math — they calculate prices, portion sizes, and how much of each ingredient to order every single day. Even at home, math showed us that one person who turns off the tap while brushing saves 2,920 gallons a year. You do not escape math after class; you just stop noticing you are using it.</div>
       </div>
     </li>
   
@@ -1133,7 +1238,11 @@ header.packet h1::after{
         <p class="ws-stem">A chef expects 120 customers tonight and projects that 1 out of every 4 will order the soup. Each serving of soup uses 2 cups of broth. How much broth should the chef prepare?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">60 cups</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">240 cups</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">30 cups</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">15 cups</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 120 ÷ 4 = 30 soup orders, and 30 orders × 2 cups each = 60 cups of broth.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing math only 'counts' when it happens in a classroom — and walking past the calculating, measuring, and projecting inside jobs, hobbies, and chores every day.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -1141,19 +1250,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Pick a hobby — yours or anyone's — and list at least three specific math tasks hiding inside it, the way the lesson did for gardening.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: In skateboarding: you measure the height and length of a ramp to know if you can clear it, you count how many tries a trick takes and track whether that number is going down, and you estimate speed and distance before a gap so you know how hard to push. The board itself is measured in inches, and riders compare deck widths like 8.0 versus 8.25.</div>
+        <p class="ws-stem">Someone says, 'Math is just a school subject. I'll never use it after class.' Using the chef, the gardener, or the water problem, write what you would say back.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I would say that a chef never stops using math — they calculate prices, portion sizes, and how much of each ingredient to order every single day. Even at home, math showed us that one person who turns off the tap while brushing saves 2,920 gallons a year. You do not escape math after class; you just stop noticing you are using it.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each person to the math their real-world task uses.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Chef tripling a recipe</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Gardener filling a 4 × 2 × 1 ft planter</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Family tracking water savings</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Shopper comparing two sizes</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Multiply every ingredient by 3</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Volume: 8 cubic feet of soil</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">8 gallons × 365 days</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Unit rate: price ÷ quantity</span></li></ul></div>
+        <p class="ws-stem">Pick a hobby — yours or anyone's — and list at least three specific math tasks hiding inside it, the way the lesson did for gardening.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: In skateboarding: you measure the height and length of a ramp to know if you can clear it, you count how many tries a trick takes and track whether that number is going down, and you estimate speed and distance before a gap so you know how hard to push. The board itself is measured in inches, and riders compare deck widths like 8.0 versus 8.25.</div>
       </div>
     </li>
   </ol>

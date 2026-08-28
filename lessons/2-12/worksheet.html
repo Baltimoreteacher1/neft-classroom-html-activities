@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Multiply Decimals</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Multiply Decimals · Product · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,31 +773,52 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Multiply Decimals</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can multiply decimals and place the decimal point correctly in the product.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Multiply Decimals <span class="ws-es-term">(Multiplicar decimales)</span></span><span class="ws-bankdef"> — Find the product of decimals, then use place value to place the decimal point.</span></div><div class="ws-bank-card"><span class="ws-bankword">Product <span class="ws-es-term">(Producto)</span></span><span class="ws-bankdef"> — The answer when you multiply.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decimal point <span class="ws-es-term">(Punto decimal)</span></span><span class="ws-bankdef"> — The dot that splits the whole number from the part after it.</span></div><div class="ws-bank-card"><span class="ws-bankword">Estimate <span class="ws-es-term">(Estimar)</span></span><span class="ws-bankdef"> — A close answer you get by rounding first.</span></div><div class="ws-bank-card"><span class="ws-bankword">Place value <span class="ws-es-term">(Valor posicional)</span></span><span class="ws-bankdef"> — What a digit is worth based on where it sits in a number.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decimal places <span class="ws-es-term">(Cifras decimales)</span></span><span class="ws-bankdef"> — How many digits come after the decimal point.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do you multiply decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Multiplying Decimals</div>
+        <ul class="ws-note-list"><li>To multiply decimals, you multiply the numbers as if there were no decimal points. Then you count the decimal places and put the point back in the answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Multiply the numbers as if they were whole numbers (ignore decimals during multiplication).</li><li>Count the total number of decimal places in both factors.</li><li>Place the decimal point in the product so it has that same total number of decimal places</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 4.5 × 12.60, the cost of 4.5 meters at $12.60 each.</li><li>First I multiply without points, like whole numbers: 45 × 1260 = 56,700.</li><li>Now I count decimal places: 4.5 has 1, and 12.60 has 2, so 1 + 2 = 3 decimal places.</li><li>I put the point 3 places from the right in 56,700: that gives 56.700, or $56.70.</li><li>I check with an estimate: 5 × $13 = $65, and $56.70 is close, so my answer is reasonable.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Multiply Decimals (Multiplicar decimales) — Find the product of decimals, then use place value to place the decimal point.</li><li>Product (Producto) — The answer when you multiply.</li><li>Decimal point (Punto decimal) — The dot that splits the whole number from the part after it.</li><li>Estimate (Estimar) — A close answer you get by rounding first.</li><li>Place value (Valor posicional) — What a digit is worth based on where it sits in a number.</li><li>Decimal places (Cifras decimales) — How many digits come after the decimal point.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Multiply Decimals is counting decimal places from only one factor instead of adding the decimal places from BOTH factors. For example, in 0.4 × 0.06, a student multiplies 4 × 6 = 24, then places the decimal point using just one factor's place count (1 place), writing 0.24 instead of the correct answer: 0.4 has 1 decimal place and 0.06 has 2 decimal places, for a total of 3, so 24 becomes 0.024. Before you submit, count the decimal places in EACH factor separately and add them together — that total is how many decimal places belong in your final answer.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 3.4 × 2.6?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8.84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">88.4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.884</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8.48</span></li></ol>
+        <p class="ws-stem">Multiply as whole numbers, then place the decimal point.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Whole Number Product</th><th>Total Decimal Places</th><th>Final Answer</th></tr></thead><tbody><tr><td>2.5 × 4</td><td></td><td></td><td></td></tr><tr><td>1.2 × 0.3</td><td></td><td></td><td></td></tr><tr><td>6.1 × 0.5</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -740,7 +826,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 0.7 × 1.5?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.05</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.105</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1.50</span></li></ol>
+        <p class="ws-stem">What is 3.4 × 2.6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8.84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">88.4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.884</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8.48</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div>
       </div>
     </li>
   
@@ -751,20 +837,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 5.3 × 4?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">21.2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">212</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20.12</span></li></ol>
+        <p class="ws-stem">What is 0.7 × 1.5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.05</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.105</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1.50</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Multiply as whole numbers, then place the decimal point.</p>
-  <table class="ws-table"><thead><tr><th>Problem</th><th>Whole Number Product</th><th>Total Decimal Places</th><th>Final Answer</th></tr></thead><tbody><tr><td>2.5 × 4</td><td></td><td></td><td></td></tr><tr><td>1.2 × 0.3</td><td></td><td></td><td></td></tr><tr><td>6.1 × 0.5</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">What is 5.3 × 4?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">21.2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">212</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20.12</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div>
       </div>
     </li>
   </ol>
@@ -813,14 +897,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Multiply Decimals</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Multiply Decimals · Product · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -835,31 +920,52 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Multiply Decimals</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can multiply decimals and place the decimal point correctly in the product.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do you multiply decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Multiplying Decimals</div>
+        <ul class="ws-note-list"><li>To multiply decimals, you multiply the numbers as if there were no decimal points. Then you count the decimal places and put the point back in the answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Multiply the numbers as if they were whole numbers (ignore decimals during multiplication).</li><li>Count the total number of decimal places in both factors.</li><li>Place the decimal point in the product so it has that same total number of decimal places</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 4.5 × 12.60, the cost of 4.5 meters at $12.60 each.</li><li>First I multiply without points, like whole numbers: 45 × 1260 = 56,700.</li><li>Now I count decimal places: 4.5 has 1, and 12.60 has 2, so 1 + 2 = 3 decimal places.</li><li>I put the point 3 places from the right in 56,700: that gives 56.700, or $56.70.</li><li>I check with an estimate: 5 × $13 = $65, and $56.70 is close, so my answer is reasonable.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Multiply Decimals (Multiplicar decimales) — Find the product of decimals, then use place value to place the decimal point.</li><li>Product (Producto) — The answer when you multiply.</li><li>Decimal point (Punto decimal) — The dot that splits the whole number from the part after it.</li><li>Estimate (Estimar) — A close answer you get by rounding first.</li><li>Place value (Valor posicional) — What a digit is worth based on where it sits in a number.</li><li>Decimal places (Cifras decimales) — How many digits come after the decimal point.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Multiply Decimals is counting decimal places from only one factor instead of adding the decimal places from BOTH factors. For example, in 0.4 × 0.06, a student multiplies 4 × 6 = 24, then places the decimal point using just one factor's place count (1 place), writing 0.24 instead of the correct answer: 0.4 has 1 decimal place and 0.06 has 2 decimal places, for a total of 3, so 24 becomes 0.024. Before you submit, count the decimal places in EACH factor separately and add them together — that total is how many decimal places belong in your final answer.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Multiply Decimals <span class="ws-es-term">(Multiplicar decimales)</span></span><span class="ws-bankdef"> — Find the product of decimals, then use place value to place the decimal point.</span></div><div class="ws-bank-card"><span class="ws-bankword">Product <span class="ws-es-term">(Producto)</span></span><span class="ws-bankdef"> — The answer when you multiply.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decimal point <span class="ws-es-term">(Punto decimal)</span></span><span class="ws-bankdef"> — The dot that splits the whole number from the part after it.</span></div><div class="ws-bank-card"><span class="ws-bankword">Estimate <span class="ws-es-term">(Estimar)</span></span><span class="ws-bankdef"> — A close answer you get by rounding first.</span></div><div class="ws-bank-card"><span class="ws-bankword">Place value <span class="ws-es-term">(Valor posicional)</span></span><span class="ws-bankdef"> — What a digit is worth based on where it sits in a number.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decimal places <span class="ws-es-term">(Cifras decimales)</span></span><span class="ws-bankdef"> — How many digits come after the decimal point.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 3.4 × 2.6?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8.84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">88.4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.884</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8.48</span></li></ol>
+        <p class="ws-stem">Multiply as whole numbers, then place the decimal point.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Whole Number Product</th><th>Total Decimal Places</th><th>Final Answer</th></tr></thead><tbody><tr><td>2.5 × 4</td><td></td><td></td><td></td></tr><tr><td>1.2 × 0.3</td><td></td><td></td><td></td></tr><tr><td>6.1 × 0.5</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -867,7 +973,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 0.7 × 1.5?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.05</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.105</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1.50</span></li></ol>
+        <p class="ws-stem">What is 3.4 × 2.6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8.84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">88.4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.884</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8.48</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div>
       </div>
     </li>
   
@@ -878,23 +984,25 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 5.3 × 4?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">21.2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">212</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20.12</span></li></ol>
+        <p class="ws-stem">What is 0.7 × 1.5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.05</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.105</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1.50</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Multiply as whole numbers, then place the decimal point.</p>
-  <table class="ws-table"><thead><tr><th>Problem</th><th>Whole Number Product</th><th>Total Decimal Places</th><th>Final Answer</th></tr></thead><tbody><tr><td>2.5 × 4</td><td></td><td></td><td></td></tr><tr><td>1.2 × 0.3</td><td></td><td></td><td></td></tr><tr><td>6.1 × 0.5</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">What is 5.3 × 4?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">21.2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">212</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20.12</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -902,10 +1010,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which estimate is closest to 4.8 × 3.2?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5 × 3 = 15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 × 3 = 12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5 × 4 = 20</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">48 × 32 = 1,536</span></li></ol>
+        <p class="ws-stem">Which estimate is closest to 4.8 × 3.2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5 × 3 = 15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 × 3 = 12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5 × 4 = 20</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">48 × 32 = 1,536</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 4</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -916,7 +1031,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake — Counting Decimal Places</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">0.3 × 0.6</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply as whole numbers:</span><span class="ws-step-w">3 × 6 = 18</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Count decimal places:</span><span class="ws-step-w">0.3 has 1 decimal place and 0.6 has 1 decimal place → 1 total</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Place the decimal point:</span><span class="ws-step-w">Move the point 1 place in 18 to get 1.8</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -965,14 +1083,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Multiply Decimals</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Multiply Decimals · Product · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -987,9 +1106,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do you multiply decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Multiplying Decimals</div>
+        <ul class="ws-note-list"><li>To multiply decimals, you multiply the numbers as if there were no decimal points. Then you count the decimal places and put the point back in the answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Multiply the numbers as if they were whole numbers (ignore decimals during multiplication).</li><li>Count the total number of decimal places in both factors.</li><li>Place the decimal point in the product so it has that same total number of decimal places</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 4.5 × 12.60, the cost of 4.5 meters at $12.60 each.</li><li>First I multiply without points, like whole numbers: 45 × 1260 = 56,700.</li><li>Now I count decimal places: 4.5 has 1, and 12.60 has 2, so 1 + 2 = 3 decimal places.</li><li>I put the point 3 places from the right in 56,700: that gives 56.700, or $56.70.</li><li>I check with an estimate: 5 × $13 = $65, and $56.70 is close, so my answer is reasonable.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Let's multiply 0.4 × 0.7. First multiply like whole numbers: what is 4 × 7? (28.)</li><li>Now count decimal places: 0.4 has 1 and 0.7 has 1, so that is 2 places total.</li><li>Put the point 2 places from the right in 28: 0.28. So 0.4 × 0.7 = 0.28.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Multiply Decimals (Multiplicar decimales) — Find the product of decimals, then use place value to place the decimal point.</li><li>Product (Producto) — The answer when you multiply.</li><li>Decimal point (Punto decimal) — The dot that splits the whole number from the part after it.</li><li>Estimate (Estimar) — A close answer you get by rounding first.</li><li>Place value (Valor posicional) — What a digit is worth based on where it sits in a number.</li><li>Decimal places (Cifras decimales) — How many digits come after the decimal point.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Multiply Decimals is counting decimal places from only one factor instead of adding the decimal places from BOTH factors. For example, in 0.4 × 0.06, a student multiplies 4 × 6 = 24, then places the decimal point using just one factor's place count (1 place), writing 0.24 instead of the correct answer: 0.4 has 1 decimal place and 0.06 has 2 decimal places, for a total of 3, so 24 becomes 0.024. Before you submit, count the decimal places in EACH factor separately and add them together — that total is how many decimal places belong in your final answer.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1011,29 +1156,16 @@ header.packet h1::after{
         
         <p class="ws-stem">Complete each decimal multiplication.</p>
   <table class="ws-table"><thead><tr><th>Problem</th><th>Product</th></tr></thead><tbody><tr><td>6.4 × 3.5</td><td></td></tr><tr><td>0.25 × 0.4</td><td></td></tr><tr><td>8.3 × 2.1</td><td></td></tr><tr><td>12.5 × 0.8</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A car travels 55.5 miles per hour for 2.4 hours. How far does it go?</p><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">133.2 miles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">13.32 miles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1,332 miles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">57.9 miles</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1043,7 +1175,31 @@ header.packet h1::after{
   <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A car travels 55.5 miles per hour for 2.4 hours. How far does it go?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">133.2 miles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">13.32 miles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1,332 miles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">57.9 miles</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+    </tbody></table></div></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1054,7 +1210,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake — Placing the Decimal Point</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">1.5 × 2.4</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply as whole numbers:</span><span class="ws-step-w">15 × 24 = 360</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Count decimal places:</span><span class="ws-step-w">1.5 has 1 decimal place and 2.4 has 1 decimal place → 2 total</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Place the decimal point:</span><span class="ws-step-w">Move the point 2 places in 360 to get 0.36</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1103,14 +1262,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Multiply Decimals</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Multiply Decimals · Product · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1125,12 +1285,58 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do you multiply decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Multiplying Decimals</div>
+        <ul class="ws-note-list"><li>To multiply decimals, you multiply the numbers as if there were no decimal points. Then you count the decimal places and put the point back in the answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Multiply the numbers as if they were whole numbers (ignore decimals during multiplication).</li><li>Count the total number of decimal places in both factors.</li><li>Place the decimal point in the product so it has that same total number of decimal places</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 4.5 × 12.60, the cost of 4.5 meters at $12.60 each.</li><li>First I multiply without points, like whole numbers: 45 × 1260 = 56,700.</li><li>Now I count decimal places: 4.5 has 1, and 12.60 has 2, so 1 + 2 = 3 decimal places.</li><li>I put the point 3 places from the right in 56,700: that gives 56.700, or $56.70.</li><li>I check with an estimate: 5 × $13 = $65, and $56.70 is close, so my answer is reasonable.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Let's multiply 0.4 × 0.7. First multiply like whole numbers: what is 4 × 7? (28.)</li><li>Now count decimal places: 0.4 has 1 and 0.7 has 1, so that is 2 places total.</li><li>Put the point 2 places from the right in 28: 0.28. So 0.4 × 0.7 = 0.28.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Multiply Decimals (Multiplicar decimales) — Find the product of decimals, then use place value to place the decimal point.</li><li>Product (Producto) — The answer when you multiply.</li><li>Decimal point (Punto decimal) — The dot that splits the whole number from the part after it.</li><li>Estimate (Estimar) — A close answer you get by rounding first.</li><li>Place value (Valor posicional) — What a digit is worth based on where it sits in a number.</li><li>Decimal places (Cifras decimales) — How many digits come after the decimal point.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Multiply Decimals is counting decimal places from only one factor instead of adding the decimal places from BOTH factors. For example, in 0.4 × 0.06, a student multiplies 4 × 6 = 24, then places the decimal point using just one factor's place count (1 place), writing 0.24 instead of the correct answer: 0.4 has 1 decimal place and 0.06 has 2 decimal places, for a total of 3, so 24 becomes 0.024. Before you submit, count the decimal places in EACH factor separately and add them together — that total is how many decimal places belong in your final answer.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Find the missing factor.</p>
+  <table class="ws-table"><thead><tr><th>Equation</th><th>Missing Factor</th></tr></thead><tbody><tr><td>___ × 0.5 = 3.5</td><td></td></tr><tr><td>2.4 × ___ = 7.2</td><td></td></tr><tr><td>___ × 1.5 = 4.5</td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1138,31 +1344,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find Kai's Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">2.4 × 3.15</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply as whole numbers:</span><span class="ws-step-w">24 × 315 = 7,560</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Count decimal places:</span><span class="ws-step-w">2.4 has 1 decimal place, 3.15 has 2 decimal places → 2 total</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Place decimal:</span><span class="ws-step-w">75.60</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A driver buys 9.5 gallons of gas at $3.40 per gallon. Show how to find the total cost. Use estimation to check if your answer is reasonable.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Find the missing factor.</p>
-  <table class="ws-table"><thead><tr><th>Equation</th><th>Missing Factor</th></tr></thead><tbody><tr><td>___ × 0.5 = 3.5</td><td></td></tr><tr><td>2.4 × ___ = 7.2</td><td></td></tr><tr><td>___ × 1.5 = 4.5</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">A driver buys 9.5 gallons of gas at $3.40 per gallon. Show how to find the total cost. Use estimation to check if your answer is reasonable.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

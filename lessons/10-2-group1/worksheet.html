@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">10.2 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">symmetric · mirror image · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-2-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,19 +767,29 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 10.2 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can use bilateral symmetry to describe structure in nature and in human creations — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — Math creates beautiful designs in nature</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Bilateral symmetry — two sides that are mirror images — appears throughout nature, and it shapes human creations from art to music to architecture.</div>
+        <ul class="ws-note-list"><li>Look closely at a butterfly's wings, then at how a plant grows its leaves. The same mathematical idea keeps appearing. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me find the symmetry in a butterfly</div>
+        <ol class="ws-note-list"><li>I look at the two sides of the butterfly, and they look like mirror images — the butterfly is symmetric.</li><li>All butterflies have reflective symmetry. In plants and animals, this is called bilateral symmetry.</li><li>To show it, I draw a line down the middle of the butterfly's body: everything on the left is reflected on the right.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>symmetric (simétrico) — Having two halves that match — one side is a mirror image of the other.</li><li>mirror image (imagen reflejada) — A copy of a figure flipped across a line, so the two halves face each other.</li><li>bilateral symmetry (simetría bilateral) — Reflective symmetry in plants and animals — the two sides of the body mirror each other.</li><li>line of symmetry (eje de simetría) — The line you can draw through a figure so each side is a reflection of the other.</li><li>balance (equilibrio) — An even, steady arrangement — neither side feels heavier than the other.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>Thinking a figure lacks bilateral symmetry just because its line of symmetry is not vertical — the mirror line can run in any direction, and the test is whether the two sides match across it.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">symmetric <span class="ws-es-term">(simétrico)</span></span><span class="ws-bankdef"> — Having two halves that match — one side is a mirror image of the other.</span></div><div class="ws-bank-card"><span class="ws-bankword">mirror image <span class="ws-es-term">(imagen reflejada)</span></span><span class="ws-bankdef"> — A copy of a figure flipped across a line, so the two halves face each other.</span></div><div class="ws-bank-card"><span class="ws-bankword">bilateral symmetry <span class="ws-es-term">(simetría bilateral)</span></span><span class="ws-bankdef"> — Reflective symmetry in plants and animals — the two sides of the body mirror each other.</span></div><div class="ws-bank-card"><span class="ws-bankword">line of symmetry <span class="ws-es-term">(eje de simetría)</span></span><span class="ws-bankdef"> — The line you can draw through a figure so each side is a reflection of the other.</span></div><div class="ws-bank-card"><span class="ws-bankword">balance <span class="ws-es-term">(equilibrio)</span></span><span class="ws-bankdef"> — An even, steady arrangement — neither side feels heavier than the other.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -722,46 +797,16 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What does it mean that a butterfly is symmetric?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The two sides of the butterfly look like mirror images</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The butterfly has exactly two wings</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The butterfly's wings are very colorful</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The butterfly is larger than most insects</span></li></ol>
+        <p class="ws-stem">What does it mean that a butterfly is symmetric?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The two sides of the butterfly look like mirror images</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The butterfly has exactly two wings</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The butterfly's wings are very colorful</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The butterfly is larger than most insects</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In plants and animals, reflective symmetry is called:</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">bilateral symmetry</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">rotational symmetry</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">a mirror image</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">balance</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A plant grows in layers, and each layer is made up of 2 leaves. How many leaves does the plant have after growing 4 layers?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8 leaves</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 leaves</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">16 leaves</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 leaves</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Where have you seen symmetry before? Name one place and describe it.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I have seen symmetry in ___ .&lt;br&gt;The two sides ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -774,14 +819,67 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">How many lines of symmetry does each figure have?</p>
   <table class="ws-table"><thead><tr><th>Figure</th><th>Think about the folds</th><th>Lines of symmetry</th></tr></thead><tbody><tr><td>Square</td><td></td><td></td></tr><tr><td>Rectangle (not a square)</td><td></td><td></td></tr><tr><td>Equilateral triangle</td><td></td><td></td></tr><tr><td>The letter H</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In plants and animals, reflective symmetry is called:</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">bilateral symmetry</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">rotational symmetry</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">a mirror image</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">balance</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A plant grows in layers, and each layer is made up of 2 leaves. How many leaves does the plant have after growing 4 layers?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8 leaves</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 leaves</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">16 leaves</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 leaves</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Where have you seen symmetry before? Name one place and describe it.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I have seen symmetry in ___ .&lt;br&gt;The two sides ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

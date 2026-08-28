@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Range and Interquartile Range</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Range and Interquartile Range · Range · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,29 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Two classes both have a median score of 81. Class A's IQR is 13 and Class B's IQR is 8. Which statement is true?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The middle half of Class B's scores is less spread out</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Class B has a higher median</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Class A has more students</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Class B's highest score is greater</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A smaller IQR means the middle half of the data is packed into a shorter stretch, so Class B's middle half varies less. The medians are equal, so nothing there separates them.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,7 +798,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -726,23 +809,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which measure of spread uses ONLY the middle half of the data?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The interquartile range</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The mode</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The IQR runs from Q1 to Q3, which is exactly the middle half of the values. The range uses every value, including the extremes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Two classes both have a median score of 81. Class A's IQR is 13 and Class B's IQR is 8. Which statement is true?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The middle half of Class B's scores is less spread out</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Class B has a higher median</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Class A has more students</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Class B's highest score is greater</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A smaller IQR means the middle half of the data is packed into a shorter stretch, so Class B's middle half varies less. The medians are equal, so nothing there separates them.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
+        <p class="ws-stem">Which measure of spread uses ONLY the middle half of the data?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The interquartile range</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The mode</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The IQR runs from Q1 to Q3, which is exactly the middle half of the values. The range uses every value, including the extremes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
       </div>
     </li>
   </ol>
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Range and Interquartile Range</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Range and Interquartile Range · Range · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,44 +879,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A data set runs from a least value of 12 to a greatest value of 30. What is the range?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Range = greatest − least = 30 − 12 = 18.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">On a box plot, Q1 = 20 and Q3 = 36. What is the interquartile range?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">56</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">36</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> IQR = Q3 − Q1 = 36 − 20 = 16.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which measure of spread uses ONLY the middle half of the data?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The interquartile range</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The mode</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The IQR runs from Q1 to Q3, which is exactly the middle half of the values. The range uses every value, including the extremes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -854,7 +897,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -864,7 +907,48 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Range</span><span class="ws-sort-text">Greatest value − least value</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">Q3 − Q1</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">The width of the box on a box plot</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Range</span><span class="ws-sort-text">The distance from whisker tip to whisker tip</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Range</span><span class="ws-sort-text">Changes a lot when one value is unusually high</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">Describes the middle 50% of the data</span></li></ul>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A data set runs from a least value of 12 to a greatest value of 30. What is the range?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Range = greatest − least = 30 − 12 = 18.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">On a box plot, Q1 = 20 and Q3 = 36. What is the interquartile range?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">56</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">36</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> IQR = Q3 − Q1 = 36 − 20 = 16.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which measure of spread uses ONLY the middle half of the data?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The interquartile range</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The mode</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The IQR runs from Q1 to Q3, which is exactly the middle half of the values. The range uses every value, including the extremes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -916,14 +1000,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Range and Interquartile Range</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Range and Interquartile Range · Range · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -939,22 +1024,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A box plot shows: least 68, Q1 75.5, median 83.5, Q3 88, greatest 94. What are the range and the IQR?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Range 26, IQR 12.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Range 12.5, IQR 26</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Range 26, IQR 83.5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Range 20, IQR 12.5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Range = 94 − 68 = 26. IQR = 88 − 75.5 = 12.5. The range covers the whole span; the IQR covers only the box.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MATCHING</span>
       </div>
       <div class="ws-pbody">
@@ -966,7 +1043,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -977,7 +1054,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -987,7 +1064,26 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">The range grows a lot</span><span class="ws-sort-text">Because it uses the greatest value</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">The IQR barely changes</span><span class="ws-sort-text">Because it uses only Q1 and Q3</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">The range grows a lot</span><span class="ws-sort-text">It measures the whole span of the data</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">The IQR barely changes</span><span class="ws-sort-text">It measures only the middle half</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A box plot shows: least 68, Q1 75.5, median 83.5, Q3 88, greatest 94. What are the range and the IQR?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Range 26, IQR 12.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Range 12.5, IQR 26</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Range 26, IQR 83.5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Range 20, IQR 12.5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Range = 94 − 68 = 26. IQR = 88 − 75.5 = 12.5. The range covers the whole span; the IQR covers only the box.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1039,14 +1135,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Range and Interquartile Range</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Range and Interquartile Range · Range · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1062,11 +1159,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A coach wants ONE number for each question. Sort each question under the measure that answers it.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Range</span> <span class="ws-cat-pill">Interquartile range</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Range</span><span class="ws-sort-text">How far apart are our best and worst games?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">How consistent is a typical night for this team?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">How much did the middle half of our scores vary?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Range</span><span class="ws-sort-text">What is the full span from lowest to highest?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">Which measure survives one record-breaking game?</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1080,25 +1197,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Two students both scored 80 on a make-up test — one joins Class A (range 28, IQR 13) and one joins Class B (range 20, IQR 8). Both classes have a median of 81. Predict how each class's IQR changes, and explain your reasoning.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Each new score of 80 lands just below the median of 81, which is inside the box for both classes. Adding a value inside the middle of the data pulls the quartiles slightly toward the center, so each IQR either stays the same or shrinks a little; neither can grow much, because nothing was added out at the extremes. The ranges do not change at all, since 80 is neither a new least nor a new greatest value for either class. The comparison holds: Class B's scores stay the more tightly clustered of the two.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A coach wants ONE number for each question. Sort each question under the measure that answers it.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Range</span> <span class="ws-cat-pill">Interquartile range</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Range</span><span class="ws-sort-text">How far apart are our best and worst games?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">How consistent is a typical night for this team?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">How much did the middle half of our scores vary?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Range</span><span class="ws-sort-text">What is the full span from lowest to highest?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Interquartile range</span><span class="ws-sort-text">Which measure survives one record-breaking game?</span></li></ul>
       </div>
     </li>
   </ol>

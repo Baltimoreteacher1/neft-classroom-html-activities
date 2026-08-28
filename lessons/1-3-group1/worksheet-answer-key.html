@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">1.3 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">representation · tape diagram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-3-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,54 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">One tram ride takes 12.5 minutes. How many minutes do 10 rides take?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">125 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">22.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,250 minutes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 12.5 × 10 = 125. Multiplying by 10 shifts every digit one place to the left.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Five Breaks: which of these is a correct way to decompose 12.5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">10 + 2.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10 + 2.05</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 + 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 + 2.5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 10 + 2.5 = 12.5. The parts of a decomposition must rebuild the number exactly.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">About how many coins are in the picture in your book? Explain how you estimated WITHOUT counting every coin.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> First I counted ___ .&lt;br&gt;Then I estimated about ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I counted one small stack of about 10 coins, then estimated that about 15 stacks like it fill the picture, so about 150 coins. An estimate is a reasoned answer that is close enough to be useful.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How many minutes do 50 tram rides take, at 12.5 minutes per ride?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">625 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">62.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">600 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6,250 minutes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 12.5 × 50 = 625, just as the table shows: 1 ride → 12.5, 10 rides → 125, 50 rides → 625.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -760,7 +785,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -768,6 +793,58 @@ header.packet h1::after{
         <p class="ws-stem">Each tram ride takes 12.5 minutes. Complete the table of total minutes.</p>
   <table class="ws-table"><thead><tr><th>Rides</th><th>Expression</th><th>Total minutes</th></tr></thead><tbody><tr><td>10</td><td>10 × 12.5</td><td>125</td></tr><tr><td>20</td><td>20 × 12.5</td><td>250</td></tr><tr><td>50</td><td>50 × 12.5</td><td>625</td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">One tram ride takes 12.5 minutes. How many minutes do 10 rides take?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">125 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">22.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,250 minutes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 12.5 × 10 = 125. Multiplying by 10 shifts every digit one place to the left.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Five Breaks: which of these is a correct way to decompose 12.5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">10 + 2.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10 + 2.05</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 + 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 + 2.5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 10 + 2.5 = 12.5. The parts of a decomposition must rebuild the number exactly.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How many minutes do 50 tram rides take, at 12.5 minutes per ride?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">625 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">62.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">600 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6,250 minutes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 12.5 × 50 = 625, just as the table shows: 1 ride → 12.5, 10 rides → 125, 50 rides → 625.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">About how many coins are in the picture in your book? Explain how you estimated WITHOUT counting every coin.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> First I counted ___ .&lt;br&gt;Then I estimated about ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I counted one small stack of about 10 coins, then estimated that about 15 stacks like it fill the picture, so about 150 coins. An estimate is a reasoned answer that is close enough to be useful.</div>
       </div>
     </li>
   </ol>

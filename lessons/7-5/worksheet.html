@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Rational Numbers on the Coordinate Plane</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Graph on the Coordinate Plane · Coordinate plane · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=7-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,20 +773,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Represent Rational Numbers on the Coordinate Plane</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can plot and identify points on the coordinate plane using ordered pairs.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Graph on the Coordinate Plane <span class="ws-es-term">(Representar en el plano de coordenadas)</span></span><span class="ws-bankdef"> — Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</span></div><div class="ws-bank-card"><span class="ws-bankword">Coordinate plane <span class="ws-es-term">(Plano cartesiano)</span></span><span class="ws-bankdef"> — A grid with a line going across and a line going up to plot points.</span></div><div class="ws-bank-card"><span class="ws-bankword">Ordered pair <span class="ws-es-term">(Par ordenado)</span></span><span class="ws-bankdef"> — Two numbers (x, y) that tell where a point is on a grid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Origin <span class="ws-es-term">(Origen)</span></span><span class="ws-bankdef"> — The point (0, 0) where the two grid lines cross.</span></div><div class="ws-bank-card"><span class="ws-bankword">Quadrant <span class="ws-es-term">(Cuadrante)</span></span><span class="ws-bankdef"> — One of the four parts of a coordinate grid, numbered I to IV.</span></div><div class="ws-bank-card"><span class="ws-bankword">Reflection <span class="ws-es-term">(Reflexión)</span></span><span class="ws-bankdef"> — A flipped, mirror image across a line.</span></div><div class="ws-bank-card"><span class="ws-bankword">Integer <span class="ws-es-term">(Número entero)</span></span><span class="ws-bankdef"> — Whole numbers and their opposites, like -2, -1, 0, 1, 2.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do you plot a point on the coordinate plane?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Coordinate Plane: Plotting Points. Formula: Ordered Pair: (x, y) = (Horizontal, Vertical)</div>
+        <ul class="ws-note-list"><li>An ordered pair (x, y) is two numbers that tell you exactly where a point goes. The first number moves you right or left. The second number moves you up or down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Always start at the Origin (0, 0).</li><li>x-coordinate: Move right for positive (+), left for negative (-).</li><li>y-coordinate: Move up for positive (+), down for negative (-)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I will plot the point (5, 4). The 5 is the x-coordinate, and the 4 is the y-coordinate.</li><li>I start at the origin, which is (0, 0).</li><li>First I move 5 units to the right along the x-axis.</li><li>Then I move 4 units up. I place my dot. That is the point (5, 4).</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Graph on the Coordinate Plane (Representar en el plano de coordenadas) — Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</li><li>Coordinate plane (Plano cartesiano) — A grid with a line going across and a line going up to plot points.</li><li>Ordered pair (Par ordenado) — Two numbers (x, y) that tell where a point is on a grid.</li><li>Origin (Origen) — The point (0, 0) where the two grid lines cross.</li><li>Quadrant (Cuadrante) — One of the four parts of a coordinate grid, numbered I to IV.</li><li>Reflection (Reflexión) — A flipped, mirror image across a line.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Graph on the Coordinate Plane is swapping the order of the coordinates — moving up/down first instead of right/left first. For example, when plotting (5, 2), students often move up 5 and right 2, landing on the wrong point (2, 5) instead of (5, 2). Remember: the x-coordinate (first number) always tells you how far to move right or left along the x-axis; the y-coordinate (second number) tells you how far up or down along the y-axis.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -729,35 +806,16 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which ordered pair names a point 3 units right and 7 units up from the origin?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 7)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 3)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(0, 7)</span></li></ol>
+        <p class="ws-stem">A point is at (6, 2). What does the 6 tell you?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Move 6 units to the right</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Move 6 units up</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Move 6 units to the left</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The point is in Quadrant 6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What are the coordinates of the origin?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(0, 0)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(1, 1)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(0, 1)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(1, 0)</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A point is at (6, 2). What does the 6 tell you?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Move 6 units to the right</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Move 6 units up</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Move 6 units to the left</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The point is in Quadrant 6</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -765,6 +823,38 @@ header.packet h1::after{
         <p class="ws-stem">Put these steps in order for plotting the point (4, 5).</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Group 1</span> <span class="ws-cat-pill">Group 2</span></div>
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Start at the origin (0, 0)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Move 4 units to the right along the x-axis</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Move 5 units up from that spot</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Place a dot at the point (4, 5)</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which ordered pair names a point 3 units right and 7 units up from the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 7)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 3)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(0, 7)</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What are the coordinates of the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(0, 0)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(1, 1)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(0, 1)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(1, 0)</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -813,14 +903,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Rational Numbers on the Coordinate Plane</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Graph on the Coordinate Plane · Coordinate plane · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=7-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -835,20 +926,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Represent Rational Numbers on the Coordinate Plane</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can plot and identify points on the coordinate plane using ordered pairs.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do you plot a point on the coordinate plane?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Coordinate Plane: Plotting Points. Formula: Ordered Pair: (x, y) = (Horizontal, Vertical)</div>
+        <ul class="ws-note-list"><li>An ordered pair (x, y) is two numbers that tell you exactly where a point goes. The first number moves you right or left. The second number moves you up or down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Always start at the Origin (0, 0).</li><li>x-coordinate: Move right for positive (+), left for negative (-).</li><li>y-coordinate: Move up for positive (+), down for negative (-)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I will plot the point (5, 4). The 5 is the x-coordinate, and the 4 is the y-coordinate.</li><li>I start at the origin, which is (0, 0).</li><li>First I move 5 units to the right along the x-axis.</li><li>Then I move 4 units up. I place my dot. That is the point (5, 4).</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Graph on the Coordinate Plane (Representar en el plano de coordenadas) — Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</li><li>Coordinate plane (Plano cartesiano) — A grid with a line going across and a line going up to plot points.</li><li>Ordered pair (Par ordenado) — Two numbers (x, y) that tell where a point is on a grid.</li><li>Origin (Origen) — The point (0, 0) where the two grid lines cross.</li><li>Quadrant (Cuadrante) — One of the four parts of a coordinate grid, numbered I to IV.</li><li>Reflection (Reflexión) — A flipped, mirror image across a line.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Graph on the Coordinate Plane is swapping the order of the coordinates — moving up/down first instead of right/left first. For example, when plotting (5, 2), students often move up 5 and right 2, landing on the wrong point (2, 5) instead of (5, 2). Remember: the x-coordinate (first number) always tells you how far to move right or left along the x-axis; the y-coordinate (second number) tells you how far up or down along the y-axis.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Graph on the Coordinate Plane <span class="ws-es-term">(Representar en el plano de coordenadas)</span></span><span class="ws-bankdef"> — Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</span></div><div class="ws-bank-card"><span class="ws-bankword">Coordinate plane <span class="ws-es-term">(Plano cartesiano)</span></span><span class="ws-bankdef"> — A grid with a line going across and a line going up to plot points.</span></div><div class="ws-bank-card"><span class="ws-bankword">Ordered pair <span class="ws-es-term">(Par ordenado)</span></span><span class="ws-bankdef"> — Two numbers (x, y) that tell where a point is on a grid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Origin <span class="ws-es-term">(Origen)</span></span><span class="ws-bankdef"> — The point (0, 0) where the two grid lines cross.</span></div><div class="ws-bank-card"><span class="ws-bankword">Quadrant <span class="ws-es-term">(Cuadrante)</span></span><span class="ws-bankdef"> — One of the four parts of a coordinate grid, numbered I to IV.</span></div><div class="ws-bank-card"><span class="ws-bankword">Reflection <span class="ws-es-term">(Reflexión)</span></span><span class="ws-bankdef"> — A flipped, mirror image across a line.</span></div><div class="ws-bank-card"><span class="ws-bankword">Integer <span class="ws-es-term">(Número entero)</span></span><span class="ws-bankdef"> — Whole numbers and their opposites, like -2, -1, 0, 1, 2.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -856,35 +959,16 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which ordered pair names a point 3 units right and 7 units up from the origin?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 7)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 3)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(0, 7)</span></li></ol>
+        <p class="ws-stem">A point is at (6, 2). What does the 6 tell you?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Move 6 units to the right</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Move 6 units up</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Move 6 units to the left</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The point is in Quadrant 6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What are the coordinates of the origin?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(0, 0)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(1, 1)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(0, 1)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(1, 0)</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A point is at (6, 2). What does the 6 tell you?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Move 6 units to the right</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Move 6 units up</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Move 6 units to the left</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The point is in Quadrant 6</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -897,7 +981,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
@@ -906,7 +990,43 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">(0, 0)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">(4, 2)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">(1, 6)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">(5, 5)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">(3, 0)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">(0, 4)</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Origin</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Right 4, Up 2</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Right 1, Up 6</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Right 5, Up 5</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">On the x-axis</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">On the y-axis</span></li></ul></div>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which ordered pair names a point 3 units right and 7 units up from the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 7)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 3)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(0, 7)</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What are the coordinates of the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(0, 0)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(1, 1)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(0, 1)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(1, 0)</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -917,7 +1037,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Clue:</span><span class="ws-step-w">Plot the point (5, 2).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Start:</span><span class="ws-step-w">Start at the origin (0, 0). Good.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move up:</span><span class="ws-step-w">Move 5 units UP along the y-axis.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Move right:</span><span class="ws-step-w">Move 2 units to the right. Place the dot at (2, 5).</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -966,14 +1089,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Rational Numbers on the Coordinate Plane</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Graph on the Coordinate Plane · Coordinate plane · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=7-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -988,23 +1112,38 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do you plot a point on the coordinate plane?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Coordinate Plane: Plotting Points. Formula: Ordered Pair: (x, y) = (Horizontal, Vertical)</div>
+        <ul class="ws-note-list"><li>An ordered pair (x, y) is two numbers that tell you exactly where a point goes. The first number moves you right or left. The second number moves you up or down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Always start at the Origin (0, 0).</li><li>x-coordinate: Move right for positive (+), left for negative (-).</li><li>y-coordinate: Move up for positive (+), down for negative (-)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I will plot the point (5, 4). The 5 is the x-coordinate, and the 4 is the y-coordinate.</li><li>I start at the origin, which is (0, 0).</li><li>First I move 5 units to the right along the x-axis.</li><li>Then I move 4 units up. I place my dot. That is the point (5, 4).</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now let's plot (2, 1). Where do we start? At the origin (0, 0).</li><li>How far do we move right? The first number is 2, so we move 2 right.</li><li>How far do we move up? The second number is 1, so we move 1 up and place the dot.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Graph on the Coordinate Plane (Representar en el plano de coordenadas) — Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</li><li>Coordinate plane (Plano cartesiano) — A grid with a line going across and a line going up to plot points.</li><li>Ordered pair (Par ordenado) — Two numbers (x, y) that tell where a point is on a grid.</li><li>Origin (Origen) — The point (0, 0) where the two grid lines cross.</li><li>Quadrant (Cuadrante) — One of the four parts of a coordinate grid, numbered I to IV.</li><li>Reflection (Reflexión) — A flipped, mirror image across a line.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Graph on the Coordinate Plane is swapping the order of the coordinates — moving up/down first instead of right/left first. For example, when plotting (5, 2), students often move up 5 and right 2, landing on the wrong point (2, 5) instead of (5, 2). Remember: the x-coordinate (first number) always tells you how far to move right or left along the x-axis; the y-coordinate (second number) tells you how far up or down along the y-axis.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">COORDINATE GRID</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Plot these points to reveal a hidden shape: (1, 1), (1, 5), (6, 5), (6, 1)</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
@@ -1016,20 +1155,23 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Complete the table. Write the ordered pair for each description.</p>
   <table class="ws-table"><thead><tr><th>Description</th><th>Ordered Pair</th></tr></thead><tbody><tr><td>Right 7, Up 2</td><td></td></tr><tr><td>Right 0, Up 5</td><td></td></tr><tr><td>Right 4, Up 0</td><td></td></tr><tr><td>Right 3, Up 3</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1039,7 +1181,29 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">(5, 3)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">(1, 7)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">(3, 2)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">(0, 4)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">(7, 1)</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">COORDINATE GRID</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Plot these points to reveal a hidden shape: (1, 1), (1, 5), (6, 5), (6, 1)</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1050,7 +1214,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Clue:</span><span class="ws-step-w">Plot the point (4, 0).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move right:</span><span class="ws-step-w">Move 4 units to the right along the x-axis. Good.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move up:</span><span class="ws-step-w">Move 4 units up, because the pair has a 4 in it.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Plot the point:</span><span class="ws-step-w">Place the dot at (4, 4).</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1099,14 +1266,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Rational Numbers on the Coordinate Plane</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Graph on the Coordinate Plane · Coordinate plane · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=7-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1121,12 +1289,56 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do you plot a point on the coordinate plane?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Coordinate Plane: Plotting Points. Formula: Ordered Pair: (x, y) = (Horizontal, Vertical)</div>
+        <ul class="ws-note-list"><li>An ordered pair (x, y) is two numbers that tell you exactly where a point goes. The first number moves you right or left. The second number moves you up or down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Always start at the Origin (0, 0).</li><li>x-coordinate: Move right for positive (+), left for negative (-).</li><li>y-coordinate: Move up for positive (+), down for negative (-)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I will plot the point (5, 4). The 5 is the x-coordinate, and the 4 is the y-coordinate.</li><li>I start at the origin, which is (0, 0).</li><li>First I move 5 units to the right along the x-axis.</li><li>Then I move 4 units up. I place my dot. That is the point (5, 4).</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now let's plot (2, 1). Where do we start? At the origin (0, 0).</li><li>How far do we move right? The first number is 2, so we move 2 right.</li><li>How far do we move up? The second number is 1, so we move 1 up and place the dot.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Graph on the Coordinate Plane (Representar en el plano de coordenadas) — Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</li><li>Coordinate plane (Plano cartesiano) — A grid with a line going across and a line going up to plot points.</li><li>Ordered pair (Par ordenado) — Two numbers (x, y) that tell where a point is on a grid.</li><li>Origin (Origen) — The point (0, 0) where the two grid lines cross.</li><li>Quadrant (Cuadrante) — One of the four parts of a coordinate grid, numbered I to IV.</li><li>Reflection (Reflexión) — A flipped, mirror image across a line.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Graph on the Coordinate Plane is swapping the order of the coordinates — moving up/down first instead of right/left first. For example, when plotting (5, 2), students often move up 5 and right 2, landing on the wrong point (2, 5) instead of (5, 2). Remember: the x-coordinate (first number) always tells you how far to move right or left along the x-axis; the y-coordinate (second number) tells you how far up or down along the y-axis.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">COORDINATE GRID</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Plot the points (2, 3), (2, 7), (6, 7), (6, 3). Connect them. Name the shape and find its perimeter using the coordinates.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1134,29 +1346,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Miscounted Grid Lines</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Ordered pair:</span><span class="ws-step-w">(7, 3)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move along the x-axis:</span><span class="ws-step-w">Start at the origin (0, 0) and count 7 units to the right.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move along the y-axis:</span><span class="ws-step-w">Count up from the x-axis: 1, 2, 3, 4 — stop on 4.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Plot the point:</span><span class="ws-step-w">Place the dot at (7, 4).</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A student says that (3, 5) and (5, 3) are the same point because they use the same numbers. Is the student correct? Explain why or why not, and describe where each point is located on the coordinate plane.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">COORDINATE GRID</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Plot the points (2, 3), (2, 7), (6, 7), (6, 3). Connect them. Name the shape and find its perimeter using the coordinates.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">A student says that (3, 5) and (5, 3) are the same point because they use the same numbers. Is the student correct? Explain why or why not, and describe where each point is located on the coordinate plane.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

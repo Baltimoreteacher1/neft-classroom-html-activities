@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">5.9 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Area of Regular Polygons · Regular Polygon · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-9-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,81 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 5.9 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can find the area of a regular polygon by decomposing it into triangles — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — How do we find the area of a regular polygon?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>A regular polygon splits into the same number of triangles as it has sides, so total area = (one triangle's area) × (number of sides).</div>
+        <ul class="ws-note-list"><li>A regular polygon is a closed shape with straight sides where every side is the same length and every angle is the same size. We can decompose it (break it apart) into equal triangles from the center, then add up their areas. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My hexagon has 6 equal sides. Each side is 6 feet, and each center triangle has a height of 5.2 feet.</li><li>First I find one triangle: A = ½ × base × height = ½ × 6 × 5.2.</li><li>I multiply: 6 × 5.2 = 31.2, then ½ × 31.2 = 15.6 square feet.</li><li>A hexagon has 6 sides, so it has 6 equal triangles.</li><li>I multiply: 6 × 15.6 = 93.6. So the total area is 93.6 square feet.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Area of Regular Polygons (Área de polígonos regulares) — The space a regular polygon covers. Split it from the center into identical triangles, find one triangle's area, then multiply by how many there are.</li><li>Regular Polygon (Polígono regular) — A closed flat shape made of straight sides, where every side is the same length and every angle is the same size.</li><li>Decompose (Descomponer) — To break a shape into smaller, simpler shapes.</li><li>Triangle (Triángulo) — A shape with three sides.</li><li>Composite (Compuesto) — Made by putting two or more simple shapes together.</li><li>Formula (Fórmula) — A math rule written with symbols.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Area of Regular Polygons <span class="ws-es-term">(Área de polígonos regulares)</span></span><span class="ws-bankdef"> — The space a regular polygon covers. Split it from the center into identical triangles, find one triangle's area, then multiply by how many there are.</span></div><div class="ws-bank-card"><span class="ws-bankword">Regular Polygon <span class="ws-es-term">(Polígono regular)</span></span><span class="ws-bankdef"> — A closed flat shape made of straight sides, where every side is the same length and every angle is the same size.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decompose <span class="ws-es-term">(Descomponer)</span></span><span class="ws-bankdef"> — To break a shape into smaller, simpler shapes.</span></div><div class="ws-bank-card"><span class="ws-bankword">Triangle <span class="ws-es-term">(Triángulo)</span></span><span class="ws-bankdef"> — A shape with three sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Composite <span class="ws-es-term">(Compuesto)</span></span><span class="ws-bankdef"> — Made by putting two or more simple shapes together.</span></div><div class="ws-bank-card"><span class="ws-bankword">Formula <span class="ws-es-term">(Fórmula)</span></span><span class="ws-bankdef"> — A math rule written with symbols.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">15.6 ft</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">93.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">187.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">62.4 sq ft</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A regular hexagon is split into 6 triangles, each with base 4 cm and height 3.5 cm. What is the total area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">42 sq cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">21 sq cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">84 sq cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">14 sq cm</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How many triangles can you make from the center of a regular pentagon?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -789,14 +805,83 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Solve the mathematical problem. Show all of your work and reasoning.</p>
   <table class="ws-table"><thead><tr><th>Polygon</th><th>Number of Triangles</th><th>Triangle Base</th><th>Triangle Height</th><th>Area of One Triangle</th><th>Total Area</th></tr></thead><tbody><tr><td>Hexagon</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Pentagon</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Square</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Octagon</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">15.6 ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">93.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">187.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">62.4 sq ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A regular hexagon is split into 6 triangles, each with base 4 cm and height 3.5 cm. What is the total area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">42 sq cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">21 sq cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">84 sq cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">14 sq cm</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How many triangles can you make from the center of a regular pentagon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

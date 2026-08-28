@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Estimate the Percent of a Number</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">estimate · benchmark percent · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,16 +767,24 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Estimate the Percent of a Number</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can estimate the percent of a number using benchmark percents, rounding, and compatible numbers.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">estimate <span class="ws-es-term">(estimación)</span></span><span class="ws-bankdef"> — A reasoned answer that is close enough to be useful, found without exact computation.</span></div><div class="ws-bank-card"><span class="ws-bankword">benchmark percent <span class="ws-es-term">(porcentaje de referencia)</span></span><span class="ws-bankdef"> — A friendly percent — 1%, 10%, 25%, 50%, 75%, 100% — used as a landmark for estimating.</span></div><div class="ws-bank-card"><span class="ws-bankword">compatible numbers <span class="ws-es-term">(números compatibles)</span></span><span class="ws-bankdef"> — Numbers close to the originals that are easy to compute with mentally.</span></div><div class="ws-bank-card"><span class="ws-bankword">double number line <span class="ws-es-term">(recta numérica doble)</span></span><span class="ws-bankdef"> — Two parallel number lines that pair amounts with their percents at the same positions.</span></div><div class="ws-bank-card"><span class="ws-bankword">the whole <span class="ws-es-term">(el todo)</span></span><span class="ws-bankdef"> — The quantity that counts as 100% in a problem — and it can change between questions.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Approximately — the problem is asking for an estimate</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Estimating Percents of Numbers</div>
+        <ul class="ws-note-list"><li>The word approximately tells you an exact answer is not required. Benchmarks, rounding and compatible numbers get you close, fast.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Use benchmark percents: 10% (move decimal left 1), 1% (move left 2), 50% (half), 25% (quarter).</li><li>Combine benchmarks (e.g. 15% = 10% + 5%; 75% = 50% + 25%).</li><li>Round numbers to compatible values for quick mental estimates</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me set up the double number line</div>
+        <ol class="ws-note-list"><li>The whole is 6 GB — that is 100%.</li><li>I mark the bottom line in benchmark jumps of 25%: 0%, 25%, 50%, 75%, 100%.</li><li>Equivalent ratios give the top line: 25% of 6 GB is 1.5 GB, so the top reads 0, 1.5, 3, 4.5, 6.</li><li>4 GB used lands between 4.5 (75%) and 3 (50%), close to 4.5 — so about 70% of the storage is used.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>estimate (estimación) — A reasoned answer that is close enough to be useful, found without exact computation.</li><li>benchmark percent (porcentaje de referencia) — A friendly percent — 1%, 10%, 25%, 50%, 75%, 100% — used as a landmark for estimating.</li><li>compatible numbers (números compatibles) — Numbers close to the originals that are easy to compute with mentally.</li><li>double number line (recta numérica doble) — Two parallel number lines that pair amounts with their percents at the same positions.</li><li>the whole (el todo) — The quantity that counts as 100% in a problem — and it can change between questions.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Keeping the same whole for every question — when the problem says 'of the used storage,' the whole changes from 6 GB to 4 GB, and estimates anchored to the old whole are wrong before any arithmetic happens.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
@@ -723,7 +796,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Margaret's phone has 6 GB of storage and 4 GB is used. About what percent is used?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 70%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 40%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 25%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 150%</span></li></ol>
+        <p class="ws-stem">Margaret's phone has 6 GB of storage and 4 GB is used. About what percent is used?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 70%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 40%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 25%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 150%</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -734,9 +810,9 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">On the double number line for 6 GB, what amount lines up with 25%?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="ws-stem">On the double number line for 6 GB, what amount lines up with 25%?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.5 GB</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.5 GB</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 GB</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 GB</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
       <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.5 GB</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.5 GB</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 GB</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 GB</span></li></ol>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div>
       </div>
     </li>
   
@@ -747,7 +823,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which benchmark percents make good landmarks on a number line?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0%, 25%, 50%, 75%, 100%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3%, 17%, 62%, 94%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only 50%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only 100%</span></li></ol>
+        <p class="ws-stem">Which benchmark percents make good landmarks on a number line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0%, 25%, 50%, 75%, 100%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3%, 17%, 62%, 94%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only 50%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only 100%</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -758,7 +837,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">To estimate 8.6% of 216 by rounding, which numbers should you use?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10% of 220</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">8% of 300</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">86% of 216</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1% of 216</span></li></ol>
+        <p class="ws-stem">To estimate 8.6% of 216 by rounding, which numbers should you use?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10% of 220</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">8% of 300</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">86% of 216</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1% of 216</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -807,14 +889,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Estimate the Percent of a Number</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">estimate · benchmark percent · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -829,31 +912,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Estimate the Percent of a Number</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can estimate the percent of a number using benchmark percents, rounding, and compatible numbers.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Approximately — the problem is asking for an estimate</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Estimating Percents of Numbers</div>
+        <ul class="ws-note-list"><li>The word approximately tells you an exact answer is not required. Benchmarks, rounding and compatible numbers get you close, fast.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Use benchmark percents: 10% (move decimal left 1), 1% (move left 2), 50% (half), 25% (quarter).</li><li>Combine benchmarks (e.g. 15% = 10% + 5%; 75% = 50% + 25%).</li><li>Round numbers to compatible values for quick mental estimates</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me set up the double number line</div>
+        <ol class="ws-note-list"><li>The whole is 6 GB — that is 100%.</li><li>I mark the bottom line in benchmark jumps of 25%: 0%, 25%, 50%, 75%, 100%.</li><li>Equivalent ratios give the top line: 25% of 6 GB is 1.5 GB, so the top reads 0, 1.5, 3, 4.5, 6.</li><li>4 GB used lands between 4.5 (75%) and 3 (50%), close to 4.5 — so about 70% of the storage is used.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>estimate (estimación) — A reasoned answer that is close enough to be useful, found without exact computation.</li><li>benchmark percent (porcentaje de referencia) — A friendly percent — 1%, 10%, 25%, 50%, 75%, 100% — used as a landmark for estimating.</li><li>compatible numbers (números compatibles) — Numbers close to the originals that are easy to compute with mentally.</li><li>double number line (recta numérica doble) — Two parallel number lines that pair amounts with their percents at the same positions.</li><li>the whole (el todo) — The quantity that counts as 100% in a problem — and it can change between questions.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Keeping the same whole for every question — when the problem says 'of the used storage,' the whole changes from 6 GB to 4 GB, and estimates anchored to the old whole are wrong before any arithmetic happens.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">estimate <span class="ws-es-term">(estimación)</span></span><span class="ws-bankdef"> — A reasoned answer that is close enough to be useful, found without exact computation.</span></div><div class="ws-bank-card"><span class="ws-bankword">benchmark percent <span class="ws-es-term">(porcentaje de referencia)</span></span><span class="ws-bankdef"> — A friendly percent — 1%, 10%, 25%, 50%, 75%, 100% — used as a landmark for estimating.</span></div><div class="ws-bank-card"><span class="ws-bankword">compatible numbers <span class="ws-es-term">(números compatibles)</span></span><span class="ws-bankdef"> — Numbers close to the originals that are easy to compute with mentally.</span></div><div class="ws-bank-card"><span class="ws-bankword">double number line <span class="ws-es-term">(recta numérica doble)</span></span><span class="ws-bankdef"> — Two parallel number lines that pair amounts with their percents at the same positions.</span></div><div class="ws-bank-card"><span class="ws-bankword">the whole <span class="ws-es-term">(el todo)</span></span><span class="ws-bankdef"> — The quantity that counts as 100% in a problem — and it can change between questions.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Margaret's phone has 6 GB of storage and 4 GB is used. About what percent is used?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 70%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 40%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 25%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 150%</span></li></ol>
+        <p class="ws-stem">Sort each problem by its best benchmark percent.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Use 10% (move the decimal)</span> <span class="ws-cat-pill">Use 50% (take half)</span> <span class="ws-cat-pill">Use 25% (take a quarter)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">8.6% of 216</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">11% of 350</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">48% of 90</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">52% of 200</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">26% of 80</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">24% of 400</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -861,9 +962,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">On the double number line for 6 GB, what amount lines up with 25%?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.5 GB</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.5 GB</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 GB</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 GB</span></li></ol>
+        <p class="ws-stem">Margaret's phone has 6 GB of storage and 4 GB is used. About what percent is used?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 70%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 40%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 25%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 150%</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -874,7 +976,9 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which benchmark percents make good landmarks on a number line?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0%, 25%, 50%, 75%, 100%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3%, 17%, 62%, 94%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only 50%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only 100%</span></li></ol>
+        <p class="ws-stem">On the double number line for 6 GB, what amount lines up with 25%?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.5 GB</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.5 GB</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 GB</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 GB</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div>
       </div>
     </li>
   
@@ -885,7 +989,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">To estimate 8.6% of 216 by rounding, which numbers should you use?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10% of 220</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">8% of 300</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">86% of 216</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1% of 216</span></li></ol>
+        <p class="ws-stem">Which benchmark percents make good landmarks on a number line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0%, 25%, 50%, 75%, 100%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3%, 17%, 62%, 94%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only 50%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only 100%</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -896,33 +1003,41 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 10% of 220?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">22</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">220</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">44</span></li></ol>
+        <p class="ws-stem">To estimate 8.6% of 216 by rounding, which numbers should you use?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10% of 220</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">8% of 300</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">86% of 216</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1% of 216</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What is 10% of 220?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">22</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">220</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">44</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Whole</span><span class="wsd-step-h">100% is what number?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find 10%</span><span class="wsd-step-h">Divide by 10.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Build</span><span class="wsd-step-h">Add or multiply to the percent.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Is it under or over the whole?</span></li></ol></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The word 'approximately' appears in the storage problem. What does it tell you about the answer you need?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> 'Approximately' tells me ___ .&lt;br&gt;So instead of computing exactly, I can ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each problem by its best benchmark percent.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Use 10% (move the decimal)</span> <span class="ws-cat-pill">Use 50% (take half)</span> <span class="ws-cat-pill">Use 25% (take a quarter)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">8.6% of 216</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">11% of 350</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">48% of 90</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">52% of 200</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">26% of 80</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">24% of 400</span></li></ul>
+        <p class="ws-stem">The word 'approximately' appears in the storage problem. What does it tell you about the answer you need?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> 'Approximately' tells me ___ .&lt;br&gt;So instead of computing exactly, I can ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -971,14 +1086,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Estimate the Percent of a Number</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">estimate · benchmark percent · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -993,22 +1109,55 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Approximately — the problem is asking for an estimate</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Estimating Percents of Numbers</div>
+        <ul class="ws-note-list"><li>The word approximately tells you an exact answer is not required. Benchmarks, rounding and compatible numbers get you close, fast.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Use benchmark percents: 10% (move decimal left 1), 1% (move left 2), 50% (half), 25% (quarter).</li><li>Combine benchmarks (e.g. 15% = 10% + 5%; 75% = 50% + 25%).</li><li>Round numbers to compatible values for quick mental estimates</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me set up the double number line</div>
+        <ol class="ws-note-list"><li>The whole is 6 GB — that is 100%.</li><li>I mark the bottom line in benchmark jumps of 25%: 0%, 25%, 50%, 75%, 100%.</li><li>Equivalent ratios give the top line: 25% of 6 GB is 1.5 GB, so the top reads 0, 1.5, 3, 4.5, 6.</li><li>4 GB used lands between 4.5 (75%) and 3 (50%), close to 4.5 — so about 70% of the storage is used.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's estimate the metal recycling together</div>
+        <ol class="ws-note-list"><li>The Green-Team recycled 216 pounds of material; 8.6% was metal.</li><li>Round both: 8.6% is about 10%, and 216 is about 220.</li><li>10% of 220 = 0.1 × 220 = 22. About 22 pounds of metal.</li><li>Compatible numbers work too: 10% of 200 = 20. Both estimates agree — around 20 pounds.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>estimate (estimación) — A reasoned answer that is close enough to be useful, found without exact computation.</li><li>benchmark percent (porcentaje de referencia) — A friendly percent — 1%, 10%, 25%, 50%, 75%, 100% — used as a landmark for estimating.</li><li>compatible numbers (números compatibles) — Numbers close to the originals that are easy to compute with mentally.</li><li>double number line (recta numérica doble) — Two parallel number lines that pair amounts with their percents at the same positions.</li><li>the whole (el todo) — The quantity that counts as 100% in a problem — and it can change between questions.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Keeping the same whole for every question — when the problem says 'of the used storage,' the whole changes from 6 GB to 4 GB, and estimates anchored to the old whole are wrong before any arithmetic happens.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The Green-Team recycled 216 pounds; 8.6% was metal. Using compatible numbers 10% and 200, the estimate is:</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20 pounds</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 pounds</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">208 pounds</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">86 pounds</span></li></ol>
+        <p class="ws-stem">Complete the benchmark table for 240.</p>
+  <table class="ws-table"><thead><tr><th>Benchmark</th><th>Shortcut</th><th>Value</th></tr></thead><tbody><tr><td>10% of 240</td><td></td><td></td></tr><tr><td>1% of 240</td><td></td><td></td></tr><tr><td>50% of 240</td><td></td><td></td></tr><tr><td>25% of 240</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -1016,7 +1165,9 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Photos use 3.5 GB of the 4 GB of used storage. About what percent of the USED storage is photos?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 87%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 58%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 35%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 99%</span></li></ol>
+        <p class="ws-stem">The Green-Team recycled 216 pounds; 8.6% was metal. Using compatible numbers 10% and 200, the estimate is:</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20 pounds</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 pounds</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">208 pounds</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">86 pounds</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div>
       </div>
     </li>
   
@@ -1027,7 +1178,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Why did the whole change between the two storage questions?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The second question asks about the used storage, so 4 GB becomes 100%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The phone gained storage between the questions</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The whole never changes in a percent problem</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because photos are more important than mail</span></li></ol>
+        <p class="ws-stem">Photos use 3.5 GB of the 4 GB of used storage. About what percent of the USED storage is photos?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 87%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 58%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 35%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 99%</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1038,7 +1192,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Estimate 24% of 81 with benchmarks.</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 2</span></li></ol>
+        <p class="ws-stem">Why did the whole change between the two storage questions?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The second question asks about the used storage, so 4 GB becomes 100%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The phone gained storage between the questions</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The whole never changes in a percent problem</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because photos are more important than mail</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1049,18 +1206,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Your estimate for 8.6% of 216 was 22 pounds (using 10% of 220). Is the exact answer higher or lower than 22?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Lower, because both 10% and 220 rounded UP</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Higher, because rounding always shrinks the answer</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Exactly 22</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Impossible to tell</span></li></ol>
+        <p class="ws-stem">Estimate 24% of 81 with benchmarks.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 2</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Estimate 47% of 312. Show which strategy you used — benchmark, rounding, or compatible numbers — and give your estimate.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Your estimate for 8.6% of 216 was 22 pounds (using 10% of 220). Is the exact answer higher or lower than 22?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Lower, because both 10% and 220 rounded UP</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Higher, because rounding always shrinks the answer</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Exactly 22</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Impossible to tell</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1071,20 +1234,28 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">1 MB equals 0.001 GB. Mail uses 300 MB. About what percent of Margaret's 6 GB is mail?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 5%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 50%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 0.5%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 30%</span></li></ol>
+        <p class="ws-stem">1 MB equals 0.001 GB. Mail uses 300 MB. About what percent of Margaret's 6 GB is mail?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 5%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 50%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 0.5%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 30%</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">8</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Complete the benchmark table for 240.</p>
-  <table class="ws-table"><thead><tr><th>Benchmark</th><th>Shortcut</th><th>Value</th></tr></thead><tbody><tr><td>10% of 240</td><td></td><td></td></tr><tr><td>1% of 240</td><td></td><td></td></tr><tr><td>50% of 240</td><td></td><td></td></tr><tr><td>25% of 240</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">Estimate 47% of 312. Show which strategy you used — benchmark, rounding, or compatible numbers — and give your estimate.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1133,14 +1304,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Estimate the Percent of a Number</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">estimate · benchmark percent · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1155,20 +1327,51 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Approximately — the problem is asking for an estimate</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Estimating Percents of Numbers</div>
+        <ul class="ws-note-list"><li>The word approximately tells you an exact answer is not required. Benchmarks, rounding and compatible numbers get you close, fast.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Use benchmark percents: 10% (move decimal left 1), 1% (move left 2), 50% (half), 25% (quarter).</li><li>Combine benchmarks (e.g. 15% = 10% + 5%; 75% = 50% + 25%).</li><li>Round numbers to compatible values for quick mental estimates</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me set up the double number line</div>
+        <ol class="ws-note-list"><li>The whole is 6 GB — that is 100%.</li><li>I mark the bottom line in benchmark jumps of 25%: 0%, 25%, 50%, 75%, 100%.</li><li>Equivalent ratios give the top line: 25% of 6 GB is 1.5 GB, so the top reads 0, 1.5, 3, 4.5, 6.</li><li>4 GB used lands between 4.5 (75%) and 3 (50%), close to 4.5 — so about 70% of the storage is used.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's estimate the metal recycling together</div>
+        <ol class="ws-note-list"><li>The Green-Team recycled 216 pounds of material; 8.6% was metal.</li><li>Round both: 8.6% is about 10%, and 216 is about 220.</li><li>10% of 220 = 0.1 × 220 = 22. About 22 pounds of metal.</li><li>Compatible numbers work too: 10% of 200 = 20. Both estimates agree — around 20 pounds.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>estimate (estimación) — A reasoned answer that is close enough to be useful, found without exact computation.</li><li>benchmark percent (porcentaje de referencia) — A friendly percent — 1%, 10%, 25%, 50%, 75%, 100% — used as a landmark for estimating.</li><li>compatible numbers (números compatibles) — Numbers close to the originals that are easy to compute with mentally.</li><li>double number line (recta numérica doble) — Two parallel number lines that pair amounts with their percents at the same positions.</li><li>the whole (el todo) — The quantity that counts as 100% in a problem — and it can change between questions.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Keeping the same whole for every question — when the problem says 'of the used storage,' the whole changes from 6 GB to 4 GB, and estimates anchored to the old whole are wrong before any arithmetic happens.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Two students estimate 8.6% of 216. Ana uses 10% of 220 = 22. Ben uses 10% of 200 = 20. Whose estimate is closer to the exact answer, 18.576?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Ben's — 20 is 1.4 away; Ana's 22 is 3.4 away</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Ana's — 22 is closer to 18.576</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They are equally close</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither is a valid estimate</span></li></ol>
+        <p class="ws-stem">Match each percent problem to the benchmark combination that estimates it.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">15% of 200</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">75% of 80</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">20% of 350</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">11% of 400</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">10% + 5%: 20 + 10 = 30</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">50% + 25%: 40 + 20 = 60</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">10% doubled: 35 × 2 = 70</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">10% + 1%: 40 + 4 = 44</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -1176,18 +1379,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">For which problem is ESTIMATING clearly the right tool, rather than exact computation?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Deciding if a $58 jacket at 25% off fits your $45 budget</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Programming a bank to compute interest on every account</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Reporting a medicine dose</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Scoring a state test</span></li></ol>
+        <p class="ws-stem">Two students estimate 8.6% of 216. Ana uses 10% of 220 = 22. Ben uses 10% of 200 = 20. Whose estimate is closer to the exact answer, 18.576?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Ben's — 20 is 1.4 away; Ana's 22 is 3.4 away</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Ana's — 22 is closer to 18.576</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They are equally close</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither is a valid estimate</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Write your own estimation problem about percent, using a real situation from your life. Then solve it with a benchmark and say whether your estimate runs high or low.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">For which problem is ESTIMATING clearly the right tool, rather than exact computation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Deciding if a $58 jacket at 25% off fits your $45 budget</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Programming a bank to compute interest on every account</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Reporting a medicine dose</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Scoring a state test</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1198,10 +1407,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A store marks a $79.95 item 32% off. Which mental estimate best checks the discount?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About one third of 80, so about $26 off</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 32 dollars off, because 32% means $32</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 3.2 dollars off</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About half of 80, so $40 off</span></li></ol>
+        <p class="ws-stem">A store marks a $79.95 item 32% off. Which mental estimate best checks the discount?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About one third of 80, so about $26 off</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 32 dollars off, because 32% means $32</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 3.2 dollars off</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About half of 80, so $40 off</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1209,19 +1425,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Margaret wants to know what percent of her TOTAL 6 GB is photos (photos = 3.5 GB). Estimate it, and explain why this answer differs from the 87% found earlier.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Write your own estimation problem about percent, using a real situation from your life. Then solve it with a benchmark and say whether your estimate runs high or low.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each percent problem to the benchmark combination that estimates it.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">15% of 200</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">75% of 80</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">20% of 350</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">11% of 400</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">10% + 5%: 20 + 10 = 30</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">50% + 25%: 40 + 20 = 60</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">10% doubled: 35 × 2 = 70</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">10% + 1%: 40 + 4 = 44</span></li></ul></div>
+        <p class="ws-stem">Margaret wants to know what percent of her TOTAL 6 GB is photos (photos = 3.5 GB). Estimate it, and explain why this answer differs from the 87% found earlier.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

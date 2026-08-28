@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">6.15 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Simplify Algebraic Expressions · Like Terms · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-15-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,13 +773,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 6.15 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can simplify algebraic expressions by combining like terms, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do we simplify by combining like terms?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Only combine terms that have the same variable part; numbers without a variable combine with each other — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The rooms need microphones and stands: (4 + 2 + 6) microphones and (3 + 5 + 1) stands.</li><li>Microphones are like items, so I add: 4 + 2 + 6 = 12 microphones.</li><li>Stands are like items, so I add: 3 + 5 + 1 = 9 stands.</li><li>In algebra this is the same as 4m + 2m + 6m + 3s + 5s + 1s = 12m + 9s.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Let's simplify 5x + 3x. Are these like terms?</li><li>Yes, both have x, so we add the numbers in front: 5 + 3 = 8.</li><li>So 5x + 3x = 8x.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Simplify Algebraic Expressions (Simplificar expresiones algebraicas) — Rewrite an expression in a shorter equivalent form by combining like terms and using properties.</li><li>Like Terms (Términos semejantes) — Terms with the same letter raised to the same power, like 2x and 5x.</li><li>Combine (Combinar) — To add or subtract terms with the same letter into one.</li><li>Simplify (Simplificar) — To rewrite an expression in a shorter form that is still equal to the original.</li><li>Coefficient (Coeficiente) — The number in front of a letter, like the 3 in 3x.</li><li>Term (Término) — A single number, variable, or product of them, separated by + or − signs.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -724,7 +807,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Simplify each expression by combining like terms.</p>
   <table class="ws-table"><thead><tr><th>Expression</th><th>Like Terms Combined</th><th>Simplified</th></tr></thead><tbody><tr><td>3a + 5a + 2</td><td></td><td></td></tr><tr><td>6x + 4 + 2x + 7</td><td></td><td></td></tr><tr><td>10m − 3m + 5</td><td></td><td></td></tr><tr><td>4y + 3 + y + 9</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -739,7 +825,11 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">8x + 3x + 1</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">5a − 2a + 7</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">4n + n + 6</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">12y − 5y</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">3m + 8 + 4m + 2</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">9p + 1 − 3p</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">11x + 1</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">3a + 7</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">5n + 6</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">7y</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">7m + 10</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">6p + 1</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -747,7 +837,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify the track: 4a + 2 + a.</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5a + 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7a</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5a²+ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6a</span></li></ol>
+        <p class="ws-stem">Simplify the track: 4a + 2 + a.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5a + 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7a</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5a²+ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6a</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -758,7 +851,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Clean up this channel: 7y − 3y.</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4y</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10y</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21y</span></li></ol>
+        <p class="ws-stem">Clean up this channel: 7y − 3y.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4y</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10y</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21y</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -769,10 +865,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify the mix: 6m + 4 + 3m.</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9m + 4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">13m</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9m + 4m</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10m</span></li></ol>
+        <p class="ws-stem">Simplify the mix: 6m + 4 + 3m.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9m + 4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">13m</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9m + 4m</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10m</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -783,7 +886,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Level 2 Extension — Crossed Channels on the Board</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Track:</span><span class="ws-step-w">3x + 5</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine:</span><span class="ws-step-w">Add the 3 and the 5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify:</span><span class="ws-step-w">8x</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -850,7 +956,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Simplify Algebraic Expressions</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Simplify Algebraic Expressions · Like Terms · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-15" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,16 +773,24 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Simplify Algebraic Expressions</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can simplify algebraic expressions by combining like terms.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Simplify Algebraic Expressions <span class="ws-es-term">(Simplificar expresiones algebraicas)</span></span><span class="ws-bankdef"> — Rewrite an expression in a shorter equivalent form by combining like terms and using properties.</span></div><div class="ws-bank-card"><span class="ws-bankword">Like Terms <span class="ws-es-term">(Términos semejantes)</span></span><span class="ws-bankdef"> — Terms with the same letter raised to the same power, like 2x and 5x.</span></div><div class="ws-bank-card"><span class="ws-bankword">Combine <span class="ws-es-term">(Combinar)</span></span><span class="ws-bankdef"> — To add or subtract terms with the same letter into one.</span></div><div class="ws-bank-card"><span class="ws-bankword">Simplify <span class="ws-es-term">(Simplificar)</span></span><span class="ws-bankdef"> — To rewrite an expression in a shorter form that is still equal to the original.</span></div><div class="ws-bank-card"><span class="ws-bankword">Coefficient <span class="ws-es-term">(Coeficiente)</span></span><span class="ws-bankdef"> — The number in front of a letter, like the 3 in 3x.</span></div><div class="ws-bank-card"><span class="ws-bankword">Term <span class="ws-es-term">(Término)</span></span><span class="ws-bankdef"> — A single number, variable, or product of them, separated by + or − signs.</span></div><div class="ws-bank-card"><span class="ws-bankword">Distributive property <span class="ws-es-term">(Propiedad distributiva)</span></span><span class="ws-bankdef"> — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we simplify by combining like terms?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Combining Like Terms</div>
+        <ul class="ws-note-list"><li>Like terms are terms with the same variable, like 2x and 5x. To simplify an expression, you add or subtract the like terms to make it shorter.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Like Terms: Terms that share the exact same variable part and exponent (e.g. 4x and 2x).</li><li>Add or subtract the coefficients of like terms; keep the variable unchanged.</li><li>Constants (numbers without variables) combine together separately</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The rooms need microphones and stands: (4 + 2 + 6) microphones and (3 + 5 + 1) stands.</li><li>Microphones are like items, so I add: 4 + 2 + 6 = 12 microphones.</li><li>Stands are like items, so I add: 3 + 5 + 1 = 9 stands.</li><li>In algebra this is the same as 4m + 2m + 6m + 3s + 5s + 1s = 12m + 9s.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Simplify Algebraic Expressions (Simplificar expresiones algebraicas) — Rewrite an expression in a shorter equivalent form by combining like terms and using properties.</li><li>Like Terms (Términos semejantes) — Terms with the same letter raised to the same power, like 2x and 5x.</li><li>Combine (Combinar) — To add or subtract terms with the same letter into one.</li><li>Simplify (Simplificar) — To rewrite an expression in a shorter form that is still equal to the original.</li><li>Coefficient (Coeficiente) — The number in front of a letter, like the 3 in 3x.</li><li>Term (Término) — A single number, variable, or product of them, separated by + or − signs.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
@@ -729,7 +802,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify 7x + 3x.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10x²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">21x</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">73x</span></li></ol>
+        <p class="ws-stem">Simplify 7x + 3x.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10x²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">21x</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">73x</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -740,7 +816,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify 9n + 4 + 2n.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11n + 4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15n</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11n² + 4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">92n + 4</span></li></ol>
+        <p class="ws-stem">Simplify 9n + 4 + 2n.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11n + 4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15n</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11n² + 4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">92n + 4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,7 +830,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which pair are like terms?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6x and 2x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6x and 6y</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6x and 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6x and 2x²</span></li></ol>
+        <p class="ws-stem">Which pair are like terms?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6x and 2x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6x and 6y</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6x and 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6x and 2x²</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -762,7 +844,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify 5a + 3 + 2a.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7a + 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10a</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">7a² + 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">52a + 3</span></li></ol>
+        <p class="ws-stem">Simplify 5a + 3 + 2a.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7a + 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10a</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">7a² + 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">52a + 3</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -811,14 +896,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Simplify Algebraic Expressions</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Simplify Algebraic Expressions · Like Terms · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-15" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -833,31 +919,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Simplify Algebraic Expressions</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can simplify algebraic expressions by combining like terms.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we simplify by combining like terms?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Combining Like Terms</div>
+        <ul class="ws-note-list"><li>Like terms are terms with the same variable, like 2x and 5x. To simplify an expression, you add or subtract the like terms to make it shorter.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Like Terms: Terms that share the exact same variable part and exponent (e.g. 4x and 2x).</li><li>Add or subtract the coefficients of like terms; keep the variable unchanged.</li><li>Constants (numbers without variables) combine together separately</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The rooms need microphones and stands: (4 + 2 + 6) microphones and (3 + 5 + 1) stands.</li><li>Microphones are like items, so I add: 4 + 2 + 6 = 12 microphones.</li><li>Stands are like items, so I add: 3 + 5 + 1 = 9 stands.</li><li>In algebra this is the same as 4m + 2m + 6m + 3s + 5s + 1s = 12m + 9s.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Simplify Algebraic Expressions (Simplificar expresiones algebraicas) — Rewrite an expression in a shorter equivalent form by combining like terms and using properties.</li><li>Like Terms (Términos semejantes) — Terms with the same letter raised to the same power, like 2x and 5x.</li><li>Combine (Combinar) — To add or subtract terms with the same letter into one.</li><li>Simplify (Simplificar) — To rewrite an expression in a shorter form that is still equal to the original.</li><li>Coefficient (Coeficiente) — The number in front of a letter, like the 3 in 3x.</li><li>Term (Término) — A single number, variable, or product of them, separated by + or − signs.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Simplify Algebraic Expressions <span class="ws-es-term">(Simplificar expresiones algebraicas)</span></span><span class="ws-bankdef"> — Rewrite an expression in a shorter equivalent form by combining like terms and using properties.</span></div><div class="ws-bank-card"><span class="ws-bankword">Like Terms <span class="ws-es-term">(Términos semejantes)</span></span><span class="ws-bankdef"> — Terms with the same letter raised to the same power, like 2x and 5x.</span></div><div class="ws-bank-card"><span class="ws-bankword">Combine <span class="ws-es-term">(Combinar)</span></span><span class="ws-bankdef"> — To add or subtract terms with the same letter into one.</span></div><div class="ws-bank-card"><span class="ws-bankword">Simplify <span class="ws-es-term">(Simplificar)</span></span><span class="ws-bankdef"> — To rewrite an expression in a shorter form that is still equal to the original.</span></div><div class="ws-bank-card"><span class="ws-bankword">Coefficient <span class="ws-es-term">(Coeficiente)</span></span><span class="ws-bankdef"> — The number in front of a letter, like the 3 in 3x.</span></div><div class="ws-bank-card"><span class="ws-bankword">Term <span class="ws-es-term">(Término)</span></span><span class="ws-bankdef"> — A single number, variable, or product of them, separated by + or − signs.</span></div><div class="ws-bank-card"><span class="ws-bankword">Distributive property <span class="ws-es-term">(Propiedad distributiva)</span></span><span class="ws-bankdef"> — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify 7x + 3x.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10x²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">21x</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">73x</span></li></ol>
+        <p class="ws-stem">Sort each pair of terms by whether they are like terms (can be combined) or not.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Like Terms</span> <span class="ws-cat-pill">Not Like Terms</span></div>
+  <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -865,7 +969,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify 9n + 4 + 2n.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11n + 4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15n</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11n² + 4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">92n + 4</span></li></ol>
+        <p class="ws-stem">Simplify 7x + 3x.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10x²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">21x</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">73x</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -876,7 +983,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which pair are like terms?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6x and 2x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6x and 6y</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6x and 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6x and 2x²</span></li></ol>
+        <p class="ws-stem">Simplify 9n + 4 + 2n.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11n + 4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15n</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11n² + 4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">92n + 4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -887,23 +997,31 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify 5a + 3 + 2a.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7a + 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10a</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">7a² + 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">52a + 3</span></li></ol>
+        <p class="ws-stem">Which pair are like terms?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6x and 2x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6x and 6y</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6x and 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6x and 2x²</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each pair of terms by whether they are like terms (can be combined) or not.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Like Terms</span> <span class="ws-cat-pill">Not Like Terms</span></div>
-  <ul class="ws-sort-list"></ul>
+        <p class="ws-stem">Simplify 5a + 3 + 2a.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7a + 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10a</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">7a² + 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">52a + 3</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -914,7 +1032,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Mistake — Exponent Slip</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression:</span><span class="ws-step-w">4x + 3x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine:</span><span class="ws-step-w">Add the coefficients: 4 + 3 = 7</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify:</span><span class="ws-step-w">7x²</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -963,14 +1084,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Simplify Algebraic Expressions</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Simplify Algebraic Expressions · Like Terms · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-15" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -985,9 +1107,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we simplify by combining like terms?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Combining Like Terms</div>
+        <ul class="ws-note-list"><li>Like terms are terms with the same variable, like 2x and 5x. To simplify an expression, you add or subtract the like terms to make it shorter.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Like Terms: Terms that share the exact same variable part and exponent (e.g. 4x and 2x).</li><li>Add or subtract the coefficients of like terms; keep the variable unchanged.</li><li>Constants (numbers without variables) combine together separately</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The rooms need microphones and stands: (4 + 2 + 6) microphones and (3 + 5 + 1) stands.</li><li>Microphones are like items, so I add: 4 + 2 + 6 = 12 microphones.</li><li>Stands are like items, so I add: 3 + 5 + 1 = 9 stands.</li><li>In algebra this is the same as 4m + 2m + 6m + 3s + 5s + 1s = 12m + 9s.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Let's simplify 5x + 3x. Are these like terms?</li><li>Yes, both have x, so we add the numbers in front: 5 + 3 = 8.</li><li>So 5x + 3x = 8x.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Simplify Algebraic Expressions (Simplificar expresiones algebraicas) — Rewrite an expression in a shorter equivalent form by combining like terms and using properties.</li><li>Like Terms (Términos semejantes) — Terms with the same letter raised to the same power, like 2x and 5x.</li><li>Combine (Combinar) — To add or subtract terms with the same letter into one.</li><li>Simplify (Simplificar) — To rewrite an expression in a shorter form that is still equal to the original.</li><li>Coefficient (Coeficiente) — The number in front of a letter, like the 3 in 3x.</li><li>Term (Término) — A single number, variable, or product of them, separated by + or − signs.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -997,7 +1145,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Simplify each expression by combining like terms.</p>
   <table class="ws-table"><thead><tr><th>Expression</th><th>Like Terms Combined</th><th>Simplified</th></tr></thead><tbody><tr><td>3a + 5a + 2</td><td></td><td></td></tr><tr><td>6x + 4 + 2x + 7</td><td></td><td></td></tr><tr><td>10m − 3m + 5</td><td></td><td></td></tr><tr><td>4y + 3 + y + 9</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1044,10 +1195,17 @@ header.packet h1::after{
       <rect x="210" y="76" width="100" height="28" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="4"/>
       <text x="260" y="94" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af" font-family="'Hanken Grotesk',Arial,sans-serif">7x + 2</text>
     </svg></div>
-        <p class="ws-stem">Both simplify to 7x + 2 — they are equivalent.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Both simplify to 7x + 2 — they are equivalent.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1058,7 +1216,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Mistake — Swept-Up Constant</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression:</span><span class="ws-step-w">6x + 4 + 2x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine:</span><span class="ws-step-w">Add everything: 6 + 4 + 2 = 12</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify:</span><span class="ws-step-w">12x</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1107,14 +1268,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Simplify Algebraic Expressions</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Simplify Algebraic Expressions · Like Terms · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-15" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1129,12 +1291,58 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we simplify by combining like terms?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Combining Like Terms</div>
+        <ul class="ws-note-list"><li>Like terms are terms with the same variable, like 2x and 5x. To simplify an expression, you add or subtract the like terms to make it shorter.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Like Terms: Terms that share the exact same variable part and exponent (e.g. 4x and 2x).</li><li>Add or subtract the coefficients of like terms; keep the variable unchanged.</li><li>Constants (numbers without variables) combine together separately</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The rooms need microphones and stands: (4 + 2 + 6) microphones and (3 + 5 + 1) stands.</li><li>Microphones are like items, so I add: 4 + 2 + 6 = 12 microphones.</li><li>Stands are like items, so I add: 3 + 5 + 1 = 9 stands.</li><li>In algebra this is the same as 4m + 2m + 6m + 3s + 5s + 1s = 12m + 9s.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Let's simplify 5x + 3x. Are these like terms?</li><li>Yes, both have x, so we add the numbers in front: 5 + 3 = 8.</li><li>So 5x + 3x = 8x.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Simplify Algebraic Expressions (Simplificar expresiones algebraicas) — Rewrite an expression in a shorter equivalent form by combining like terms and using properties.</li><li>Like Terms (Términos semejantes) — Terms with the same letter raised to the same power, like 2x and 5x.</li><li>Combine (Combinar) — To add or subtract terms with the same letter into one.</li><li>Simplify (Simplificar) — To rewrite an expression in a shorter form that is still equal to the original.</li><li>Coefficient (Coeficiente) — The number in front of a letter, like the 3 in 3x.</li><li>Term (Término) — A single number, variable, or product of them, separated by + or − signs.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Simplify each multi-variable expression. Only combine like terms (same variable).</p>
+  <table class="ws-table"><thead><tr><th>Expression</th><th>Simplified</th></tr></thead><tbody><tr><td>3x + 2y + 5x + y</td><td></td></tr><tr><td>7a + 4b − 2a + b</td><td></td></tr><tr><td>6m + 3 + 2m + n + 1</td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1142,31 +1350,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the Simplification Error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression:</span><span class="ws-step-w">5x + 3 + 2y + 4x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine:</span><span class="ws-step-w">5x + 2y + 4x + 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify:</span><span class="ws-step-w">11xy + 3</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Three students simplified 4x + 3 + 2x + 5 + x differently. Student A got 7x + 8. Student B got 7x² + 8. Student C got 6x + 9. Who is correct? Explain the mistakes the other two students made.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Simplify each multi-variable expression. Only combine like terms (same variable).</p>
-  <table class="ws-table"><thead><tr><th>Expression</th><th>Simplified</th></tr></thead><tbody><tr><td>3x + 2y + 5x + y</td><td></td></tr><tr><td>7a + 4b − 2a + b</td><td></td></tr><tr><td>6m + 3 + 2m + n + 1</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">Three students simplified 4x + 3 + 2x + 5 + x differently. Student A got 7x + 8. Student B got 7x² + 8. Student C got 6x + 9. Who is correct? Explain the mistakes the other two students made.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

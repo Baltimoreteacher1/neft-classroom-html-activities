@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Three-Dimensional Figures in Two Dimensions</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area Using Nets · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,36 +773,48 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Represent Three-Dimensional Figures in Two Dimensions</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the surface area of a solid by using its net.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Surface Area Using Nets <span class="ws-es-term">(Área de superficie usando redes)</span></span><span class="ws-bankdef"> — The total area of all the faces of a solid. A net unfolds the solid flat so you can see every face and add their areas.</span></div><div class="ws-bank-card"><span class="ws-bankword">Surface area <span class="ws-es-term">(Área de superficie)</span></span><span class="ws-bankdef"> — The total area of all the flat sides of a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Net <span class="ws-es-term">(Plantilla (desarrollo plano))</span></span><span class="ws-bankdef"> — A flat shape that folds up into a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Face <span class="ws-es-term">(Cara)</span></span><span class="ws-bankdef"> — One flat side of a solid shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Two-dimensional <span class="ws-es-term">(Bidimensional)</span></span><span class="ws-bankdef"> — A flat shape with length and width, but no thickness.</span></div><div class="ws-bank-card"><span class="ws-bankword">Edge <span class="ws-es-term">(Arista)</span></span><span class="ws-bankdef"> — The line where two flat sides of a solid meet.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we find the surface area of a box?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Representing 3D Solids with Nets</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the flat faces of a solid. A net unfolds the box flat so you can see and add all 6 faces. The answer uses square units.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>A net is a 2D flat pattern that folds into a 3D solid without overlapping.</li><li>Rectangular prism net has 6 rectangular faces in 3 congruent opposite pairs.</li><li>Surface Area is the total sum of the areas of all flat faces on the net</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My box is 8 in. long, 5 in. wide, and 3 in. tall. I unfold it into a net and see 3 pairs of faces.</li><li>Top and bottom: each is 8 × 5 = 40, and there are 2 of them, so 2 × 40 = 80.</li><li>Front and back: each is 8 × 3 = 24, so 2 × 24 = 48.</li><li>Left and right: each is 5 × 3 = 15, so 2 × 15 = 30.</li><li>I add all the pairs: 80 + 48 + 30 = 158. The surface area is 158 in².</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area Using Nets (Área de superficie usando redes) — The total area of all the faces of a solid. A net unfolds the solid flat so you can see every face and add their areas.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Two-dimensional (Bidimensional) — A flat shape with length and width, but no thickness.</li><li>Edge (Arista) — The line where two flat sides of a solid meet.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area Using Nets is finding the area of only one face from each of the 3 matching pairs and forgetting to double it, instead of counting all 6 faces. For a box that is 9 in × 4 in × 5 in, a student might add just one face from each pair: (9×4) + (9×5) + (4×5) = 36 + 45 + 20 = 101 in², but the net actually has two of each face, so the correct total is 2(36) + 2(45) + 2(20) = 72 + 90 + 40 = 202 in² — exactly double. Before you submit, ask: 'Did I count both matching faces in each pair, or only one from each pair?'</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">88 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">88 in³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">44 in²</span></li></ol>
+        <p class="ws-stem">Match each concept about rectangular prisms.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Top &amp; Bottom faces</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Front &amp; Back faces</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Left &amp; Right faces</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Surface area formula</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Volume formula</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Number of faces</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">l × w (two of them)</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">l × h (two of them)</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">w × h (two of them)</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">SA = 2lw + 2lh + 2wh</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">V = l × w × h</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">6 faces total</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -745,7 +822,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How many faces does a rectangular prism have?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol>
+        <p class="ws-stem">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">88 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">88 in³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">44 in²</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -756,19 +838,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Surface area is measured in which type of unit?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Square units (in², cm², ft²)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Cubic units (in³, cm³, ft³)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Linear units (in, cm, ft)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No units needed</span></li></ol>
+        <p class="ws-stem">How many faces does a rectangular prism have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each concept about rectangular prisms.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Top &amp; Bottom faces</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Front &amp; Back faces</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Left &amp; Right faces</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Surface area formula</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Volume formula</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Number of faces</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">l × w (two of them)</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">l × h (two of them)</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">w × h (two of them)</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">SA = 2lw + 2lh + 2wh</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">V = l × w × h</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">6 faces total</span></li></ul></div>
+        <p class="ws-stem">Surface area is measured in which type of unit?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Square units (in², cm², ft²)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Cubic units (in³, cm³, ft³)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Linear units (in, cm, ft)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No units needed</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -817,14 +904,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Three-Dimensional Figures in Two Dimensions</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area Using Nets · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -839,61 +927,35 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Represent Three-Dimensional Figures in Two Dimensions</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the surface area of a solid by using its net.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we find the surface area of a box?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Representing 3D Solids with Nets</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the flat faces of a solid. A net unfolds the box flat so you can see and add all 6 faces. The answer uses square units.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>A net is a 2D flat pattern that folds into a 3D solid without overlapping.</li><li>Rectangular prism net has 6 rectangular faces in 3 congruent opposite pairs.</li><li>Surface Area is the total sum of the areas of all flat faces on the net</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My box is 8 in. long, 5 in. wide, and 3 in. tall. I unfold it into a net and see 3 pairs of faces.</li><li>Top and bottom: each is 8 × 5 = 40, and there are 2 of them, so 2 × 40 = 80.</li><li>Front and back: each is 8 × 3 = 24, so 2 × 24 = 48.</li><li>Left and right: each is 5 × 3 = 15, so 2 × 15 = 30.</li><li>I add all the pairs: 80 + 48 + 30 = 158. The surface area is 158 in².</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area Using Nets (Área de superficie usando redes) — The total area of all the faces of a solid. A net unfolds the solid flat so you can see every face and add their areas.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Two-dimensional (Bidimensional) — A flat shape with length and width, but no thickness.</li><li>Edge (Arista) — The line where two flat sides of a solid meet.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area Using Nets is finding the area of only one face from each of the 3 matching pairs and forgetting to double it, instead of counting all 6 faces. For a box that is 9 in × 4 in × 5 in, a student might add just one face from each pair: (9×4) + (9×5) + (4×5) = 36 + 45 + 20 = 101 in², but the net actually has two of each face, so the correct total is 2(36) + 2(45) + 2(20) = 72 + 90 + 40 = 202 in² — exactly double. Before you submit, ask: 'Did I count both matching faces in each pair, or only one from each pair?'</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Surface Area Using Nets <span class="ws-es-term">(Área de superficie usando redes)</span></span><span class="ws-bankdef"> — The total area of all the faces of a solid. A net unfolds the solid flat so you can see every face and add their areas.</span></div><div class="ws-bank-card"><span class="ws-bankword">Surface area <span class="ws-es-term">(Área de superficie)</span></span><span class="ws-bankdef"> — The total area of all the flat sides of a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Net <span class="ws-es-term">(Plantilla (desarrollo plano))</span></span><span class="ws-bankdef"> — A flat shape that folds up into a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Face <span class="ws-es-term">(Cara)</span></span><span class="ws-bankdef"> — One flat side of a solid shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Two-dimensional <span class="ws-es-term">(Bidimensional)</span></span><span class="ws-bankdef"> — A flat shape with length and width, but no thickness.</span></div><div class="ws-bank-card"><span class="ws-bankword">Edge <span class="ws-es-term">(Arista)</span></span><span class="ws-bankdef"> — The line where two flat sides of a solid meet.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">88 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">88 in³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">44 in²</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How many faces does a rectangular prism have?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Surface area is measured in which type of unit?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Square units (in², cm², ft²)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Cubic units (in³, cm³, ft³)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Linear units (in, cm, ft)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No units needed</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
@@ -905,7 +967,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -915,7 +977,59 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Identify the three face pairs: 5×3, 5×2, 3×2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Find area of each: 15, 10, 6</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Multiply each by 2: 30, 20, 12</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Add all pairs: 30 + 20 + 12</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">SA = 62 in²</span></li></ul>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">88 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">88 in³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">44 in²</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How many faces does a rectangular prism have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Surface area is measured in which type of unit?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Square units (in², cm², ft²)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Cubic units (in³, cm³, ft³)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Linear units (in, cm, ft)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No units needed</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -926,7 +1040,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Mistake — A Counted Face Was Skipped</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read:</span><span class="ws-step-w">A time capsule box from the net is l = 6 in, w = 4 in, h = 2 in. Find the surface area.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Label the faces:</span><span class="ws-step-w">Top/Bottom: 6×4 = 24, Front/Back: 6×2 = 12, Left/Right: 4×2 = 8</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Add the faces:</span><span class="ws-step-w">SA = 24 + 24 + 12 + 8 + 8 = 76 in² (only one front/back face counted)</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -975,14 +1092,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Three-Dimensional Figures in Two Dimensions</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area Using Nets · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -997,9 +1115,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we find the surface area of a box?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Representing 3D Solids with Nets</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the flat faces of a solid. A net unfolds the box flat so you can see and add all 6 faces. The answer uses square units.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>A net is a 2D flat pattern that folds into a 3D solid without overlapping.</li><li>Rectangular prism net has 6 rectangular faces in 3 congruent opposite pairs.</li><li>Surface Area is the total sum of the areas of all flat faces on the net</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My box is 8 in. long, 5 in. wide, and 3 in. tall. I unfold it into a net and see 3 pairs of faces.</li><li>Top and bottom: each is 8 × 5 = 40, and there are 2 of them, so 2 × 40 = 80.</li><li>Front and back: each is 8 × 3 = 24, so 2 × 24 = 48.</li><li>Left and right: each is 5 × 3 = 15, so 2 × 15 = 30.</li><li>I add all the pairs: 80 + 48 + 30 = 158. The surface area is 158 in².</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now a smaller box: 4 long, 3 wide, 2 tall. How many pairs of faces does it have?</li><li>Top and bottom: 4 × 3 = 12, times 2 = 24. Front and back: 4 × 2 = 8, times 2 = 16.</li><li>Left and right: 3 × 2 = 6, times 2 = 12. Now add 24 + 16 + 12. What is the surface area?</li><li>Yes, SA = 52 in². Remember to use square units.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area Using Nets (Área de superficie usando redes) — The total area of all the faces of a solid. A net unfolds the solid flat so you can see every face and add their areas.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Two-dimensional (Bidimensional) — A flat shape with length and width, but no thickness.</li><li>Edge (Arista) — The line where two flat sides of a solid meet.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area Using Nets is finding the area of only one face from each of the 3 matching pairs and forgetting to double it, instead of counting all 6 faces. For a box that is 9 in × 4 in × 5 in, a student might add just one face from each pair: (9×4) + (9×5) + (4×5) = 36 + 45 + 20 = 101 in², but the net actually has two of each face, so the correct total is 2(36) + 2(45) + 2(20) = 72 + 90 + 40 = 202 in² — exactly double. Before you submit, ask: 'Did I count both matching faces in each pair, or only one from each pair?'</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1009,40 +1153,30 @@ header.packet h1::after{
         
         <p class="ws-stem">Find the surface area of each time capsule box using its net.</p>
   <table class="ws-table"><thead><tr><th>Box</th><th>Length</th><th>Width</th><th>Height</th><th>Surface Area</th></tr></thead><tbody><tr><td>Box A</td><td></td><td></td><td></td><td></td></tr><tr><td>Box B</td><td></td><td></td><td></td><td></td></tr><tr><td>Box C</td><td></td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">BAR MODEL</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A cube has edges of 5 cm. What is its surface area?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">150 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">125 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">150 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">30 cm²</span></li></ol>
+        <p class="ws-stem">What is the combined area of the left and right faces?</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">BAR MODEL</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the combined area of the left and right faces?</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1052,7 +1186,31 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">2 × 2 × 2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">3 × 3 × 3</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">5 × 4 × 3</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">6 × 4 × 2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">10 × 1 × 1</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A cube has edges of 5 cm. What is its surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">150 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">125 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">150 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">30 cm²</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1063,7 +1221,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Mistake — One Pair Was Not Doubled</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read:</span><span class="ws-step-w">A time capsule box from the net is l = 7 in, w = 5 in, h = 4 in. Find the surface area.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find each face pair:</span><span class="ws-step-w">Top/Bottom: 7×5 = 35, Front/Back: 7×4 = 28, Left/Right: 5×4 = 20</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply the formula:</span><span class="ws-step-w">SA = 2(35) + 2(28) + 20 = 70 + 56 + 20 = 146 in² (left/right pair not doubled)</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer:</span><span class="ws-step-w">Surface Area = 146 in²</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1112,14 +1273,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent Three-Dimensional Figures in Two Dimensions</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area Using Nets · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1134,12 +1296,58 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we find the surface area of a box?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Representing 3D Solids with Nets</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the flat faces of a solid. A net unfolds the box flat so you can see and add all 6 faces. The answer uses square units.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>A net is a 2D flat pattern that folds into a 3D solid without overlapping.</li><li>Rectangular prism net has 6 rectangular faces in 3 congruent opposite pairs.</li><li>Surface Area is the total sum of the areas of all flat faces on the net</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My box is 8 in. long, 5 in. wide, and 3 in. tall. I unfold it into a net and see 3 pairs of faces.</li><li>Top and bottom: each is 8 × 5 = 40, and there are 2 of them, so 2 × 40 = 80.</li><li>Front and back: each is 8 × 3 = 24, so 2 × 24 = 48.</li><li>Left and right: each is 5 × 3 = 15, so 2 × 15 = 30.</li><li>I add all the pairs: 80 + 48 + 30 = 158. The surface area is 158 in².</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now a smaller box: 4 long, 3 wide, 2 tall. How many pairs of faces does it have?</li><li>Top and bottom: 4 × 3 = 12, times 2 = 24. Front and back: 4 × 2 = 8, times 2 = 16.</li><li>Left and right: 3 × 2 = 6, times 2 = 12. Now add 24 + 16 + 12. What is the surface area?</li><li>Yes, SA = 52 in². Remember to use square units.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area Using Nets (Área de superficie usando redes) — The total area of all the faces of a solid. A net unfolds the solid flat so you can see every face and add their areas.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Two-dimensional (Bidimensional) — A flat shape with length and width, but no thickness.</li><li>Edge (Arista) — The line where two flat sides of a solid meet.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area Using Nets is finding the area of only one face from each of the 3 matching pairs and forgetting to double it, instead of counting all 6 faces. For a box that is 9 in × 4 in × 5 in, a student might add just one face from each pair: (9×4) + (9×5) + (4×5) = 36 + 45 + 20 = 101 in², but the net actually has two of each face, so the correct total is 2(36) + 2(45) + 2(20) = 72 + 90 + 40 = 202 in² — exactly double. Before you submit, ask: 'Did I count both matching faces in each pair, or only one from each pair?'</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Compare volume and surface area. Which measurement is bigger for each prism?</p>
+  <table class="ws-table"><thead><tr><th>Prism</th><th>Volume (cubic units)</th><th>Surface Area (square units)</th><th>Which is numerically larger?</th></tr></thead><tbody><tr><td>2 × 2 × 2</td><td></td><td></td><td></td></tr><tr><td>5 × 5 × 5</td><td></td><td></td><td></td></tr><tr><td>10 × 10 × 10</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1147,31 +1355,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the Surface Area Error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">l = 10 in, w = 4 in, h = 3 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">SA = 2lw + 2lh + 2wh</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">SA = 2(10×4) + 2(10×3) + (4×3) = 80 + 60 + 12 = 152 in²</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer:</span><span class="ws-step-w">Surface Area = 152 in²</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Two boxes have the same volume of 60 in³. Box A is 5 × 4 × 3. Box B is 10 × 6 × 1. Which box uses less wrapping paper (has less surface area)? Show your calculations and explain why a more cube-like shape might use less material.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Compare volume and surface area. Which measurement is bigger for each prism?</p>
-  <table class="ws-table"><thead><tr><th>Prism</th><th>Volume (cubic units)</th><th>Surface Area (square units)</th><th>Which is numerically larger?</th></tr></thead><tbody><tr><td>2 × 2 × 2</td><td></td><td></td><td></td></tr><tr><td>5 × 5 × 5</td><td></td><td></td><td></td></tr><tr><td>10 × 10 × 10</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">Two boxes have the same volume of 60 in³. Box A is 5 × 4 × 3. Box B is 10 × 6 × 1. Which box uses less wrapping paper (has less surface area)? Show your calculations and explain why a more cube-like shape might use less material.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

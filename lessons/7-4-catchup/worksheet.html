@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🔵 Prerequisite Catch-Up &amp;amp; Skill Bridge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">7.3 · 7.4 · 7.5 Catch-Up</h1>
           <p class="ws-sub-title">Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard</p>
+          <p class="ws-strategy-line">Integers and Absolute Value · Integer · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=7-4-catchup" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,19 +773,28 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 7.3 · 7.4 · 7.5 Catch-Up</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can show I am caught up on Lessons 7.3 · 7.4 · 7.5 by using each lesson's big idea in mixed practice.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: The Big Ideas — Lessons 7.3 · 7.4 · 7.5</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>7.3: Absolute value is a distance from zero, so it is never negative. It works the same for fractions and decimals as it does for whole numbers. • 7.4: The number farther to the left is always less; the number farther to the right is always greater. • 7.5: Always start at the origin (0, 0), move right/left first, then up/down.</div>
+        <ul class="ws-note-list"><li>Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — The Big Ideas (one per lesson)</div>
+        <ol class="ws-note-list"><li>Lesson 7.3 — Understand Absolute Value of Rational Numbers: Absolute value is a distance from zero, so it is never negative. It works the same for fractions and decimals as it does for whole numbers.</li><li>Lesson 7.4 — Compare and Order Integers and Rational Numbers: The number farther to the left is always less; the number farther to the right is always greater.</li><li>Lesson 7.5 — Represent Rational Numbers on the Coordinate Plane: Always start at the origin (0, 0), move right/left first, then up/down.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Integers and Absolute Value (Enteros y valor absoluto) — Integers are whole numbers and their opposites; absolute value is their distance from zero.</li><li>Integer (Número entero) — Whole numbers and their opposites, like -2, -1, 0, 1, 2.</li><li>Positive (Positivo) — A number bigger than zero, to the right of zero on a number line.</li><li>Negative (Negativo) — A number smaller than zero, to the left of zero on a number line.</li><li>Absolute value (Valor absoluto) — How far a number is from zero. It is never negative.</li><li>Opposite (Opuesto) — Two numbers the same distance from zero, on opposite sides, like 3 and -3.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Graph on the Coordinate Plane is swapping the order of the coordinates — moving up/down first instead of right/left first. For example, when plotting (5, 2), students often move up 5 and right 2, landing on the wrong point (2, 5) instead of (5, 2). Remember: the x-coordinate (first number) always tells you how far to move right or left along the x-axis; the y-coordinate (second number) tells you how far up or down along the y-axis.</li></ul>
+      </div>
     </section>
   
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Integers and Absolute Value <span class="ws-es-term">(Enteros y valor absoluto)</span></span><span class="ws-bankdef"> — Integers are whole numbers and their opposites; absolute value is their distance from zero.</span></div><div class="ws-bank-card"><span class="ws-bankword">Integer <span class="ws-es-term">(Número entero)</span></span><span class="ws-bankdef"> — Whole numbers and their opposites, like -2, -1, 0, 1, 2.</span></div><div class="ws-bank-card"><span class="ws-bankword">Positive <span class="ws-es-term">(Positivo)</span></span><span class="ws-bankdef"> — A number bigger than zero, to the right of zero on a number line.</span></div><div class="ws-bank-card"><span class="ws-bankword">Negative <span class="ws-es-term">(Negativo)</span></span><span class="ws-bankdef"> — A number smaller than zero, to the left of zero on a number line.</span></div><div class="ws-bank-card"><span class="ws-bankword">Absolute value <span class="ws-es-term">(Valor absoluto)</span></span><span class="ws-bankdef"> — How far a number is from zero. It is never negative.</span></div><div class="ws-bank-card"><span class="ws-bankword">Opposite <span class="ws-es-term">(Opuesto)</span></span><span class="ws-bankdef"> — Two numbers the same distance from zero, on opposite sides, like 3 and -3.</span></div><div class="ws-bank-card"><span class="ws-bankword">Rational number <span class="ws-es-term">(Número racional)</span></span><span class="ws-bankdef"> — A number that can be written as a fraction of two integers, with a bottom number that is not zero.</span></div><div class="ws-bank-card"><span class="ws-bankword">Compare and Order Integers <span class="ws-es-term">(Comparar y ordenar enteros)</span></span><span class="ws-bankdef"> — Use a number line to decide which integers are greater or less and place them in order.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -728,10 +802,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 7.3) What is the absolute value of -9?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1</span></li></ol>
+        <p class="ws-stem">(Lesson 7.4) Which statement is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">-3 &gt; -1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-5 &lt; -2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">-4 &gt; 0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-1 &lt; -6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -739,7 +820,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 7.3) Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">-3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol>
+        <p class="ws-stem">(Lesson 7.3) What is the absolute value of -9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -750,7 +834,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 7.4) Which statement is TRUE?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">-3 &gt; -1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-5 &lt; -2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">-4 &gt; 0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-1 &lt; -6</span></li></ol>
+        <p class="ws-stem">(Lesson 7.3) Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">-3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -761,7 +848,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 7.4) Which integer is the LEAST: -3, 5, -8, 2, 0?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">-8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5</span></li></ol>
+        <p class="ws-stem">(Lesson 7.4) Which integer is the LEAST: -3, 5, -8, 2, 0?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">-8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -772,7 +862,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 7.5) Which ordered pair names a point 3 units right and 7 units up from the origin?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 7)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 3)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(0, 7)</span></li></ol>
+        <p class="ws-stem">(Lesson 7.5) Which ordered pair names a point 3 units right and 7 units up from the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 7)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 3)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(0, 7)</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

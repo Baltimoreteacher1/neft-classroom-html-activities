@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Determine Surface Area of Prisms</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area of Prisms · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,36 +773,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Determine Surface Area of Prisms</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the surface area of rectangular and triangular prisms.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Surface Area of Prisms <span class="ws-es-term">(Área de superficie de prismas)</span></span><span class="ws-bankdef"> — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</span></div><div class="ws-bank-card"><span class="ws-bankword">Surface area <span class="ws-es-term">(Área de superficie)</span></span><span class="ws-bankdef"> — The total area of all the flat sides of a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Rectangular prism <span class="ws-es-term">(Prisma rectangular)</span></span><span class="ws-bankdef"> — A solid box shape with six flat rectangle sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Triangular prism <span class="ws-es-term">(Prisma triangular)</span></span><span class="ws-bankdef"> — A solid with two triangle ends and three flat rectangle sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Face <span class="ws-es-term">(Cara)</span></span><span class="ws-bankdef"> — One flat side of a solid shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Net <span class="ws-es-term">(Plantilla (desarrollo plano))</span></span><span class="ws-bankdef"> — A flat shape that folds up into a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Lateral face <span class="ws-es-term">(Cara lateral)</span></span><span class="ws-bankdef"> — The side faces of a solid, not the top or bottom.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we find the surface area of a prism?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Surface Area of Prisms. Formula: Surface Area = Sum of areas of all 6 faces</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the faces of a solid. A rectangular prism has 6 faces; a triangular prism has 5 faces (2 triangles + 3 rectangles). Add every face to get the total.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Calculate area of Top &amp; Bottom: 2 × (l · w).</li><li>Calculate area of Front &amp; Back: 2 × (l · h).</li><li>Calculate area of Left &amp; Right: 2 × (w · h), then sum all three pairs</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My triangular prism has triangle bases (base 6 in., height 4 in.), is 10 in. long, and the two slant sides are 5 in. each.</li><li>Each triangle base is ½ × 6 × 4 = 12, and there are 2 of them: 2 × 12 = 24.</li><li>Now the 3 rectangles: 6 × 10 = 60, 5 × 10 = 50, and 5 × 10 = 50, which add to 160.</li><li>I add the bases and the rectangles: 24 + 160 = 184.</li><li>So the surface area is 184 in². I counted 5 faces because it is a triangular prism.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area of Prisms (Área de superficie de prismas) — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Rectangular prism (Prisma rectangular) — A solid box shape with six flat rectangle sides.</li><li>Triangular prism (Prisma triangular) — A solid with two triangle ends and three flat rectangle sides.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol>
+        <p class="ws-stem">Put the steps in order for finding the surface area of a triangular prism.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Steps in order (first → last)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Find the area of one triangular base</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Multiply the triangle area by 2 (two bases)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Find the area of each rectangular lateral face</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Add all three rectangle areas together</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Add the two triangle areas + all rectangle areas = SA</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -745,7 +823,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How many faces does a triangular prism have?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol>
+        <p class="ws-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -756,25 +839,26 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">134 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">122 cm²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">134 cm³</span></li></ol>
+        <p class="ws-stem">How many faces does a triangular prism have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Put the steps in order for finding the surface area of a triangular prism.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Steps in order (first → last)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Find the area of one triangular base</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Multiply the triangle area by 2 (two bases)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Find the area of each rectangular lateral face</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Add all three rectangle areas together</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Add the two triangle areas + all rectangle areas = SA</span></li></ul>
+        <p class="ws-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">134 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">122 cm²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">134 cm³</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   </ol>
@@ -823,14 +907,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Determine Surface Area of Prisms</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area of Prisms · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -845,66 +930,35 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Determine Surface Area of Prisms</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the surface area of rectangular and triangular prisms.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we find the surface area of a prism?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Surface Area of Prisms. Formula: Surface Area = Sum of areas of all 6 faces</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the faces of a solid. A rectangular prism has 6 faces; a triangular prism has 5 faces (2 triangles + 3 rectangles). Add every face to get the total.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Calculate area of Top &amp; Bottom: 2 × (l · w).</li><li>Calculate area of Front &amp; Back: 2 × (l · h).</li><li>Calculate area of Left &amp; Right: 2 × (w · h), then sum all three pairs</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My triangular prism has triangle bases (base 6 in., height 4 in.), is 10 in. long, and the two slant sides are 5 in. each.</li><li>Each triangle base is ½ × 6 × 4 = 12, and there are 2 of them: 2 × 12 = 24.</li><li>Now the 3 rectangles: 6 × 10 = 60, 5 × 10 = 50, and 5 × 10 = 50, which add to 160.</li><li>I add the bases and the rectangles: 24 + 160 = 184.</li><li>So the surface area is 184 in². I counted 5 faces because it is a triangular prism.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area of Prisms (Área de superficie de prismas) — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Rectangular prism (Prisma rectangular) — A solid box shape with six flat rectangle sides.</li><li>Triangular prism (Prisma triangular) — A solid with two triangle ends and three flat rectangle sides.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Surface Area of Prisms <span class="ws-es-term">(Área de superficie de prismas)</span></span><span class="ws-bankdef"> — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</span></div><div class="ws-bank-card"><span class="ws-bankword">Surface area <span class="ws-es-term">(Área de superficie)</span></span><span class="ws-bankdef"> — The total area of all the flat sides of a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Rectangular prism <span class="ws-es-term">(Prisma rectangular)</span></span><span class="ws-bankdef"> — A solid box shape with six flat rectangle sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Triangular prism <span class="ws-es-term">(Prisma triangular)</span></span><span class="ws-bankdef"> — A solid with two triangle ends and three flat rectangle sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Face <span class="ws-es-term">(Cara)</span></span><span class="ws-bankdef"> — One flat side of a solid shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Net <span class="ws-es-term">(Plantilla (desarrollo plano))</span></span><span class="ws-bankdef"> — A flat shape that folds up into a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Lateral face <span class="ws-es-term">(Cara lateral)</span></span><span class="ws-bankdef"> — The side faces of a solid, not the top or bottom.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How many faces does a triangular prism have?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">134 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">122 cm²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">134 cm³</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -917,7 +971,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
@@ -926,7 +980,61 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Rectangular prism</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Triangular prism</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Cube</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Surface area</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Volume</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Net</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">6 faces (all rectangles)</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">5 faces (2 triangles + 3 rectangles)</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">6 identical square faces</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Uses square units (in²)</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">Uses cubic units (in³)</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">2D pattern that folds into 3D</span></li></ul></div>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How many faces does a triangular prism have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">134 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">122 cm²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">134 cm³</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -937,7 +1045,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake — A Forgotten Face</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">Rectangular prism time capsule: l = 5 in, w = 3 in, h = 2 in.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">SA = 2lw + 2lh + 2wh (add all 6 faces).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">The student wrote SA = 2(5×3) + 2(5×2) + (3×2) = 30 + 20 + 6 = 56 in².</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -986,14 +1097,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Determine Surface Area of Prisms</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area of Prisms · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1008,9 +1120,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we find the surface area of a prism?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Surface Area of Prisms. Formula: Surface Area = Sum of areas of all 6 faces</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the faces of a solid. A rectangular prism has 6 faces; a triangular prism has 5 faces (2 triangles + 3 rectangles). Add every face to get the total.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Calculate area of Top &amp; Bottom: 2 × (l · w).</li><li>Calculate area of Front &amp; Back: 2 × (l · h).</li><li>Calculate area of Left &amp; Right: 2 × (w · h), then sum all three pairs</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My triangular prism has triangle bases (base 6 in., height 4 in.), is 10 in. long, and the two slant sides are 5 in. each.</li><li>Each triangle base is ½ × 6 × 4 = 12, and there are 2 of them: 2 × 12 = 24.</li><li>Now the 3 rectangles: 6 × 10 = 60, 5 × 10 = 50, and 5 × 10 = 50, which add to 160.</li><li>I add the bases and the rectangles: 24 + 160 = 184.</li><li>So the surface area is 184 in². I counted 5 faces because it is a triangular prism.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now a rectangular prism: 5 long, 4 wide, 3 tall. How many faces does it have?</li><li>Top and bottom: 5 × 4 = 20, times 2 = 40. Front and back: 5 × 3 = 15, times 2 = 30.</li><li>Left and right: 4 × 3 = 12, times 2 = 24. Now add 40 + 30 + 24. What is the surface area?</li><li>Yes, SA = 94 cm². Surface area always uses square units.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area of Prisms (Área de superficie de prismas) — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Rectangular prism (Prisma rectangular) — A solid box shape with six flat rectangle sides.</li><li>Triangular prism (Prisma triangular) — A solid with two triangle ends and three flat rectangle sides.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1020,40 +1158,30 @@ header.packet h1::after{
         
         <p class="ws-stem">Calculate the surface area of each rectangular prism time capsule.</p>
   <table class="ws-table"><thead><tr><th>Capsule</th><th>Length</th><th>Width</th><th>Height</th><th>Surface Area</th></tr></thead><tbody><tr><td>Capsule E</td><td></td><td></td><td></td><td></td></tr><tr><td>Capsule F</td><td></td><td></td><td></td><td></td></tr><tr><td>Capsule G</td><td></td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">BAR MODEL</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">184 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">160 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">124 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">184 in³</span></li></ol>
+        <p class="ws-stem">What is the combined area of the left and right faces?</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">BAR MODEL</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the combined area of the left and right faces?</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1063,7 +1191,31 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Cube 3×3×3: SA = 54</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Rect prism 5×4×3: SA = 94</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Rect prism 8×5×3: SA = 158</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Rect prism 10×6×4: SA = 248</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">184 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">160 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">124 in²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">184 in³</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1074,7 +1226,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake — Surface Area or Volume?</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">Rectangular prism time capsule: l = 7 in, w = 4 in, h = 3 in. Find the surface area.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">Surface area adds all 6 faces: SA = 2lw + 2lh + 2wh.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">The student multiplied the three dimensions: 7 × 4 × 3 = 84, so they wrote SA = 84 in².</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1123,14 +1278,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Determine Surface Area of Prisms</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Surface Area of Prisms · Surface area · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1145,12 +1301,58 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we find the surface area of a prism?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Surface Area of Prisms. Formula: Surface Area = Sum of areas of all 6 faces</div>
+        <ul class="ws-note-list"><li>Surface area is the total area of all the faces of a solid. A rectangular prism has 6 faces; a triangular prism has 5 faces (2 triangles + 3 rectangles). Add every face to get the total.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Calculate area of Top &amp; Bottom: 2 × (l · w).</li><li>Calculate area of Front &amp; Back: 2 × (l · h).</li><li>Calculate area of Left &amp; Right: 2 × (w · h), then sum all three pairs</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My triangular prism has triangle bases (base 6 in., height 4 in.), is 10 in. long, and the two slant sides are 5 in. each.</li><li>Each triangle base is ½ × 6 × 4 = 12, and there are 2 of them: 2 × 12 = 24.</li><li>Now the 3 rectangles: 6 × 10 = 60, 5 × 10 = 50, and 5 × 10 = 50, which add to 160.</li><li>I add the bases and the rectangles: 24 + 160 = 184.</li><li>So the surface area is 184 in². I counted 5 faces because it is a triangular prism.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now a rectangular prism: 5 long, 4 wide, 3 tall. How many faces does it have?</li><li>Top and bottom: 5 × 4 = 20, times 2 = 40. Front and back: 5 × 3 = 15, times 2 = 30.</li><li>Left and right: 4 × 3 = 12, times 2 = 24. Now add 40 + 30 + 24. What is the surface area?</li><li>Yes, SA = 94 cm². Surface area always uses square units.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area of Prisms (Área de superficie de prismas) — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Rectangular prism (Prisma rectangular) — A solid box shape with six flat rectangle sides.</li><li>Triangular prism (Prisma triangular) — A solid with two triangle ends and three flat rectangle sides.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A rectangular prism and a triangular prism have similar dimensions. Compare their surface areas and volumes.</p>
+  <table class="ws-table"><thead><tr><th>Shape</th><th>Faces</th><th>Surface Area</th><th>Volume</th></tr></thead><tbody><tr><td>Rect prism: 6×4×3</td><td></td><td></td><td></td></tr><tr><td>Tri prism: base=6, h=4, length=3, sides=5</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1158,31 +1360,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the Surface Area Error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">Rectangular prism: l = 12 cm, w = 7 cm, h = 5 cm</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">SA = 2lw + 2lh + 2wh</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">SA = 2(12×7) + 2(12×5) + 2(7×5) = 168 + 120 + 35 = 323 cm²</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer:</span><span class="ws-step-w">Surface Area = 323 cm²</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A company ships products in two container options: a rectangular prism (8 × 6 × 4 in) or a triangular prism (triangle base 8 in, triangle height 6 in, prism length 8 in, slant sides 6.3 in each). Both must be wrapped in protective film. Which shape uses LESS film? Show your work.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A rectangular prism and a triangular prism have similar dimensions. Compare their surface areas and volumes.</p>
-  <table class="ws-table"><thead><tr><th>Shape</th><th>Faces</th><th>Surface Area</th><th>Volume</th></tr></thead><tbody><tr><td>Rect prism: 6×4×3</td><td></td><td></td><td></td></tr><tr><td>Tri prism: base=6, h=4, length=3, sides=5</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">A company ships products in two container options: a rectangular prism (8 × 6 × 4 in) or a triangular prism (triangle base 8 in, triangle height 6 in, prism length 8 in, slant sides 6.3 in each). Both must be wrapped in protective film. Which shape uses LESS film? Show your work.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

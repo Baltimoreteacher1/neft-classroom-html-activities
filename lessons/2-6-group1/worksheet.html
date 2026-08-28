@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.6 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Divide Multi-Digit Numbers · Dividend · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-6-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,47 +767,65 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 2.6 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can divide multi-digit whole numbers and explain the meaning of the quotient and remainder — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — How do you divide big numbers?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Repeat the cycle Divide → Multiply → Subtract → Bring Down until no digits are left to bring down; what is left at the end is the remainder.</div>
+        <ul class="ws-note-list"><li>Dividing means splitting a total into equal groups. Long division finds the quotient one digit at a time by repeating the same four steps: divide, multiply, subtract, bring down. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 1,344 ÷ 12. The dividend is 1,344 and the divisor is 12, so 12 goes outside the bracket and 1,344 goes inside.</li><li>DIVIDE: 12 does not fit into 1, so I look at 13. How many 12s fit into 13? One. I write 1 above the 3.</li><li>MULTIPLY: 1 × 12 = 12. I write 12 underneath the 13.</li><li>SUBTRACT: 13 − 12 = 1. That is what is left so far.</li><li>BRING DOWN: I bring the next digit, 4, down next to the 1 to make 14. Now I repeat the cycle.</li><li>REPEAT: 14 ÷ 12 → 1 (written above the 4), 1 × 12 = 12, 14 − 12 = 2, and I bring down the last 4 to make 24.</li><li>REPEAT: 24 ÷ 12 → 2 (written above the last 4), 2 × 12 = 24, 24 − 24 = 0. Nothing is left to bring down, so the remainder is 0.</li><li>The digits I wrote are 1, 1, 2, so 1,344 ÷ 12 = 112. I check by multiplying: 12 × 112 = 1,344.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Divide Multi-Digit Numbers (Dividir números de varias cifras) — Separate a multi-digit number into equal groups to find a quotient.</li><li>Dividend (Dividendo) — The total number being divided into equal groups (the number inside the division bracket).</li><li>Divisor (Divisor) — The number of equal groups you are dividing into (the number outside the division bracket).</li><li>Quotient (Cociente) — The answer when you divide.</li><li>Remainder (Residuo) — What is left over when a number does not divide evenly.</li><li>Long division (División larga) — A method that repeats four steps — divide, multiply, subtract, bring down — until there are no digits left to bring down.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Divide Multi-Digit Numbers <span class="ws-es-term">(Dividir números de varias cifras)</span></span><span class="ws-bankdef"> — Separate a multi-digit number into equal groups to find a quotient.</span></div><div class="ws-bank-card"><span class="ws-bankword">Dividend <span class="ws-es-term">(Dividendo)</span></span><span class="ws-bankdef"> — The total number being divided into equal groups (the number inside the division bracket).</span></div><div class="ws-bank-card"><span class="ws-bankword">Divisor <span class="ws-es-term">(Divisor)</span></span><span class="ws-bankdef"> — The number of equal groups you are dividing into (the number outside the division bracket).</span></div><div class="ws-bank-card"><span class="ws-bankword">Quotient <span class="ws-es-term">(Cociente)</span></span><span class="ws-bankdef"> — The answer when you divide.</span></div><div class="ws-bank-card"><span class="ws-bankword">Remainder <span class="ws-es-term">(Residuo)</span></span><span class="ws-bankdef"> — What is left over when a number does not divide evenly.</span></div><div class="ws-bank-card"><span class="ws-bankword">Long division <span class="ws-es-term">(División larga)</span></span><span class="ws-bankdef"> — A method that repeats four steps — divide, multiply, subtract, bring down — until there are no digits left to bring down.</span></div><div class="ws-bank-card"><span class="ws-bankword">Bring down <span class="ws-es-term">(Bajar el dígito)</span></span><span class="ws-bankdef"> — The fourth step of long division: move the next digit of the dividend down next to what is left, then start the cycle again.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 936 ÷ 12?</p><div class="wsd-wrap wsd-supported">
-      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 246" width="195" height="246" role="img" aria-label="Blank long-division frame for 936 divided by 12" style="background:white;"><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">1</text><text class="wsd-given" x="74" y="58" text-anchor="middle">2</text><path class="wsd-rule" d="M 84 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="84" y1="40" x2="186" y2="40"/><text class="wsd-given" x="105" y="58" text-anchor="middle">9</text><text class="wsd-given" x="135" y="58" text-anchor="middle">3</text><text class="wsd-given" x="165" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/></svg></div>
-      <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">78</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">87</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">68</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">76</span></li></ol>
+        <p class="ws-stem">Run the long-division cycle. Fill in the quotient.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Divide</th><th>Multiply &amp; Subtract</th><th>Bring Down</th><th>Quotient</th></tr></thead><tbody><tr><td>384 ÷ 8</td><td></td><td></td><td></td><td></td></tr><tr><td>672 ÷ 6</td><td></td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 2,485 ÷ 5?</p><div class="wsd-wrap wsd-supported">
-      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 314" width="195" height="314" role="img" aria-label="Blank long-division frame for 2485 divided by 5" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">5</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="186" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">2</text><text class="wsd-given" x="105" y="58" text-anchor="middle">4</text><text class="wsd-given" x="135" y="58" text-anchor="middle">8</text><text class="wsd-given" x="165" y="58" text-anchor="middle">5</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="276" width="24" height="22" rx="3"/></svg></div>
-      <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">497</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">487</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">507</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">496</span></li></ol>
+        <p class="ws-stem">Complete each division problem.</p>
+  <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>672 ÷ 8</td><td></td></tr><tr><td>2,208 ÷ 16</td><td></td></tr><tr><td>2,016 ÷ 14</td><td></td></tr><tr><td>1,560 ÷ 15</td><td></td></tr><tr><td>3,276 ÷ 12</td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -750,10 +833,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 756 ÷ 9?</p><div class="wsd-wrap wsd-supported">
-      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 165 246" width="165" height="246" role="img" aria-label="Blank long-division frame for 756 divided by 9" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">9</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="156" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">7</text><text class="wsd-given" x="105" y="58" text-anchor="middle">5</text><text class="wsd-given" x="135" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/></svg></div>
+        <p class="ws-stem">What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">78</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">87</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">68</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">76</span></li></ol><div class="wsd-wrap wsd-supported">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 246" width="195" height="246" role="img" aria-label="Blank long-division frame for 936 divided by 12" style="background:white;"><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">1</text><text class="wsd-given" x="74" y="58" text-anchor="middle">2</text><path class="wsd-rule" d="M 84 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="84" y1="40" x2="186" y2="40"/><text class="wsd-given" x="105" y="58" text-anchor="middle">9</text><text class="wsd-given" x="135" y="58" text-anchor="middle">3</text><text class="wsd-given" x="165" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/></svg></div>
       <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">83</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">86</span></li></ol>
+    </div>
       </div>
     </li>
   
@@ -764,36 +847,38 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 1,125 ÷ 9?</p><div class="wsd-wrap wsd-supported">
-      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 314" width="195" height="314" role="img" aria-label="Blank long-division frame for 1125 divided by 9" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">9</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="186" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">1</text><text class="wsd-given" x="105" y="58" text-anchor="middle">1</text><text class="wsd-given" x="135" y="58" text-anchor="middle">2</text><text class="wsd-given" x="165" y="58" text-anchor="middle">5</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="276" width="24" height="22" rx="3"/></svg></div>
+        <p class="ws-stem">What is 2,485 ÷ 5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">497</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">487</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">507</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">496</span></li></ol><div class="wsd-wrap wsd-supported">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 314" width="195" height="314" role="img" aria-label="Blank long-division frame for 2485 divided by 5" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">5</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="186" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">2</text><text class="wsd-given" x="105" y="58" text-anchor="middle">4</text><text class="wsd-given" x="135" y="58" text-anchor="middle">8</text><text class="wsd-given" x="165" y="58" text-anchor="middle">5</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="276" width="24" height="22" rx="3"/></svg></div>
       <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">125</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">115</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">135</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">124</span></li></ol>
+    </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Run the long-division cycle. Fill in the quotient.</p>
-  <table class="ws-table"><thead><tr><th>Problem</th><th>Divide</th><th>Multiply &amp; Subtract</th><th>Bring Down</th><th>Quotient</th></tr></thead><tbody><tr><td>384 ÷ 8</td><td></td><td></td><td></td><td></td></tr><tr><td>672 ÷ 6</td><td></td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">83</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">86</span></li></ol><div class="wsd-wrap wsd-supported">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 165 246" width="165" height="246" role="img" aria-label="Blank long-division frame for 756 divided by 9" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">9</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="156" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">7</text><text class="wsd-given" x="105" y="58" text-anchor="middle">5</text><text class="wsd-given" x="135" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/></svg></div>
+      <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
+    </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Complete each division problem.</p>
-  <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>672 ÷ 8</td><td></td></tr><tr><td>2,208 ÷ 16</td><td></td></tr><tr><td>2,016 ÷ 14</td><td></td></tr><tr><td>1,560 ÷ 15</td><td></td></tr><tr><td>3,276 ÷ 12</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">What is 1,125 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">125</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">115</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">135</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">124</span></li></ol><div class="wsd-wrap wsd-supported">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 314" width="195" height="314" role="img" aria-label="Blank long-division frame for 1125 divided by 9" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">9</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="186" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">1</text><text class="wsd-given" x="105" y="58" text-anchor="middle">1</text><text class="wsd-given" x="135" y="58" text-anchor="middle">2</text><text class="wsd-given" x="165" y="58" text-anchor="middle">5</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="276" width="24" height="22" rx="3"/></svg></div>
+      <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
+    </div>
       </div>
     </li>
   </ol>

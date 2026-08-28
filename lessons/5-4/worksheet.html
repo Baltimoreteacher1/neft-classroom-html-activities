@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Apply Area Concepts to Solve Problems</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Area of Composite Figures · Composite Figure · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,16 +773,24 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Apply Area Concepts to Solve Problems</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the area of a composite figure by decomposing it into basic shapes, including a regular polygon split into triangles, and adding or subtracting the areas.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Area of Composite Figures <span class="ws-es-term">(Área de figuras compuestas)</span></span><span class="ws-bankdef"> — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</span></div><div class="ws-bank-card"><span class="ws-bankword">Composite Figure <span class="ws-es-term">(Figura compuesta)</span></span><span class="ws-bankdef"> — A shape made by putting two or more simple shapes together.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decompose <span class="ws-es-term">(Descomponer)</span></span><span class="ws-bankdef"> — To break a shape into smaller, simpler shapes.</span></div><div class="ws-bank-card"><span class="ws-bankword">Add <span class="ws-es-term">(Sumar)</span></span><span class="ws-bankdef"> — Add up the areas of the smaller shapes to get the total.</span></div><div class="ws-bank-card"><span class="ws-bankword">Subtract <span class="ws-es-term">(Restar)</span></span><span class="ws-bankdef"> — Take away the area of a missing piece from a bigger shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Formula <span class="ws-es-term">(Fórmula)</span></span><span class="ws-bankdef"> — A math rule written with symbols.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we find the area of a composite figure?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Area of Composite Figures</div>
+        <ul class="ws-note-list"><li>A composite figure is a shape made of two or more simple shapes joined together. We decompose it into basic shapes, find each area, then add or subtract.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Decompose: Split the irregular shape into basic figures (rectangles, triangles, trapezoids).</li><li>Calculate: Find the area of each individual sub-figure.</li><li>Combine: Add the areas together (or subtract if a piece is removed/cut out)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My L-shaped room splits into two rectangles: one is 12 ft by 8 ft, the other is 6 ft by 5 ft.</li><li>First rectangle: A = length × width = 12 × 8 = 96 square feet.</li><li>Second rectangle: A = 6 × 5 = 30 square feet.</li><li>The pieces are joined, so I add: 96 + 30 = 126.</li><li>So the total area is 126 square feet.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Area of Composite Figures (Área de figuras compuestas) — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</li><li>Composite Figure (Figura compuesta) — A shape made by putting two or more simple shapes together.</li><li>Decompose (Descomponer) — To break a shape into smaller, simpler shapes.</li><li>Add (Sumar) — Add up the areas of the smaller shapes to get the total.</li><li>Subtract (Restar) — Take away the area of a missing piece from a bigger shape.</li><li>Formula (Fórmula) — A math rule written with symbols.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Area of Composite Figures is adding every piece even when a piece has been cut out of the figure. For a 10 ft by 8 ft rectangle with a 3 ft by 2 ft rectangular notch cut from one corner, students compute the full rectangle 10 × 8 = 80 sq ft and stop, or they add the notch instead of removing it (80 + 6 = 86 sq ft) instead of subtracting it: 80 − (3 × 2) = 80 − 6 = 74 sq ft. Before submitting, check whether each piece is part of the figure (add it) or missing from the figure (subtract it).</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
@@ -729,12 +802,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">72 ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">72 ft</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -745,12 +818,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">130 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">150 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">170 sq ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">130 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">150 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">170 sq ft</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -761,12 +834,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Find the area of an L-shape made of a 5×3 rectangle and a 2×4 rectangle.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">Find the area of an L-shape made of a 5×3 rectangle and a 2×4 rectangle.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">23 sq units</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15 sq units</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8 sq units</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20 sq units</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">23 sq units</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15 sq units</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8 sq units</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20 sq units</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -777,7 +850,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">When should you subtract areas instead of adding them to find the area of a composite figure?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">When a piece is cut out or removed from a larger shape</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">When the shapes overlap</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">When one shape is larger than the other</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Always subtract — never add</span></li></ol>
+        <p class="ws-stem">When should you subtract areas instead of adding them to find the area of a composite figure?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">When a piece is cut out or removed from a larger shape</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">When the shapes overlap</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">When one shape is larger than the other</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Always subtract — never add</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -826,14 +902,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Apply Area Concepts to Solve Problems</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Area of Composite Figures · Composite Figure · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -848,36 +925,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Apply Area Concepts to Solve Problems</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the area of a composite figure by decomposing it into basic shapes, including a regular polygon split into triangles, and adding or subtracting the areas.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do we find the area of a composite figure?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Area of Composite Figures</div>
+        <ul class="ws-note-list"><li>A composite figure is a shape made of two or more simple shapes joined together. We decompose it into basic shapes, find each area, then add or subtract.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Decompose: Split the irregular shape into basic figures (rectangles, triangles, trapezoids).</li><li>Calculate: Find the area of each individual sub-figure.</li><li>Combine: Add the areas together (or subtract if a piece is removed/cut out)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My L-shaped room splits into two rectangles: one is 12 ft by 8 ft, the other is 6 ft by 5 ft.</li><li>First rectangle: A = length × width = 12 × 8 = 96 square feet.</li><li>Second rectangle: A = 6 × 5 = 30 square feet.</li><li>The pieces are joined, so I add: 96 + 30 = 126.</li><li>So the total area is 126 square feet.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Area of Composite Figures (Área de figuras compuestas) — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</li><li>Composite Figure (Figura compuesta) — A shape made by putting two or more simple shapes together.</li><li>Decompose (Descomponer) — To break a shape into smaller, simpler shapes.</li><li>Add (Sumar) — Add up the areas of the smaller shapes to get the total.</li><li>Subtract (Restar) — Take away the area of a missing piece from a bigger shape.</li><li>Formula (Fórmula) — A math rule written with symbols.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Area of Composite Figures is adding every piece even when a piece has been cut out of the figure. For a 10 ft by 8 ft rectangle with a 3 ft by 2 ft rectangular notch cut from one corner, students compute the full rectangle 10 × 8 = 80 sq ft and stop, or they add the notch instead of removing it (80 + 6 = 86 sq ft) instead of subtracting it: 80 − (3 × 2) = 80 − 6 = 74 sq ft. Before submitting, check whether each piece is part of the figure (add it) or missing from the figure (subtract it).</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Area of Composite Figures <span class="ws-es-term">(Área de figuras compuestas)</span></span><span class="ws-bankdef"> — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</span></div><div class="ws-bank-card"><span class="ws-bankword">Composite Figure <span class="ws-es-term">(Figura compuesta)</span></span><span class="ws-bankdef"> — A shape made by putting two or more simple shapes together.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decompose <span class="ws-es-term">(Descomponer)</span></span><span class="ws-bankdef"> — To break a shape into smaller, simpler shapes.</span></div><div class="ws-bank-card"><span class="ws-bankword">Add <span class="ws-es-term">(Sumar)</span></span><span class="ws-bankdef"> — Add up the areas of the smaller shapes to get the total.</span></div><div class="ws-bank-card"><span class="ws-bankword">Subtract <span class="ws-es-term">(Restar)</span></span><span class="ws-bankdef"> — Take away the area of a missing piece from a bigger shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Formula <span class="ws-es-term">(Fórmula)</span></span><span class="ws-bankdef"> — A math rule written with symbols.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">72 ft</span></li></ol>
+        <p class="ws-stem">Sort each composite figure by whether you ADD or SUBTRACT the areas to find the total.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Add the areas</span> <span class="ws-cat-pill">Subtract the areas</span></div>
+  <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -885,12 +975,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">72 ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">130 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">150 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">170 sq ft</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -901,12 +991,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Find the area of an L-shape made of a 5×3 rectangle and a 2×4 rectangle.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">130 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">150 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">170 sq ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">23 sq units</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15 sq units</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8 sq units</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20 sq units</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -917,23 +1007,33 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">When should you subtract areas instead of adding them to find the area of a composite figure?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">When a piece is cut out or removed from a larger shape</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">When the shapes overlap</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">When one shape is larger than the other</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Always subtract — never add</span></li></ol>
+        <p class="ws-stem">Find the area of an L-shape made of a 5×3 rectangle and a 2×4 rectangle.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">23 sq units</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15 sq units</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8 sq units</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20 sq units</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each composite figure by whether you ADD or SUBTRACT the areas to find the total.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Add the areas</span> <span class="ws-cat-pill">Subtract the areas</span></div>
-  <ul class="ws-sort-list"></ul>
+        <p class="ws-stem">When should you subtract areas instead of adding them to find the area of a composite figure?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">When a piece is cut out or removed from a larger shape</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">When the shapes overlap</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">When one shape is larger than the other</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Always subtract — never add</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -944,7 +1044,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Identify the shapes:</span><span class="ws-step-w">An L-shaped room is made of two joined rectangles: 8 ft × 5 ft and 4 ft × 3 ft.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find each area:</span><span class="ws-step-w">First rectangle = 8 × 5 = 40 sq ft. Second rectangle = 4 × 3 = 12 sq ft.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Combine the areas:</span><span class="ws-step-w">Total = 40 × 12 = 480 sq ft.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -993,14 +1096,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Apply Area Concepts to Solve Problems</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Area of Composite Figures · Composite Figure · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1015,9 +1119,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we find the area of a composite figure?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Area of Composite Figures</div>
+        <ul class="ws-note-list"><li>A composite figure is a shape made of two or more simple shapes joined together. We decompose it into basic shapes, find each area, then add or subtract.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Decompose: Split the irregular shape into basic figures (rectangles, triangles, trapezoids).</li><li>Calculate: Find the area of each individual sub-figure.</li><li>Combine: Add the areas together (or subtract if a piece is removed/cut out)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My L-shaped room splits into two rectangles: one is 12 ft by 8 ft, the other is 6 ft by 5 ft.</li><li>First rectangle: A = length × width = 12 × 8 = 96 square feet.</li><li>Second rectangle: A = 6 × 5 = 30 square feet.</li><li>The pieces are joined, so I add: 96 + 30 = 126.</li><li>So the total area is 126 square feet.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now an L-shape made of a 5 ft by 4 ft rectangle and a 3 ft by 2 ft rectangle.</li><li>First rectangle: 5 × 4 = 20 square feet.</li><li>Second rectangle: 3 × 2 = 6 square feet.</li><li>Are they joined or cut out? Joined, so we add: 20 + 6 = 26 square feet.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Area of Composite Figures (Área de figuras compuestas) — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</li><li>Composite Figure (Figura compuesta) — A shape made by putting two or more simple shapes together.</li><li>Decompose (Descomponer) — To break a shape into smaller, simpler shapes.</li><li>Add (Sumar) — Add up the areas of the smaller shapes to get the total.</li><li>Subtract (Restar) — Take away the area of a missing piece from a bigger shape.</li><li>Formula (Fórmula) — A math rule written with symbols.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Area of Composite Figures is adding every piece even when a piece has been cut out of the figure. For a 10 ft by 8 ft rectangle with a 3 ft by 2 ft rectangular notch cut from one corner, students compute the full rectangle 10 × 8 = 80 sq ft and stop, or they add the notch instead of removing it (80 + 6 = 86 sq ft) instead of subtracting it: 80 − (3 × 2) = 80 − 6 = 74 sq ft. Before submitting, check whether each piece is part of the figure (add it) or missing from the figure (subtract it).</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1027,7 +1157,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Solve the mathematical problem. Show all of your work and reasoning.</p>
   <table class="ws-table"><thead><tr><th>Figure</th><th>Shape 1 Area</th><th>Shape 2 Area</th><th>Operation</th><th>Total Area</th></tr></thead><tbody><tr><td>L-shaped deck</td><td></td><td></td><td></td><td></td></tr><tr><td>Floor with alcove</td><td></td><td></td><td></td><td></td></tr><tr><td>Wall with window cutout</td><td></td><td></td><td></td><td></td></tr><tr><td>Courtyard with fountain cutout</td><td></td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1050,7 +1183,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         <div class="ws-figure-wrap" style="margin:10px auto;display:flex;flex-direction:column;align-items:center;"><svg width="460" height="66" viewBox="0 0 460 66" role="img" aria-label="Tape diagram model" style="background:white;max-width:100%;height:auto;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;"><text x="10" y="31" font-size="11" font-weight="700" fill="#1e293b" font-family="'Hanken Grotesk',Arial,sans-serif">Total</text><rect x="94.0" y="10" width="318.4" height="34" rx="4" fill="#0f8a84"/><text x="254.2" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">108</text><rect x="414.4" y="10" width="33.6" height="34" rx="4" fill="#c2603f"/><text x="432.2" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">12</text></svg></div>
-        <p class="ws-stem">Wall area = 120 sq ft → painted area (108) + window cutout (12)</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Wall area = 120 sq ft → painted area (108) + window cutout (12)</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1066,7 +1202,11 @@ header.packet h1::after{
   <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1077,7 +1217,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Identify the shapes:</span><span class="ws-step-w">A 16 ft × 9 ft floor has a 4 ft × 5 ft supply closet cut out of one corner. Find the usable floor area.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the large rectangle area:</span><span class="ws-step-w">A = 16 × 9 = 144 sq ft.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the cutout area:</span><span class="ws-step-w">A = 4 × 5 = 20 sq ft.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find the usable area:</span><span class="ws-step-w">Usable area = 144 + 20 = 164 sq ft.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1126,14 +1269,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Apply Area Concepts to Solve Problems</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Area of Composite Figures · Composite Figure · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1148,12 +1292,58 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do we find the area of a composite figure?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Area of Composite Figures</div>
+        <ul class="ws-note-list"><li>A composite figure is a shape made of two or more simple shapes joined together. We decompose it into basic shapes, find each area, then add or subtract.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Decompose: Split the irregular shape into basic figures (rectangles, triangles, trapezoids).</li><li>Calculate: Find the area of each individual sub-figure.</li><li>Combine: Add the areas together (or subtract if a piece is removed/cut out)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My L-shaped room splits into two rectangles: one is 12 ft by 8 ft, the other is 6 ft by 5 ft.</li><li>First rectangle: A = length × width = 12 × 8 = 96 square feet.</li><li>Second rectangle: A = 6 × 5 = 30 square feet.</li><li>The pieces are joined, so I add: 96 + 30 = 126.</li><li>So the total area is 126 square feet.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Now an L-shape made of a 5 ft by 4 ft rectangle and a 3 ft by 2 ft rectangle.</li><li>First rectangle: 5 × 4 = 20 square feet.</li><li>Second rectangle: 3 × 2 = 6 square feet.</li><li>Are they joined or cut out? Joined, so we add: 20 + 6 = 26 square feet.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Area of Composite Figures (Área de figuras compuestas) — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</li><li>Composite Figure (Figura compuesta) — A shape made by putting two or more simple shapes together.</li><li>Decompose (Descomponer) — To break a shape into smaller, simpler shapes.</li><li>Add (Sumar) — Add up the areas of the smaller shapes to get the total.</li><li>Subtract (Restar) — Take away the area of a missing piece from a bigger shape.</li><li>Formula (Fórmula) — A math rule written with symbols.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Area of Composite Figures is adding every piece even when a piece has been cut out of the figure. For a 10 ft by 8 ft rectangle with a 3 ft by 2 ft rectangular notch cut from one corner, students compute the full rectangle 10 × 8 = 80 sq ft and stop, or they add the notch instead of removing it (80 + 6 = 86 sq ft) instead of subtracting it: 80 − (3 × 2) = 80 − 6 = 74 sq ft. Before submitting, check whether each piece is part of the figure (add it) or missing from the figure (subtract it).</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">This composite figure is a house shape: a rectangle topped with a triangle. Find each area and the total.</p>
+  <table class="ws-table"><thead><tr><th>Part</th><th>Shape</th><th>Dimensions</th><th>Area</th></tr></thead><tbody><tr><td>Walls</td><td></td><td></td><td></td></tr><tr><td>Roof</td><td></td><td></td><td></td></tr><tr><td>Total</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1161,31 +1351,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the Area Error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Identify the shapes:</span><span class="ws-step-w">Rectangle: 16 ft × 10 ft, with a 4 ft × 6 ft piece cut from the corner</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the large rectangle area:</span><span class="ws-step-w">A = 16 × 10 = 160 sq ft</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the cutout area:</span><span class="ws-step-w">A = 4 × 6 = 24 sq ft</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find total area:</span><span class="ws-step-w">Total = 160 + 24 = 184 sq ft</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A T-shaped room can be decomposed in two different ways. Show both ways and prove they give the same total area. Use a T-shape where the top is 14 ft × 4 ft and the stem is 6 ft × 10 ft.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">This composite figure is a house shape: a rectangle topped with a triangle. Find each area and the total.</p>
-  <table class="ws-table"><thead><tr><th>Part</th><th>Shape</th><th>Dimensions</th><th>Area</th></tr></thead><tbody><tr><td>Walls</td><td></td><td></td><td></td></tr><tr><td>Roof</td><td></td><td></td><td></td></tr><tr><td>Total</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">A T-shaped room can be decomposed in two different ways. Show both ways and prove they give the same total area. Use a T-shape where the top is 14 ft × 4 ft and the stem is 6 ft × 10 ft.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

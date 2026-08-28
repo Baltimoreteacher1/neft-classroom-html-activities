@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Understand Equations and Their Solutions</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Write Equations · Equation · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -698,7 +763,6 @@ header.packet h1::after{
       </div>
     </header>
   
-      
       
       
       <ol class="ws-problems-grid">
@@ -783,14 +847,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Understand Equations and Their Solutions</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Write Equations · Equation · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +871,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each phrase into the correct operation.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Addition (+)</span> <span class="ws-cat-pill">Subtraction (−)</span> <span class="ws-cat-pill">Multiplication (×)</span> <span class="ws-cat-pill">Division (÷)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Addition (+)</span><span class="ws-sort-text">more than</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Addition (+)</span><span class="ws-sort-text">increased by</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Addition (+)</span><span class="ws-sort-text">sum of</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Subtraction (−)</span><span class="ws-sort-text">less than</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Subtraction (−)</span><span class="ws-sort-text">decreased by</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Subtraction (−)</span><span class="ws-sort-text">fewer than</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Multiplication (×)</span><span class="ws-sort-text">times</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Multiplication (×)</span><span class="ws-sort-text">product of</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Multiplication (×)</span><span class="ws-sort-text">twice</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Division (÷)</span><span class="ws-sort-text">divided by</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Division (÷)</span><span class="ws-sort-text">split equally</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Division (÷)</span><span class="ws-sort-text">quotient of</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +906,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,7 +917,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -843,7 +928,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -854,7 +939,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -862,20 +947,11 @@ header.packet h1::after{
         <p class="ws-stem">Which equation represents: 'A number divided by 4 equals 8'?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">n / 4 = 8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4n = 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n − 4 = 8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n + 4 = 8</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 'Divided by 4' means division: n / 4 = 8.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Write Equations is writing subtraction and division clues in the wrong order — putting the number from the clue first instead of the variable first. For 'a number decreased by 8 equals 5,' students often write 8 − n = 5 instead of the correct n − 8 = 5; for 'a number divided by 4 equals 6,' they write 4 ÷ n (or 4n) instead of n / 4 = 6. Always start with the variable, then attach the operation in the order the words describe it, and check by substituting your answer back in.</p>
       </div>
     </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each phrase into the correct operation.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Addition (+)</span> <span class="ws-cat-pill">Subtraction (−)</span> <span class="ws-cat-pill">Multiplication (×)</span> <span class="ws-cat-pill">Division (÷)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Addition (+)</span><span class="ws-sort-text">more than</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Addition (+)</span><span class="ws-sort-text">increased by</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Addition (+)</span><span class="ws-sort-text">sum of</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Subtraction (−)</span><span class="ws-sort-text">less than</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Subtraction (−)</span><span class="ws-sort-text">decreased by</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Subtraction (−)</span><span class="ws-sort-text">fewer than</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Multiplication (×)</span><span class="ws-sort-text">times</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Multiplication (×)</span><span class="ws-sort-text">product of</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Multiplication (×)</span><span class="ws-sort-text">twice</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Division (÷)</span><span class="ws-sort-text">divided by</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Division (÷)</span><span class="ws-sort-text">split equally</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Division (÷)</span><span class="ws-sort-text">quotient of</span></li></ul>
-      </div>
-    </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
@@ -927,14 +1003,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Understand Equations and Their Solutions</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Write Equations · Equation · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -950,8 +1027,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -980,17 +1060,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">f + 14 = 30</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">f − 14 = 30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">14f = 30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">f / 14 = 30</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The detective's Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Write Equations is writing subtraction and division clues in the wrong order — putting the number from the clue first instead of the variable first. For 'a number decreased by 8 equals 5,' students often write 8 − n = 5 instead of the correct n − 8 = 5; for 'a number divided by 4 equals 6,' they write 4 ÷ n (or 4n) instead of n / 4 = 6. Always start with the variable, then attach the operation in the order the words describe it, and check by substituting your answer back in.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">BALANCE SCALE</span>
       </div>
       <div class="ws-pbody">
@@ -1009,7 +1078,26 @@ header.packet h1::after{
         <p class="ws-stem">Build the equation 2n + 3 = 11 on the balance scale and find n.</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">f + 14 = 30</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">f − 14 = 30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">14f = 30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">f / 14 = 30</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The detective's Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Write Equations is writing subtraction and division clues in the wrong order — putting the number from the clue first instead of the variable first. For 'a number decreased by 8 equals 5,' students often write 8 − n = 5 instead of the correct n − 8 = 5; for 'a number divided by 4 equals 6,' they write 4 ÷ n (or 4n) instead of n / 4 = 6. Always start with the variable, then attach the operation in the order the words describe it, and check by substituting your answer back in.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1061,14 +1149,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Understand Equations and Their Solutions</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Write Equations · Equation · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1084,11 +1173,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">For each equation, explain why one situation matches and the other does not.</p>
+  <table class="ws-table"><thead><tr><th>Equation</th><th>Situation That MATCHES</th><th>Situation That Does NOT Match</th></tr></thead><tbody><tr><td>5n = 35</td><td>Five identical bags hold 35 clues total.</td><td>A detective has 5 more clues than 35.</td></tr><tr><td>n − 8 = 12</td><td>After giving away 8 items, a detective has 12 left.</td><td>A detective collected 8 items and then 12 more.</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1102,25 +1211,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Write a real-world situation that can be modeled by the equation n / 5 = 9. Explain what n represents and verify your equation makes sense.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: equation, variable, represents, divided, equal, 45 Explanation: The equation n / 5 = 9 describes one amount being shared into 5 equal groups with 9 in each group, so a matching story could be n stickers split evenly among 5 friends with each friend getting 9. Since 5 groups of 9 rebuild the whole, n = 9 × 5 = 45, and 45 ÷ 5 = 9 checks the story.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">For each equation, explain why one situation matches and the other does not.</p>
-  <table class="ws-table"><thead><tr><th>Equation</th><th>Situation That MATCHES</th><th>Situation That Does NOT Match</th></tr></thead><tbody><tr><td>5n = 35</td><td>Five identical bags hold 35 clues total.</td><td>A detective has 5 more clues than 35.</td></tr><tr><td>n − 8 = 12</td><td>After giving away 8 items, a detective has 12 left.</td><td>A detective collected 8 items and then 12 more.</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.10 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Appropriate Measures of Center · Mean · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-10-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,69 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 2.10 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can choose the best measure of center for a data set based on its shape — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — Should I use the mean or the median?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Use the mean for data with no outliers; use the median when an outlier or a skewed shape would pull the mean away from typical.</div>
+        <ul class="ws-note-list"><li>The mean and the median both describe the center of a data set, but one fits better depending on the shape. When the data has an outlier (a value far from the rest), the median is usually the better choice. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data, the top scorer's points: 22, 24, 20, 25, 23, 21, 58. I notice 58 is much bigger than the rest, so it is an outlier.</li><li>Mean: 22 + 24 + 20 + 25 + 23 + 21 + 58 = 193, then 193 ÷ 7 ≈ 27.6.</li><li>Median: in order they are 20, 21, 22, 23, 24, 25, 58. The middle (4th) value is 23.</li><li>The mean (27.6) is higher than 6 of the 7 games because 58 pulled it up. So the median (23) better shows a typical game.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Appropriate Measures of Center (Medidas de centro apropiadas) — A mean, median, or mode chosen because it describes a data set fairly.</li><li>Mean (Media) — The average. Add all the numbers, then divide by how many there are.</li><li>Median (Mediana) — The middle number when you put them in order.</li><li>Outlier (Valor atípico) — A number that is much bigger or smaller than the rest.</li><li>Skewed (Sesgado) — When most data sits on one side with a tail on the other.</li><li>Data distribution (Distribución de datos) — How the data looks: where it sits and how spread out it is.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Appropriate Measures of Center <span class="ws-es-term">(Medidas de centro apropiadas)</span></span><span class="ws-bankdef"> — A mean, median, or mode chosen because it describes a data set fairly.</span></div><div class="ws-bank-card"><span class="ws-bankword">Mean <span class="ws-es-term">(Media)</span></span><span class="ws-bankdef"> — The average. Add all the numbers, then divide by how many there are.</span></div><div class="ws-bank-card"><span class="ws-bankword">Median <span class="ws-es-term">(Mediana)</span></span><span class="ws-bankdef"> — The middle number when you put them in order.</span></div><div class="ws-bank-card"><span class="ws-bankword">Outlier <span class="ws-es-term">(Valor atípico)</span></span><span class="ws-bankdef"> — A number that is much bigger or smaller than the rest.</span></div><div class="ws-bank-card"><span class="ws-bankword">Skewed <span class="ws-es-term">(Sesgado)</span></span><span class="ws-bankdef"> — When most data sits on one side with a tail on the other.</span></div><div class="ws-bank-card"><span class="ws-bankword">Data distribution <span class="ws-es-term">(Distribución de datos)</span></span><span class="ws-bankdef"> — How the data looks: where it sits and how spread out it is.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variability <span class="ws-es-term">(Variabilidad)</span></span><span class="ws-bankdef"> — How spread out the numbers are.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A gymnast's scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Median</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither — the data is too small</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Both are equally bad</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A runner's mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Median — the outlier 12:00 pulls the mean too high</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean — it uses all the data</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Mode — it shows the most common time</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither measure works</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Data set: 5, 6, 7, 7, 8, 50. The mean is about 13.8 and the median is 7. Which better represents the typical value?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Median (7) — the outlier 50 inflates the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean (13.8) — it includes all values</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally good</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither works for this data</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Spot the Mistake — Forgetting to Order the Data</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data:</span><span class="ws-step-w">A swimmer's lap counts: 9, 12, 8, 11, 10 (no outliers).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the median:</span><span class="ws-step-w">The student keeps the numbers as written (9, 12, 8, 11, 10) and picks the middle one: median = 8.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Choose a measure:</span><span class="ws-step-w">The student reports the median (8) as the typical lap count.</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -777,14 +805,84 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Solve the mathematical problem. Show all of your work and reasoning.</p>
   <table class="ws-table"><thead><tr><th>Data Set</th><th>Mean</th><th>Median</th><th>Outlier?</th><th>Best Measure</th></tr></thead><tbody><tr><td>15, 18, 16, 17, 15</td><td></td><td></td><td></td><td></td></tr><tr><td>15, 18, 16, 17, 72</td><td></td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A gymnast's scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Median</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither — the data is too small</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Both are equally bad</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A runner's mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Median — the outlier 12:00 pulls the mean too high</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean — it uses all the data</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Mode — it shows the most common time</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither measure works</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Data set: 5, 6, 7, 7, 8, 50. The mean is about 13.8 and the median is 7. Which better represents the typical value?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Median (7) — the outlier 50 inflates the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean (13.8) — it includes all values</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally good</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither works for this data</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Spot the Mistake — Forgetting to Order the Data</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data:</span><span class="ws-step-w">A swimmer's lap counts: 9, 12, 8, 11, 10 (no outliers).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the median:</span><span class="ws-step-w">The student keeps the numbers as written (9, 12, 8, 11, 10) and picks the middle one: median = 8.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Choose a measure:</span><span class="ws-step-w">The student reports the median (8) as the typical lap count.</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">4.3 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">estimate · benchmark percent · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-3-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 4.3 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can estimate the percent of a number using benchmark percents, rounding, and compatible numbers, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — Approximately — the problem is asking for an estimate</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Anchor the whole at 100%, mark benchmark percents, and place the amount between the landmarks it falls beside — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me set up the double number line</div>
+        <ol class="ws-note-list"><li>The whole is 6 GB — that is 100%.</li><li>I mark the bottom line in benchmark jumps of 25%: 0%, 25%, 50%, 75%, 100%.</li><li>Equivalent ratios give the top line: 25% of 6 GB is 1.5 GB, so the top reads 0, 1.5, 3, 4.5, 6.</li><li>4 GB used lands between 4.5 (75%) and 3 (50%), close to 4.5 — so about 70% of the storage is used.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>The Green-Team recycled 216 pounds of material; 8.6% was metal.</li><li>Round both: 8.6% is about 10%, and 216 is about 220.</li><li>10% of 220 = 0.1 × 220 = 22. About 22 pounds of metal.</li><li>Compatible numbers work too: 10% of 200 = 20. Both estimates agree — around 20 pounds.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>estimate (estimación) — A reasoned answer that is close enough to be useful, found without exact computation.</li><li>benchmark percent (porcentaje de referencia) — A friendly percent — 1%, 10%, 25%, 50%, 75%, 100% — used as a landmark for estimating.</li><li>compatible numbers (números compatibles) — Numbers close to the originals that are easy to compute with mentally.</li><li>double number line (recta numérica doble) — Two parallel number lines that pair amounts with their percents at the same positions.</li><li>the whole (el todo) — The quantity that counts as 100% in a problem — and it can change between questions.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Keeping the same whole for every question — when the problem says 'of the used storage,' the whole changes from 6 GB to 4 GB, and estimates anchored to the old whole are wrong before any arithmetic happens.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Complete the benchmark table for 240.</p>
   <table class="ws-table"><thead><tr><th>Benchmark</th><th>Shortcut</th><th>Value</th></tr></thead><tbody><tr><td>10% of 240</td><td></td><td></td></tr><tr><td>1% of 240</td><td></td><td></td></tr><tr><td>50% of 240</td><td></td><td></td></tr><tr><td>25% of 240</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -733,7 +819,11 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">15% of 200</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">75% of 80</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">20% of 350</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">11% of 400</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">10% + 5%: 20 + 10 = 30</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">50% + 25%: 40 + 20 = 60</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">10% doubled: 35 × 2 = 70</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">10% + 1%: 40 + 4 = 44</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -741,18 +831,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Your estimate for 8.6% of 216 was 22 pounds (using 10% of 220). Is the exact answer higher or lower than 22?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Lower, because both 10% and 220 rounded UP</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Higher, because rounding always shrinks the answer</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Exactly 22</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Impossible to tell</span></li></ol>
+        <p class="ws-stem">Your estimate for 8.6% of 216 was 22 pounds (using 10% of 220). Is the exact answer higher or lower than 22?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Lower, because both 10% and 220 rounded UP</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Higher, because rounding always shrinks the answer</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Exactly 22</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Impossible to tell</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Estimate 47% of 312. Show which strategy you used — benchmark, rounding, or compatible numbers — and give your estimate.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">1 MB equals 0.001 GB. Mail uses 300 MB. About what percent of Margaret's 6 GB is mail?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 5%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 50%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 0.5%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 30%</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -763,18 +859,28 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">1 MB equals 0.001 GB. Mail uses 300 MB. About what percent of Margaret's 6 GB is mail?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 5%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 50%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 0.5%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 30%</span></li></ol>
+        <p class="ws-stem">Two students estimate 8.6% of 216. Ana uses 10% of 220 = 22. Ben uses 10% of 200 = 20. Whose estimate is closer to the exact answer, 18.576?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Ben's — 20 is 1.4 away; Ana's 22 is 3.4 away</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Ana's — 22 is closer to 18.576</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They are equally close</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither is a valid estimate</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Two students estimate 8.6% of 216. Ana uses 10% of 220 = 22. Ben uses 10% of 200 = 20. Whose estimate is closer to the exact answer, 18.576?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Ben's — 20 is 1.4 away; Ana's 22 is 3.4 away</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Ana's — 22 is closer to 18.576</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They are equally close</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither is a valid estimate</span></li></ol>
+        <p class="ws-stem">Estimate 47% of 312. Show which strategy you used — benchmark, rounding, or compatible numbers — and give your estimate.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -829,7 +935,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

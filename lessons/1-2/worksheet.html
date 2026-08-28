@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Exploring and Thinking</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">quantity · relationship · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,20 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Math is Exploring and Thinking</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can make sense of a problem, plan a strategy, and use fractions of a whole number to compare quantities.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">quantity <span class="ws-es-term">(cantidad)</span></span><span class="ws-bankdef"> — An amount in a problem — a number with a meaning attached, like 540 meters.</span></div><div class="ws-bank-card"><span class="ws-bankword">relationship <span class="ws-es-term">(relación)</span></span><span class="ws-bankdef"> — How two quantities compare or connect to each other.</span></div><div class="ws-bank-card"><span class="ws-bankword">strategy <span class="ws-es-term">(estrategia)</span></span><span class="ws-bankdef"> — A plan for how to solve a problem before you start computing.</span></div><div class="ws-bank-card"><span class="ws-bankword">reasonable <span class="ws-es-term">(razonable)</span></span><span class="ws-bankdef"> — A solution that makes sense in the context of the problem.</span></div><div class="ws-bank-card"><span class="ws-bankword">persevere <span class="ws-es-term">(perseverar)</span></span><span class="ws-bankdef"> — To keep working on a problem, checking your progress and adjusting your plan when you get stuck.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Make sense, plan, check</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Math Practices: Sense Making &amp; Strategy Planning</div>
+        <ul class="ws-note-list"><li>The book opens with two warm-ups: about how many peas are in the picture, and decompose 105.76 five different ways. Both are about thinking before computing.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Identify known quantities and the unknown question.</li><li>Choose a strategy (draw a model, write an equation, or build a table).</li><li>Evaluate progress and pivot to an alternate approach if needed</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me estimate the peas</div>
+        <ol class="ws-note-list"><li>A bowl is full of peas — far too many to count one at a time. About how many peas are in the bowl?</li><li>I do not count every pea — I look for a group I CAN count, like one small cluster of about 10.</li><li>Then I ask how many of those clusters would cover the whole bowl. I count about 12.</li><li>12 clusters of about 10 is 12 × 10 = 120, so my estimate is about 120 peas — a reasoned answer, close enough to be useful.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>quantity (cantidad) — An amount in a problem — a number with a meaning attached, like 540 meters.</li><li>relationship (relación) — How two quantities compare or connect to each other.</li><li>strategy (estrategia) — A plan for how to solve a problem before you start computing.</li><li>reasonable (razonable) — A solution that makes sense in the context of the problem.</li><li>persevere (perseverar) — To keep working on a problem, checking your progress and adjusting your plan when you get stuck.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Expecting a fraction of a number to be bigger than the number — 5/6 × 540 must be LESS than 540 because 5/6 is less than 1; only a fraction greater than 1, like 6/5, makes the product bigger.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -723,7 +800,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which of these is a correct way to decompose 105.76?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.076</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">105 + 7.6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10 + 5.76</span></li></ol>
+        <p class="ws-stem">Which of these is a correct way to decompose 105.76?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.076</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">105 + 7.6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10 + 5.76</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -734,7 +814,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which is another correct decomposition of 105.76?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">110 − 4.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 − 5.24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">106 − 0.34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">110 + 4.24</span></li></ol>
+        <p class="ws-stem">Which is another correct decomposition of 105.76?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">110 − 4.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 − 5.24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">106 − 0.34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">110 + 4.24</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -745,10 +828,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Deon walked a shorter distance than Miguel, and Evelyn walked a longer distance than Miguel. Who walked the shortest distance?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Deon</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Miguel</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Evelyn</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It cannot be determined</span></li></ol>
+        <p class="ws-stem">Deon walked a shorter distance than Miguel, and Evelyn walked a longer distance than Miguel. Who walked the shortest distance?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Deon</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Miguel</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Evelyn</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It cannot be determined</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -756,7 +846,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In the Comparing Walks problem, name one thing you KNOW and one thing you DON'T know.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I know that ___ .&lt;br&gt;I don't know ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">In the Comparing Walks problem, name one thing you KNOW and one thing you DON'T know.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I know that ___ .&lt;br&gt;I don't know ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -805,14 +898,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Exploring and Thinking</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">quantity · relationship · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -827,31 +921,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Math is Exploring and Thinking</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can make sense of a problem, plan a strategy, and use fractions of a whole number to compare quantities.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Make sense, plan, check</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Math Practices: Sense Making &amp; Strategy Planning</div>
+        <ul class="ws-note-list"><li>The book opens with two warm-ups: about how many peas are in the picture, and decompose 105.76 five different ways. Both are about thinking before computing.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Identify known quantities and the unknown question.</li><li>Choose a strategy (draw a model, write an equation, or build a table).</li><li>Evaluate progress and pivot to an alternate approach if needed</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me estimate the peas</div>
+        <ol class="ws-note-list"><li>A bowl is full of peas — far too many to count one at a time. About how many peas are in the bowl?</li><li>I do not count every pea — I look for a group I CAN count, like one small cluster of about 10.</li><li>Then I ask how many of those clusters would cover the whole bowl. I count about 12.</li><li>12 clusters of about 10 is 12 × 10 = 120, so my estimate is about 120 peas — a reasoned answer, close enough to be useful.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>quantity (cantidad) — An amount in a problem — a number with a meaning attached, like 540 meters.</li><li>relationship (relación) — How two quantities compare or connect to each other.</li><li>strategy (estrategia) — A plan for how to solve a problem before you start computing.</li><li>reasonable (razonable) — A solution that makes sense in the context of the problem.</li><li>persevere (perseverar) — To keep working on a problem, checking your progress and adjusting your plan when you get stuck.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Expecting a fraction of a number to be bigger than the number — 5/6 × 540 must be LESS than 540 because 5/6 is less than 1; only a fraction greater than 1, like 6/5, makes the product bigger.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">quantity <span class="ws-es-term">(cantidad)</span></span><span class="ws-bankdef"> — An amount in a problem — a number with a meaning attached, like 540 meters.</span></div><div class="ws-bank-card"><span class="ws-bankword">relationship <span class="ws-es-term">(relación)</span></span><span class="ws-bankdef"> — How two quantities compare or connect to each other.</span></div><div class="ws-bank-card"><span class="ws-bankword">strategy <span class="ws-es-term">(estrategia)</span></span><span class="ws-bankdef"> — A plan for how to solve a problem before you start computing.</span></div><div class="ws-bank-card"><span class="ws-bankword">reasonable <span class="ws-es-term">(razonable)</span></span><span class="ws-bankdef"> — A solution that makes sense in the context of the problem.</span></div><div class="ws-bank-card"><span class="ws-bankword">persevere <span class="ws-es-term">(perseverar)</span></span><span class="ws-bankdef"> — To keep working on a problem, checking your progress and adjusting your plan when you get stuck.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which of these is a correct way to decompose 105.76?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.076</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">105 + 7.6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10 + 5.76</span></li></ol>
+        <p class="ws-stem">Sort each building plan: shorter or taller than 540 meters?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Shorter than 540 m (fraction less than 1)</span> <span class="ws-cat-pill">Taller than 540 m (fraction greater than 1)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">9/10 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">5/6 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">3/4 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">6/5 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">11/10 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">7/6 of 540</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -859,7 +971,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which is another correct decomposition of 105.76?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">110 − 4.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 − 5.24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">106 − 0.34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">110 + 4.24</span></li></ol>
+        <p class="ws-stem">Which of these is a correct way to decompose 105.76?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.076</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">105 + 7.6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10 + 5.76</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -870,18 +985,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Deon walked a shorter distance than Miguel, and Evelyn walked a longer distance than Miguel. Who walked the shortest distance?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Deon</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Miguel</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Evelyn</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It cannot be determined</span></li></ol>
+        <p class="ws-stem">Which is another correct decomposition of 105.76?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">110 − 4.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 − 5.24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">106 − 0.34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">110 + 4.24</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In the Comparing Walks problem, name one thing you KNOW and one thing you DON'T know.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I know that ___ .&lt;br&gt;I don't know ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Deon walked a shorter distance than Miguel, and Evelyn walked a longer distance than Miguel. Who walked the shortest distance?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Deon</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Miguel</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Evelyn</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It cannot be determined</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -892,14 +1013,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The London building will be 5/6 as tall as One World Trade Center, which is 540 meters. How tall will the London building be?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">The London building will be 5/6 as tall as One World Trade Center, which is 540 meters. How tall will the London building be?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">450 meters</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">90 meters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">648 meters</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">534 meters</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Same size pieces</span><span class="wsd-step-h">Common denominator first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Only then add or subtract.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Simplify</span><span class="wsd-step-h">Divide out common factors.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">450 meters</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">90 meters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">648 meters</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">534 meters</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Same size pieces</span><span class="wsd-step-h">Common denominator first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Operate</span><span class="wsd-step-h">Only then add or subtract.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Simplify</span><span class="wsd-step-h">Divide out common factors.</span></li></ol></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -907,20 +1032,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What can you do if you're stuck on a problem?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> When I'm stuck, I can ___ .&lt;br&gt;Another strategy I could try is ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">In the Comparing Walks problem, name one thing you KNOW and one thing you DON'T know.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I know that ___ .&lt;br&gt;I don't know ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each building plan: shorter or taller than 540 meters?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Shorter than 540 m (fraction less than 1)</span> <span class="ws-cat-pill">Taller than 540 m (fraction greater than 1)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">9/10 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">5/6 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">3/4 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">6/5 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">11/10 of 540</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">7/6 of 540</span></li></ul>
+        <p class="ws-stem">What can you do if you're stuck on a problem?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> When I'm stuck, I can ___ .&lt;br&gt;Another strategy I could try is ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -969,14 +1098,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Exploring and Thinking</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">quantity · relationship · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -991,9 +1121,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Make sense, plan, check</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Math Practices: Sense Making &amp; Strategy Planning</div>
+        <ul class="ws-note-list"><li>The book opens with two warm-ups: about how many peas are in the picture, and decompose 105.76 five different ways. Both are about thinking before computing.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Identify known quantities and the unknown question.</li><li>Choose a strategy (draw a model, write an equation, or build a table).</li><li>Evaluate progress and pivot to an alternate approach if needed</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me estimate the peas</div>
+        <ol class="ws-note-list"><li>A bowl is full of peas — far too many to count one at a time. About how many peas are in the bowl?</li><li>I do not count every pea — I look for a group I CAN count, like one small cluster of about 10.</li><li>Then I ask how many of those clusters would cover the whole bowl. I count about 12.</li><li>12 clusters of about 10 is 12 × 10 = 120, so my estimate is about 120 peas — a reasoned answer, close enough to be useful.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's decompose 105.76 five ways</div>
+        <ol class="ws-note-list"><li>76 = 100 + 5.76.</li><li>76 = 105 + 0.76.</li><li>76 = 110 − 4.24.</li><li>76 = 52.88 × 2, and 105.76 = 211.52 ÷ 2.</li><li>Same number, five different breaks. Find one more of your own.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>quantity (cantidad) — An amount in a problem — a number with a meaning attached, like 540 meters.</li><li>relationship (relación) — How two quantities compare or connect to each other.</li><li>strategy (estrategia) — A plan for how to solve a problem before you start computing.</li><li>reasonable (razonable) — A solution that makes sense in the context of the problem.</li><li>persevere (perseverar) — To keep working on a problem, checking your progress and adjusting your plan when you get stuck.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Expecting a fraction of a number to be bigger than the number — 5/6 × 540 must be LESS than 540 because 5/6 is less than 1; only a fraction greater than 1, like 6/5, makes the product bigger.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1001,29 +1157,33 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The Rio de Janeiro building will be 9/10 as tall as One World Trade Center (540 meters). How tall will it be?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">486 meters</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">54 meters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4,860 meters</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">594 meters</span></li></ol>
+        <p class="ws-stem">You calculate 5/6 × 540 and get 650 meters. What does the checking step of your plan tell you?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The answer is unreasonable — 5/6 of 540 must be LESS than 540</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The answer is fine because it is close to 540</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The answer is fine because 650 is a bigger number than 5/6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Checking is only needed when the problem asks for it</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The Tokyo building will be 6/5 as tall as One World Trade Center (540 meters). How tall will it be?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">648 meters</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">450 meters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">108 meters</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">432 meters</span></li></ol>
+        <p class="ws-stem">Compute each building's height as a fraction of 540 meters.</p>
+  <table class="ws-table"><thead><tr><th>Building plan</th><th>Fraction of 540 m</th><th>Height (m)</th></tr></thead><tbody><tr><td>Rio de Janeiro</td><td></td><td></td></tr><tr><td>Tokyo</td><td></td><td></td></tr><tr><td>Prototype</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -1031,18 +1191,26 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Without calculating, which new building must be TALLER than One World Trade Center, and why?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Tokyo, because 6/5 is greater than 1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">London, because 5/6 has a 6 in it</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Rio de Janeiro, because 9/10 is close to 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">None — a fraction of 540 is always less than 540</span></li></ol>
+        <p class="ws-stem">The Rio de Janeiro building will be 9/10 as tall as One World Trade Center (540 meters). How tall will it be?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">486 meters</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">54 meters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4,860 meters</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">594 meters</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
+    </div></div></div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Suppose Miguel walked 2 miles. Choose possible distances for Deon and Evelyn that fit the problem, and explain how you checked them.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">The Tokyo building will be 6/5 as tall as One World Trade Center (540 meters). How tall will it be?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">648 meters</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">450 meters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">108 meters</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">432 meters</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
+    </div></div></div>
       </div>
     </li>
   
@@ -1053,10 +1221,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">You calculate 5/6 × 540 and get 650 meters. What does the checking step of your plan tell you?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The answer is unreasonable — 5/6 of 540 must be LESS than 540</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The answer is fine because it is close to 540</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The answer is fine because 650 is a bigger number than 5/6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Checking is only needed when the problem asks for it</span></li></ol>
+        <p class="ws-stem">Without calculating, which new building must be TALLER than One World Trade Center, and why?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Tokyo, because 6/5 is greater than 1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">London, because 5/6 has a 6 in it</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Rio de Janeiro, because 9/10 is close to 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">None — a fraction of 540 is always less than 540</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -1064,20 +1239,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The lesson says we check on our progress toward a solution and adjust our plan as needed. Describe one way YOU can check on your progress while solving a problem.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Suppose Miguel walked 2 miles. Choose possible distances for Deon and Evelyn that fit the problem, and explain how you checked them.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Compute each building's height as a fraction of 540 meters.</p>
-  <table class="ws-table"><thead><tr><th>Building plan</th><th>Fraction of 540 m</th><th>Height (m)</th></tr></thead><tbody><tr><td>Rio de Janeiro</td><td></td><td></td></tr><tr><td>Tokyo</td><td></td><td></td></tr><tr><td>Prototype</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">The lesson says we check on our progress toward a solution and adjust our plan as needed. Describe one way YOU can check on your progress while solving a problem.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1126,14 +1305,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Exploring and Thinking</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">quantity · relationship · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1148,20 +1328,51 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Make sense, plan, check</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Math Practices: Sense Making &amp; Strategy Planning</div>
+        <ul class="ws-note-list"><li>The book opens with two warm-ups: about how many peas are in the picture, and decompose 105.76 five different ways. Both are about thinking before computing.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Identify known quantities and the unknown question.</li><li>Choose a strategy (draw a model, write an equation, or build a table).</li><li>Evaluate progress and pivot to an alternate approach if needed</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me estimate the peas</div>
+        <ol class="ws-note-list"><li>A bowl is full of peas — far too many to count one at a time. About how many peas are in the bowl?</li><li>I do not count every pea — I look for a group I CAN count, like one small cluster of about 10.</li><li>Then I ask how many of those clusters would cover the whole bowl. I count about 12.</li><li>12 clusters of about 10 is 12 × 10 = 120, so my estimate is about 120 peas — a reasoned answer, close enough to be useful.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's decompose 105.76 five ways</div>
+        <ol class="ws-note-list"><li>76 = 100 + 5.76.</li><li>76 = 105 + 0.76.</li><li>76 = 110 − 4.24.</li><li>76 = 52.88 × 2, and 105.76 = 211.52 ÷ 2.</li><li>Same number, five different breaks. Find one more of your own.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>quantity (cantidad) — An amount in a problem — a number with a meaning attached, like 540 meters.</li><li>relationship (relación) — How two quantities compare or connect to each other.</li><li>strategy (estrategia) — A plan for how to solve a problem before you start computing.</li><li>reasonable (razonable) — A solution that makes sense in the context of the problem.</li><li>persevere (perseverar) — To keep working on a problem, checking your progress and adjusting your plan when you get stuck.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Expecting a fraction of a number to be bigger than the number — 5/6 × 540 must be LESS than 540 because 5/6 is less than 1; only a fraction greater than 1, like 6/5, makes the product bigger.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which set shows FIVE different correct decompositions of 105.76?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76, 105 + 0.76, 110 − 4.24, 52.88 × 2, 211.52 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.76, 105 + 7.6, 110 − 4.24, 52.88 × 2, 211.52 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">100 + 5.76, 105 + 0.76, 110 + 4.24, 52.88 × 2, 211.52 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">100 + 5.76, 105 + 0.76, 110 − 4.24, 52.88 × 3, 211.52 ÷ 2</span></li></ol>
+        <p class="ws-stem">Match each fraction of 540 to a shortcut that computes it.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">9/10 of 540</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">6/5 of 540</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">5/6 of 540</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">1/2 of 540</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">540 − 54</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">540 + 108</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">540 − 90</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">540 ÷ 2</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -1169,21 +1380,31 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Without computing the exact heights, order the three new buildings from shortest to tallest. (London: 5/6 of 540 m, Rio de Janeiro: 9/10 of 540 m, Tokyo: 6/5 of 540 m.)</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">London, Rio de Janeiro, Tokyo</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Rio de Janeiro, London, Tokyo</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Tokyo, Rio de Janeiro, London</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">London, Tokyo, Rio de Janeiro</span></li></ol>
+        <p class="ws-stem">Which set shows FIVE different correct decompositions of 105.76?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76, 105 + 0.76, 110 − 4.24, 52.88 × 2, 211.52 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.76, 105 + 7.6, 110 − 4.24, 52.88 × 2, 211.52 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">100 + 5.76, 105 + 0.76, 110 + 4.24, 52.88 × 2, 211.52 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">100 + 5.76, 105 + 0.76, 110 − 4.24, 52.88 × 3, 211.52 ÷ 2</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A classmate says, &quot;In math, only the final answer matters.&quot; Using this lesson, write what you would say back.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Without computing the exact heights, order the three new buildings from shortest to tallest. (London: 5/6 of 540 m, Rio de Janeiro: 9/10 of 540 m, Tokyo: 6/5 of 540 m.)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">London, Rio de Janeiro, Tokyo</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Rio de Janeiro, London, Tokyo</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Tokyo, Rio de Janeiro, London</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">London, Tokyo, Rio de Janeiro</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -1191,7 +1412,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Write your own Comparing Walks problem: describe three people using only relationships (shorter than, longer than), so a reader can put them in order without any exact distances. Then give one set of values that fits.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">A classmate says, &quot;In math, only the final answer matters.&quot; Using this lesson, write what you would say back.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1202,19 +1426,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Apply — City Blocks. A city block has 12 buildings. The block to the north is planned to hold 2/3 as many buildings, and the block to the east is planned to hold 3/2 as many. WITHOUT computing, say which block will hold the most buildings and how you know. Then find the number of buildings on each block and check that your answers make sense.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Write your own Comparing Walks problem: describe three people using only relationships (shorter than, longer than), so a reader can put them in order without any exact distances. Then give one set of values that fits.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each fraction of 540 to a shortcut that computes it.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">9/10 of 540</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">6/5 of 540</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">5/6 of 540</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">1/2 of 540</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">540 − 54</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">540 + 108</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">540 − 90</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">540 ÷ 2</span></li></ul></div>
+        <p class="ws-stem">Apply — City Blocks. A city block has 12 buildings. The block to the north is planned to hold 2/3 as many buildings, and the block to the east is planned to hold 3/2 as many. WITHOUT computing, say which block will hold the most buildings and how you know. Then find the number of buildings on each block and check that your answers make sense.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

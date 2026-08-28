@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.5 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Range and Interquartile Range · Range · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-5-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 2.5 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the range and the interquartile range of a data set and use them to describe how spread out the data is, explain how I can tell, and judge a case I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How spread out is the data?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Range = greatest − least, and it covers every value. Interquartile range = Q3 − Q1, and it covers only the middle half, so one faraway value cannot stretch it — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me measure the spread of the test scores</div>
+        <ol class="ws-note-list"><li>Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordering them first is what makes every step after this possible.</li><li>Range: I subtract the least value from the greatest. 94 − 68 = 26. The scores span 26 points from end to end.</li><li>Now the quartiles. The median splits the 20 scores into two halves of 10. The median is halfway between the 10th and 11th values: (83 + 84) ÷ 2 = 83.5.</li><li>Q1 is the median of the lower 10 values: halfway between 75 and 76, so Q1 = 75.5. Q3 is the median of the upper 10: halfway between 88 and 88, so Q3 = 88.</li><li>Interquartile range: IQR = Q3 − Q1 = 88 − 75.5 = 12.5. The middle half of the students' scores differed by only 12.5 points, even though the full range was 26.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Class A's box plot reads: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range first.</li><li>Range = 90 − 62 = 28 points from the lowest score to the highest.</li><li>Now the IQR: subtract Q1 from Q3. IQR = 87 − 74 = 13 points across the middle half.</li><li>Say what each one means: the whole class's scores span 28 points, but the middle half of the class is packed into 13 points.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Range and Interquartile Range (Rango y rango intercuartílico) — Two numbers that describe spread: the range covers all the data, and the interquartile range covers only the middle half.</li><li>Range (Rango) — The distance from the least value to the greatest value, found by subtracting: greatest − least.</li><li>Quartile (Cuartil) — One of the three values that cut an ordered data set into four equal-sized groups.</li><li>Interquartile range (Rango intercuartílico) — The distance across the middle half of the data, found by subtracting the first quartile from the third: Q3 − Q1.</li><li>Variability (Variabilidad) — How much the values in a data set differ from one another — whether they sit close together or far apart.</li><li>Measure of variation (Medida de variación) — A single number that describes the spread of a whole data set. The range and the IQR are both measures of variation.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -742,10 +825,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Class A and Class B both have a range of 40 on a test. Class A's IQR is 8; Class B's is 30. What does that tell you?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Class A's scores cluster tightly with a few far-out scores; Class B's are spread through the whole range</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Class A did better than Class B</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Nothing — equal ranges mean the classes performed the same</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Class B has more students than Class A</span></li></ol>
+        <p class="ws-stem">Class A and Class B both have a range of 40 on a test. Class A's IQR is 8; Class B's is 30. What does that tell you?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Class A's scores cluster tightly with a few far-out scores; Class B's are spread through the whole range</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Class A did better than Class B</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Nothing — equal ranges mean the classes performed the same</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Class B has more students than Class A</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -753,7 +843,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claim: “The interquartile range can never be greater than the range.” Always, sometimes, or never true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Always — the middle half sits inside the full spread, so it cannot be wider than it</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Sometimes — it depends whether the data set has an outlier</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — the IQR uses more values, so it comes out larger</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sometimes — it is true only for data sets with an even count</span></li></ol>
+        <p class="ws-stem">Claim: “The interquartile range can never be greater than the range.” Always, sometimes, or never true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Always — the middle half sits inside the full spread, so it cannot be wider than it</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Sometimes — it depends whether the data set has an outlier</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — the IQR uses more values, so it comes out larger</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sometimes — it is true only for data sets with an even count</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -764,7 +857,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which data set has the greater range: A (12, 14, 15, 18) or B (5, 9, 14, 25)?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">B, because 25 − 5 = 20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A, because it has larger values</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They are equal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell without the median</span></li></ol>
+        <p class="ws-stem">Which data set has the greater range: A (12, 14, 15, 18) or B (5, 9, 14, 25)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">B, because 25 − 5 = 20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A, because it has larger values</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">They are equal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell without the median</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -775,7 +871,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A coach records practice times, then one runner is injured mid-run and posts a time far above the rest. Which measure of spread should the coach report, and why?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The IQR — it describes the middle half and is not moved by one extreme time</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range — it uses every value, so it is the most complete</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Either — one unusual value cannot change a measure of spread much</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither — spread cannot be reported once there is an outlier</span></li></ol>
+        <p class="ws-stem">A coach records practice times, then one runner is injured mid-run and posts a time far above the rest. Which measure of spread should the coach report, and why?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The IQR — it describes the middle half and is not moved by one extreme time</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range — it uses every value, so it is the most complete</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Either — one unusual value cannot change a measure of spread much</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither — spread cannot be reported once there is an outlier</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -842,7 +941,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

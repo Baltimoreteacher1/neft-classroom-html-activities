@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">6.14 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">The Distributive Property · Distributive Property · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-14-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,41 +773,65 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 6.14 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can use the distributive property to expand and factor expressions — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — What is the distributive property?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>The number outside the parentheses gets &quot;shared&quot; with every term inside.</div>
+        <ul class="ws-note-list"><li>The distributive property means you can multiply a number by everything inside the parentheses, one piece at a time: a(b + c) = ab + ac. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Each bundle has a ticket ($15) and a snack ($5). For 3 bundles I can write 3(15 + 5).</li><li>Way 1: add inside first. 15 + 5 = 20, then 3 × 20 = 60.</li><li>Way 2: distribute the 3 to each part. 3 × 15 + 3 × 5.</li><li>That is 45 + 15 = 60.</li><li>Both ways give $60, so 3(15 + 5) = 3 × 15 + 3 × 5.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>The Distributive Property (La propiedad distributiva) — Multiply a factor by every term inside parentheses.</li><li>Distributive Property (Propiedad distributiva) — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</li><li>Factor (Factor) — A factor of a whole number divides it evenly, with no remainder. For example, 3 is a factor of 12 because 12 ÷ 3 = 4.</li><li>Expand (Desarrollar) — To multiply out the parentheses in an expression.</li><li>Equivalent (Equivalente) — Expressions that always have the same value.</li><li>Coefficient (Coeficiente) — The number in front of a letter, like the 3 in 3x.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>The most common mistake in The Distributive Property is multiplying the outside factor by only the FIRST term inside the parentheses and forgetting the second — for example, writing 3(x + 4) = 3x + 4 instead of 3x + 12. Before you submit, check: did the outside number reach BOTH terms inside the parentheses?</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">The Distributive Property <span class="ws-es-term">(La propiedad distributiva)</span></span><span class="ws-bankdef"> — Multiply a factor by every term inside parentheses.</span></div><div class="ws-bank-card"><span class="ws-bankword">Distributive Property <span class="ws-es-term">(Propiedad distributiva)</span></span><span class="ws-bankdef"> — Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.</span></div><div class="ws-bank-card"><span class="ws-bankword">Factor <span class="ws-es-term">(Factor)</span></span><span class="ws-bankdef"> — A factor of a whole number divides it evenly, with no remainder. For example, 3 is a factor of 12 because 12 ÷ 3 = 4.</span></div><div class="ws-bank-card"><span class="ws-bankword">Expand <span class="ws-es-term">(Desarrollar)</span></span><span class="ws-bankdef"> — To multiply out the parentheses in an expression.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equivalent <span class="ws-es-term">(Equivalente)</span></span><span class="ws-bankdef"> — Expressions that always have the same value.</span></div><div class="ws-bank-card"><span class="ws-bankword">Coefficient <span class="ws-es-term">(Coeficiente)</span></span><span class="ws-bankdef"> — The number in front of a letter, like the 3 in 3x.</span></div><div class="ws-bank-card"><span class="ws-bankword">Like terms <span class="ws-es-term">(Términos semejantes)</span></span><span class="ws-bankdef"> — Terms with the same letter raised to the same power, like 2x and 5x.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Expand 6(n + 3) using the distributive property.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6n + 18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6n + 3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n + 18</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6n + 9</span></li></ol>
+        <p class="ws-stem">Use the distributive property to expand each expression.</p>
+  <table class="ws-table"><thead><tr><th>Factored Form</th><th>Expanded Form</th></tr></thead><tbody><tr><td>2(x + 5)</td><td></td></tr><tr><td>4(3 + 7)</td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Expand 4(5 − 2) using the distributive property.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">20 − 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">22</span></li></ol>
+        <p class="ws-stem">Use the distributive property to expand each expression.</p>
+  <table class="ws-table"><thead><tr><th>Factored Form</th><th>Expanded Form</th></tr></thead><tbody><tr><td>3(2x + 5)</td><td></td></tr><tr><td>7(a − 4)</td><td></td></tr><tr><td>2(3m + 8)</td><td></td></tr><tr><td>5(6 − y)</td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -750,7 +839,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Expand 3(x + 4) using the distributive property.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3x + 12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3x + 4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">x + 12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7x</span></li></ol>
+        <p class="ws-stem">Expand 6(n + 3) using the distributive property.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6n + 18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6n + 3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n + 18</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6n + 9</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -761,33 +853,38 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">When using the distributive property with a(b + c), you must multiply 'a' by:</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Both b and c</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Only b</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only c</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">b + c first, then multiply</span></li></ol>
+        <p class="ws-stem">Expand 4(5 − 2) using the distributive property.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">20 − 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">22</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Use the distributive property to expand each expression.</p>
-  <table class="ws-table"><thead><tr><th>Factored Form</th><th>Expanded Form</th></tr></thead><tbody><tr><td>2(x + 5)</td><td></td></tr><tr><td>4(3 + 7)</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">Expand 3(x + 4) using the distributive property.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3x + 12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3x + 4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">x + 12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7x</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Use the distributive property to expand each expression.</p>
-  <table class="ws-table"><thead><tr><th>Factored Form</th><th>Expanded Form</th></tr></thead><tbody><tr><td>3(2x + 5)</td><td></td></tr><tr><td>7(a − 4)</td><td></td></tr><tr><td>2(3m + 8)</td><td></td></tr><tr><td>5(6 − y)</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">When using the distributive property with a(b + c), you must multiply 'a' by:</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Both b and c</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Only b</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only c</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">b + c first, then multiply</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

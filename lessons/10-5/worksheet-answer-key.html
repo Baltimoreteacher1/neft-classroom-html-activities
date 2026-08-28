@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Boundless</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">repetition · pattern · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,8 +765,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -734,7 +802,11 @@ header.packet h1::after{
         <p class="ws-stem">In the circle-square-triangle border, how many shapes long is the pattern unit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 shapes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 shapes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 shapes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 shape</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The smallest repeating chunk is circle, square, triangle — 3 shapes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Boundless</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">repetition · pattern · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +879,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each shape: can it tessellate by itself?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Tessellates by itself</span> <span class="ws-cat-pill">Cannot tessellate alone</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Tessellates by itself</span><span class="ws-sort-text">Squares</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Tessellates by itself</span><span class="ws-sort-text">Equilateral triangles</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Tessellates by itself</span><span class="ws-sort-text">Regular hexagons</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Cannot tessellate alone</span><span class="ws-sort-text">Circles</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Cannot tessellate alone</span><span class="ws-sort-text">Regular pentagons</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Cannot tessellate alone</span><span class="ws-sort-text">Regular octagons</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +914,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,23 +925,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">In the circle-square-triangle border, how many shapes long is the pattern unit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 shapes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 shapes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 shapes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 shape</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The smallest repeating chunk is circle, square, triangle — 3 shapes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Where have you seen geometric patterns decorating a building, clothing, or artwork? Describe the design.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I have seen a geometric pattern on ___ .&lt;br&gt;Its pattern unit is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The floor of our school hallway has a pattern: two gray tiles, then one blue tile, repeated down the whole hall. The pattern unit is 3 tiles, so I can always predict the next tile.</div>
       </div>
     </li>
   
@@ -862,7 +944,11 @@ header.packet h1::after{
         <p class="ws-stem">What is rhythm in geometric design?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The same objects or shapes with varying placement, size, or order of appearance</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">One shape repeated exactly, over and over</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Shapes arranged in a strict, predictable order</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A design with no shapes at all</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Rhythm is created by varying the placement and order of appearance of the same objects or shapes — it gives patterns a flow and often lacks predictability.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -870,20 +956,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How would you compare the visual appeal of a design with just repetition and a design with patterns?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A design with only repetition feels ___ .&lt;br&gt;A design with patterns feels ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: A design with just repetition is calm but can feel plain, because one shape repeats with no change. A pattern feels more interesting to me because several shapes take turns in a regular order — there is more to look at, but it is still predictable.</div>
+        <p class="ws-stem">Where have you seen geometric patterns decorating a building, clothing, or artwork? Describe the design.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I have seen a geometric pattern on ___ .&lt;br&gt;Its pattern unit is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The floor of our school hallway has a pattern: two gray tiles, then one blue tile, repeated down the whole hall. The pattern unit is 3 tiles, so I can always predict the next tile.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each shape: can it tessellate by itself?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Tessellates by itself</span> <span class="ws-cat-pill">Cannot tessellate alone</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Tessellates by itself</span><span class="ws-sort-text">Squares</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Tessellates by itself</span><span class="ws-sort-text">Equilateral triangles</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Tessellates by itself</span><span class="ws-sort-text">Regular hexagons</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Cannot tessellate alone</span><span class="ws-sort-text">Circles</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Cannot tessellate alone</span><span class="ws-sort-text">Regular pentagons</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Cannot tessellate alone</span><span class="ws-sort-text">Regular octagons</span></li></ul>
+        <p class="ws-stem">How would you compare the visual appeal of a design with just repetition and a design with patterns?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A design with only repetition feels ___ .&lt;br&gt;A design with patterns feels ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: A design with just repetition is calm but can feel plain, because one shape repeats with no change. A pattern feels more interesting to me because several shapes take turns in a regular order — there is more to look at, but it is still predictable.</div>
       </div>
     </li>
   </ol>
@@ -924,14 +1008,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Boundless</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">repetition · pattern · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,11 +1032,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">The border pattern repeats circle, square, triangle. Name the shape at each position.</p>
+  <table class="ws-table"><thead><tr><th>Position number</th><th>Thinking with the unit of 3</th><th>Shape</th></tr></thead><tbody><tr><td>7</td><td>7 = 3 + 3 + 1, so it restarts</td><td>circle</td></tr><tr><td>12</td><td>12 = 3 × 4 exactly, ends a unit</td><td>triangle</td></tr><tr><td>20</td><td>20 = 3 × 6 + 2, second in the unit</td><td>square</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -962,7 +1067,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -973,23 +1078,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">How many COMPLETE pattern units appear in the first 18 shapes of the circle-square-triangle border?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">6 units</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15 units</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9 units</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3 units</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each unit is 3 shapes, and 18 ÷ 3 = 6 complete units.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A painting shows circles whose colors, sizes, and thickness vary, along with the number of concentric circles inside each one. Describe how the painting demonstrates rhythm.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The painting demonstrates rhythm because it uses the same object — a circle — but everything about how the circles appear varies: their colors, their sizes, their thickness, and how many rings sit inside each one. There is a flow, but no repeating unit you could use to predict the next circle.</div>
       </div>
     </li>
   
@@ -1003,7 +1097,11 @@ header.packet h1::after{
         <p class="ws-stem">How is a design with rhythm different from a pattern?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Rhythm varies size, orientation, and order, so it often lacks predictability; a pattern repeats in a regular order</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Rhythm uses shapes and a pattern does not</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">A pattern varies its shapes and rhythm never does</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">There is no difference between them</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A pattern repeats its unit in a regular arrangement, so it is predictable. Rhythm keeps the same objects but varies how they appear, giving flow without predictability.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -1011,20 +1109,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">If a new row of circles were added to the rhythm painting, what would they look like? Explain your thinking.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The new circles would still be circles, but their colors and sizes would vary and each would hold a different number of concentric rings — maybe a huge pale circle with many thin rings next to a small dark one with two thick rings. I cannot copy an existing row, because rhythm varies instead of repeating.</div>
+        <p class="ws-stem">A painting shows circles whose colors, sizes, and thickness vary, along with the number of concentric circles inside each one. Describe how the painting demonstrates rhythm.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The painting demonstrates rhythm because it uses the same object — a circle — but everything about how the circles appear varies: their colors, their sizes, their thickness, and how many rings sit inside each one. There is a flow, but no repeating unit you could use to predict the next circle.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The border pattern repeats circle, square, triangle. Name the shape at each position.</p>
-  <table class="ws-table"><thead><tr><th>Position number</th><th>Thinking with the unit of 3</th><th>Shape</th></tr></thead><tbody><tr><td>7</td><td>7 = 3 + 3 + 1, so it restarts</td><td>circle</td></tr><tr><td>12</td><td>12 = 3 × 4 exactly, ends a unit</td><td>triangle</td></tr><tr><td>20</td><td>20 = 3 × 6 + 2, second in the unit</td><td>square</td></tr></tbody></table>
-  
+        <p class="ws-stem">If a new row of circles were added to the rhythm painting, what would they look like? Explain your thinking.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The new circles would still be circles, but their colors and sizes would vary and each would hold a different number of concentric rings — maybe a huge pale circle with many thin rings next to a small dark one with two thick rings. I cannot copy an existing row, because rhythm varies instead of repeating.</div>
       </div>
     </li>
   </ol>
@@ -1065,14 +1161,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Boundless</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">repetition · pattern · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-5" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1088,11 +1185,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each vertex arrangement to its angle sum — and what it means for tessellation.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">4 squares at a vertex</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">6 equilateral triangles at a vertex</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">3 regular hexagons at a vertex</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">3 regular pentagons at a vertex</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">4 × 90° = 360° — no gaps</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">6 × 60° = 360° — no gaps</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">3 × 120° = 360° — no gaps</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">3 × 108° = 324° — a gap remains</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1103,7 +1219,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1111,10 +1227,14 @@ header.packet h1::after{
         <p class="ws-stem">Which element of geometric design often LACKS predictability?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Rhythm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Repetition</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Pattern</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The pattern unit</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Rhythm varies the size, orientation, and order of appearance of the same objects, so it gives flow but often lacks predictability.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1125,24 +1245,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Why do you think the lesson is called 'Math is Boundless'? Use repetition, pattern, and rhythm in your answer.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: A pattern unit can repeat forever — there is no last circle, square, or triangle, so the design has no boundary. Repetition can cover any wall, patterns let us predict shape 25 or shape 25,000, and rhythm shows that even without predictability, math ideas keep creating endless new designs. The designs, like math, never have to end.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each vertex arrangement to its angle sum — and what it means for tessellation.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">4 squares at a vertex</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">6 equilateral triangles at a vertex</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">3 regular hexagons at a vertex</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">3 regular pentagons at a vertex</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">4 × 90° = 360° — no gaps</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">6 × 60° = 360° — no gaps</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">3 × 120° = 360° — no gaps</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">3 × 108° = 324° — a gap remains</span></li></ul></div>
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.1 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Understand Ratios · Ratio · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-1-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -699,7 +764,11 @@ header.packet h1::after{
     </header>
   
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -725,21 +794,14 @@ header.packet h1::after{
   
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A bag of marbles has 8 red, 6 blue, and 4 green marbles. Write three different ratios using these quantities: one part-to-part ratio, one part-to-whole ratio, and explain the difference.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Part-to-part: red to blue = 8:6. Part-to-whole: green to total = 4:18. The difference is that part-to-part compares two individual groups, while part-to-whole compares one group to the entire collection (8 + 6 + 4 = 18). Key Terms to Look For: part-to-part, part-to-whole, 18, total, compare, individual Explanation: A part-to-part ratio compares two groups to each other, such as red to blue, 8:6. A part-to-whole ratio compares one group to the total of 8 + 6 + 4 = 18 marbles, such as green to all marbles, 4:18. The difference is what the second number stands for: another part, or the entire set.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -750,7 +812,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -761,12 +823,27 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">“For every” language: Chef Reyes says, “My glaze uses 9 spoons of honey for every 4 spoons of lemon.” Written in colon notation, the ratio of honey to lemon is:</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9:4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4:9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9:13</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">13:4</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> “For every 9 honey to 4 lemon” is a part-to-part comparison. In colon notation, honey to lemon is 9:4.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A bag of marbles has 8 red, 6 blue, and 4 green marbles. Write three different ratios using these quantities: one part-to-part ratio, one part-to-whole ratio, and explain the difference.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Part-to-part: red to blue = 8:6. Part-to-whole: green to total = 4:18. The difference is that part-to-part compares two individual groups, while part-to-whole compares one group to the entire collection (8 + 6 + 4 = 18). Key Terms to Look For: part-to-part, part-to-whole, 18, total, compare, individual Explanation: A part-to-part ratio compares two groups to each other, such as red to blue, 8:6. A part-to-whole ratio compares one group to the total of 8 + 6 + 4 = 18 marbles, such as green to all marbles, 4:18. The difference is what the second number stands for: another part, or the entire set.</div>
       </div>
     </li>
   </ol>

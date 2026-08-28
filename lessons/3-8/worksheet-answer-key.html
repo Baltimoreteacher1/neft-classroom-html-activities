@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Solve Problems with Unit Rates</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Unit Rate Problem Solving · Unit Rate · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -698,7 +763,6 @@ header.packet h1::after{
       </div>
     </header>
   
-      
       
       
       <ol class="ws-problems-grid">
@@ -783,14 +847,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Solve Problems with Unit Rates</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Unit Rate Problem Solving · Unit Rate · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +871,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Find the unit rate for each deal to determine which is cheaper.</p>
+  <table class="ws-table"><thead><tr><th>Item</th><th>Deal</th><th>Unit Rate</th></tr></thead><tbody><tr><td>Erasers Pack A</td><td>12 for $3.60</td><td>$0.30 each</td></tr><tr><td>Erasers Pack B</td><td>8 for $2.80</td><td></td></tr><tr><td>Erasers Pack C</td><td>20 for $5.00</td><td></td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +906,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,7 +917,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -843,7 +928,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -851,20 +936,11 @@ header.packet h1::after{
         <p class="ws-stem">Store A sells 5 notebooks for $8. Store B sells 3 notebooks for $5.25. Which has the lower price per notebook?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Store A ($1.60 each)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Store B ($1.75 each)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Same price</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Cannot determine</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, so Store A is cheaper per notebook.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
       </div>
     </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Find the unit rate for each deal to determine which is cheaper.</p>
-  <table class="ws-table"><thead><tr><th>Item</th><th>Deal</th><th>Unit Rate</th></tr></thead><tbody><tr><td>Erasers Pack A</td><td>12 for $3.60</td><td>$0.30 each</td></tr><tr><td>Erasers Pack B</td><td>8 for $2.80</td><td></td></tr><tr><td>Erasers Pack C</td><td>20 for $5.00</td><td></td></tr></tbody></table>
-  
-      </div>
-    </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -916,14 +992,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Solve Problems with Unit Rates</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Unit Rate Problem Solving · Unit Rate · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -939,8 +1016,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -957,17 +1037,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A machine dispenses 24 tokens in 3 minutes. At this rate, how many tokens does it dispense in 10 minutes?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">80 tokens</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 tokens</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">72 tokens</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">240 tokens</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Unit rate: 24 ÷ 3 = 8 tokens per minute. In 10 minutes: 8 × 10 = 80 tokens.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -975,6 +1044,21 @@ header.packet h1::after{
         <p class="ws-stem">Three friends each walked different distances in different times. Sort them from fastest to slowest.</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Fastest</span> <span class="ws-cat-pill">Middle</span> <span class="ws-cat-pill">Slowest</span></div>
   <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A machine dispenses 24 tokens in 3 minutes. At this rate, how many tokens does it dispense in 10 minutes?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">80 tokens</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 tokens</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">72 tokens</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">240 tokens</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Unit rate: 24 ÷ 3 = 8 tokens per minute. In 10 minutes: 8 × 10 = 80 tokens.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
       </div>
     </li>
   
@@ -988,7 +1072,11 @@ header.packet h1::after{
         <p class="ws-stem">A factory produces 360 widgets in 8 hours. At the same rate, how many widgets are produced in a 12-hour shift?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">540 widgets</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">480 widgets</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">360 widgets</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">720 widgets</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Unit rate: 360 ÷ 8 = 45 widgets per hour. In 12 hours: 45 × 12 = 540 widgets.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1040,14 +1128,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Solve Problems with Unit Rates</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Unit Rate Problem Solving · Unit Rate · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-8" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1063,11 +1152,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Two delivery drones fly at different rates. Drone A travels 9 miles in 12 minutes. Drone B travels 7 miles in 10 minutes. Complete the table and determine which drone delivers faster.</p>
+  <table class="ws-table"><thead><tr><th>Drone</th><th>Distance</th><th>Time</th><th>Miles per Minute</th><th>Faster?</th></tr></thead><tbody><tr><td>Drone A</td><td>9 miles</td><td>12 min</td><td></td><td></td></tr><tr><td>Drone B</td><td>7 miles</td><td>10 min</td><td></td><td></td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1081,25 +1190,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Two arcade supply companies offer token deals. Company X: 300 tokens for $36. Company Y: 500 tokens for $55. The arcade needs 1,000 tokens. Find the unit rate for each company, determine which is cheaper per token, and calculate the total cost of buying 1,000 tokens from the better deal.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: $0.12, $0.11, Company Y, lower unit rate, $110, divide, per token Explanation: Company X charges $36 ÷ 300 = $0.12 per token and Company Y charges $55 ÷ 500 = $0.11 per token, so Y is cheaper for each token even though its package costs more. At $0.11 per token, 1,000 tokens cost 1,000 × $0.11 = $110.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Two delivery drones fly at different rates. Drone A travels 9 miles in 12 minutes. Drone B travels 7 miles in 10 minutes. Complete the table and determine which drone delivers faster.</p>
-  <table class="ws-table"><thead><tr><th>Drone</th><th>Distance</th><th>Time</th><th>Miles per Minute</th><th>Faster?</th></tr></thead><tbody><tr><td>Drone A</td><td>9 miles</td><td>12 min</td><td></td><td></td></tr><tr><td>Drone B</td><td>7 miles</td><td>10 min</td><td></td><td></td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

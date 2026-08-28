@@ -539,6 +539,11 @@ function renderProblemDiagram(it) {
 
 function divisionInStem(stem) {
   const text = String(stem || "").replace(/[,$]/g, "");
+  // A FRACTION anywhere in the expression means this is not long division.
+  // "3 ÷ 1/4" matched as dividend 3, divisor 1, so a fraction-division problem
+  // printed a long-division frame AND the Divide/Multiply/Subtract/Bring-down
+  // rail — in Unit 6, which teaches one method and it is Keep-Change-Flip.
+  if (/\d\s*\/\s*\d/.test(text)) return null;
   const m = /(\d+(?:\.\d+)?)\s*(?:÷|\bdivided by\b)\s*(\d+(?:\.\d+)?)/i.exec(text) || null;
   if (!m) return null;
   const dividend = m[1];
@@ -621,11 +626,18 @@ function workArea(it, { supported = false } = {}) {
   }
   const scaffold = scaffoldFor(it, { supported });
   if (scaffold) return scaffold.html;
-  return workBox(supported ? "Show every step here" : "Show your work");
+  return workBox("Workspace & Solution Steps", supported);
 }
 
-function workBox(label = "Show Your Work & Mathematical Strategy", tall = false) {
-  return `<div class="ws-work${tall ? " ws-work-tall" : ""}"><span class="ws-work-label">✏️ ${esc(label)}</span></div>`;
+/* "Workspace & Solution Steps:" over ruled lines — the model worksheets give
+   every problem somewhere to actually write, and a labelled dotted box was not
+   that. The lines are the same .ws-line rule the rest of this sheet uses. */
+function workBox(label = "Workspace & Solution Steps", tall = false) {
+  const rules = tall ? 4 : 3;
+  return `<div class="ws-work${tall ? " ws-work-tall" : ""}">
+    <span class="ws-work-label">✏️ ${esc(label)}</span>
+    <div class="ws-lines">${'<span class="ws-line"></span>'.repeat(rules)}</div>
+  </div>`;
 }
 
 /* ==========================================================================
@@ -667,8 +679,11 @@ function renderMC(it, _n, key, commonMistake, supported = false) {
     const watch = it.watchFor || it.distractorRationale || commonMistake;
     if (watch) notes += `<p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> ${esc(watch)}</p>`;
   }
+  // The choices come BEFORE the workspace: a student reads the question, sees
+  // what kind of answer is wanted, and then works. The model worksheets put
+  // "Workspace & Solution Steps" under the (A)–(D) block for the same reason.
   const work = key ? "" : workArea(it, { supported });
-  return `<p class="ws-stem">${esc(stem)}</p>${work}<ol class="ws-opts">${opts}</ol>${notes}`;
+  return `<p class="ws-stem">${esc(stem)}</p><ol class="ws-opts">${opts}</ol>${work}${notes}`;
 }
 
 function renderMatching(it, _n, key) {
@@ -846,41 +861,228 @@ function renderProblem(it, n, { key = false, supported = false, commonMistake = 
    4. PUBLISHER ANCHORS, WORD BANKS, DISCOURSE & CER MATRIX
    ========================================================================== */
 
-function wordBank(vocab = []) {
-  if (!vocab || !vocab.length) return "";
-  const chips = vocab
-    .slice(0, 8)
-    .map((v) => {
-      const en = esc(v.term || v.en || "");
-      const es = v.termEs || v.spanish || v.es || "";
-      const def = v.definition ? ` — ${esc(v.definition)}` : "";
-      const esBadge = es ? ` <span class="ws-es-term">(${esc(es)})</span>` : "";
-      return `<div class="ws-bank-card"><span class="ws-bankword">${en}${esBadge}</span><span class="ws-bankdef">${def}</span></div>`;
-    })
-    .join("");
-  return `
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid">${chips}</div>
-    </section>
-  `;
+/* ── Sections ──────────────────────────────────────────────────────────────
+ *
+ * Both model worksheets march through named sections rather than one flat run
+ * of problems: conceptual/visual first, then computation, then contexts, then
+ * writing and error analysis. The classifier below reads each item's own type
+ * and stem, so a lesson's problems land where they belong without any authoring
+ * change; a section with no problems is not printed. */
+const WS_SECTIONS = [
+  {
+    key: "visual",
+    name: "CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS",
+    tag: "Visual Modeling",
+  },
+  {
+    key: "fluency",
+    name: "COMPUTATION &amp; PROCEDURAL FLUENCY",
+    tag: "Show Every Step",
+  },
+  {
+    key: "context",
+    name: "REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING",
+    tag: "Applications",
+  },
+  {
+    key: "writing",
+    name: "MATHEMATICAL WRITING &amp; ERROR ANALYSIS",
+    tag: "Reasoning &amp; Critique",
+  },
+];
+
+const VISUAL_TYPES = new Set([
+  "bar-model",
+  "number-line",
+  "area-model",
+  "tape-diagram",
+  "fraction-model",
+  "drag-sort",
+  "matching-game",
+  "matching",
+  "fill-table",
+  "percent-grid",
+  "balance-scale",
+  "coordinate-plane",
+  "dot-plot",
+  "box-plot",
+  "histogram",
+  "bar-chart",
+  "factor-tree",
+]);
+const WRITING_TYPES = new Set(["error-analysis", "open-response", "constructed-response"]);
+
+function sectionOf(item) {
+  const type = String(item?.type || "");
+  if (WRITING_TYPES.has(type)) return "writing";
+  if (VISUAL_TYPES.has(type)) return "visual";
+  const stem = String(item?.stem || item?.prompt || "").trim();
+  // "What does 3 ÷ 1/4 mean?", "Which expression means…" — meaning, not answer.
+  if (
+    /\b(what does|which expression|what is the meaning|which model|which real-world|which statement|matches)\b/i.test(
+      stem,
+    )
+  )
+    return "visual";
+  // FLUENCY IS THE NARROW CASE, and it is recognised positively: a bare
+  // computation is an instruction word (or nothing) wrapped around an
+  // expression — "Calculate: 5 ÷ (1/2)", "What is 6 ÷ 1/5?". Listing context
+  // verbs instead and defaulting to fluency put "A half-pan of brownies is
+  // shared equally among 4 people" under Computation, because "shared" was not
+  // on the list. Anything with prose in it is a context; that is what prose is.
+  const bare = stem
+    .replace(/^(what is|calculate|simplify|evaluate|solve|find|compute)\b[:\s]*/i, "")
+    .replace(/[?.]$/, "")
+    .trim();
+  if (bare && /^[\d\s/×÷+\-*=().,^%$]+$/.test(bare)) return "fluency";
+  if (!stem) return "fluency";
+  return "context";
 }
 
-function conceptAnchorBox(cfg, isGroup1 = true) {
-  const intro = cfg.conceptIntro || {};
+/** The problems grouped under their section headers, numbered continuously. */
+function sectionedProblems(pool, renderOne) {
+  const buckets = new Map(WS_SECTIONS.map((sc) => [sc.key, []]));
+  pool.forEach((item) => buckets.get(sectionOf(item)).push(item));
+  // A worksheet whose problems all land in one section gains nothing from a
+  // header announcing it — print the plain list instead.
+  const used = WS_SECTIONS.filter((sc) => buckets.get(sc.key).length);
+  let n = 0;
+  if (used.length < 2) {
+    return `<ol class="ws-problems-grid">${pool.map((it) => renderOne(it, ++n)).join("")}</ol>`;
+  }
+  return used
+    .map((sc, i) => {
+      const items = buckets
+        .get(sc.key)
+        .map((it) => renderOne(it, ++n))
+        .join("");
+      return `<div class="ws-section-head"><span class="ws-section-n">SECTION ${i + 1}</span>
+          <span class="ws-section-name">${sc.name}</span>
+          <span class="ws-section-tag">[${sc.tag}]</span>
+        </div>
+        <ol class="ws-problems-grid">${items}</ol>`;
+    })
+    .join("");
+}
+
+/* ── Concept Summary & Guided Notes ────────────────────────────────────────
+ *
+ * The numbered notes block both model worksheets open with (Joel, 2026-08-28,
+ * with Lesson 6-1 Core Practice and Advanced/GT as the models): the meanings or
+ * laws, each with its worked example and key rule, then the strategy model,
+ * then the word bank, then the trap.
+ *
+ * It replaces a one-line "Key Takeaway" which — because it read cfg.conceptIntro
+ * on configs that store the worked example at cfg.launch.conceptIntro — was the
+ * lesson's objective and nothing else on every worksheet in the fleet.
+ *
+ * Every line is the LESSON's own authored text. This composes; it does not
+ * write mathematics. */
+
+/* Reveal configs carry the worked example at launch.conceptIntro; reading only
+   the top-level key is what emptied this block fleet-wide. */
+function conceptIntroOf(cfg) {
+  return (cfg && cfg.launch && cfg.launch.conceptIntro) || (cfg && cfg.conceptIntro) || {};
+}
+
+/** keyIdea is often "Title. 1. step 2. step 3. step" — split it into both. */
+function splitKeyIdea(keyIdea) {
+  const raw = String(keyIdea || "").trim();
+  if (!raw) return { lead: "", steps: [] };
+  const at = raw.search(/\b1\.\s/);
+  if (at < 0) return { lead: raw, steps: [] };
+  const lead = raw
+    .slice(0, at)
+    .replace(/[.\s]+$/, "")
+    .trim();
+  const steps = raw
+    .slice(at)
+    .split(/\s(?=\d+\.\s)/)
+    .map((x) => x.replace(/^\d+\.\s*/, "").trim())
+    .filter(Boolean);
+  return { lead, steps };
+}
+
+function conceptSummaryBlock(cfg, { advanced = false } = {}) {
+  const intro = conceptIntroOf(cfg);
   const heading = intro.heading || cfg.title || "Core Mathematical Strategy";
-  const keyIdea =
-    intro.keyIdea ||
-    cfg.contentObjective ||
-    "Understand and apply the target mathematical relationship with precision.";
-  const iDo = intro.iDo || {};
-  const steps = Array.isArray(iDo.lines) ? iDo.lines.map((l) => `<li>${esc(l)}</li>`).join("") : "";
+  const { lead, steps } = splitKeyIdea(intro.keyIdea);
+  const iDoLines = Array.isArray(intro.iDo && intro.iDo.lines) ? intro.iDo.lines : [];
+  const weDoLines = Array.isArray(intro.weDo && intro.weDo.lines) ? intro.weDo.lines : [];
+  const vocab = (cfg.vocabulary || []).filter((v) => v && v.term).slice(0, 6);
+  const mistake =
+    cfg.practice?.commonMistake || cfg.commonMistake || cfg.reflect?.commonMistake || "";
+  const mistakeText =
+    typeof mistake === "string" ? mistake : mistake?.text || mistake?.description || "";
+
+  const points = [];
+
+  if (intro.intro || lead) {
+    points.push({
+      title: lead || "The Big Idea",
+      bullets: [intro.intro].filter(Boolean),
+    });
+  }
+
+  if (steps.length) {
+    points.push({
+      title: advanced ? "The Structural Procedure" : "Strategy Model — step by step",
+      bullets: steps,
+      ordered: true,
+    });
+  }
+
+  if (iDoLines.length) {
+    points.push({
+      title: `Worked Example${intro.iDo && intro.iDo.title ? ` — ${intro.iDo.title}` : ""}`,
+      bullets: iDoLines,
+      ordered: true,
+    });
+  }
+
+  // The GT edition gets the "let's do one together" problem as a second model;
+  // the core edition keeps the notes short so the practice starts sooner.
+  if (advanced && weDoLines.length) {
+    points.push({
+      title: `Second Model${intro.weDo && intro.weDo.title ? ` — ${intro.weDo.title}` : ""}`,
+      bullets: weDoLines,
+      ordered: true,
+    });
+  }
+
+  if (vocab.length) {
+    points.push({
+      title: "Mathematical Word Bank",
+      bullets: vocab.map(
+        (v) =>
+          `${v.term}${v.termEs ? ` (${v.termEs})` : ""}${v.definition ? ` — ${v.definition}` : ""}`,
+      ),
+    });
+  }
+
+  if (mistakeText) {
+    points.push({ title: "Watch out", bullets: [mistakeText], warn: true });
+  }
+
+  if (!points.length) return "";
+
+  const body = points
+    .map((pt, i) => {
+      const tag = pt.ordered ? "ol" : "ul";
+      const items = pt.bullets
+        .map((b) => `<li>${esc(String(b).replace(/^\d+\.\s*/, ""))}</li>`)
+        .join("");
+      return `<div class="ws-note-point${pt.warn ? " ws-note-warn" : ""}">
+        <div class="ws-note-head"><span class="ws-note-n">${i + 1}</span>${esc(pt.title)}</div>
+        ${items ? `<${tag} class="ws-note-list">${items}</${tag}>` : ""}
+      </div>`;
+    })
+    .join("");
 
   return `
-    <section class="ws-anchor-box ${isGroup1 ? "ws-support-anchor" : "ws-challenge-anchor"}">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: ${esc(heading)}</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> ${esc(keyIdea)}</p>
-      ${steps ? `<div class="ws-anchor-steps"><b>Worked Steps ("I Do" Strategy):</b><ol>${steps}</ol></div>` : ""}
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ${advanced ? "ADVANCED CONCEPT ANCHOR" : "CONCEPT SUMMARY &amp; GUIDED NOTES"}: ${esc(heading)}</div>
+      ${body}
     </section>
   `;
 }
@@ -1053,6 +1255,37 @@ function studentSelfCheckBar() {
    5. TOP 1% TPT PUBLISHER HEADER WITH RUBRIC
    ========================================================================== */
 
+/* "Visual Models · Reciprocals · Keep-Change-Flip · Real-World Applications" —
+   the strategy strip both model worksheets carry under the title. Built from
+   the lesson's own vocabulary and the shapes of its practice items, so it names
+   what this worksheet actually asks for and never a generic list. */
+function strategyLine(cfg) {
+  const parts = [];
+  const pool = []
+    .concat(
+      cfg.practice?.approaching || [],
+      cfg.practice?.onLevel || [],
+      cfg.practice?.extending || [],
+    )
+    .filter(Boolean);
+  const types = new Set(pool.map((p) => String(p.type || "")));
+  const has = (...t) => t.some((x) => types.has(x));
+  if (has("bar-model", "number-line", "area-model", "tape-diagram", "fraction-model"))
+    parts.push("Visual Models");
+  const terms = (cfg.vocabulary || [])
+    .map((v) => v && v.term)
+    .filter(Boolean)
+    .slice(0, 2);
+  parts.push(...terms);
+  if (has("multiple-choice", "fill-table")) parts.push("Procedural Fluency");
+  if (
+    pool.some((p) => /\b(he|she|they|has|had|buys|cuts|makes|shares)\b/i.test(String(p.stem || "")))
+  )
+    parts.push("Real-World Applications");
+  if (has("error-analysis", "open-response")) parts.push("Reasoning & Critique");
+  return [...new Set(parts)].slice(0, 4).join(" · ");
+}
+
 function publisherHeader(cfg, levelBadge, levelSub, isKey = false) {
   const wbUrl = `/curriculum/math-workbench/?lesson=${esc(cfg.lessonId)}`;
   const title = esc(cfg.title || cfg.lessonId || "Mathematics Practice");
@@ -1067,14 +1300,15 @@ function publisherHeader(cfg, levelBadge, levelSub, isKey = false) {
           <span class="ws-pill ws-pill-level">${esc(isKey ? levelBadge + " · Answer Key" : levelBadge)}</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">${title}</h1>
           <p class="ws-sub-title">${esc(levelSub)}</p>
+          ${strategyLine(cfg) ? `<p class="ws-strategy-line">${esc(strategyLine(cfg))}</p>` : ""}
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="${wbUrl}" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1103,12 +1337,12 @@ function buildGroup1SupportWorksheet(cfg, isKey = false) {
   const problems = combined.slice(0, 6);
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
 
-  const itemsHtml = problems
-    .map((p, i) => renderProblem(p, i + 1, { key: isKey, supported: true, commonMistake }))
-    .join("");
+  const itemsHtml = sectionedProblems(problems, (p, n) =>
+    renderProblem(p, n, { key: isKey, supported: true, commonMistake }),
+  );
 
-  const anchorHtml = !isKey ? conceptAnchorBox(cfg, true) : "";
-  const bankHtml = !isKey ? wordBank(cfg.vocabulary) : "";
+  const anchorHtml = !isKey ? conceptSummaryBlock(cfg) : "";
+  const bankHtml = "";
   const discHtml = cfg.explore?.discourse ? discourseCard(cfg.explore.discourse, true) : "";
   const cerHtml = cerWritingMatrix(cfg.cerWriting, true);
   const twrHtml = renderTWRSection(cfg);
@@ -1118,7 +1352,7 @@ function buildGroup1SupportWorksheet(cfg, isKey = false) {
       ${publisherHeader(cfg, "🟡 Group 1 · Support &amp; Scaffolding", "Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors", isKey)}
       ${anchorHtml}
       ${bankHtml}
-      <ol class="ws-problems-grid">${itemsHtml}</ol>
+      ${itemsHtml}
       ${discHtml}
       ${twrHtml}
       ${cerHtml}
@@ -1136,11 +1370,11 @@ function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
   const problems = combined.slice(0, 6);
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
 
-  const itemsHtml = problems
-    .map((p, i) => renderProblem(p, i + 1, { key: isKey, supported: false, commonMistake }))
-    .join("");
+  const itemsHtml = sectionedProblems(problems, (p, n) =>
+    renderProblem(p, n, { key: isKey, supported: false, commonMistake }),
+  );
 
-  const anchorHtml = !isKey ? conceptAnchorBox(cfg, false) : "";
+  const anchorHtml = !isKey ? conceptSummaryBlock(cfg, { advanced: true }) : "";
   const discHtml = cfg.explore?.discourse ? discourseCard(cfg.explore.discourse, false) : "";
   const cerHtml = cerWritingMatrix(cfg.cerWriting, false);
   const twrHtml = renderTWRSection(cfg);
@@ -1159,7 +1393,7 @@ function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
     <section class="ws-page ws-group2-page">
       ${publisherHeader(cfg, "🟣 Group 2 · Challenge &amp; Extension", "Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs", isKey)}
       ${anchorHtml}
-      <ol class="ws-problems-grid">${itemsHtml}</ol>
+      ${itemsHtml}
       ${discHtml}
       ${twrHtml}
       ${cerHtml}
@@ -1177,16 +1411,15 @@ function buildCatchupWorksheet(cfg, isKey = false) {
   const problems = (approaching.length ? approaching : onLevel).slice(0, 5);
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
 
-  const itemsHtml = problems
-    .map((p, i) => renderProblem(p, i + 1, { key: isKey, supported: true, commonMistake }))
-    .join("");
+  const itemsHtml = sectionedProblems(problems, (p, n) =>
+    renderProblem(p, n, { key: isKey, supported: true, commonMistake }),
+  );
 
   return `
     <section class="ws-page ws-catchup-page">
       ${publisherHeader(cfg, "🔵 Prerequisite Catch-Up &amp; Skill Bridge", "Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard", isKey)}
-      ${!isKey ? conceptAnchorBox(cfg, true) : ""}
-      ${!isKey ? wordBank(cfg.vocabulary) : ""}
-      <ol class="ws-problems-grid">${itemsHtml}</ol>
+      ${!isKey ? conceptSummaryBlock(cfg) : ""}
+      ${itemsHtml}
       ${cerWritingMatrix(cfg.cerWriting, true)}
       ${!isKey ? studentSelfCheckBar() : ""}
     </section>
@@ -1201,12 +1434,15 @@ function buildCoreTierPage(
   { supported = false, isKey = false, extraScaffold = false } = {},
 ) {
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
-  const itemsHtml = pool
-    .map((p, i) => renderProblem(p, i + 1, { key: isKey, supported, commonMistake }))
-    .join("");
+  const itemsHtml = sectionedProblems(pool, (p, n) =>
+    renderProblem(p, n, { key: isKey, supported, commonMistake }),
+  );
 
-  const anchorHtml = supported && !isKey ? conceptAnchorBox(cfg, true) : "";
-  const bankHtml = supported && !isKey ? wordBank(cfg.vocabulary) : "";
+  // The guided notes open EVERY edition now, not only the supported tiers —
+  // both model worksheets carry them, and the Challenge tier is the one where
+  // a student most needs the rule stated before a non-routine problem. The
+  // stretch tier gets the fuller "Advanced Concept Anchor" shape.
+  const notesHtml = isKey ? "" : conceptSummaryBlock(cfg, { advanced: !supported });
   const scaffoldBanner =
     extraScaffold && !isKey
       ? `<div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>`
@@ -1215,10 +1451,9 @@ function buildCoreTierPage(
   return `
     <section class="ws-page ws-core-tier-page">
       ${publisherHeader(cfg, label, sub, isKey)}
-      ${anchorHtml}
-      ${bankHtml}
+      ${notesHtml}
       ${scaffoldBanner}
-      <ol class="ws-problems-grid">${itemsHtml}</ol>
+      ${itemsHtml}
       ${cerWritingMatrix(cfg.cerWriting, supported)}
       ${!isKey ? studentSelfCheckBar() : ""}
     </section>
@@ -1567,11 +1802,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -1580,6 +1813,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">1.1 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">doer of math · math story · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-1-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -699,43 +764,14 @@ header.packet h1::after{
     </header>
   
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Estimating 23 × 4, Sam rounds 23 to 20. Nia instead splits it: 23 × 4 = (20 × 4) + (3 × 4). Which comparison is accurate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Sam's is faster but loses 12 riders; Nia's takes one more step and lands exactly on 92</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Both give exactly 92, so there is no difference between them</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Nia's is an estimate too, because she broke the number apart</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sam's is the only real estimate, so Nia's method does not count</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Sam gets 20 × 4 = 80. Nia gets 80 + 12 = 92, which is exact — decomposing does not lose anything, it just reorganizes the work. Two students, two defensible routes, different trade-offs.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing that 'doing math' only counts when it happens on paper in a classroom.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The operator removes 3 cars for repairs, so the 23-car wheel now runs 20 cars, and adds a fifth seat to every car. Without multiplying it out, what happens to the number of riders in one turn?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">It goes up — losing 3 cars costs about 12 riders, but a fifth seat in 20 cars adds 20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">It stays the same — one change up and one change down cancel out</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">It goes down — removing cars always matters more than adding seats</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">There is no way to tell without doing the multiplication</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Before: 23 × 4 = 92. After: 20 × 5 = 100. The 3 lost cars were carrying about 4 each (−12), while the extra seat is added in all 20 remaining cars (+20). Net gain of 8, and you can see it without computing either product.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing that 'doing math' only counts when it happens on paper in a classroom.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">At the same fair, a food stand sells about 38 drinks an hour and is open 7 hours. Estimate the drinks sold in a day, using a strategy of your choice. Then describe a DIFFERENT strategy a classmate could reasonably use, and say what each one is better for.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I rounded 38 up to 40 and multiplied: 40 × 7 = about 280 drinks. The exact answer is 266, so mine is 14 high — good for making sure the stand orders enough. A classmate could decompose instead: (30 × 7) + (8 × 7) = 210 + 56 = 266 exactly. Rounding is faster for a quick order; decomposing is better when the number has to be right.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -748,13 +784,54 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Match each number to a correct decomposition.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">78.5</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">78.5 using multiplication</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">480</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">12.5</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">70 + 8 + 0.5</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">(7 × 10) + (8 × 1) + (5 × 0.1)</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">6 × 80</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">12 + 0.5</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Estimating 23 × 4, Sam rounds 23 to 20. Nia instead splits it: 23 × 4 = (20 × 4) + (3 × 4). Which comparison is accurate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Sam's is faster but loses 12 riders; Nia's takes one more step and lands exactly on 92</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Both give exactly 92, so there is no difference between them</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Nia's is an estimate too, because she broke the number apart</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sam's is the only real estimate, so Nia's method does not count</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Sam gets 20 × 4 = 80. Nia gets 80 + 12 = 92, which is exact — decomposing does not lose anything, it just reorganizes the work. Two students, two defensible routes, different trade-offs.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing that 'doing math' only counts when it happens on paper in a classroom.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">The operator removes 3 cars for repairs, so the 23-car wheel now runs 20 cars, and adds a fifth seat to every car. Without multiplying it out, what happens to the number of riders in one turn?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">It goes up — losing 3 cars costs about 12 riders, but a fifth seat in 20 cars adds 20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">It stays the same — one change up and one change down cancel out</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">It goes down — removing cars always matters more than adding seats</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">There is no way to tell without doing the multiplication</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Before: 23 × 4 = 92. After: 20 × 5 = 100. The 3 lost cars were carrying about 4 each (−12), while the extra seat is added in all 20 remaining cars (+20). Net gain of 8, and you can see it without computing either product.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Believing that 'doing math' only counts when it happens on paper in a classroom.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">At the same fair, a food stand sells about 38 drinks an hour and is open 7 hours. Estimate the drinks sold in a day, using a strategy of your choice. Then describe a DIFFERENT strategy a classmate could reasonably use, and say what each one is better for.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I rounded 38 up to 40 and multiplied: 40 × 7 = about 280 drinks. The exact answer is 266, so mine is 14 high — good for making sure the stand orders enough. A classmate could decompose instead: (30 × 7) + (8 × 7) = 210 + 56 = 266 exactly. Rounding is faster for a quick order; decomposing is better when the number has to be right.</div>
       </div>
     </li>
   

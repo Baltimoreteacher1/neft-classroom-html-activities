@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">6.12 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Visual Models · Least Common Multiple · Multiple · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-12-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,41 +773,59 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 6.12 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can find the least common multiple (LCM) of two numbers by listing or comparing their multiples — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — What is the least common multiple (LCM)?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>The LCM is the FIRST number that shows up in both numbers' multiple lists.</div>
+        <ul class="ws-note-list"><li>A multiple is what you get when you count by a number: 4, 8, 12, 16. The least common multiple is the smallest multiple that two numbers share. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want the LCM of 4 and 6. I skip count the multiples of 4: 4, 8, 12, 16, 20, 24.</li><li>Then I skip count the multiples of 6: 6, 12, 18, 24.</li><li>I look for the first number in BOTH lists. 12 is in both lists, and it comes before 24.</li><li>So the LCM of 4 and 6 is 12. I check: 12 ÷ 4 = 3 and 12 ÷ 6 = 2, so both go into 12 evenly.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Least Common Multiple (Mínimo común múltiplo) — The least positive number that is a multiple of two or more numbers.</li><li>Multiple (Múltiplo) — What you get when you multiply a number by 1, 2, 3, and so on.</li><li>Common multiple (Múltiplo común) — A number that two or more numbers both go into.</li><li>Skip counting (Conteo salteado) — Counting by a number, like 2, 4, 6, to list its multiples.</li><li>Prime factorization (Factorización prima) — Writing a number as prime numbers multiplied together. It helps you find the LCM.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Least Common Multiple is multiplying the two numbers together instead of listing multiples to find the smallest shared one. For example, for 4 and 6, a student calculates 4 × 6 = 24 and calls that the LCM, but the actual least common multiple is 12 (multiples of 4: 4, 8, 12; multiples of 6: 6, 12 — 12 is the first number that appears in both lists). This shortcut only works when the two numbers share no common factors (like 4 and 9, where the LCM really is 36 = 4 × 9); for numbers like 4 and 6 that share a factor of 2, multiplying overshoots the true LCM. Always list multiples of both numbers and pick the first one that appears in both lists.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Least Common Multiple <span class="ws-es-term">(Mínimo común múltiplo)</span></span><span class="ws-bankdef"> — The least positive number that is a multiple of two or more numbers.</span></div><div class="ws-bank-card"><span class="ws-bankword">Multiple <span class="ws-es-term">(Múltiplo)</span></span><span class="ws-bankdef"> — What you get when you multiply a number by 1, 2, 3, and so on.</span></div><div class="ws-bank-card"><span class="ws-bankword">Common multiple <span class="ws-es-term">(Múltiplo común)</span></span><span class="ws-bankdef"> — A number that two or more numbers both go into.</span></div><div class="ws-bank-card"><span class="ws-bankword">Skip counting <span class="ws-es-term">(Conteo salteado)</span></span><span class="ws-bankdef"> — Counting by a number, like 2, 4, 6, to list its multiples.</span></div><div class="ws-bank-card"><span class="ws-bankword">Prime factorization <span class="ws-es-term">(Factorización prima)</span></span><span class="ws-bankdef"> — Writing a number as prime numbers multiplied together. It helps you find the LCM.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">NUMBER LINE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the LCM of 3 and 5?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">30</span></li></ol>
+        <p class="ws-stem">Find the LCM of 5 and 6 on the number line</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the LCM of 6 and 8?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol>
+        <p class="ws-stem">Match each pair of numbers to their LCM.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(2, 5)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(4, 10)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(3, 8)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(6, 9)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(5, 7)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(4, 6)</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">10</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">20</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">24</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">18</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">35</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">12</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -750,7 +833,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the LCM of 4 and 10?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol>
+        <p class="ws-stem">What is the LCM of 3 and 5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">30</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -761,30 +847,38 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the LCM of 2 and 7?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol>
+        <p class="ws-stem">What is the LCM of 6 and 8?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">NUMBER LINE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Find the LCM of 5 and 6 on the number line</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">What is the LCM of 4 and 10?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each pair of numbers to their LCM.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(2, 5)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(4, 10)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(3, 8)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(6, 9)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(5, 7)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">LCM(4, 6)</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">10</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">20</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">24</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">18</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">35</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">12</span></li></ul></div>
+        <p class="ws-stem">What is the LCM of 2 and 7?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

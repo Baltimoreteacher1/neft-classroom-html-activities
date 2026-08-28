@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write Equations to Represent Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">equation · variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,8 +765,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -709,10 +777,14 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Recreation World charges $24.95 per month. What is the total cost of 2 months of membership?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$49.90</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$26.95</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$74.85</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Two months at $24.95 each is 2 × 24.95 = 49.90.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">In the equation c = 24.95m for the gym membership, what does m represent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The number of months of membership</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The total cost in dollars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The monthly fee of $24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The name of the gym</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> m stands for the quantity Miguel chooses — the number of months. The letter c stands for the total cost that results.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -720,7 +792,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In the equation c = 24.95m for the gym membership, what does m represent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The number of months of membership</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The total cost in dollars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The monthly fee of $24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The name of the gym</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> m stands for the quantity Miguel chooses — the number of months. The letter c stands for the total cost that results.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">Recreation World charges $24.95 per month. What is the total cost of 2 months of membership?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$49.90</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$26.95</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$74.85</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Two months at $24.95 each is 2 × 24.95 = 49.90.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write Equations to Represent Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">equation · variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,22 +879,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Recreation World charges $24.95 per month. What is the total cost of 2 months of membership?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$49.90</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$26.95</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$74.85</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Two months at $24.95 each is 2 × 24.95 = 49.90.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,12 +897,29 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each equation by what it really says.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Says 'y is 4 times x'</span> <span class="ws-cat-pill">Says something different</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says 'y is 4 times x'</span><span class="ws-sort-text">y = 4x</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says 'y is 4 times x'</span><span class="ws-sort-text">y = x × 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says 'y is 4 times x'</span><span class="ws-sort-text">x = y ÷ 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says something different</span><span class="ws-sort-text">y = x + 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says something different</span><span class="ws-sort-text">x = 4y</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says something different</span><span class="ws-sort-text">y = 4 ÷ x</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A canoe rents for $15 per hour. Let h = hours and c = total cost. Which equation represents the relationship?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">c = 15h</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">c = 15 + h</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h = 15c</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">c = h − 15</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each hour costs $15, so the total is 15 times the number of hours: c = 15h.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">Recreation World charges $24.95 per month. What is the total cost of 2 months of membership?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$49.90</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$26.95</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$74.85</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Two months at $24.95 each is 2 × 24.95 = 49.90.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
@@ -848,7 +930,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Using c = 15h, what is the total cost of a 3-hour canoe rental?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$45</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$18</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$75</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute h = 3: c = 15 × 3 = 45.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">A canoe rents for $15 per hour. Let h = hours and c = total cost. Which equation represents the relationship?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">c = 15h</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">c = 15 + h</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h = 15c</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">c = h − 15</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each hour costs $15, so the total is 15 times the number of hours: c = 15h.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
@@ -859,7 +941,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In the gym membership situation, which quantity is the DEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The total cost</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The number of months</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The monthly fee of $24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The number of gyms in town</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The total cost depends on the number of months of membership — Miguel chooses the months, and the cost responds.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">Using c = 15h, what is the total cost of a 3-hour canoe rental?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$45</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$18</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$75</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute h = 3: c = 15 × 3 = 45.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
@@ -870,20 +952,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The membership table shows: 1 month, $24.95; 2 months, $49.90; 3 months, $74.85. By how much does the total cost increase each month?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$24.95</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$49.90</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$25.00</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$24.05</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each row grows by the monthly fee: 49.90 − 24.95 = 24.95, and 74.85 − 49.90 = 24.95.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">In the gym membership situation, which quantity is the DEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The total cost</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The number of months</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The monthly fee of $24.95</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The number of gyms in town</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The total cost depends on the number of months of membership — Miguel chooses the months, and the cost responds.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each equation by what it really says.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Says 'y is 4 times x'</span> <span class="ws-cat-pill">Says something different</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says 'y is 4 times x'</span><span class="ws-sort-text">y = 4x</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says 'y is 4 times x'</span><span class="ws-sort-text">y = x × 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says 'y is 4 times x'</span><span class="ws-sort-text">x = y ÷ 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says something different</span><span class="ws-sort-text">y = x + 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says something different</span><span class="ws-sort-text">x = 4y</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Says something different</span><span class="ws-sort-text">y = 4 ÷ x</span></li></ul>
+        <p class="ws-stem">The membership table shows: 1 month, $24.95; 2 months, $49.90; 3 months, $74.85. By how much does the total cost increase each month?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$24.95</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$49.90</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$25.00</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$24.05</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Each row grows by the monthly fee: 49.90 − 24.95 = 24.95, and 74.85 − 49.90 = 24.95.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   </ol>
@@ -924,14 +1004,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write Equations to Represent Relationships Between Two Variables</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">equation · variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,33 +1028,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Using c = 24.95m, what is the total cost of 10 months of membership?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$249.50</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$34.95</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$224.55</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$2,495.00</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute m = 10: c = 24.95 × 10 = 249.50.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Using c = 15h, what is the total cost of a 5-hour canoe rental?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$75</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$20</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$60</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$80</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute h = 5: c = 15 × 5 = 75.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -984,12 +1046,40 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A canoe rents for $15 per hour: c = 15h. Complete the table.</p>
+  <table class="ws-table"><thead><tr><th>Hours (h)</th><th>Substitute</th><th>Cost in dollars (c)</th></tr></thead><tbody><tr><td>2</td><td>c = 15 × 2</td><td>30</td></tr><tr><td>5</td><td>c = 15 × 5</td><td>75</td></tr><tr><td>8</td><td>c = 15 × 8</td><td>120</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Using c = 24.95m, what is the total cost of 10 months of membership?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$249.50</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$34.95</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$224.55</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$2,495.00</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute m = 10: c = 24.95 × 10 = 249.50.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">On the canoe graph with hours on the horizontal axis and cost on the vertical axis, which point lies on the graph?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(4, 60)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(60, 4)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4, 19)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(4, 55)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 hours cost 4 × 15 = 60 dollars, and hours come first, so the point is (4, 60).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">Using c = 15h, what is the total cost of a 5-hour canoe rental?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">$75</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$20</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$60</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$80</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute h = 5: c = 15 × 5 = 75.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
@@ -1000,7 +1090,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The friends have $90 to spend. Using c = 15h, for how many hours can they rent the canoe?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">6 hours</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">75 hours</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,350 hours</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Solve 15h = 90 by dividing both sides by 15: h = 90 ÷ 15 = 6.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">On the canoe graph with hours on the horizontal axis and cost on the vertical axis, which point lies on the graph?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(4, 60)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(60, 4)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4, 19)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(4, 55)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 hours cost 4 × 15 = 60 dollars, and hours come first, so the point is (4, 60).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
@@ -1011,20 +1101,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How are the canoe graph and the equation c = 15h related?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Every point on the graph is a pair (h, c) that makes the equation true</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The graph and the equation show different relationships</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The equation only works for the points shown on the graph</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The graph replaces the equation, so only one can be used</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The graph is a picture of the equation: each point (h, c) on it satisfies c = 15h, like (3, 45) and (5, 75).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
+        <p class="ws-stem">The friends have $90 to spend. Using c = 15h, for how many hours can they rent the canoe?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">6 hours</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">75 hours</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,350 hours</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Solve 15h = 90 by dividing both sides by 15: h = 90 ÷ 15 = 6.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A canoe rents for $15 per hour: c = 15h. Complete the table.</p>
-  <table class="ws-table"><thead><tr><th>Hours (h)</th><th>Substitute</th><th>Cost in dollars (c)</th></tr></thead><tbody><tr><td>2</td><td>c = 15 × 2</td><td>30</td></tr><tr><td>5</td><td>c = 15 × 5</td><td>75</td></tr><tr><td>8</td><td>c = 15 × 8</td><td>120</td></tr></tbody></table>
-  
+        <p class="ws-stem">How are the canoe graph and the equation c = 15h related?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Every point on the graph is a pair (h, c) that makes the equation true</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The graph and the equation show different relationships</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The equation only works for the points shown on the graph</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The graph replaces the equation, so only one can be used</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The graph is a picture of the equation: each point (h, c) on it satisfies c = 15h, like (3, 45) and (5, 75).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
       </div>
     </li>
   </ol>
@@ -1065,14 +1153,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write Equations to Represent Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">equation · variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-3" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1088,11 +1177,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each scenario to the equation that models it.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Canoe rental: $15 per hour</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Gym membership: $24.95 per month</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Football tickets: $45 each</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Tram climbing 1,200 feet per minute</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">c = 15h</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">c = 24.95m</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">c = 45t</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">d = 1200m</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1103,7 +1211,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1114,7 +1222,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1125,24 +1233,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">The friends spent exactly $120 on the canoe. Solve 15h = 120. How long was the rental?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">8 hours</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">105 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9 hours</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,800 hours</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Divide both sides by 15: h = 120 ÷ 15 = 8.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Writing the equation with addition — c = 24.95 + m — instead of multiplication. The fee is charged EVERY month, so the total is the rate times the number of months; always test the equation against a row of the table.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each scenario to the equation that models it.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Canoe rental: $15 per hour</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Gym membership: $24.95 per month</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Football tickets: $45 each</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Tram climbing 1,200 feet per minute</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">c = 15h</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">c = 24.95m</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">c = 45t</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">d = 1200m</span></li></ul></div>
       </div>
     </li>
   </ol>

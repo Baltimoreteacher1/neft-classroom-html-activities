@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Mean Absolute Deviation</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Mean Absolute Deviation · Deviation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-9" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,16 +773,24 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Describe Data by Mean Absolute Deviation</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the mean absolute deviation (MAD) to describe how spread out data is.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Mean Absolute Deviation <span class="ws-es-term">(Desviación media absoluta)</span></span><span class="ws-bankdef"> — The average distance of data values from the mean; it describes spread.</span></div><div class="ws-bank-card"><span class="ws-bankword">Deviation <span class="ws-es-term">(Desviación)</span></span><span class="ws-bankdef"> — How far a number is from the mean.</span></div><div class="ws-bank-card"><span class="ws-bankword">Absolute Value <span class="ws-es-term">(Valor absoluto)</span></span><span class="ws-bankdef"> — How far a number is from zero. It is never negative.</span></div><div class="ws-bank-card"><span class="ws-bankword">Spread <span class="ws-es-term">(Dispersión)</span></span><span class="ws-bankdef"> — How far apart the numbers are.</span></div><div class="ws-bank-card"><span class="ws-bankword">Data distribution <span class="ws-es-term">(Distribución de datos)</span></span><span class="ws-bankdef"> — How the data looks: where it sits and how spread out it is.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variability <span class="ws-es-term">(Variabilidad)</span></span><span class="ws-bankdef"> — How spread out the numbers are.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: What is the mean absolute deviation (MAD)?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mean Absolute Deviation (MAD). Formula: MAD = (Sum of distances from mean) ÷ (Total count)</div>
+        <ul class="ws-note-list"><li>The mean absolute deviation, or MAD, is the average distance of each value from the mean. It tells you how spread out the data is: a small MAD means the data is close together, and a large MAD means it is spread out.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Calculate the mean of the data set.</li><li>Find the distance (absolute difference |value − mean|) for each data point.</li><li>Average the distances: Add all distances and divide by the count</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.</li><li>Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.</li><li>Then I take the absolute value of each (the distance, always positive): 3, 1, 1, 3.</li><li>Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Mean Absolute Deviation (Desviación media absoluta) — The average distance of data values from the mean; it describes spread.</li><li>Deviation (Desviación) — How far a number is from the mean.</li><li>Absolute Value (Valor absoluto) — How far a number is from zero. It is never negative.</li><li>Spread (Dispersión) — How far apart the numbers are.</li><li>Data distribution (Distribución de datos) — How the data looks: where it sits and how spread out it is.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
@@ -729,7 +802,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">26</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">11</span></li></ol>
+        <p class="ws-stem">The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">26</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">11</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -740,7 +816,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1</span></li></ol>
+        <p class="ws-stem">A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,7 +830,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The mean of a data set is 20. A value is 26. What is the absolute deviation?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">46</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">26</span></li></ol>
+        <p class="ws-stem">The mean of a data set is 20. A value is 26. What is the absolute deviation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">46</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">26</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -762,7 +844,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Team A — lower MAD means scores are closer to the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Team B — higher MAD means better performance</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally consistent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Cannot tell from MAD alone</span></li></ol>
+        <p class="ws-stem">Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Team A — lower MAD means scores are closer to the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Team B — higher MAD means better performance</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally consistent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Cannot tell from MAD alone</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -811,14 +896,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Mean Absolute Deviation</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Mean Absolute Deviation · Deviation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-9" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -833,31 +919,50 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Describe Data by Mean Absolute Deviation</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the mean absolute deviation (MAD) to describe how spread out data is.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: What is the mean absolute deviation (MAD)?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mean Absolute Deviation (MAD). Formula: MAD = (Sum of distances from mean) ÷ (Total count)</div>
+        <ul class="ws-note-list"><li>The mean absolute deviation, or MAD, is the average distance of each value from the mean. It tells you how spread out the data is: a small MAD means the data is close together, and a large MAD means it is spread out.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Calculate the mean of the data set.</li><li>Find the distance (absolute difference |value − mean|) for each data point.</li><li>Average the distances: Add all distances and divide by the count</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.</li><li>Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.</li><li>Then I take the absolute value of each (the distance, always positive): 3, 1, 1, 3.</li><li>Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Mean Absolute Deviation (Desviación media absoluta) — The average distance of data values from the mean; it describes spread.</li><li>Deviation (Desviación) — How far a number is from the mean.</li><li>Absolute Value (Valor absoluto) — How far a number is from zero. It is never negative.</li><li>Spread (Dispersión) — How far apart the numbers are.</li><li>Data distribution (Distribución de datos) — How the data looks: where it sits and how spread out it is.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Mean Absolute Deviation <span class="ws-es-term">(Desviación media absoluta)</span></span><span class="ws-bankdef"> — The average distance of data values from the mean; it describes spread.</span></div><div class="ws-bank-card"><span class="ws-bankword">Deviation <span class="ws-es-term">(Desviación)</span></span><span class="ws-bankdef"> — How far a number is from the mean.</span></div><div class="ws-bank-card"><span class="ws-bankword">Absolute Value <span class="ws-es-term">(Valor absoluto)</span></span><span class="ws-bankdef"> — How far a number is from zero. It is never negative.</span></div><div class="ws-bank-card"><span class="ws-bankword">Spread <span class="ws-es-term">(Dispersión)</span></span><span class="ws-bankdef"> — How far apart the numbers are.</span></div><div class="ws-bank-card"><span class="ws-bankword">Data distribution <span class="ws-es-term">(Distribución de datos)</span></span><span class="ws-bankdef"> — How the data looks: where it sits and how spread out it is.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variability <span class="ws-es-term">(Variabilidad)</span></span><span class="ws-bankdef"> — How spread out the numbers are.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">NUMBER LINE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">26</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">11</span></li></ol>
+        <p class="ws-stem">The mean is 10. Place each data value on the number line, then find how far each is from the mean: Data: 7, 10, 13.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -865,7 +970,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1</span></li></ol>
+        <p class="ws-stem">The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">26</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">11</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -876,7 +984,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The mean of a data set is 20. A value is 26. What is the absolute deviation?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">46</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">26</span></li></ol>
+        <p class="ws-stem">A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -887,21 +998,31 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Team A — lower MAD means scores are closer to the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Team B — higher MAD means better performance</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally consistent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Cannot tell from MAD alone</span></li></ol>
+        <p class="ws-stem">The mean of a data set is 20. A value is 26. What is the absolute deviation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">−6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">46</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">26</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">NUMBER LINE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The mean is 10. Place each data value on the number line, then find how far each is from the mean: Data: 7, 10, 13.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Team A — lower MAD means scores are closer to the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Team B — higher MAD means better performance</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally consistent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Cannot tell from MAD alone</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -912,7 +1033,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set:</span><span class="ws-step-w">A player's points: 6, 10, 8. Mean = (6 + 10 + 8) ÷ 3 = 8.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find each deviation (value − mean):</span><span class="ws-step-w">6 − 8 = −2, 10 − 8 = 2, 8 − 8 = 0</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the MAD:</span><span class="ws-step-w">MAD = (−2 + 2 + 0) ÷ 3 = 0 ÷ 3 = 0</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -961,14 +1085,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Mean Absolute Deviation</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Mean Absolute Deviation · Deviation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-9" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -983,9 +1108,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: What is the mean absolute deviation (MAD)?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mean Absolute Deviation (MAD). Formula: MAD = (Sum of distances from mean) ÷ (Total count)</div>
+        <ul class="ws-note-list"><li>The mean absolute deviation, or MAD, is the average distance of each value from the mean. It tells you how spread out the data is: a small MAD means the data is close together, and a large MAD means it is spread out.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Calculate the mean of the data set.</li><li>Find the distance (absolute difference |value − mean|) for each data point.</li><li>Average the distances: Add all distances and divide by the count</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.</li><li>Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.</li><li>Then I take the absolute value of each (the distance, always positive): 3, 1, 1, 3.</li><li>Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>New data set: 9, 10, 11. First, what is the mean? Add the three numbers and divide by 3.</li><li>Now find how far each number is from the mean. What is the distance for 9? For 10? For 11?</li><li>Add those distances and divide by 3. Is this MAD small or large? What does that tell us about the spread?</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Mean Absolute Deviation (Desviación media absoluta) — The average distance of data values from the mean; it describes spread.</li><li>Deviation (Desviación) — How far a number is from the mean.</li><li>Absolute Value (Valor absoluto) — How far a number is from zero. It is never negative.</li><li>Spread (Dispersión) — How far apart the numbers are.</li><li>Data distribution (Distribución de datos) — How the data looks: where it sits and how spread out it is.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -995,7 +1146,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Deviation Detective: the quiz scores are 12, 8, 10, 14, 6 and the mean is 10. Complete each deviation and absolute deviation, then compute the MAD.</p>
   <table class="ws-table"><thead><tr><th>Score</th><th>Deviation (Score − Mean)</th><th>Absolute Deviation</th></tr></thead><tbody><tr><td>12</td><td></td><td></td></tr><tr><td>8</td><td></td><td></td></tr><tr><td>10</td><td></td><td></td></tr><tr><td>14</td><td></td><td></td></tr><tr><td>6</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1023,7 +1177,11 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Set A: 9, 10, 10, 11 (MAD ≈ 0.5)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Set B: 5, 10, 10, 15 (MAD = 2.5)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Set C: 1, 10, 10, 19 (MAD = 4.5)</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -1031,10 +1189,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Two runners have the same average time of 60 seconds. Runner A's MAD is 1.2 seconds. Runner B's MAD is 5.8 seconds. Which runner is the coach more likely to pick for a relay race that needs a reliable time?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Runner A — lower MAD means more consistent times</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Runner B — higher MAD means faster potential</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Either — they have the same average</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither — MAD doesn't matter for relay races</span></li></ol>
+        <p class="ws-stem">Two runners have the same average time of 60 seconds. Runner A's MAD is 1.2 seconds. Runner B's MAD is 5.8 seconds. Which runner is the coach more likely to pick for a relay race that needs a reliable time?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Runner A — lower MAD means more consistent times</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Runner B — higher MAD means faster potential</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Either — they have the same average</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither — MAD doesn't matter for relay races</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1045,7 +1210,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set:</span><span class="ws-step-w">A swimmer's lap times: 2, 5, 8, 9. Mean = (2 + 5 + 8 + 9) ÷ 4 = 24 ÷ 4 = 6.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find each absolute deviation:</span><span class="ws-step-w">|2 − 6| = 4, |5 − 6| = 1, |8 − 6| = 2, |9 − 6| = 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the MAD:</span><span class="ws-step-w">Sum of absolute deviations = 4 + 1 + 2 + 3 = 10. MAD = 10 ÷ 3 ≈ 3.33</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1094,14 +1262,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Describe Data by Mean Absolute Deviation</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Mean Absolute Deviation · Deviation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-9" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1116,37 +1285,38 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: What is the mean absolute deviation (MAD)?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mean Absolute Deviation (MAD). Formula: MAD = (Sum of distances from mean) ÷ (Total count)</div>
+        <ul class="ws-note-list"><li>The mean absolute deviation, or MAD, is the average distance of each value from the mean. It tells you how spread out the data is: a small MAD means the data is close together, and a large MAD means it is spread out.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Calculate the mean of the data set.</li><li>Find the distance (absolute difference |value − mean|) for each data point.</li><li>Average the distances: Add all distances and divide by the count</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.</li><li>Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.</li><li>Then I take the absolute value of each (the distance, always positive): 3, 1, 1, 3.</li><li>Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>New data set: 9, 10, 11. First, what is the mean? Add the three numbers and divide by 3.</li><li>Now find how far each number is from the mean. What is the distance for 9? For 10? For 11?</li><li>Add those distances and divide by 3. Is this MAD small or large? What does that tell us about the spread?</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Mean Absolute Deviation (Desviación media absoluta) — The average distance of data values from the mean; it describes spread.</li><li>Deviation (Desviación) — How far a number is from the mean.</li><li>Absolute Value (Valor absoluto) — How far a number is from zero. It is never negative.</li><li>Spread (Dispersión) — How far apart the numbers are.</li><li>Data distribution (Distribución de datos) — How the data looks: where it sits and how spread out it is.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Find the MAD Error</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set:</span><span class="ws-step-w">5, 10, 15, 20, 25</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find mean:</span><span class="ws-step-w">Sum = 75, Count = 5, Mean = 15</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find deviations:</span><span class="ws-step-w">−10, −5, 0, 5, 10</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find MAD:</span><span class="ws-step-w">MAD = (−10 + −5 + 0 + 5 + 10) ÷ 5 = 0</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Two basketball teams both average 75 points per game. Team A's last 5 scores: 73, 76, 74, 77, 75. Team B's last 5 scores: 60, 90, 65, 85, 75. Calculate the MAD for each team and explain which team a coach would prefer if they need predictable scoring.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1154,6 +1324,41 @@ header.packet h1::after{
         <p class="ws-stem">Sort each scenario by whether low or high variability is desirable.</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Want LOW MAD (consistent)</span> <span class="ws-cat-pill">Want HIGH MAD (lots of spread)</span></div>
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">A factory making bolts that must be exactly 5 cm long</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">A bus schedule where arrival times should be reliable</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">A game show where contestants try to score as many different point values as possible</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Find the MAD Error</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set:</span><span class="ws-step-w">5, 10, 15, 20, 25</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find mean:</span><span class="ws-step-w">Sum = 75, Count = 5, Mean = 15</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find deviations:</span><span class="ws-step-w">−10, −5, 0, 5, 10</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find MAD:</span><span class="ws-step-w">MAD = (−10 + −5 + 0 + 5 + 10) ÷ 5 = 0</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Two basketball teams both average 75 points per game. Team A's last 5 scores: 73, 76, 74, 77, 75. Team B's last 5 scores: 60, 90, 65, 85, 75. Calculate the MAD for each team and explain which team a coach would prefer if they need predictable scoring.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

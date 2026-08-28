@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Mixed Numbers</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Divide Mixed Numbers · Mixed Number · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,19 +765,28 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 1 1/2 ÷ 3/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 1/8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3/4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9/8</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 1 1/2 = 3/2. Then 3/2 ÷ 3/4 = 3/2 × 4/3 = 12/6 = 2.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
+        <p class="ws-stem">Convert each mixed number to an improper fraction.</p>
+  <table class="ws-table"><thead><tr><th>Mixed Number</th><th>Improper Fraction</th></tr></thead><tbody><tr><td>1 3/4</td><td>7/4</td></tr><tr><td>2 2/3</td><td>8/3</td></tr><tr><td>4 1/2</td><td>9/2</td></tr><tr><td>3 1/5</td><td>16/5</td></tr></tbody></table>
+  
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -720,7 +794,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Convert 3 2/5 to an improper fraction.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">17/5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15/5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">32/5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 × 5 = 15, then 15 + 2 = 17. So 3 2/5 = 17/5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
+        <p class="ws-stem">What is 1 1/2 ÷ 3/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 1/8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3/4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9/8</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 1 1/2 = 3/2. Then 3/2 ÷ 3/4 = 3/2 × 4/3 = 12/6 = 2.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
       </div>
     </li>
   
@@ -734,17 +808,19 @@ header.packet h1::after{
         <p class="ws-stem">What is 2 1/4 ÷ 3/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 1/2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9/16</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 1/3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 2 1/4 = 9/4. Then 9/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Convert each mixed number to an improper fraction.</p>
-  <table class="ws-table"><thead><tr><th>Mixed Number</th><th>Improper Fraction</th></tr></thead><tbody><tr><td>1 3/4</td><td>7/4</td></tr><tr><td>2 2/3</td><td>8/3</td></tr><tr><td>4 1/2</td><td>9/2</td></tr><tr><td>3 1/5</td><td>16/5</td></tr></tbody></table>
-  
+        <p class="ws-stem">Convert 3 2/5 to an improper fraction.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">17/5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15/5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">32/5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 × 5 = 15, then 15 + 2 = 17. So 3 2/5 = 17/5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
       </div>
     </li>
   </ol>
@@ -785,14 +861,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Mixed Numbers</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Divide Mixed Numbers · Mixed Number · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -808,19 +885,28 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 1 1/2 ÷ 3/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 1/8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3/4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9/8</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 1 1/2 = 3/2. Then 3/2 ÷ 3/4 = 3/2 × 4/3 = 12/6 = 2.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
+        <p class="ws-stem">Convert each mixed number to an improper fraction.</p>
+  <table class="ws-table"><thead><tr><th>Mixed Number</th><th>Improper Fraction</th></tr></thead><tbody><tr><td>1 3/4</td><td>7/4</td></tr><tr><td>2 2/3</td><td>8/3</td></tr><tr><td>4 1/2</td><td>9/2</td></tr><tr><td>3 1/5</td><td>16/5</td></tr></tbody></table>
+  
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -828,7 +914,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Convert 3 2/5 to an improper fraction.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">17/5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15/5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">32/5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 × 5 = 15, then 15 + 2 = 17. So 3 2/5 = 17/5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
+        <p class="ws-stem">What is 1 1/2 ÷ 3/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 1/8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3/4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9/8</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 1 1/2 = 3/2. Then 3/2 ÷ 3/4 = 3/2 × 4/3 = 12/6 = 2.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
       </div>
     </li>
   
@@ -846,19 +932,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Convert each mixed number to an improper fraction.</p>
-  <table class="ws-table"><thead><tr><th>Mixed Number</th><th>Improper Fraction</th></tr></thead><tbody><tr><td>1 3/4</td><td>7/4</td></tr><tr><td>2 2/3</td><td>8/3</td></tr><tr><td>4 1/2</td><td>9/2</td></tr><tr><td>3 1/5</td><td>16/5</td></tr></tbody></table>
-  
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -866,7 +939,26 @@ header.packet h1::after{
         <p class="ws-stem">What is 3 1/2 ÷ 1/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 1/8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">7/8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">13/4</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 1/2 = 7/2. Then 7/2 ÷ 1/4 = 7/2 × 4/1 = 28/2 = 14.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Convert 3 2/5 to an improper fraction.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">17/5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15/5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">32/5</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 × 5 = 15, then 15 + 2 = 17. So 3 2/5 = 17/5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 4</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -918,14 +1010,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Mixed Numbers</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Divide Mixed Numbers · Mixed Number · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -941,8 +1034,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -978,7 +1074,11 @@ header.packet h1::after{
         <p class="ws-stem">How many 1/2-size pieces fit into 2 1/2?</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -989,7 +1089,11 @@ header.packet h1::after{
         <p class="ws-stem">A baker has 2 1/4 cups of butter. Each batch of cookies needs 3/4 cup of butter. How many batches can the baker make?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 batches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 1/2 batches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 batches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 batches</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Convert 2 1/4 = 9/4. Then 2 1/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3 batches.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Mixed Numbers is dividing the whole-number parts and fraction parts separately instead of converting first — for example, treating 4 1/2 ÷ 1 1/2 as (4 ÷ 1) + (1/2 ÷ 1/2) = 5. Always convert each mixed number to one improper fraction first, then divide using Keep, Change, Flip: 4 1/2 ÷ 1 1/2 = 9/2 ÷ 3/2 = 9/2 × 2/3 = 3.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1041,14 +1145,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Mixed Numbers</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Divide Mixed Numbers · Mixed Number · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1062,7 +1167,6 @@ header.packet h1::after{
       </div>
     </header>
   
-      
       
       
       <ol class="ws-problems-grid">

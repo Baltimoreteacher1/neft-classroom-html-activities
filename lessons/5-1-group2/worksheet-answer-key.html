@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">5.1 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Area of Parallelograms · Slanted side · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-1-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -699,7 +764,11 @@ header.packet h1::after{
     </header>
   
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -724,7 +793,11 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Triangle 8×6</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Parallelogram 5×4</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Rectangle 7×3</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Triangle 10×8</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span><span class="ws-term-lbl">Square side 6</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">F</span><span class="ws-term-lbl">Parallelogram 9×2</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">24 sq units</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">20 sq units</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">21 sq units</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">40 sq units</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">36 sq units</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">18 sq units</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -750,6 +823,21 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What is the area of a parallelogram with base 10 cm and height 7 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">70 sq cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">34 sq cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">17 sq cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">70 cm</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A = b × h = 10 × 7 = 70 square centimeters.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in Area of Parallelograms is multiplying the base by the slanted side instead of the perpendicular height. For a parallelogram with a base of 16 ft, a perpendicular height of 9 ft, and a slanted side of 11 ft, students compute 16 × 11 = 176 square feet instead of the correct 16 × 9 = 144 square feet. The height must be the straight-up (perpendicular) distance between the base and its opposite side, not the length of the slanted side, even though the slanted side is often the number that 'looks' like it belongs in the formula.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -758,17 +846,6 @@ header.packet h1::after{
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the blueprint:</span><span class="ws-step-w">base = 12 ft, slanted side = 10 ft, height = 7 ft</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula:</span><span class="ws-step-w">A = base x height</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute the values:</span><span class="ws-step-w">A = 12 x 10</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate the area:</span><span class="ws-step-w">A = 120 sq ft</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
   <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 3. Correct Work: The height is 7 ft, not the slanted side of 10 ft. Substitute the perpendicular height: A = 12 x 7 = 84 sq ft. Only the straight-up height belongs in A = base x height.. Misconception: The blueprint lists three numbers, and the substitution step grabs the 10 ft slanted side instead of the 7 ft height. Since A = base × height only accepts the perpendicular measurement, the real area is A = 12 × 7 = 84 sq ft.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the area of a parallelogram with base 10 cm and height 7 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">70 sq cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">34 sq cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">17 sq cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">70 cm</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A = b × h = 10 × 7 = 70 square centimeters.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in Area of Parallelograms is multiplying the base by the slanted side instead of the perpendicular height. For a parallelogram with a base of 16 ft, a perpendicular height of 9 ft, and a slanted side of 11 ft, students compute 16 × 11 = 176 square feet instead of the correct 16 × 9 = 144 square feet. The height must be the straight-up (perpendicular) distance between the base and its opposite side, not the length of the slanted side, even though the slanted side is often the number that 'looks' like it belongs in the formula.</p>
       </div>
     </li>
   </ol>

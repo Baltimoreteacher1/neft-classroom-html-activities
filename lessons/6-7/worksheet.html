@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find Factors and Multiples</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Find Factors and Multiples · Factor · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,31 +773,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Find Factors and Multiples</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the greatest common factor and the least common multiple of two numbers, and use each to solve a real problem.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Find Factors and Multiples <span class="ws-es-term">(Hallar factores y múltiplos)</span></span><span class="ws-bankdef"> — Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.</span></div><div class="ws-bank-card"><span class="ws-bankword">Factor <span class="ws-es-term">(Factor)</span></span><span class="ws-bankdef"> — A whole number that divides another number evenly, with no remainder.</span></div><div class="ws-bank-card"><span class="ws-bankword">Multiple <span class="ws-es-term">(Múltiplo)</span></span><span class="ws-bankdef"> — The result of multiplying a number by 1, 2, 3, and so on — where you land when you skip-count by it.</span></div><div class="ws-bank-card"><span class="ws-bankword">Greatest common factor (GCF) <span class="ws-es-term">(Máximo común divisor (MCD))</span></span><span class="ws-bankdef"> — The largest number that is a factor of two or more numbers. It answers “how many equal groups can I make?”</span></div><div class="ws-bank-card"><span class="ws-bankword">Least common multiple (LCM) <span class="ws-es-term">(Mínimo común múltiplo (mcm))</span></span><span class="ws-bankdef"> — The smallest number that is a multiple of two or more numbers. It answers “when will these line up again?”</span></div><div class="ws-bank-card"><span class="ws-bankword">Factor pair <span class="ws-es-term">(Par de factores)</span></span><span class="ws-bankdef"> — Two factors that multiply to make a number. In a word problem, one is the number of groups and the other is the size of each group.</span></div><div class="ws-bank-card"><span class="ws-bankword">Prime factorization <span class="ws-es-term">(Descomposición en factores primos)</span></span><span class="ws-bankdef"> — Writing a number as a product of prime numbers, usually with a factor tree. Multiplying the primes two numbers share also gives the GCF.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Factors split things up; multiples count forward</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Greatest Common Factor (GCF) &amp; Least Common Multiple (LCM)</div>
+        <ul class="ws-note-list"><li>A factor divides a number evenly, so factors answer questions about splitting a stock into equal groups. A multiple is where you land when you skip-count, so multiples answer questions about when repeating events line up.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>GCF: Largest factor shared by two numbers — used to simplify fractions or divide into equal groups.</li><li>LCM: Smallest shared multiple — used to find common denominators.</li><li>Use prime factor trees or list method to find common factors/multiples</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me build the combo packs</div>
+        <ol class="ws-note-list"><li>The store has 48 pencils and 36 notebooks. Every combo pack must hold the same number of each, with nothing left over — so the number of packs has to be a factor of BOTH quantities.</li><li>Factors of 48: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. Listing them in order is what makes the comparison easy.</li><li>The numbers in both lists are the common factors: 1, 2, 3, 4, 6, and 12.</li><li>The greatest of those is 12, so the GCF of 48 and 36 is 12. The manager can make 12 combo packs — each holding 48 ÷ 12 = 4 pencils and 36 ÷ 12 = 3 notebooks.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Find Factors and Multiples (Hallar factores y múltiplos) — Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.</li><li>Factor (Factor) — A whole number that divides another number evenly, with no remainder.</li><li>Multiple (Múltiplo) — The result of multiplying a number by 1, 2, 3, and so on — where you land when you skip-count by it.</li><li>Greatest common factor (GCF) (Máximo común divisor (MCD)) — The largest number that is a factor of two or more numbers. It answers “how many equal groups can I make?”</li><li>Least common multiple (LCM) (Mínimo común múltiplo (mcm)) — The smallest number that is a multiple of two or more numbers. It answers “when will these line up again?”</li><li>Factor pair (Par de factores) — Two factors that multiply to make a number. In a word problem, one is the number of groups and the other is the size of each group.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is reaching for the wrong tool: listing FACTORS for a problem about repeating cycles. Ayasha's classes repeat every 6 and 8 weeks, so the weeks they land on are multiples — answering with the GCF of 2 claims a class that meets every 8 weeks happens in week 2. Use the size of the answer as a check: a GCF is never larger than the smaller number, and an LCM is never smaller than the larger one.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which list shows all the factors of 12?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1, 2, 3, 4, 6, 12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12, 24, 36, 48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1, 12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 3, 4, 6</span></li></ol>
+        <p class="ws-stem">Sort each number by its relationship to 10.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">A factor of 10</span> <span class="ws-cat-pill">A multiple of 10</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">20</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">5</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">30</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">50</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -740,7 +823,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which list shows the first four multiples of 8?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8, 16, 24, 32</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1, 2, 4, 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8, 9, 10, 11</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 4, 6, 8</span></li></ol>
+        <p class="ws-stem">Which list shows all the factors of 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1, 2, 3, 4, 6, 12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12, 24, 36, 48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1, 12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 3, 4, 6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,20 +837,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the greatest common factor of 12 and 18?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol>
+        <p class="ws-stem">Which list shows the first four multiples of 8?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8, 16, 24, 32</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1, 2, 4, 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8, 9, 10, 11</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 4, 6, 8</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each number by its relationship to 10.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">A factor of 10</span> <span class="ws-cat-pill">A multiple of 10</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">20</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">5</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">30</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">50</span></li></ul>
+        <p class="ws-stem">What is the greatest common factor of 12 and 18?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -813,14 +903,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find Factors and Multiples</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Find Factors and Multiples · Factor · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -835,31 +926,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Find Factors and Multiples</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the greatest common factor and the least common multiple of two numbers, and use each to solve a real problem.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Factors split things up; multiples count forward</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Greatest Common Factor (GCF) &amp; Least Common Multiple (LCM)</div>
+        <ul class="ws-note-list"><li>A factor divides a number evenly, so factors answer questions about splitting a stock into equal groups. A multiple is where you land when you skip-count, so multiples answer questions about when repeating events line up.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>GCF: Largest factor shared by two numbers — used to simplify fractions or divide into equal groups.</li><li>LCM: Smallest shared multiple — used to find common denominators.</li><li>Use prime factor trees or list method to find common factors/multiples</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me build the combo packs</div>
+        <ol class="ws-note-list"><li>The store has 48 pencils and 36 notebooks. Every combo pack must hold the same number of each, with nothing left over — so the number of packs has to be a factor of BOTH quantities.</li><li>Factors of 48: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. Listing them in order is what makes the comparison easy.</li><li>The numbers in both lists are the common factors: 1, 2, 3, 4, 6, and 12.</li><li>The greatest of those is 12, so the GCF of 48 and 36 is 12. The manager can make 12 combo packs — each holding 48 ÷ 12 = 4 pencils and 36 ÷ 12 = 3 notebooks.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Find Factors and Multiples (Hallar factores y múltiplos) — Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.</li><li>Factor (Factor) — A whole number that divides another number evenly, with no remainder.</li><li>Multiple (Múltiplo) — The result of multiplying a number by 1, 2, 3, and so on — where you land when you skip-count by it.</li><li>Greatest common factor (GCF) (Máximo común divisor (MCD)) — The largest number that is a factor of two or more numbers. It answers “how many equal groups can I make?”</li><li>Least common multiple (LCM) (Mínimo común múltiplo (mcm)) — The smallest number that is a multiple of two or more numbers. It answers “when will these line up again?”</li><li>Factor pair (Par de factores) — Two factors that multiply to make a number. In a word problem, one is the number of groups and the other is the size of each group.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is reaching for the wrong tool: listing FACTORS for a problem about repeating cycles. Ayasha's classes repeat every 6 and 8 weeks, so the weeks they land on are multiples — answering with the GCF of 2 claims a class that meets every 8 weeks happens in week 2. Use the size of the answer as a check: a GCF is never larger than the smaller number, and an LCM is never smaller than the larger one.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Find Factors and Multiples <span class="ws-es-term">(Hallar factores y múltiplos)</span></span><span class="ws-bankdef"> — Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.</span></div><div class="ws-bank-card"><span class="ws-bankword">Factor <span class="ws-es-term">(Factor)</span></span><span class="ws-bankdef"> — A whole number that divides another number evenly, with no remainder.</span></div><div class="ws-bank-card"><span class="ws-bankword">Multiple <span class="ws-es-term">(Múltiplo)</span></span><span class="ws-bankdef"> — The result of multiplying a number by 1, 2, 3, and so on — where you land when you skip-count by it.</span></div><div class="ws-bank-card"><span class="ws-bankword">Greatest common factor (GCF) <span class="ws-es-term">(Máximo común divisor (MCD))</span></span><span class="ws-bankdef"> — The largest number that is a factor of two or more numbers. It answers “how many equal groups can I make?”</span></div><div class="ws-bank-card"><span class="ws-bankword">Least common multiple (LCM) <span class="ws-es-term">(Mínimo común múltiplo (mcm))</span></span><span class="ws-bankdef"> — The smallest number that is a multiple of two or more numbers. It answers “when will these line up again?”</span></div><div class="ws-bank-card"><span class="ws-bankword">Factor pair <span class="ws-es-term">(Par de factores)</span></span><span class="ws-bankdef"> — Two factors that multiply to make a number. In a word problem, one is the number of groups and the other is the size of each group.</span></div><div class="ws-bank-card"><span class="ws-bankword">Prime factorization <span class="ws-es-term">(Descomposición en factores primos)</span></span><span class="ws-bankdef"> — Writing a number as a product of prime numbers, usually with a factor tree. Multiplying the primes two numbers share also gives the GCF.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which list shows all the factors of 12?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1, 2, 3, 4, 6, 12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12, 24, 36, 48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1, 12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 3, 4, 6</span></li></ol>
+        <p class="ws-stem">Sort each number by its relationship to 10.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">A factor of 10</span> <span class="ws-cat-pill">A multiple of 10</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">20</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">5</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">30</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">50</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -867,7 +976,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which list shows the first four multiples of 8?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8, 16, 24, 32</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1, 2, 4, 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8, 9, 10, 11</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 4, 6, 8</span></li></ol>
+        <p class="ws-stem">Which list shows all the factors of 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1, 2, 3, 4, 6, 12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12, 24, 36, 48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1, 12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 3, 4, 6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -878,20 +990,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the greatest common factor of 12 and 18?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol>
+        <p class="ws-stem">Which list shows the first four multiples of 8?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8, 16, 24, 32</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1, 2, 4, 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8, 9, 10, 11</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, 4, 6, 8</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each number by its relationship to 10.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">A factor of 10</span> <span class="ws-cat-pill">A multiple of 10</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">2</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">20</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">5</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">30</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">50</span></li></ul>
+        <p class="ws-stem">What is the greatest common factor of 12 and 18?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">36</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -902,10 +1018,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is the least common multiple of 4 and 6?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10</span></li></ol>
+        <p class="ws-stem">What is the least common multiple of 4 and 6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -916,7 +1039,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Find the GCF of 12 and 18.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Step 1:</span><span class="ws-step-w">Factors of 12: 1, 2, 3, 4, 6, 12</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Step 2:</span><span class="ws-step-w">Factors of 18: 1, 2, 3, 6, 9, 18</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Step 3:</span><span class="ws-step-w">The GCF is 36, because 36 is in both times tables.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -965,14 +1091,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find Factors and Multiples</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Find Factors and Multiples · Factor · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -987,9 +1114,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Factors split things up; multiples count forward</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Greatest Common Factor (GCF) &amp; Least Common Multiple (LCM)</div>
+        <ul class="ws-note-list"><li>A factor divides a number evenly, so factors answer questions about splitting a stock into equal groups. A multiple is where you land when you skip-count, so multiples answer questions about when repeating events line up.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>GCF: Largest factor shared by two numbers — used to simplify fractions or divide into equal groups.</li><li>LCM: Smallest shared multiple — used to find common denominators.</li><li>Use prime factor trees or list method to find common factors/multiples</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me build the combo packs</div>
+        <ol class="ws-note-list"><li>The store has 48 pencils and 36 notebooks. Every combo pack must hold the same number of each, with nothing left over — so the number of packs has to be a factor of BOTH quantities.</li><li>Factors of 48: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. Listing them in order is what makes the comparison easy.</li><li>The numbers in both lists are the common factors: 1, 2, 3, 4, 6, and 12.</li><li>The greatest of those is 12, so the GCF of 48 and 36 is 12. The manager can make 12 combo packs — each holding 48 ÷ 12 = 4 pencils and 36 ÷ 12 = 3 notebooks.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's do one together — the same GCF, using prime factors</div>
+        <ol class="ws-note-list"><li>A factor tree breaks each number into primes. 48 = 2 × 2 × 2 × 2 × 3, and 36 = 2 × 2 × 3 × 3.</li><li>Now look at what the two share: two 2s and one 3.</li><li>Multiply the shared primes: 2 × 2 × 3 = 12.</li><li>Same answer as the lists, 12 — which is the check. For big numbers, the factor tree is usually the faster road.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Find Factors and Multiples (Hallar factores y múltiplos) — Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.</li><li>Factor (Factor) — A whole number that divides another number evenly, with no remainder.</li><li>Multiple (Múltiplo) — The result of multiplying a number by 1, 2, 3, and so on — where you land when you skip-count by it.</li><li>Greatest common factor (GCF) (Máximo común divisor (MCD)) — The largest number that is a factor of two or more numbers. It answers “how many equal groups can I make?”</li><li>Least common multiple (LCM) (Mínimo común múltiplo (mcm)) — The smallest number that is a multiple of two or more numbers. It answers “when will these line up again?”</li><li>Factor pair (Par de factores) — Two factors that multiply to make a number. In a word problem, one is the number of groups and the other is the size of each group.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is reaching for the wrong tool: listing FACTORS for a problem about repeating cycles. Ayasha's classes repeat every 6 and 8 weeks, so the weeks they land on are multiples — answering with the GCF of 2 claims a class that meets every 8 weeks happens in week 2. Use the size of the answer as a check: a GCF is never larger than the smaller number, and an LCM is never smaller than the larger one.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -999,35 +1152,16 @@ header.packet h1::after{
         
         <p class="ws-stem">The store has 48 pencils and 36 notebooks. Complete the factor lists, then find the GCF.</p>
   <table class="ws-table"><thead><tr><th>Number</th><th>Factors</th><th>GCF</th></tr></thead><tbody><tr><td>48</td><td></td><td></td></tr><tr><td>36</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Using prime factors, 48 = 2 × 2 × 2 × 2 × 3 and 36 = 2 × 2 × 3 × 3. What is their GCF?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12, from the shared 2 × 2 × 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">144, from multiplying all the primes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6, from one 2 and one 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, the only prime they share</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Ayasha has painting every 8 weeks and pottery every 6 weeks, both this week. When do they next fall in the same week?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">In 24 weeks</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">In 48 weeks</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">In 14 weeks</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">In 2 weeks</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1037,7 +1171,43 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Split 48 pencils and 36 notebooks into identical packs</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Two classes repeat every 6 and 8 weeks — when do they meet?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Cut two ribbons into the longest equal pieces with none left over</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Hot dogs in packs of 10, buns in packs of 8 — when do they match?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The answer is at most the smaller number</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The answer is at least the larger number</span></li></ul>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Using prime factors, 48 = 2 × 2 × 2 × 2 × 3 and 36 = 2 × 2 × 3 × 3. What is their GCF?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12, from the shared 2 × 2 × 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">144, from multiplying all the primes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6, from one 2 and one 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2, the only prime they share</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Ayasha has painting every 8 weeks and pottery every 6 weeks, both this week. When do they next fall in the same week?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">In 24 weeks</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">In 48 weeks</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">In 14 weeks</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">In 2 weeks</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1048,7 +1218,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Ayasha has painting every 8 weeks and pottery every 6 weeks. When do both fall in the same week?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Step 1:</span><span class="ws-step-w">Factors of 8: 1, 2, 4, 8</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Step 2:</span><span class="ws-step-w">Factors of 6: 1, 2, 3, 6</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Step 3:</span><span class="ws-step-w">The greatest common factor is 2, so both classes meet in week 2.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1097,14 +1270,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find Factors and Multiples</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Find Factors and Multiples · Factor · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1119,12 +1293,58 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Factors split things up; multiples count forward</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Greatest Common Factor (GCF) &amp; Least Common Multiple (LCM)</div>
+        <ul class="ws-note-list"><li>A factor divides a number evenly, so factors answer questions about splitting a stock into equal groups. A multiple is where you land when you skip-count, so multiples answer questions about when repeating events line up.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>GCF: Largest factor shared by two numbers — used to simplify fractions or divide into equal groups.</li><li>LCM: Smallest shared multiple — used to find common denominators.</li><li>Use prime factor trees or list method to find common factors/multiples</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me build the combo packs</div>
+        <ol class="ws-note-list"><li>The store has 48 pencils and 36 notebooks. Every combo pack must hold the same number of each, with nothing left over — so the number of packs has to be a factor of BOTH quantities.</li><li>Factors of 48: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. Listing them in order is what makes the comparison easy.</li><li>The numbers in both lists are the common factors: 1, 2, 3, 4, 6, and 12.</li><li>The greatest of those is 12, so the GCF of 48 and 36 is 12. The manager can make 12 combo packs — each holding 48 ÷ 12 = 4 pencils and 36 ÷ 12 = 3 notebooks.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's do one together — the same GCF, using prime factors</div>
+        <ol class="ws-note-list"><li>A factor tree breaks each number into primes. 48 = 2 × 2 × 2 × 2 × 3, and 36 = 2 × 2 × 3 × 3.</li><li>Now look at what the two share: two 2s and one 3.</li><li>Multiply the shared primes: 2 × 2 × 3 = 12.</li><li>Same answer as the lists, 12 — which is the check. For big numbers, the factor tree is usually the faster road.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Find Factors and Multiples (Hallar factores y múltiplos) — Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.</li><li>Factor (Factor) — A whole number that divides another number evenly, with no remainder.</li><li>Multiple (Múltiplo) — The result of multiplying a number by 1, 2, 3, and so on — where you land when you skip-count by it.</li><li>Greatest common factor (GCF) (Máximo común divisor (MCD)) — The largest number that is a factor of two or more numbers. It answers “how many equal groups can I make?”</li><li>Least common multiple (LCM) (Mínimo común múltiplo (mcm)) — The smallest number that is a multiple of two or more numbers. It answers “when will these line up again?”</li><li>Factor pair (Par de factores) — Two factors that multiply to make a number. In a word problem, one is the number of groups and the other is the size of each group.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is reaching for the wrong tool: listing FACTORS for a problem about repeating cycles. Ayasha's classes repeat every 6 and 8 weeks, so the weeks they land on are multiples — answering with the GCF of 2 claims a class that meets every 8 weeks happens in week 2. Use the size of the answer as a check: a GCF is never larger than the smaller number, and an LCM is never smaller than the larger one.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Find both the GCF and the LCM of each pair.</p>
+  <table class="ws-table"><thead><tr><th>Numbers</th><th>GCF</th><th>LCM</th></tr></thead><tbody><tr><td>6 and 8</td><td></td><td></td></tr><tr><td>12 and 18</td><td></td><td></td></tr><tr><td>4 and 10</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1132,31 +1352,24 @@ header.packet h1::after{
         <p class="ws-stem"><b>Find the error</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Find the LCM of 6 and 8.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Step 1:</span><span class="ws-step-w">Multiples of 6: 6, 12, 18, 24, 30, 36, 42, 48</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Step 2:</span><span class="ws-step-w">Multiples of 8: 8, 16, 24, 32, 40, 48</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Step 3:</span><span class="ws-step-w">Both lists contain 48, so the LCM is 48.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Reginald is having hot dogs for 24 guests and wants the same number of hot dogs and buns, with none left over. Hot dogs come in packs of 10 and buns in packs of 8. How many packs of each should he buy, and how many will he have? Explain which tool you used and why.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Find both the GCF and the LCM of each pair.</p>
-  <table class="ws-table"><thead><tr><th>Numbers</th><th>GCF</th><th>LCM</th></tr></thead><tbody><tr><td>6 and 8</td><td></td><td></td></tr><tr><td>12 and 18</td><td></td><td></td></tr><tr><td>4 and 10</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">Reginald is having hot dogs for 24 guests and wants the same number of hot dogs and buns, with none left over. Hot dogs come in packs of 10 and buns in packs of 8. How many packs of each should he buy, and how many will he have? Explain which tool you used and why.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

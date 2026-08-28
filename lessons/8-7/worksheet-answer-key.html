@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Equations and Inequalities Problem Solving</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Equations and Inequalities Problem Solving · Model · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,29 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which model is correct for: 'A number divided by 6 equals 7'?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">n / 6 = 7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6n = 7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n − 6 = 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n + 6 = 7</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Divided by 6 is n / 6. Equals 7 means = 7. So n / 6 = 7.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,23 +798,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 + h &gt; 8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 + h = 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h &gt; 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8 + h &gt; 3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which model is correct for: 'A number divided by 6 equals 7'?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">n / 6 = 7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6n = 7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n − 6 = 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n + 6 = 7</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Divided by 6 is n / 6. Equals 7 means = 7. So n / 6 = 7.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
+        <p class="ws-stem">A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 + h &gt; 8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 + h = 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h &gt; 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8 + h &gt; 3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
       </div>
     </li>
   
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Equations and Inequalities Problem Solving</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Equations and Inequalities Problem Solving · Model · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,33 +879,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A museum has some paintings. After adding 12, they have 45. Which equation models this?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">p + 12 = 45</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">p − 12 = 45</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12p = 45</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">p / 12 = 45</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 'Adding 12' to the original number gives 45: p + 12 = 45. Solve: p = 33.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 + h &gt; 8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 + h = 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h &gt; 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8 + h &gt; 3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -843,18 +897,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A bus can carry at most 48 passengers. There are already 31 on board. Which inequality shows how many more can board?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">31 + p ≤ 48</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31 + p &gt; 48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">31 + p = 48</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">p − 31 ≤ 48</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 'At most 48' means the total must be ≤ 48. So 31 + p ≤ 48. Solve: p ≤ 17.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -864,7 +907,48 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equation (=)</span><span class="ws-sort-text">Five boxes weigh exactly 60 pounds total. How much does each weigh?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Equation (=)</span><span class="ws-sort-text">A number plus 8 equals 20.</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Inequality (&lt;, &gt;, ≤, ≥)</span><span class="ws-sort-text">A shelf holds at most 30 books. There are already 17. How many more fit?</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Inequality (&lt;, &gt;, ≤, ≥)</span><span class="ws-sort-text">The temperature must stay above 32 degrees.</span></li></ul>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A museum has some paintings. After adding 12, they have 45. Which equation models this?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">p + 12 = 45</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">p − 12 = 45</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12p = 45</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">p / 12 = 45</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 'Adding 12' to the original number gives 45: p + 12 = 45. Solve: p = 33.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 + h &gt; 8</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 + h = 8</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h &gt; 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8 + h &gt; 3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A bus can carry at most 48 passengers. There are already 31 on board. Which inequality shows how many more can board?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">31 + p ≤ 48</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31 + p &gt; 48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">31 + p = 48</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">p − 31 ≤ 48</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 'At most 48' means the total must be ≤ 48. So 31 + p ≤ 48. Solve: p ≤ 17.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -916,14 +1000,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Equations and Inequalities Problem Solving</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Equations and Inequalities Problem Solving · Model · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -939,8 +1024,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -957,17 +1045,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A student solved 4n = 52 and got n = 13. Is the answer reasonable if n represents the number of notebooks in a box?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Yes — 13 notebooks per box is reasonable</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No — 13 is too many notebooks</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">No — the answer should be 48</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Yes — but only if n is a fraction</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 × 13 = 52 ✓. 13 notebooks per box is a reasonable whole number answer.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MATCHING</span>
       </div>
       <div class="ws-pbody">
@@ -979,7 +1056,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">BALANCE SCALE</span>
       </div>
       <div class="ws-pbody">
@@ -998,7 +1075,26 @@ header.packet h1::after{
         <p class="ws-stem">Solve this two-step problem: 3x + 5 = 26</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A student solved 4n = 52 and got n = 13. Is the answer reasonable if n represents the number of notebooks in a box?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Yes — 13 notebooks per box is reasonable</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No — 13 is too many notebooks</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">No — the answer should be 48</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Yes — but only if n is a fraction</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 4 × 13 = 52 ✓. 13 notebooks per box is a reasonable whole number answer.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Equations and Inequalities Problem Solving is matching the wrong model to a key phrase. For 'the getaway car held no more than 6 bags,' students often write the equation b = 6 instead of the inequality b ≤ 6, because they see one number and assume it must be exact. The same mistake happens in reverse: for 'the reward split equally among 5 people gave each $40,' students sometimes write the inequality 5p ≥ 40 instead of the equation 5p = 40, because 'split equally' sounds like it could mean a range. Before you submit, ask: does this phrase give one exact value (equation, =) or a limit/range (inequality, &lt;, &gt;, ≤, ≥)?</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1050,14 +1146,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Equations and Inequalities Problem Solving</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Equations and Inequalities Problem Solving · Model · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1073,11 +1170,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Check each student's model. If wrong, write the correct model and solve.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Student's Model</th><th>Correct?</th><th>Fix (if needed)</th></tr></thead><tbody><tr><td>A tank holds at most 500 gallons. It has 320. How many more gallons can be added?</td><td>320 + g = 500</td><td>No</td><td>'At most' needs ≤: 320 + g ≤ 500 → g ≤ 180</td></tr><tr><td>Six friends split a pizza bill equally. Each paid $8. What was the total?</td><td>t / 6 = 8</td><td>Yes</td><td>Correct: t = 48</td></tr><tr><td>A runner must complete more than 5 laps. She has done 2. How many more does she need?</td><td>2 + m = 5</td><td>No</td><td>'More than' needs &gt;: 2 + m &gt; 5 → m &gt; 3</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1091,25 +1208,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Create two word problems about the same situation: one that requires an equation and one that requires an inequality. Solve both and explain why the models are different.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: equation, inequality, exactly, at least, at most, more than, reasonable Explanation: The two models differ because the two questions ask for different things. An equation fits when the situation names one exact amount, like 'I saved exactly $45', so it has a single solution. An inequality fits when the situation sets a minimum or a ceiling, like 'I need at least $45', so a whole range of values works. Same story, different clue words, different symbol.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Check each student's model. If wrong, write the correct model and solve.</p>
-  <table class="ws-table"><thead><tr><th>Problem</th><th>Student's Model</th><th>Correct?</th><th>Fix (if needed)</th></tr></thead><tbody><tr><td>A tank holds at most 500 gallons. It has 320. How many more gallons can be added?</td><td>320 + g = 500</td><td>No</td><td>'At most' needs ≤: 320 + g ≤ 500 → g ≤ 180</td></tr><tr><td>Six friends split a pizza bill equally. Each paid $8. What was the total?</td><td>t / 6 = 8</td><td>Yes</td><td>Correct: t = 48</td></tr><tr><td>A runner must complete more than 5 laps. She has done 2. How many more does she need?</td><td>2 + m = 5</td><td>No</td><td>'More than' needs &gt;: 2 + m &gt; 5 → m &gt; 3</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

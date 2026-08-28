@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">7.1 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Integer · Opposite · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=7-1-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,82 +767,48 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 7.1 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can use integers to represent quantities in everyday life, explain what 0 means in each situation, and name the opposite of an integer on the number line — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — How do you use integers to describe quantities above and below zero?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Pick what 0 means in the situation first. Then a quantity above 0 is a positive integer and a quantity below 0 is a negative integer, and its opposite is the same distance from 0 on the other side.</div>
+        <ul class="ws-note-list"><li>Counting numbers, their opposites, and 0 are integers. A negative integer is less than zero and is written with a − sign. Opposites are the same distance from 0, but on opposite sides of the number line. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Badwater Basin is 86 meters below sea level, and sea level is defined as 0.</li><li>Below 0 means a negative number, so I write the elevation as −86 meters.</li><li>On a number line, I count 86 units to the LEFT of 0 and mark that point.</li><li>The opposite of −86 is 86. Both are 86 units from 0, just on different sides.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Integer (Número entero) — The counting numbers, their opposites, and 0.</li><li>Opposite (Opuesto) — A number that is the same distance from 0 as another number, but on the other side of 0.</li><li>Negative number (Número negativo) — A number less than 0, written with a − sign. On a number line it sits to the left of 0.</li><li>Positive number (Número positivo) — A number greater than 0. On a number line it sits to the right of 0.</li><li>Number line (Recta numérica) — A straight line where numbers are placed in order. It extends to the left of 0 to show values less than 0.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Integer <span class="ws-es-term">(Número entero)</span></span><span class="ws-bankdef"> — The counting numbers, their opposites, and 0.</span></div><div class="ws-bank-card"><span class="ws-bankword">Opposite <span class="ws-es-term">(Opuesto)</span></span><span class="ws-bankdef"> — A number that is the same distance from 0 as another number, but on the other side of 0.</span></div><div class="ws-bank-card"><span class="ws-bankword">Negative number <span class="ws-es-term">(Número negativo)</span></span><span class="ws-bankdef"> — A number less than 0, written with a − sign. On a number line it sits to the left of 0.</span></div><div class="ws-bank-card"><span class="ws-bankword">Positive number <span class="ws-es-term">(Número positivo)</span></span><span class="ws-bankdef"> — A number greater than 0. On a number line it sits to the right of 0.</span></div><div class="ws-bank-card"><span class="ws-bankword">Number line <span class="ws-es-term">(Recta numérica)</span></span><span class="ws-bankdef"> — A straight line where numbers are placed in order. It extends to the left of 0 to show values less than 0.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Badwater Basin is 86 meters below sea level, and sea level is 0. Which integer represents that elevation?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">-86</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">86</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-68</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In Reykjavik the temperature was -9°C. What is the opposite of -9?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-18</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the opposite of 0?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A number written -0, which is less than 0</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Every negative number</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Zero has no opposite</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Spot the Mistake: The Opposite of -7</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Name the opposite of -7.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking:</span><span class="ws-step-w">The number starts out negative, and taking the opposite of a negative number keeps it negative, so the answer stays on the left side of 0.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer:</span><span class="ws-step-w">The opposite of -7 is -7.</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Write the integer that represents each situation. Remember to decide what 0 means first.</p>
   <table class="ws-table"><thead><tr><th>Situation</th><th>Integer</th></tr></thead><tbody><tr><td>A football play with a 12-yard loss</td><td></td></tr><tr><td>A hiker 250 meters above sea level</td><td></td></tr><tr><td>7 degrees below zero</td><td></td></tr><tr><td>A submarine resting at the surface of the water</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -785,6 +816,73 @@ header.packet h1::after{
         <p class="ws-stem">Sort each integer by which side of 0 it sits on when you graph it on a number line.</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Left of 0 (negative integer)</span> <span class="ws-cat-pill">Right of 0 (positive integer)</span></div>
   <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Badwater Basin is 86 meters below sea level, and sea level is 0. Which integer represents that elevation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">-86</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">86</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-68</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In Reykjavik the temperature was -9°C. What is the opposite of -9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-18</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What is the opposite of 0?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A number written -0, which is less than 0</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Every negative number</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Zero has no opposite</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Spot the Mistake: The Opposite of -7</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Name the opposite of -7.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking:</span><span class="ws-step-w">The number starts out negative, and taking the opposite of a negative number keeps it negative, so the answer stays on the left side of 0.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer:</span><span class="ws-step-w">The opposite of -7 is -7.</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

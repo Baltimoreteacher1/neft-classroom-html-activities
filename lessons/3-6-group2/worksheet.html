@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.6 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Visual Models · Convert Measurements within the Same System · Conversion factor · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-6-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 3.6 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use ratio reasoning to convert between units within the same measurement system, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — Converting inside one measurement system</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Write the conversion factor as a unit ratio (12 inches : 1 foot), then multiply to go to the smaller unit and divide to go to the larger one. The amount never changes — only the unit does — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me check the ride height rule</div>
+        <ol class="ws-note-list"><li>A ride requires riders to be at or above 44 inches tall. A child is 4 feet tall. The two measurements use different units, so I cannot compare them yet.</li><li>Both units belong to the customary system, and there are 12 inches in one foot. That relationship is the conversion factor. As a ratio it is 12 : 1 — a unit ratio, because it compares an amount to exactly 1 foot.</li><li>Inches are smaller than feet, so there will be MORE of them: I multiply. 4 × 12 = 48.</li><li>The child is 48 inches tall. Now the comparison is fair: 48 inches is greater than 44 inches, so the child can go on the ride.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Diamond wants to drink 4 liters of water. Her bottle is marked in milliliters.</li><li>The conversion factor is 1,000 mL : 1 L. On a double number line, every 1 liter above matches 1,000 milliliters below.</li><li>Milliliters are smaller, so multiply: 4 × 1,000 = 4,000. So 4 liters = 4,000 milliliters.</li><li>Her bottle holds 500 milliliters. How many fills? Solve ? × 500 = 4,000. Since 8 × 500 = 4,000, she fills the bottle 8 times.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Convert Measurements within the Same System (Convertir medidas dentro del mismo sistema) — Rewriting a measurement in a different unit of the SAME system, such as feet into inches or liters into milliliters.</li><li>Conversion factor (Factor de conversión) — The ratio that links two units in the same measurement system, such as 12 inches to 1 foot. Within one system it is exact.</li><li>Unit ratio (Razón unitaria) — A ratio that compares an amount to exactly 1 unit of another quantity, like 12 inches to 1 foot.</li><li>Convert (Convertir) — To change a measurement from one unit to another without changing how much it is.</li><li>Measurement system (Sistema de medidas) — A family of units that go together — customary units like inches and feet, or metric units like milliliters and liters.</li><li>Double number line (Recta numérica doble) — Two number lines lined up so matching tick marks show two units for the same amount.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake when converting within a measurement system is choosing the operation by habit instead of by unit size — multiplying every time. Converting 36 inches to feet by multiplying gives 36 × 12 = 432 feet, taller than a 40-story building. Ask first which unit is smaller: it takes MORE small units to make the same amount, so going to a smaller unit multiplies, and going to a larger unit divides.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">There are 1,000 milliliters in 1 liter. Complete the double number line as a table.</p>
   <table class="ws-table"><thead><tr><th>Liters</th><th>Milliliters</th></tr></thead><tbody><tr><td>1</td><td></td></tr><tr><td>2</td><td></td></tr><tr><td>4</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -729,10 +815,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         <div class="ws-figure-wrap" style="margin:10px auto;display:flex;flex-direction:column;align-items:center;"><svg width="460" height="66" viewBox="0 0 460 66" role="img" aria-label="Tape diagram model" style="background:white;max-width:100%;height:auto;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;"><text x="10" y="31" font-size="11" font-weight="700" fill="#1e293b" font-family="'Hanken Grotesk',Arial,sans-serif">Total</text><rect x="94.0" y="10" width="116.7" height="34" rx="4" fill="#0f8a84"/><text x="153.3" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">Quart 1</text><rect x="212.7" y="10" width="116.7" height="34" rx="4" fill="#c2603f"/><text x="272.0" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">Quart 2</text><rect x="331.3" y="10" width="116.7" height="34" rx="4" fill="#b07d12"/><text x="390.7" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">Quart 3</text></svg></div>
-        <p class="ws-stem">A 3-quart stockpot is filled using a 1-cup scoop. There are 4 cups in 1 quart. Use the bar model to show how many scoops fill the pot.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">A 3-quart stockpot is filled using a 1-cup scoop. There are 4 cups in 1 quart. Use the bar model to show how many scoops fill the pot.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -740,7 +833,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A tap fills 250 milliliters every 10 seconds. Will it fill a 3-liter jug in under 2 minutes?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Yes — it delivers 3,000 mL in 120 seconds, exactly filling the jug at the 2-minute mark</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No — 250 mL in 10 seconds is far too slow for 3 liters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes — 3 liters is only 300 mL, so it takes 12 seconds</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">There is not enough information to tell</span></li></ol>
+        <p class="ws-stem">A tap fills 250 milliliters every 10 seconds. Will it fill a 3-liter jug in under 2 minutes?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Yes — it delivers 3,000 mL in 120 seconds, exactly filling the jug at the 2-minute mark</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No — 250 mL in 10 seconds is far too slow for 3 liters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes — 3 liters is only 300 mL, so it takes 12 seconds</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">There is not enough information to tell</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,7 +847,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which pair belongs to the SAME measurement system?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Cups and quarts</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Inches and centimeters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Pounds and grams</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Liters and gallons</span></li></ol>
+        <p class="ws-stem">Which pair belongs to the SAME measurement system?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Cups and quarts</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Inches and centimeters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Pounds and grams</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Liters and gallons</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -762,7 +861,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A shelf is 5 feet long. A row of books measures 58 inches. Which is longer, and by how much?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The shelf, by 2 inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The books, by 53 inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The books, by 2 inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">They are the same length</span></li></ol>
+        <p class="ws-stem">A shelf is 5 feet long. A row of books measures 58 inches. Which is longer, and by how much?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The shelf, by 2 inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The books, by 53 inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The books, by 2 inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">They are the same length</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -773,7 +875,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claim: “Converting a measurement to a smaller unit always makes the number bigger.” Always, sometimes, or never true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Always — a smaller unit means more of them are needed to cover the same amount</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Sometimes — it depends whether you multiply or divide</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — converting cannot change the number</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sometimes — it is true for length but not for mass</span></li></ol>
+        <p class="ws-stem">Claim: “Converting a measurement to a smaller unit always makes the number bigger.” Always, sometimes, or never true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Always — a smaller unit means more of them are needed to cover the same amount</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Sometimes — it depends whether you multiply or divide</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — converting cannot change the number</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sometimes — it is true for length but not for mass</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -840,7 +945,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

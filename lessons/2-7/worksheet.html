@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -684,14 +748,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Decimals Using an Algorithm</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Divide Decimals · Dividend · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -706,31 +771,52 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Divide Decimals Using an Algorithm</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can divide with decimals by making the divisor a whole number first.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Divide Decimals <span class="ws-es-term">(Dividir decimales)</span></span><span class="ws-bankdef"> — Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</span></div><div class="ws-bank-card"><span class="ws-bankword">Dividend <span class="ws-es-term">(Dividendo)</span></span><span class="ws-bankdef"> — The total number being divided into equal groups (the number inside the division bracket).</span></div><div class="ws-bank-card"><span class="ws-bankword">Divisor <span class="ws-es-term">(Divisor)</span></span><span class="ws-bankdef"> — The number of equal groups you are dividing into (the number outside the division bracket).</span></div><div class="ws-bank-card"><span class="ws-bankword">Quotient <span class="ws-es-term">(Cociente)</span></span><span class="ws-bankdef"> — The answer when you divide.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decimal Division Algorithm <span class="ws-es-term">(Algoritmo de división decimal)</span></span><span class="ws-bankdef"> — The steps for dividing decimals: slide the divisor's decimal point right until the divisor is a whole number, slide the dividend's point right the same number of places, then divide.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equivalent division <span class="ws-es-term">(División equivalente)</span></span><span class="ws-bankdef"> — Multiplying both numbers by 10 or 100 gives the same answer.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do you divide with decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Decimal Division Algorithm</div>
+        <ul class="ws-note-list"><li>Dividing splits a total into equal groups. When you divide by a decimal, first move the point to make the divisor a whole number — then run the same long-division cycle: divide, multiply, subtract, bring down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Make the divisor a whole number: slide its decimal point to the right.</li><li>Slide the dividend's decimal point to the right the same number of places.</li><li>Write the answer's decimal point in the column directly above the dividend's point, then divide as whole numbers using Divide → Multiply → Subtract → Bring Down.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 18.9 ÷ 6.3. The divisor is 6.3, and long division needs a whole-number divisor.</li><li>STEP 0 — MOVE THE POINT: I move the decimal point 1 place right in the divisor, so 6.3 becomes 63.</li><li>I slide the decimal point 1 place to the right in the dividend too, so 18.9 becomes 189. Both points slid the same 1 place, so the answer does not change. The problem is now 189 ÷ 63.</li><li>Now I write it the tall way — 63 into 189 — with the answer going on top of the bar and the answer's decimal point in the column directly above the dividend's point. Then I repeat the same four steps I always use: DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN.</li><li>DIVIDE: 63 does not fit into 1 or 18, so my first working number is 189. How many 63s fit into 189? Three. I write 3 above the 9.</li><li>MULTIPLY: 3 × 63 = 189. I write it underneath.</li><li>SUBTRACT: 189 − 189 = 0.</li><li>BRING DOWN: there are no digits left to bring down, so the cycle is finished and the remainder is 0. 18.9 ÷ 6.3 = 3.</li><li>I check by multiplying: 6.3 × 3 = 18.9. Correct — 18.9 ÷ 6.3 = 3.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Divide Decimals (Dividir decimales) — Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</li><li>Dividend (Dividendo) — The total number being divided into equal groups (the number inside the division bracket).</li><li>Divisor (Divisor) — The number of equal groups you are dividing into (the number outside the division bracket).</li><li>Quotient (Cociente) — The answer when you divide.</li><li>Decimal Division Algorithm (Algoritmo de división decimal) — The steps for dividing decimals: slide the divisor's decimal point right until the divisor is a whole number, slide the dividend's point right the same number of places, then divide.</li><li>Equivalent division (División equivalente) — Multiplying both numbers by 10 or 100 gives the same answer.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 14.4 ÷ 1.2?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol>
+        <p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
+  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td></td><td></td><td></td></tr><tr><td>3.6 ÷ 0.4</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -738,7 +824,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 3.78 ÷ 0.6?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6.3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">63</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.63</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.063</span></li></ol>
+        <p class="ws-stem">What is 14.4 ÷ 1.2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -749,20 +838,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 8.4 ÷ 0.7?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol>
+        <p class="ws-stem">What is 3.78 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6.3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">63</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.63</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.063</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
-  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td></td><td></td><td></td></tr><tr><td>3.6 ÷ 0.4</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">What is 8.4 ÷ 0.7?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -811,14 +904,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Decimals Using an Algorithm</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Divide Decimals · Dividend · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -833,31 +927,52 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Divide Decimals Using an Algorithm</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can divide with decimals by making the divisor a whole number first.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do you divide with decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Decimal Division Algorithm</div>
+        <ul class="ws-note-list"><li>Dividing splits a total into equal groups. When you divide by a decimal, first move the point to make the divisor a whole number — then run the same long-division cycle: divide, multiply, subtract, bring down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Make the divisor a whole number: slide its decimal point to the right.</li><li>Slide the dividend's decimal point to the right the same number of places.</li><li>Write the answer's decimal point in the column directly above the dividend's point, then divide as whole numbers using Divide → Multiply → Subtract → Bring Down.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 18.9 ÷ 6.3. The divisor is 6.3, and long division needs a whole-number divisor.</li><li>STEP 0 — MOVE THE POINT: I move the decimal point 1 place right in the divisor, so 6.3 becomes 63.</li><li>I slide the decimal point 1 place to the right in the dividend too, so 18.9 becomes 189. Both points slid the same 1 place, so the answer does not change. The problem is now 189 ÷ 63.</li><li>Now I write it the tall way — 63 into 189 — with the answer going on top of the bar and the answer's decimal point in the column directly above the dividend's point. Then I repeat the same four steps I always use: DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN.</li><li>DIVIDE: 63 does not fit into 1 or 18, so my first working number is 189. How many 63s fit into 189? Three. I write 3 above the 9.</li><li>MULTIPLY: 3 × 63 = 189. I write it underneath.</li><li>SUBTRACT: 189 − 189 = 0.</li><li>BRING DOWN: there are no digits left to bring down, so the cycle is finished and the remainder is 0. 18.9 ÷ 6.3 = 3.</li><li>I check by multiplying: 6.3 × 3 = 18.9. Correct — 18.9 ÷ 6.3 = 3.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Divide Decimals (Dividir decimales) — Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</li><li>Dividend (Dividendo) — The total number being divided into equal groups (the number inside the division bracket).</li><li>Divisor (Divisor) — The number of equal groups you are dividing into (the number outside the division bracket).</li><li>Quotient (Cociente) — The answer when you divide.</li><li>Decimal Division Algorithm (Algoritmo de división decimal) — The steps for dividing decimals: slide the divisor's decimal point right until the divisor is a whole number, slide the dividend's point right the same number of places, then divide.</li><li>Equivalent division (División equivalente) — Multiplying both numbers by 10 or 100 gives the same answer.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Divide Decimals <span class="ws-es-term">(Dividir decimales)</span></span><span class="ws-bankdef"> — Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</span></div><div class="ws-bank-card"><span class="ws-bankword">Dividend <span class="ws-es-term">(Dividendo)</span></span><span class="ws-bankdef"> — The total number being divided into equal groups (the number inside the division bracket).</span></div><div class="ws-bank-card"><span class="ws-bankword">Divisor <span class="ws-es-term">(Divisor)</span></span><span class="ws-bankdef"> — The number of equal groups you are dividing into (the number outside the division bracket).</span></div><div class="ws-bank-card"><span class="ws-bankword">Quotient <span class="ws-es-term">(Cociente)</span></span><span class="ws-bankdef"> — The answer when you divide.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decimal Division Algorithm <span class="ws-es-term">(Algoritmo de división decimal)</span></span><span class="ws-bankdef"> — The steps for dividing decimals: slide the divisor's decimal point right until the divisor is a whole number, slide the dividend's point right the same number of places, then divide.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equivalent division <span class="ws-es-term">(División equivalente)</span></span><span class="ws-bankdef"> — Multiplying both numbers by 10 or 100 gives the same answer.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 14.4 ÷ 1.2?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol>
+        <p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
+  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td></td><td></td><td></td></tr><tr><td>3.6 ÷ 0.4</td><td></td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -865,7 +980,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 3.78 ÷ 0.6?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6.3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">63</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.63</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.063</span></li></ol>
+        <p class="ws-stem">What is 14.4 ÷ 1.2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -876,20 +994,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 8.4 ÷ 0.7?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol>
+        <p class="ws-stem">What is 3.78 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">6.3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">63</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.63</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.063</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
-  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td></td><td></td><td></td></tr><tr><td>3.6 ÷ 0.4</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">What is 8.4 ÷ 0.7?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.12</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -900,10 +1022,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 15.6 ÷ 1.3?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">13</span></li></ol>
+        <p class="ws-stem">What is 15.6 ÷ 1.3?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1.2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">120</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">13</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -914,7 +1043,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Solve 6.4 ÷ 0.8.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move the divisor's decimal:</span><span class="ws-step-w">0.8 becomes 8 (moved 1 place right).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Divide without moving the dividend:</span><span class="ws-step-w">6.4 ÷ 8 = 0.8</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -963,14 +1095,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Decimals Using an Algorithm</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Divide Decimals · Dividend · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -985,9 +1118,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do you divide with decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Decimal Division Algorithm</div>
+        <ul class="ws-note-list"><li>Dividing splits a total into equal groups. When you divide by a decimal, first move the point to make the divisor a whole number — then run the same long-division cycle: divide, multiply, subtract, bring down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Make the divisor a whole number: slide its decimal point to the right.</li><li>Slide the dividend's decimal point to the right the same number of places.</li><li>Write the answer's decimal point in the column directly above the dividend's point, then divide as whole numbers using Divide → Multiply → Subtract → Bring Down.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 18.9 ÷ 6.3. The divisor is 6.3, and long division needs a whole-number divisor.</li><li>STEP 0 — MOVE THE POINT: I move the decimal point 1 place right in the divisor, so 6.3 becomes 63.</li><li>I slide the decimal point 1 place to the right in the dividend too, so 18.9 becomes 189. Both points slid the same 1 place, so the answer does not change. The problem is now 189 ÷ 63.</li><li>Now I write it the tall way — 63 into 189 — with the answer going on top of the bar and the answer's decimal point in the column directly above the dividend's point. Then I repeat the same four steps I always use: DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN.</li><li>DIVIDE: 63 does not fit into 1 or 18, so my first working number is 189. How many 63s fit into 189? Three. I write 3 above the 9.</li><li>MULTIPLY: 3 × 63 = 189. I write it underneath.</li><li>SUBTRACT: 189 − 189 = 0.</li><li>BRING DOWN: there are no digits left to bring down, so the cycle is finished and the remainder is 0. 18.9 ÷ 6.3 = 3.</li><li>I check by multiplying: 6.3 × 3 = 18.9. Correct — 18.9 ÷ 6.3 = 3.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Let's do 8.4 ÷ 2.1. STEP 0 — MOVE THE POINT: how many places make 2.1 a whole number? (1 place, so 2.1 becomes 21.)</li><li>Now slide the decimal point 1 place to the right in the dividend too. What does 8.4 become? (84, so the new problem is 84 ÷ 21.)</li><li>DIVIDE: how many 21s fit into 84? (Four. I write 4 on top, above the 4 in 84.)</li><li>MULTIPLY: what is 4 × 21? (84. I write it underneath the 84.)</li><li>SUBTRACT: what is 84 − 84? (0.)</li><li>BRING DOWN: is there another digit left to bring down? (No — nothing is left, so 8.4 ÷ 2.1 = 4. Check: 2.1 × 4 = 8.4.)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Divide Decimals (Dividir decimales) — Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</li><li>Dividend (Dividendo) — The total number being divided into equal groups (the number inside the division bracket).</li><li>Divisor (Divisor) — The number of equal groups you are dividing into (the number outside the division bracket).</li><li>Quotient (Cociente) — The answer when you divide.</li><li>Decimal Division Algorithm (Algoritmo de división decimal) — The steps for dividing decimals: slide the divisor's decimal point right until the divisor is a whole number, slide the dividend's point right the same number of places, then divide.</li><li>Equivalent division (División equivalente) — Multiplying both numbers by 10 or 100 gives the same answer.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -997,7 +1156,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Solve each decimal division problem.</p>
   <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>9.6 ÷ 0.8</td><td></td></tr><tr><td>15.6 ÷ 1.3</td><td></td></tr><tr><td>24.5 ÷ 3.5</td><td></td></tr><tr><td>5.76 ÷ 0.24</td><td></td></tr><tr><td>11.34 ÷ 0.9</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1016,17 +1178,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A water tank holds 19.2 liters. It is poured into bottles that each hold 1.6 liters. How many bottles can be filled?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12 bottles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">11 bottles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">13 bottles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1.2 bottles</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1036,7 +1187,29 @@ header.packet h1::after{
   <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A water tank holds 19.2 liters. It is poured into bottles that each hold 1.6 liters. How many bottles can be filled?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12 bottles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">11 bottles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">13 bottles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1.2 bottles</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1047,7 +1220,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Solve 9.6 ÷ 0.12.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count how far to move:</span><span class="ws-step-w">0.12 has 2 decimal places, so BOTH numbers move 2 places right. The divisor: 0.12 → 12.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move the dividend the same 2 places:</span><span class="ws-step-w">9.6 only has one digit after the point, so the student moved it just 1 place: 9.6 → 96. New problem: 96 ÷ 12 = 8.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1096,14 +1272,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Decimals Using an Algorithm</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Divide Decimals · Dividend · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-7" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1118,37 +1295,38 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do you divide with decimals?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Decimal Division Algorithm</div>
+        <ul class="ws-note-list"><li>Dividing splits a total into equal groups. When you divide by a decimal, first move the point to make the divisor a whole number — then run the same long-division cycle: divide, multiply, subtract, bring down.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Make the divisor a whole number: slide its decimal point to the right.</li><li>Slide the dividend's decimal point to the right the same number of places.</li><li>Write the answer's decimal point in the column directly above the dividend's point, then divide as whole numbers using Divide → Multiply → Subtract → Bring Down.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 18.9 ÷ 6.3. The divisor is 6.3, and long division needs a whole-number divisor.</li><li>STEP 0 — MOVE THE POINT: I move the decimal point 1 place right in the divisor, so 6.3 becomes 63.</li><li>I slide the decimal point 1 place to the right in the dividend too, so 18.9 becomes 189. Both points slid the same 1 place, so the answer does not change. The problem is now 189 ÷ 63.</li><li>Now I write it the tall way — 63 into 189 — with the answer going on top of the bar and the answer's decimal point in the column directly above the dividend's point. Then I repeat the same four steps I always use: DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN.</li><li>DIVIDE: 63 does not fit into 1 or 18, so my first working number is 189. How many 63s fit into 189? Three. I write 3 above the 9.</li><li>MULTIPLY: 3 × 63 = 189. I write it underneath.</li><li>SUBTRACT: 189 − 189 = 0.</li><li>BRING DOWN: there are no digits left to bring down, so the cycle is finished and the remainder is 0. 18.9 ÷ 6.3 = 3.</li><li>I check by multiplying: 6.3 × 3 = 18.9. Correct — 18.9 ÷ 6.3 = 3.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Let's do 8.4 ÷ 2.1. STEP 0 — MOVE THE POINT: how many places make 2.1 a whole number? (1 place, so 2.1 becomes 21.)</li><li>Now slide the decimal point 1 place to the right in the dividend too. What does 8.4 become? (84, so the new problem is 84 ÷ 21.)</li><li>DIVIDE: how many 21s fit into 84? (Four. I write 4 on top, above the 4 in 84.)</li><li>MULTIPLY: what is 4 × 21? (84. I write it underneath the 84.)</li><li>SUBTRACT: what is 84 − 84? (0.)</li><li>BRING DOWN: is there another digit left to bring down? (No — nothing is left, so 8.4 ÷ 2.1 = 4. Check: 2.1 × 4 = 8.4.)</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Divide Decimals (Dividir decimales) — Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</li><li>Dividend (Dividendo) — The total number being divided into equal groups (the number inside the division bracket).</li><li>Divisor (Divisor) — The number of equal groups you are dividing into (the number outside the division bracket).</li><li>Quotient (Cociente) — The answer when you divide.</li><li>Decimal Division Algorithm (Algoritmo de división decimal) — The steps for dividing decimals: slide the divisor's decimal point right until the divisor is a whole number, slide the dividend's point right the same number of places, then divide.</li><li>Equivalent division (División equivalente) — Multiplying both numbers by 10 or 100 gives the same answer.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Find Derek's Mistake</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">7.2 ÷ 0.45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply divisor by 10:</span><span class="ws-step-w">0.45 × 10 = 4.5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply dividend by 10:</span><span class="ws-step-w">7.2 × 10 = 72</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide:</span><span class="ws-step-w">72 ÷ 4.5 = 16</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A gas station sells fuel at $3.45 per gallon. A customer pays $27.60 total. How many gallons did the customer buy? Set up the decimal division, show how to convert it to whole-number division, and solve.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">BALANCE SCALE</span>
       </div>
       <div class="ws-pbody">
@@ -1164,7 +1342,45 @@ header.packet h1::after{
       <rect x="210" y="76" width="100" height="28" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="4"/>
       <text x="260" y="94" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af" font-family="'Hanken Grotesk',Arial,sans-serif">24.5</text>
     </svg></div>
-        <p class="ws-stem">Verify each division by showing that quotient × divisor = dividend. Are the two sides balanced?</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Verify each division by showing that quotient × divisor = dividend. Are the two sides balanced?</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Find Derek's Mistake</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">7.2 ÷ 0.45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply divisor by 10:</span><span class="ws-step-w">0.45 × 10 = 4.5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply dividend by 10:</span><span class="ws-step-w">7.2 × 10 = 72</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide:</span><span class="ws-step-w">72 ÷ 4.5 = 16</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A gas station sells fuel at $3.45 per gallon. A customer pays $27.60 total. How many gallons did the customer buy? Set up the decimal division, show how to convert it to whole-number division, and solve.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

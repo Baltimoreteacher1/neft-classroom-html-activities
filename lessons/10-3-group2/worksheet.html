@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">10.3 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">puzzle · pattern · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-3-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 10.3 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use patterns and relationships to make sense of the Tower of Hanoi puzzle and think logically about its solutions, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — Playing with math means playing with patterns</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>We play with math by using our imagination and by looking for patterns or relationships that help us think logically — a pattern can tell us the answer to a puzzle we have not even played yet — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me imagine the solution first</div>
+        <ol class="ws-note-list"><li>Before moving anything, I describe what the solved puzzle will look like: the discs in the same order — smallest on top to largest on bottom — but on a different rod.</li><li>Then I play the small cases: a one-disc tower takes 1 move, and a two-disc tower takes 3 moves.</li><li>A three-disc tower takes at least 7 moves. Small cases are how mathematicians play.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Discs: 1, 2, 3 — Steps: 1, 3, 7. What is happening from each row to the next?</li><li>Double the number of steps and add 1: 1 doubled plus 1 is 3, and 3 doubled plus 1 is 7.</li><li>So 4 discs take 7 × 2 + 1 = 15 steps, and 5 discs take 15 × 2 + 1 = 31 steps.</li><li>The pattern just solved a puzzle we never touched.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>puzzle (rompecabezas) — A problem designed to be played with — it has rules, a goal, and room to imagine solutions.</li><li>pattern (patrón) — Something that repeats or changes in a predictable way.</li><li>pattern rule (regla del patrón) — A rule that tells you how to get the next value in a pattern from the one before it.</li><li>predict (predecir) — To say what will happen before it happens, using a pattern or reasoning.</li><li>organize (organizar) — To arrange information — often in a table — so patterns become easier to see.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Doubling the previous number of steps but forgetting to add 1 — answering 14 instead of 15 for four discs, or 30 instead of 31 for five.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Use the doubling pattern to complete the table of fewest moves.</p>
   <table class="ws-table"><thead><tr><th>Discs</th><th>Pattern: double the previous, add 1</th><th>Fewest moves</th></tr></thead><tbody><tr><td>3</td><td></td><td></td></tr><tr><td>4</td><td></td><td></td></tr><tr><td>6</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -733,7 +819,11 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">4-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">5-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">6-disc tower</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Any n-disc tower</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">2 × 7 + 1 = 15</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">2 × 15 + 1 = 31</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">2 × 31 + 1 = 63</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Double the (n − 1)-disc answer, add 1</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -741,18 +831,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Why is finding a pattern MORE powerful than just solving the three-disc puzzle by hand?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The pattern predicts the answer for towers you have never played, like five or six discs</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The pattern lets you skip the rules of the puzzle</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Patterns make the discs move by themselves</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A pattern proves the puzzle is impossible</span></li></ol>
+        <p class="ws-stem">Why is finding a pattern MORE powerful than just solving the three-disc puzzle by hand?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The pattern predicts the answer for towers you have never played, like five or six discs</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The pattern lets you skip the rules of the puzzle</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Patterns make the discs move by themselves</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A pattern proves the puzzle is impossible</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Before solving, the lesson asked you to DESCRIBE what the solution will look like. Why is imagining the ending a useful way to start a puzzle?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Will the fewest number of steps for a Tower of Hanoi puzzle always be an ODD number?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Yes — doubling any whole number gives an even number, and adding 1 makes it odd</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No — every other tower size gives an even number of steps</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes — but only because 7 happens to be odd</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No — the steps alternate between odd and even</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -763,18 +859,28 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Will the fewest number of steps for a Tower of Hanoi puzzle always be an ODD number?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Yes — doubling any whole number gives an even number, and adding 1 makes it odd</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No — every other tower size gives an even number of steps</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes — but only because 7 happens to be odd</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No — the steps alternate between odd and even</span></li></ol>
+        <p class="ws-stem">A five-disc tower takes 31 steps. Using the pattern rule, how many steps would a SIX-disc tower take?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">63 steps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">62 steps</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">36 steps</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">32 steps</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A five-disc tower takes 31 steps. Using the pattern rule, how many steps would a SIX-disc tower take?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">63 steps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">62 steps</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">36 steps</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">32 steps</span></li></ol>
+        <p class="ws-stem">Before solving, the lesson asked you to DESCRIBE what the solution will look like. Why is imagining the ending a useful way to start a puzzle?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -829,7 +935,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

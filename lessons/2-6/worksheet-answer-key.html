@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Multi-Digit Numbers Using an Algorithm</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Algorithm · Dividend · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Run the long-division cycle. Fill in the quotient.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Divide</th><th>Multiply &amp; Subtract</th><th>Bring Down</th><th>Quotient</th></tr></thead><tbody><tr><td>384 ÷ 8</td><td>38 ÷ 8 → 4</td><td>4 × 8 = 32, and 38 − 32 = 6</td><td>bring down the 4 → 64</td><td>48</td></tr><tr><td>672 ÷ 6</td><td>6 ÷ 6 → 1</td><td>1 × 6 = 6, and 6 − 6 = 0</td><td>bring down the 7 → 7</td><td>112</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,7 +800,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -726,25 +811,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">83</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">86</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 9 × 84 = 756. Running the cycle: 75 ÷ 9 → 8 with 3 left, then 36 ÷ 9 → 4 with 0 left, so the quotient is 84 and the remainder is 0.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Run the long-division cycle. Fill in the quotient.</p>
-  <table class="ws-table"><thead><tr><th>Problem</th><th>Divide</th><th>Multiply &amp; Subtract</th><th>Bring Down</th><th>Quotient</th></tr></thead><tbody><tr><td>384 ÷ 8</td><td>38 ÷ 8 → 4</td><td>4 × 8 = 32, and 38 − 32 = 6</td><td>bring down the 4 → 64</td><td>48</td></tr><tr><td>672 ÷ 6</td><td>6 ÷ 6 → 1</td><td>1 × 6 = 6, and 6 − 6 = 0</td><td>bring down the 7 → 7</td><td>112</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>
@@ -785,14 +857,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Multi-Digit Numbers Using an Algorithm</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Algorithm · Dividend · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -808,11 +881,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Run the long-division cycle. Fill in the quotient.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Divide</th><th>Multiply &amp; Subtract</th><th>Bring Down</th><th>Quotient</th></tr></thead><tbody><tr><td>384 ÷ 8</td><td>38 ÷ 8 → 4</td><td>4 × 8 = 32, and 38 − 32 = 6</td><td>bring down the 4 → 64</td><td>48</td></tr><tr><td>672 ÷ 6</td><td>6 ÷ 6 → 1</td><td>1 × 6 = 6, and 6 − 6 = 0</td><td>bring down the 7 → 7</td><td>112</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -823,7 +916,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -834,25 +927,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">84</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">83</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">86</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 9 × 84 = 756. Running the cycle: 75 ÷ 9 → 8 with 3 left, then 36 ÷ 9 → 4 with 0 left, so the quotient is 84 and the remainder is 0.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Run the long-division cycle. Fill in the quotient.</p>
-  <table class="ws-table"><thead><tr><th>Problem</th><th>Divide</th><th>Multiply &amp; Subtract</th><th>Bring Down</th><th>Quotient</th></tr></thead><tbody><tr><td>384 ÷ 8</td><td>38 ÷ 8 → 4</td><td>4 × 8 = 32, and 38 − 32 = 6</td><td>bring down the 4 → 64</td><td>48</td></tr><tr><td>672 ÷ 6</td><td>6 ÷ 6 → 1</td><td>1 × 6 = 6, and 6 − 6 = 0</td><td>bring down the 7 → 7</td><td>112</td></tr></tbody></table>
-  
       </div>
     </li>
   
@@ -866,7 +946,11 @@ header.packet h1::after{
         <p class="ws-stem">What is 1,125 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">125</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">115</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">135</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">124</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 9 × 125 = 1,125. Running the cycle: 11 ÷ 9 → 1 with 2 left, 22 ÷ 9 → 2 with 4 left, 45 ÷ 9 → 5 with 0 left, so the quotient is 125.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -918,14 +1002,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Multi-Digit Numbers Using an Algorithm</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Algorithm · Dividend · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -941,8 +1026,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -971,17 +1059,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A warehouse has 2,184 items to pack into boxes of 14. How many boxes are needed?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">156 boxes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">146 boxes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">166 boxes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">155 boxes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 2,184 ÷ 14 = 156. Check: 14 × 156 = 14 × 150 + 14 × 6 = 2,100 + 84 = 2,184.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -991,7 +1068,26 @@ header.packet h1::after{
   
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A warehouse has 2,184 items to pack into boxes of 14. How many boxes are needed?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">156 boxes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">146 boxes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">166 boxes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">155 boxes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 2,184 ÷ 14 = 156. Check: 14 × 156 = 14 × 150 + 14 × 6 = 2,100 + 84 = 2,184.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1043,14 +1139,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Divide Multi-Digit Numbers Using an Algorithm</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Algorithm · Dividend · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1066,11 +1163,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Solve each problem using long division. Show the quotient and any remainder.</p>
+  <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th><th>Remainder</th></tr></thead><tbody><tr><td>2,578 ÷ 13</td><td>198</td><td>4</td></tr><tr><td>3,456 ÷ 16</td><td>216</td><td>0</td></tr><tr><td>1,987 ÷ 11</td><td>180</td><td>7</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1084,25 +1201,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">The station must load 3,360 ration packs equally into 14 storage pods. Solve it with long division. Name each step — divide, multiply, subtract, bring down — and check your answer by multiplying.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: divide, multiply, subtract, bring down, 240, 3360, 14, check Explanation: Long division on 3,360 ÷ 14 runs the cycle three times: 33 ÷ 14 → 2 (2 × 14 = 28, leaving 5), bring down the 6 → 56 ÷ 14 → 4 (4 × 14 = 56, leaving 0), bring down the 0 → 0 ÷ 14 → 0, so a 0 must be written in the ones place. The quotient is 240 ration packs per pod, and 14 × 240 = 3,360 proves none were left over.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Solve each problem using long division. Show the quotient and any remainder.</p>
-  <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th><th>Remainder</th></tr></thead><tbody><tr><td>2,578 ÷ 13</td><td>198</td><td>4</td></tr><tr><td>3,456 ÷ 16</td><td>216</td><td>0</td></tr><tr><td>1,987 ÷ 11</td><td>180</td><td>7</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

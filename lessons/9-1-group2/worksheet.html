@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">9.1 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">independent variable · dependent variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-1-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 9.1 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can recognize when two quantities change together, and identify which one is the independent variable and which is the dependent variable, explain how I can tell, and judge a case I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — Which quantity is doing the changing — and which is responding?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>The independent variable is subject to choice. The dependent variable changes in response to it — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me sort Akela's experiment</div>
+        <ol class="ws-note-list"><li>The two quantities are hours of sunlight per day and average plant height after 3 weeks.</li><li>Akela CHOSE where to put each tray, so she chose the sunlight. Sunlight is subject to choice — that makes it the independent variable.</li><li>She did not choose how tall the plants got. Height responded. That makes height the dependent variable.</li><li>Say it as a sentence: plant height depends on sunlight.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Claire burned 123 Calories on a 30-minute jog and 246 Calories on a 60-minute jog.</li><li>Which did Claire choose — the minutes, or the Calories?</li><li>She chose how long to jog. So time is independent, and Calories burned is dependent.</li><li>Sentence frame: ___ depends on ___ .</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>independent variable (variable independiente) — The quantity that is subject to choice. It does not depend on the other quantity.</li><li>dependent variable (variable dependiente) — The quantity that changes in response to the independent variable.</li><li>depends on (depende de) — One quantity depends on another when changing the first causes the second to change.</li><li>quantity (cantidad) — Something that can be counted or measured.</li><li>relationship (relación) — How two quantities change together.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Naming the variables backward — calling the responding quantity 'independent' because it is the one the question asks about.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -716,10 +799,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which question would you ask to find the DEPENDENT variable?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Which quantity responds when the other one changes?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Which quantity is larger?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Which quantity has units?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Which quantity comes first alphabetically?</span></li></ol>
+        <p class="ws-stem">Two quantities are related. Which statement is ALWAYS true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The independent variable is subject to choice</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The independent variable is always the larger number</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The dependent variable is always measured in dollars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The independent variable is always listed first in a table</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -727,7 +817,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claire decides to walk instead of jog for the same 30 minutes. What happens to the two variables?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Time stays the independent variable; Calories burned still depends on it</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories burned becomes the independent variable</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither is a variable any more</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Time becomes the dependent variable</span></li></ol>
+        <p class="ws-stem">Which question would you ask to find the DEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Which quantity responds when the other one changes?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Which quantity is larger?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Which quantity has units?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Which quantity comes first alphabetically?</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -738,7 +831,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">If Claire runs exactly 3 miles and records how long it takes, which is the independent variable now?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Distance (3 miles)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Time it takes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her speed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Calories burned</span></li></ol>
+        <p class="ws-stem">Claire decides to walk instead of jog for the same 30 minutes. What happens to the two variables?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Time stays the independent variable; Calories burned still depends on it</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories burned becomes the independent variable</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither is a variable any more</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Time becomes the dependent variable</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -749,29 +845,42 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Two quantities are related. Which statement is ALWAYS true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The independent variable is subject to choice</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The independent variable is always the larger number</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The dependent variable is always measured in dollars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The independent variable is always listed first in a table</span></li></ol>
+        <p class="ws-stem">If Claire runs exactly 3 miles and records how long it takes, which is the independent variable now?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Distance (3 miles)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Time it takes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her speed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Calories burned</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A pizza shop decides each morning how many pizzas to make, then weighs out the cheese it needs. Devon says: “Cheese is the independent variable, because the shop buys the cheese before it makes any pizzas.” Devon is wrong. What rule did Devon use, and why does that rule fail here?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claim: “The dependent variable always has the larger values.” Is this claim always, sometimes, or never true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Sometimes — the size of the numbers has nothing to do with which variable is which</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Always — the dependent variable is the result, so it is bigger</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — the independent variable is always the larger one</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only when both quantities are measured in the same unit</span></li></ol>
+        <p class="ws-stem">Claim: “The dependent variable always has the larger values.” Is this claim always, sometimes, or never true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Sometimes — the size of the numbers has nothing to do with which variable is which</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Always — the dependent variable is the result, so it is bigger</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — the independent variable is always the larger one</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Only when both quantities are measured in the same unit</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A pizza shop decides each morning how many pizzas to make, then weighs out the cheese it needs. Devon says: “Cheese is the independent variable, because the shop buys the cheese before it makes any pizzas.” Devon is wrong. What rule did Devon use, and why does that rule fail here?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -826,7 +935,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

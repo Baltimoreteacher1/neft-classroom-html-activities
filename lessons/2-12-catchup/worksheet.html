@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🔵 Prerequisite Catch-Up &amp;amp; Skill Bridge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.4–2.12 Catch-Up</h1>
           <p class="ws-sub-title">Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard</p>
+          <p class="ws-strategy-line">Display Data with Box Plots · Box Plot · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-12-catchup" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,19 +767,28 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 2.4–2.12 Catch-Up</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can show I am caught up on Lessons 2.4–2.12 by using each lesson's big idea in mixed practice.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: The Big Ideas — Lessons 2.4–2.12</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>2.4: The box always holds the middle 50% of the data, and the line inside the box is the median. • 2.5: Range = greatest − least, and it covers every value. Interquartile range = Q3 − Q1, and it covers only the middle half, so one faraway value cannot stretch it. • 2.6: Repeat the cycle Divide → Multiply → Subtract → Bring Down until no digits are left to bring down; what is left at the end is the remainder. • 2.7: Slide the decimal point the same number of places to the right in BOTH the divisor and the dividend. Write the answer's decimal point in the column directly above the dividend's point. Then repeat Divide → Multiply → Subtract → Bring Down. • 2.8: Mean = total of all the values ÷ how many values there are. • 2.9: MAD = the average of how far each number is from the mean (always a positive distance). • 2.10: Use the mean for data with no outliers; use the median when an outlier or a skewed shape would pull the mean away from typical. • 2.11: Line up the decimal points, add zeros so each number has the same number of decimal places, then add or subtract one column at a time. • 2.12: Multiply like whole numbers, then the product has the SAME total of decimal places as both factors combined.</div>
+        <ul class="ws-note-list"><li>Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — The Big Ideas (one per lesson)</div>
+        <ol class="ws-note-list"><li>Lesson 2.4 — Represent and Describe Data in a Box Plot: The box always holds the middle 50% of the data, and the line inside the box is the median.</li><li>Lesson 2.5 — Describe Data by Range and Interquartile Range: Range = greatest − least, and it covers every value. Interquartile range = Q3 − Q1, and it covers only the middle half, so one faraway value cannot stretch it.</li><li>Lesson 2.6 — Divide Multi-Digit Numbers Using an Algorithm: Repeat the cycle Divide → Multiply → Subtract → Bring Down until no digits are left to bring down; what is left at the end is the remainder.</li><li>Lesson 2.7 — Divide Decimals Using an Algorithm: Slide the decimal point the same number of places to the right in BOTH the divisor and the dividend. Write the answer's decimal point in the column directly above the dividend's point. Then repeat Divide → Multiply → Subtract → Bring Down.</li><li>Lesson 2.8 — Describe Data Using the Mean: Mean = total of all the values ÷ how many values there are.</li><li>Lesson 2.9 — Describe Data by Mean Absolute Deviation: MAD = the average of how far each number is from the mean (always a positive distance).</li><li>Lesson 2.10 — Choose Appropriate Measures: Use the mean for data with no outliers; use the median when an outlier or a skewed shape would pull the mean away from typical.</li><li>Lesson 2.11 — Add and Subtract Decimals: Line up the decimal points, add zeros so each number has the same number of decimal places, then add or subtract one column at a time.</li><li>Lesson 2.12 — Multiply Decimals: Multiply like whole numbers, then the product has the SAME total of decimal places as both factors combined.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Display Data with Box Plots (Representar datos con diagramas de caja) — Show a data set's five-number summary in a box-and-whisker display.</li><li>Box Plot (Diagrama de caja) — A graph that shows how data is spread using five key numbers.</li><li>Median (Mediana) — The middle number when you put them in order.</li><li>Quartile (Cuartil) — Numbers that split the data into four equal parts.</li><li>Interquartile Range (Rango intercuartílico) — The spread of the middle half of the data (Q3 − Q1).</li><li>Data distribution (Distribución de datos) — How the data looks: where it sits and how spread out it is.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Multiply Decimals is counting decimal places from only one factor instead of adding the decimal places from BOTH factors. For example, in 0.4 × 0.06, a student multiplies 4 × 6 = 24, then places the decimal point using just one factor's place count (1 place), writing 0.24 instead of the correct answer: 0.4 has 1 decimal place and 0.06 has 2 decimal places, for a total of 3, so 24 becomes 0.024. Before you submit, count the decimal places in EACH factor separately and add them together — that total is how many decimal places belong in your final answer.</li></ul>
+      </div>
     </section>
   
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Display Data with Box Plots <span class="ws-es-term">(Representar datos con diagramas de caja)</span></span><span class="ws-bankdef"> — Show a data set's five-number summary in a box-and-whisker display.</span></div><div class="ws-bank-card"><span class="ws-bankword">Box Plot <span class="ws-es-term">(Diagrama de caja)</span></span><span class="ws-bankdef"> — A graph that shows how data is spread using five key numbers.</span></div><div class="ws-bank-card"><span class="ws-bankword">Median <span class="ws-es-term">(Mediana)</span></span><span class="ws-bankdef"> — The middle number when you put them in order.</span></div><div class="ws-bank-card"><span class="ws-bankword">Quartile <span class="ws-es-term">(Cuartil)</span></span><span class="ws-bankdef"> — Numbers that split the data into four equal parts.</span></div><div class="ws-bank-card"><span class="ws-bankword">Interquartile Range <span class="ws-es-term">(Rango intercuartílico)</span></span><span class="ws-bankdef"> — The spread of the middle half of the data (Q3 − Q1).</span></div><div class="ws-bank-card"><span class="ws-bankword">Data distribution <span class="ws-es-term">(Distribución de datos)</span></span><span class="ws-bankdef"> — How the data looks: where it sits and how spread out it is.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variability <span class="ws-es-term">(Variabilidad)</span></span><span class="ws-bankdef"> — How spread out the numbers are.</span></div><div class="ws-bank-card"><span class="ws-bankword">Range and Interquartile Range <span class="ws-es-term">(Rango y rango intercuartílico)</span></span><span class="ws-bankdef"> — Two numbers that describe spread: the range covers all the data, and the interquartile range covers only the middle half.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -722,11 +796,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 2.4) A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-slot"><span class="wss-slot-t">Put the data in order</span><span class="wss-slot-w"></span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Order</span><span class="wsd-step-h">Smallest to largest.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Count</span><span class="wsd-step-h">How many values?</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Locate</span><span class="wsd-step-h">Middle, or add and divide.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Answer</span><span class="wsd-step-h">Say which measure it is.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20</span></li></ol>
+        <p class="ws-stem">(Lesson 2.4) On a box plot, what does the line inside the box represent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The mean</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The mode</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The range</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -734,7 +814,8 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 2.4) On a box plot, what does the line inside the box represent?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The mean</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The mode</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The range</span></li></ol>
+        <p class="ws-stem">(Lesson 2.4) A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-slot"><span class="wss-slot-t">Put the data in order</span><span class="wss-slot-w"></span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Order</span><span class="wsd-step-h">Smallest to largest.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Count</span><span class="wsd-step-h">How many values?</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Locate</span><span class="wsd-step-h">Middle, or add and divide.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Answer</span><span class="wsd-step-h">Say which measure it is.</span></li></ol></div>
       </div>
     </li>
   
@@ -745,8 +826,8 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 2.5) A data set runs from a least value of 12 to a greatest value of 30. What is the range?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-slot"><span class="wss-slot-t">Put the data in order</span><span class="wss-slot-w"></span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Order</span><span class="wsd-step-h">Smallest to largest.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Count</span><span class="wsd-step-h">How many values?</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Locate</span><span class="wsd-step-h">Middle, or add and divide.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Answer</span><span class="wsd-step-h">Say which measure it is.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21</span></li></ol>
+        <p class="ws-stem">(Lesson 2.5) A data set runs from a least value of 12 to a greatest value of 30. What is the range?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">18</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">30</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-slot"><span class="wss-slot-t">Put the data in order</span><span class="wss-slot-w"></span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Order</span><span class="wsd-step-h">Smallest to largest.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Count</span><span class="wsd-step-h">How many values?</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Locate</span><span class="wsd-step-h">Middle, or add and divide.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Answer</span><span class="wsd-step-h">Say which measure it is.</span></li></ol></div>
       </div>
     </li>
   
@@ -757,8 +838,8 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 2.5) On a box plot, Q1 = 20 and Q3 = 36. What is the interquartile range?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-slot"><span class="wss-slot-t">Put the data in order</span><span class="wss-slot-w"></span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Order</span><span class="wsd-step-h">Smallest to largest.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Count</span><span class="wsd-step-h">How many values?</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Locate</span><span class="wsd-step-h">Middle, or add and divide.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Answer</span><span class="wsd-step-h">Say which measure it is.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">56</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">36</span></li></ol>
+        <p class="ws-stem">(Lesson 2.5) On a box plot, Q1 = 20 and Q3 = 36. What is the interquartile range?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">56</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">36</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-slot"><span class="wss-slot-t">Put the data in order</span><span class="wss-slot-w"></span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Order</span><span class="wsd-step-h">Smallest to largest.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Count</span><span class="wsd-step-h">How many values?</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Locate</span><span class="wsd-step-h">Middle, or add and divide.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Answer</span><span class="wsd-step-h">Say which measure it is.</span></li></ol></div>
       </div>
     </li>
   
@@ -769,10 +850,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 2.6) What is 936 ÷ 12?</p><div class="wsd-wrap wsd-supported">
+        <p class="ws-stem">(Lesson 2.6) What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">78</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">87</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">68</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">76</span></li></ol><div class="wsd-wrap wsd-supported">
       <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 246" width="195" height="246" role="img" aria-label="Blank long-division frame for 936 divided by 12" style="background:white;"><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">1</text><text class="wsd-given" x="74" y="58" text-anchor="middle">2</text><path class="wsd-rule" d="M 84 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="84" y1="40" x2="186" y2="40"/><text class="wsd-given" x="105" y="58" text-anchor="middle">9</text><text class="wsd-given" x="135" y="58" text-anchor="middle">3</text><text class="wsd-given" x="165" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/></svg></div>
       <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">78</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">87</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">68</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">76</span></li></ol>
+    </div>
       </div>
     </li>
   </ol>

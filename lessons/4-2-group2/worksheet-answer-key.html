@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">4.2 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Visual Models · Fractions, Decimals, and Percents · Percent · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-2-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -699,7 +764,11 @@ header.packet h1::after{
     </header>
   
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -723,7 +792,11 @@ header.packet h1::after{
   
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -749,6 +822,21 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Convert 3/5 to a percent.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">60%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">35%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">53%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">65%</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 5 × 20 = 100, so 3 × 20 = 60. That makes 3/5 = 60/100 = 0.6 = 60%.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Relate Fractions, Decimals, and Percents is treating the numerator and denominator as the percent's digits — turning 3/5 into &quot;35%&quot; by just reading the 3 and the 5. Percent means out of 100, so the fix is to build an equivalent fraction with denominator 100: 5 × 20 = 100, so multiply the top by 20 too — 3/5 = 60/100 = 60%. A second version of this mistake is scaling only ONE part of the fraction (writing 3/5 = 3/100 or 60/5). Whatever you multiply the denominator by, you must multiply the numerator by the same number. When a denominator will not reach 100 evenly (8, 3, 7), divide the numerator by the denominator instead and then multiply by 100.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -757,17 +845,6 @@ header.packet h1::after{
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Convert 0.4 to a percent:</span><span class="ws-step-w">0.4</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move the decimal point:</span><span class="ws-step-w">0.4 → 0.04</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the percent:</span><span class="ws-step-w">0.04 = 4%</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer:</span><span class="ws-step-w">0.4 = 4%</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
   <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 2. Correct Work: To change a decimal to a percent, multiply by 100 (move the decimal two places RIGHT): 0.4 × 100 = 40. So 0.4 = 40%, not 4%.. Misconception: Going from a decimal to a percent means multiplying by 100, which moves the decimal point two places to the RIGHT. Moving it left divides instead, which is why 0.4 turned into 0.04. Done correctly, 0.4 × 100 = 40, so 0.4 = 40%.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Convert 3/5 to a percent.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">60%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">35%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">53%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">65%</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 5 × 20 = 100, so 3 × 20 = 60. That makes 3/5 = 60/100 = 0.6 = 60%.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Relate Fractions, Decimals, and Percents is treating the numerator and denominator as the percent's digits — turning 3/5 into &quot;35%&quot; by just reading the 3 and the 5. Percent means out of 100, so the fix is to build an equivalent fraction with denominator 100: 5 × 20 = 100, so multiply the top by 20 too — 3/5 = 60/100 = 60%. A second version of this mistake is scaling only ONE part of the fraction (writing 3/5 = 3/100 or 60/5). Whatever you multiply the denominator by, you must multiply the numerator by the same number. When a denominator will not reach 100 evenly (8, 3, 7), divide the numerator by the denominator instead and then multiply by 100.</p>
       </div>
     </li>
   </ol>

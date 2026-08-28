@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">4.4 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Visual Models · Percent of a Number · Percent · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-4-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 4.4 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can find the percent of a number using an equation or a model, explain what each part stands for, and build one for a situation I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do I find the percent of a number?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Write the percent as a decimal (move the point 2 places left), then multiply it by the base: part = percent × base — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The claw machine costs 60 tickets, and it is 25% off. I need 25% of 60.</li><li>Step 1 — find the base (the whole): the number after “of” is 60.</li><li>Step 2 — the percent as a decimal: 25% means 25 out of 100, so 25 ÷ 100 = 0.25.</li><li>Step 3 — multiply: 0.25 × 60 = 15.</li><li>The discount is 15 tickets. Check: 15 is about a quarter of 60, so that makes sense.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Find 40% of 80. Step 1 — what is the base? (80, the number after “of”)</li><li>Step 2 — 40% as a decimal? (40 ÷ 100 = 0.40)</li><li>Step 3 — multiply: 0.40 × 80 = ? (32)</li><li>Does 32 make sense? 40% is a little less than half, and half of 80 is 40. ✓</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Percent of a Number (Porcentaje de un número) — A part of a number found by multiplying the number by the percent written as a decimal.</li><li>Percent (Porcentaje) — A way to compare a number to 100, shown with the % sign.</li><li>Base (Base) — The whole amount you start with — the number right after the word “of.”</li><li>Part (Parte) — How much of the base (the whole) you get. It is your answer.</li><li>Equation (Ecuación) — A number sentence with an equal sign. The percent one is: part = percent × base.</li><li>Discount (Descuento) — Money taken off the first price to make it cheaper.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Find the Percent of a Number is multiplying by the percent number itself instead of its decimal form — for example, finding 30% of 80 by computing 30 × 80 = 2,400 instead of 0.30 × 80 = 24. Always divide the percent by 100 to get the decimal, then multiply that decimal by the base.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Complete each row to find the percent of a number.</p>
   <table class="ws-table"><thead><tr><th>Percent</th><th>Base</th><th>Part</th></tr></thead><tbody><tr><td>10%</td><td></td><td></td></tr><tr><td>75%</td><td></td><td></td></tr><tr><td>35%</td><td></td><td></td></tr><tr><td>8%</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -729,18 +815,27 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         <div class="ws-figure-wrap" style="margin:10px auto;display:flex;flex-direction:column;align-items:center;"><svg width="460" height="66" viewBox="0 0 460 66" role="img" aria-label="Tape diagram model" style="background:white;max-width:100%;height:auto;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;"><text x="10" y="31" font-size="11" font-weight="700" fill="#1e293b" font-family="'Hanken Grotesk',Arial,sans-serif">Total</text><rect x="94.0" y="10" width="87.0" height="34" rx="4" fill="#0f8a84"/><text x="138.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text><rect x="183.0" y="10" width="87.0" height="34" rx="4" fill="#c2603f"/><text x="227.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text><rect x="272.0" y="10" width="87.0" height="34" rx="4" fill="#b07d12"/><text x="316.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text><rect x="361.0" y="10" width="87.0" height="34" rx="4" fill="#3b6ea5"/><text x="405.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text></svg></div>
-        <p class="ws-stem">200 ÷ 4 = 50. Each 25% section = 50 points. So 25% of 200 = 50.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">200 ÷ 4 = 50. Each 25% section = 50 points. So 25% of 200 = 50.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A class has 32 students. 25% are in the math club, 50% are in the reading club, and 12.5% are in both. How many students are in each group? Can the total of all three groups be more than 32? Explain why or why not.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">The claw machine prize is 80 tickets and today it is 25% off. How many tickets do you save?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">55</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div>
       </div>
     </li>
   
@@ -751,9 +846,9 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The claw machine prize is 80 tickets and today it is 25% off. How many tickets do you save?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="ws-stem">Your bowling score was 60 points. The bonus round adds 15% more points. How many bonus points is that?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">45</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">75</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
       <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">55</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16</span></li></ol>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div>
       </div>
     </li>
   
@@ -764,22 +859,27 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Your bowling score was 60 points. The bonus round adds 15% more points. How many bonus points is that?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="ws-stem">A snack at the arcade costs $40. The sales tax is 5%. How many dollars is the tax?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$20</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
       <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">45</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">75</span></li></ol>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A snack at the arcade costs $40. The sales tax is 5%. How many dollars is the tax?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$20</span></li></ol>
+        <p class="ws-stem">A class has 32 students. 25% are in the math club, 50% are in the reading club, and 12.5% are in both. How many students are in each group? Can the total of all three groups be more than 32? Explain why or why not.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -846,7 +946,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

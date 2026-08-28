@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">1.6 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">make sense of a problem · representation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-6-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -699,43 +764,14 @@ header.packet h1::after{
     </header>
   
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Write your own 'times as many' problem about our school that a classmate could solve, and build in the trap from this lesson (a reader might add instead of multiply). Then give the correct answer AND the trap answer, with a sentence telling them apart.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Problem: The art room has 7 tables with 4 chairs each. The cafeteria has 5 times as many chairs. How many cafeteria chairs? Correct: 7 × 4 = 28 chairs, then 28 × 5 = 140. Trap: 28 + 5 = 33. The trap adds one small group of 5; 'times' demands five whole copies of 28.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Priya tries to answer 'how many bikes fit 96 wheels?' by drawing every single wheel. After two minutes she has 30 wheels drawn and is losing track. By this lesson's process, what should she do?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Notice the strategy is not making progress and shift — her drawing already shows every 2 wheels is a bike, so compute 96 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Keep drawing: quitting a strategy means the strategy failed</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Erase everything and start guessing numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Decide the problem is unsolvable and move on</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Watching progress and shifting strategies is the process working, not failing. The drawing did its job — it exposed the 2-wheels-per-bike structure — and the structure finishes the problem: 96 ÷ 2 = 48 bikes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A classmate claims: 'Group work slows me down — I solve faster alone.' Using the rack problem, write a respectful response that names ONE specific mathematical thing a partner caught or contributed that solo work would likely miss.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I hear you — alone is faster when the path is clear. But on the rack problem my partner caught that my 48 counted bikes-times-six, not wheels, before I multiplied by the wrong 2. A partner checks the MEANING of your numbers while you compute them, and that catch is exactly what our class community is for.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -748,7 +784,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
@@ -757,15 +793,56 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">My strategy is not making progress</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">I don't understand the problem</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">My answer looks unreasonable</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">My partner got a different answer</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Try a different entry point</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Restate it in your own words</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Check it against an estimate</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Compare steps and find where they differ</span></li></ul></div>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Priya tries to answer 'how many bikes fit 96 wheels?' by drawing every single wheel. After two minutes she has 30 wheels drawn and is losing track. By this lesson's process, what should she do?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Notice the strategy is not making progress and shift — her drawing already shows every 2 wheels is a bike, so compute 96 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Keep drawing: quitting a strategy means the strategy failed</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Erase everything and start guessing numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Decide the problem is unsolvable and move on</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Watching progress and shifting strategies is the process working, not failing. The drawing did its job — it exposed the 2-wheels-per-bike structure — and the structure finishes the problem: 96 ÷ 2 = 48 bikes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
+      </div>
+    </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">You are working on your own and get stuck. Which move follows BOTH parts of our working-alone agreements?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Try a get-unstuck strategy first, then quietly ask for help without interrupting classmates unnecessarily</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Immediately call across the room to a friend</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Sit silently for the rest of class without seeking help</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Take a classmate's paper to see their work</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Our working-alone agreement has two parts. We seek help when we are stuck. We also avoid interrupting classmates unnecessarily. The best move honors both parts at once.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Write your own 'times as many' problem about our school that a classmate could solve, and build in the trap from this lesson (a reader might add instead of multiply). Then give the correct answer AND the trap answer, with a sentence telling them apart.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Problem: The art room has 7 tables with 4 chairs each. The cafeteria has 5 times as many chairs. How many cafeteria chairs? Correct: 7 × 4 = 28 chairs, then 28 × 5 = 140. Trap: 28 + 5 = 33. The trap adds one small group of 5; 'times' demands five whole copies of 28.</div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A classmate claims: 'Group work slows me down — I solve faster alone.' Using the rack problem, write a respectful response that names ONE specific mathematical thing a partner caught or contributed that solo work would likely miss.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I hear you — alone is faster when the path is clear. But on the rack problem my partner caught that my 48 counted bikes-times-six, not wheels, before I multiplied by the wrong 2. A partner checks the MEANING of your numbers while you compute them, and that catch is exactly what our class community is for.</div>
       </div>
     </li>
   </ol>

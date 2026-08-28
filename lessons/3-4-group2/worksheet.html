@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.4 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Graph Ratio Tables · Coordinate plane · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-4-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,45 +767,80 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 3.4 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can graph the values from a ratio table as points on the coordinate plane, explain what each part stands for, and build one for a situation I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do we graph a ratio table?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>The points from equal ratios form a straight line that passes through the origin (0, 0) — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The recipe uses 2 ounces of sauce for every 1 sundae.</li><li>I put sundaes on the x-axis and ounces of sauce on the y-axis.</li><li>For 1 sundae I need 2 ounces, so I plot the ordered pair (1, 2): right 1, up 2.</li><li>For 2 sundaes I need 4 ounces, so I plot (2, 4): right 2, up 4.</li><li>When I connect (1, 2), (2, 4), (3, 6), they form a straight line through the origin (0, 0).</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>A recipe uses 1 cup of sugar for every 3 cups of flour.</li><li>For 1 cup of sugar, the ordered pair is (1, 3): right 1, up 3.</li><li>For 2 cups of sugar, what is the pair? It is (2, 6): right 2, up 6.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Graph Ratio Tables (Representar tablas de razones en una gráfica) — Plot the paired values from a ratio table as ordered pairs.</li><li>Coordinate plane (Plano cartesiano) — A grid with a line going across and a line going up to plot points.</li><li>Ordered pair (Par ordenado) — Two numbers (x, y) that tell where a point is on a grid.</li><li>Linear pattern (Patrón lineal) — Points that make a straight line on a grid.</li><li>Proportional (Proporcional) — Two amounts that grow together at the same rate.</li><li>Origin (Origen) — The point (0, 0) where the two grid lines cross.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">COORDINATE GRID</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Chef Reyes uses 3 cups of flour for every 1 cup of sugar. Plot the ordered pairs from the ratio table: (1,3), (2,6), (3,9), (4,12).</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Use the graph pattern y = 5x to complete the ratio table, then identify what the ordered pairs would be.</p>
   <table class="ws-table"><thead><tr><th>x</th><th>y</th><th>Ordered Pair</th></tr></thead><tbody><tr><td>1</td><td></td><td></td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>4</td><td></td><td></td></tr><tr><td>6</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">COORDINATE GRID</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A student plots the points (1, 3), (2, 6), (3, 9), and (4, 15) from a ratio table. She says they form a straight line because they go up. Is she correct? Explain how to check.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Chef Reyes uses 3 cups of flour for every 1 cup of sugar. Plot the ordered pairs from the ratio table: (1,3), (2,6), (3,9), (4,12).</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Recipe: 1 cup berries to 2 scoops yogurt. With cups on x and scoops on y, which pair shows 3 cups?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 6)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(6, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 5)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(3, 3)</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,18 +851,28 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Recipe: 1 cup berries to 2 scoops yogurt. With cups on x and scoops on y, which pair shows 3 cups?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 6)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(6, 3)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(3, 5)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(3, 3)</span></li></ol>
+        <p class="ws-stem">On the smoothie graph, every point follows the rule scoops = 2 × cups. Which equation describes the pattern between x (cups) and y (scoops)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">y = 2x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">y = x + 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">y = x ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">x = 2y</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 4</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">On the smoothie graph, every point follows the rule scoops = 2 × cups. Which equation describes the pattern between x (cups) and y (scoops)?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">y = 2x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">y = x + 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">y = x ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">x = 2y</span></li></ol>
+        <p class="ws-stem">A student plots the points (1, 3), (2, 6), (3, 9), and (4, 15) from a ratio table. She says they form a straight line because they go up. Is she correct? Explain how to check.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -776,7 +886,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Level 2 Extension — The Swapped Smoothie Point</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the table:</span><span class="ws-step-w">Cups of blueberries: 2 | Scoops of yogurt: 4 (rule: 2 scoops per cup)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Name the axes:</span><span class="ws-step-w">Cups go on the x-axis, scoops go on the y-axis</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ordered pair:</span><span class="ws-step-w">(4, 2)</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Plot the point:</span><span class="ws-step-w">Go right 4, up 2 on the grid</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -843,7 +956,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

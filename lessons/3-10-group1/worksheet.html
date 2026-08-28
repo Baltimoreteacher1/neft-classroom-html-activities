@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -687,14 +751,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.10 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Convert Measurement Units · Conversion Factor · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-10-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -709,41 +774,61 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 3.10 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can convert measurement units using ratios and conversion factors — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — How do I change one measurement unit into another?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Multiply when changing to a smaller unit, and divide when changing to a bigger unit.</div>
+        <ul class="ws-note-list"><li>A unit is a standard amount used to measure, like a foot or an inch. A conversion factor is a ratio that relates two units, like 1 foot = 12 inches. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>The cabinet is 5 feet tall. I want to know how many inches that is.</li><li>My conversion factor is 1 foot = 12 inches.</li><li>Inches are smaller than feet, so I multiply: 5 × 12 = 60.</li><li>So 5 feet = 60 inches.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Convert Measurement Units (Convertir unidades de medida) — Rename a measurement in a different unit without changing its amount.</li><li>Conversion Factor (Factor de conversión) — A ratio that helps you change one unit into another.</li><li>Unit (Unidad) — A standard amount used to measure, like an inch or a liter.</li><li>Equivalent (Equivalente) — Having the same value, just in different units.</li><li>Ratio (Razón) — A way to compare two amounts, like 3 to 2.</li><li>Customary units (Unidades usuales (sistema inglés)) — The U.S. way of measuring, like inches, feet, and pounds.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Convert Measurement Units <span class="ws-es-term">(Convertir unidades de medida)</span></span><span class="ws-bankdef"> — Rename a measurement in a different unit without changing its amount.</span></div><div class="ws-bank-card"><span class="ws-bankword">Conversion Factor <span class="ws-es-term">(Factor de conversión)</span></span><span class="ws-bankdef"> — A ratio that helps you change one unit into another.</span></div><div class="ws-bank-card"><span class="ws-bankword">Unit <span class="ws-es-term">(Unidad)</span></span><span class="ws-bankdef"> — A standard amount used to measure, like an inch or a liter.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equivalent <span class="ws-es-term">(Equivalente)</span></span><span class="ws-bankdef"> — Having the same value, just in different units.</span></div><div class="ws-bank-card"><span class="ws-bankword">Ratio <span class="ws-es-term">(Razón)</span></span><span class="ws-bankdef"> — A way to compare two amounts, like 3 to 2.</span></div><div class="ws-bank-card"><span class="ws-bankword">Customary units <span class="ws-es-term">(Unidades usuales (sistema inglés))</span></span><span class="ws-bankdef"> — The U.S. way of measuring, like inches, feet, and pounds.</span></div><div class="ws-bank-card"><span class="ws-bankword">Metric units <span class="ws-es-term">(Unidades métricas)</span></span><span class="ws-bankdef"> — A way of measuring by 10s, like meters, liters, and grams.</span></div><div class="ws-bank-card"><span class="ws-bankword">Ratio table <span class="ws-es-term">(Tabla de razones)</span></span><span class="ws-bankdef"> — A table of equal ratios that shows a pattern.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How many inches are in 7 feet?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">84 inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">72 inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">70 inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">96 inches</span></li></ol>
+        <p class="ws-stem">Complete the conversion table using the given conversion factors.</p>
+  <table class="ws-table"><thead><tr><th>Given</th><th>Conversion Factor</th><th>Answer</th></tr></thead><tbody><tr><td>2 feet</td><td></td><td></td></tr><tr><td>6 yards</td><td></td><td></td></tr><tr><td>3 pounds</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How many feet are in 3 yards?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">36 feet</span></li></ol>
+        <p class="ws-stem">Match each measurement to its equivalent value.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">3 yards</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">4 feet</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">5 pounds</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">2 yards</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">36 inches</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">3 pounds</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">9 feet</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">48 inches</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">80 ounces</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">72 inches</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">3 feet</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">48 ounces</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -751,7 +836,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How many ounces are in 4 pounds?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">64 ounces</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48 ounces</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">32 ounces</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16 ounces</span></li></ol>
+        <p class="ws-stem">How many inches are in 7 feet?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">84 inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">72 inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">70 inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">96 inches</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -762,32 +850,38 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Convert 24 inches to feet.</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">24 feet</span></li></ol>
+        <p class="ws-stem">How many feet are in 3 yards?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">36 feet</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Complete the conversion table using the given conversion factors.</p>
-  <table class="ws-table"><thead><tr><th>Given</th><th>Conversion Factor</th><th>Answer</th></tr></thead><tbody><tr><td>2 feet</td><td></td><td></td></tr><tr><td>6 yards</td><td></td><td></td></tr><tr><td>3 pounds</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">How many ounces are in 4 pounds?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">64 ounces</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48 ounces</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">32 ounces</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16 ounces</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each measurement to its equivalent value.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">3 yards</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">4 feet</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">5 pounds</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">2 yards</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">36 inches</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">3 pounds</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">9 feet</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">48 inches</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">80 ounces</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">72 inches</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">3 feet</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">48 ounces</span></li></ul></div>
+        <p class="ws-stem">Convert 24 inches to feet.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 feet</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 feet</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">24 feet</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

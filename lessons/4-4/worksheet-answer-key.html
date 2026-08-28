@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find and Compare with Percentages</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Percent of a Number · Percent · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -698,7 +763,6 @@ header.packet h1::after{
       </div>
     </header>
   
-      
       
       
       <ol class="ws-problems-grid">
@@ -783,14 +847,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find and Compare with Percentages</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Percent of a Number · Percent · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +871,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Find each percent of a number using the formula: Part = Percent × Base.</p>
+  <table class="ws-table"><thead><tr><th>Percent</th><th>Base</th><th>Part</th></tr></thead><tbody><tr><td>25%</td><td>60</td><td>15</td></tr><tr><td>40%</td><td>80</td><td></td></tr><tr><td>15%</td><td>200</td><td></td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +906,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,7 +917,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -843,7 +928,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -851,20 +936,11 @@ header.packet h1::after{
         <p class="ws-stem">What percent of 50 is 15?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">30%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">35%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">50%</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 15/50 → 50 × 2 = 100, so 15 × 2 = 30. That makes 15/50 = 30/100 = 30%.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Find the Percent of a Number is multiplying by the percent number itself instead of its decimal form — for example, finding 30% of 80 by computing 30 × 80 = 2,400 instead of 0.30 × 80 = 24. Always divide the percent by 100 to get the decimal, then multiply that decimal by the base.</p>
       </div>
     </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Find each percent of a number using the formula: Part = Percent × Base.</p>
-  <table class="ws-table"><thead><tr><th>Percent</th><th>Base</th><th>Part</th></tr></thead><tbody><tr><td>25%</td><td>60</td><td>15</td></tr><tr><td>40%</td><td>80</td><td></td></tr><tr><td>15%</td><td>200</td><td></td></tr></tbody></table>
-  
-      </div>
-    </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -916,14 +992,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find and Compare with Percentages</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Percent of a Number · Percent · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -939,8 +1016,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -957,22 +1037,26 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">36 tickets</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24 tickets</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15 tickets</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">204 tickets</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 15% of 240 = 0.15 × 240 = 36 tickets saved.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Find the Percent of a Number is multiplying by the percent number itself instead of its decimal form — for example, finding 30% of 80 by computing 30 × 80 = 2,400 instead of 0.30 × 80 = 24. Always divide the percent by 100 to get the decimal, then multiply that decimal by the base.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">BAR MODEL</span>
       </div>
       <div class="ws-pbody">
         <div class="ws-figure-wrap" style="margin:10px auto;display:flex;flex-direction:column;align-items:center;"><svg width="460" height="66" viewBox="0 0 460 66" role="img" aria-label="Tape diagram model" style="background:white;max-width:100%;height:auto;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;"><text x="10" y="31" font-size="11" font-weight="700" fill="#1e293b" font-family="'Hanken Grotesk',Arial,sans-serif">Total</text><rect x="94.0" y="10" width="87.0" height="34" rx="4" fill="#0f8a84"/><text x="138.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text><rect x="183.0" y="10" width="87.0" height="34" rx="4" fill="#c2603f"/><text x="227.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text><rect x="272.0" y="10" width="87.0" height="34" rx="4" fill="#b07d12"/><text x="316.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text><rect x="361.0" y="10" width="87.0" height="34" rx="4" fill="#3b6ea5"/><text x="405.5" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">25%</text></svg></div>
         <p class="ws-stem">200 ÷ 4 = 50. Each 25% section = 50 points. So 25% of 200 = 50.</p><div class="ws-keynote">See standard solution method.</div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">36 tickets</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24 tickets</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">15 tickets</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">204 tickets</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 15% of 240 = 0.15 × 240 = 36 tickets saved.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Find the Percent of a Number is multiplying by the percent number itself instead of its decimal form — for example, finding 30% of 80 by computing 30 × 80 = 2,400 instead of 0.30 × 80 = 24. Always divide the percent by 100 to get the decimal, then multiply that decimal by the base.</p>
       </div>
     </li>
   
@@ -986,7 +1070,11 @@ header.packet h1::after{
         <p class="ws-stem">A student scored 72 out of 90 on a test. What percent did they score?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">80%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">72%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">75%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">90%</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 72/90 simplifies to 8/10, and 10 × 10 = 100, so 8 × 10 = 80. That makes 72/90 = 80/100 = 80%.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Find the Percent of a Number is multiplying by the percent number itself instead of its decimal form — for example, finding 30% of 80 by computing 30 × 80 = 2,400 instead of 0.30 × 80 = 24. Always divide the percent by 100 to get the decimal, then multiply that decimal by the base.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1038,14 +1126,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Find and Compare with Percentages</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Percent of a Number · Percent · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1061,11 +1150,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A video game character starts with 500 health points. Complete the table to find how many health points are lost or gained.</p>
+  <table class="ws-table"><thead><tr><th>Event</th><th>Percent Change</th><th>Calculation</th><th>Health Points After</th></tr></thead><tbody><tr><td>Hit by enemy</td><td>Lose 20%</td><td>500 × 0.20 = 100 lost</td><td>400</td></tr><tr><td>Health potion</td><td>Gain 50% of current</td><td></td><td></td></tr><tr><td>Poison trap</td><td>Lose 10% of current</td><td></td><td></td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1079,25 +1188,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">A class has 32 students. 25% are in the math club, 50% are in the reading club, and 12.5% are in both. How many students are in each group? Can the total of all three groups be more than 32? Explain why or why not.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: 8, 16, 4, overlap, can, counted twice, both Explanation: Taking each percent of the same 32 students gives 25% = 32 ÷ 4 = 8 in math club, 50% = 32 ÷ 2 = 16 in reading club, and 12.5% = 32 ÷ 8 = 4 in both. Adding 8 + 16 + 4 = 28 is misleading, because the 4 students in both are already inside the 8 and the 16 — counting them a third time overlaps, and the number of different students in at least one club is 8 + 16 − 4 = 20.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A video game character starts with 500 health points. Complete the table to find how many health points are lost or gained.</p>
-  <table class="ws-table"><thead><tr><th>Event</th><th>Percent Change</th><th>Calculation</th><th>Health Points After</th></tr></thead><tbody><tr><td>Hit by enemy</td><td>Lose 20%</td><td>500 × 0.20 = 100 lost</td><td>400</td></tr><tr><td>Health potion</td><td>Gain 50% of current</td><td></td><td></td></tr><tr><td>Poison trap</td><td>Lose 10% of current</td><td></td><td></td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

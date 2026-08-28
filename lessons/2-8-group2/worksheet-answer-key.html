@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.8 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Visual Models · Mean · Average · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-8-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -699,7 +764,11 @@ header.packet h1::after{
     </header>
   
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -723,21 +792,14 @@ header.packet h1::after{
         <p class="ws-stem">Data: 10, 12, 14, 16, 18. Place a marker at the mean of this data set.</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sofia realized she made an error: she actually scored 12 points in Game 8, not 10. Her other games are unchanged (12, 20, 16, 11, 17, 14, 15, and 18). How does this change the number of points she needs in Game 10 to average 15 points per game? Show how you know.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: 135, 150, 15, 2, total, fewer, mean Explanation: Raising Game 8 from 10 to 12 adds 2 points, so the 9-game total goes from 133 to 135. The target has not changed: a mean of 15 over 10 games still needs 15 × 10 = 150 points in all. So Game 10 must now supply 150 − 135 = 15 points instead of 17 — exactly 2 fewer, because every point gained earlier is a point she no longer has to score later.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -748,7 +810,33 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A data set of 5 numbers has a mean of 12. A sixth value of 12 is added. What happens to the mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">It stays 12 — adding a value equal to the mean cannot pull it either way</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">It rises, because the total went up</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">It falls, because there are more values to divide by</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">There is not enough information without the original five numbers</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Five numbers with a mean of 12 add up to 60. Adding one more 12 makes the total 72. There are 6 values now, so divide: 72 ÷ 6 = 12. Adding a value equal to the mean never moves the mean.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake with the mean is adding correctly and then dividing by the wrong number — or not dividing at all. Students report the total (for 8, 10, 6, 12 they say the mean is 36) or they divide by a count that does not match the data, such as dividing a 4-value total by 5, or skipping a zero when counting the values. Before you finish, do two things: count the values in the data set out loud, and check that your mean lands between the smallest and largest value. A mean of 36 for data that never goes above 12 is impossible.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sofia realized she made an error: she actually scored 12 points in Game 8, not 10. Her other games are unchanged (12, 20, 16, 11, 17, 14, 15, and 18). How does this change the number of points she needs in Game 10 to average 15 points per game? Show how you know.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: 135, 150, 15, 2, total, fewer, mean Explanation: Raising Game 8 from 10 to 12 adds 2 points, so the 9-game total goes from 133 to 135. The target has not changed: a mean of 15 over 10 games still needs 15 × 10 = 150 points in all. So Game 10 must now supply 150 − 135 = 15 points instead of 17 — exactly 2 fewer, because every point gained earlier is a point she no longer has to score later.</div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -757,17 +845,6 @@ header.packet h1::after{
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set:</span><span class="ws-step-w">Goals allowed in 4 games: 0, 3, 2, 7</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Goal:</span><span class="ws-step-w">Find the MEAN number of goals allowed per game.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Add the values:</span><span class="ws-step-w">0 + 3 + 2 + 7 = 12</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide:</span><span class="ws-step-w">The student says the shutout does not count as a game, so 12 ÷ 3 = 4 goals per game.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
   <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 4. Correct Work: A score of 0 is real data, not missing data — the shutout is still a game that was played. There are 4 values in the data set, so the mean is 12 ÷ 4 = 3 goals per game, not 4.. Misconception: Adding a 0 does not change a total, which is why it feels invisible — but it absolutely changes the count. The data set has 4 games, so the mean is 12 ÷ 4 = 3. Dropping the shutout from the count reports a worse average than the goalkeeper actually allowed.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A data set of 5 numbers has a mean of 12. A sixth value of 12 is added. What happens to the mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">It stays 12 — adding a value equal to the mean cannot pull it either way</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">It rises, because the total went up</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">It falls, because there are more values to divide by</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">There is not enough information without the original five numbers</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Five numbers with a mean of 12 add up to 60. Adding one more 12 makes the total 72. There are 6 values now, so divide: 72 ÷ 6 = 12. Adding a value equal to the mean never moves the mean.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake with the mean is adding correctly and then dividing by the wrong number — or not dividing at all. Students report the total (for 8, 10, 6, 12 they say the mean is 36) or they divide by a count that does not match the data, such as dividing a 4-value total by 5, or skipping a zero when counting the values. Before you finish, do two things: count the values in the data set out loud, and check that your mean lands between the smallest and largest value. A mean of 36 for data that never goes above 12 is impossible.</p>
       </div>
     </li>
   </ol>

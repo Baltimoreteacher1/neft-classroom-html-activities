@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.6 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Divide Multi-Digit Numbers · Dividend · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-6-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 2.6 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can divide multi-digit whole numbers and explain the meaning of the quotient and remainder, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do you divide big numbers?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Repeat the cycle Divide → Multiply → Subtract → Bring Down until no digits are left to bring down; what is left at the end is the remainder — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>I want 1,344 ÷ 12. The dividend is 1,344 and the divisor is 12, so 12 goes outside the bracket and 1,344 goes inside.</li><li>DIVIDE: 12 does not fit into 1, so I look at 13. How many 12s fit into 13? One. I write 1 above the 3.</li><li>MULTIPLY: 1 × 12 = 12. I write 12 underneath the 13.</li><li>SUBTRACT: 13 − 12 = 1. That is what is left so far.</li><li>BRING DOWN: I bring the next digit, 4, down next to the 1 to make 14. Now I repeat the cycle.</li><li>REPEAT: 14 ÷ 12 → 1 (written above the 4), 1 × 12 = 12, 14 − 12 = 2, and I bring down the last 4 to make 24.</li><li>REPEAT: 24 ÷ 12 → 2 (written above the last 4), 2 × 12 = 24, 24 − 24 = 0. Nothing is left to bring down, so the remainder is 0.</li><li>The digits I wrote are 1, 1, 2, so 1,344 ÷ 12 = 112. I check by multiplying: 12 × 112 = 1,344.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Let's do 384 ÷ 8. DIVIDE: 8 does not fit into 3, so we look at 38. How many 8s fit into 38? (4 — write it above the 8.)</li><li>MULTIPLY: 4 × 8 = ? (32 — write it under the 38.) SUBTRACT: 38 − 32 = ? (6.)</li><li>BRING DOWN: bring the 4 down to make 64, then repeat. DIVIDE: 64 ÷ 8 = ? (8.) MULTIPLY: 8 × 8 = 64. SUBTRACT: 64 − 64 = 0.</li><li>Nothing is left to bring down, so the remainder is 0 and 384 ÷ 8 = 48. Check: 8 × 48 = 384.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Divide Multi-Digit Numbers (Dividir números de varias cifras) — Separate a multi-digit number into equal groups to find a quotient.</li><li>Dividend (Dividendo) — The total number being divided into equal groups (the number inside the division bracket).</li><li>Divisor (Divisor) — The number of equal groups you are dividing into (the number outside the division bracket).</li><li>Quotient (Cociente) — The answer when you divide.</li><li>Remainder (Residuo) — What is left over when a number does not divide evenly.</li><li>Long division (División larga) — A method that repeats four steps — divide, multiply, subtract, bring down — until there are no digits left to bring down.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Complete each division problem.</p>
   <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>672 ÷ 8</td><td></td></tr><tr><td>2,208 ÷ 16</td><td></td></tr><tr><td>2,016 ÷ 14</td><td></td></tr><tr><td>1,560 ÷ 15</td><td></td></tr><tr><td>3,276 ÷ 12</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -733,7 +819,11 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">450 ÷ 18</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">1,008 ÷ 16</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">1,440 ÷ 24</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">2,100 ÷ 15</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">864 ÷ 12</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">1,825 ÷ 25</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">25</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">63</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">60</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">140</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">72</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">73</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -741,10 +831,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 4,896 ÷ 12?</p><div class="wsd-wrap">
+        <p class="ws-stem">What is 4,896 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">408</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">480</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">380</span></li></ol><div class="wsd-wrap">
       <div class="wsd-frame"><svg class="wsd" viewBox="0 0 225 280" width="225" height="280" role="img" aria-label="Blank long-division frame for 4896 divided by 12" style="background:white;"><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">1</text><text class="wsd-given" x="74" y="58" text-anchor="middle">2</text><path class="wsd-rule" d="M 84 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="84" y1="40" x2="216" y2="40"/><text class="wsd-given" x="105" y="58" text-anchor="middle">4</text><text class="wsd-given" x="135" y="58" text-anchor="middle">8</text><text class="wsd-given" x="165" y="58" text-anchor="middle">9</text><text class="wsd-given" x="195" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="242" width="24" height="22" rx="3"/></svg></div>
       
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">408</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">48</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">480</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">380</span></li></ol>
+    </div>
       </div>
     </li>
   
@@ -755,10 +845,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A school orders 3,648 pencils packed 24 to a box. How many boxes are there?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">152</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">148</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">160</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">144</span></li></ol>
+        <p class="ws-stem">What is 5,084 ÷ 31?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">164</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">154</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">174</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">164 r2</span></li></ol><div class="wsd-wrap">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 225 280" width="225" height="280" role="img" aria-label="Blank long-division frame for 5084 divided by 31" style="background:white;"><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">3</text><text class="wsd-given" x="74" y="58" text-anchor="middle">1</text><path class="wsd-rule" d="M 84 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="84" y1="40" x2="216" y2="40"/><text class="wsd-given" x="105" y="58" text-anchor="middle">5</text><text class="wsd-given" x="135" y="58" text-anchor="middle">0</text><text class="wsd-given" x="165" y="58" text-anchor="middle">8</text><text class="wsd-given" x="195" y="58" text-anchor="middle">4</text><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="242" width="24" height="22" rx="3"/></svg></div>
+      
+    </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -766,10 +863,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What is 5,084 ÷ 31?</p><div class="wsd-wrap">
-      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 225 280" width="225" height="280" role="img" aria-label="Blank long-division frame for 5084 divided by 31" style="background:white;"><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">3</text><text class="wsd-given" x="74" y="58" text-anchor="middle">1</text><path class="wsd-rule" d="M 84 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="84" y1="40" x2="216" y2="40"/><text class="wsd-given" x="105" y="58" text-anchor="middle">5</text><text class="wsd-given" x="135" y="58" text-anchor="middle">0</text><text class="wsd-given" x="165" y="58" text-anchor="middle">8</text><text class="wsd-given" x="195" y="58" text-anchor="middle">4</text><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="183" y="242" width="24" height="22" rx="3"/></svg></div>
-      
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">164</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">154</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">174</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">164 r2</span></li></ol>
+        <p class="ws-stem">A school orders 3,648 pencils packed 24 to a box. How many boxes are there?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">152</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">148</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">160</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">144</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -780,10 +877,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Path 1: The first arcade door shows 4,928 ÷ 7. Which quotient lights the correct path?</p><div class="wsd-wrap">
+        <p class="ws-stem">Path 1: The first arcade door shows 4,928 ÷ 7. Which quotient lights the correct path?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">704</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">74</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">740</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">703 r7</span></li></ol><div class="wsd-wrap">
       <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 280" width="195" height="280" role="img" aria-label="Blank long-division frame for 4928 divided by 7" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">7</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="186" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">4</text><text class="wsd-given" x="105" y="58" text-anchor="middle">9</text><text class="wsd-given" x="135" y="58" text-anchor="middle">2</text><text class="wsd-given" x="165" y="58" text-anchor="middle">8</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/></svg></div>
       
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">704</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">74</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">740</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">703 r7</span></li></ol>
+    </div>
       </div>
     </li>
   </ol>
@@ -850,7 +947,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.4 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Graph Ratio Tables · Coordinate plane · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-4-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,54 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A ratio table shows (2, 6), (4, 12), and (6, 18). Which ordered pair comes next if the pattern continues?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(8, 24)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 20)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(8, 22)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(10, 24)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The pattern adds 2 to x and 6 to y each time. After (6, 18): x = 6+2 = 8, y = 18+6 = 24. The next point is (8, 24).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">When you graph equivalent ratios, the points will always form what shape?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">A straight line through the origin</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A curved line</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">A zigzag</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A circle</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Equivalent ratios are proportional, so their graph is always a straight line that passes through the origin (0, 0).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A ratio table shows (2, 8), (3, 12), and (5, 20). What is the y-value when x = 7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">21</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">35</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The ratio is y/x = 8/2 = 4. For every x, y = 4x. When x = 7: y = 4 × 7 = 28.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which point would NOT be on the graph of the ratio 1:5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 10)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(2, 10)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4, 20)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(5, 25)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> For the ratio 1:5, every y-value should be 5 times the x-value. (3, 10): 5 × 3 = 15, not 10. So (3, 10) does not belong.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">COORDINATE GRID</span>
       </div>
       <div class="ws-pbody">
@@ -758,12 +783,60 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">COORDINATE GRID</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Chef Reyes uses 3 cups of flour for every 1 cup of sugar. Plot the ordered pairs from the ratio table: (1,3), (2,6), (3,9), (4,12).</p><div class="ws-keynote">See standard solution method.</div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A ratio table shows (2, 6), (4, 12), and (6, 18). Which ordered pair comes next if the pattern continues?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(8, 24)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(7, 20)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(8, 22)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(10, 24)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The pattern adds 2 to x and 6 to y each time. After (6, 18): x = 6+2 = 8, y = 18+6 = 24. The next point is (8, 24).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">When you graph equivalent ratios, the points will always form what shape?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">A straight line through the origin</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A curved line</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">A zigzag</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A circle</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Equivalent ratios are proportional, so their graph is always a straight line that passes through the origin (0, 0).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A ratio table shows (2, 8), (3, 12), and (5, 20). What is the y-value when x = 7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">21</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">35</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The ratio is y/x = 8/2 = 4. For every x, y = 4x. When x = 7: y = 4 × 7 = 28.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which point would NOT be on the graph of the ratio 1:5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">(3, 10)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">(2, 10)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4, 20)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">(5, 25)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> For the ratio 1:5, every y-value should be 5 times the x-value. (3, 10): 5 × 3 = 15, not 10. So (3, 10) does not belong.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Graph Ratio Tables is writing the ordered pair in the wrong order — putting the second table value first instead of matching (x, y) to the table's column order. For example, if a recipe table shows 2 cups of sugar for every 4 cups of flour, a student might plot (4, 2) instead of (2, 4), landing the point in a completely different spot on the grid. Before you plot, check: which quantity goes on the x-axis, and does your ordered pair start with that number?</p>
       </div>
     </li>
   </ol>

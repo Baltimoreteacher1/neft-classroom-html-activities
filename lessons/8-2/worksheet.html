@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write and Solve Equations Using Addition or Subtraction</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Solve One-Step Addition and Subtraction Equations · Equation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,16 +773,24 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Write and Solve Equations Using Addition or Subtraction</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can solve one-step addition and subtraction equations using inverse operations.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Solve One-Step Addition and Subtraction Equations <span class="ws-es-term">(Resolver ecuaciones de suma y resta de un paso)</span></span><span class="ws-bankdef"> — Use one inverse addition or subtraction operation to isolate the variable.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equation <span class="ws-es-term">(Ecuación)</span></span><span class="ws-bankdef"> — A math sentence with an equal sign showing both sides are the same.</span></div><div class="ws-bank-card"><span class="ws-bankword">Inverse operation <span class="ws-es-term">(Operación inversa)</span></span><span class="ws-bankdef"> — Two math actions that undo each other, like × and ÷.</span></div><div class="ws-bank-card"><span class="ws-bankword">Isolate <span class="ws-es-term">(Despejar)</span></span><span class="ws-bankdef"> — To get the letter by itself on one side.</span></div><div class="ws-bank-card"><span class="ws-bankword">Solution <span class="ws-es-term">(Solución)</span></span><span class="ws-bankdef"> — A number that makes the equation or inequality true.</span></div><div class="ws-bank-card"><span class="ws-bankword">One-step equation <span class="ws-es-term">(Ecuación de un paso)</span></span><span class="ws-bankdef"> — An equation you can solve in a single step using one inverse operation.</span></div><div class="ws-bank-card"><span class="ws-bankword">Balance <span class="ws-es-term">(Equilibrio)</span></span><span class="ws-bankdef"> — Keeping both sides of an equation equal by doing the same thing to each side.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do I solve an addition or subtraction equation?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Solving Addition &amp; Subtraction Equations. Formula: x + a = b → x = b − a | x − a = b → x = b + a</div>
+        <ul class="ws-note-list"><li>To solve means to find the value that makes the equation true. I use the inverse operation (the opposite) to get the variable alone, and I do the same thing to both sides.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Identify operation on variable.</li><li>Use inverse operation: subtract to undo addition; add to undo subtraction.</li><li>Property of Equality: do same operation to both sides.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Solve n + 23 = 58. The 23 is added to n.</li><li>The inverse of adding 23 is subtracting 23.</li><li>I subtract 23 from both sides: n + 23 − 23 = 58 − 23.</li><li>That leaves n = 35. Check: 35 + 23 = 58. True!</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Solve One-Step Addition and Subtraction Equations (Resolver ecuaciones de suma y resta de un paso) — Use one inverse addition or subtraction operation to isolate the variable.</li><li>Equation (Ecuación) — A math sentence with an equal sign showing both sides are the same.</li><li>Inverse operation (Operación inversa) — Two math actions that undo each other, like × and ÷.</li><li>Isolate (Despejar) — To get the letter by itself on one side.</li><li>Solution (Solución) — A number that makes the equation or inequality true.</li><li>One-step equation (Ecuación de un paso) — An equation you can solve in a single step using one inverse operation.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is applying the same operation instead of the inverse — for example, solving x − 7 = 15 by subtracting 7 from both sides (getting the wrong x = 8) instead of adding 7 to both sides (the correct x = 22). Another common mistake is doing the inverse operation to only one side, like solving x + 6 = 14 by subtracting 6 from the left but forgetting the right side. Before you submit, name the operation shown in the equation, choose its inverse, apply it to BOTH sides, and check by substituting your answer back into the original equation.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
@@ -729,7 +802,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: x + 9 = 15</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">x = 6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">x = 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">x = 9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">x = 15</span></li></ol>
+        <p class="ws-stem">Solve: x + 9 = 15</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">x = 6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">x = 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">x = 9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">x = 15</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -740,7 +816,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: y − 7 = 20</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">y = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">y = 13</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">y = 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">y = 140</span></li></ol>
+        <p class="ws-stem">Solve: y − 7 = 20</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">y = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">y = 13</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">y = 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">y = 140</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,7 +830,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: n + 15 = 42</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n = 57</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n = 15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n = 42</span></li></ol>
+        <p class="ws-stem">Solve: n + 15 = 42</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n = 57</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n = 15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n = 42</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -762,7 +844,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: m − 11 = 25</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">m = 36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">m = 14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">m = 25</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">m = 275</span></li></ol>
+        <p class="ws-stem">Solve: m − 11 = 25</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">m = 36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">m = 14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">m = 25</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">m = 275</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -811,14 +896,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write and Solve Equations Using Addition or Subtraction</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Solve One-Step Addition and Subtraction Equations · Equation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -833,31 +919,50 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Write and Solve Equations Using Addition or Subtraction</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can solve one-step addition and subtraction equations using inverse operations.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: How do I solve an addition or subtraction equation?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Solving Addition &amp; Subtraction Equations. Formula: x + a = b → x = b − a | x − a = b → x = b + a</div>
+        <ul class="ws-note-list"><li>To solve means to find the value that makes the equation true. I use the inverse operation (the opposite) to get the variable alone, and I do the same thing to both sides.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Identify operation on variable.</li><li>Use inverse operation: subtract to undo addition; add to undo subtraction.</li><li>Property of Equality: do same operation to both sides.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Solve n + 23 = 58. The 23 is added to n.</li><li>The inverse of adding 23 is subtracting 23.</li><li>I subtract 23 from both sides: n + 23 − 23 = 58 − 23.</li><li>That leaves n = 35. Check: 35 + 23 = 58. True!</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Solve One-Step Addition and Subtraction Equations (Resolver ecuaciones de suma y resta de un paso) — Use one inverse addition or subtraction operation to isolate the variable.</li><li>Equation (Ecuación) — A math sentence with an equal sign showing both sides are the same.</li><li>Inverse operation (Operación inversa) — Two math actions that undo each other, like × and ÷.</li><li>Isolate (Despejar) — To get the letter by itself on one side.</li><li>Solution (Solución) — A number that makes the equation or inequality true.</li><li>One-step equation (Ecuación de un paso) — An equation you can solve in a single step using one inverse operation.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is applying the same operation instead of the inverse — for example, solving x − 7 = 15 by subtracting 7 from both sides (getting the wrong x = 8) instead of adding 7 to both sides (the correct x = 22). Another common mistake is doing the inverse operation to only one side, like solving x + 6 = 14 by subtracting 6 from the left but forgetting the right side. Before you submit, name the operation shown in the equation, choose its inverse, apply it to BOTH sides, and check by substituting your answer back into the original equation.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Solve One-Step Addition and Subtraction Equations <span class="ws-es-term">(Resolver ecuaciones de suma y resta de un paso)</span></span><span class="ws-bankdef"> — Use one inverse addition or subtraction operation to isolate the variable.</span></div><div class="ws-bank-card"><span class="ws-bankword">Equation <span class="ws-es-term">(Ecuación)</span></span><span class="ws-bankdef"> — A math sentence with an equal sign showing both sides are the same.</span></div><div class="ws-bank-card"><span class="ws-bankword">Inverse operation <span class="ws-es-term">(Operación inversa)</span></span><span class="ws-bankdef"> — Two math actions that undo each other, like × and ÷.</span></div><div class="ws-bank-card"><span class="ws-bankword">Isolate <span class="ws-es-term">(Despejar)</span></span><span class="ws-bankdef"> — To get the letter by itself on one side.</span></div><div class="ws-bank-card"><span class="ws-bankword">Solution <span class="ws-es-term">(Solución)</span></span><span class="ws-bankdef"> — A number that makes the equation or inequality true.</span></div><div class="ws-bank-card"><span class="ws-bankword">One-step equation <span class="ws-es-term">(Ecuación de un paso)</span></span><span class="ws-bankdef"> — An equation you can solve in a single step using one inverse operation.</span></div><div class="ws-bank-card"><span class="ws-bankword">Balance <span class="ws-es-term">(Equilibrio)</span></span><span class="ws-bankdef"> — Keeping both sides of an equation equal by doing the same thing to each side.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">NUMBER LINE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: x + 9 = 15</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">x = 6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">x = 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">x = 9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">x = 15</span></li></ol>
+        <p class="ws-stem">Use the number line to solve x + 8 = 20. Start at 20 and count back 8 to find x.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -865,7 +970,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: y − 7 = 20</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">y = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">y = 13</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">y = 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">y = 140</span></li></ol>
+        <p class="ws-stem">Solve: x + 9 = 15</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">x = 6</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">x = 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">x = 9</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">x = 15</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -876,7 +984,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: n + 15 = 42</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n = 57</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n = 15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n = 42</span></li></ol>
+        <p class="ws-stem">Solve: y − 7 = 20</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">y = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">y = 13</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">y = 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">y = 140</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -887,21 +998,31 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Solve: m − 11 = 25</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">m = 36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">m = 14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">m = 25</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">m = 275</span></li></ol>
+        <p class="ws-stem">Solve: n + 15 = 42</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">n = 27</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">n = 57</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">n = 15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">n = 42</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">NUMBER LINE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Use the number line to solve x + 8 = 20. Start at 20 and count back 8 to find x.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Solve: m − 11 = 25</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">m = 36</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">m = 14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">m = 25</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">m = 275</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -912,7 +1033,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation:</span><span class="ws-step-w">x + 6 = 14</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Choose inverse:</span><span class="ws-step-w">The inverse of + 6 is − 6.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Subtract from one side only:</span><span class="ws-step-w">x + 6 − 6 = 14, so x = 14</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -961,14 +1085,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write and Solve Equations Using Addition or Subtraction</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Solve One-Step Addition and Subtraction Equations · Equation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -983,9 +1108,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do I solve an addition or subtraction equation?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Solving Addition &amp; Subtraction Equations. Formula: x + a = b → x = b − a | x − a = b → x = b + a</div>
+        <ul class="ws-note-list"><li>To solve means to find the value that makes the equation true. I use the inverse operation (the opposite) to get the variable alone, and I do the same thing to both sides.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Identify operation on variable.</li><li>Use inverse operation: subtract to undo addition; add to undo subtraction.</li><li>Property of Equality: do same operation to both sides.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Solve n + 23 = 58. The 23 is added to n.</li><li>The inverse of adding 23 is subtracting 23.</li><li>I subtract 23 from both sides: n + 23 − 23 = 58 − 23.</li><li>That leaves n = 35. Check: 35 + 23 = 58. True!</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Solve x − 4 = 9. Is x being added or subtracted?</li><li>It is subtracted, so the inverse is adding 4 to both sides.</li><li>x = 9 + 4 = 13. Check together: 13 − 4 = 9. True?</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Solve One-Step Addition and Subtraction Equations (Resolver ecuaciones de suma y resta de un paso) — Use one inverse addition or subtraction operation to isolate the variable.</li><li>Equation (Ecuación) — A math sentence with an equal sign showing both sides are the same.</li><li>Inverse operation (Operación inversa) — Two math actions that undo each other, like × and ÷.</li><li>Isolate (Despejar) — To get the letter by itself on one side.</li><li>Solution (Solución) — A number that makes the equation or inequality true.</li><li>One-step equation (Ecuación de un paso) — An equation you can solve in a single step using one inverse operation.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is applying the same operation instead of the inverse — for example, solving x − 7 = 15 by subtracting 7 from both sides (getting the wrong x = 8) instead of adding 7 to both sides (the correct x = 22). Another common mistake is doing the inverse operation to only one side, like solving x + 6 = 14 by subtracting 6 from the left but forgetting the right side. Before you submit, name the operation shown in the equation, choose its inverse, apply it to BOTH sides, and check by substituting your answer back into the original equation.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1004,7 +1155,10 @@ header.packet h1::after{
       <rect x="210" y="76" width="100" height="28" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="4"/>
       <text x="260" y="94" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af" font-family="'Hanken Grotesk',Arial,sans-serif">46</text>
     </svg></div>
-        <p class="ws-stem">Solve: m − 14 = 32</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Solve: m − 14 = 32</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1017,24 +1171,16 @@ header.packet h1::after{
         
         <p class="ws-stem">Complete the table: identify the inverse operation, solve, and check.</p>
   <table class="ws-table"><thead><tr><th>Equation</th><th>Inverse Operation</th><th>Solution</th><th>Check</th></tr></thead><tbody><tr><td>x + 18 = 45</td><td></td><td></td><td></td></tr><tr><td>p − 22 = 19</td><td></td><td></td><td></td></tr><tr><td>w + 3.5 = 10</td><td></td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A shirt costs $d. After a $15 discount, it costs $38. What is d?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$53</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$23</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$38</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$45</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1044,7 +1190,29 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">x − 9 = 14</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">n − 20 = 35</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">y − 6 = 8</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">x + 12 = 30</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">n + 7 = 19</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">y + 15 = 40</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A shirt costs $d. After a $15 discount, it costs $38. What is d?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$53</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$23</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$38</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$45</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1055,7 +1223,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Common Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation:</span><span class="ws-step-w">y − 13 = 28</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Choose inverse:</span><span class="ws-step-w">The inverse of − 13 is + 13, so add 13 to both sides.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides:</span><span class="ws-step-w">y = 28 + 13</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify:</span><span class="ws-step-w">y = 31</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1104,14 +1275,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Write and Solve Equations Using Addition or Subtraction</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Solve One-Step Addition and Subtraction Equations · Equation · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1126,37 +1298,38 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: How do I solve an addition or subtraction equation?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Solving Addition &amp; Subtraction Equations. Formula: x + a = b → x = b − a | x − a = b → x = b + a</div>
+        <ul class="ws-note-list"><li>To solve means to find the value that makes the equation true. I use the inverse operation (the opposite) to get the variable alone, and I do the same thing to both sides.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Identify operation on variable.</li><li>Use inverse operation: subtract to undo addition; add to undo subtraction.</li><li>Property of Equality: do same operation to both sides.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Solve n + 23 = 58. The 23 is added to n.</li><li>The inverse of adding 23 is subtracting 23.</li><li>I subtract 23 from both sides: n + 23 − 23 = 58 − 23.</li><li>That leaves n = 35. Check: 35 + 23 = 58. True!</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>Solve x − 4 = 9. Is x being added or subtracted?</li><li>It is subtracted, so the inverse is adding 4 to both sides.</li><li>x = 9 + 4 = 13. Check together: 13 − 4 = 9. True?</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Solve One-Step Addition and Subtraction Equations (Resolver ecuaciones de suma y resta de un paso) — Use one inverse addition or subtraction operation to isolate the variable.</li><li>Equation (Ecuación) — A math sentence with an equal sign showing both sides are the same.</li><li>Inverse operation (Operación inversa) — Two math actions that undo each other, like × and ÷.</li><li>Isolate (Despejar) — To get the letter by itself on one side.</li><li>Solution (Solución) — A number that makes the equation or inequality true.</li><li>One-step equation (Ecuación de un paso) — An equation you can solve in a single step using one inverse operation.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake is applying the same operation instead of the inverse — for example, solving x − 7 = 15 by subtracting 7 from both sides (getting the wrong x = 8) instead of adding 7 to both sides (the correct x = 22). Another common mistake is doing the inverse operation to only one side, like solving x + 6 = 14 by subtracting 6 from the left but forgetting the right side. Before you submit, name the operation shown in the equation, choose its inverse, apply it to BOTH sides, and check by substituting your answer back into the original equation.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Find the Equation Error</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation:</span><span class="ws-step-w">x − 18 = 45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify inverse:</span><span class="ws-step-w">Inverse of subtraction is subtraction</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides:</span><span class="ws-step-w">x − 18 − 18 = 45 − 18</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify:</span><span class="ws-step-w">x = 27</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A detective solved x + 25 = 60 and got x = 35. Another detective solved y − 25 = 60 and got y = 35. Are both correct? Explain using inverse operations and check each answer.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">BALANCE SCALE</span>
       </div>
       <div class="ws-pbody">
@@ -1172,7 +1345,45 @@ header.packet h1::after{
       <rect x="210" y="76" width="100" height="28" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="4"/>
       <text x="260" y="94" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e40af" font-family="'Hanken Grotesk',Arial,sans-serif">6.6</text>
     </svg></div>
-        <p class="ws-stem">Solve using decimals: x + 2.7 = 9.3. Use inverse operations.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">Solve using decimals: x + 2.7 = 9.3. Use inverse operations.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Find the Equation Error</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation:</span><span class="ws-step-w">x − 18 = 45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify inverse:</span><span class="ws-step-w">Inverse of subtraction is subtraction</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides:</span><span class="ws-step-w">x − 18 − 18 = 45 − 18</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify:</span><span class="ws-step-w">x = 27</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A detective solved x + 25 = 60 and got x = 35. Another detective solved y − 25 = 60 and got y = 35. Are both correct? Explain using inverse operations and check each answer.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

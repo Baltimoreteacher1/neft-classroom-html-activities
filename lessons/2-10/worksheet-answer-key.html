@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Choose Appropriate Measures</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Appropriate Measures of Center · Mean · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each data description with the best measure of center.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Test scores: 88, 90, 85, 92, 87 (no outliers)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Salaries: $30K, $32K, $35K, $31K, $250K</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Race times: 12.1s, 12.3s, 12.0s, 12.2s, 12.1s</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Goals scored: 1, 2, 1, 0, 2, 1, 15</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Mean</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Median</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Mean</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Median</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,24 +799,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">A runner's mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Median — the outlier 12:00 pulls the mean too high</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean — it uses all the data</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Mode — it shows the most common time</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither measure works</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The 12:00 is an outlier that pulls the mean up. The median (7:15) better represents the runner's typical time.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MATCHING</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each data description with the best measure of center.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Test scores: 88, 90, 85, 92, 87 (no outliers)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Salaries: $30K, $32K, $35K, $31K, $250K</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Race times: 12.1s, 12.3s, 12.0s, 12.2s, 12.1s</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Goals scored: 1, 2, 1, 0, 2, 1, 15</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Mean</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Median</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Mean</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Median</span></li></ul></div>
       </div>
     </li>
   
@@ -784,14 +856,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Choose Appropriate Measures</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Appropriate Measures of Center · Mean · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -807,33 +880,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A gymnast's scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Median</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither — the data is too small</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Both are equally bad</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The data is symmetric with no outliers, so the mean (8.7) best represents the typical score.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A runner's mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Median — the outlier 12:00 pulls the mean too high</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean — it uses all the data</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Mode — it shows the most common time</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither measure works</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The 12:00 is an outlier that pulls the mean up. The median (7:15) better represents the runner's typical time.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MATCHING</span>
       </div>
       <div class="ws-pbody">
@@ -845,18 +899,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Data set: 5, 6, 7, 7, 8, 50. The mean is about 13.8 and the median is 7. Which better represents the typical value?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Median (7) — the outlier 50 inflates the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean (13.8) — it includes all values</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally good</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither works for this data</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The mean (13.8) is higher than 5 of the 6 values because the outlier 50 pulls it up. The median (7) better represents a typical value.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -866,7 +909,48 @@ header.packet h1::after{
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Use Mean</span><span class="ws-sort-text">No outliers in the data</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Use Mean</span><span class="ws-sort-text">Data is symmetric</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Use Mean</span><span class="ws-sort-text">All values are close together</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Use Median</span><span class="ws-sort-text">Data has one or more outliers</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Use Median</span><span class="ws-sort-text">Data is skewed to one side</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Use Median</span><span class="ws-sort-text">One extreme value pulls the average</span></li></ul>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A gymnast's scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Median</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither — the data is too small</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Both are equally bad</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The data is symmetric with no outliers, so the mean (8.7) best represents the typical score.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A runner's mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Median — the outlier 12:00 pulls the mean too high</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean — it uses all the data</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Mode — it shows the most common time</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither measure works</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The 12:00 is an outlier that pulls the mean up. The median (7:15) better represents the runner's typical time.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Data set: 5, 6, 7, 7, 8, 50. The mean is about 13.8 and the median is 7. Which better represents the typical value?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Median (7) — the outlier 50 inflates the mean</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean (13.8) — it includes all values</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Both are equally good</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither works for this data</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The mean (13.8) is higher than 5 of the 6 values because the outlier 50 pulls it up. The median (7) better represents a typical value.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -918,14 +1002,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Choose Appropriate Measures</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Appropriate Measures of Center · Mean · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -941,22 +1026,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A baseball player's batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player's typical batting average?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Median, because the .110 outlier pulls the mean down</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean, because it uses all the data</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Mean, because .110 is a real season</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither measure works</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The .110 is an outlier that pulls the mean down to .260. The median (.2875) better represents typical performance because it isn't affected by the extreme value.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -969,7 +1046,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MATCHING</span>
       </div>
       <div class="ws-pbody">
@@ -981,7 +1058,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">NUMBER LINE</span>
       </div>
       <div class="ws-pbody">
@@ -989,7 +1066,26 @@ header.packet h1::after{
         <p class="ws-stem">Data: 10, 12, 11, 13, 50. Place the mean (19.2) and median (12) on the number line. Notice how far apart they are because of the outlier.</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A baseball player's batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player's typical batting average?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Median, because the .110 outlier pulls the mean down</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Mean, because it uses all the data</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Mean, because .110 is a real season</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither measure works</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The .110 is an outlier that pulls the mean down to .260. The median (.2875) better represents typical performance because it isn't affected by the extreme value.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Appropriate Measures is defaulting to the mean just because &quot;it uses all the data,&quot; without first checking whether an outlier or skewed shape is present. For example, given a player's points per game 14, 16, 15, 17, 16, 58, a student calculates the mean (136 ÷ 6 ≈ 22.7) and reports that as the typical game — but 58 is far from the cluster of 14–17, so it pulls the mean above 5 of the 6 games. The median (16) actually represents a typical game here. Before choosing a measure, always scan the data for an outlier or a long tail first: only use the mean once you've confirmed the data has neither.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1041,14 +1137,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Choose Appropriate Measures</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Appropriate Measures of Center · Mean · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-10" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1064,11 +1161,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort by which measure is typically used in real life.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Mean is typically reported</span> <span class="ws-cat-pill">Median is typically reported</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Mean is typically reported</span><span class="ws-sort-text">Average temperature for the month</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Mean is typically reported</span><span class="ws-sort-text">Average test score for a class (no outliers)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Median is typically reported</span><span class="ws-sort-text">Median household income in a city</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Median is typically reported</span><span class="ws-sort-text">Median home price in a neighborhood</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1082,25 +1199,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">A local newspaper reports that the average home price in a neighborhood is $450,000. The actual prices are: $180K, $200K, $190K, $210K, $195K, $1,725K. Is the reporter's claim misleading? Calculate the mean and median and explain which better represents a 'typical' home price.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: mean, median, outlier, misleading, pulls, higher, typical, skewed Explanation: The six prices add to $2,700K, so the mean is 2,700 ÷ 6 = $450K, matching the reporter — but the median is the average of the middle two prices, $195K and $200K, which is $197.5K. Five of the six homes cost between $180K and $210K, so the $1,725K home is an outlier pulling the mean far above what most homes cost. The claim is misleading, and the median better represents a typical price.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort by which measure is typically used in real life.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Mean is typically reported</span> <span class="ws-cat-pill">Median is typically reported</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Mean is typically reported</span><span class="ws-sort-text">Average temperature for the month</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Mean is typically reported</span><span class="ws-sort-text">Average test score for a class (no outliers)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Median is typically reported</span><span class="ws-sort-text">Median household income in a city</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Median is typically reported</span><span class="ws-sort-text">Median home price in a neighborhood</span></li></ul>
       </div>
     </li>
   </ol>

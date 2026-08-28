@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Histogram</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Display Data with Histograms · Histogram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,20 +773,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Represent and Describe Data in a Histogram</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can make and read a histogram to display data in intervals.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Display Data with Histograms <span class="ws-es-term">(Representar datos con histogramas)</span></span><span class="ws-bankdef"> — Group numerical data into intervals and show each interval's frequency with a bar.</span></div><div class="ws-bank-card"><span class="ws-bankword">Histogram <span class="ws-es-term">(Histograma)</span></span><span class="ws-bankdef"> — A bar graph that groups data into equal ranges. The bars touch.</span></div><div class="ws-bank-card"><span class="ws-bankword">Frequency <span class="ws-es-term">(Frecuencia)</span></span><span class="ws-bankdef"> — How many times a value shows up.</span></div><div class="ws-bank-card"><span class="ws-bankword">Interval <span class="ws-es-term">(Intervalo)</span></span><span class="ws-bankdef"> — A range of numbers used to group data.</span></div><div class="ws-bank-card"><span class="ws-bankword">Distribution <span class="ws-es-term">(Distribución)</span></span><span class="ws-bankdef"> — How the data is spread out.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variability <span class="ws-es-term">(Variabilidad)</span></span><span class="ws-bankdef"> — How spread out the numbers are.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: What is a histogram?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Histograms &amp; Frequency Distributions</div>
+        <ul class="ws-note-list"><li>A histogram is a bar graph that groups numbers into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch because the intervals are continuous.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Set equal intervals along the horizontal axis with no gaps.</li><li>Count the frequency (how many data values fall into each interval).</li><li>Draw adjacent bars with heights equal to frequency</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data: 3, 7, 12, 15, 18, 24. I will use intervals of 10: 0–9, 10–19, 20–29.</li><li>Interval 0–9: the values 3 and 7 fit, so the frequency is 2.</li><li>Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3.</li><li>Interval 20–29: only the value 24 fits, so the frequency is 1.</li><li>Now I draw three bars with heights 2, 3, and 1, touching each other. The tallest bar (10–19) is where most values are.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Display Data with Histograms (Representar datos con histogramas) — Group numerical data into intervals and show each interval's frequency with a bar.</li><li>Histogram (Histograma) — A bar graph that groups data into equal ranges. The bars touch.</li><li>Frequency (Frecuencia) — How many times a value shows up.</li><li>Interval (Intervalo) — A range of numbers used to group data.</li><li>Distribution (Distribución) — How the data is spread out.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Display Data: Histograms is counting a boundary value in two intervals at once — for example, putting the value 10 in both the '0–9' bin and the '10–19' bin. Each data value belongs to exactly ONE interval. Before you submit, add up all your frequencies and check that the total matches the number of data values you started with.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -729,15 +806,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol>
+        <p class="ws-stem">In a histogram, what does the height of each bar represent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The average of the data in that interval</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range of the interval</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median of the data</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The frequency (count) of data in that interval</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -745,7 +824,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In a histogram, what does the height of each bar represent?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The average of the data in that interval</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range of the interval</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median of the data</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The frequency (count) of data in that interval</span></li></ol>
+        <p class="ws-stem">A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div>
       </div>
     </li>
   
@@ -756,7 +840,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How is a histogram different from a regular bar graph?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">There is no difference</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Histogram bars touch (no gaps) because the intervals are continuous ranges</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Histograms use colors and bar graphs don't</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Bar graphs show numbers and histograms show words</span></li></ol>
+        <p class="ws-stem">How is a histogram different from a regular bar graph?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">There is no difference</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Histogram bars touch (no gaps) because the intervals are continuous ranges</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Histograms use colors and bar graphs don't</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Bar graphs show numbers and histograms show words</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -767,7 +854,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A histogram has intervals: 0–4, 5–9, 10–14, 15–19. What is the width of each interval?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">19</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4</span></li></ol>
+        <p class="ws-stem">A histogram has intervals: 0–4, 5–9, 10–14, 15–19. What is the width of each interval?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">19</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -816,14 +906,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Histogram</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Display Data with Histograms · Histogram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -838,20 +929,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Represent and Describe Data in a Histogram</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can make and read a histogram to display data in intervals.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: What is a histogram?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Histograms &amp; Frequency Distributions</div>
+        <ul class="ws-note-list"><li>A histogram is a bar graph that groups numbers into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch because the intervals are continuous.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Set equal intervals along the horizontal axis with no gaps.</li><li>Count the frequency (how many data values fall into each interval).</li><li>Draw adjacent bars with heights equal to frequency</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data: 3, 7, 12, 15, 18, 24. I will use intervals of 10: 0–9, 10–19, 20–29.</li><li>Interval 0–9: the values 3 and 7 fit, so the frequency is 2.</li><li>Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3.</li><li>Interval 20–29: only the value 24 fits, so the frequency is 1.</li><li>Now I draw three bars with heights 2, 3, and 1, touching each other. The tallest bar (10–19) is where most values are.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Display Data with Histograms (Representar datos con histogramas) — Group numerical data into intervals and show each interval's frequency with a bar.</li><li>Histogram (Histograma) — A bar graph that groups data into equal ranges. The bars touch.</li><li>Frequency (Frecuencia) — How many times a value shows up.</li><li>Interval (Intervalo) — A range of numbers used to group data.</li><li>Distribution (Distribución) — How the data is spread out.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Display Data: Histograms is counting a boundary value in two intervals at once — for example, putting the value 10 in both the '0–9' bin and the '10–19' bin. Each data value belongs to exactly ONE interval. Before you submit, add up all your frequencies and check that the total matches the number of data values you started with.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Display Data with Histograms <span class="ws-es-term">(Representar datos con histogramas)</span></span><span class="ws-bankdef"> — Group numerical data into intervals and show each interval's frequency with a bar.</span></div><div class="ws-bank-card"><span class="ws-bankword">Histogram <span class="ws-es-term">(Histograma)</span></span><span class="ws-bankdef"> — A bar graph that groups data into equal ranges. The bars touch.</span></div><div class="ws-bank-card"><span class="ws-bankword">Frequency <span class="ws-es-term">(Frecuencia)</span></span><span class="ws-bankdef"> — How many times a value shows up.</span></div><div class="ws-bank-card"><span class="ws-bankword">Interval <span class="ws-es-term">(Intervalo)</span></span><span class="ws-bankdef"> — A range of numbers used to group data.</span></div><div class="ws-bank-card"><span class="ws-bankword">Distribution <span class="ws-es-term">(Distribución)</span></span><span class="ws-bankdef"> — How the data is spread out.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variability <span class="ws-es-term">(Variabilidad)</span></span><span class="ws-bankdef"> — How spread out the numbers are.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -859,51 +962,16 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol>
+        <p class="ws-stem">In a histogram, what does the height of each bar represent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The average of the data in that interval</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range of the interval</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median of the data</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The frequency (count) of data in that interval</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In a histogram, what does the height of each bar represent?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The average of the data in that interval</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The range of the interval</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The median of the data</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The frequency (count) of data in that interval</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How is a histogram different from a regular bar graph?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">There is no difference</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Histogram bars touch (no gaps) because the intervals are continuous ranges</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Histograms use colors and bar graphs don't</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Bar graphs show numbers and histograms show words</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A histogram has intervals: 0–4, 5–9, 10–14, 15–19. What is the width of each interval?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">19</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -916,18 +984,21 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A histogram bar for the interval 20–29 reaches a height of 7. What does the 7 tell you?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The largest value is 7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">There are 7 intervals</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The interval is 7 wide</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7 data values fall between 20 and 29</span></li></ol>
+        <p class="ws-stem">A histogram bar for the interval 20–29 reaches a height of 7. What does the 7 tell you?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The largest value is 7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">There are 7 intervals</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The interval is 7 wide</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7 data values fall between 20 and 29</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
@@ -936,7 +1007,59 @@ header.packet h1::after{
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Frequency</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Interval</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Bars touch</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">How many values are in an interval (the bar height)</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">An equal-width range like 10–19</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Why a histogram has no gaps between bars</span></li></ul></div>
       </div>
     </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">12</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div>
+      </div>
+    </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How is a histogram different from a regular bar graph?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">There is no difference</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Histogram bars touch (no gaps) because the intervals are continuous ranges</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Histograms use colors and bar graphs don't</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Bar graphs show numbers and histograms show words</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A histogram has intervals: 0–4, 5–9, 10–14, 15–19. What is the width of each interval?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">19</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">8</span>
@@ -947,7 +1070,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Counting Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data (points per game):</span><span class="ws-step-w">3, 7, 11, 13, 16, 22</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Intervals:</span><span class="ws-step-w">0–9, 10–19, 20–29</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Frequency count:</span><span class="ws-step-w">0–9: 2, 10–19: 2, 20–29: 1</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion:</span><span class="ws-step-w">So the histogram bars have heights 2, 2, and 1.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -996,14 +1122,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Histogram</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Display Data with Histograms · Histogram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1018,9 +1145,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: What is a histogram?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Histograms &amp; Frequency Distributions</div>
+        <ul class="ws-note-list"><li>A histogram is a bar graph that groups numbers into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch because the intervals are continuous.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Set equal intervals along the horizontal axis with no gaps.</li><li>Count the frequency (how many data values fall into each interval).</li><li>Draw adjacent bars with heights equal to frequency</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data: 3, 7, 12, 15, 18, 24. I will use intervals of 10: 0–9, 10–19, 20–29.</li><li>Interval 0–9: the values 3 and 7 fit, so the frequency is 2.</li><li>Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3.</li><li>Interval 20–29: only the value 24 fits, so the frequency is 1.</li><li>Now I draw three bars with heights 2, 3, and 1, touching each other. The tallest bar (10–19) is where most values are.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>New data: 2, 4, 8, 11, 13, 16, 21. We will use intervals of 10 again: 0–9, 10–19, 20–29.</li><li>How many values fall in 0–9? Count them. How many fall in 10–19?</li><li>How many fall in 20–29? Which interval would have the tallest bar?</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Display Data with Histograms (Representar datos con histogramas) — Group numerical data into intervals and show each interval's frequency with a bar.</li><li>Histogram (Histograma) — A bar graph that groups data into equal ranges. The bars touch.</li><li>Frequency (Frecuencia) — How many times a value shows up.</li><li>Interval (Intervalo) — A range of numbers used to group data.</li><li>Distribution (Distribución) — How the data is spread out.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Display Data: Histograms is counting a boundary value in two intervals at once — for example, putting the value 10 in both the '0–9' bin and the '10–19' bin. Each data value belongs to exactly ONE interval. Before you submit, add up all your frequencies and check that the total matches the number of data values you started with.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1030,24 +1183,16 @@ header.packet h1::after{
         
         <p class="ws-stem">Solve the mathematical problem. Show all of your work and reasoning.</p>
   <table class="ws-table"><thead><tr><th>Interval (Yards)</th><th>Frequency</th></tr></thead><tbody><tr><td>Player rushing yards per game: 0, 5, 12, 15, 18, 22, 25, 28, 31, 35, 40, 45</td><td></td></tr><tr><td>0–9</td><td></td></tr><tr><td>10–19</td><td></td></tr><tr><td>20–29</td><td></td></tr><tr><td>30–39</td><td></td></tr><tr><td>40–49</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A histogram of test scores shows: 50–59: 2, 60–69: 5, 70–79: 10, 80–89: 8, 90–99: 3. Which interval has the most students?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">90–99 with 3 students</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70–79 with 10 students</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">80–89 with 8 students</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">60–69 with 5 students</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
@@ -1059,7 +1204,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1072,28 +1217,56 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A histogram of goals-per-game shows: 0–1: 9 players, 2–3: 6, 4–5: 3, 6–7: 1. What shape is this distribution?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Perfectly symmetric</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Flat / uniform (all bars equal)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Skewed right (most players low, tail toward high values)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Skewed left (most players high, tail toward low values)</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Use this data set of rebounds per game to complete the frequency table (intervals of 5): 1, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16.</p>
   <table class="ws-table"><thead><tr><th>Interval (Rebounds)</th><th>Frequency</th></tr></thead><tbody><tr><td>0–4</td><td></td></tr><tr><td>5–9</td><td></td></tr><tr><td>10–14</td><td></td></tr><tr><td>15–19</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A histogram of test scores shows: 50–59: 2, 60–69: 5, 70–79: 10, 80–89: 8, 90–99: 3. Which interval has the most students?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">90–99 with 3 students</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70–79 with 10 students</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">80–89 with 8 students</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">60–69 with 5 students</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A histogram of goals-per-game shows: 0–1: 9 players, 2–3: 6, 4–5: 3, 6–7: 1. What shape is this distribution?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Perfectly symmetric</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Flat / uniform (all bars equal)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Skewed right (most players low, tail toward high values)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Skewed left (most players high, tail toward low values)</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
@@ -1104,7 +1277,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Spot the Interval Mistake</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data (assists per game):</span><span class="ws-step-w">1, 4, 6, 9, 12, 15, 18</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Intervals the student chose:</span><span class="ws-step-w">0–5, 6–10, 12–18</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Frequency count:</span><span class="ws-step-w">0–5: 2, 6–10: 2, 12–18: 3</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion:</span><span class="ws-step-w">The student drew three bars and said the histogram was complete.</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1153,14 +1329,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Histogram</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Display Data with Histograms · Histogram · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1175,37 +1352,38 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: What is a histogram?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Histograms &amp; Frequency Distributions</div>
+        <ul class="ws-note-list"><li>A histogram is a bar graph that groups numbers into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch because the intervals are continuous.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Set equal intervals along the horizontal axis with no gaps.</li><li>Count the frequency (how many data values fall into each interval).</li><li>Draw adjacent bars with heights equal to frequency</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>My data: 3, 7, 12, 15, 18, 24. I will use intervals of 10: 0–9, 10–19, 20–29.</li><li>Interval 0–9: the values 3 and 7 fit, so the frequency is 2.</li><li>Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3.</li><li>Interval 20–29: only the value 24 fits, so the frequency is 1.</li><li>Now I draw three bars with heights 2, 3, and 1, touching each other. The tallest bar (10–19) is where most values are.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try together</div>
+        <ol class="ws-note-list"><li>New data: 2, 4, 8, 11, 13, 16, 21. We will use intervals of 10 again: 0–9, 10–19, 20–29.</li><li>How many values fall in 0–9? Count them. How many fall in 10–19?</li><li>How many fall in 20–29? Which interval would have the tallest bar?</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Display Data with Histograms (Representar datos con histogramas) — Group numerical data into intervals and show each interval's frequency with a bar.</li><li>Histogram (Histograma) — A bar graph that groups data into equal ranges. The bars touch.</li><li>Frequency (Frecuencia) — How many times a value shows up.</li><li>Interval (Intervalo) — A range of numbers used to group data.</li><li>Distribution (Distribución) — How the data is spread out.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Display Data: Histograms is counting a boundary value in two intervals at once — for example, putting the value 10 in both the '0–9' bin and the '10–19' bin. Each data value belongs to exactly ONE interval. Before you submit, add up all your frequencies and check that the total matches the number of data values you started with.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Find the Histogram Error</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data:</span><span class="ws-step-w">Test scores: 55, 62, 68, 70, 72, 75, 78, 80, 82, 85, 88, 90, 95</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Intervals:</span><span class="ws-step-w">50–59, 60–69, 70–79, 80–89, 90–100</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Frequency table:</span><span class="ws-step-w">50–59: 1, 60–69: 2, 70–79: 3, 80–89: 4, 90–100: 2</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion:</span><span class="ws-step-w">The histogram is symmetric because the bars go 1, 2, 3, 4, 2.</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A teacher collected test scores and made two different histograms — one with intervals of 5 (50–54, 55–59, etc.) and one with intervals of 20 (50–69, 70–89, 90–109). Both use the same data. How might the two histograms look different? Which interval size gives you more detail about the distribution? When might the larger interval be better?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -1218,23 +1396,68 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A histogram of points-per-game has its tallest bars on the LEFT (low scores) and a long tail stretching RIGHT toward a few high scorers. How is this distribution described?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Skewed left</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Symmetric</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Bimodal (two equal peaks)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Skewed right</span></li></ol>
+        <p class="ws-stem">Two histograms show the SAME 40 test scores — one uses intervals of 5, the other intervals of 20. Which statement is true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The interval-of-5 histogram leaves some scores out</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The interval-of-5 histogram has more bars and shows more detail about the shape</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The interval-of-20 histogram has more bars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Both histograms must look exactly the same</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A histogram of points-per-game has its tallest bars on the LEFT (low scores) and a long tail stretching RIGHT toward a few high scorers. How is this distribution described?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Skewed left</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Symmetric</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Bimodal (two equal peaks)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Skewed right</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Find the Histogram Error</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data:</span><span class="ws-step-w">Test scores: 55, 62, 68, 70, 72, 75, 78, 80, 82, 85, 88, 90, 95</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Intervals:</span><span class="ws-step-w">50–59, 60–69, 70–79, 80–89, 90–100</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Frequency table:</span><span class="ws-step-w">50–59: 1, 60–69: 2, 70–79: 3, 80–89: 4, 90–100: 2</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion:</span><span class="ws-step-w">The histogram is symmetric because the bars go 1, 2, 3, 4, 2.</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Two histograms show the SAME 40 test scores — one uses intervals of 5, the other intervals of 20. Which statement is true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The interval-of-5 histogram leaves some scores out</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The interval-of-5 histogram has more bars and shows more detail about the shape</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The interval-of-20 histogram has more bars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Both histograms must look exactly the same</span></li></ol>
+        <p class="ws-stem">A teacher collected test scores and made two different histograms — one with intervals of 5 (50–54, 55–59, etc.) and one with intervals of 20 (50–69, 70–89, 90–109). Both use the same data. How might the two histograms look different? Which interval size gives you more detail about the distribution? When might the larger interval be better?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

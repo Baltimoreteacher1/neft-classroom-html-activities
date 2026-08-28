@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Least Common Multiple</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Least Common Multiple · Multiple · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,29 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">NUMBER LINE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Find the LCM of 5 and 6 on the number line</p><div class="ws-keynote">See standard solution method.</div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,7 +798,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -726,23 +809,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What is the LCM of 4 and 10?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Multiples of 4: 4, 8, 12, 16, 20, ... Multiples of 10: 10, 20, ... The smallest common multiple is 20.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Least Common Multiple is multiplying the two numbers together instead of listing multiples to find the smallest shared one. For example, for 4 and 6, a student calculates 4 × 6 = 24 and calls that the LCM, but the actual least common multiple is 12 (multiples of 4: 4, 8, 12; multiples of 6: 6, 12 — 12 is the first number that appears in both lists). This shortcut only works when the two numbers share no common factors (like 4 and 9, where the LCM really is 36 = 4 × 9); for numbers like 4 and 6 that share a factor of 2, multiplying overshoots the true LCM. Always list multiples of both numbers and pick the first one that appears in both lists.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">NUMBER LINE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Find the LCM of 5 and 6 on the number line</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
   </ol>
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Least Common Multiple</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Least Common Multiple · Multiple · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,11 +879,29 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">NUMBER LINE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Find the LCM of 5 and 6 on the number line</p><div class="ws-keynote">See standard solution method.</div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -821,7 +912,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,23 +923,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What is the LCM of 4 and 10?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">20</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Multiples of 4: 4, 8, 12, 16, 20, ... Multiples of 10: 10, 20, ... The smallest common multiple is 20.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Least Common Multiple is multiplying the two numbers together instead of listing multiples to find the smallest shared one. For example, for 4 and 6, a student calculates 4 × 6 = 24 and calls that the LCM, but the actual least common multiple is 12 (multiples of 4: 4, 8, 12; multiples of 6: 6, 12 — 12 is the first number that appears in both lists). This shortcut only works when the two numbers share no common factors (like 4 and 9, where the LCM really is 36 = 4 × 9); for numbers like 4 and 6 that share a factor of 2, multiplying overshoots the true LCM. Always list multiples of both numbers and pick the first one that appears in both lists.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">NUMBER LINE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Find the LCM of 5 and 6 on the number line</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
   
@@ -862,7 +942,11 @@ header.packet h1::after{
         <p class="ws-stem">What is the LCM of 2 and 7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Since 2 and 7 share no common factors (they are relatively prime), LCM = 2 × 7 = 14.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Least Common Multiple is multiplying the two numbers together instead of listing multiples to find the smallest shared one. For example, for 4 and 6, a student calculates 4 × 6 = 24 and calls that the LCM, but the actual least common multiple is 12 (multiples of 4: 4, 8, 12; multiples of 6: 6, 12 — 12 is the first number that appears in both lists). This shortcut only works when the two numbers share no common factors (like 4 and 9, where the LCM really is 36 = 4 × 9); for numbers like 4 and 6 that share a factor of 2, multiplying overshoots the true LCM. Always list multiples of both numbers and pick the first one that appears in both lists.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -914,14 +998,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Least Common Multiple</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Least Common Multiple · Multiple · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -937,8 +1022,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -967,17 +1055,6 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9:00 AM (60 minutes later)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">8:30 AM (30 minutes later)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8:40 AM (40 minutes later)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9:20 AM (80 minutes later)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> LCM(15, 20) = 60 minutes. Both buses return together 60 minutes after 8:00 AM, at 9:00 AM.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Least Common Multiple is multiplying the two numbers together instead of listing multiples to find the smallest shared one. For example, for 4 and 6, a student calculates 4 × 6 = 24 and calls that the LCM, but the actual least common multiple is 12 (multiples of 4: 4, 8, 12; multiples of 6: 6, 12 — 12 is the first number that appears in both lists). This shortcut only works when the two numbers share no common factors (like 4 and 9, where the LCM really is 36 = 4 × 9); for numbers like 4 and 6 that share a factor of 2, multiplying overshoots the true LCM. Always list multiples of both numbers and pick the first one that appears in both lists.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -987,7 +1064,26 @@ header.packet h1::after{
   <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9:00 AM (60 minutes later)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">8:30 AM (30 minutes later)</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8:40 AM (40 minutes later)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9:20 AM (80 minutes later)</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> LCM(15, 20) = 60 minutes. Both buses return together 60 minutes after 8:00 AM, at 9:00 AM.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Least Common Multiple is multiplying the two numbers together instead of listing multiples to find the smallest shared one. For example, for 4 and 6, a student calculates 4 × 6 = 24 and calls that the LCM, but the actual least common multiple is 12 (multiples of 4: 4, 8, 12; multiples of 6: 6, 12 — 12 is the first number that appears in both lists). This shortcut only works when the two numbers share no common factors (like 4 and 9, where the LCM really is 36 = 4 × 9); for numbers like 4 and 6 that share a factor of 2, multiplying overshoots the true LCM. Always list multiples of both numbers and pick the first one that appears in both lists.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1039,14 +1135,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Least Common Multiple</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Least Common Multiple · Multiple · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-12" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1062,11 +1159,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Use prime factorization to find the LCM. Take the highest power of each prime factor.</p>
+  <table class="ws-table"><thead><tr><th>Numbers</th><th>Prime Factorizations</th><th>Highest Powers</th><th>LCM</th></tr></thead><tbody><tr><td>12 and 18</td><td>12 = 2² × 3, 18 = 2 × 3²</td><td>2² × 3²</td><td>36</td></tr><tr><td>15 and 20</td><td>15 = 3 × 5, 20 = 2² × 5</td><td>2² × 3 × 5</td><td>60</td></tr><tr><td>8 and 14</td><td>8 = 2³, 14 = 2 × 7</td><td>2³ × 7</td><td>56</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1080,25 +1197,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">You are making party favors. Glow sticks come in packs of 10 and bracelets come in packs of 4. What is the fewest of each you can buy so every favor has exactly one glow stick and one bracelet with none left over? Explain how the LCM solves this problem.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: LCM, least, common, multiple, 20, packs, equal, none left over Explanation: Every favor uses one glow stick and one bracelet, so the totals must match and be a multiple of both 10 and 4. The LCM of 10 and 4 is 20, so you buy 2 packs of glow sticks (2 × 10 = 20) and 5 packs of bracelets (5 × 4 = 20) and finish with 20 complete favors and nothing left over.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Use prime factorization to find the LCM. Take the highest power of each prime factor.</p>
-  <table class="ws-table"><thead><tr><th>Numbers</th><th>Prime Factorizations</th><th>Highest Powers</th><th>LCM</th></tr></thead><tbody><tr><td>12 and 18</td><td>12 = 2² × 3, 18 = 2 × 3²</td><td>2² × 3²</td><td>36</td></tr><tr><td>15 and 20</td><td>15 = 3 × 5, 20 = 2² × 5</td><td>2² × 3 × 5</td><td>60</td></tr><tr><td>8 and 14</td><td>8 = 2³, 14 = 2 × 7</td><td>2³ × 7</td><td>56</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

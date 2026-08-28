@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">6.4 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Write and Evaluate Numerical Expressions with Exponents · Numerical expression · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-4-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,19 +767,29 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 6.4 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can write numerical expressions from a real situation and evaluate them using the order of operations, including powers — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — Write the expression, then evaluate it in order</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Evaluate in this order: grouping symbols, then powers, then multiplication and division left to right, then addition and subtraction left to right.</div>
+        <ul class="ws-note-list"><li>A numerical expression is a math phrase made of numbers and operations, with no equal sign. Writing one for a whole situation keeps every part visible; evaluating it means finding its single value, following the order of operations. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me price the theater order</div>
+        <ol class="ws-note-list"><li>Sofia buys 2 member tickets at $15, 4 non-member tickets at $20, and 8 student tickets at $2 each. I write one expression for each ticket type: 2 × 15, 4 × 20, and 8 × 2.</li><li>The whole order is the three costs added together: 2 × 15 + 4 × 20 + 8 × 2.</li><li>Now I evaluate. There are no grouping symbols and no powers yet, so multiplication comes first, left to right: 30 + 80 + 16.</li><li>Then I add: 30 + 80 + 16 = 126. The tickets cost $126.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Write and Evaluate Numerical Expressions with Exponents (Escribir y evaluar expresiones numéricas con exponentes) — Turning a situation into a number sentence without an equal sign, then finding its value in the correct order.</li><li>Numerical expression (Expresión numérica) — A math phrase built from numbers and operations, with no equal sign and no variable.</li><li>Evaluate (Evaluar) — To find the single value an expression is worth by carrying out its operations in order.</li><li>Order of operations (Orden de las operaciones) — The agreed order for evaluating: grouping symbols, then exponents, then multiply and divide left to right, then add and subtract left to right.</li><li>Power (Potencia) — A short way to write repeated multiplication of the same factor, such as 2³ for 2 × 2 × 2.</li><li>Base (Base) — In a power, the number being multiplied by itself. In 2³ the base is 2.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake with powers is multiplying the base by the exponent: reading 3² as 3 × 2 = 6 instead of 3 × 3 = 9. A second is evaluating strictly left to right, so 3 + 4 × 2 becomes 14 instead of 11. The order of operations exists so one expression has exactly one value: grouping symbols, then powers, then × and ÷ left to right, then + and − left to right.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Write and Evaluate Numerical Expressions with Exponents <span class="ws-es-term">(Escribir y evaluar expresiones numéricas con exponentes)</span></span><span class="ws-bankdef"> — Turning a situation into a number sentence without an equal sign, then finding its value in the correct order.</span></div><div class="ws-bank-card"><span class="ws-bankword">Numerical expression <span class="ws-es-term">(Expresión numérica)</span></span><span class="ws-bankdef"> — A math phrase built from numbers and operations, with no equal sign and no variable.</span></div><div class="ws-bank-card"><span class="ws-bankword">Evaluate <span class="ws-es-term">(Evaluar)</span></span><span class="ws-bankdef"> — To find the single value an expression is worth by carrying out its operations in order.</span></div><div class="ws-bank-card"><span class="ws-bankword">Order of operations <span class="ws-es-term">(Orden de las operaciones)</span></span><span class="ws-bankdef"> — The agreed order for evaluating: grouping symbols, then exponents, then multiply and divide left to right, then add and subtract left to right.</span></div><div class="ws-bank-card"><span class="ws-bankword">Power <span class="ws-es-term">(Potencia)</span></span><span class="ws-bankdef"> — A short way to write repeated multiplication of the same factor, such as 2³ for 2 × 2 × 2.</span></div><div class="ws-bank-card"><span class="ws-bankword">Base <span class="ws-es-term">(Base)</span></span><span class="ws-bankdef"> — In a power, the number being multiplied by itself. In 2³ the base is 2.</span></div><div class="ws-bank-card"><span class="ws-bankword">Exponent <span class="ws-es-term">(Exponente)</span></span><span class="ws-bankdef"> — In a power, the small raised number that says how many times the base is used as a factor.</span></div><div class="ws-bank-card"><span class="ws-bankword">Evaluate Expressions <span class="ws-es-term">(Evaluar expresiones)</span></span><span class="ws-bankdef"> — Find the value of an expression by substituting numbers and following the order of operations.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -722,7 +797,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Evaluate 3 + 4 × 2.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol>
+        <p class="ws-stem">What does 2³ mean?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 2 × 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 + 2 + 2</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -733,55 +811,72 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What does 2³ mean?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 2 × 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 + 2 + 2</span></li></ol>
+        <p class="ws-stem">Sofia buys 4 tickets at $20 each and 2 tickets at $15 each. Which expression shows the total?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 × 20 + 2 × 15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 + 20 + 2 + 15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4 + 2) × (20 + 15)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 × 2 + 20 × 15</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sofia buys 4 tickets at $20 each and 2 tickets at $15 each. Which expression shows the total?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 × 20 + 2 × 15</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 + 20 + 2 + 15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">(4 + 2) × (20 + 15)</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 × 2 + 20 × 15</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Evaluate 5² + 3.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ledger"><thead><tr><th>Rewrite the whole expression each line</th><th>What I simplified</th></tr></thead><tbody><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr></tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Grouping</span><span class="wsd-step-h">Inside ( ) first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Exponents</span><span class="wsd-step-h">Then powers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">× ÷</span><span class="wsd-step-h">Left to right.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">+ −</span><span class="wsd-step-h">Left to right.</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">64</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Evaluate each expression, following the order of operations.</p>
   <table class="ws-table"><thead><tr><th>Expression</th><th>Value</th></tr></thead><tbody><tr><td>2 + 3 × 4</td><td></td></tr><tr><td>10 − 2²</td><td></td></tr><tr><td>(2 + 3) × 4</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Sofia buys 2 member tickets ($15), 4 non-member tickets ($20), and 8 student tickets (2³ dollars). Build the total.</p>
   <table class="ws-table"><thead><tr><th>Ticket type</th><th>Expression</th><th>Cost</th></tr></thead><tbody><tr><td>Member</td><td></td><td></td></tr><tr><td>Non-member</td><td></td><td></td></tr><tr><td>Student</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">COMPUTATION &amp; PROCEDURAL FLUENCY</span>
+          <span class="ws-section-tag">[Show Every Step]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Evaluate 3 + 4 × 2.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">11</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">24</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-panel "><span class="wss-panel-t">Show each partial product, then add them</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Split</span><span class="wsd-step-h">Break one factor apart.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">One part at a time.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Add</span><span class="wsd-step-h">Add the parts.</span></li></ol></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Evaluate 5² + 3.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">28</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">64</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ledger"><thead><tr><th>Rewrite the whole expression each line</th><th>What I simplified</th></tr></thead><tbody><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr></tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Grouping</span><span class="wsd-step-h">Inside ( ) first.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Exponents</span><span class="wsd-step-h">Then powers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">× ÷</span><span class="wsd-step-h">Left to right.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">+ −</span><span class="wsd-step-h">Left to right.</span></li></ol></div>
       </div>
     </li>
   </ol>

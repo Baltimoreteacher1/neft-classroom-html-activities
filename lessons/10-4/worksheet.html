@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ingenuity</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">ingenuity · rotation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,20 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Math is Ingenuity</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use ratios and models to explain how the Penny Farthing and gear-driven bicycles were ingenious solutions to a real problem.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">ingenuity <span class="ws-es-term">(ingenio)</span></span><span class="ws-bankdef"> — Coming up with different, and sometimes unique, solutions to problems.</span></div><div class="ws-bank-card"><span class="ws-bankword">rotation <span class="ws-es-term">(rotación)</span></span><span class="ws-bankdef"> — One full turn of a wheel, gear, or pedal all the way around.</span></div><div class="ws-bank-card"><span class="ws-bankword">gear <span class="ws-es-term">(engranaje)</span></span><span class="ws-bankdef"> — A toothed wheel that passes motion to another toothed wheel through a chain.</span></div><div class="ws-bank-card"><span class="ws-bankword">ratio <span class="ws-es-term">(razón)</span></span><span class="ws-bankdef"> — A comparison of two quantities, like pedal rotations to wheel rotations.</span></div><div class="ws-bank-card"><span class="ws-bankword">equivalent ratios <span class="ws-es-term">(razones equivalentes)</span></span><span class="ws-bankdef"> — Ratios that make the same comparison using different numbers.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Math can power ingenious solutions</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Gear Ratios, Circumference &amp; Mechanical Advantage. Formula: Distance = Rotations × Circumference | Gear Ratio = Teeth_Driver / Teeth_Driven</div>
+        <ul class="ws-note-list"><li>The Penny Farthing is powered by the rider: pushing the pedals rotates the front wheel directly, so each pedal rotation rotates the wheel one time — a 1 to 1 ratio.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Circumference is the distance traveled in one full wheel rotation.</li><li>Gear ratios determine speed and rotational force (torque).</li><li>Apply proportional reasoning to calculate travel distance and mechanical advantage</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me use a gear ratio</div>
+        <ol class="ws-note-list"><li>A later bicycle design uses a chain: the pedal gear has 48 teeth, and the largest rear gear has 32 teeth.</li><li>For each rotation of the 48-tooth pedal gear, the wheel gear also turns 48 teeth.</li><li>The 32-tooth gear needs to turn 32 teeth to make one full rotation, so I find the equivalent ratio: 48 ÷ 32 = 1.5.</li><li>The rear wheel makes 1.5 rotations for each pedal rotation — this gear makes it easier to pedal at slower speeds or go uphill.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>ingenuity (ingenio) — Coming up with different, and sometimes unique, solutions to problems.</li><li>rotation (rotación) — One full turn of a wheel, gear, or pedal all the way around.</li><li>gear (engranaje) — A toothed wheel that passes motion to another toothed wheel through a chain.</li><li>ratio (razón) — A comparison of two quantities, like pedal rotations to wheel rotations.</li><li>equivalent ratios (razones equivalentes) — Ratios that make the same comparison using different numbers.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Thinking a rear gear with MORE teeth makes the wheel spin more — it is the opposite: the 32-tooth gear gives only 1.5 rotations per pedal rotation, while the 12-tooth gear gives 4.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -723,7 +800,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">On the Penny Farthing, what is the ratio of pedal rotations to front-wheel rotations?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1 to 1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 to 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 to 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 to 4</span></li></ol>
+        <p class="ws-stem">On the Penny Farthing, what is the ratio of pedal rotations to front-wheel rotations?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1 to 1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 to 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 to 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 to 4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -734,7 +814,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How far does the Penny Farthing travel with each pedal rotation?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The length of the perimeter of the front wheel</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The height of the rider</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The length of the pedal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It does not move a fixed distance</span></li></ol>
+        <p class="ws-stem">How far does the Penny Farthing travel with each pedal rotation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The length of the perimeter of the front wheel</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The height of the rider</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The length of the pedal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It does not move a fixed distance</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -745,10 +828,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Why was the front wheel of the Penny Farthing so large?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">So the bicycle travels a greater distance with one pedal rotation</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">So the bicycle is easier to stop</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">So the rider sits closer to the ground</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">So the rear wheel spins faster</span></li></ol>
+        <p class="ws-stem">Why was the front wheel of the Penny Farthing so large?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">So the bicycle travels a greater distance with one pedal rotation</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">So the bicycle is easier to stop</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">So the rider sits closer to the ground</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">So the rear wheel spins faster</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -756,7 +846,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How does the size of the front wheel affect the distance the bicycle travels?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A bigger wheel travels ___ with each pedal rotation because ___ .&lt;br&gt;A smaller wheel would travel ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">How does the size of the front wheel affect the distance the bicycle travels?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A bigger wheel travels ___ with each pedal rotation because ___ .&lt;br&gt;A smaller wheel would travel ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -805,14 +898,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ingenuity</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">ingenuity · rotation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -827,31 +921,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Math is Ingenuity</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can use ratios and models to explain how the Penny Farthing and gear-driven bicycles were ingenious solutions to a real problem.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Math can power ingenious solutions</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Gear Ratios, Circumference &amp; Mechanical Advantage. Formula: Distance = Rotations × Circumference | Gear Ratio = Teeth_Driver / Teeth_Driven</div>
+        <ul class="ws-note-list"><li>The Penny Farthing is powered by the rider: pushing the pedals rotates the front wheel directly, so each pedal rotation rotates the wheel one time — a 1 to 1 ratio.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Circumference is the distance traveled in one full wheel rotation.</li><li>Gear ratios determine speed and rotational force (torque).</li><li>Apply proportional reasoning to calculate travel distance and mechanical advantage</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me use a gear ratio</div>
+        <ol class="ws-note-list"><li>A later bicycle design uses a chain: the pedal gear has 48 teeth, and the largest rear gear has 32 teeth.</li><li>For each rotation of the 48-tooth pedal gear, the wheel gear also turns 48 teeth.</li><li>The 32-tooth gear needs to turn 32 teeth to make one full rotation, so I find the equivalent ratio: 48 ÷ 32 = 1.5.</li><li>The rear wheel makes 1.5 rotations for each pedal rotation — this gear makes it easier to pedal at slower speeds or go uphill.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>ingenuity (ingenio) — Coming up with different, and sometimes unique, solutions to problems.</li><li>rotation (rotación) — One full turn of a wheel, gear, or pedal all the way around.</li><li>gear (engranaje) — A toothed wheel that passes motion to another toothed wheel through a chain.</li><li>ratio (razón) — A comparison of two quantities, like pedal rotations to wheel rotations.</li><li>equivalent ratios (razones equivalentes) — Ratios that make the same comparison using different numbers.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Thinking a rear gear with MORE teeth makes the wheel spin more — it is the opposite: the 32-tooth gear gives only 1.5 rotations per pedal rotation, while the 12-tooth gear gives 4.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">ingenuity <span class="ws-es-term">(ingenio)</span></span><span class="ws-bankdef"> — Coming up with different, and sometimes unique, solutions to problems.</span></div><div class="ws-bank-card"><span class="ws-bankword">rotation <span class="ws-es-term">(rotación)</span></span><span class="ws-bankdef"> — One full turn of a wheel, gear, or pedal all the way around.</span></div><div class="ws-bank-card"><span class="ws-bankword">gear <span class="ws-es-term">(engranaje)</span></span><span class="ws-bankdef"> — A toothed wheel that passes motion to another toothed wheel through a chain.</span></div><div class="ws-bank-card"><span class="ws-bankword">ratio <span class="ws-es-term">(razón)</span></span><span class="ws-bankdef"> — A comparison of two quantities, like pedal rotations to wheel rotations.</span></div><div class="ws-bank-card"><span class="ws-bankword">equivalent ratios <span class="ws-es-term">(razones equivalentes)</span></span><span class="ws-bankdef"> — Ratios that make the same comparison using different numbers.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">On the Penny Farthing, what is the ratio of pedal rotations to front-wheel rotations?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1 to 1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 to 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 to 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 to 4</span></li></ol>
+        <p class="ws-stem">Sort each rear gear by how the wheel responds to one pedal turn.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">More than one wheel rotation</span> <span class="ws-cat-pill">One rotation or less</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">12-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">16-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">24-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">48-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">60-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">96-tooth rear gear</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -859,7 +971,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How far does the Penny Farthing travel with each pedal rotation?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The length of the perimeter of the front wheel</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The height of the rider</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The length of the pedal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It does not move a fixed distance</span></li></ol>
+        <p class="ws-stem">On the Penny Farthing, what is the ratio of pedal rotations to front-wheel rotations?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1 to 1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1 to 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 to 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 to 4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -870,18 +985,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Why was the front wheel of the Penny Farthing so large?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">So the bicycle travels a greater distance with one pedal rotation</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">So the bicycle is easier to stop</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">So the rider sits closer to the ground</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">So the rear wheel spins faster</span></li></ol>
+        <p class="ws-stem">How far does the Penny Farthing travel with each pedal rotation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The length of the perimeter of the front wheel</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The height of the rider</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The length of the pedal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It does not move a fixed distance</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How does the size of the front wheel affect the distance the bicycle travels?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A bigger wheel travels ___ with each pedal rotation because ___ .&lt;br&gt;A smaller wheel would travel ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Why was the front wheel of the Penny Farthing so large?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">So the bicycle travels a greater distance with one pedal rotation</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">So the bicycle is easier to stop</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">So the rider sits closer to the ground</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">So the rear wheel spins faster</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -892,10 +1013,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">For each rotation of the 48-tooth pedal gear, how many teeth does the wheel gear turn?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">48 teeth</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">32 teeth</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 teeth</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 tooth</span></li></ol>
+        <p class="ws-stem">For each rotation of the 48-tooth pedal gear, how many teeth does the wheel gear turn?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">48 teeth</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">32 teeth</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 teeth</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 tooth</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -903,20 +1031,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Name one ingenious solution — from this lesson or from your own life — where math helped solve an everyday problem.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> One ingenious solution is ___ .&lt;br&gt;The math behind it is ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">How does the size of the front wheel affect the distance the bicycle travels?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> A bigger wheel travels ___ with each pedal rotation because ___ .&lt;br&gt;A smaller wheel would travel ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each rear gear by how the wheel responds to one pedal turn.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">More than one wheel rotation</span> <span class="ws-cat-pill">One rotation or less</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">12-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">16-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">24-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">48-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">60-tooth rear gear</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">96-tooth rear gear</span></li></ul>
+        <p class="ws-stem">Name one ingenious solution — from this lesson or from your own life — where math helped solve an everyday problem.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> One ingenious solution is ___ .&lt;br&gt;The math behind it is ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -965,14 +1097,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ingenuity</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">ingenuity · rotation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -987,25 +1120,55 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Math can power ingenious solutions</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Gear Ratios, Circumference &amp; Mechanical Advantage. Formula: Distance = Rotations × Circumference | Gear Ratio = Teeth_Driver / Teeth_Driven</div>
+        <ul class="ws-note-list"><li>The Penny Farthing is powered by the rider: pushing the pedals rotates the front wheel directly, so each pedal rotation rotates the wheel one time — a 1 to 1 ratio.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Circumference is the distance traveled in one full wheel rotation.</li><li>Gear ratios determine speed and rotational force (torque).</li><li>Apply proportional reasoning to calculate travel distance and mechanical advantage</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me use a gear ratio</div>
+        <ol class="ws-note-list"><li>A later bicycle design uses a chain: the pedal gear has 48 teeth, and the largest rear gear has 32 teeth.</li><li>For each rotation of the 48-tooth pedal gear, the wheel gear also turns 48 teeth.</li><li>The 32-tooth gear needs to turn 32 teeth to make one full rotation, so I find the equivalent ratio: 48 ÷ 32 = 1.5.</li><li>The rear wheel makes 1.5 rotations for each pedal rotation — this gear makes it easier to pedal at slower speeds or go uphill.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's do the smallest gear together</div>
+        <ol class="ws-note-list"><li>The smallest rear gear has 12 teeth, and the pedal gear still turns 48 teeth per rotation.</li><li>One full rotation of the 12-tooth gear takes 12 teeth.</li><li>48 ÷ 12 = 4, so the rear wheel makes 4 rotations for each pedal rotation.</li><li>This gear makes it easier to pedal at faster speeds or go downhill.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>ingenuity (ingenio) — Coming up with different, and sometimes unique, solutions to problems.</li><li>rotation (rotación) — One full turn of a wheel, gear, or pedal all the way around.</li><li>gear (engranaje) — A toothed wheel that passes motion to another toothed wheel through a chain.</li><li>ratio (razón) — A comparison of two quantities, like pedal rotations to wheel rotations.</li><li>equivalent ratios (razones equivalentes) — Ratios that make the same comparison using different numbers.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Thinking a rear gear with MORE teeth makes the wheel spin more — it is the opposite: the 32-tooth gear gives only 1.5 rotations per pedal rotation, while the 12-tooth gear gives 4.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The pedal gear turns 48 teeth per rotation. The largest rear gear needs 32 teeth for one full rotation. How many rotations does the rear wheel make for each pedal rotation?</p><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.5 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">16 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.5 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 rotations</span></li></ol>
+        <p class="ws-stem">The pedal gear has 48 teeth. Complete the table of wheel rotations per pedal turn.</p>
+  <table class="ws-table"><thead><tr><th>Rear gear (teeth)</th><th>Ratio 48 ÷ teeth</th><th>Wheel rotations per pedal turn</th></tr></thead><tbody><tr><td>12</td><td></td><td></td></tr><tr><td>16</td><td></td><td></td></tr><tr><td>24</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -1013,7 +1176,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The smallest rear gear has 12 teeth. How many rotations will the rear wheel make for each rotation of the 48-tooth pedal gear?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">36 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.25 rotations</span></li></ol>
+        <p class="ws-stem">The pedal gear turns 48 teeth per rotation. The largest rear gear needs 32 teeth for one full rotation. How many rotations does the rear wheel make for each pedal rotation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1.5 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">16 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0.5 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2 rotations</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+    </tbody></table></div></div>
       </div>
     </li>
   
@@ -1024,18 +1192,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">You are about to ride up a steep hill. Which rear gear should the chain be on, and why?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The 32-tooth gear, because 1.5 rotations per pedal makes pedaling easier at slow speeds</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The 12-tooth gear, because 4 rotations per pedal is always better</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The 32-tooth gear, because it makes the bike go faster</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It does not matter which gear you use on a hill</span></li></ol>
+        <p class="ws-stem">The smallest rear gear has 12 teeth. How many rotations will the rear wheel make for each rotation of the 48-tooth pedal gear?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">36 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">0.25 rotations</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Why do you think the larger gear makes it easier to pedal at slower speeds?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">You are about to ride up a steep hill. Which rear gear should the chain be on, and why?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The 32-tooth gear, because 1.5 rotations per pedal makes pedaling easier at slow speeds</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The 12-tooth gear, because 4 rotations per pedal is always better</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The 32-tooth gear, because it makes the bike go faster</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It does not matter which gear you use on a hill</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1046,10 +1220,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">With the chain on the 12-tooth gear, the rider makes 10 pedal rotations. How many rotations does the rear wheel make?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">40 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">22 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">120 rotations</span></li></ol>
+        <p class="ws-stem">With the chain on the 12-tooth gear, the rider makes 10 pedal rotations. How many rotations does the rear wheel make?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">40 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">14 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">22 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">120 rotations</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -1057,20 +1238,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">When the chain is on the largest gear the rear wheel makes 1.5 rotations per pedal rotation; on the smallest gear it makes 4. What do you notice about the size of the wheel gears and the distance the bike travels?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Why do you think the larger gear makes it easier to pedal at slower speeds?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The pedal gear has 48 teeth. Complete the table of wheel rotations per pedal turn.</p>
-  <table class="ws-table"><thead><tr><th>Rear gear (teeth)</th><th>Ratio 48 ÷ teeth</th><th>Wheel rotations per pedal turn</th></tr></thead><tbody><tr><td>12</td><td></td><td></td></tr><tr><td>16</td><td></td><td></td></tr><tr><td>24</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">When the chain is on the largest gear the rear wheel makes 1.5 rotations per pedal rotation; on the smallest gear it makes 4. What do you notice about the size of the wheel gears and the distance the bike travels?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1119,14 +1304,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ingenuity</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">ingenuity · rotation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1141,20 +1327,51 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Math can power ingenious solutions</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Gear Ratios, Circumference &amp; Mechanical Advantage. Formula: Distance = Rotations × Circumference | Gear Ratio = Teeth_Driver / Teeth_Driven</div>
+        <ul class="ws-note-list"><li>The Penny Farthing is powered by the rider: pushing the pedals rotates the front wheel directly, so each pedal rotation rotates the wheel one time — a 1 to 1 ratio.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Circumference is the distance traveled in one full wheel rotation.</li><li>Gear ratios determine speed and rotational force (torque).</li><li>Apply proportional reasoning to calculate travel distance and mechanical advantage</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me use a gear ratio</div>
+        <ol class="ws-note-list"><li>A later bicycle design uses a chain: the pedal gear has 48 teeth, and the largest rear gear has 32 teeth.</li><li>For each rotation of the 48-tooth pedal gear, the wheel gear also turns 48 teeth.</li><li>The 32-tooth gear needs to turn 32 teeth to make one full rotation, so I find the equivalent ratio: 48 ÷ 32 = 1.5.</li><li>The rear wheel makes 1.5 rotations for each pedal rotation — this gear makes it easier to pedal at slower speeds or go uphill.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's do the smallest gear together</div>
+        <ol class="ws-note-list"><li>The smallest rear gear has 12 teeth, and the pedal gear still turns 48 teeth per rotation.</li><li>One full rotation of the 12-tooth gear takes 12 teeth.</li><li>48 ÷ 12 = 4, so the rear wheel makes 4 rotations for each pedal rotation.</li><li>This gear makes it easier to pedal at faster speeds or go downhill.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>ingenuity (ingenio) — Coming up with different, and sometimes unique, solutions to problems.</li><li>rotation (rotación) — One full turn of a wheel, gear, or pedal all the way around.</li><li>gear (engranaje) — A toothed wheel that passes motion to another toothed wheel through a chain.</li><li>ratio (razón) — A comparison of two quantities, like pedal rotations to wheel rotations.</li><li>equivalent ratios (razones equivalentes) — Ratios that make the same comparison using different numbers.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Thinking a rear gear with MORE teeth makes the wheel spin more — it is the opposite: the 32-tooth gear gives only 1.5 rotations per pedal rotation, while the 12-tooth gear gives 4.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The rider makes 3 full pedal rotations with the chain on the 32-tooth gear. How many rotations does the rear wheel make?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4.5 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">96 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 rotations</span></li></ol>
+        <p class="ws-stem">Distance = rotations × circumference. Match each ride to its distance.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">4 wheel rotations, 7 ft circumference</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">3 wheel rotations, 6 ft circumference</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">2 wheel rotations, 7 ft circumference</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">48-tooth pedal gear with a 12-tooth rear gear</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">28 feet</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">18 feet</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">14 feet</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">4 rotations per pedal turn</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -1162,26 +1379,33 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A designer adds a middle gear so the rear wheel makes exactly 2 rotations per rotation of the 48-tooth pedal gear. How many teeth must the new gear have?</p><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">24 teeth</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">22 teeth</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">96 teeth</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16 teeth</span></li></ol>
+        <p class="ws-stem">The rider makes 3 full pedal rotations with the chain on the 32-tooth gear. How many rotations does the rear wheel make?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4.5 rotations</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3 rotations</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">96 rotations</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 rotations</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How would the distance traveled differ with a smaller front wheel on the Penny Farthing? Use the 1 to 1 pedal ratio in your answer.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">A designer adds a middle gear so the rear wheel makes exactly 2 rotations per rotation of the 48-tooth pedal gear. How many teeth must the new gear have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">24 teeth</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">22 teeth</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">96 teeth</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">16 teeth</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+    </tbody></table></div></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -1189,19 +1413,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How did math help the bicycle's designers come up with ingenious solutions — first with the Penny Farthing, then with chains and gears?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">How would the distance traveled differ with a smaller front wheel on the Penny Farthing? Use the 1 to 1 pedal ratio in your answer.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Distance = rotations × circumference. Match each ride to its distance.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">4 wheel rotations, 7 ft circumference</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">3 wheel rotations, 6 ft circumference</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">2 wheel rotations, 7 ft circumference</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">48-tooth pedal gear with a 12-tooth rear gear</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">28 feet</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">18 feet</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">14 feet</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">4 rotations per pedal turn</span></li></ul></div>
+        <p class="ws-stem">How did math help the bicycle's designers come up with ingenious solutions — first with the Penny Farthing, then with chains and gears?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

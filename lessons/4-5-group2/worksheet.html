@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">4.5 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Visual Models · Determine the Whole Given the Part and Percent · Part · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=4-5-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,13 +767,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 4.5 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can determine the whole when I know a part and the percent that part represents, explain why the method works, and use it on a problem I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — Working backwards to the whole</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Percent × whole = part. When the whole is unknown, divide the part by the percent in decimal form: whole = part ÷ decimal — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me find the original price of the sweater</div>
+        <ol class="ws-note-list"><li>Akela paid $42 for a sweater on sale, and that was 60% of the original price. The $42 is the part; the original price is the whole, which is 100%.</li><li>On a double number line, I put $42 under 60%. To find a smaller step, I use 10%: if 60% is $42, then 10% is 42 ÷ 6 = $7.</li><li>Now I count up to the whole: 100% is ten of those 10% steps, so 10 × $7 = $70.</li><li>The equation says the same thing in one move: 0.6 × v = 42, so v = 42 ÷ 0.6 = 70. The original price was $70 — larger than the sale price, which is exactly what a discount should mean.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>Sheng's car is now worth $26,600, which is 70% of what his parents paid for it. Find the original price.</li><li>Name the pieces first: $26,600 is the part, 70% is the percent, and the purchase price is the unknown whole.</li><li>Write the percentage statement as an equation, using the decimal form: 0.7v = 26,600.</li><li>Solve by dividing both sides by 0.7: v = 26,600 ÷ 0.7 = 38,000. The car cost $38,000 when they bought it.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Determine the Whole Given the Part and Percent (Hallar el total dados la parte y el porcentaje) — Working backwards from a part and its percent to find the whole amount it came from.</li><li>Part (Parte) — The amount you already know — the piece of the whole that the percent describes.</li><li>Whole (Total) — The full amount the percent is measured against. The whole is always 100%.</li><li>Double number line (Recta numérica doble) — Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.</li><li>Equation (Ecuación) — A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.</li><li>Percent (Porcentaje) — A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake when finding the whole is multiplying by the percent instead of dividing. For &quot;$42 is 60% of the original price,&quot; computing 0.6 × 42 = $25.20 makes the original price SMALLER than the sale price — impossible for a discount. Since percent × whole = part, the whole is found by dividing: 42 ÷ 0.6 = $70. Whenever the percent is less than 100%, the whole must come out larger than the part, so a smaller answer is the tell.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -718,7 +801,10 @@ header.packet h1::after{
         
         <p class="ws-stem">$42 is 60% of the original price. Complete the ratio table to reach 100%.</p>
   <table class="ws-table"><thead><tr><th>Percent</th><th>Dollars</th></tr></thead><tbody><tr><td>60%</td><td></td></tr><tr><td>10%</td><td></td></tr><tr><td>100%</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -729,10 +815,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         <div class="ws-figure-wrap" style="margin:10px auto;display:flex;flex-direction:column;align-items:center;"><svg width="460" height="66" viewBox="0 0 460 66" role="img" aria-label="Tape diagram model" style="background:white;max-width:100%;height:auto;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;"><text x="10" y="31" font-size="11" font-weight="700" fill="#1e293b" font-family="'Hanken Grotesk',Arial,sans-serif">Total</text><rect x="94.0" y="10" width="33.6" height="34" rx="4" fill="#0f8a84"/><text x="111.8" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="129.6" y="10" width="33.6" height="34" rx="4" fill="#c2603f"/><text x="147.4" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="165.2" y="10" width="33.6" height="34" rx="4" fill="#b07d12"/><text x="183.0" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="200.8" y="10" width="33.6" height="34" rx="4" fill="#3b6ea5"/><text x="218.6" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="236.4" y="10" width="33.6" height="34" rx="4" fill="#0f8a84"/><text x="254.2" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="272.0" y="10" width="33.6" height="34" rx="4" fill="#c2603f"/><text x="289.8" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="307.6" y="10" width="33.6" height="34" rx="4" fill="#b07d12"/><text x="325.4" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="343.2" y="10" width="33.6" height="34" rx="4" fill="#3b6ea5"/><text x="361.0" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="378.8" y="10" width="33.6" height="34" rx="4" fill="#0f8a84"/><text x="396.6" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text><rect x="414.4" y="10" width="33.6" height="34" rx="4" fill="#c2603f"/><text x="432.2" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">10%</text></svg></div>
-        <p class="ws-stem">A sweater's sale price of $42 is 60% of the original price. Each section is 10%. Use the bar model to find the original price.</p><div class="ws-work"><span class="ws-work-label">✏️ Show Your Work &amp; Mathematical Strategy</span></div>
+        <p class="ws-stem">A sweater's sale price of $42 is 60% of the original price. Each section is 10%. Use the bar model to find the original price.</p><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -740,7 +833,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A shop reports that this week's $60 in sales is 120% of last week's. Was last week better or worse, and by how much?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Worse — last week was $50, so sales rose by $10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Better — last week was $72, so sales fell</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Worse — last week was $48</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell without knowing the number of items sold</span></li></ol>
+        <p class="ws-stem">A shop reports that this week's $60 in sales is 120% of last week's. Was last week better or worse, and by how much?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Worse — last week was $50, so sales rose by $10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Better — last week was $72, so sales fell</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Worse — last week was $48</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell without knowing the number of items sold</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -751,7 +847,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">To find the whole when $9 is 25% of it, Lena divides 9 by 0.25. Omar reasons that 25% is a quarter, so he multiplies 9 by 4. Whose method works?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Both — dividing by 0.25 and multiplying by 4 are the same operation</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Only Lena — multiplying cannot undo a percent</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only Omar — you should never divide by a decimal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither — you need the whole before you can use either method</span></li></ol>
+        <p class="ws-stem">To find the whole when $9 is 25% of it, Lena divides 9 by 0.25. Omar reasons that 25% is a quarter, so he multiplies 9 by 4. Whose method works?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Both — dividing by 0.25 and multiplying by 4 are the same operation</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Only Lena — multiplying cannot undo a percent</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only Omar — you should never divide by a decimal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither — you need the whole before you can use either method</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -762,7 +861,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">To find the whole from a part and a percent, you…</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Divide the part by the percent in decimal form</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Multiply the part by the percent</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Add the part and the percent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Subtract the percent from 100</span></li></ol>
+        <p class="ws-stem">To find the whole from a part and a percent, you…</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Divide the part by the percent in decimal form</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Multiply the part by the percent</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Add the part and the percent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Subtract the percent from 100</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -773,7 +875,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claim: “If the percent is less than 100, the whole is always bigger than the part.” Always, sometimes, or never true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Always — a percent under 100 describes less than one whole, so the whole must be larger</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Sometimes — it depends whether the numbers are money or counts</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — the part and the whole are always equal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sometimes — it fails when the percent is under 10</span></li></ol>
+        <p class="ws-stem">Claim: “If the percent is less than 100, the whole is always bigger than the part.” Always, sometimes, or never true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Always — a percent under 100 describes less than one whole, so the whole must be larger</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Sometimes — it depends whether the numbers are money or counts</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Never — the part and the whole are always equal</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sometimes — it fails when the percent is under 10</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -840,7 +945,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

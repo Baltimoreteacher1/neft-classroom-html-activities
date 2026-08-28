@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.1 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Statistical Questions and Data · Statistical Question · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-1-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,69 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 2.1 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can tell the difference between a statistical question and a non-statistical question — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — What makes a question a statistical question?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>If you expect the answers to vary, it is a statistical question.</div>
+        <ul class="ws-note-list"><li>A statistical question is one you answer by collecting data, and the answers are different for different people or cases. A non-statistical question has just one fixed answer. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Question 1: &quot;How many points did our top player score last night?&quot; There is one player and one game, so there is one fixed answer, like 18 points.</li><li>One answer, no variety, so this is NOT a statistical question.</li><li>Question 2: &quot;How many points does each player score per game?&quot; The answers vary: 8, 12, 12, 15, 18, 20, 22.</li><li>Because the answers are different for different players, I must collect data. This IS a statistical question.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Statistical Questions and Data (Preguntas estadísticas y datos) — A statistical question expects varied answers that can be collected as data.</li><li>Statistical Question (Pregunta estadística) — A question where the answers will be different for different people.</li><li>Non-statistical Question (Pregunta no estadística) — A question that has just one fixed answer that is the same no matter who you ask, so there is no data to collect.</li><li>Data (Datos) — Facts and numbers you collect, like answers to a survey.</li><li>Variability (Variabilidad) — How spread out the numbers are.</li><li>Survey (Encuesta) — Collecting facts by asking people questions.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Statistical Questions and Data <span class="ws-es-term">(Preguntas estadísticas y datos)</span></span><span class="ws-bankdef"> — A statistical question expects varied answers that can be collected as data.</span></div><div class="ws-bank-card"><span class="ws-bankword">Statistical Question <span class="ws-es-term">(Pregunta estadística)</span></span><span class="ws-bankdef"> — A question where the answers will be different for different people.</span></div><div class="ws-bank-card"><span class="ws-bankword">Non-statistical Question <span class="ws-es-term">(Pregunta no estadística)</span></span><span class="ws-bankdef"> — A question that has just one fixed answer that is the same no matter who you ask, so there is no data to collect.</span></div><div class="ws-bank-card"><span class="ws-bankword">Data <span class="ws-es-term">(Datos)</span></span><span class="ws-bankdef"> — Facts and numbers you collect, like answers to a survey.</span></div><div class="ws-bank-card"><span class="ws-bankword">Variability <span class="ws-es-term">(Variabilidad)</span></span><span class="ws-bankdef"> — How spread out the numbers are.</span></div><div class="ws-bank-card"><span class="ws-bankword">Survey <span class="ws-es-term">(Encuesta)</span></span><span class="ws-bankdef"> — Collecting facts by asking people questions.</span></div><div class="ws-bank-card"><span class="ws-bankword">Data distribution <span class="ws-es-term">(Distribución de datos)</span></span><span class="ws-bankdef"> — How the data looks: where it sits and how spread out it is.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which of the following is a statistical question?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">How many points did each player score this season?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many points are scored for a free throw?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">What sport does this team play?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How many halves are in a soccer game?</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which question is NOT a statistical question?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">How many innings are in a baseball game?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many home runs did each player hit this year?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">How many miles does each runner train per week?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How tall is each player on the basketball team?</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Why is 'How many hours of sleep did each student get last night?' a statistical question?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Because different students got different amounts of sleep</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Because it asks about sleep</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Because hours are numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because the answer is always 8 hours</span></li></ol>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Spot the Common Mistake</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Question:</span><span class="ws-step-w">How tall is each player on the basketball team?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student decision:</span><span class="ws-step-w">This is NOT a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student reason:</span><span class="ws-step-w">Height is just one number, so every answer will be the same.</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -777,14 +805,84 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Decide if each question is statistical and explain why.</p>
   <table class="ws-table"><thead><tr><th>Question</th><th>Statistical?</th><th>Why?</th></tr></thead><tbody><tr><td>How many push-ups can each student do in one minute?</td><td></td><td></td></tr><tr><td>How many sides does a basketball court have?</td><td></td><td></td></tr><tr><td>How far does each player kick the ball?</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which of the following is a statistical question?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">How many points did each player score this season?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many points are scored for a free throw?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">What sport does this team play?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How many halves are in a soccer game?</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which question is NOT a statistical question?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">How many innings are in a baseball game?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many home runs did each player hit this year?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">How many miles does each runner train per week?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How tall is each player on the basketball team?</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Why is 'How many hours of sleep did each student get last night?' a statistical question?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Because different students got different amounts of sleep</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Because it asks about sleep</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Because hours are numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because the answer is always 8 hours</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Spot the Common Mistake</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Question:</span><span class="ws-step-w">How tall is each player on the basketball team?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student decision:</span><span class="ws-step-w">This is NOT a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student reason:</span><span class="ws-step-w">Height is just one number, so every answer will be the same.</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

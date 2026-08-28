@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Fraction Division Problem Solving</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Fraction Division Problem Solving · Model · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-11" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each word problem: should you DIVIDE or MULTIPLY to solve it?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Division Problem</span> <span class="ws-cat-pill">Multiplication Problem</span></div>
+  <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,7 +800,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -726,25 +811,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">A trail is 3/4 mile long. A jogger runs laps of 1/4 mile each. How many laps does the jogger complete?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 laps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1/3 lap</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4 laps</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3/16 lap</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 laps. This is reasonable: three 1/4-mile pieces fit into 3/4 mile.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Fraction Division Problem Solving is reversing which fraction is the dividend and which is the divisor when setting up the equation from a word problem. For example: a pitcher holds 3/4 cup of punch, and each serving is 1/8 cup — how many servings? The correct setup is total ÷ group size = 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 servings. A student who reverses the setup calculates 1/8 ÷ 3/4 = 1/8 × 4/3 = 4/24 = 1/6, an answer smaller than 1 that can't possibly be a serving count. Before you submit, check: does my answer make sense as a NUMBER OF GROUPS? If the setup gives a fraction less than 1 for a 'how many' question, you likely swapped the dividend and divisor.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each word problem: should you DIVIDE or MULTIPLY to solve it?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Division Problem</span> <span class="ws-cat-pill">Multiplication Problem</span></div>
-  <ul class="ws-sort-list"></ul>
       </div>
     </li>
   </ol>
@@ -785,14 +857,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Fraction Division Problem Solving</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Fraction Division Problem Solving · Model · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-11" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -808,11 +881,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Sort each word problem: should you DIVIDE or MULTIPLY to solve it?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Division Problem</span> <span class="ws-cat-pill">Multiplication Problem</span></div>
+  <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -823,7 +916,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -834,25 +927,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">A trail is 3/4 mile long. A jogger runs laps of 1/4 mile each. How many laps does the jogger complete?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 laps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1/3 lap</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4 laps</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3/16 lap</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 laps. This is reasonable: three 1/4-mile pieces fit into 3/4 mile.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Fraction Division Problem Solving is reversing which fraction is the dividend and which is the divisor when setting up the equation from a word problem. For example: a pitcher holds 3/4 cup of punch, and each serving is 1/8 cup — how many servings? The correct setup is total ÷ group size = 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 servings. A student who reverses the setup calculates 1/8 ÷ 3/4 = 1/8 × 4/3 = 4/24 = 1/6, an answer smaller than 1 that can't possibly be a serving count. Before you submit, check: does my answer make sense as a NUMBER OF GROUPS? If the setup gives a fraction less than 1 for a 'how many' question, you likely swapped the dividend and divisor.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each word problem: should you DIVIDE or MULTIPLY to solve it?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Division Problem</span> <span class="ws-cat-pill">Multiplication Problem</span></div>
-  <ul class="ws-sort-list"></ul>
       </div>
     </li>
   
@@ -866,7 +946,11 @@ header.packet h1::after{
         <p class="ws-stem">A board is 5/6 foot long. Each shelf bracket needs 1/6 foot. How many brackets fit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">1/36</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5/36</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 brackets.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Fraction Division Problem Solving is reversing which fraction is the dividend and which is the divisor when setting up the equation from a word problem. For example: a pitcher holds 3/4 cup of punch, and each serving is 1/8 cup — how many servings? The correct setup is total ÷ group size = 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 servings. A student who reverses the setup calculates 1/8 ÷ 3/4 = 1/8 × 4/3 = 4/24 = 1/6, an answer smaller than 1 that can't possibly be a serving count. Before you submit, check: does my answer make sense as a NUMBER OF GROUPS? If the setup gives a fraction less than 1 for a 'how many' question, you likely swapped the dividend and divisor.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -918,14 +1002,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Fraction Division Problem Solving</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Fraction Division Problem Solving · Model · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-11" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -941,8 +1026,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -979,7 +1067,11 @@ header.packet h1::after{
         <p class="ws-stem">How many 1/8-pound molds can be made from 3/4 pound?</p><div class="ws-keynote">See standard solution method.</div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -990,7 +1082,11 @@ header.packet h1::after{
         <p class="ws-stem">Marcus solved 2/3 ÷ 1/4 and got 8/3 = 2 2/3. He says 'That can't be right because I started with less than 1.' Is Marcus's math correct? Is his reasoning correct?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">His math is correct (2 2/3), but his reasoning is wrong — dividing by a small fraction gives a larger result</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">His math and reasoning are both correct — the answer should be less than 1</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">His math is wrong — the answer should be 1/6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">His math is wrong — the answer should be 8/12</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. This IS correct. When you divide by a number less than 1, the quotient is greater than the dividend.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Fraction Division Problem Solving is reversing which fraction is the dividend and which is the divisor when setting up the equation from a word problem. For example: a pitcher holds 3/4 cup of punch, and each serving is 1/8 cup — how many servings? The correct setup is total ÷ group size = 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 servings. A student who reverses the setup calculates 1/8 ÷ 3/4 = 1/8 × 4/3 = 4/24 = 1/6, an answer smaller than 1 that can't possibly be a serving count. Before you submit, check: does my answer make sense as a NUMBER OF GROUPS? If the setup gives a fraction less than 1 for a 'how many' question, you likely swapped the dividend and divisor.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1042,14 +1138,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Fraction Division Problem Solving</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Fraction Division Problem Solving · Model · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-11" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1065,11 +1162,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Solve each multi-step problem. Show the equation and verify with multiplication.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Equation</th><th>Solution</th><th>Check (quotient × divisor = dividend)</th></tr></thead><tbody><tr><td>A chef has 2 1/2 cups of flour. Each batch of cookies needs 1/4 cup. How many batches?</td><td>2 1/2 ÷ 1/4 = 5/2 × 4/1</td><td>10</td><td>10 × 1/4 = 10/4 = 2 1/2</td></tr><tr><td>A detective has 1 1/3 gallons of solution. Each test uses 2/3 gallon. How many tests?</td><td>1 1/3 ÷ 2/3 = 4/3 × 3/2</td><td>2</td><td>2 × 2/3 = 4/3 = 1 1/3</td></tr><tr><td>A board is 3 3/4 feet long. Each piece must be 5/8 foot. How many pieces?</td><td>3 3/4 ÷ 5/8 = 15/4 × 8/5</td><td>6</td><td>6 × 5/8 = 30/8 = 3 3/4</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1083,25 +1200,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Write your own fraction division word problem where the answer is 8. Then show the equation, solve it step by step, and explain how you know your answer is reasonable.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: divide, = 8, reasonable, word problem, equation, reciprocal Explanation: The safest way to build this problem is backwards: choose a group size, multiply it by 8, and let that product be the total in your story. For example, 8 groups of 1/2 make 4, so &quot;4 cups of trail mix packed into 1/2-cup bags&quot; gives 4 ÷ 1/2 = 4 × 2/1 = 8. The answer is reasonable because 8 groups of the size you chose rebuild the original total exactly.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Solve each multi-step problem. Show the equation and verify with multiplication.</p>
-  <table class="ws-table"><thead><tr><th>Problem</th><th>Equation</th><th>Solution</th><th>Check (quotient × divisor = dividend)</th></tr></thead><tbody><tr><td>A chef has 2 1/2 cups of flour. Each batch of cookies needs 1/4 cup. How many batches?</td><td>2 1/2 ÷ 1/4 = 5/2 × 4/1</td><td>10</td><td>10 × 1/4 = 10/4 = 2 1/2</td></tr><tr><td>A detective has 1 1/3 gallons of solution. Each test uses 2/3 gallon. How many tests?</td><td>1 1/3 ÷ 2/3 = 4/3 × 3/2</td><td>2</td><td>2 × 2/3 = 4/3 = 1 1/3</td></tr><tr><td>A board is 3 3/4 feet long. Each piece must be 5/8 foot. How many pieces?</td><td>3 3/4 ÷ 5/8 = 15/4 × 8/5</td><td>6</td><td>6 × 5/8 = 30/8 = 3 3/4</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>

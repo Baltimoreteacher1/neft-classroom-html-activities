@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Explore Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">independent variable · dependent variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,16 +767,24 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Explore Relationships Between Two Variables</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can recognize when two quantities change together, and identify which one is the independent variable and which is the dependent variable.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">independent variable <span class="ws-es-term">(variable independiente)</span></span><span class="ws-bankdef"> — The quantity that is subject to choice. It does not depend on the other quantity.</span></div><div class="ws-bank-card"><span class="ws-bankword">dependent variable <span class="ws-es-term">(variable dependiente)</span></span><span class="ws-bankdef"> — The quantity that changes in response to the independent variable.</span></div><div class="ws-bank-card"><span class="ws-bankword">depends on <span class="ws-es-term">(depende de)</span></span><span class="ws-bankdef"> — One quantity depends on another when changing the first causes the second to change.</span></div><div class="ws-bank-card"><span class="ws-bankword">quantity <span class="ws-es-term">(cantidad)</span></span><span class="ws-bankdef"> — Something that can be counted or measured.</span></div><div class="ws-bank-card"><span class="ws-bankword">relationship <span class="ws-es-term">(relación)</span></span><span class="ws-bankdef"> — How two quantities change together.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Which quantity is doing the changing — and which is responding?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Independent &amp; Dependent Variables</div>
+        <ul class="ws-note-list"><li>When two quantities are related, one of them depends on the other. Naming which is which is the whole job of this lesson.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Independent Variable (x): The input / cause that is chosen or changes freely.</li><li>Dependent Variable (y): The output / effect that depends on the independent variable.</li><li>Sentence check: 'The (dependent) depends on the (independent)'</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me sort Akela's experiment</div>
+        <ol class="ws-note-list"><li>The two quantities are hours of sunlight per day and average plant height after 3 weeks.</li><li>Akela CHOSE where to put each tray, so she chose the sunlight. Sunlight is subject to choice — that makes it the independent variable.</li><li>She did not choose how tall the plants got. Height responded. That makes height the dependent variable.</li><li>Say it as a sentence: plant height depends on sunlight.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>independent variable (variable independiente) — The quantity that is subject to choice. It does not depend on the other quantity.</li><li>dependent variable (variable dependiente) — The quantity that changes in response to the independent variable.</li><li>depends on (depende de) — One quantity depends on another when changing the first causes the second to change.</li><li>quantity (cantidad) — Something that can be counted or measured.</li><li>relationship (relación) — How two quantities change together.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Naming the variables backward — calling the responding quantity 'independent' because it is the one the question asks about.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
@@ -723,7 +796,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Akela chooses how many hours of sunlight each tray gets. Which is the INDEPENDENT variable?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Number of trays</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Number of seeds</span></li></ol>
+        <p class="ws-stem">Akela chooses how many hours of sunlight each tray gets. Which is the INDEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Number of trays</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Number of seeds</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -734,7 +810,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In Akela's experiment, which is the DEPENDENT variable?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The kind of seed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The size of the tray</span></li></ol>
+        <p class="ws-stem">In Akela's experiment, which is the DEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The kind of seed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The size of the tray</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -745,7 +824,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claire burned 123 Calories on a 30-minute jog. Which quantity is subject to choice?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Minutes she jogs</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories she burns</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her heart rate</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The weather</span></li></ol>
+        <p class="ws-stem">Claire burned 123 Calories on a 30-minute jog. Which quantity is subject to choice?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Minutes she jogs</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories she burns</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her heart rate</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The weather</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -756,7 +838,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which sentence is written in the correct order?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Calories burned depends on minutes jogged.</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Minutes jogged depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Calories burned depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither quantity depends on the other.</span></li></ol>
+        <p class="ws-stem">Which sentence is written in the correct order?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Calories burned depends on minutes jogged.</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Minutes jogged depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Calories burned depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither quantity depends on the other.</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -805,14 +890,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Explore Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">independent variable · dependent variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -827,31 +913,49 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Explore Relationships Between Two Variables</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can recognize when two quantities change together, and identify which one is the independent variable and which is the dependent variable.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Which quantity is doing the changing — and which is responding?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Independent &amp; Dependent Variables</div>
+        <ul class="ws-note-list"><li>When two quantities are related, one of them depends on the other. Naming which is which is the whole job of this lesson.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Independent Variable (x): The input / cause that is chosen or changes freely.</li><li>Dependent Variable (y): The output / effect that depends on the independent variable.</li><li>Sentence check: 'The (dependent) depends on the (independent)'</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me sort Akela's experiment</div>
+        <ol class="ws-note-list"><li>The two quantities are hours of sunlight per day and average plant height after 3 weeks.</li><li>Akela CHOSE where to put each tray, so she chose the sunlight. Sunlight is subject to choice — that makes it the independent variable.</li><li>She did not choose how tall the plants got. Height responded. That makes height the dependent variable.</li><li>Say it as a sentence: plant height depends on sunlight.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>independent variable (variable independiente) — The quantity that is subject to choice. It does not depend on the other quantity.</li><li>dependent variable (variable dependiente) — The quantity that changes in response to the independent variable.</li><li>depends on (depende de) — One quantity depends on another when changing the first causes the second to change.</li><li>quantity (cantidad) — Something that can be counted or measured.</li><li>relationship (relación) — How two quantities change together.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Naming the variables backward — calling the responding quantity 'independent' because it is the one the question asks about.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">independent variable <span class="ws-es-term">(variable independiente)</span></span><span class="ws-bankdef"> — The quantity that is subject to choice. It does not depend on the other quantity.</span></div><div class="ws-bank-card"><span class="ws-bankword">dependent variable <span class="ws-es-term">(variable dependiente)</span></span><span class="ws-bankdef"> — The quantity that changes in response to the independent variable.</span></div><div class="ws-bank-card"><span class="ws-bankword">depends on <span class="ws-es-term">(depende de)</span></span><span class="ws-bankdef"> — One quantity depends on another when changing the first causes the second to change.</span></div><div class="ws-bank-card"><span class="ws-bankword">quantity <span class="ws-es-term">(cantidad)</span></span><span class="ws-bankdef"> — Something that can be counted or measured.</span></div><div class="ws-bank-card"><span class="ws-bankword">relationship <span class="ws-es-term">(relación)</span></span><span class="ws-bankdef"> — How two quantities change together.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Akela chooses how many hours of sunlight each tray gets. Which is the INDEPENDENT variable?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Number of trays</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Number of seeds</span></li></ol>
+        <p class="ws-stem">Sort each quantity: independent or dependent?</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Independent variable (input)</span> <span class="ws-cat-pill">Dependent variable (output)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Hours of sunlight a tray of seedlings gets</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Months of gym membership</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Minutes spent jogging</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Height the seedlings grow</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Total cost of the membership</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Calories burned on the jog</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -859,7 +963,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In Akela's experiment, which is the DEPENDENT variable?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The kind of seed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The size of the tray</span></li></ol>
+        <p class="ws-stem">Akela chooses how many hours of sunlight each tray gets. Which is the INDEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Number of trays</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Number of seeds</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -870,7 +977,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claire burned 123 Calories on a 30-minute jog. Which quantity is subject to choice?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Minutes she jogs</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories she burns</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her heart rate</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The weather</span></li></ol>
+        <p class="ws-stem">In Akela's experiment, which is the DEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Plant height</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Hours of sunlight</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The kind of seed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The size of the tray</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -881,7 +991,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which sentence is written in the correct order?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Calories burned depends on minutes jogged.</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Minutes jogged depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Calories burned depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither quantity depends on the other.</span></li></ol>
+        <p class="ws-stem">Claire burned 123 Calories on a 30-minute jog. Which quantity is subject to choice?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Minutes she jogs</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories she burns</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her heart rate</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The weather</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -892,7 +1005,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A tray that got 2 hours of sun grew to 4 cm. A tray that got 6 hours grew to 12 cm. As sunlight increases, plant height…</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">increases</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">decreases</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">stays the same</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">cannot be determined</span></li></ol>
+        <p class="ws-stem">Which sentence is written in the correct order?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Calories burned depends on minutes jogged.</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Minutes jogged depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Calories burned depends on Calories burned.</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither quantity depends on the other.</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -903,20 +1019,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">You buy tickets at $45 each. Which quantity depends on the other?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Total cost depends on number of tickets</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Number of tickets depends on total cost</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The price per ticket depends on the total cost</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Nothing depends on anything here</span></li></ol>
+        <p class="ws-stem">A tray that got 2 hours of sun grew to 4 cm. A tray that got 6 hours grew to 12 cm. As sunlight increases, plant height…</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">increases</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">decreases</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">stays the same</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">cannot be determined</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort each quantity: independent or dependent?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Independent variable (input)</span> <span class="ws-cat-pill">Dependent variable (output)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Hours of sunlight a tray of seedlings gets</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Months of gym membership</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Minutes spent jogging</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Height the seedlings grow</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Total cost of the membership</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">Calories burned on the jog</span></li></ul>
+        <p class="ws-stem">You buy tickets at $45 each. Which quantity depends on the other?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Total cost depends on number of tickets</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Number of tickets depends on total cost</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The price per ticket depends on the total cost</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Nothing depends on anything here</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -965,14 +1085,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Explore Relationships Between Two Variables</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">independent variable · dependent variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -987,20 +1108,55 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Which quantity is doing the changing — and which is responding?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Independent &amp; Dependent Variables</div>
+        <ul class="ws-note-list"><li>When two quantities are related, one of them depends on the other. Naming which is which is the whole job of this lesson.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Independent Variable (x): The input / cause that is chosen or changes freely.</li><li>Dependent Variable (y): The output / effect that depends on the independent variable.</li><li>Sentence check: 'The (dependent) depends on the (independent)'</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me sort Akela's experiment</div>
+        <ol class="ws-note-list"><li>The two quantities are hours of sunlight per day and average plant height after 3 weeks.</li><li>Akela CHOSE where to put each tray, so she chose the sunlight. Sunlight is subject to choice — that makes it the independent variable.</li><li>She did not choose how tall the plants got. Height responded. That makes height the dependent variable.</li><li>Say it as a sentence: plant height depends on sunlight.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try Claire's fitness tracker together</div>
+        <ol class="ws-note-list"><li>Claire burned 123 Calories on a 30-minute jog and 246 Calories on a 60-minute jog.</li><li>Which did Claire choose — the minutes, or the Calories?</li><li>She chose how long to jog. So time is independent, and Calories burned is dependent.</li><li>Sentence frame: ___ depends on ___ .</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>independent variable (variable independiente) — The quantity that is subject to choice. It does not depend on the other quantity.</li><li>dependent variable (variable dependiente) — The quantity that changes in response to the independent variable.</li><li>depends on (depende de) — One quantity depends on another when changing the first causes the second to change.</li><li>quantity (cantidad) — Something that can be counted or measured.</li><li>relationship (relación) — How two quantities change together.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Naming the variables backward — calling the responding quantity 'independent' because it is the one the question asks about.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A gym charges $24.95 per month. Which pair correctly names the variables?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Independent: months; Dependent: total cost</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Independent: total cost; Dependent: months</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Independent: $24.95; Dependent: months</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Independent: months; Dependent: $24.95</span></li></ol>
+        <p class="ws-stem">Claire burns Calories at a steady rate: 30 minutes burns 123 Calories. Complete the table.</p>
+  <table class="ws-table"><thead><tr><th>Minutes jogged (independent)</th><th>Thinking</th><th>Calories burned (dependent)</th></tr></thead><tbody><tr><td>30</td><td></td><td></td></tr><tr><td>60</td><td></td><td></td></tr><tr><td>90</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -1008,7 +1164,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claire jogs 30 minutes and burns 123 Calories. At the same rate, how many Calories would a 90-minute jog burn?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">369</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">246</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">410</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">300</span></li></ol>
+        <p class="ws-stem">A gym charges $24.95 per month. Which pair correctly names the variables?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Independent: months; Dependent: total cost</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Independent: total cost; Dependent: months</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Independent: $24.95; Dependent: months</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Independent: months; Dependent: $24.95</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1019,7 +1178,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which of these pairs is NOT a dependent relationship?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Number of pizzas sold and number of employees the shop has</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Number of pizzas sold and weekly cost of cheese</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Hours jogged and Calories burned</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Tickets bought and total cost</span></li></ol>
+        <p class="ws-stem">Claire jogs 30 minutes and burns 123 Calories. At the same rate, how many Calories would a 90-minute jog burn?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">369</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">246</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">410</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">300</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1030,7 +1192,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A plant grows 2 cm for every hour of daily sunlight. Which table row is correct?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 hours to 8 cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 hours to 6 cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4 hours to 2 cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 hours to 4 cm</span></li></ol>
+        <p class="ws-stem">Which of these pairs is NOT a dependent relationship?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Number of pizzas sold and number of employees the shop has</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Number of pizzas sold and weekly cost of cheese</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Hours jogged and Calories burned</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Tickets bought and total cost</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1041,7 +1206,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which question would you ask to find the DEPENDENT variable?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Which quantity responds when the other one changes?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Which quantity is larger?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Which quantity has units?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Which quantity comes first alphabetically?</span></li></ol>
+        <p class="ws-stem">A plant grows 2 cm for every hour of daily sunlight. Which table row is correct?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 hours to 8 cm</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4 hours to 6 cm</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4 hours to 2 cm</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4 hours to 4 cm</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1052,7 +1220,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claire decides to walk instead of jog for the same 30 minutes. What happens to the two variables?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Time stays the independent variable; Calories burned still depends on it</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories burned becomes the independent variable</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither is a variable any more</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Time becomes the dependent variable</span></li></ol>
+        <p class="ws-stem">Which question would you ask to find the DEPENDENT variable?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Which quantity responds when the other one changes?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Which quantity is larger?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Which quantity has units?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Which quantity comes first alphabetically?</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1063,20 +1234,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">If Claire runs exactly 3 miles and records how long it takes, which is the independent variable now?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Distance (3 miles)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Time it takes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her speed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Calories burned</span></li></ol>
+        <p class="ws-stem">Claire decides to walk instead of jog for the same 30 minutes. What happens to the two variables?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Time stays the independent variable; Calories burned still depends on it</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Calories burned becomes the independent variable</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Neither is a variable any more</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Time becomes the dependent variable</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">8</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Claire burns Calories at a steady rate: 30 minutes burns 123 Calories. Complete the table.</p>
-  <table class="ws-table"><thead><tr><th>Minutes jogged (independent)</th><th>Thinking</th><th>Calories burned (dependent)</th></tr></thead><tbody><tr><td>30</td><td></td><td></td></tr><tr><td>60</td><td></td><td></td></tr><tr><td>90</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">If Claire runs exactly 3 miles and records how long it takes, which is the independent variable now?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Distance (3 miles)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Time it takes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Her speed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Calories burned</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1125,14 +1300,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Explore Relationships Between Two Variables</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">independent variable · dependent variable · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1147,9 +1323,35 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Which quantity is doing the changing — and which is responding?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Independent &amp; Dependent Variables</div>
+        <ul class="ws-note-list"><li>When two quantities are related, one of them depends on the other. Naming which is which is the whole job of this lesson.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Independent Variable (x): The input / cause that is chosen or changes freely.</li><li>Dependent Variable (y): The output / effect that depends on the independent variable.</li><li>Sentence check: 'The (dependent) depends on the (independent)'</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me sort Akela's experiment</div>
+        <ol class="ws-note-list"><li>The two quantities are hours of sunlight per day and average plant height after 3 weeks.</li><li>Akela CHOSE where to put each tray, so she chose the sunlight. Sunlight is subject to choice — that makes it the independent variable.</li><li>She did not choose how tall the plants got. Height responded. That makes height the dependent variable.</li><li>Say it as a sentence: plant height depends on sunlight.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's try Claire's fitness tracker together</div>
+        <ol class="ws-note-list"><li>Claire burned 123 Calories on a 30-minute jog and 246 Calories on a 60-minute jog.</li><li>Which did Claire choose — the minutes, or the Calories?</li><li>She chose how long to jog. So time is independent, and Calories burned is dependent.</li><li>Sentence frame: ___ depends on ___ .</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>independent variable (variable independiente) — The quantity that is subject to choice. It does not depend on the other quantity.</li><li>dependent variable (variable dependiente) — The quantity that changes in response to the independent variable.</li><li>depends on (depende de) — One quantity depends on another when changing the first causes the second to change.</li><li>quantity (cantidad) — Something that can be counted or measured.</li><li>relationship (relación) — How two quantities change together.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Naming the variables backward — calling the responding quantity 'independent' because it is the one the question asks about.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -1157,21 +1359,29 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Two quantities are related. Which statement is ALWAYS true?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The independent variable is subject to choice</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The independent variable is always the larger number</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The dependent variable is always measured in dollars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The independent variable is always listed first in a table</span></li></ol>
+        <p class="ws-stem">Two quantities are related. Which statement is ALWAYS true?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The independent variable is subject to choice</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The independent variable is always the larger number</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The dependent variable is always measured in dollars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The independent variable is always listed first in a table</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Give an example where the SAME quantity can be independent in one problem and dependent in another.</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Time: chosen when you pick how long to jog, but measured as a result when you run a set distance</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Time is always independent</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Time is always dependent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A quantity can never switch roles</span></li></ol>
+        <p class="ws-stem">Match each scenario to its (independent → dependent) pair.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Gym membership</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Seedling experiment</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Jogging</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Buying movie tickets</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">months → total cost</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">hours of sunlight → plant height</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">minutes → Calories burned</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">tickets → total price</span></li></ul></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -1179,12 +1389,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">The pizza shop spends $1.15 on cheese per pizza. Which weekly total is correct if it makes 200 pizzas?</p><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$230</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$115</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$201.15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$1,150</span></li></ol>
+        <p class="ws-stem">Give an example where the SAME quantity can be independent in one problem and dependent in another.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Time: chosen when you pick how long to jog, but measured as a result when you run a set distance</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Time is always independent</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Time is always dependent</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A quantity can never switch roles</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1195,7 +1403,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which relationship is NOT a case of one quantity depending on the other?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">A student's height and their house number</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Hours studied and quiz score</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Minutes jogged and Calories burned</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Pizzas made and cheese used</span></li></ol>
+        <p class="ws-stem">The pizza shop spends $1.15 on cheese per pizza. Which weekly total is correct if it makes 200 pizzas?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$230</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$115</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$201.15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$1,150</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+    </tbody></table></div></div>
       </div>
     </li>
   
@@ -1206,19 +1419,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Write the relationship as a sentence: a printer prints 12 pages per minute.</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Pages printed depends on minutes running</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Minutes running depends on pages printed</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 depends on the number of pages</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The printer depends on the pages</span></li></ol>
+        <p class="ws-stem">Which relationship is NOT a case of one quantity depending on the other?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">A student's height and their house number</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Hours studied and quiz score</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Minutes jogged and Calories burned</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Pizzas made and cheese used</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each scenario to its (independent → dependent) pair.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Gym membership</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Seedling experiment</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Jogging</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Buying movie tickets</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">months → total cost</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">hours of sunlight → plant height</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">minutes → Calories burned</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">tickets → total price</span></li></ul></div>
+        <p class="ws-stem">Write the relationship as a sentence: a printer prints 12 pages per minute.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Pages printed depends on minutes running</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Minutes running depends on pages printed</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 depends on the number of pages</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The printer depends on the pages</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

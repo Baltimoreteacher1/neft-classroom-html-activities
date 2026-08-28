@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,20 +767,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Math is Mine</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can look back at my answers from Lesson 1-1, describe how my math biography has changed this year, and recognize ways we are all doers of math.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">math biography <span class="ws-es-term">(biografía matemática)</span></span><span class="ws-bankdef"> — The story of your relationship with math — and how it has changed over time.</span></div><div class="ws-bank-card"><span class="ws-bankword">reflect <span class="ws-es-term">(reflexionar)</span></span><span class="ws-bankdef"> — To look back at what you did, felt, and learned, and think about what it means.</span></div><div class="ws-bank-card"><span class="ws-bankword">growth <span class="ws-es-term">(crecimiento)</span></span><span class="ws-bankdef"> — The change between what you could do before and what you can do now.</span></div><div class="ws-bank-card"><span class="ws-bankword">confidence <span class="ws-es-term">(confianza)</span></span><span class="ws-bankdef"> — Trusting yourself to try a problem, even when the first attempt might fail.</span></div><div class="ws-bank-card"><span class="ws-bankword">community <span class="ws-es-term">(comunidad)</span></span><span class="ws-bankdef"> — The people and places around you — where math shows up outside the classroom.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Your math story, one year later</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mathematical Reflection &amp; Portfolio Culmination</div>
+        <ul class="ws-note-list"><li>In Lesson 1-1 you estimated riders on a Ferris wheel, decomposed 78.5, and wrote your math story. The question now is not 'what is math?' but 'how have I changed as a doer of math?'</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Synthesize grade-level mastery across Number Systems, Ratios, Expressions, Geometry, and Statistics.</li><li>Justify problem-solving strategies using multiple representations (equations, graphs, models).</li><li>Reflect on mathematical growth and communicate solutions with precision and confidence</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me reread my September work</div>
+        <ol class="ws-note-list"><li>In September I estimated the Ferris wheel: 20 cars with about 4 riders each is 20 × 4 = 80 riders — 'about 80.'</li><li>Now I can go further with this year's math: at 6 turns an hour, that wheel moves about 80 × 6 = 480 riders per hour.</li><li>Same wheel, same me — but my toolbox grew. That difference IS my math story.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>math biography (biografía matemática) — The story of your relationship with math — and how it has changed over time.</li><li>reflect (reflexionar) — To look back at what you did, felt, and learned, and think about what it means.</li><li>growth (crecimiento) — The change between what you could do before and what you can do now.</li><li>confidence (confianza) — Trusting yourself to try a problem, even when the first attempt might fail.</li><li>community (comunidad) — The people and places around you — where math shows up outside the classroom.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</li></ul>
+      </div>
     </section>
   
       <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -723,29 +800,42 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In Lesson 1-1 you estimated the Ferris wheel: 20 cars each holding about 4 people. About how many riders was that?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol>
+        <p class="ws-stem">In Lesson 1-1 you estimated the Ferris wheel: 20 cars each holding about 4 people. About how many riders was that?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In September you decomposed 78.5 as 70 + 8.5. Which of these ALSO equals 78.5, using division?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">156 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78.5 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 4</span></li></ol>
+        <p class="ws-stem">In September you decomposed 78.5 as 70 + 8.5. Which of these ALSO equals 78.5, using division?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">156 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78.5 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -756,7 +846,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How have you used math at home or with your family in new or different ways this year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> This year at home I used math to ___ .&lt;br&gt;That was new for me because ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">How have you used math at home or with your family in new or different ways this year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> This year at home I used math to ___ .&lt;br&gt;That was new for me because ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -805,14 +898,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -827,20 +921,32 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: Math is Mine</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can look back at my answers from Lesson 1-1, describe how my math biography has changed this year, and recognize ways we are all doers of math.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Your math story, one year later</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mathematical Reflection &amp; Portfolio Culmination</div>
+        <ul class="ws-note-list"><li>In Lesson 1-1 you estimated riders on a Ferris wheel, decomposed 78.5, and wrote your math story. The question now is not 'what is math?' but 'how have I changed as a doer of math?'</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
+        <ol class="ws-note-list"><li>Synthesize grade-level mastery across Number Systems, Ratios, Expressions, Geometry, and Statistics.</li><li>Justify problem-solving strategies using multiple representations (equations, graphs, models).</li><li>Reflect on mathematical growth and communicate solutions with precision and confidence</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me reread my September work</div>
+        <ol class="ws-note-list"><li>In September I estimated the Ferris wheel: 20 cars with about 4 riders each is 20 × 4 = 80 riders — 'about 80.'</li><li>Now I can go further with this year's math: at 6 turns an hour, that wheel moves about 80 × 6 = 480 riders per hour.</li><li>Same wheel, same me — but my toolbox grew. That difference IS my math story.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>math biography (biografía matemática) — The story of your relationship with math — and how it has changed over time.</li><li>reflect (reflexionar) — To look back at what you did, felt, and learned, and think about what it means.</li><li>growth (crecimiento) — The change between what you could do before and what you can do now.</li><li>confidence (confianza) — Trusting yourself to try a problem, even when the first attempt might fail.</li><li>community (comunidad) — The people and places around you — where math shows up outside the classroom.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">math biography <span class="ws-es-term">(biografía matemática)</span></span><span class="ws-bankdef"> — The story of your relationship with math — and how it has changed over time.</span></div><div class="ws-bank-card"><span class="ws-bankword">reflect <span class="ws-es-term">(reflexionar)</span></span><span class="ws-bankdef"> — To look back at what you did, felt, and learned, and think about what it means.</span></div><div class="ws-bank-card"><span class="ws-bankword">growth <span class="ws-es-term">(crecimiento)</span></span><span class="ws-bankdef"> — The change between what you could do before and what you can do now.</span></div><div class="ws-bank-card"><span class="ws-bankword">confidence <span class="ws-es-term">(confianza)</span></span><span class="ws-bankdef"> — Trusting yourself to try a problem, even when the first attempt might fail.</span></div><div class="ws-bank-card"><span class="ws-bankword">community <span class="ws-es-term">(comunidad)</span></span><span class="ws-bankdef"> — The people and places around you — where math shows up outside the classroom.</span></div></div>
-    </section>
-  
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -848,21 +954,30 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In Lesson 1-1 you estimated the Ferris wheel: 20 cars each holding about 4 people. About how many riders was that?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol>
+        <p class="ws-stem">Which statement matches this lesson's big idea about math stories?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Our math stories continue to grow and evolve as we grow</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Your math story was finished when you wrote it in September</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only students with high grades have a math story</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A math story never changes once it is written</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Sort this year's ideas into their areas of mathematics.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Percents</span> <span class="ws-cat-pill">Statistics</span> <span class="ws-cat-pill">Algebra</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">50% of 157</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The 10% benchmark</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The median of a data set</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">A dot plot of class data</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The equation y = kx</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The independent variable</span></li></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -870,29 +985,42 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In September you decomposed 78.5 as 70 + 8.5. Which of these ALSO equals 78.5, using division?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">156 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78.5 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 4</span></li></ol>
+        <p class="ws-stem">In Lesson 1-1 you estimated the Ferris wheel: 20 cars each holding about 4 people. About how many riders was that?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How have you used math at home or with your family in new or different ways this year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> This year at home I used math to ___ .&lt;br&gt;That was new for me because ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which statement matches this lesson's big idea about math stories?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Our math stories continue to grow and evolve as we grow</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Your math story was finished when you wrote it in September</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Only students with high grades have a math story</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">A math story never changes once it is written</span></li></ol>
+        <p class="ws-stem">In September you decomposed 78.5 as 70 + 8.5. Which of these ALSO equals 78.5, using division?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">156 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78.5 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 4</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -903,20 +1031,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">As a result of what we learned together this year, where do you see math used in your community?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In my community I see math at ___ .&lt;br&gt;This year taught me to also notice ___ .</div><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">How have you used math at home or with your family in new or different ways this year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> This year at home I used math to ___ .&lt;br&gt;That was new for me because ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Sort this year's ideas into their areas of mathematics.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Percents</span> <span class="ws-cat-pill">Statistics</span> <span class="ws-cat-pill">Algebra</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">50% of 157</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The 10% benchmark</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The median of a data set</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">A dot plot of class data</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The equation y = kx</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The independent variable</span></li></ul>
+        <p class="ws-stem">As a result of what we learned together this year, where do you see math used in your community?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In my community I see math at ___ .&lt;br&gt;This year taught me to also notice ___ .</div><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -965,14 +1097,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -987,20 +1120,55 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Your math story, one year later</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mathematical Reflection &amp; Portfolio Culmination</div>
+        <ul class="ws-note-list"><li>In Lesson 1-1 you estimated riders on a Ferris wheel, decomposed 78.5, and wrote your math story. The question now is not 'what is math?' but 'how have I changed as a doer of math?'</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Synthesize grade-level mastery across Number Systems, Ratios, Expressions, Geometry, and Statistics.</li><li>Justify problem-solving strategies using multiple representations (equations, graphs, models).</li><li>Reflect on mathematical growth and communicate solutions with precision and confidence</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me reread my September work</div>
+        <ol class="ws-note-list"><li>In September I estimated the Ferris wheel: 20 cars with about 4 riders each is 20 × 4 = 80 riders — 'about 80.'</li><li>Now I can go further with this year's math: at 6 turns an hour, that wheel moves about 80 × 6 = 480 riders per hour.</li><li>Same wheel, same me — but my toolbox grew. That difference IS my math story.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's revisit 78.5 with this year's tools</div>
+        <ol class="ws-note-list"><li>In September we decomposed 78.5 as 70 + 8.5 and 80 − 1.5.</li><li>This year we learned new ways to say the same number: 78.5 = 157 ÷ 2.</li><li>And with percents: 50% of 157 = 78.5.</li><li>Find one more way to write 78.5 using something you learned this year.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>math biography (biografía matemática) — The story of your relationship with math — and how it has changed over time.</li><li>reflect (reflexionar) — To look back at what you did, felt, and learned, and think about what it means.</li><li>growth (crecimiento) — The change between what you could do before and what you can do now.</li><li>confidence (confianza) — Trusting yourself to try a problem, even when the first attempt might fail.</li><li>community (comunidad) — The people and places around you — where math shows up outside the classroom.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Now stretch the September estimate with this year's math: about 80 riders per turn, 6 turns each hour. About how many riders per hour?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 480</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 86</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 13</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 800</span></li></ol>
+        <p class="ws-stem">Answer each quick problem with this year's skills — the same numbers you met in Lesson 1-1.</p>
+  <table class="ws-table"><thead><tr><th>Problem from this year</th><th>Thinking</th><th>Answer</th></tr></thead><tbody><tr><td>50% of 157</td><td></td><td></td></tr><tr><td>10% of 480</td><td></td><td></td></tr><tr><td>Riders per hour: 80 per turn × 6 turns</td><td></td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -1008,20 +1176,23 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Percents were new this year. What is 50% of 157?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">78.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">77.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">31.4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">107</span></li></ol>
+        <p class="ws-stem">Now stretch the September estimate with this year's math: about 80 riders per turn, 6 turns each hour. About how many riders per hour?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 480</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 86</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 13</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 800</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What challenges did you face in math this year, and how did you respond to these challenges?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Percents were new this year. What is 50% of 157?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">78.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">77.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">31.4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">107</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="wss-barlab"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div>
       </div>
     </li>
   
@@ -1032,10 +1203,17 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which of these is the strongest evidence that YOUR math reasoning grew this year?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">You can explain why a method works, not just follow its steps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">You finish worksheets faster than in September</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">You memorized more answers than before</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You stopped making any mistakes</span></li></ol>
+        <p class="ws-stem">Which of these is the strongest evidence that YOUR math reasoning grew this year?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">You can explain why a method works, not just follow its steps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">You finish worksheets faster than in September</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">You memorized more answers than before</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You stopped making any mistakes</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1043,7 +1221,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Ask a classmate about their math story. How has your classmate's math story changed since the beginning of the year?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">What challenges did you face in math this year, and how did you respond to these challenges?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1054,20 +1235,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In what areas are you more confident about math now? What are your strengths in math?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Ask a classmate about their math story. How has your classmate's math story changed since the beginning of the year?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Answer each quick problem with this year's skills — the same numbers you met in Lesson 1-1.</p>
-  <table class="ws-table"><thead><tr><th>Problem from this year</th><th>Thinking</th><th>Answer</th></tr></thead><tbody><tr><td>50% of 157</td><td></td><td></td></tr><tr><td>10% of 480</td><td></td><td></td></tr><tr><td>Riders per hour: 80 per turn × 6 turns</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">In what areas are you more confident about math now? What are your strengths in math?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -1116,14 +1301,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1138,31 +1324,69 @@ header.packet h1::after{
     </header>
   
       
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Your math story, one year later</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Mathematical Reflection &amp; Portfolio Culmination</div>
+        <ul class="ws-note-list"><li>In Lesson 1-1 you estimated riders on a Ferris wheel, decomposed 78.5, and wrote your math story. The question now is not 'what is math?' but 'how have I changed as a doer of math?'</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
+        <ol class="ws-note-list"><li>Synthesize grade-level mastery across Number Systems, Ratios, Expressions, Geometry, and Statistics.</li><li>Justify problem-solving strategies using multiple representations (equations, graphs, models).</li><li>Reflect on mathematical growth and communicate solutions with precision and confidence</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me reread my September work</div>
+        <ol class="ws-note-list"><li>In September I estimated the Ferris wheel: 20 cars with about 4 riders each is 20 × 4 = 80 riders — 'about 80.'</li><li>Now I can go further with this year's math: at 6 turns an hour, that wheel moves about 80 × 6 = 480 riders per hour.</li><li>Same wheel, same me — but my toolbox grew. That difference IS my math story.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's revisit 78.5 with this year's tools</div>
+        <ol class="ws-note-list"><li>In September we decomposed 78.5 as 70 + 8.5 and 80 − 1.5.</li><li>This year we learned new ways to say the same number: 78.5 = 157 ÷ 2.</li><li>And with percents: 50% of 157 = 78.5.</li><li>Find one more way to write 78.5 using something you learned this year.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>math biography (biografía matemática) — The story of your relationship with math — and how it has changed over time.</li><li>reflect (reflexionar) — To look back at what you did, felt, and learned, and think about what it means.</li><li>growth (crecimiento) — The change between what you could do before and what you can do now.</li><li>confidence (confianza) — Trusting yourself to try a problem, even when the first attempt might fail.</li><li>community (comunidad) — The people and places around you — where math shows up outside the classroom.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
+        <ul class="ws-note-list"><li>Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</li></ul>
+      </div>
+    </section>
+  
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each September estimate to the refined result your math produces now.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">20 cars × about 4 riders each</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">80 riders × 6 turns each hour</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">78.5 written by place value</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">480 riders per hour for 3 hours</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">About 80 riders per turn</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">480 riders each hour</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">(7 × 10) + (8 × 1) + (5 × 0.1)</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">1,440 riders</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which set shows THREE correct ways to write 78.5 using skills from this year?</p><div class="ws-work"><span class="ws-work-label">✏️ Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2, 50% of 157, 78½</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">157 ÷ 2, 50% of 157, 78¼</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">156 ÷ 2, 50% of 157, 78½</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 2, 25% of 157, 78½</span></li></ol>
+        <p class="ws-stem">Which set shows THREE correct ways to write 78.5 using skills from this year?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2, 50% of 157, 78½</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">157 ÷ 2, 50% of 157, 78¼</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">156 ÷ 2, 50% of 157, 78½</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 2, 25% of 157, 78½</span></li></ol><div class="ws-work">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How have your math thinking HABITS changed from the beginning of the year to now? (Not what you know — how you think.)</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
-      </div>
-    </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -1170,7 +1394,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Write a short letter to your September self. Tell them one thing about their math story that will change, and one piece of advice for the year ahead.</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">How have your math thinking HABITS changed from the beginning of the year to now? (Not what you know — how you think.)</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -1181,19 +1408,24 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">We are always growing and changing. Think about who you were five years ago and who you are now. In what ways have you changed? In what ways have you grown?</p><div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span></div>
+        <p class="ws-stem">Write a short letter to your September self. Tell them one thing about their math story that will change, and one piece of advice for the year ahead.</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Match each September estimate to the refined result your math produces now.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">20 cars × about 4 riders each</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">80 riders × 6 turns each hour</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">78.5 written by place value</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">480 riders per hour for 3 hours</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">About 80 riders per turn</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">480 riders each hour</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">(7 × 10) + (8 × 1) + (5 × 0.1)</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">1,440 riders</span></li></ul></div>
+        <p class="ws-stem">We are always growing and changing. Think about who you were five years ago and who you are now. In what ways have you changed? In what ways have you grown?</p><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Mathematical Justification &amp; Response</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">7.1 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Integer · Opposite · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=7-1-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,57 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Badwater Basin is 86 meters below sea level, and sea level is 0. Which integer represents that elevation?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">-86</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">86</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-68</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Below sea level means less than 0, so the elevation is written with a negative sign: -86 meters.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In Reykjavik the temperature was -9°C. What is the opposite of -9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-18</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The opposite of a number is the same distance from 0 on the other side, so the opposite of -9 is 9.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the opposite of 0?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A number written -0, which is less than 0</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Every negative number</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Zero has no opposite</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Zero is 0 units from itself, so there is no other side to move to. Zero is its own opposite.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Spot the Mistake: The Opposite of -7</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Name the opposite of -7.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking:</span><span class="ws-step-w">The number starts out negative, and taking the opposite of a negative number keeps it negative, so the answer stays on the left side of 0.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer:</span><span class="ws-step-w">The opposite of -7 is -7.</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 2. Correct Work: Opposites are the same distance from 0 but on OPPOSITE sides of 0. -7 sits 7 units to the left of 0, so its opposite must sit 7 units to the RIGHT of 0. That number is 7. The only integer that is its own opposite is 0, because 0 is zero units from itself.. Misconception: The &quot;Student thinking&quot; step invents a rule that opposites keep their sign. The definition says the two numbers sit on opposite sides of 0, so taking an opposite always changes the direction: from the left side to the right side. The distance never changes, which is why -7 and 7 are both 7 units from 0.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -763,7 +785,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -771,6 +793,61 @@ header.packet h1::after{
         <p class="ws-stem">Sort each integer by which side of 0 it sits on when you graph it on a number line.</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Left of 0 (negative integer)</span> <span class="ws-cat-pill">Right of 0 (positive integer)</span></div>
   <ul class="ws-sort-list"></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Badwater Basin is 86 meters below sea level, and sea level is 0. Which integer represents that elevation?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">-86</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">86</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-68</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Below sea level means less than 0, so the elevation is written with a negative sign: -86 meters.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In Reykjavik the temperature was -9°C. What is the opposite of -9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">-9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">-18</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The opposite of a number is the same distance from 0 on the other side, so the opposite of -9 is 9.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What is the opposite of 0?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">0</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A number written -0, which is less than 0</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Every negative number</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Zero has no opposite</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Zero is 0 units from itself, so there is no other side to move to. Zero is its own opposite.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Spot the Mistake: The Opposite of -7</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">Name the opposite of -7.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking:</span><span class="ws-step-w">The number starts out negative, and taking the opposite of a negative number keeps it negative, so the answer stays on the left side of 0.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer:</span><span class="ws-step-w">The opposite of -7 is -7.</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 2. Correct Work: Opposites are the same distance from 0 but on OPPOSITE sides of 0. -7 sits 7 units to the left of 0, so its opposite must sit 7 units to the RIGHT of 0. That number is 7. The only integer that is its own opposite is 0, because 0 is zero units from itself.. Misconception: The &quot;Student thinking&quot; step invents a rule that opposites keep their sign. The definition says the two numbers sit on opposite sides of 0, so taking an opposite always changes the direction: from the left side to the right side. The distance never changes, which is why -7 and 7 are both 7 units from 0.</div>
       </div>
     </li>
   </ol>

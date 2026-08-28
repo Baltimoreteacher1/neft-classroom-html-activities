@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Box Plot</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">Visual Models · Display Data with Box Plots · Box Plot · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,8 +765,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -709,10 +777,14 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> IQR = Q3 − Q1 = 28 − 15 = 13.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
+        <p class="ws-stem">On a box plot, what does the line inside the box represent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The mean</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The mode</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The range</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The line inside the box of a box plot always represents the median.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
@@ -720,7 +792,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">On a box plot, what does the line inside the box represent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The median</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The mean</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The mode</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The range</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The line inside the box of a box plot always represents the median.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
+        <p class="ws-stem">A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> IQR = Q3 − Q1 = 28 − 15 = 13.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
       </div>
     </li>
   
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Box Plot</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">Visual Models · Display Data with Box Plots · Box Plot · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,22 +879,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> IQR = Q3 − Q1 = 28 − 15 = 13.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -832,12 +897,29 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">DRAG SORT</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Order the steps for making a box plot.</p>
+  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Steps (in order)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 1: Order the data from least to greatest</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 2: Find the median (middle value)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 3: Find Q1 (median of the lower half)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 4: Find Q3 (median of the upper half)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 5: Draw the box from Q1 to Q3 with a line at the median, and whiskers to min and max</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">What percentage of data falls between Q1 and Q3 on a box plot?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">50%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">75%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">100%</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The box in a box plot contains the middle 50% of the data (from Q1 to Q3).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
+        <p class="ws-stem">A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">13</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">20</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> IQR = Q3 − Q1 = 28 − 15 = 13.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
       </div>
     </li>
   
@@ -848,23 +930,25 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Find the range of: 14, 22, 8, 31, 17</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">23</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">18</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Range = max − min = 31 − 8 = 23.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
+        <p class="ws-stem">What percentage of data falls between Q1 and Q3 on a box plot?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">50%</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">25%</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">75%</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">100%</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The box in a box plot contains the middle 50% of the data (from Q1 to Q3).</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">DRAG SORT</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Order the steps for making a box plot.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Steps (in order)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 1: Order the data from least to greatest</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 2: Find the median (middle value)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 3: Find Q1 (median of the lower half)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 4: Find Q3 (median of the upper half)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Steps (in order)</span><span class="ws-sort-text">Step 5: Draw the box from Q1 to Q3 with a line at the median, and whiskers to min and max</span></li></ul>
+        <p class="ws-stem">Find the range of: 14, 22, 8, 31, 17</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">23</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">18</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Range = max − min = 31 − 8 = 23.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -916,14 +1000,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Box Plot</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">Visual Models · Display Data with Box Plots · Box Plot · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -939,8 +1024,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -987,7 +1075,11 @@ header.packet h1::after{
         <p class="ws-stem">Two box plots show: Team A has IQR = 8, Team B has IQR = 22. What does this tell you?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Team A's middle 50% is more consistent; Team B's is more spread out</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Team B is a better team</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Team A has a higher median</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The IQRs don't tell you about consistency</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A smaller IQR means the middle 50% of data is more tightly clustered. Team A's scoring is more consistent in the middle range.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1039,14 +1131,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Represent and Describe Data in a Box Plot</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">Visual Models · Display Data with Box Plots · Box Plot · Procedural Fluency</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1062,11 +1155,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each box plot feature with what it tells you about the data.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Long right whisker, short left whisker</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Median line centered in the box</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Very small box (small IQR)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Very large box (large IQR)</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Skewed right — some high values stretch far from the box</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Approximately symmetric in the middle 50%</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Middle 50% is tightly clustered — consistent</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Middle 50% is widely spread — high variability</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">ERROR ANALYSIS</span>
       </div>
       <div class="ws-pbody">
@@ -1080,24 +1192,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Two basketball teams played 9 games each. Team A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Team B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Find the five-number summary and IQR for each team. Which team is more consistent? Which has a wider spread in the middle 50%?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Key Terms to Look For: five-number summary, Q1, Q3, IQR, consistent, spread, middle 50% Explanation: Team A's summary is 40, 43, 48, 53, 56 with IQR = 53 − 43 = 10, and Team B's is 30, 37.5, 48, 57.5, 65 with IQR = 57.5 − 37.5 = 20. Both teams share a median of 48, but Team B's middle 50% spreads twice as far, so Team A is the more consistent team.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each box plot feature with what it tells you about the data.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Long right whisker, short left whisker</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Median line centered in the box</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Very small box (small IQR)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Very large box (large IQR)</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Skewed right — some high values stretch far from the box</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Approximately symmetric in the middle 50%</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Middle 50% is tightly clustered — consistent</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Middle 50% is widely spread — high variability</span></li></ul></div>
       </div>
     </li>
   </ol>

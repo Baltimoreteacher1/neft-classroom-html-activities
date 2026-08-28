@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🔵 Prerequisite Catch-Up &amp;amp; Skill Bridge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">1.4–1.6 Catch-Up</h1>
           <p class="ws-sub-title">Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard</p>
+          <p class="ws-strategy-line">argument · conjecture · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-6-catchup" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,16 +767,21 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 1.4–1.6 Catch-Up</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can show I am caught up on Lessons 1.4–1.6 by using each lesson's big idea in mixed practice.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">argument <span class="ws-es-term">(argumento)</span></span><span class="ws-bankdef"> — A chain of reasons — equations, drawings, or words — used to defend your thinking.</span></div><div class="ws-bank-card"><span class="ws-bankword">conjecture <span class="ws-es-term">(conjetura)</span></span><span class="ws-bankdef"> — A mathematical statement you believe is true but have not yet proven.</span></div><div class="ws-bank-card"><span class="ws-bankword">counterexample <span class="ws-es-term">(contraejemplo)</span></span><span class="ws-bankdef"> — A single example that shows a statement is not always true.</span></div><div class="ws-bank-card"><span class="ws-bankword">volume <span class="ws-es-term">(volumen)</span></span><span class="ws-bankdef"> — The amount of space a solid figure takes up, measured in cubic units.</span></div><div class="ws-bank-card"><span class="ws-bankword">cubic unit <span class="ws-es-term">(unidad cúbica)</span></span><span class="ws-bankdef"> — A cube with edges 1 unit long — the unit used to measure volume.</span></div><div class="ws-bank-card"><span class="ws-bankword">pattern <span class="ws-es-term">(patrón)</span></span><span class="ws-bankdef"> — Something that repeats or changes in a predictable way.</span></div><div class="ws-bank-card"><span class="ws-bankword">pattern rule <span class="ws-es-term">(regla del patrón)</span></span><span class="ws-bankdef"> — The instruction that tells how to get from one number in a pattern to the next.</span></div><div class="ws-bank-card"><span class="ws-bankword">generalization <span class="ws-es-term">(generalización)</span></span><span class="ws-bankdef"> — A statement that is true for a whole pattern, made by noticing repeated calculations.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: The Big Ideas — Lessons 1.4–1.6</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>1.4: We can defend a recommendation using equations, drawings, or words — and volume in cubic units gives the equations something exact to say. • 1.5: We use the patterns and relationships we notice to solve problems, make generalizations, and check that our solutions are reasonable. • 1.6: We make sense of problems, look for patterns, choose representations and tools, make a plan, watch our progress, and shift strategies when needed — together and on our own.</div>
+        <ul class="ws-note-list"><li>Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — The Big Ideas (one per lesson)</div>
+        <ol class="ws-note-list"><li>Lesson 1.4 — Math is Explaining and Sharing: We can defend a recommendation using equations, drawings, or words — and volume in cubic units gives the equations something exact to say.</li><li>Lesson 1.5 — Math is Finding Patterns: We use the patterns and relationships we notice to solve problems, make generalizations, and check that our solutions are reasonable.</li><li>Lesson 1.6 — Math is Ours: We make sense of problems, look for patterns, choose representations and tools, make a plan, watch our progress, and shift strategies when needed — together and on our own.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>argument (argumento) — A chain of reasons — equations, drawings, or words — used to defend your thinking.</li><li>conjecture (conjetura) — A mathematical statement you believe is true but have not yet proven.</li><li>counterexample (contraejemplo) — A single example that shows a statement is not always true.</li><li>volume (volumen) — The amount of space a solid figure takes up, measured in cubic units.</li><li>cubic unit (unidad cúbica) — A cube with edges 1 unit long — the unit used to measure volume.</li><li>pattern (patrón) — Something that repeats or changes in a predictable way.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</li></ul>
+      </div>
     </section>
   
       <ol class="ws-problems-grid">
@@ -722,7 +792,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.4) An egg muffin is about 60 calories. A plate holds 4 egg muffins. About how many calories are on the plate?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 240</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 64</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 600</span></li></ol>
+        <p class="ws-stem">(Lesson 1.4) An egg muffin is about 60 calories. A plate holds 4 egg muffins. About how many calories are on the plate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 240</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 64</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 600</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -733,12 +806,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.4) A large cereal box is 8 in long, 3 in wide, and 10 in tall. What is its volume?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">(Lesson 1.4) A large cereal box is 8 in long, 3 in wide, and 10 in tall. What is its volume?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">240 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">21 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">80 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">240 square inches</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">240 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">21 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">80 cubic inches</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">240 square inches</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -749,7 +822,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.5) Each penny has a value of $0.01. What is the value of 100 pennies?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$1.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$0.10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$10.00</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$100.00</span></li></ol>
+        <p class="ws-stem">(Lesson 1.5) Each penny has a value of $0.01. What is the value of 100 pennies?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$1.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$0.10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$10.00</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$100.00</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -760,7 +836,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.5) Each quarter has a value of $0.25. Following the pattern, what is the value of 100 quarters?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$25.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$2.50</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$250.00</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$100.25</span></li></ol>
+        <p class="ws-stem">(Lesson 1.5) Each quarter has a value of $0.25. Following the pattern, what is the value of 100 quarters?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$25.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$2.50</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$250.00</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$100.25</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -771,7 +850,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.6) A bicycle rack holds 8 bikes, and each bike has 2 wheels. How many wheels are on the rack?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">82</span></li></ol>
+        <p class="ws-stem">(Lesson 1.6) A bicycle rack holds 8 bikes, and each bike has 2 wheels. How many wheels are on the rack?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">82</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

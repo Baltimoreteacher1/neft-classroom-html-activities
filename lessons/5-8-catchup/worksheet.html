@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🔵 Prerequisite Catch-Up &amp;amp; Skill Bridge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">5.7 · 5.8 Catch-Up</h1>
           <p class="ws-sub-title">Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard</p>
+          <p class="ws-strategy-line">Surface Area of Prisms · Surface area · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-8-catchup" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,16 +773,21 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 5.7 · 5.8 Catch-Up</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can show I am caught up on Lessons 5.7 · 5.8 by using each lesson's big idea in mixed practice.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Surface Area of Prisms <span class="ws-es-term">(Área de superficie de prismas)</span></span><span class="ws-bankdef"> — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</span></div><div class="ws-bank-card"><span class="ws-bankword">Surface area <span class="ws-es-term">(Área de superficie)</span></span><span class="ws-bankdef"> — The total area of all the flat sides of a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Rectangular prism <span class="ws-es-term">(Prisma rectangular)</span></span><span class="ws-bankdef"> — A solid box shape with six flat rectangle sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Triangular prism <span class="ws-es-term">(Prisma triangular)</span></span><span class="ws-bankdef"> — A solid with two triangle ends and three flat rectangle sides.</span></div><div class="ws-bank-card"><span class="ws-bankword">Face <span class="ws-es-term">(Cara)</span></span><span class="ws-bankdef"> — One flat side of a solid shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Net <span class="ws-es-term">(Plantilla (desarrollo plano))</span></span><span class="ws-bankdef"> — A flat shape that folds up into a solid.</span></div><div class="ws-bank-card"><span class="ws-bankword">Lateral face <span class="ws-es-term">(Cara lateral)</span></span><span class="ws-bankdef"> — The side faces of a solid, not the top or bottom.</span></div><div class="ws-bank-card"><span class="ws-bankword">Surface Area of Pyramids <span class="ws-es-term">(Área de superficie de pirámides)</span></span><span class="ws-bankdef"> — The total area of a pyramid's base and triangular faces. Formula: SA = B + lateral area.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: The Big Ideas — Lessons 5.7 · 5.8</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>5.7: No matter the prism, find the area of every face and add them all together. • 5.8: Surface area of a pyramid = base area + the area of all the triangular lateral faces.</div>
+        <ul class="ws-note-list"><li>Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — The Big Ideas (one per lesson)</div>
+        <ol class="ws-note-list"><li>Lesson 5.7 — Determine Surface Area of Prisms: No matter the prism, find the area of every face and add them all together.</li><li>Lesson 5.8 — Determine Surface Area of Pyramids: Surface area of a pyramid = base area + the area of all the triangular lateral faces.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Surface Area of Prisms (Área de superficie de prismas) — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</li><li>Surface area (Área de superficie) — The total area of all the flat sides of a solid.</li><li>Rectangular prism (Prisma rectangular) — A solid box shape with six flat rectangle sides.</li><li>Triangular prism (Prisma triangular) — A solid with two triangle ends and three flat rectangle sides.</li><li>Face (Cara) — One flat side of a solid shape.</li><li>Net (Plantilla (desarrollo plano)) — A flat shape that folds up into a solid.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Surface Area of Pyramids is finding the four triangular lateral faces correctly (½ × base edge × slant height, times 4) and then stopping — forgetting to add the base area at the end. This leaves the total surface area too small by exactly the base's area. Before you submit, ask: 'Did I add the base area to the four lateral faces, or did I stop after the sides?'</li></ul>
+      </div>
     </section>
   
       <ol class="ws-problems-grid">
@@ -728,12 +798,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.7) What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">(Lesson 5.7) What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -744,7 +814,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.7) How many faces does a triangular prism have?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol>
+        <p class="ws-stem">(Lesson 5.7) How many faces does a triangular prism have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -755,12 +828,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.8) A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">(Lesson 5.8) A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">95 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">95 in³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">120 in²</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">95 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">95 in³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">120 in²</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -771,7 +844,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.8) How many lateral (triangular) faces does a square pyramid have?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol>
+        <p class="ws-stem">(Lesson 5.8) How many lateral (triangular) faces does a square pyramid have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

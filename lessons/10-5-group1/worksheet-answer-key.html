@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">10.5 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">repetition · pattern · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-5-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,54 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In geometric design, what is repetition?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The same object or shape repeated multiple times</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A set of different shapes arranged randomly</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Shapes that vary in size and order of appearance</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Any drawing that uses color</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Repetition involves one repeated object, shape, or form — and because of that, it has predictability.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A border shows: pink circle, purple square, blue triangle, pink circle, purple square, blue triangle. What are the next three shapes?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Pink circle, purple square, blue triangle</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Blue triangle, purple square, pink circle</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Pink circle, blue triangle, purple square</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It is impossible to predict</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The pattern unit is circle, square, triangle, so it repeats in the same order: a pink circle, a purple square, and a blue triangle.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In the circle-square-triangle border, how many shapes long is the pattern unit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 shapes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 shapes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 shapes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 shape</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The smallest repeating chunk is circle, square, triangle — 3 shapes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Where have you seen geometric patterns decorating a building, clothing, or artwork? Describe the design.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I have seen a geometric pattern on ___ .&lt;br&gt;Its pattern unit is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The floor of our school hallway has a pattern: two gray tiles, then one blue tile, repeated down the whole hall. The pattern unit is 3 tiles, so I can always predict the next tile.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -760,7 +785,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -768,6 +793,58 @@ header.packet h1::after{
         <p class="ws-stem">The border pattern repeats circle, square, triangle. Name the shape at each position.</p>
   <table class="ws-table"><thead><tr><th>Position number</th><th>Thinking with the unit of 3</th><th>Shape</th></tr></thead><tbody><tr><td>7</td><td>7 = 3 + 3 + 1, so it restarts</td><td>circle</td></tr><tr><td>12</td><td>12 = 3 × 4 exactly, ends a unit</td><td>triangle</td></tr><tr><td>20</td><td>20 = 3 × 6 + 2, second in the unit</td><td>square</td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In geometric design, what is repetition?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">The same object or shape repeated multiple times</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">A set of different shapes arranged randomly</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Shapes that vary in size and order of appearance</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Any drawing that uses color</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Repetition involves one repeated object, shape, or form — and because of that, it has predictability.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A border shows: pink circle, purple square, blue triangle, pink circle, purple square, blue triangle. What are the next three shapes?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Pink circle, purple square, blue triangle</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Blue triangle, purple square, pink circle</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Pink circle, blue triangle, purple square</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">It is impossible to predict</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The pattern unit is circle, square, triangle, so it repeats in the same order: a pink circle, a purple square, and a blue triangle.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In the circle-square-triangle border, how many shapes long is the pattern unit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">3 shapes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6 shapes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">2 shapes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1 shape</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The smallest repeating chunk is circle, square, triangle — 3 shapes.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Calling every repeated design a 'pattern.' One identical shape repeated is repetition; a pattern needs a unit of shapes repeating in a regular order; and rhythm varies the shapes' size and order, so it is neither.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Where have you seen geometric patterns decorating a building, clothing, or artwork? Describe the design.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> I have seen a geometric pattern on ___ .&lt;br&gt;Its pattern unit is ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: The floor of our school hallway has a pattern: two gray tiles, then one blue tile, repeated down the whole hall. The pattern unit is 3 tiles, so I can always predict the next tile.</div>
       </div>
     </li>
   </ol>

@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">2.1 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Statistical Questions and Data · Statistical Question · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=2-1-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,57 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which of the following is a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">How many points did each player score this season?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many points are scored for a free throw?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">What sport does this team play?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How many halves are in a soccer game?</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> &quot;How many points did each player score?&quot; is statistical because different players will have different scores — there is variability in the data.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which question is NOT a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">How many innings are in a baseball game?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many home runs did each player hit this year?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">How many miles does each runner train per week?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How tall is each player on the basketball team?</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> &quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Why is 'How many hours of sleep did each student get last night?' a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Because different students got different amounts of sleep</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Because it asks about sleep</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Because hours are numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because the answer is always 8 hours</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A statistical question anticipates variability — different students slept different amounts, so the data will vary.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Spot the Common Mistake</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Question:</span><span class="ws-step-w">How tall is each player on the basketball team?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student decision:</span><span class="ws-step-w">This is NOT a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student reason:</span><span class="ws-step-w">Height is just one number, so every answer will be the same.</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 3. Correct Work: The reason is wrong. The question asks about EACH player, and different players have different heights — for example 58 in, 60 in, 63 in, 65 in. Because the answers vary from player to player, this IS a statistical question.. Misconception: The reasoning step claims every answer will be the same, but the question asks about EACH player and players have different heights — 58 in, 60 in, 63 in, 65 in. Because the answers vary from player to player, the question is statistical after all.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -763,7 +785,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
@@ -771,6 +793,61 @@ header.packet h1::after{
         <p class="ws-stem">Decide if each question is statistical and explain why.</p>
   <table class="ws-table"><thead><tr><th>Question</th><th>Statistical?</th><th>Why?</th></tr></thead><tbody><tr><td>How many push-ups can each student do in one minute?</td><td>Yes</td><td>Different students can do different amounts — there is variability.</td></tr><tr><td>How many sides does a basketball court have?</td><td>No</td><td>There is one fixed answer (4 sides) — no variability.</td></tr><tr><td>How far does each player kick the ball?</td><td>Yes</td><td>Different players kick different distances — the data varies.</td></tr></tbody></table>
   
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which of the following is a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">How many points did each player score this season?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many points are scored for a free throw?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">What sport does this team play?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How many halves are in a soccer game?</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> &quot;How many points did each player score?&quot; is statistical because different players will have different scores — there is variability in the data.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Which question is NOT a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">How many innings are in a baseball game?</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">How many home runs did each player hit this year?</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">How many miles does each runner train per week?</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">How tall is each player on the basketball team?</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> &quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Why is 'How many hours of sleep did each student get last night?' a statistical question?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Because different students got different amounts of sleep</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Because it asks about sleep</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Because hours are numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Because the answer is always 8 hours</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A statistical question anticipates variability — different students slept different amounts, so the data will vary.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Spot the Common Mistake</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Question:</span><span class="ws-step-w">How tall is each player on the basketball team?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student decision:</span><span class="ws-step-w">This is NOT a statistical question.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student reason:</span><span class="ws-step-w">Height is just one number, so every answer will be the same.</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 3. Correct Work: The reason is wrong. The question asks about EACH player, and different players have different heights — for example 58 in, 60 in, 63 in, 65 in. Because the answers vary from player to player, this IS a statistical question.. Misconception: The reasoning step claims every answer will be the same, but the question asks about EACH player and players have different heights — 58 in, 60 in, 63 in, 65 in. Because the answers vary from player to player, the question is statistical after all.</div>
       </div>
     </li>
   </ol>

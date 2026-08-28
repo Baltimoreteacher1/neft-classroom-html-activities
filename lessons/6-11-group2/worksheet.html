@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">6.11 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Fraction Division Problem Solving · Model · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-11-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,13 +773,31 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-challenge-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 6.11 Small Group · Group 2</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can solve real-world problems by writing and solving fraction division equations, explain what each part stands for, and build one for a situation I have not seen before.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Push further — How do I solve a fraction division word problem?</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Total goes first (dividend), group size goes second (divisor): total ÷ group size. Then check your answer by multiplying it back — and you can say why it is true, and where it would stop being true.</div>
+        <ul class="ws-note-list"><li>You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
+        <ol class="ws-note-list"><li>Agent Torres has 2/3 gallon of dust and each test uses 1/6 gallon. I ask: how many tests fit?</li><li>The total 2/3 is the dividend. The size of each test 1/6 is the divisor. My equation is 2/3 ÷ 1/6.</li><li>Keep 2/3, change to ×, flip 1/6 to 6/1: 2/3 × 6/1 = 12/3 = 4.</li><li>So she can run 4 tests. I check by multiplying back: 4 × 1/6 = 4/6 = 2/3. It matches the total, so the answer is reasonable.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Second Model — Try it together — then prove it</div>
+        <ol class="ws-note-list"><li>A ribbon is 3/4 yard and each bow uses 1/4 yard. The total 3/4 is the dividend; 1/4 is the divisor.</li><li>Equation: 3/4 ÷ 1/4. Keep, change, flip: 3/4 × 4/1 = 12/4 = 3.</li><li>So we can make 3 bows. Check: 3 × 1/4 = 3/4. It matches, so it is reasonable.</li><li>Now prove it: say why that move had to work at all — not just that it did.</li><li>Sentence frame — convince a skeptic: &quot;My method works because ___ . It would stop working if ___ .&quot;</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Fraction Division Problem Solving (Resolución de problemas de división de fracciones) — Use fraction division to find an unknown number of groups or the size of each group.</li><li>Model (Modelo) — A picture or math way to show a problem so you can solve it.</li><li>Equation (Ecuación) — A math sentence with an equal sign showing both sides are the same.</li><li>Solution (Solución) — A number that makes the equation or inequality true.</li><li>Reasonableness (Razonabilidad) — Checking if your answer makes sense.</li><li>Inverse operations (Operaciones inversas) — Two math actions that undo each other, like × and ÷.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Fraction Division Problem Solving is reversing which fraction is the dividend and which is the divisor when setting up the equation from a word problem. For example: a pitcher holds 3/4 cup of punch, and each serving is 1/8 cup — how many servings? The correct setup is total ÷ group size = 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 servings. A student who reverses the setup calculates 1/8 ÷ 3/4 = 1/8 × 4/3 = 4/24 = 1/6, an answer smaller than 1 that can't possibly be a serving count. Before you submit, check: does my answer make sense as a NUMBER OF GROUPS? If the setup gives a fraction less than 1 for a 'how many' question, you likely swapped the dividend and divisor.</li></ul>
+      </div>
     </section>
   
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -724,7 +807,10 @@ header.packet h1::after{
         
         <p class="ws-stem">Solve each word problem by writing and solving an equation.</p>
   <table class="ws-table"><thead><tr><th>Problem</th><th>Equation</th><th>Solution</th></tr></thead><tbody><tr><td>A board is 7/8 foot long. Each shelf bracket needs 1/4 foot. How many brackets fit?</td><td></td><td></td></tr><tr><td>A jug holds 5/6 liter. Each cup holds 1/3 liter. How many cups can be filled?</td><td></td><td></td></tr><tr><td>A path is 3/4 mile long. A runner does laps of 3/8 mile. How many laps fit?</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -740,7 +826,11 @@ header.packet h1::after{
   <ul class="ws-sort-list"></ul>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -748,11 +838,11 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Room 1 — Evidence Locker: Agent Torres has 7/8 pound of casting clay to lift footprints. Each cast uses 1/8 pound. How many casts can she make to unlock the door?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">Room 1 — Evidence Locker: Agent Torres has 7/8 pound of casting clay to lift footprints. Each cast uses 1/8 pound. How many casts can she make to unlock the door?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1/7</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1/7</span></li></ol>
+    </div></div></div>
       </div>
     </li>
   
@@ -763,11 +853,11 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Room 2 — Surveillance Map: A suspect's trail is 5/6 of a mile. Hidden checkpoints are spaced every 1/6 of a mile. How many checkpoints are on the trail?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">Room 2 — Surveillance Map: A suspect's trail is 5/6 of a mile. Hidden checkpoints are spaced every 1/6 of a mile. How many checkpoints are on the trail?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1/5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4</span></li></ol>
+    </div></div></div>
       </div>
     </li>
   
@@ -778,14 +868,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Room 5 — Final Keypad: The vault key code equals the number of 3/10-liter vials Torres can fill from a 9/10-liter bottle of fingerprint solution. What is the code?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">Room 5 — Final Keypad: The vault key code equals the number of 3/10-liter vials Torres can fill from a 9/10-liter bottle of fingerprint solution. What is the code?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1/3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
-    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1/3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol>
+    </div></div></div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
@@ -796,7 +890,10 @@ header.packet h1::after{
         <p class="ws-stem"><b>Level 2 Extension — Escape the Wrong Operation</b></p>
   <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem:</span><span class="ws-step-w">A tank holds 4/5 gallon of testing fluid. Each test uses 1/10 gallon. How many tests can be run to escape the lab?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's equation:</span><span class="ws-step-w">4/5 × 1/10</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Solve:</span><span class="ws-step-w">4/5 × 1/10 = 4/50 = 2/25</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer:</span><span class="ws-step-w">2/25 of a test</span></li></ol></div>
   <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span></div>
+  <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Corrected Mathematical Work &amp; Explanation</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
@@ -863,7 +960,10 @@ header.packet h1::after{
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
-      <div class="ws-work ws-work-tall"><span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span></div>
+      <div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Author Workspace &amp; Complete Solution Key</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
     </section>
   
       

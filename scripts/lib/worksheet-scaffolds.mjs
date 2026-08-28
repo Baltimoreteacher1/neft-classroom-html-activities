@@ -88,6 +88,20 @@ const RULES = [
     "ratio",
     (s) => /\bunit rate\b|\bratio of\b|\d+\s*:\s*\d+|\bper\b\s+\w+|\bat\b[^?]*\bper\b/i.test(s),
   ],
+  /* Dividing BY a fraction is not "find a common denominator".
+     "A rope is 4 feet long. How many 1/2-foot pieces can be cut from it?" has a
+     fraction and no ÷ sign, so it fell through to the `fraction` scaffold and
+     was handed the add/subtract rail — common denominator first, then add or
+     subtract — on a division problem. Unit 6 teaches one method for this and it
+     is Keep-Change-Flip, so the scaffold names those moves. */
+  [
+    "fractionDivision",
+    (s) =>
+      /\d\s*\/\s*\d|\bunit fraction\b/i.test(s) &&
+      /÷|\bdivid(?:e|ed|ing)\b|\bhow many\b[^?]*\b(fit|go into|are in|can be cut|pieces)\b|\bshared? (?:equally )?(?:among|between)\b|\bsplit (?:equally )?(?:among|between|into)\b/i.test(
+        s,
+      ),
+  ],
   ["fraction", (s) => /\d\s*\/\s*\d|\bnumerator\b|\bdenominator\b|\bfraction of\b/i.test(s)],
   // Statistics only when a MEASURE is named as a noun, never the verb "mean".
   // Ordered AHEAD of `equation` on purpose: a box plot states "Q1 = 15,
@@ -230,6 +244,26 @@ const SCAFFOLDS = {
           ["Find 10%", "Divide by 10."],
           ["Build", "Add or multiply to the percent."],
           ["Check", "Is it under or over the whole?"],
+        ])
+      : "",
+  }),
+
+  /* Keep, Change, Flip — written out, because the flip is the step students
+     skip. The whole-number-over-1 line comes first for the same reason: 3 ÷ 1/4
+     is unreachable until the 3 is a fraction. */
+  fractionDivision: (_stem, supported) => ({
+    body: `<div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Write any whole number over 1</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Keep · Change · Flip</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Multiply across</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Simplify · label the units</span><span class="wss-slot-w"></span></div>
+    </div>`,
+    rail: supported
+      ? rail([
+          ["Whole over 1", "3 becomes 3/1."],
+          ["Keep", "The first fraction does not move."],
+          ["Change · Flip", "÷ becomes ×; flip the second fraction."],
+          ["Check", "Dividing by a piece smaller than 1 gives a BIGGER answer."],
         ])
       : "",
   }),

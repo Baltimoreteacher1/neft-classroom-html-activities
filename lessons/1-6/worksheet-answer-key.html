@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ours</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">make sense of a problem · representation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,11 +765,29 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">You read a problem and have no idea where to start. According to this lesson, what does that mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">You are doing math — getting stuck is part of the process, and there are strategies to try</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">You are not a math person</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The problem is broken and should be skipped</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You should wait silently until someone gives you the answer</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> When we do math, sometimes we get stuck — and we can try different strategies to get moving again.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -715,7 +798,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -723,18 +806,11 @@ header.packet h1::after{
         <p class="ws-stem">Another bicycle rack has 6 times as many wheels as the rack with 16 wheels. About how many wheels does it have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">About 96</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 22</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 66</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 616</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 6 times as many as 16 is 16 × 6 = 96 wheels.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
       </div>
     </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">You read a problem and have no idea where to start. According to this lesson, what does that mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">You are doing math — getting stuck is part of the process, and there are strategies to try</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">You are not a math person</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The problem is broken and should be skipped</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You should wait silently until someone gives you the answer</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> When we do math, sometimes we get stuck — and we can try different strategies to get moving again.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
-      </div>
-    </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -783,14 +859,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ours</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">make sense of a problem · representation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,33 +883,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A bicycle rack holds 8 bikes, and each bike has 2 wheels. How many wheels are on the rack?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">82</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 8 bikes with 2 wheels each is 8 × 2 = 16 wheels.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Another bicycle rack has 6 times as many wheels as the rack with 16 wheels. About how many wheels does it have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">About 96</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 22</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 66</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 616</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 6 times as many as 16 is 16 × 6 = 96 wheels.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -843,18 +901,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Name TWO strategies from this lesson you can try when you get stuck on a problem.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> When I get stuck I can ___ .&lt;br&gt;I can also ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I can visualize the problem or draw pictures of it, and I can think of questions to ask a classmate or the teacher.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -865,18 +912,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What did you do the last time you worked with someone to solve a math problem?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> The last time I worked with someone, we ___ .&lt;br&gt;One thing my partner did that helped was ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: My partner and I read the problem out loud, said what we each noticed, and tried my idea first. When it stalled, we switched to her drawing and it worked.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -884,6 +920,58 @@ header.packet h1::after{
         <p class="ws-stem">Sort each behavior by its effect on our math community.</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Builds our community</span> <span class="ws-cat-pill">Hurts our community</span></div>
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Builds our community</span><span class="ws-sort-text">Asking a partner to explain their strategy</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Builds our community</span><span class="ws-sort-text">Comparing two different approaches to the same problem</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Builds our community</span><span class="ws-sort-text">Saying 'I disagree, because...' with a reason</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Builds our community</span><span class="ws-sort-text">Making sure every group member gets to talk</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Hurts our community</span><span class="ws-sort-text">One student doing all the talking</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Hurts our community</span><span class="ws-sort-text">Calling an answer 'wrong' with no reason</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Hurts our community</span><span class="ws-sort-text">Keeping your strategy secret so you finish first</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Hurts our community</span><span class="ws-sort-text">Laughing when someone makes a mistake</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A bicycle rack holds 8 bikes, and each bike has 2 wheels. How many wheels are on the rack?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">16</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">82</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 8 bikes with 2 wheels each is 8 × 2 = 16 wheels.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Another bicycle rack has 6 times as many wheels as the rack with 16 wheels. About how many wheels does it have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">About 96</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 22</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 66</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 616</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 6 times as many as 16 is 16 × 6 = 96 wheels.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Name TWO strategies from this lesson you can try when you get stuck on a problem.</p><div class="ws-frame">💬 <b>Sentence Starter:</b> When I get stuck I can ___ .&lt;br&gt;I can also ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I can visualize the problem or draw pictures of it, and I can think of questions to ask a classmate or the teacher.</div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What did you do the last time you worked with someone to solve a math problem?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> The last time I worked with someone, we ___ .&lt;br&gt;One thing my partner did that helped was ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: My partner and I read the problem out loud, said what we each noticed, and tried my idea first. When it stalled, we switched to her drawing and it worked.</div>
       </div>
     </li>
   </ol>
@@ -924,14 +1012,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ours</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">make sense of a problem · representation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,8 +1036,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -963,6 +1055,23 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Use the bicycle rack problem to complete the table.</p>
+  <table class="ws-table"><thead><tr><th>Question</th><th>Thinking</th><th>Answer</th></tr></thead><tbody><tr><td>Wheels on a rack of 8 bikes</td><td>8 bikes × 2 wheels</td><td>16</td></tr><tr><td>Wheels on the bigger rack (6 times as many)</td><td>16 × 6</td><td>96</td></tr><tr><td>Bikes on the bigger rack</td><td>96 wheels ÷ 2</td><td>48</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -973,7 +1082,22 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">You are working on your own and get stuck. Which move follows BOTH parts of our working-alone agreements?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Try a get-unstuck strategy first, then quietly ask for help without interrupting classmates unnecessarily</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Immediately call across the room to a friend</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Sit silently for the rest of class without seeking help</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Take a classmate's paper to see their work</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> When we work on our own, we seek help when we are stuck AND we avoid interrupting our classmates unnecessarily — the best move honors both.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -984,7 +1108,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">6</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -995,36 +1119,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">You are working on your own and get stuck. Which move follows BOTH parts of our working-alone agreements?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Try a get-unstuck strategy first, then quietly ask for help without interrupting classmates unnecessarily</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Immediately call across the room to a friend</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Sit silently for the rest of class without seeking help</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Take a classmate's paper to see their work</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> When we work on our own, we seek help when we are stuck AND we avoid interrupting our classmates unnecessarily — the best move honors both.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">7</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">What skills and knowledge do you bring to a group that help the group be successful?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I'm good at drawing a problem so everyone can see it, and I ask questions when something is unclear, which usually helps someone else who was confused too.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Use the bicycle rack problem to complete the table.</p>
-  <table class="ws-table"><thead><tr><th>Question</th><th>Thinking</th><th>Answer</th></tr></thead><tbody><tr><td>Wheels on a rack of 8 bikes</td><td>8 bikes × 2 wheels</td><td>16</td></tr><tr><td>Wheels on the bigger rack (6 times as many)</td><td>16 × 6</td><td>96</td></tr><tr><td>Bikes on the bigger rack</td><td>96 wheels ÷ 2</td><td>48</td></tr></tbody></table>
-  
       </div>
     </li>
   </ol>
@@ -1065,14 +1165,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Ours</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">make sense of a problem · representation · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1088,11 +1189,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each stuck moment to the strategy that gets you unstuck.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">My strategy is not making progress</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">I don't understand the problem</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">My answer looks unreasonable</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">My partner got a different answer</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Try a different entry point</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Restate it in your own words</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Check it against an estimate</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Compare steps and find where they differ</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1100,10 +1220,14 @@ header.packet h1::after{
         <p class="ws-stem">A group solves a hard problem, but one student did all the talking while three stayed silent. By this lesson's standards, how did the GROUP do?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Not well — a community shares thinking and takes turns, so three voices went unheard</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Perfectly — the answer was right, and that is all that matters</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Not well — the talker should have stayed silent too</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Perfectly — silent members were being respectful</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> We share our thinking and take turns when sharing ideas — a right answer that silences three thinkers costs the community three sets of ideas.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1114,7 +1238,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1125,24 +1249,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">A classmate says: 'Math class would be better with no group work — thinking is private.' Using this lesson, write a respectful critique of that IDEA.</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I hear the idea that focus matters, and the lesson agrees — we sometimes work on our own, staying focused and respecting boundaries. But the lesson also says math is done with others: we listen, share thinking, and critique ideas so everyone grows. A class with only private thinking loses the moment when someone else's strategy unsticks you. So I'd critique the 'no group work' part while keeping the respect for quiet focus.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each stuck moment to the strategy that gets you unstuck.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">My strategy is not making progress</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">I don't understand the problem</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">My answer looks unreasonable</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">My partner got a different answer</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Try a different entry point</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Restate it in your own words</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">Check it against an estimate</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Compare steps and find where they differ</span></li></ul></div>
       </div>
     </li>
   </ol>

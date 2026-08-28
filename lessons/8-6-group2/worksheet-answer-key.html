@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟣 Group 2 · Challenge &amp;amp; Extension · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">8.6 Small Group · Group 2</h1>
           <p class="ws-sub-title">Tier 1 Extension · Non-Routine Synthesis · Misconception Traps · Rigorous CER Proofs</p>
+          <p class="ws-strategy-line">Solve and Graph Inequalities · Solve · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=8-6-group2" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -699,7 +764,11 @@ header.packet h1::after{
     </header>
   
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -733,10 +802,14 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Clue 1: Which value is a solution of x &gt; 7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A solution makes x &gt; 7 true. Substitute each: 9 &gt; 7 is true, but 7 &gt; 7, 5 &gt; 7, and 3 &gt; 7 are all false. So 9 is the solution that opens the gate.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve and Graph Inequalities is shading the number line in the wrong direction after solving. For example, a student solves x + 4 &gt; 10 correctly to get x &gt; 6, but then shades LEFT toward smaller numbers instead of RIGHT toward greater numbers. The shading direction always matches the solved symbol, not the original problem: '&gt;' and '≥' shade right (greater numbers), '&lt;' and '≤' shade left (smaller numbers) — check this AFTER you solve, not before. To catch this mistake, substitute one shaded value and one unshaded value back into the original inequality: the shaded value should make it true, and the unshaded value should make it false.</p>
+        <p class="ws-stem">Final gate — describe the solution set. The vault rule is x &gt; 7. What does the solution set mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">All numbers greater than 7, like 8, 9, 10, … (but NOT 7 itself)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Only the number 7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">All numbers less than 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Every number, including 7</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The solution set is every value that makes x &gt; 7 true. That means all numbers greater than 7, such as 8, 9, 10, and beyond. Because &gt; does not include the boundary, 7 itself is NOT in the solution set.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve and Graph Inequalities is shading the number line in the wrong direction after solving. For example, a student solves x + 4 &gt; 10 correctly to get x &gt; 6, but then shades LEFT toward smaller numbers instead of RIGHT toward greater numbers. The shading direction always matches the solved symbol, not the original problem: '&gt;' and '≥' shade right (greater numbers), '&lt;' and '≤' shade left (smaller numbers) — check this AFTER you solve, not before. To catch this mistake, substitute one shaded value and one unshaded value back into the original inequality: the shaded value should make it true, and the unshaded value should make it false.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">4</span>
@@ -744,7 +817,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Clue 2: Is 5 a solution of x ≤ 5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Yes, because 5 ≤ 5 is true</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No, because 5 is not less than 5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">No, because ≤ means only smaller numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Yes, but only because 5 is odd</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute x = 5 into x ≤ 5. That gives 5 ≤ 5. The symbol ≤ means ‘less than OR equal to,’ so this is true. The boundary value 5 IS a solution, so the gate opens.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve and Graph Inequalities is shading the number line in the wrong direction after solving. For example, a student solves x + 4 &gt; 10 correctly to get x &gt; 6, but then shades LEFT toward smaller numbers instead of RIGHT toward greater numbers. The shading direction always matches the solved symbol, not the original problem: '&gt;' and '≥' shade right (greater numbers), '&lt;' and '≤' shade left (smaller numbers) — check this AFTER you solve, not before. To catch this mistake, substitute one shaded value and one unshaded value back into the original inequality: the shaded value should make it true, and the unshaded value should make it false.</p>
+        <p class="ws-stem">Clue 1: Which value is a solution of x &gt; 7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A solution makes x &gt; 7 true. Substitute each: 9 &gt; 7 is true, but 7 &gt; 7, 5 &gt; 7, and 3 &gt; 7 are all false. So 9 is the solution that opens the gate.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve and Graph Inequalities is shading the number line in the wrong direction after solving. For example, a student solves x + 4 &gt; 10 correctly to get x &gt; 6, but then shades LEFT toward smaller numbers instead of RIGHT toward greater numbers. The shading direction always matches the solved symbol, not the original problem: '&gt;' and '≥' shade right (greater numbers), '&lt;' and '≤' shade left (smaller numbers) — check this AFTER you solve, not before. To catch this mistake, substitute one shaded value and one unshaded value back into the original inequality: the shaded value should make it true, and the unshaded value should make it false.</p>
       </div>
     </li>
   
@@ -755,10 +828,14 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Final gate — describe the solution set. The vault rule is x &gt; 7. What does the solution set mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">All numbers greater than 7, like 8, 9, 10, … (but NOT 7 itself)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Only the number 7</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">All numbers less than 7</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Every number, including 7</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> The solution set is every value that makes x &gt; 7 true. That means all numbers greater than 7, such as 8, 9, 10, and beyond. Because &gt; does not include the boundary, 7 itself is NOT in the solution set.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve and Graph Inequalities is shading the number line in the wrong direction after solving. For example, a student solves x + 4 &gt; 10 correctly to get x &gt; 6, but then shades LEFT toward smaller numbers instead of RIGHT toward greater numbers. The shading direction always matches the solved symbol, not the original problem: '&gt;' and '≥' shade right (greater numbers), '&lt;' and '≤' shade left (smaller numbers) — check this AFTER you solve, not before. To catch this mistake, substitute one shaded value and one unshaded value back into the original inequality: the shaded value should make it true, and the unshaded value should make it false.</p>
+        <p class="ws-stem">Clue 2: Is 5 a solution of x ≤ 5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">Yes, because 5 ≤ 5 is true</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">No, because 5 is not less than 5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">No, because ≤ means only smaller numbers</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Yes, but only because 5 is odd</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Substitute x = 5 into x ≤ 5. That gives 5 ≤ 5. The symbol ≤ means ‘less than OR equal to,’ so this is true. The boundary value 5 IS a solution, so the gate opens.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Solve and Graph Inequalities is shading the number line in the wrong direction after solving. For example, a student solves x + 4 &gt; 10 correctly to get x &gt; 6, but then shades LEFT toward smaller numbers instead of RIGHT toward greater numbers. The shading direction always matches the solved symbol, not the original problem: '&gt;' and '≥' shade right (greater numbers), '&lt;' and '≤' shade left (smaller numbers) — check this AFTER you solve, not before. To catch this mistake, substitute one shaded value and one unshaded value back into the original inequality: the shaded value should make it true, and the unshaded value should make it false.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>

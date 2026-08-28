@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Level 0 · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,8 +765,11 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
@@ -716,22 +784,26 @@ header.packet h1::after{
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: In September I thought being good at math meant being fast. Now I think it means sticking with a problem — some of my best work this year came on the second or third try.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">In September you decomposed 78.5 as 70 + 8.5. Which of these ALSO equals 78.5, using division?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">156 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78.5 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 4</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 157 ÷ 2 = 78.5, so it is another way to write the same number from Lesson 1-1.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: In September I thought being good at math meant being fast. Now I think it means sticking with a problem — some of my best work this year came on the second or third try.</div>
       </div>
     </li>
   
@@ -783,14 +855,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version A · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -806,55 +879,14 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In Lesson 1-1 you estimated the Ferris wheel: 20 cars each holding about 4 people. About how many riders was that?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 20 × 4 = 80 — the same estimate you made in September, and it still holds up.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: In September I thought being good at math meant being fast. Now I think it means sticking with a problem — some of my best work this year came on the second or third try.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">In September you decomposed 78.5 as 70 + 8.5. Which of these ALSO equals 78.5, using division?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">156 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78.5 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 4</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 157 ÷ 2 = 78.5, so it is another way to write the same number from Lesson 1-1.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How have you used math at home or with your family in new or different ways this year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> This year at home I used math to ___ .&lt;br&gt;That was new for me because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: This year I started comparing prices with unit rates at the grocery store — I figured out which size of cereal actually costs less per ounce, which I never thought to do before Grade 6.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -865,18 +897,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">As a result of what we learned together this year, where do you see math used in your community?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In my community I see math at ___ .&lt;br&gt;This year taught me to also notice ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I see math at the rec center scoreboard, in the percent-off signs at the store, and in the bus schedule my neighbor reads every morning. After this year I also notice ratios — like the mix on the snowball stand's price list.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -884,6 +905,69 @@ header.packet h1::after{
         <p class="ws-stem">Sort this year's ideas into their areas of mathematics.</p>
   <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Percents</span> <span class="ws-cat-pill">Statistics</span> <span class="ws-cat-pill">Algebra</span></div>
   <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Percents</span><span class="ws-sort-text">50% of 157</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Percents</span><span class="ws-sort-text">The 10% benchmark</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Statistics</span><span class="ws-sort-text">The median of a data set</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Statistics</span><span class="ws-sort-text">A dot plot of class data</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Algebra</span><span class="ws-sort-text">The equation y = kx</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm">Algebra</span><span class="ws-sort-text">The independent variable</span></li></ul>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In Lesson 1-1 you estimated the Ferris wheel: 20 cars each holding about 4 people. About how many riders was that?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 20 × 4 = 80 — the same estimate you made in September, and it still holds up.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">In September you decomposed 78.5 as 70 + 8.5. Which of these ALSO equals 78.5, using division?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">156 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78.5 ÷ 2</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 4</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 157 ÷ 2 = 78.5, so it is another way to write the same number from Lesson 1-1.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How has your attitude about math changed over the year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In September I thought math was ___ .&lt;br&gt;Now I think ___ because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: In September I thought being good at math meant being fast. Now I think it means sticking with a problem — some of my best work this year came on the second or third try.</div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How have you used math at home or with your family in new or different ways this year?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> This year at home I used math to ___ .&lt;br&gt;That was new for me because ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: This year I started comparing prices with unit rates at the grocery store — I figured out which size of cereal actually costs less per ounce, which I never thought to do before Grade 6.</div>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">7</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">As a result of what we learned together this year, where do you see math used in your community?</p><div class="ws-frame">💬 <b>Sentence Starter:</b> In my community I see math at ___ .&lt;br&gt;This year taught me to also notice ___ .</div><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I see math at the rec center scoreboard, in the percent-off signs at the store, and in the bus schedule my neighbor reads every morning. After this year I also notice ratios — like the mix on the snowball stand's price list.</div>
       </div>
     </li>
   </ol>
@@ -924,14 +1008,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Version B · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -947,11 +1032,31 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">FILL TABLE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Answer each quick problem with this year's skills — the same numbers you met in Lesson 1-1.</p>
+  <table class="ws-table"><thead><tr><th>Problem from this year</th><th>Thinking</th><th>Answer</th></tr></thead><tbody><tr><td>50% of 157</td><td>half of 157</td><td>78.5</td></tr><tr><td>10% of 480</td><td>move the decimal</td><td>48</td></tr><tr><td>Riders per hour: 80 per turn × 6 turns</td><td>80 × 6</td><td>480</td></tr></tbody></table>
+  
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -962,23 +1067,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Percents were new this year. What is 50% of 157?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">78.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">77.5</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">31.4</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">107</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> 50% means half, and 157 ÷ 2 = 78.5 — the very number you decomposed back in Lesson 1-1.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">OPEN RESPONSE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What challenges did you face in math this year, and how did you respond to these challenges?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Dividing fractions was my biggest challenge — my first quiz did not go well. I responded by drawing models before using the rule, and by asking my partner to explain her way. By the next unit I could explain WHY dividing by one-half doubles a number.</div>
       </div>
     </li>
   
@@ -992,7 +1086,11 @@ header.packet h1::after{
         <p class="ws-stem">Which of these is the strongest evidence that YOUR math reasoning grew this year?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">You can explain why a method works, not just follow its steps</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">You finish worksheets faster than in September</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">You memorized more answers than before</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You stopped making any mistakes</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> Constructing and explaining reasoning is the growth this lesson asks you to look for — it is what makes the math yours.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
@@ -1000,7 +1098,7 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Ask a classmate about their math story. How has your classmate's math story changed since the beginning of the year?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: My classmate told me she used to erase everything the moment it looked wrong. Now she keeps her first attempt and writes the fix next to it, because seeing the mistake helped her on the ratio unit. Her story changed from hiding mistakes to using them.</div>
+        <p class="ws-stem">What challenges did you face in math this year, and how did you respond to these challenges?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Dividing fractions was my biggest challenge — my first quiz did not go well. I responded by drawing models before using the rule, and by asking my partner to explain her way. By the next unit I could explain WHY dividing by one-half doubles a number.</div>
       </div>
     </li>
   
@@ -1011,20 +1109,18 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">In what areas are you more confident about math now? What are your strengths in math?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I am most confident with ratios and unit rates now — I can set up a table and trust it. My strengths are estimating before I solve, which I already had in September, and explaining my steps out loud, which grew this year.</div>
+        <p class="ws-stem">Ask a classmate about their math story. How has your classmate's math story changed since the beginning of the year?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: My classmate told me she used to erase everything the moment it looked wrong. Now she keeps her first attempt and writes the fix next to it, because seeing the mistake helped her on the ratio unit. Her story changed from hiding mistakes to using them.</div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Answer each quick problem with this year's skills — the same numbers you met in Lesson 1-1.</p>
-  <table class="ws-table"><thead><tr><th>Problem from this year</th><th>Thinking</th><th>Answer</th></tr></thead><tbody><tr><td>50% of 157</td><td>half of 157</td><td>78.5</td></tr><tr><td>10% of 480</td><td>move the decimal</td><td>48</td></tr><tr><td>Riders per hour: 80 per turn × 6 turns</td><td>80 × 6</td><td>480</td></tr></tbody></table>
-  
+        <p class="ws-stem">In what areas are you more confident about math now? What are your strengths in math?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: I am most confident with ratios and unit rates now — I can set up a table and trust it. My strengths are estimating before I solve, which I already had in September, and explaining my steps out loud, which grew this year.</div>
       </div>
     </li>
   </ol>
@@ -1065,14 +1161,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">Challenge · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">Math is Mine</h1>
           <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
+          <p class="ws-strategy-line">math biography · reflect · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=10-6" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -1088,11 +1185,30 @@ header.packet h1::after{
   
       
       
-      
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
+        <span class="ws-pbadge">MATCHING GAME</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">Match each September estimate to the refined result your math produces now.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">20 cars × about 4 riders each</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">80 riders × 6 turns each hour</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">78.5 written by place value</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">480 riders per hour for 3 hours</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">About 80 riders per turn</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">480 riders each hour</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">(7 × 10) + (8 × 1) + (5 × 0.1)</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">1,440 riders</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
@@ -1100,10 +1216,14 @@ header.packet h1::after{
         <p class="ws-stem">Which set shows THREE correct ways to write 78.5 using skills from this year?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">157 ÷ 2, 50% of 157, 78½</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">157 ÷ 2, 50% of 157, 78¼</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">156 ÷ 2, 50% of 157, 78½</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">157 ÷ 2, 25% of 157, 78½</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> All three rebuild 78.5 exactly: 157 ÷ 2 = 78.5, 50% of 157 = 78.5, and 78½ = 78.5.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> Treating your math story as finished — writing the same answers you wrote in Lesson 1-1 instead of looking for what actually changed. The story grows and evolves; a retrospective that copies September has missed the point.</p>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
+        <span class="ws-pnum">3</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1114,7 +1234,7 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
+        <span class="ws-pnum">4</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
@@ -1125,24 +1245,12 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
+        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">OPEN RESPONSE</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">We are always growing and changing. Think about who you were five years ago and who you are now. In what ways have you changed? In what ways have you grown?</p><div class="ws-keynote">💡 <b>Exemplar Response:</b> Sample Answer: Five years ago I was learning to multiply and I needed someone to tell me if I was right. I have changed in what I can do — fractions, ratios, negative numbers, equations — but I have grown more in how I work: I check my own answers, I can explain my thinking to someone else, and I expect hard problems to take more than one try.</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each September estimate to the refined result your math produces now.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">20 cars × about 4 riders each</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">80 riders × 6 turns each hour</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">78.5 written by place value</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">480 riders per hour for 3 hours</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">About 80 riders per turn</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">480 riders each hour</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">(7 × 10) + (8 × 1) + (5 × 0.1)</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">1,440 riders</span></li></ul></div>
       </div>
     </li>
   </ol>

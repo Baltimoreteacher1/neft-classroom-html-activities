@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🔵 Prerequisite Catch-Up &amp;amp; Skill Bridge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">1.1–1.3 Catch-Up</h1>
           <p class="ws-sub-title">Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard</p>
+          <p class="ws-strategy-line">doer of math · math story · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=1-3-catchup" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,16 +767,21 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 1.1–1.3 Catch-Up</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can show I am caught up on Lessons 1.1–1.3 by using each lesson's big idea in mixed practice.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">doer of math <span class="ws-es-term">(persona que hace matemáticas)</span></span><span class="ws-bankdef"> — Anyone who uses mathematical thinking — which is everyone, every day.</span></div><div class="ws-bank-card"><span class="ws-bankword">math story <span class="ws-es-term">(historia matemática)</span></span><span class="ws-bankdef"> — Your own history with mathematics — what you have done, felt, and learned so far.</span></div><div class="ws-bank-card"><span class="ws-bankword">strength <span class="ws-es-term">(fortaleza)</span></span><span class="ws-bankdef"> — Something you already do well and can share with others.</span></div><div class="ws-bank-card"><span class="ws-bankword">decompose <span class="ws-es-term">(descomponer)</span></span><span class="ws-bankdef"> — To break a number into parts that add, subtract, multiply, or divide back to it.</span></div><div class="ws-bank-card"><span class="ws-bankword">estimate <span class="ws-es-term">(estimar)</span></span><span class="ws-bankdef"> — A reasoned answer that is close enough to be useful, without counting every one.</span></div><div class="ws-bank-card"><span class="ws-bankword">quantity <span class="ws-es-term">(cantidad)</span></span><span class="ws-bankdef"> — An amount in a problem — a number with a meaning attached, like 540 meters.</span></div><div class="ws-bank-card"><span class="ws-bankword">relationship <span class="ws-es-term">(relación)</span></span><span class="ws-bankdef"> — How two quantities compare or connect to each other.</span></div><div class="ws-bank-card"><span class="ws-bankword">strategy <span class="ws-es-term">(estrategia)</span></span><span class="ws-bankdef"> — A plan for how to solve a problem before you start computing.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: The Big Ideas — Lessons 1.1–1.3</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>1.1: Everyone uses math daily. We do it differently, and sharing how we do it makes all of us better at it. • 1.2: When we do math, we make sense of problems, develop a solution plan, check our progress, and try other strategies when we come to dead ends. • 1.3: When we do math, we visualize and represent problems, use tools to show relationships among quantities, and make strategic decisions about which tool fits the problem.</div>
+        <ul class="ws-note-list"><li>Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — The Big Ideas (one per lesson)</div>
+        <ol class="ws-note-list"><li>Lesson 1.1 — Math is Mine: Everyone uses math daily. We do it differently, and sharing how we do it makes all of us better at it.</li><li>Lesson 1.2 — Math is Exploring and Thinking: When we do math, we make sense of problems, develop a solution plan, check our progress, and try other strategies when we come to dead ends.</li><li>Lesson 1.3 — Math is In My World: When we do math, we visualize and represent problems, use tools to show relationships among quantities, and make strategic decisions about which tool fits the problem.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>doer of math (persona que hace matemáticas) — Anyone who uses mathematical thinking — which is everyone, every day.</li><li>math story (historia matemática) — Your own history with mathematics — what you have done, felt, and learned so far.</li><li>strength (fortaleza) — Something you already do well and can share with others.</li><li>decompose (descomponer) — To break a number into parts that add, subtract, multiply, or divide back to it.</li><li>estimate (estimar) — A reasoned answer that is close enough to be useful, without counting every one.</li><li>quantity (cantidad) — An amount in a problem — a number with a meaning attached, like 540 meters.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</li></ul>
+      </div>
     </section>
   
       <ol class="ws-problems-grid">
@@ -722,7 +792,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.1) About how many people can ride the Ferris wheel at one time if it has 20 cars that each hold about 4 people?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol>
+        <p class="ws-stem">(Lesson 1.1) About how many people can ride the Ferris wheel at one time if it has 20 cars that each hold about 4 people?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 80</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 400</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -733,7 +806,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.1) Which of these is a correct way to decompose 78.5?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">70 + 8.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70 + 8.05</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78 + 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7 + 8.5</span></li></ol>
+        <p class="ws-stem">(Lesson 1.1) Which of these is a correct way to decompose 78.5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">70 + 8.5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">70 + 8.05</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78 + 5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7 + 8.5</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -744,7 +820,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.2) Which of these is a correct way to decompose 105.76?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.076</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">105 + 7.6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10 + 5.76</span></li></ol>
+        <p class="ws-stem">(Lesson 1.2) Which of these is a correct way to decompose 105.76?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">100 + 5.76</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">100 + 5.076</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">105 + 7.6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10 + 5.76</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -755,7 +834,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.2) Which is another correct decomposition of 105.76?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">110 − 4.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 − 5.24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">106 − 0.34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">110 + 4.24</span></li></ol>
+        <p class="ws-stem">(Lesson 1.2) Which is another correct decomposition of 105.76?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">110 − 4.24</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 − 5.24</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">106 − 0.34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">110 + 4.24</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -766,7 +848,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 1.3) One tram ride takes 12.5 minutes. How many minutes do 10 rides take?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">125 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">22.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,250 minutes</span></li></ol>
+        <p class="ws-stem">(Lesson 1.3) One tram ride takes 12.5 minutes. How many minutes do 10 rides take?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">125 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">22.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">1.25 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,250 minutes</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>

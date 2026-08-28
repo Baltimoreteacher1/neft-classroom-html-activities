@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -677,14 +741,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding · Answer Key</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">5.7 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Surface Area of Prisms · Surface area · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-7-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -700,57 +765,14 @@ header.packet h1::after{
   
       
       
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How many faces does a triangular prism have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">134 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">122 cm²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">134 cm³</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">ERROR ANALYSIS</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem"><b>Spot the Common Mistake — A Forgotten Face</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">Rectangular prism time capsule: l = 5 in, w = 3 in, h = 2 in.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">SA = 2lw + 2lh + 2wh (add all 6 faces).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">The student wrote SA = 2(5×3) + 2(5×2) + (3×2) = 30 + 20 + 6 = 56 in².</span></li></ol></div>
-  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
-  <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 3. Correct Work: The student forgot to multiply the last face pair (3×2) by 2. It should be 2(3×2) = 12, not 6. Correct: SA = 30 + 20 + 12 = 62 in².. Misconception: In the Calculate step the student doubled the first two face pairs but wrote (3×2) = 6 for the last one. A rectangular prism has 6 faces in 3 matching pairs, so that term must be 2(3×2) = 12, giving SA = 30 + 20 + 12 = 62 in².</div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
         <span class="ws-pbadge">DRAG SORT</span>
       </div>
       <div class="ws-pbody">
@@ -763,13 +785,68 @@ header.packet h1::after{
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
+        <span class="ws-pnum">2</span>
         <span class="ws-pbadge">MATCHING GAME</span>
       </div>
       <div class="ws-pbody">
         
         <p class="ws-stem">Match each solid to its description.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span><span class="ws-term-lbl">Rectangular prism</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span><span class="ws-term-lbl">Triangular prism</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span><span class="ws-term-lbl">Cube</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span><span class="ws-term-lbl">Surface area</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span><span class="ws-term-lbl">Volume</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">F</span><span class="ws-term-lbl">Net</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">6 faces (all rectangles)</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">5 faces (2 triangles + 3 rectangles)</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">6 identical square faces</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Uses square units (in²)</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">Uses cubic units (in³)</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">2D pattern that folds into 3D</span></li></ul></div>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">3</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">47 cm²</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">4</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">How many faces does a triangular prism have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces.</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
+      </div>
+    </li>
+  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">5</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">134 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">110 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">122 cm²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">134 cm³</span></li></ol><p class="ws-keynote">💡 <b>Solution Rationale:</b> SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².</p><p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
+      </div>
+    </li>
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 3</span>
+          <span class="ws-section-name">MATHEMATICAL WRITING &amp; ERROR ANALYSIS</span>
+          <span class="ws-section-tag">[Reasoning &amp; Critique]</span>
+        </div>
+        <ol class="ws-problems-grid">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head">
+        <span class="ws-pnum">6</span>
+        <span class="ws-pbadge">ERROR ANALYSIS</span>
+      </div>
+      <div class="ws-pbody">
+        
+        <p class="ws-stem"><b>Spot the Common Mistake — A Forgotten Face</b></p>
+  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions:</span><span class="ws-step-w">Rectangular prism time capsule: l = 5 in, w = 3 in, h = 2 in.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Formula:</span><span class="ws-step-w">SA = 2lw + 2lh + 2wh (add all 6 faces).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate:</span><span class="ws-step-w">The student wrote SA = 2(5×3) + 2(5×2) + (3×2) = 30 + 20 + 6 = 56 in².</span></li></ol></div>
+  <p class="ws-prompt">Which step contains the error? Explain the mathematical misconception and write the correct calculation below.</p>
+  <div class="ws-keynote"><b>Key Analysis:</b> Mistake is in Step 3. Correct Work: The student forgot to multiply the last face pair (3×2) by 2. It should be 2(3×2) = 12, not 6. Correct: SA = 30 + 20 + 12 = 62 in².. Misconception: In the Calculate step the student doubled the first two face pairs but wrote (3×2) = 6 for the last one. A rectangular prism has 6 faces in 3 matching pairs, so that term must be 2(3×2) = 12, giving SA = 30 + 20 + 12 = 62 in².</div>
       </div>
     </li>
   </ol>

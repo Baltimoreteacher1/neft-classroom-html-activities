@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -686,14 +750,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🔵 Prerequisite Catch-Up &amp;amp; Skill Bridge</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">5.4 · 5.9 Catch-Up</h1>
           <p class="ws-sub-title">Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard</p>
+          <p class="ws-strategy-line">Area of Composite Figures · Composite Figure · Procedural Fluency · Real-World Applications</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=5-4-catchup" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -708,16 +773,21 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 5.4 · 5.9 Catch-Up</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> I can show I am caught up on Lessons 5.4 · 5.9 by using each lesson's big idea in mixed practice.</p>
-      
-    </section>
-  
-      
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Area of Composite Figures <span class="ws-es-term">(Área de figuras compuestas)</span></span><span class="ws-bankdef"> — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</span></div><div class="ws-bank-card"><span class="ws-bankword">Composite Figure <span class="ws-es-term">(Figura compuesta)</span></span><span class="ws-bankdef"> — A shape made by putting two or more simple shapes together.</span></div><div class="ws-bank-card"><span class="ws-bankword">Decompose <span class="ws-es-term">(Descomponer)</span></span><span class="ws-bankdef"> — To break a shape into smaller, simpler shapes.</span></div><div class="ws-bank-card"><span class="ws-bankword">Add <span class="ws-es-term">(Sumar)</span></span><span class="ws-bankdef"> — Add up the areas of the smaller shapes to get the total.</span></div><div class="ws-bank-card"><span class="ws-bankword">Subtract <span class="ws-es-term">(Restar)</span></span><span class="ws-bankdef"> — Take away the area of a missing piece from a bigger shape.</span></div><div class="ws-bank-card"><span class="ws-bankword">Formula <span class="ws-es-term">(Fórmula)</span></span><span class="ws-bankdef"> — A math rule written with symbols.</span></div><div class="ws-bank-card"><span class="ws-bankword">Area of Regular Polygons <span class="ws-es-term">(Área de polígonos regulares)</span></span><span class="ws-bankdef"> — The space a regular polygon covers. Split it from the center into identical triangles, find one triangle's area, then multiply by how many there are.</span></div><div class="ws-bank-card"><span class="ws-bankword">Regular Polygon <span class="ws-es-term">(Polígono regular)</span></span><span class="ws-bankdef"> — A closed flat shape made of straight sides, where every side is the same length and every angle is the same size.</span></div></div>
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: The Big Ideas — Lessons 5.4 · 5.9</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>5.4: Break the figure into simple shapes. ADD the areas when shapes are joined; SUBTRACT when a piece is cut out. • 5.9: A regular polygon splits into the same number of triangles as it has sides, so total area = (one triangle's area) × (number of sides).</div>
+        <ul class="ws-note-list"><li>Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — The Big Ideas (one per lesson)</div>
+        <ol class="ws-note-list"><li>Lesson 5.4 — Apply Area Concepts to Solve Problems: Break the figure into simple shapes. ADD the areas when shapes are joined; SUBTRACT when a piece is cut out.</li><li>Lesson 5.9 — Area of Regular Polygons: A regular polygon splits into the same number of triangles as it has sides, so total area = (one triangle's area) × (number of sides).</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Area of Composite Figures (Área de figuras compuestas) — The total space inside a figure made of basic shapes. Formula: A = A₁ + A₂ — add the parts (or subtract a missing piece).</li><li>Composite Figure (Figura compuesta) — A shape made by putting two or more simple shapes together.</li><li>Decompose (Descomponer) — To break a shape into smaller, simpler shapes.</li><li>Add (Sumar) — Add up the areas of the smaller shapes to get the total.</li><li>Subtract (Restar) — Take away the area of a missing piece from a bigger shape.</li><li>Formula (Fórmula) — A math rule written with symbols.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</li></ul>
+      </div>
     </section>
   
       <ol class="ws-problems-grid">
@@ -728,12 +798,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.4) An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">(Lesson 5.4) An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">72 ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">72 ft</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -744,12 +814,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.4) A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">(Lesson 5.4) A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">130 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">150 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">170 sq ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">130 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">150 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">170 sq ft</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -760,12 +830,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.9) A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">(Lesson 5.9) A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">15.6 ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">31.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">11.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">15.6 ft</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   
@@ -776,12 +846,12 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">(Lesson 5.9) Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
+        <p class="ws-stem">(Lesson 5.9) Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">93.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">187.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">62.4 sq ft</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
       <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
       <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">93.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15.6 sq ft</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">187.2 sq ft</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">62.4 sq ft</span></li></ol>
+    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div>
       </div>
     </li>
   </ol>

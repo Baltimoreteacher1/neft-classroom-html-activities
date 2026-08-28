@@ -277,11 +277,9 @@ body {
   border: 1.5px dashed var(--line);
   border-radius: 6px;
   min-height: 75px;
-  padding: 8px 10px;
+  padding: 8px 10px 2px;
   margin-top: 8px;
   background: #fafbfc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 14px 14px;
 }
 .ws-work-tall { min-height: 110px; }
 .ws-work-label {
@@ -290,6 +288,72 @@ body {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
+.ws-rubric-badges { display: flex; gap: 10px; }
+.ws-mastery { white-space: nowrap; font-weight: 700; }
+.ws-strategy-line {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ws-notes-box { break-inside: avoid; }
+.ws-note-point { margin-top: 8px; }
+.ws-note-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ws-note-n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.ws-note-list {
+  margin: 4px 0 0;
+  padding-left: 30px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ws-note-list > li { margin-bottom: 2px; }
+.ws-note-warn .ws-note-head { color: #9a3412; }
+.ws-note-warn .ws-note-n { background: #9a3412; }
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--navy);
+  color: #fff;
+  break-after: avoid;
+}
+.ws-section-n {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
+.ws-section-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 .ws-lines { margin: 6px 0; }
 .ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
@@ -680,14 +744,15 @@ header.packet h1::after{
           <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
         </div>
         <div class="ws-rubric-box">
-          <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
-          <div class="ws-rubric-badges">🌟 Exceeds &nbsp;|&nbsp; ✅ Target &nbsp;|&nbsp; 🔄 Approaching</div>
+          <div class="ws-rubric-score">MASTERY CHECK</div>
+          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
         </div>
       </div>
       <div class="ws-title-group">
         <div class="ws-title-text-box">
           <h1 class="ws-main-title">3.7 Small Group · Group 1</h1>
           <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
+          <p class="ws-strategy-line">Convert Measurements Between Systems · Conversion factor · Procedural Fluency · Reasoning &amp; Critique</p>
         </div>
         <div class="ws-digital-link-box">
           <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=3-7-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
@@ -702,41 +767,65 @@ header.packet h1::after{
     </header>
   
       
-    <section class="ws-anchor-box ws-support-anchor">
-      <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: 3.7 Small Group · Group 1</div>
-      <p class="ws-anchor-idea"><b>Key Takeaway:</b> With my small group, I can use ratio reasoning to convert measurements between the customary and metric systems — one step at a time, with support.</p>
-      
+    <section class="ws-anchor-box ws-notes-box">
+      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — Comparing across two measurement systems</div>
+      <div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">1</span>Write the conversion factor as a ratio (1 km ≈ 0.6 mi), then scale it with a ratio table until it reaches your amount. Between systems the result is approximate, so write ≈, not =.</div>
+        <ul class="ws-note-list"><li>Kilometers and miles both measure distance, but they come from different measurement systems, so the numbers cannot be compared directly. A conversion factor links the two systems, and a ratio table scales it up to the amount you need. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me compare two speed limits</div>
+        <ol class="ws-note-list"><li>Evelyn sees a Canadian highway sign reading 100 kilometers per hour and wonders whether that is faster or slower than 100 miles per hour.</li><li>Kilometers are metric and miles are customary, so 100 and 100 cannot be compared as they stand. Both measure distance, so a conversion factor links them: 1 kilometer ≈ 0.6 mile, or the ratio 1 : 0.6.</li><li>I build a ratio table from that unit ratio. Kilometers 1, 10, 100 pair with miles 0.6, 6, 60 — each column multiplies both numbers by the same factor.</li><li>So 100 kilometers ≈ 60 miles, which means 100 kilometers per hour ≈ 60 miles per hour.</li><li>Now the comparison is fair: 100 miles per hour is faster, because in one hour you would travel 100 miles instead of only about 60.</li></ol>
+      </div><div class="ws-note-point">
+        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
+        <ul class="ws-note-list"><li>Convert Measurements Between Systems (Convertir medidas entre sistemas) — Rewriting a customary measurement as a metric one, or the reverse, so two amounts can be compared.</li><li>Conversion factor (Factor de conversión) — The ratio that links a unit in one system to a unit in the other, such as 1 mile to about 1.609 kilometers.</li><li>Customary system (Sistema usual) — The measurement system used in the United States: inches, feet, miles, ounces, pounds, cups, quarts, gallons.</li><li>Metric system (Sistema métrico) — The measurement system used in most of the world, built on tens: centimeters, meters, kilometers, grams, kilograms, liters.</li><li>Approximately (Aproximadamente) — Close to, but not exactly equal. Conversions between systems are almost always approximate, so they use the ≈ sign.</li><li>Ratio table (Tabla de razones) — A table of equal ratios used to scale a conversion factor up to the amount you actually need.</li></ul>
+      </div><div class="ws-note-point ws-note-warn">
+        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
+        <ul class="ws-note-list"><li>A common mistake converting between systems is comparing the bare numbers without converting at all — deciding that 5 kilometers and 5 miles are the same distance because both say 5. They are not: 5 kilometers ≈ 3 miles. A second mistake is writing = instead of ≈. Conversion factors between systems are rounded (1 mile is about 1.609344 kilometers), so the result is approximate no matter how carefully you multiply.</li></ul>
+      </div>
     </section>
   
       
-    <section class="ws-anchor-box ws-vocab-box">
-      <div class="ws-anchor-title">📕 Mathematical Word Bank &amp; Spanish Cognates / Banco de Palabras</div>
-      <div class="ws-bankgrid"><div class="ws-bank-card"><span class="ws-bankword">Convert Measurements Between Systems <span class="ws-es-term">(Convertir medidas entre sistemas)</span></span><span class="ws-bankdef"> — Rewriting a customary measurement as a metric one, or the reverse, so two amounts can be compared.</span></div><div class="ws-bank-card"><span class="ws-bankword">Conversion factor <span class="ws-es-term">(Factor de conversión)</span></span><span class="ws-bankdef"> — The ratio that links a unit in one system to a unit in the other, such as 1 mile to about 1.609 kilometers.</span></div><div class="ws-bank-card"><span class="ws-bankword">Customary system <span class="ws-es-term">(Sistema usual)</span></span><span class="ws-bankdef"> — The measurement system used in the United States: inches, feet, miles, ounces, pounds, cups, quarts, gallons.</span></div><div class="ws-bank-card"><span class="ws-bankword">Metric system <span class="ws-es-term">(Sistema métrico)</span></span><span class="ws-bankdef"> — The measurement system used in most of the world, built on tens: centimeters, meters, kilometers, grams, kilograms, liters.</span></div><div class="ws-bank-card"><span class="ws-bankword">Approximately <span class="ws-es-term">(Aproximadamente)</span></span><span class="ws-bankdef"> — Close to, but not exactly equal. Conversions between systems are almost always approximate, so they use the ≈ sign.</span></div><div class="ws-bank-card"><span class="ws-bankword">Ratio table <span class="ws-es-term">(Tabla de razones)</span></span><span class="ws-bankdef"> — A table of equal ratios used to scale a conversion factor up to the amount you actually need.</span></div><div class="ws-bank-card"><span class="ws-bankword">Ratio and Rate Problem Solving <span class="ws-es-term">(Resolución de problemas de razones y tasas)</span></span><span class="ws-bankdef"> — Use ratios and rates to compare quantities and solve real-world problems.</span></div><div class="ws-bank-card"><span class="ws-bankword">Rate <span class="ws-es-term">(Tasa)</span></span><span class="ws-bankdef"> — A ratio comparing two amounts with different units, like miles per hour.</span></div></div>
-    </section>
-  
-      <ol class="ws-problems-grid">
+      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
+          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
+          <span class="ws-section-tag">[Visual Modeling]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">1 kilometer ≈ 0.6 mile. About how many miles is 5 kilometers?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3 miles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5.6 miles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8 miles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">30 miles</span></li></ol>
+        <p class="ws-stem">1 kilometer ≈ 0.6 mile. Complete the ratio table.</p>
+  <table class="ws-table"><thead><tr><th>Kilometers</th><th>Miles</th></tr></thead><tbody><tr><td>1</td><td></td></tr><tr><td>10</td><td></td></tr><tr><td>100</td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
+        <span class="ws-pbadge">FILL TABLE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">1 pound ≈ 0.45 kilogram. About how many kilograms is 10 pounds?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4.5 kg</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10.45 kg</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">22 kg</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">45 kg</span></li></ol>
+        <p class="ws-stem">1 pound ≈ 0.45 kilogram. Complete the ratio table, then use it to place a 31-pound dog.</p>
+  <table class="ws-table"><thead><tr><th>Pounds</th><th>Kilograms</th></tr></thead><tbody><tr><td>1</td><td></td></tr><tr><td>10</td><td></td></tr><tr><td>30</td><td></td></tr><tr><td>40</td><td></td></tr></tbody></table>
+  <div class="ws-work">
+    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
-  
+  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
+          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
+          <span class="ws-section-tag">[Applications]</span>
+        </div>
+        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">3</span>
@@ -744,7 +833,10 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">Which pair of units comes from two DIFFERENT measurement systems?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Miles and kilometers</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Inches and feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Cups and quarts</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Grams and kilograms</span></li></ol>
+        <p class="ws-stem">1 kilometer ≈ 0.6 mile. About how many miles is 5 kilometers?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3 miles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5.6 miles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">8 miles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">30 miles</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
@@ -755,33 +847,38 @@ header.packet h1::after{
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">A sign in Mexico gives a distance of 80 kilometers. Using 1 km ≈ 0.6 mi, about how far is that in miles?</p><div class="ws-work"><span class="ws-work-label">✏️ Show every step here</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 48 miles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 80 miles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 133 miles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 8 miles</span></li></ol>
+        <p class="ws-stem">1 pound ≈ 0.45 kilogram. About how many kilograms is 10 pounds?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4.5 kg</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10.45 kg</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">22 kg</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">45 kg</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">1 kilometer ≈ 0.6 mile. Complete the ratio table.</p>
-  <table class="ws-table"><thead><tr><th>Kilometers</th><th>Miles</th></tr></thead><tbody><tr><td>1</td><td></td></tr><tr><td>10</td><td></td></tr><tr><td>100</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">Which pair of units comes from two DIFFERENT measurement systems?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Miles and kilometers</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Inches and feet</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Cups and quarts</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Grams and kilograms</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">FILL TABLE</span>
+        <span class="ws-pbadge">MULTIPLE CHOICE</span>
       </div>
       <div class="ws-pbody">
         
-        <p class="ws-stem">1 pound ≈ 0.45 kilogram. Complete the ratio table, then use it to place a 31-pound dog.</p>
-  <table class="ws-table"><thead><tr><th>Pounds</th><th>Kilograms</th></tr></thead><tbody><tr><td>1</td><td></td></tr><tr><td>10</td><td></td></tr><tr><td>30</td><td></td></tr><tr><td>40</td><td></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">✏️ Scratchpad / Reasoning</span></div>
+        <p class="ws-stem">A sign in Mexico gives a distance of 80 kilometers. Using 1 km ≈ 0.6 mi, about how far is that in miles?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 48 miles</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 80 miles</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 133 miles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 8 miles</span></li></ol><div class="ws-work ws-work-tall">
+    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </div>
       </div>
     </li>
   </ol>
