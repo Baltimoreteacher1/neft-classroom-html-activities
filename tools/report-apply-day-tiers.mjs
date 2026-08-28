@@ -19,18 +19,37 @@
  * well than it reads. The three chips sit on ONE screen with their counts on
  * them, so a table that picks "🟣 Level 3 · Stretch (5)" and gets five problems
  * the other tables already solved can see that it did. Measured 2026-08-28:
- * 24 of 76 lessons have a level that is ENTIRELY a repeat of an earlier one —
- * in every case Level 3, the stretch set.
+ * 25 of 76 lessons have a level that is ENTIRELY a repeat of an earlier one —
+ * in every case Level 3, the stretch set, which owns 39% of what it shows while
+ * Levels 1 and 2 own 100% and 98%.
  *
- * And the shortage is real, not a policy artifact. Cross-deduping in any
- * claiming order was measured and just moves the gap onto Level 2, the
- * grade-level table where most students sit (median 5 items → 2). There is no
- * ordering that fixes this, and no untapped authored stretch pool to source
- * from: on 5-2 the generator feeds 21 raw items into Level 3 and its own
- * within-level dedupe leaves 3, all of which are already in Levels 1-2.
+ * THREE FIXES WERE TRIED AND MEASURED. None ships; recording them so the next
+ * person does not spend the afternoon rediscovering it:
  *
- * So the fix is authored stretch items, roughly 2-3 per affected lesson. This
- * report is what scopes that work and tracks it shrinking.
+ * 1. Cross-dedupe the levels. In EVERY claiming order this just moves the
+ *    shortage onto Level 2, the grade-level table where most students sit
+ *    (median 5 items → 2). There is no ordering that wins.
+ * 2. Source from another authored pool. There is none: on 5-2 the generator
+ *    already feeds 21 raw items into Level 3 and its own within-level dedupe
+ *    leaves 3, all of which are in Levels 1-2 too.
+ * 3. Promote the lesson's MSTAR items — `reflect.mstarPractice`, 144 authored
+ *    state-assessment parts that NOTHING reads, since this builder only ever
+ *    looked at `practice.*` and `parallelPractice`. This one WORKS
+ *    mechanically: leading Level 3 with them takes the hollow levels 25 → 0 and
+ *    lifts its own share to 60%, without touching the dedupe decision. It is
+ *    blocked on content, not code, on two counts:
+ *      - 0 of the 144 parts carry `choiceFeedback`, and
+ *        tools/distractor-feedback.test.mjs requires every wrong choice of a
+ *        multiple-choice item to name the specific error. Compliance is 432
+ *        authored diagnostic messages, and deriving "what this student did
+ *        wrong" from an explanation of the RIGHT answer is fabrication.
+ *      - 28 Part B stems say "the equation chosen in Part A", which dangles the
+ *        moment the part is lifted out and numbered on its own.
+ *    Unblock either of those and this becomes a small generator change.
+ *
+ * So the remaining fix is authored: either those 432 distractor messages, or
+ * ~2-3 fresh stretch items per affected lesson. This report scopes that work
+ * and tracks it shrinking.
  * ========================================================================== */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -49,8 +68,29 @@ const LEVELS = [
 const printable = (pool) =>
   (Array.isArray(pool) ? pool : []).filter((p) => p && (p.type || p.stem || p.prompt));
 
-/** The whole item, so two prompts that differ only in `instructions` differ. */
+/**
+ * The SAME normalized stem `generate-part-two.mjs` dedupes on, deliberately.
+ *
+ * A whole-item fingerprint is the stricter comparison and therefore the wrong
+ * one: the parallel banks label their copies "(Lesson 2.3)", so comparing whole
+ * items sees two different problems where a student sees the same one — the
+ * generator's own comment records that this hid duplicates in 36 of 76 configs.
+ * Measured both ways on the same tree, whole-item reported 24 hollow levels and
+ * this reports 25. A report that undercounts what a student meets is not a
+ * report about students.
+ */
 const fingerprint = (item) => {
+  const stem = String(item?.stem || item?.prompt || "")
+    .replace(/\(Lesson \d+\.\d+\)/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  // A stemless item (a drag-sort carries its prompt on `instructions`) would
+  // fingerprint to "" and every one of them would collapse into a single
+  // "repeat" — the exact bug the Set B dedupe shipped with. Fall back to the
+  // whole item, which is distinct even when the stem is absent. The generator
+  // avoids this differently, by dropping stemless items outright; a report must
+  // still count what is on disk.
+  if (stem) return stem;
   const { origin: _o, ...rest } = item || {};
   return JSON.stringify(rest, Object.keys(rest).sort());
 };
@@ -88,13 +128,31 @@ export function tierOwnership(groupLevels) {
   if (dup[1].repeated !== 1) fails.push("a repeat in level2 was not counted");
   if (dup[2].own !== 0) fails.push("a level that is entirely a repeat was not detected");
 
-  // An item differing only in a nested field is a DIFFERENT item.
-  const near = tierOwnership({
-    level1: [{ stem: "x", choices: ["1", "2"] }],
-    level2: [{ stem: "x", choices: ["1", "3"] }],
+  // The "(Lesson 2.3)" label the parallel banks add is not a different problem.
+  const labelled = tierOwnership({
+    level1: [{ stem: "Find the mean of 4, 6, 8" }],
+    level2: [{ stem: "Find the mean of 4, 6, 8 (Lesson 2.3)" }],
     level3: [],
   });
-  if (near[1].repeated) fails.push("items differing in their choices were merged");
+  if (!labelled[1].repeated) {
+    fails.push("a parallel-bank copy carrying a (Lesson n.n) label was not seen as a repeat");
+  }
+
+  // Two DIFFERENT stemless items must not collapse into one. Both carry their
+  // prompt on `instructions`, so a stem-only fingerprint makes them identical.
+  const stemless = tierOwnership({
+    level1: [{ type: "drag-sort", instructions: "Sort by operation" }],
+    level2: [{ type: "drag-sort", instructions: "Sort by size" }],
+    level3: [],
+  });
+  if (stemless[1].repeated) fails.push("two different stemless items were merged");
+  // …and a stemless item repeated verbatim still counts as a repeat.
+  const sameStemless = tierOwnership({
+    level1: [{ type: "drag-sort", instructions: "Sort by operation" }],
+    level2: [{ type: "drag-sort", instructions: "Sort by operation" }],
+    level3: [],
+  });
+  if (!sameStemless[1].repeated) fails.push("an identical stemless item was not seen as a repeat");
 
   if (fails.length) {
     console.error("report-apply-day-tiers self-test FAILED:");
