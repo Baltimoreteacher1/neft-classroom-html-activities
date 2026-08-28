@@ -21,7 +21,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
-import { selectReviewItems } from "../engine/core/retrieval.js";
+import { selectReviewItems, taughtBefore } from "../engine/core/retrieval.js";
+import { buildInstructionalSequence } from "../shared/curriculum/instructional-sequence.js";
 import {
   buildBank,
   isPortable,
@@ -155,6 +156,125 @@ for (const [standard, items] of Object.entries(bank.bank)) {
     first.item.stem,
     later.item.stem,
     "a student on a later box meets a different question, not the same card again",
+  );
+}
+
+// ── 4b. Scope: only lessons taught EARLIER in the district's sequence ────────
+{
+  // The artifact's sequence IS the instructional sequence (paced lessons, in
+  // taught order) — not a lesson-number sort. 6-1 is the fourth lesson of the
+  // year (Pre-Unit), not the one after 5-10.
+  const read = (rel) => JSON.parse(readFileSync(new URL(`../${rel}`, import.meta.url), "utf8"));
+  const live = buildInstructionalSequence({
+    ranges: read("data/pacing-unit-ranges.json"),
+    authored: read("data/pacing-unit-lessons.json"),
+    manifest: read("data/curriculum-launch-manifest.json"),
+  });
+  const pacedOrder = live.order.filter((id) => live.entries.get(id)?.paced);
+  checks += 1;
+  assert.deepEqual(
+    bank.sequence.map((e) => e.id),
+    pacedOrder,
+    "the bank's sequence must be the paced instructional order, nothing else",
+  );
+  checks += 1;
+  assert.deepEqual(
+    taughtBefore(bank.sequence, "6-1").map((e) => e.id),
+    ["2-7", "2-6", "1-1"],
+    "before 6-1 (Pre-Unit) come 2-7, 2-6, 1-1 — most recent first — never 5-10",
+  );
+  checks += 1;
+  assert.deepEqual(
+    taughtBefore(bank.sequence, "6-1-group2"),
+    taughtBefore(bank.sequence, "6-1"),
+    "a variant inherits its parent's position",
+  );
+  checks += 1;
+  assert.deepEqual(
+    taughtBefore(bank.sequence, "1-1"),
+    [],
+    "the course opener has nothing to remember",
+  );
+  checks += 1;
+  assert.deepEqual(taughtBefore(bank.sequence, "1-3"), [], "an unpaced lesson has no position");
+
+  // Scoped selection: yesterday's lesson is the Warm-Up's, today's standard is
+  // about to be taught, and a due standard from a unit the class has not met
+  // is refused even though the device says it is due.
+  const before35 = taughtBefore(bank.sequence, "3-5");
+  const today = bank.sequence.find((e) => e.id === "3-5").standard;
+  const yesterday = before35[0].standard;
+  // A standard NO earlier lesson taught (a code can recur across lessons, so
+  // "the last lesson's standard" is not automatically unseen).
+  const seen = new Set(before35.map((e) => e.standard));
+  const at35 = bank.sequence.findIndex((e) => e.id === "3-5");
+  const laterStd = bank.sequence
+    .slice(at35 + 1)
+    .map((e) => e.standard)
+    .find((std) => std && !seen.has(std) && std !== today && bank.bank[std]);
+  checks += 1;
+  assert.ok(laterStd, "the sequence has a not-yet-taught standard with banked items to refuse");
+  const due = [
+    { standard: laterStd, box: 2 },
+    { standard: yesterday, box: 1 },
+    { standard: today, box: 0 },
+  ];
+  const scoped = selectReviewItems(due, bank.bank, { exclude: today, before: before35 });
+  checks += 1;
+  assert.ok(scoped.length > 0 && scoped.length <= 3, "a lesson with history gets a capped review");
+  checks += 1;
+  assert.ok(
+    scoped.every(
+      (p) => p.standard !== today && p.standard !== yesterday && p.standard !== laterStd,
+    ),
+    "scoped picks never include today, yesterday, or a not-yet-taught standard",
+  );
+  const allowed = new Set(before35.slice(1).map((e) => e.standard));
+  checks += 1;
+  assert.ok(
+    scoped.every((p) => allowed.has(p.standard)),
+    "every scoped pick is a standard some earlier lesson taught",
+  );
+  checks += 1;
+  assert.ok(
+    scoped.every((p) => p.lesson && before35.some((e) => e.id === p.lesson)),
+    "every scoped pick names the earlier lesson it comes from",
+  );
+  // 6-1's history is 2-7, 2-6, 1-1: yesterday's 2-7 is the Warm-Up's, and 1-1
+  // "Math is Mine" is MPP.3 — a practice standard with nothing to retrieve.
+  const picks61 = selectReviewItems([], bank.bank, {
+    exclude: "6.NOS.1",
+    before: taughtBefore(bank.sequence, "6-1"),
+  });
+  checks += 1;
+  assert.deepEqual(
+    picks61.map((p) => p.lesson),
+    ["2-6"],
+    "on 6-1 a fresh device remembers 2-6 only — not yesterday's 2-7, not MPP 1-1, never 5-10",
+  );
+  // Due-first inside the scope: a due standard the class HAS met leads.
+  // (3-4 and 3-3 share a standard, so "the first earlier lesson with banked
+  // items" can be yesterday's code — which is rightly refused. Pick one that
+  // is neither yesterday's nor today's.)
+  const dueInScope = before35
+    .slice(1)
+    .find((e) => bank.bank[e.standard] && e.standard !== yesterday && e.standard !== today);
+  const led = selectReviewItems([{ standard: dueInScope.standard, box: 1 }], bank.bank, {
+    exclude: today,
+    before: before35,
+  });
+  checks += 1;
+  assert.equal(
+    led[0]?.standard,
+    dueInScope.standard,
+    "a due standard inside the scope is asked first",
+  );
+  // No history at all → the old behaviour: due standards only, nothing invented.
+  checks += 1;
+  assert.deepEqual(
+    selectReviewItems([], bank.bank, { exclude: today, before: [] }),
+    [],
+    "with no sequence position and nothing due, nothing renders",
   );
 }
 

@@ -2698,10 +2698,11 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   }
 
   // Spaced retrieval runs BEFORE today's warmup. The warmup reviews the previous
-  // lesson (yesterday); this reviews what the schedule says is about to be
-  // forgotten (weeks ago). They answer different questions and both belong here,
+  // lesson (yesterday); this reviews lessons taught EARLIER in the district's
+  // scope and sequence (days to weeks ago), never yesterday's and never one the
+  // class has not met. They answer different questions and both belong here,
   // in that order — nearest first, so the student warms up before reaching back.
-  // Renders nothing at all when nothing is due, which is most page loads.
+  // Renders nothing on a course opener or an unpaced lesson.
   const retrievalHost = document.createElement("div");
   el.append(retrievalHost);
   mountRetrievalOpener(retrievalHost, config, state, 0).catch(() => {

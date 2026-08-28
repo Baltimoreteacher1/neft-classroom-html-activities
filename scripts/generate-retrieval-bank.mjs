@@ -26,6 +26,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildInstructionalSequence } from "../shared/curriculum/instructional-sequence.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const OUTPUT = resolve(ROOT, "data/retrieval-bank.json");
@@ -83,6 +84,43 @@ export function isPortable(item) {
   return true;
 }
 
+/**
+ * The lessons a class has ALREADY MET, in the order the district teaches them —
+ * the same instructional sequence the warmups use, read from the same three
+ * data files (see shared/curriculum/instructional-sequence.js), never from a
+ * lesson number. "Remember When" reviews only lessons that sit BEFORE today's
+ * in this list: the curriculum numbers 6-1 after 5-10, but the district
+ * teaches 6-1 in the Pre-Unit, so on that day the only things a student can
+ * remember are 1-1, 2-6 and 2-7 (Joel, 2026-08-28: "use a previous lesson …
+ * following the updated scope and sequence and lesson scope").
+ *
+ * Paced lessons only: an unpaced lesson is never taught, so it can be neither
+ * remembered nor a position to count back from.
+ */
+export function buildTaughtSequence() {
+  const read = (rel) => JSON.parse(readFileSync(resolve(ROOT, rel), "utf8"));
+  const manifest = read("data/curriculum-launch-manifest.json");
+  const sequence = buildInstructionalSequence({
+    ranges: read("data/pacing-unit-ranges.json"),
+    authored: read("data/pacing-unit-lessons.json"),
+    manifest,
+  });
+  const meta = new Map((manifest.lessons || []).map((l) => [l.id, l]));
+  const out = [];
+  for (const id of sequence.order) {
+    const entry = sequence.entries.get(id);
+    if (!entry || !entry.paced) continue;
+    const m = meta.get(id) || {};
+    out.push({
+      id,
+      standard: String(m.standard || ""),
+      title: String(m.title || ""),
+      unit: entry.unitKey || String(m.unit || ""),
+    });
+  }
+  return out;
+}
+
 export function buildBank() {
   const lessonsDir = resolve(ROOT, "lessons");
   const byStandard = new Map();
@@ -127,12 +165,17 @@ export function buildBank() {
   }
 
   const total = Object.values(standards).reduce((n, items) => n + items.length, 0);
+  const sequence = buildTaughtSequence();
   return {
     _generated: "scripts/generate-retrieval-bank.mjs — do not hand-edit",
-    _source: "lessons/*/config.json (multiple-choice items already gated by validate:math)",
+    _source:
+      "lessons/*/config.json (multiple-choice items already gated by validate:math); " +
+      "sequence from data/pacing-unit-ranges.json + pacing-unit-lessons.json + curriculum-launch-manifest.json",
     standards: Object.keys(standards).length,
     items: total,
+    taught: sequence.length,
     bank: standards,
+    sequence,
   };
 }
 
