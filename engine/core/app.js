@@ -10,6 +10,7 @@ import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
 import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
 import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
+  getActStepNav,
   goToActStep,
   linkifyObjectiveTerms,
   observeVocabTerms,
@@ -2344,13 +2345,20 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const cur = st.currentPhase ?? 0;
       const total = config.phases.length;
       const onExtra = document.documentElement.classList.contains("nt-extra-fullpage-open");
-      // The teaching sequence lives INSIDE Act 2 as steps now, so the pill's
-      // job is simply "next act" — it always agrees with the sidebar and the
-      // in-act Continue buttons. (Its old special case sent Act 1 students to
-      // a Vocabulary takeover without advancing the phase, after which this
-      // same pill read "Next: Act 3" — one tap skipped five steps.)
-      const nextName = phaseConfigs[cur + 1]?.name || "Next";
-      const hide = cur >= total - 1 || onExtra;
+      // The teaching sequence lives INSIDE the act as steps, so "next" is the
+      // next STEP until the act runs out, and only then the next act. A
+      // phase-only pill is not merely imprecise here: standing on Act 2's
+      // Launch — step 2 of 6, the problem the whole lesson is built around — it
+      // read "Next: Exit Ticket" and one tap skipped Learn It, Explore,
+      // Practice and Connect. The chain is READ from the mounted strip
+      // (getActStepNav) rather than restated here, because a second copy of the
+      // taught order is exactly how these surfaces drifted apart before.
+      const nav = getActStepNav();
+      const nextStep = nav ? nav.steps[nav.index + 1] : null;
+      const nextName = nextStep
+        ? `${nextStep.icon} ${nextStep.label}`
+        : phaseConfigs[cur + 1]?.name || "Next";
+      const hide = (!nextStep && cur >= total - 1) || onExtra;
       nextBtn.innerHTML = `Next: ${nextName} <span aria-hidden="true">→</span>`;
       nextBtn.hidden = hide;
       // `hidden` alone was not enough. The UA rule is [hidden] { display: none },
@@ -2361,6 +2369,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       nextBtn.style.display = hide ? "none" : "inline-flex";
     }
     nextBtn.addEventListener("click", () => {
+      const nav = getActStepNav();
+      if (nav && nav.index + 1 < nav.steps.length) {
+        nav.show(nav.index + 1);
+        return;
+      }
       const cur = state.get().currentPhase ?? 0;
       if (cur < config.phases.length - 1) {
         app.navigateTo(cur + 1);
@@ -2368,6 +2381,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       }
     });
     state.subscribe(refresh);
+    // Selecting a step changes nothing in the state store, so the pill would
+    // keep naming the destination it had when the phase mounted.
+    document.addEventListener("nt:actstep-changed", refresh);
     // A full-page extra toggles a documentElement class outside the state store,
     // so watch that too.
     new MutationObserver(refresh).observe(document.documentElement, {

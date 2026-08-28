@@ -105,10 +105,33 @@ const CHECKS = {
       "flagship reverted to indexing 6 scene keys by a 3-act phase index (Act 3 shows the explore scene)",
     );
   },
-  partTwoForward(rendererSrc) {
+  // The floating pill is a STEP control, not a phase control. Standing on Act
+  // 2's Launch it used to read "Next: Exit Ticket" and skip Learn It, Explore,
+  // Practice and Connect in one tap, because it only ever knew about phases.
+  nextPillFollowsSteps(appSrc) {
+    const start = appSrc.indexOf("function mountNextButton");
+    assert.ok(start > 0, "the floating Next pill is gone");
+    const body = appSrc.slice(start, appSrc.indexOf("})();", start));
     assert.ok(
-      /part-two-forward/.test(rendererSrc) && /-part2\//.test(rendererSrc),
-      "Part 1 lost its forward door to Apply Day — the -part2 pages become hub-only again",
+      /getActStepNav\(\)/.test(body),
+      "the Next pill stopped reading the mounted act-step chain — it is naming phases again, so one tap skips the rest of the act",
+    );
+    assert.ok(
+      /nav\.show\(nav\.index \+ 1\)/.test(body),
+      "the Next pill no longer advances to the next STEP; it jumps straight to the next act",
+    );
+    assert.ok(
+      /addEventListener\("nt:actstep-changed", refresh\)/.test(body),
+      "the Next pill no longer refreshes when the step changes — selecting a step leaves it naming a stale destination",
+    );
+  },
+  // Part 1 must NOT link forward to Part 2 (Joel, 2026-08-28): Apply Day is the
+  // next class and the teacher opens it. The opposite of this used to be
+  // pinned here; re-adding the card is a decision, not a regression fix.
+  noPartTwoForward(rendererSrc) {
+    assert.ok(
+      !/part-two-forward/.test(rendererSrc),
+      "the 'Continue to Part 2: Apply Day' card came back — Part 1 does not send students into tomorrow's group problem",
     );
   },
   partTwoLabels(partTwoSrc) {
@@ -140,7 +163,17 @@ const MUTANTS = [
         .replace("ACT_SCENE_KEYS", "PHASE_KEYS")
         .replace("sceneForPhase(scenes, phaseIndex)", "scenes[PHASE_KEYS[phaseIndex]]"),
     ),
-  () => CHECKS.partTwoForward(renderer.replace("part-two-forward", "gone")),
+  () => CHECKS.nextPillFollowsSteps(app.replaceAll("getActStepNav()", "null")),
+  () =>
+    CHECKS.nextPillFollowsSteps(app.replace("nav.show(nav.index + 1);", "app.navigateTo(cur);")),
+  () =>
+    CHECKS.nextPillFollowsSteps(
+      app.replace('document.addEventListener("nt:actstep-changed", refresh);', ""),
+    ),
+  () =>
+    CHECKS.noPartTwoForward(
+      renderer.replace("renderAct3ExitTicket", 'x="part-two-forward";renderAct3ExitTicket'),
+    ),
 ];
 let caught = 0;
 for (const mutate of MUTANTS) {
@@ -160,7 +193,8 @@ CHECKS.ribbonFiltersJumps(app);
 CHECKS.continueLandsOnVocab(renderer);
 CHECKS.stepSavedByKey(renderer);
 CHECKS.flagshipScenesPerAct(flagship);
-CHECKS.partTwoForward(renderer);
+CHECKS.nextPillFollowsSteps(app);
+CHECKS.noPartTwoForward(renderer);
 CHECKS.partTwoLabels(partTwo);
 
-console.log("act-flow-contract: PASS (9 checks, 7 mutation-proven)");
+console.log(`act-flow-contract: PASS (10 checks, ${MUTANTS.length} mutation-proven)`);

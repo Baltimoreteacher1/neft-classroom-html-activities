@@ -5506,12 +5506,8 @@ function renderReflectPhase(el, state, ctx, config) {
 
   el.append(reflectCard);
   el.append(finishNote, finishRow);
-
-  // MSTAR-style practice, AFTER the exit ticket and clearly optional. Authored
-  // items sat in reflect.mstarPractice with nothing reading them, which is
-  // content a student cannot reach — tools/esol-lane-coverage.test.mjs caught
-  // the authored Spanish (optionsEs) that no renderer displayed.
-  renderMstarPractice(el, state, config);
+  // MSTAR practice used to be appended here, collapsed, below everything above.
+  // It is now its own step in Act 3 — see renderAct3ExitTicket.
 }
 
 /* ── MSTAR-style practice ──────────────────────────────────────────────────
@@ -5527,12 +5523,25 @@ function renderReflectPhase(el, state, ctx, config) {
  * Every Spanish field an item carries is rendered beside its English through
  * stackHtml, the same bilingual path the rest of the lesson uses.
  */
-function renderMstarPractice(el, state, config) {
-  const items = config.reflect?.mstarPractice || config.mstarPractice;
-  if (!Array.isArray(items) || !items.length) return;
+function mstarPracticeItems(config) {
+  const items = config?.reflect?.mstarPractice || config?.mstarPractice;
+  return Array.isArray(items) && items.length ? items : null;
+}
+
+/** Does this lesson author MSTAR items? The condition for the Act 3 step chip. */
+function hasMstarPractice(config) {
+  return mstarPracticeItems(config) !== null;
+}
+
+function renderMstarPractice(el, state, config, opts = {}) {
+  const items = mstarPracticeItems(config);
+  if (!items) return;
 
   const wrap = document.createElement("details");
   wrap.className = "card mstar-practice";
+  // On its own step the items ARE the step, so it opens; the disclosure is kept
+  // so the heading and its "optional" note still read as one block.
+  if (opts.open) wrap.open = true;
   wrap.innerHTML = `<summary class="mstar-practice-summary">
       <span class="badge badge-navy">${stackHtml("MSTAR-Style Practice", "Práctica estilo MSTAR")}</span>
       <span class="mstar-practice-note">${stackHtml(
@@ -6000,6 +6009,29 @@ function injectActStepStyles() {
 let pendingActStep = null;
 /** @type {((key:string)=>boolean)|null} */
 let selectActStep = null;
+
+/* The MOUNTED act's step chain, published for the surfaces that live outside
+ * this module.
+ *
+ * The floating "Next" pill (app.js) knew only about PHASES, so on Act 2 step 2
+ * of 6 — the Launch, the problem the lesson is built around — it read
+ * "Next: Exit Ticket" and one tap skipped Learn It, Explore, Practice and
+ * Connect. It was not a wrong label: a phase-level control cannot see a
+ * step-level sequence, and a second hand-maintained copy of the sequence is how
+ * these four surfaces drifted apart in the first place. So the strip publishes
+ * itself and the pill reads it. `wrap` is kept so a stale reference (the phase
+ * re-rendered, or this act has no strip) is detectable rather than believed. */
+/** @type {{wrap:HTMLElement, steps:{key:string,icon:string,label:string}[], index:number, show:(i:number)=>void}|null} */
+let actStepNav = null;
+
+/**
+ * The step chain of the act currently on screen, or null when the mounted
+ * phase has no strip. Never cached by callers — the phase re-render replaces it.
+ */
+export function getActStepNav() {
+  if (!actStepNav || !actStepNav.wrap.isConnected) return null;
+  return actStepNav;
+}
 if (typeof document !== "undefined" && !document.__ntActStepWired) {
   document.__ntActStepWired = true;
   document.addEventListener("rma:actstep", (e) => {
@@ -6048,6 +6080,8 @@ function renderActSteps(el, state, phaseIdx, steps) {
       c.setAttribute("aria-selected", j === i ? "true" : "false");
     });
     visited.add(i);
+    actStepNav = { wrap, steps, index: i, show: (j) => show(j, true) };
+    document.dispatchEvent(new CustomEvent("nt:actstep-changed", { detail: { index: i } }));
     if (save) {
       // Saved by stable KEY, not index: the step list is conditional (a lesson
       // without vocabulary has no vocab step), so a saved index silently
@@ -6414,52 +6448,46 @@ function renderTrackBanner(el) {
 
 // ── Act 3: Exit Ticket & Reflection ──
 export function renderAct3ExitTicket(el, state, ctx, config) {
-  renderActSteps(el, state, 2, [
+  const steps = [
     {
       key: "exit",
       icon: "📝",
       label: "Exit Ticket",
       render: (host) => renderReflectPhase(host, state, ctx, config),
     },
-    {
-      key: "mastery",
-      icon: "🏆",
-      label: "Mastery Check",
-      render: (host) => {
-        renderObjectivesReviewPhase(host, state, ctx, config);
-        appendPartTwoForward(host, config);
-      },
-    },
-  ]);
+  ];
+  // MSTAR practice is its OWN step, not a `<details>` stacked under the exit
+  // ticket. Below three exit questions and the reflection card it sat roughly a
+  // screen and a half past the fold, collapsed, and Joel — who authored the
+  // items — could not find it (2026-08-28: "I'm also not seeing the
+  // supplemental MSTAR practice beneath the exit ticket (this should be its own
+  // button)"). A step a student cannot see is content that does not exist. It
+  // stays optional: the chip only appears on a lesson that authored items, and
+  // nothing in the required sequence routes through it.
+  if (hasMstarPractice(config)) {
+    steps.push({
+      key: "mstar",
+      icon: "🎯",
+      label: "MSTAR Practice",
+      render: (host) => renderMstarPractice(host, state, config, { open: true }),
+    });
+  }
+  steps.push({
+    key: "mastery",
+    icon: "🏆",
+    label: "Mastery Check",
+    render: (host) => renderObjectivesReviewPhase(host, state, ctx, config),
+  });
+  renderActSteps(el, state, 2, steps);
 }
 
-/**
- * Part 1 used to be a dead end: the Apply word problem moved to its own day at
- * /lessons/<id>-part2/ (2026-08-26), and the only route there was back out
- * through the unit hub. This card is the forward door, rendered only when the
- * Part 2 page actually exists — the generator builds one for every CORE lesson
- * with an authored `revealWordProblem.text` (76 of 84), which is exactly the
- * condition tested here, so the link cannot point at a folder that is not
- * there.
- */
-function appendPartTwoForward(host, config) {
-  const isCore = /^\d+-\d+$/.test(String(config.lessonId || ""));
-  const hasApply =
-    config.revealWordProblem && String(config.revealWordProblem.text || "").trim().length > 0;
-  if (!isCore || !hasApply) return;
-  const card = document.createElement("div");
-  card.className = "card part-two-forward";
-  card.style.cssText =
-    "margin:26px auto 8px; max-width:560px; text-align:center; padding:22px 24px; " +
-    "border:1.5px solid #cbd5e1; border-radius:14px; background:#f8fafc;";
-  card.innerHTML = `
-    <div style="font-weight:800; font-size:1.1rem; color:#14223a; margin-bottom:6px;">Next class: Apply Day</div>
-    <p style="margin:0 0 14px; color:#475569; line-height:1.5;">
-      Part 2 is the big problem for this lesson — you will solve it with your group.
-    </p>
-    <a class="btn btn-primary" href="/lessons/${encodeURIComponent(config.lessonId)}-part2/"
-       style="display:inline-block; padding:12px 28px; font-weight:800; border-radius:12px; background:#0f766e; color:#ffffff; text-decoration:none;">
-      Continue to Part 2: Apply Day 📋 →
-    </a>`;
-  host.append(card);
-}
+/* Part 1 deliberately does NOT link forward to Part 2.
+ *
+ * A "Continue to Part 2: Apply Day" card used to close Act 3, added because
+ * Part 1 looked like a dead end. It is not one: Apply Day is the NEXT CLASS,
+ * the teacher opens it, and a forward button at the end of today's lesson only
+ * invites a student to run ahead into tomorrow's group problem alone (Joel,
+ * 2026-08-28: "there should not be a 'continue to apply day 2' — we will just
+ * do that the next day"). The -part2 pages are reached from the unit hub and
+ * the pacing planner, which is where a day is chosen. Do not re-add the card
+ * without asking. */

@@ -135,7 +135,15 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * and an `ERR_HTTP_RESPONSE_CODE_FAILURE` for a file that was on disk the whole
  * time. Both read as real page defects. Both vanish when the check runs on its
  * own against the same dist/. A third Chromium was the difference. */
-const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection", "validate:visibility"]);
+const EXCLUSIVE = new Set([
+  "validate:lesson-boot",
+  "smoke:injection",
+  "validate:visibility",
+  // `validate:flow-walk` joined them on 2026-08-28. It is the heaviest browser
+  // member of the set — it opens two pages per lesson (one to read the taught
+  // sequence, one to walk it clean) and drives ~10 navigations on each.
+  "validate:flow-walk",
+]);
 
 /* --------------------------------------------------------------------------
  * Change coverage. Each rule is [RegExp, checks[]]. A changed path uses the
@@ -150,6 +158,24 @@ const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection", "validate:
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // LESSON FLOW — the forward control, the act step strip and the fixed chrome
+  // that floats over them. These three files are where "press Next and see
+  // where it lands" is decided, and on 2026-08-28 all three were individually
+  // correct while the pill on Act 2's Launch read "Next: Exit Ticket". The
+  // browser walk is the only check that can see that, so any edit here pays for
+  // it; `test` comes along for act-flow-contract.test.mjs, the source-text twin.
+  [
+    /^(engine\/core\/(app|lesson-renderer)\.js|engine\/styles\/present-mode\.css|engine\/core\/present-mode\.js|tools\/(validate-lesson-flow-walk|act-flow-contract\.test)\.mjs)$/,
+    [
+      "validate:flow-walk",
+      "test",
+      "validate:visibility",
+      "validate:js-syntax",
+      "typecheck",
+      "check",
+    ],
+  ],
+
   // GATE COVERAGE — the check that decides which validators are allowed not to
   // gate. Its own inputs are the gate definition and the exemption registry, so
   // a change to either must re-run it; `check` comes along because both files
