@@ -5698,9 +5698,7 @@ function mstarChoiceBlock(host, state, opts) {
     const right = want === got;
     out.classList.toggle("is-correct", right);
     out.classList.toggle("is-wrong", !right);
-    out.innerHTML = right
-      ? `✓ Correct. ${opts.explanation || ""}`
-      : "✗ Not yet — try again.";
+    out.innerHTML = right ? `✓ Correct. ${opts.explanation || ""}` : "✗ Not yet — try again.";
   });
 
   row.append(btn);
