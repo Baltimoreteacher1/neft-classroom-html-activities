@@ -243,10 +243,7 @@ const CHECKS = {
    * today's problem". The invariant kept is the AGREEMENT; the name and the
    * step order are what he chose. */
   partTwoLabels(partTwoSrc) {
-    assert.ok(
-      /name:\s*"Warm-Up"/.test(partTwoSrc),
-      'Part 2 phase 0 is no longer named "Warm-Up"',
-    );
+    assert.ok(/name:\s*"Warm-Up"/.test(partTwoSrc), 'Part 2 phase 0 is no longer named "Warm-Up"');
     assert.ok(
       !/name:\s*"Review"/.test(partTwoSrc),
       'Part 2 phase 0 went back to "Review" — the rail and the page heading must both say Warm-Up',
@@ -269,8 +266,7 @@ const CHECKS = {
 // ── Mutation self-test: every detector must FAIL on the code that shipped. ──
 const MUTANTS = [
   () => CHECKS.partTwoLabels(partTwo.replace('name: "Warm-Up"', 'name: "Review"')),
-  () =>
-    CHECKS.partTwoLabels(partTwo.replace('key: "objectives"', 'key: "zz-objectives"')),
+  () => CHECKS.partTwoLabels(partTwo.replace('key: "objectives"', 'key: "zz-objectives"')),
   () => CHECKS.stripOrder(renderer.replace('key: "vocab"', 'key: "zz-removed"')),
   () => CHECKS.noTakeoverTeaching(app.replace('jump: "vocab"', 'extra: "vocab"')),
   () => CHECKS.ribbonFiltersJumps(app.replace(".filter((t) => !t || !t.jump)", "")),
