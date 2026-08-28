@@ -1009,6 +1009,135 @@ function readLongDivision(text) {
   return longDivisionFigure(d1, d2, q);
 }
 
+/* ---------------- whole ÷ unit fraction ----------------
+   The measurement model: n wholes on top, the SAME length underneath cut into
+   n×d pieces of size 1/d, so a student can count that n×d of them fit.
+
+   6-1's Watch Me Solve It walks 3 ÷ 1/4 = 12 (a 3-foot strip cut into 1/4-foot
+   pieces) but had no figure of its own, so the panel fell back to the lesson's
+   objective art — a bar model of 3 ÷ 1/2 = 6. The picture and the solve were
+   different problems (Joel, 2026-08-28: "this does not fit the image for 6-1
+   (either fix the image or fix the problem)"). This draws the problem the
+   worked example actually states. */
+/* "one 2th" is not a word — screen readers get "one half". */
+const ORDINALS = {
+  2: "half",
+  3: "third",
+  4: "fourth",
+  5: "fifth",
+  6: "sixth",
+  7: "seventh",
+  8: "eighth",
+  9: "ninth",
+  10: "tenth",
+  12: "twelfth",
+};
+function ordinalWord(d) {
+  return ORDINALS[d] || `one ${fmt(d)}th`;
+}
+
+function unitFractionDivisionFigure(n, d, unit) {
+  const X0 = 40;
+  const BW = 380;
+  const TOP = 76;
+  const BH = 52;
+  const GAP = 26;
+  const BOT = TOP + BH + GAP;
+  const pieces = n * d;
+  const pw = BW / pieces;
+  const ww = BW / n;
+
+  // Whole bars on top, one label each.
+  const wholes = [];
+  for (let i = 0; i < n; i += 1) {
+    wholes.push(
+      `<rect x="${fmt(X0 + i * ww)}" y="${TOP}" width="${fmt(ww)}" height="${BH}" rx="4" fill="#fff6e0" stroke="${AMBER_INK}" stroke-width="2.5" />` +
+        label(X0 + i * ww + ww / 2, TOP + BH / 2 + 7, "1", { size: 20, color: AMBER_INK }),
+    );
+  }
+
+  // The same length underneath, cut into pieces of 1/d. Labels are dropped when
+  // a piece is too narrow to hold one rather than printed on top of each other.
+  const showPieceLabels = pw >= 26;
+  const cuts = [];
+  for (let i = 0; i < pieces; i += 1) {
+    cuts.push(
+      `<rect x="${fmt(X0 + i * pw)}" y="${BOT}" width="${fmt(pw)}" height="${BH}" rx="3" fill="${FILL}" stroke="${TEAL_INK}" stroke-width="2" />` +
+        (showPieceLabels
+          ? label(X0 + i * pw + pw / 2, BOT + BH / 2 + 5, `1/${fmt(d)}`, {
+              size: 13,
+              color: TEAL_INK,
+            })
+          : ""),
+    );
+  }
+
+  // "pieces of 1/2 pounds" reads wrong; one piece is 1/2 of a POUND.
+  const singular = /s$/.test(unit) && !/ss$/.test(unit) ? unit.replace(/s$/, "") : unit;
+  const unitWord = singular ? ` ${singular}` : "";
+  return {
+    kind: "unit-fraction-division",
+    h: BOT + BH + 74,
+    // Every number any label prints — 1, n, d and the quotient — and nothing else.
+    values: [1, n, d, pieces],
+    alt: `A bar model. ${fmt(n)} whole bars, each labelled 1, sit above a bar of exactly the same length cut into ${fmt(pieces)} equal pieces, each one ${ordinalWord(d)} of a whole. It shows that ${fmt(pieces)} pieces of size 1/${fmt(d)} fit inside ${fmt(n)} wholes, so ${fmt(n)} divided by 1/${fmt(d)} is ${fmt(pieces)}.`,
+    inner:
+      `${label(W / 2, 40, `${fmt(n)} ÷ 1/${fmt(d)} = ${fmt(pieces)}`, { size: 23 })}` +
+      `${label(X0, TOP - 10, `${fmt(n)} whole${n === 1 ? "" : "s"}`, { size: 14, weight: 700, color: MUTED, anchor: "start" })}` +
+      wholes.join("") +
+      `${label(X0, BOT - 10, `cut into pieces of 1/${fmt(d)}${unitWord}`, { size: 14, weight: 700, color: MUTED, anchor: "start" })}` +
+      cuts.join("") +
+      lines(
+        W / 2,
+        BOT + BH + 34,
+        `Count them: ${fmt(pieces)} pieces of 1/${fmt(d)} fit inside ${fmt(n)} whole${n === 1 ? "" : "s"}.`,
+        { size: 15, weight: 700, color: MUTED },
+      ),
+  };
+}
+
+/* Words that can follow the dividend without being its unit. */
+const NOT_A_UNIT_WORD = new Set([
+  "is",
+  "and",
+  "or",
+  "the",
+  "to",
+  "in",
+  "by",
+  "into",
+  "of",
+  "wholes",
+  "whole",
+  "equal",
+  "groups",
+  "group",
+  "so",
+  "we",
+  "it",
+  "that",
+  "this",
+  "as",
+  "with",
+]);
+
+function readUnitFractionDivision(text) {
+  const m = text.match(/(\d+)\s*÷\s*1\/(\d+)/);
+  if (!m) return null;
+  const n = num(m[1]);
+  const d = num(m[2]);
+  if (!n || !d || n < 1 || d < 2) return null;
+  const pieces = n * d;
+  // Beyond this the pieces are hairlines and the picture stops teaching.
+  if (pieces > 24) return null;
+  // The lesson has to STATE the quotient. Drawing a result the worked example
+  // never claims would be this module inventing mathematics.
+  if (!new RegExp(`\\b${pieces}\\b`).test(text)) return null;
+  const um = text.match(new RegExp(`\\b${n}[-\\s]([A-Za-z]+)`));
+  const word = um ? um[1].toLowerCase() : "";
+  return unitFractionDivisionFigure(n, d, NOT_A_UNIT_WORD.has(word) ? "" : word);
+}
+
 const READERS = [
   readArea,
   readPrism,
@@ -1017,6 +1146,7 @@ const READERS = [
   readEquationTape,
   readRatioTape,
   readDoubleNumberLine,
+  readUnitFractionDivision,
 ];
 
 // The public entry point: a labelled picture of THIS lesson's worked example,
@@ -1052,6 +1182,7 @@ export const _internals = {
   readEquationTape,
   readRatioTape,
   readDoubleNumberLine,
+  readUnitFractionDivision,
   readLongDivision,
   readFactorTree,
   isPrime,

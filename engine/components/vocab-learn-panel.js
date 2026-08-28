@@ -1285,23 +1285,36 @@ function injectVocabLearnStyles() {
       max-width: 420px;
       height: auto;
     }
-    /* One column: the problem, then the steps that happen on it. The figure is
-       sticky at the top of the stage so it stays in view while the steps scroll
-       under it — which is the thing the two-column layout was trying to buy,
-       without squeezing both into half a panel each. */
+    /* One column: the problem, then the steps that happen on it. */
     .vl-solve-stage {
       display: block;
     }
     .vl-solve-stage .vl-stage-visual {
-      position: sticky;
-      top: 0;
-      z-index: 2;
+      /* IN FLOW, not over the steps.
+         This was "position: sticky; top: 0; z-index: 2" for every figure, so a
+         tall picture rode down the panel on top of the very steps it explains
+         (Joel, 2026-08-28: "the formatting is off (the image covers the
+         steps/problem)"). A static worked figure has nothing to gain from
+         following the reader: it does not change as the steps are revealed, and
+         it is already the first thing on the stage. */
+      position: static;
       margin-bottom: 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 14px;
       padding: 12px;
       box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    }
+    /* The one figure that DOES earn stickiness: the long-division tableau, which
+       grows with each revealed step, so the step and the thing it happens to
+       must be on screen together. Height-capped and scrollable, so even a tall
+       tableau stays a strip at the top and can never cover the steps. */
+    .vl-solve-stage .vl-stage-visual:has(.vl-livefig) {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      max-height: 42vh;
+      overflow: auto;
     }
     .vl-solve-stage .vl-livefig svg {
       max-width: 460px;
@@ -2006,9 +2019,19 @@ export function renderLearnItPanel(container, config, options = {}) {
       label: isEs ? "Mírame resolverlo" : "Watch Me Solve It",
       sub: isEs ? "Lee un paso, luego muestra el siguiente" : "Read one step, then show the next",
       build(host) {
+        // THE FIGURE HERE IS THIS PROBLEM, OR THERE IS NO FIGURE.
+        //
+        // The fallback used to be `visualCardHtml` — the lesson's OBJECTIVE art,
+        // which illustrates the day's goal, not the problem being solved. On
+        // 6-1 that pinned a bar model of 3 ÷ 1/2 = 6 above a walk through
+        // 3 ÷ 1/4 = 12: a picture and a solve that were different problems
+        // (Joel, 2026-08-28: "this does not fit the image for 6-1 (either fix
+        // the image or fix the problem)"). workedFigure() draws 6-1's own
+        // 3 ÷ 1/4 now; where it still draws nothing, nothing is what belongs
+        // here, because the steps below already state the problem in full.
         let visualElemHtml = workedFig
           ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
-          : visualCardHtml;
+          : "";
 
         // THE PROBLEM ITSELF, LARGE, ON THE LEFT — and it grows as the steps
         // are revealed. What used to sit here was a static D/M/S/B legend card
