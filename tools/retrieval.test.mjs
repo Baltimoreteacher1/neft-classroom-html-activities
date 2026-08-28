@@ -240,6 +240,14 @@ for (const [standard, items] of Object.entries(bank.bank)) {
     scoped.every((p) => p.lesson && before35.some((e) => e.id === p.lesson)),
     "every scoped pick names the earlier lesson it comes from",
   );
+  // A recurring standard code must not smuggle in a question written for a
+  // lesson the class has not met: every scoped item was authored in a met lesson.
+  const metIds = new Set(before35.map((e) => e.id));
+  checks += 1;
+  assert.ok(
+    scoped.every((p) => metIds.has(p.item.lesson)),
+    "every scoped item was authored in a lesson taught before today's",
+  );
   // 6-1's history is 2-7, 2-6, 1-1: yesterday's 2-7 is the Warm-Up's, and 1-1
   // "Math is Mine" is MPP.3 — a practice standard with nothing to retrieve.
   const picks61 = selectReviewItems([], bank.bank, {

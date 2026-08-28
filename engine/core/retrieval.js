@@ -93,6 +93,15 @@ export function selectReviewItems(
   const allowed = new Set(scoped ? before.slice(1).map((e) => e && e.standard) : []);
   const yesterday = scoped ? before[0]?.standard : "";
   const lessonOf = new Map(scoped ? before.map((e) => [e.standard, e.id]) : []);
+  // A standard code recurs across lessons (3-3 and 3-4 share one), so "some
+  // earlier lesson taught it" does not make every banked item for it fair
+  // game: an item authored in a lesson the class has NOT met yet asks in that
+  // lesson's terms. Inside the scope, only items from met lessons may travel.
+  const met = new Set(scoped ? before.map((e) => e.id) : []);
+  const poolFor = (standard) => {
+    const items = Array.isArray(bank?.[standard]) ? bank[standard] : [];
+    return scoped ? items.filter((it) => met.has(it.lesson)) : items;
+  };
 
   // A mathematical-practice code (MPP.*) names a habit, not content: "Math is
   // Mine" has nothing to retrieve. Derived from the code, not listed, so a new
@@ -104,15 +113,14 @@ export function selectReviewItems(
     standard !== yesterday &&
     !taken.has(standard) &&
     (!scoped || allowed.has(standard)) &&
-    Array.isArray(bank?.[standard]) &&
-    bank[standard].length > 0;
+    poolFor(standard).length > 0;
 
   // Rotate through the bank by review count rather than picking at random, so
   // a student who keeps missing a standard meets a DIFFERENT question each
   // time instead of memorising one card's answer position. Inside the scope,
   // prefer the question the remembered lesson itself asked.
   const pickFrom = (standard, lessonId, rotation) => {
-    const items = bank[standard];
+    const items = poolFor(standard);
     const own = lessonId ? items.filter((it) => it.lesson === lessonId) : [];
     const pool = own.length ? own : items;
     const item = pool[(rotation + seed) % pool.length];
