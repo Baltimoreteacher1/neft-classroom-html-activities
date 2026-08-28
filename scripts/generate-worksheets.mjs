@@ -9,8 +9,15 @@
  *   • Small-Group Catch-Up (Prerequisite Bridge & Standard Acceleration)
  *
  * Outputs per lesson:
- *   • lessons/<id>/worksheet.html              — Publisher-grade student practice printable
- *   • lessons/<id>/worksheet-answer-key.html   — Misconception-aware Teacher Answer Key
+ *   • lessons/<id>/worksheet.html                — Set A student practice printable
+ *   • lessons/<id>/worksheet-answer-key.html     — Set A misconception-aware Teacher Answer Key
+ *   • lessons/<id>/worksheet-2.html              — Set B student practice printable
+ *   • lessons/<id>/worksheet-2-answer-key.html   — Set B Teacher Answer Key
+ *
+ * Set B is the second form of the same lesson — for re-teach, homework, a retake
+ * or day two. It is composed ONLY of problems the lesson's author already wrote
+ * and Set A does not print; see scripts/lib/worksheet-set-b.mjs for which pools
+ * those are and why nothing here re-numbers an authored stem.
  *
  * Compliant with Global Development Rules:
  *   - Rule #1: Production-ready code in a single deterministic pass.
@@ -28,6 +35,7 @@ import {
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { scaffoldFor } from "./lib/worksheet-scaffolds.mjs";
+import { kindOf, setBPages } from "./lib/worksheet-set-b.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -1431,7 +1439,7 @@ function buildCoreTierPage(
   pool,
   label,
   sub,
-  { supported = false, isKey = false, extraScaffold = false } = {},
+  { supported = false, isKey = false, extraScaffold = false, pageClass = "ws-core-tier-page" } = {},
 ) {
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
   const itemsHtml = sectionedProblems(pool, (p, n) =>
@@ -1449,7 +1457,7 @@ function buildCoreTierPage(
       : "";
 
   return `
-    <section class="ws-page ws-core-tier-page">
+    <section class="ws-page ${pageClass}">
       ${publisherHeader(cfg, label, sub, isKey)}
       ${notesHtml}
       ${scaffoldBanner}
@@ -1460,15 +1468,41 @@ function buildCoreTierPage(
   `;
 }
 
-function buildWorksheet(cfg, { key = false } = {}) {
+/* The page tint Set B keeps, so a Group 2 Set B still reads as Group 2 material
+   rather than as a core sheet that wandered into the folder. */
+const SET_B_PAGE_CLASS = {
+  group1: "ws-group1-page",
+  group2: "ws-group2-page",
+  catchup: "ws-catchup-page",
+  core: "ws-core-tier-page",
+};
+
+function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
   const lessonId = cfg.lessonId || "";
   const title = esc(cfg.title || lessonId);
   const audience = key ? "teacher" : "student";
-  const titleSuffix = key ? "Practice Answer Key" : "Practice Worksheet";
+  const suffixBase = set === "B" ? "Practice Set B" : "Practice";
+  const titleSuffix = key ? `${suffixBase} Answer Key` : `${suffixBase} Worksheet`;
 
   let pages = "";
 
-  if (lessonId.includes("-group1")) {
+  if (set === "B") {
+    // Every Set B page runs through the one core builder: the reserve is a flat
+    // list of practice items regardless of lesson kind, and the group-specific
+    // extras on Set A (discourse card, author-your-own challenge) are once-per-
+    // lesson activities, not something to hand out a second time.
+    const pageClass = SET_B_PAGE_CLASS[kindOf(lessonId)] || "ws-core-tier-page";
+    pages = setBPages(cfg)
+      .map((p) =>
+        buildCoreTierPage(cfg, p.pool, p.label, p.sub, {
+          supported: p.supported,
+          isKey: key,
+          extraScaffold: false,
+          pageClass,
+        }),
+      )
+      .join("\n");
+  } else if (lessonId.includes("-group1")) {
     pages = buildGroup1SupportWorksheet(cfg, key);
   } else if (lessonId.includes("-group2")) {
     pages = buildGroup2ChallengeWorksheet(cfg, key);
@@ -2232,6 +2266,7 @@ function lessonDirs() {
 function main() {
   const CHECK = process.argv.includes("--check");
   const stale = [];
+  const missingSetB = [];
   const only = process.argv.slice(2).filter((a) => !a.startsWith("--"));
   const dirs = lessonDirs().filter((d) => (only.length ? only.includes(d) : true));
   let written = 0,
@@ -2259,19 +2294,30 @@ function main() {
       continue;
     }
 
-    const studentFile = join(LESSONS, d, "worksheet.html");
-    const keyFile = join(LESSONS, d, "worksheet-answer-key.html");
-    const studentHtml = buildWorksheet(cfg, { key: false });
-    const keyHtml = buildWorksheet(cfg, { key: true });
+    // Set B is skipped, not emitted empty, when a lesson has no reserve — a
+    // worksheet with a header and no problems is worse than no second sheet.
+    const hasSetB = setBPages(cfg).length > 0;
+    const outputs = [
+      ["worksheet.html", buildWorksheet(cfg, { key: false })],
+      ["worksheet-answer-key.html", buildWorksheet(cfg, { key: true })],
+    ];
+    if (hasSetB) {
+      outputs.push(
+        ["worksheet-2.html", buildWorksheet(cfg, { key: false, set: "B" })],
+        ["worksheet-2-answer-key.html", buildWorksheet(cfg, { key: true, set: "B" })],
+      );
+    } else {
+      missingSetB.push(d);
+    }
 
     if (CHECK) {
-      if (!isGeneratedFresh(studentFile, studentHtml)) stale.push(`lessons/${d}/worksheet.html`);
-      if (!isGeneratedFresh(keyFile, keyHtml)) stale.push(`lessons/${d}/worksheet-answer-key.html`);
+      for (const [name, html] of outputs) {
+        if (!isGeneratedFresh(join(LESSONS, d, name), html)) stale.push(`lessons/${d}/${name}`);
+      }
       continue;
     }
 
-    writeGenerated(studentFile, studentHtml);
-    writeGenerated(keyFile, keyHtml);
+    for (const [name, html] of outputs) writeGenerated(join(LESSONS, d, name), html);
     written++;
   }
 
@@ -2287,7 +2333,12 @@ function main() {
     console.log(`Worksheets up to date (${dirs.length} lessons).`);
     return;
   }
-  console.log(`Worksheets generated: ${written}  (skipped ${skipped})`);
+  console.log(
+    `Worksheets generated: ${written} lessons × Set A + Set B  (skipped ${skipped})` +
+      (missingSetB.length
+        ? `\n  no Set B reserve (Set A only): ${missingSetB.join(", ")}`
+        : "\n  every lesson has a Set B."),
+  );
 }
 
 main();

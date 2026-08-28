@@ -66,7 +66,11 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const GENERATORS = [
-  ["worksheet.html, worksheet-answer-key.html", "../scripts/generate-worksheets.mjs", []],
+  [
+    "worksheet.html, worksheet-answer-key.html, worksheet-2.html, worksheet-2-answer-key.html",
+    "../scripts/generate-worksheets.mjs",
+    [],
+  ],
   ["practice.html, practice-answer-key.html", "../scripts/generate-sg-practice.mjs", []],
   ["handout.html", "../scripts/generate-handout-html.mjs", []],
   [

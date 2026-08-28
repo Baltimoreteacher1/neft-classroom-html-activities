@@ -414,7 +414,7 @@ const COVERAGE = [
   [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   // the retention manifest is part of the same contract as the files it records
   [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
-  [/^lessons\/[^/]+\/worksheet(-answer-key)?\.html$/, ["test", "validate:worksheet-audience"]],
+  [/^lessons\/[^/]+\/worksheet(-2)?(-answer-key)?\.html$/, ["test", "validate:worksheet-audience"]],
   [/^tools\/validate-worksheet-audience\.mjs$/, ["test", "validate:worksheet-audience"]],
   // the deploy graph maps artifacts, mirrors and hook commands to real files;
   // editing any of those three is how the map starts lying

@@ -19,7 +19,7 @@
  * exactly the same reason, so it is swept by the same rules rather than by a
  * second gate that could disagree with this one.
  *
- * This gate asserts, for BOTH page families:
+ * This gate asserts, for EVERY page family:
  *   1. the student page does not contain key markup;
  *   2. a matching `*-answer-key.html` exists and does contain keys;
  *   3. the key file is marked `data-support-audience="teacher"`.
@@ -86,6 +86,12 @@ const dirs = readdirSync(LESSONS, { withFileTypes: true })
 /** The page families split into a student sheet and a teacher key. */
 const FAMILIES = [
   { student: "worksheet.html", key: "worksheet-answer-key.html" },
+  // Set B — the second practice form (worksheet-2.html). It splits on exactly
+  // the same seam as Set A and for the same reason: "worksheet-2.html" carries
+  // the `worksheet` substring the auth pin already routes to students, and
+  // "worksheet-2-answer-key.html" carries `answer-key`, so Basic Auth gates the
+  // key without retouching the five pinned auth files.
+  { student: "worksheet-2.html", key: "worksheet-2-answer-key.html" },
   { student: "practice.html", key: "practice-answer-key.html" },
 ];
 

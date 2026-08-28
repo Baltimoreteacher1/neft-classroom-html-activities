@@ -36,8 +36,13 @@
   var LESSON_PRINTABLES = {
     "2-1": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-1/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -63,8 +68,13 @@
     ],
     "2-2": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-2/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -90,8 +100,13 @@
     ],
     "2-3": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-3/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-3/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -117,8 +132,13 @@
     ],
     "2-4": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-4/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -144,8 +164,13 @@
     ],
     "2-5": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-5/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -171,8 +196,13 @@
     ],
     "2-6": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-6/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -198,8 +228,13 @@
     ],
     "2-7": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-7/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -225,8 +260,13 @@
     ],
     "2-9": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-9/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -252,8 +292,13 @@
     ],
     "2-10": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-10/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-10/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -279,8 +324,13 @@
     ],
     "2-11": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-11/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-11/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -296,8 +346,13 @@
     ],
     "2-12": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/2-12/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/2-12/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -313,8 +368,13 @@
     ],
     "3-1": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-1/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -340,8 +400,13 @@
     ],
     "3-2": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-2/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -367,8 +432,13 @@
     ],
     "3-3": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-3/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-3/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -394,8 +464,13 @@
     ],
     "3-4": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-4/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -421,8 +496,13 @@
     ],
     "3-5": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-5/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -448,8 +528,13 @@
     ],
     "3-6": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-6/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -465,8 +550,13 @@
     ],
     "3-7": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-7/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -482,8 +572,13 @@
     ],
     "3-8": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-8/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -499,8 +594,13 @@
     ],
     "3-9": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-9/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -516,8 +616,13 @@
     ],
     "3-10": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/3-10/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/3-10/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -543,8 +648,13 @@
     ],
     "4-1": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/4-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/4-1/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -560,8 +670,13 @@
     ],
     "4-2": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/4-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/4-2/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -587,8 +702,13 @@
     ],
     "4-4": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/4-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/4-4/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -614,8 +734,13 @@
     ],
     "4-5": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/4-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/4-5/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -641,8 +766,13 @@
     ],
     "5-1": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-1/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -668,8 +798,13 @@
     ],
     "5-2": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-2/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -695,8 +830,13 @@
     ],
     "5-3": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-3/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-3/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -722,8 +862,13 @@
     ],
     "5-4": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-4/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -749,8 +894,13 @@
     ],
     "5-5": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-5/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -766,8 +916,13 @@
     ],
     "5-6": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-6/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -793,8 +948,13 @@
     ],
     "5-7": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-7/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -820,8 +980,13 @@
     ],
     "5-8": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-8/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -847,8 +1012,13 @@
     ],
     "5-9": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-9/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -864,8 +1034,13 @@
     ],
     "5-10": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/5-10/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/5-10/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -891,8 +1066,13 @@
     ],
     "6-1": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-1/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -908,8 +1088,13 @@
     ],
     "6-2": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-2/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -925,8 +1110,13 @@
     ],
     "6-3": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-3/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-3/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -952,8 +1142,13 @@
     ],
     "6-4": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-4/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -979,8 +1174,13 @@
     ],
     "6-5": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-5/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1006,8 +1206,13 @@
     ],
     "6-6": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-6/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1033,8 +1238,13 @@
     ],
     "6-7": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-7/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1060,8 +1270,13 @@
     ],
     "6-8": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-8/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1077,8 +1292,13 @@
     ],
     "6-9": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-9/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1104,8 +1324,13 @@
     ],
     "6-10": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-10/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-10/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1131,8 +1356,13 @@
     ],
     "6-11": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-11/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-11/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1148,8 +1378,13 @@
     ],
     "6-12": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-12/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-12/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1165,8 +1400,13 @@
     ],
     "6-13": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-13/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-13/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1182,8 +1422,13 @@
     ],
     "6-14": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-14/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-14/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1209,8 +1454,13 @@
     ],
     "6-15": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/6-15/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/6-15/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1226,8 +1476,13 @@
     ],
     "7-2": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/7-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/7-2/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1253,8 +1508,13 @@
     ],
     "7-3": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/7-3/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/7-3/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1280,8 +1540,13 @@
     ],
     "7-4": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/7-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/7-4/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1307,8 +1572,13 @@
     ],
     "7-5": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/7-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/7-5/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1334,8 +1604,13 @@
     ],
     "7-6": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/7-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/7-6/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1361,8 +1636,13 @@
     ],
     "7-8": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/7-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/7-8/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1378,8 +1658,13 @@
     ],
     "7-9": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/7-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/7-9/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1395,8 +1680,13 @@
     ],
     "8-1": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/8-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/8-1/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1422,8 +1712,13 @@
     ],
     "8-2": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/8-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/8-2/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1449,8 +1744,13 @@
     ],
     "8-3": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/8-3/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/8-3/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1476,8 +1776,13 @@
     ],
     "8-4": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/8-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/8-4/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1503,8 +1808,13 @@
     ],
     "8-5": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/8-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/8-5/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1530,8 +1840,13 @@
     ],
     "8-6": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/8-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/8-6/worksheet-2.html",
         isPrintable: true,
       },
       {
@@ -1547,8 +1862,13 @@
     ],
     "8-7": [
       {
-        text: "📝 Practice Worksheet (A & B)",
+        text: "📝 Practice Worksheet — Set A",
         href: "/lessons/8-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Set B",
+        href: "/lessons/8-7/worksheet-2.html",
         isPrintable: true,
       },
       {
