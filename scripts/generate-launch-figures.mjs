@@ -27,7 +27,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   renderBalanceScaleSvg,
+  renderCoordPlaneSvg,
   renderDotPlotSvg,
+  renderDoubleNumberLineSvg,
   renderFractionDivisionModelSvg,
   renderNumberLineSvg,
   renderParallelogramDecompSvg,
@@ -186,12 +188,100 @@ export function readSignedScale(text) {
   };
 }
 
+/** "a top edge of 4 feet, a bottom edge of 8 feet, and a height of 5 feet" */
+export function readTrapezoid(text) {
+  if (!/\btrapezoid/i.test(text)) return null;
+  const m = text.match(
+    /top\s+(?:edge|base)\s+of\s+(\d+(?:\.\d+)?)\s*([a-z]+)[\s\S]{0,60}?bottom\s+(?:edge|base)\s+of\s+(\d+(?:\.\d+)?)[\s\S]{0,60}?height\s+of\s+(\d+(?:\.\d+)?)/i,
+  );
+  if (!m) return null;
+  const [, b1, unit, b2, h] = m;
+  // Drawn as a polygon on the coordinate helper's plain stage: the two parallel
+  // edges and the perpendicular height, labelled with the lesson's own numbers.
+  const B1 = Number(b1);
+  const B2 = Number(b2);
+  const H = Number(h);
+  const scale = Math.min(300 / Math.max(B1, B2), 150 / H);
+  const w2 = (B2 * scale) / 2;
+  const w1 = (B1 * scale) / 2;
+  const hh = H * scale;
+  const cx = 200;
+  const top = 40;
+  const bot = top + hh;
+  const svg = `<div><svg xmlns="http://www.w3.org/2000/svg" width="400" height="${bot + 60}" viewBox="0 0 400 ${bot + 60}" role="img" style="background:white">
+  <polygon points="${cx - w1},${top} ${cx + w1},${top} ${cx + w2},${bot} ${cx - w2},${bot}" fill="rgba(15,118,110,0.14)" stroke="#0f766e" stroke-width="2.5"/>
+  <line x1="${cx}" y1="${top}" x2="${cx}" y2="${bot}" stroke="#b45309" stroke-width="2.5" stroke-dasharray="7 5"/>
+  <path d="M ${cx} ${bot - 13} L ${cx + 13} ${bot - 13} L ${cx + 13} ${bot}" fill="none" stroke="#b45309" stroke-width="2"/>
+  <text x="${cx}" y="${top - 12}" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">${b1} ${unit}</text>
+  <text x="${cx}" y="${bot + 28}" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">${b2} ${unit}</text>
+  <text x="${cx + 20}" y="${top + hh / 2}" font-size="15" font-weight="700" fill="#b45309">height = ${h} ${unit}</text>
+</svg></div>`;
+  return {
+    kind: "trapezoid",
+    values: [B1, B2, H],
+    alt: `A trapezoid with a top edge of ${b1} ${unit}, a bottom edge of ${b2} ${unit}, and a perpendicular height of ${h} ${unit} drawn straight between the two parallel edges.`,
+    svg,
+  };
+}
+
+/** "a buried chest at (-3, 2) and a hidden cave at (4, 2)" */
+export function readCoordinatePair(text) {
+  const pairs = [...text.matchAll(/\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)/g)].map((m) => ({
+    x: Number(m[1]),
+    y: Number(m[2]),
+  }));
+  if (pairs.length < 2) return null;
+  const use = pairs.slice(0, 4);
+  const max = Math.max(5, ...use.flatMap((p) => [Math.abs(p.x), Math.abs(p.y)]));
+  return {
+    kind: "coordinate-plane",
+    values: use.flatMap((p) => [p.x, p.y]),
+    alt: `A four-quadrant coordinate plane with the points the problem names plotted: ${use
+      .map((p) => `(${p.x}, ${p.y})`)
+      .join(", ")}.`,
+    svg: renderCoordPlaneSvg({
+      max: Math.ceil(max),
+      points: use.map((p) => ({ ...p, label: `(${p.x}, ${p.y})` })),
+    }),
+  };
+}
+
+/** "Booth A charges $3 for 5 games" — a stated rate pairing two quantities. */
+export function readUnitRate(text) {
+  const m = text.match(/\$\s*(\d+(?:\.\d+)?)\s+for\s+(\d+(?:\.\d+)?)\s+([a-z]+)/i);
+  if (!m) return null;
+  const [, cost, qty, noun] = m;
+  const C = Number(cost);
+  const Q = Number(qty);
+  const step = C / Q;
+  const top = [0, Q];
+  const bottom = [0, C];
+  for (let k = 2; k <= 4; k++) {
+    top.push(Q * k);
+    bottom.push(Number((C * k).toFixed(2)));
+  }
+  return {
+    kind: "double-number-line",
+    values: [C, Q],
+    alt: `A double number line pairing ${noun} with dollars. ${qty} ${noun} lines up with $${cost}, so one ${noun.replace(/s$/, "")} is $${step.toFixed(2)}.`,
+    svg: renderDoubleNumberLineSvg({
+      topTicks: top,
+      bottomTicks: bottom,
+      topLabel: noun,
+      bottomLabel: "dollars",
+    }),
+  };
+}
+
 export const READERS = [
   ["equation", readEquation],
   ["inequality", readInequality],
   ["data-set", readDataSet],
   ["fraction-division", readFractionDivision],
   ["area-shape", readAreaShape],
+  ["trapezoid", readTrapezoid],
+  ["coordinate-pair", readCoordinatePair],
+  ["unit-rate", readUnitRate],
   ["signed-scale", readSignedScale],
 ];
 
