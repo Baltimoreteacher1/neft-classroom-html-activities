@@ -274,6 +274,54 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
   const parallel = (cfg) =>
     cfg && Array.isArray(cfg.parallelPractice) ? cfg.parallelPractice : [];
 
+  /* The lesson's own MSTAR item, flattened into an ordinary practice problem.
+   *
+   * These are state-assessment items — the most rigorous authored content the
+   * lesson owns — and nothing read them before: this builder only ever looked
+   * at `practice.*` and `parallelPractice`, so they sat unused while Level 3
+   * repeated Level 1 on 25 of 76 lessons. That was an oversight, not a
+   * decision; no comment or gate excluded them.
+   *
+   * ONLY Part A is taken. An EBSR item is two questions: Part A asks for the
+   * value, Part B asks which reasoning justifies "the answer to Part A" — and
+   * 28 of those stems say exactly that, which dangles the moment the part is
+   * lifted out and numbered on its own, the same defect the Connect checks had
+   * on the printed worksheets. Part A stands alone; Part B does not.
+   *
+   * `multi-select` and `error-analysis` MSTAR items are skipped: the first has
+   * several correct answers where this renderer marks one, and the second
+   * carries a worked example in a shape groupLevels never uses. A half-rendered
+   * state item is worse than none.
+   *
+   * Every Part A carries `choiceFeedback` naming what each wrong choice did —
+   * authored 2026-08-28 for exactly this promotion, because
+   * tools/distractor-feedback.test.mjs holds every multiple-choice item in a
+   * lesson config to that standard and these had none. */
+  const mstarProblems = (cfg) => {
+    const out = [];
+    for (const item of (cfg && cfg.reflect && cfg.reflect.mstarPractice) || []) {
+      if (!item || item.type !== "ebsr") continue;
+      const part = item.partA;
+      if (!part || !part.stem || !Array.isArray(part.choices) || !part.choices.length) continue;
+      if (!Number.isInteger(part.correctIndex)) continue;
+      if (part.correctIndex < 0 || part.correctIndex >= part.choices.length) continue;
+      if (!Array.isArray(part.choiceFeedback) || part.choiceFeedback.length !== part.choices.length)
+        continue;
+      out.push({
+        type: "multiple-choice",
+        stem: part.stem,
+        choices: part.choices,
+        correctIndex: part.correctIndex,
+        choiceFeedback: part.choiceFeedback,
+        ...(part.explanation ? { explanation: part.explanation } : {}),
+        ...(part.stemEs ? { stemEs: part.stemEs } : {}),
+        ...(part.choicesEs ? { choicesEs: part.choicesEs } : {}),
+        ...(part.explanationEs ? { explanationEs: part.explanationEs } : {}),
+      });
+    }
+    return out;
+  };
+
   // Each group's 12-item parallel bank is a ramp of the same skill. Group 1's
   // runs scaffolded → on-level and Group 2's runs on-level → challenge, so each
   // is split at the middle: the easy half of Group 1's and the hard half of
@@ -303,6 +351,14 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
       ...p2.slice(0, h2),
     ],
     level3: [
+      // FIRST, deliberately. Each level is capped at five and the pools are
+      // ordered, so anything appended here is what the cap throws away — which
+      // is precisely how Level 3 came to show five items it did not own.
+      // Leading with the state item also fixes the hollow levels WITHOUT
+      // touching the within-level dedupe this file documents above, and which
+      // measurement supports: cross-deduping in any claiming order simply moves
+      // the shortage onto Level 2, the grade-level table.
+      ...mstarProblems(config),
       ...tier(config, "extending"),
       ...tier(g2, "extending"),
       ...tier(cu, "extending"),
