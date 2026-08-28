@@ -35,7 +35,7 @@ import {
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { scaffoldFor } from "./lib/worksheet-scaffolds.mjs";
-import { kindOf, setBPages } from "./lib/worksheet-set-b.mjs";
+import { kindOf, partTwoSplit, setBPages } from "./lib/worksheet-set-b.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -833,6 +833,42 @@ function renderOpen(it, _n, key, supported) {
   return `<p class="ws-stem">${esc(stem)}</p>${frameHtml}${key ? keyHtml : workBox("Mathematical Justification & Response", true)}`;
 }
 
+/**
+ * guided-fill — a scaffolded solve: the question, then named steps the student
+ * completes one at a time, then the final answer.
+ *
+ * Without this it fell to renderGeneric, which prints the stem over a blank box
+ * and throws the scaffold away — on Apply Day, where the whole point of the item
+ * is the steps. The key prints each step's own answer, so a teacher can see
+ * WHERE a student came off, not only that the total was wrong.
+ */
+function renderGuidedFill(it, _n, key) {
+  const stem = getStem(it);
+  const steps = Array.isArray(it.steps) ? it.steps : [];
+
+  const rows = steps
+    .map((st, i) => {
+      const prompt = esc(st.prompt || st.label || `Step ${i + 1}`);
+      const filled = key ? esc(st.answer ?? "") : "";
+      return `<li class="ws-gf-step"><span class="ws-step-n">${i + 1}</span><span class="ws-gf-prompt">${prompt}</span><span class="ws-blank${key ? " ws-correct" : ""}">${filled}</span></li>`;
+    })
+    .join("");
+
+  const stepsHtml = rows ? `<ol class="ws-gf-steps">${rows}</ol>` : "";
+  const finalLabel = key ? esc(it.answer ?? "") : "";
+  const finalHtml = `<div class="ws-gf-final"><b>Final answer:</b> <span class="ws-blank ws-blank-lg${key ? " ws-correct" : ""}">${finalLabel}</span></div>`;
+
+  let notes = "";
+  if (key && it.explanation) {
+    notes = `<p class="ws-keynote">💡 <b>Solution Rationale:</b> ${esc(it.explanation)}</p>`;
+  }
+
+  // No steps authored means there is no scaffold to print — fall back to a
+  // workspace rather than an empty ordered list.
+  const body = stepsHtml || (key ? "" : workBox("Workspace & Solution Steps", true));
+  return `<p class="ws-stem">${esc(stem)}</p>${body}${finalHtml}${notes}`;
+}
+
 function renderGeneric(it, _n, key) {
   const stem = getStem(it);
   return `<p class="ws-stem">${esc(stem)}</p>${key ? `<div class="ws-keynote">See standard solution method.</div>` : workBox()}`;
@@ -849,6 +885,7 @@ function renderProblem(it, n, { key = false, supported = false, commonMistake = 
   else if (t === "fill-table") body = renderFillTable(it, n, key);
   else if (t === "drag-sort") body = renderDragSort(it, n, key);
   else if (t === "open-response" || t === "short-answer") body = renderOpen(it, n, key, supported);
+  else if (t === "guided-fill") body = renderGuidedFill(it, n, key);
   else body = renderGeneric(it, n, key);
 
   return `
@@ -1014,12 +1051,34 @@ function splitKeyIdea(keyIdea) {
 function conceptSummaryBlock(cfg, { advanced = false } = {}) {
   const intro = conceptIntroOf(cfg);
   const heading = intro.heading || cfg.title || "Core Mathematical Strategy";
-  const { lead, steps } = splitKeyIdea(intro.keyIdea);
+  let { lead, steps } = splitKeyIdea(intro.keyIdea);
+
+  // Apply Day has no `launch.conceptIntro` — it states the rule it is applying
+  // in `reviewHighlights` instead (rule + numbered steps + watchOut). Without
+  // this the notes block on all 76 Part 2 sheets is a word bank and nothing
+  // else, while the lesson's own worked procedure sits unread in the config.
+  const highlights = cfg.reviewHighlights || {};
+  if (!lead && highlights.rule) lead = highlights.rule;
+  if (!steps.length && Array.isArray(highlights.steps)) {
+    // The authored steps carry their own "1. " / "2. " prefixes; the renderer
+    // numbers them, so printing both gives "1. 1. Put a 1 under…".
+    steps = highlights.steps
+      .map((x) =>
+        String(x || "")
+          .replace(/^\s*\d+[.)]\s*/, "")
+          .trim(),
+      )
+      .filter(Boolean);
+  }
   const iDoLines = Array.isArray(intro.iDo && intro.iDo.lines) ? intro.iDo.lines : [];
   const weDoLines = Array.isArray(intro.weDo && intro.weDo.lines) ? intro.weDo.lines : [];
   const vocab = (cfg.vocabulary || []).filter((v) => v && v.term).slice(0, 6);
   const mistake =
-    cfg.practice?.commonMistake || cfg.commonMistake || cfg.reflect?.commonMistake || "";
+    cfg.practice?.commonMistake ||
+    cfg.commonMistake ||
+    cfg.reflect?.commonMistake ||
+    highlights.watchOut ||
+    "";
   const mistakeText =
     typeof mistake === "string" ? mistake : mistake?.text || mistake?.description || "";
 
@@ -1471,6 +1530,7 @@ function buildCoreTierPage(
 /* The page tint Set B keeps, so a Group 2 Set B still reads as Group 2 material
    rather than as a core sheet that wandered into the folder. */
 const SET_B_PAGE_CLASS = {
+  partTwo: "ws-core-tier-page",
   group1: "ws-group1-page",
   group2: "ws-group2-page",
   catchup: "ws-catchup-page",
@@ -1499,6 +1559,47 @@ function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
           isKey: key,
           extraScaffold: false,
           pageClass,
+        }),
+      )
+      .join("\n");
+  } else if (lessonId.includes("-part2")) {
+    // Apply Day. Its practice is authored under `groupLevels.level1/2/3` rather
+    // than under `practice.*`, which is why the generator skipped all 76 of
+    // these lessons in silence. The tiers overlap as authored, so the split is
+    // computed once in worksheet-set-b.mjs and both sheets read it — including
+    // the decision NOT to print tier pages for a lesson whose "three tiers" are
+    // one pool copied three times.
+    const split = partTwoSplit(cfg);
+    const TIER_META = [
+      {
+        label: "Apply Day · Version A",
+        sub: "Supported Application · Guided Entry to Today's Problem",
+        supported: true,
+      },
+      {
+        label: "Apply Day · Version B",
+        sub: "On-Level Application · Standard Rigor",
+        supported: false,
+      },
+      {
+        label: "Apply Day · Challenge",
+        sub: "Extension &amp; Non-Routine Application",
+        supported: false,
+      },
+    ];
+    const SINGLE_META = {
+      label: "Apply Day · Practice",
+      sub: "Application Practice for Today's Problem",
+      supported: true,
+    };
+    pages = split.setA
+      .map((pool, i) => ({ pool, ...(split.tiered ? TIER_META[i] : SINGLE_META) }))
+      .filter((t) => t.pool.length)
+      .map((t) =>
+        buildCoreTierPage(cfg, t.pool, t.label, t.sub, {
+          supported: t.supported,
+          isKey: key,
+          extraScaffold: false,
         }),
       )
       .join("\n");
@@ -2231,6 +2332,12 @@ ${DIVISION_FIGURE_CSS}
 
 /* Teacher Keys */
 .ws-keynote { margin: 6px 0 0; color: var(--teal); font-size: 12px; font-weight: 600; background: #f0fdfa; border-left: 3px solid var(--teal); padding: 4px 8px; border-radius: 0 4px 4px 0; }
+.ws-gf-steps { list-style: none; margin: 8px 0 0; padding: 0; }
+.ws-gf-step { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px dotted var(--line); }
+.ws-gf-prompt { flex: 0 1 auto; font-size: 12.5px; }
+.ws-gf-step .ws-blank { flex: 1 1 90px; min-width: 90px; }
+.ws-gf-final { margin-top: 10px; font-size: 12.5px; }
+.ws-blank-lg { display: inline-block; min-width: 150px; }
 .ws-watch { margin: 6px 0 0; color: #9a4a12; font-size: 12px; background: #fff3e6; border-left: 3px solid #e08a3c; padding: 4px 8px; border-radius: 0 4px 4px 0; }
 
 @media print {
@@ -2287,6 +2394,11 @@ function main() {
       ) ||
       Boolean(
         cfg.lessonId && (cfg.lessonId.includes("-group") || cfg.lessonId.includes("-catchup")),
+      ) ||
+      // Apply Day authors its practice under groupLevels, not practice.*. Asking
+      // only about `practice` is what skipped all 76 of these lessons silently.
+      ["level1", "level2", "level3"].some((lvl) =>
+        (cfg.groupLevels?.[lvl] || []).some((p) => p && (p.type || p.stem || p.prompt)),
       );
 
     if (!hasAny) {

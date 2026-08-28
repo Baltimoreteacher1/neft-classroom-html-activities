@@ -193,7 +193,114 @@ export function kindOf(lessonId) {
   if (id.includes("-group1")) return "group1";
   if (id.includes("-group2")) return "group2";
   if (id.includes("-catchup")) return "catchup";
+  // Apply Day. Its practice lives under `groupLevels.level1/2/3`, not under
+  // `practice.*`, which is why the worksheet generator skipped all 76 of these
+  // lessons in silence until 2026-08-28 — `hasAny` asked only about `practice`.
+  if (id.includes("-part2")) return "partTwo";
   return "core";
+}
+
+/** Set A prints this many items per Apply Day tier; the rest is Set B's. */
+export const PART_TWO_TIER_CAP = 3;
+
+/** The three authored tiers of an Apply Day, in increasing demand. */
+export const PART_TWO_LEVELS = ["level1", "level2", "level3"];
+
+/**
+ * Apply Day's reserve: what Set A's per-tier cap leaves behind, then the review
+ * warm-up.
+ *
+ * The warm-up comes LAST despite being the easiest, because it is retrieval on
+ * the PREVIOUS lesson rather than practice on this one — it belongs at the end
+ * of the second sheet as a spiral check, not at the front as a warm-up a
+ * student has already done in class.
+ *
+ * The cap is 3 rather than "print everything": measured across all 76 lessons,
+ * a cap of 3 leaves Set A a mean of 8.1 items over three tier pages and Set B a
+ * mean of 7.1 with nothing below 4, where a cap of 5 leaves Set B the three
+ * warm-up questions and nothing else. Both sheets have to stand on their own.
+ */
+/**
+ * The three Apply Day tiers, with each problem belonging to exactly one of them.
+ *
+ * THE TIERS OVERLAP AS AUTHORED: 192 items are repeated across level1/level2/
+ * level3 in 65 of the 76 lessons. In the app that is invisible — a group only
+ * ever sees its own level — but on paper it puts the same problem on the
+ * Version A page and the Version B page of the same packet, and (because Set A
+ * takes each tier's head and Set B its tail) it put 53 of 76 Set B sheets in
+ * breach of the no-reprint rule. The gate caught it; this is the fix.
+ *
+ * A shared item is kept at the LOWEST tier it appears in. A problem good enough
+ * for the supported group is a supported problem; promoting it would take
+ * content away from the students with the least of it.
+ */
+export function partTwoTiers(cfg) {
+  const claimed = new Set();
+  return PART_TWO_LEVELS.map((level) =>
+    printable(cfg?.groupLevels?.[level]).filter((p) => {
+      const f = itemFingerprint(p);
+      if (claimed.has(f)) return false;
+      claimed.add(f);
+      return true;
+    }),
+  );
+}
+
+/**
+ * Does this Apply Day actually have three tiers once the duplicates are gone?
+ *
+ * In 19 of the 76 lessons the deduped tiers come out like 1 / 5 / 0 — level 3
+ * was a verbatim copy of the other two and level 1 holds a single unique item.
+ * Those lessons have ONE authored pool wearing three labels, and printing a
+ * "Challenge" page with nothing on it, or a "Version A" page with one problem,
+ * would be labelling that a student can read and the content cannot support.
+ */
+export function partTwoHasRealTiers(tiers) {
+  return tiers.filter((t) => t.length >= 2).length >= 2;
+}
+
+/**
+ * How Set A and Set B divide an Apply Day.
+ *
+ * Well-tiered lesson: a page per tier, each taking that tier's first
+ * PART_TWO_TIER_CAP; Set B gets the tails.
+ * Single-pool lesson: the deduped items in tier order, split down the middle so
+ * both sheets carry the same weight instead of one taking everything.
+ */
+export function partTwoSplit(cfg) {
+  const tiers = partTwoTiers(cfg);
+  if (partTwoHasRealTiers(tiers)) {
+    return {
+      tiered: true,
+      setA: tiers.map((t) => t.slice(0, PART_TWO_TIER_CAP)),
+      reserve: tiers.flatMap((t) => t.slice(PART_TWO_TIER_CAP)),
+    };
+  }
+  // Single-pool lesson: split so the two SHEETS come out even, not the pool.
+  // Set B also receives the review warm-up, so an even split of the pool alone
+  // hands Set B three extra problems and leaves Set A the thinner sheet — which
+  // is what a plain halving did (Set A floor 2). Both sheets keep at least
+  // MIN_PER_SHEET where the content allows it.
+  const flat = tiers.flat();
+  const warmUps = printable(cfg?.reviewWarmup?.questions).length;
+  let at = Math.ceil((flat.length + warmUps) / 2);
+  at = Math.min(at, Math.max(0, flat.length - Math.max(0, MIN_PER_SHEET - warmUps)));
+  at = Math.max(at, Math.min(MIN_PER_SHEET, flat.length));
+  return { tiered: false, setA: [flat.slice(0, at)], reserve: flat.slice(at) };
+}
+
+/** What Set A prints for an Apply Day. */
+export function partTwoSetAPool(cfg) {
+  return partTwoSplit(cfg).setA.flat();
+}
+
+export function partTwoReserve(cfg) {
+  const out = tag(partTwoSplit(cfg).reserve, "practice");
+  for (const q of printable(cfg?.reviewWarmup?.questions)) {
+    const item = asProblem(q, { origin: "warmup" });
+    if (item) out.push(item);
+  }
+  return out;
 }
 
 /**
@@ -222,6 +329,9 @@ function dedupe(items) {
 
 const MAX_PER_PAGE = 6;
 
+/** A sheet below this many problems is not worth printing on its own. */
+const MIN_PER_SHEET = 4;
+
 /**
  * The pages Set B prints for this lesson, or [] when the lesson has no reserve.
  *
@@ -230,8 +340,25 @@ const MAX_PER_PAGE = 6;
  */
 export function setBPages(cfg) {
   const kind = kindOf(cfg?.lessonId);
-  const reserve = dedupe(kind === "core" ? coreReserve(cfg) : smallGroupReserve(cfg, kind));
+  const reserve = dedupe(
+    kind === "core"
+      ? coreReserve(cfg)
+      : kind === "partTwo"
+        ? partTwoReserve(cfg)
+        : smallGroupReserve(cfg, kind),
+  );
   if (!reserve.length) return [];
+
+  if (kind === "partTwo") {
+    return [
+      {
+        pool: reserve.slice(0, MAX_PER_PAGE * 2),
+        label: "Apply Day · Set B",
+        sub: "Second Practice Form · Independent Application and Spiral Review",
+        supported: false,
+      },
+    ];
+  }
 
   if (kind === "group1") {
     return [

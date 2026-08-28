@@ -25,6 +25,7 @@ import {
   coreReserve,
   itemFingerprint,
   kindOf,
+  partTwoSetAPool,
   printable,
   setBPages,
 } from "../scripts/lib/worksheet-set-b.mjs";
@@ -48,6 +49,7 @@ function setAPool(cfg) {
   if (kind === "group1") return (app.length ? app : on).slice(0, 6);
   if (kind === "group2") return (ext.length ? ext : on).slice(0, 6);
   if (kind === "catchup") return (app.length ? app : on).slice(0, 5);
+  if (kind === "partTwo") return partTwoSetAPool(cfg);
   return [...app, ...on, ...ext];
 }
 
@@ -108,8 +110,11 @@ for (const id of dirs) {
     }
   }
 
-  // A small-group Set B stays inside the practice pools.
-  if (kindOf(id) !== "core" && items.some((p) => p.origin && p.origin !== "practice")) {
+  // A small-group Set B stays inside the practice pools — Apply Day is exempt:
+  // it has no small-group Practice Set packet to collide with, and its review
+  // warm-up is its own spiral content.
+  const k = kindOf(id);
+  if (k !== "core" && k !== "partTwo" && items.some((p) => p.origin && p.origin !== "practice")) {
     failures.push(`${id}: a small-group Set B took an item from the Practice Set's pools`);
   }
 }

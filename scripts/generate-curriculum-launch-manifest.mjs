@@ -13,6 +13,7 @@ const SAFE_RESOURCE_KEYS = [
   "guidedNotes",
   "handout",
   "worksheet",
+  "worksheet2",
   "homework",
   "familyPage",
   "studentHelp",
@@ -89,6 +90,12 @@ const baseIds = new Set(lessons.filter((lesson) => !/-flagship$/.test(lesson.id)
  * student-reachable surface, which is what FORBIDDEN_RESOURCE encodes above. */
 const GROUP_PRINTABLES = [
   ["worksheet", "worksheet.html"],
+  // Set B — the second practice form. Every lesson has one, and without a key
+  // here the picker cannot offer it: the 364 Set B sheets would be live, linked
+  // from /curriculum/units/, and invisible on /curriculum/, which is the page
+  // the teacher actually opens. That is exactly how 168 small-group worksheets
+  // went unreachable before 2026-08-24.
+  ["worksheet2", "worksheet-2.html"],
   ["practice", "practice.html"],
 ];
 

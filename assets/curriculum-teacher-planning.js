@@ -797,6 +797,7 @@
         ["guidedNotes", "Guided notes"],
         ["handout", "Student handout"],
         ["worksheet", "Worksheet"],
+        ["worksheet2", "Worksheet B"],
         ["exitTicket", "Exit ticket"],
       ];
       var HOME_PARTS = [
@@ -813,6 +814,7 @@
        * per variant rather than this file guessing from the id. */
       var VARIANT_PARTS = [
         ["worksheet", "Worksheet"],
+        ["worksheet2", "Worksheet B"],
         ["practice", "Practice Set"],
       ];
 
@@ -935,6 +937,13 @@
               "tws-open-variant-parts",
             );
           });
+        }
+
+        /* Apply Day's own printables. Part 2 is day 2 of this lesson rather than
+         * a small-group variant, so it is not in `variants` and got no row —
+         * its worksheets were in the manifest and unreachable from this card. */
+        if (p2) {
+          partRow(p2, VARIANT_PARTS, "Part 2 · Apply printables", "tws-open-variant-parts");
         }
 
         /* Everything else the lesson ships with. Choosing a lesson here used to

@@ -74,6 +74,15 @@ function resourcesFor(id) {
       file: `lessons/${id}/worksheet.html`,
       applicable: true,
     },
+    /* Set B — the second practice form, for re-teach, homework, a retake or day
+       two. Same reason it needs a key as `worksheet` above: a sheet the manifest
+       does not name is a sheet the lesson picker cannot offer, however live it
+       is. Its answer key is excluded for the same reason as Set A's. */
+    worksheet2: {
+      path: `/lessons/${id}/worksheet-2.html`,
+      file: `lessons/${id}/worksheet-2.html`,
+      applicable: true,
+    },
     homework: {
       path: `/lessons/${id}/homework.html`,
       file: `lessons/${id}/homework.html`,
