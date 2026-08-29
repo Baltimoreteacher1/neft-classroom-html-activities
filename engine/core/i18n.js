@@ -138,6 +138,11 @@ const STRINGS = {
     en: "Question 2 · Explain your thinking",
     es: "Pregunta 2 · Explica tu razonamiento",
   },
+  etStretchLabel: { en: "Level 3 · Stretch", es: "Nivel 3 · Reto" },
+  etStretchPrompt: {
+    en: "Pick one of the wrong choices above. What mistake leads to it, and how would you catch it?",
+    es: "Elige una de las respuestas incorrectas de arriba. ¿Qué error lleva a ella y cómo lo detectarías?",
+  },
   etQ3Label: { en: "Question 3 · Spot the mistake", es: "Pregunta 3 · Encuentra el error" },
   etQ2Prompt: {
     en: "Look back at Question 1. How do you know your answer is right? Write 1–2 sentences.",

@@ -5416,16 +5416,19 @@ function renderReflectPhase(el, state, ctx, config) {
   const mountExitStretch = () => {
     if (ticketLevel !== "level3" || q1Card.dataset.stretch) return;
     q1Card.dataset.stretch = "1";
+    // First choice: a regenerated variant of an `extending` item (fresh numbers,
+    // so never the verbatim item Practice just served). Rare in practice —
+    // canRegenerate() accepts 0 of the fleet's 106 extending stems today, they
+    // are error-analysis and open-response by design — so it is an upgrade
+    // when available, never the only path.
     const pool = (config.practice?.extending || []).filter(
       (item) => item && item.stem && (item.answer != null || Array.isArray(item.choices)),
     );
-    // From the tail: Practice serves the tier from the front, so the last
-    // items are the ones a Level 3 student is least likely to have met.
     for (let i = pool.length - 1; i >= 0; i--) {
       const item = pool[i];
       const card = document.createElement("div");
       card.className = "card exit-ticket-card exit-ticket-stretch";
-      card.innerHTML = `<div class="badge badge-navy mb-4">${stackHtml("🟣 Level 3 · Stretch", "🟣 Nivel 3 · Reto")}</div>`;
+      card.innerHTML = `<div class="badge badge-navy mb-4">${stackHtml(t("etStretchLabel", "en"), t("etStretchLabel", "es"))}</div>`;
       const handle = attachRegenPractice(
         card,
         {
@@ -5437,6 +5440,35 @@ function renderReflectPhase(el, state, ctx, config) {
       if (!handle) continue;
       q1Card.after(card);
       return;
+    }
+    // Always-available path: error analysis on Q1's OWN distractors — Level 3's
+    // tier is "stretch problems, error analysis & challenge" (levels.js), it
+    // cannot repeat a practice item, and the authored distractor feedback is
+    // the attempt-gated model answer, so it gets better as feedback is authored.
+    const et = cfg.exitTicket || {};
+    const correctIdx = Number(et.correctIndex ?? et.answerIndex ?? -1);
+    const distractorFeedback = (Array.isArray(et.choiceFeedback) ? et.choiceFeedback : [])
+      .map((line, i) => (i === correctIdx ? "" : String(line || "").trim()))
+      .filter(Boolean);
+    const model = distractorFeedback.length
+      ? distractorFeedback.join(" • ")
+      : String(et.explanation || "");
+    const stretchTA = buildOpenET({
+      labelKey: "etStretchLabel",
+      promptKey: "etStretchPrompt",
+      frames: [
+        "Someone who chose ___ probably ___.",
+        "That choice is wrong because ___.",
+        "Alguien que eligió ___ probablemente ___.",
+      ],
+      responseKey: "exit_stretch",
+      model,
+    });
+    const stretchCard = stretchTA?.closest?.(".exit-ticket-card");
+    if (stretchCard) {
+      stretchCard.classList.add("exit-ticket-stretch");
+      const anchor = q3TA?.closest?.(".exit-ticket-card") || q1Card;
+      anchor.after(stretchCard);
     }
   };
   const finishRow = document.createElement("div");

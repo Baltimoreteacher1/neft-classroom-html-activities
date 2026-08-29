@@ -355,14 +355,25 @@ if (!funnelBySlug.size) {
     "",
   );
 } else {
+  // Denominator = the most-reached step of that lesson (its entry step), not
+  // every session the lesson ever had: step events only exist from 2026-08-29,
+  // and dividing by pre-instrumentation sessions would read as "0% reached
+  // step 1" forever. The all-time session count is shown beside it for scale.
   const sessionsBySlug = new Map(data.lessonSessions.map((r) => [r.slug, r.sessions || 0]));
   const ranked = [...funnelBySlug.entries()]
-    .map(([slug, rows]) => ({ slug, rows, sessions: sessionsBySlug.get(slug) || 0 }))
+    .map(([slug, rows]) => ({
+      slug,
+      rows,
+      sessions: Math.max(0, ...rows.map((r) => r.sessions || 0)),
+      allTime: sessionsBySlug.get(slug) || 0,
+    }))
     .sort((a, b) => b.sessions - a.sessions)
     .slice(0, 25);
-  for (const { slug, rows, sessions } of ranked) {
+  for (const { slug, rows, sessions, allTime } of ranked) {
     const title = data.lessonEvents.find((r) => r.slug === slug)?.title || slug;
-    lines.push(`### ${title} — ${fmt(sessions)} session${sessions === 1 ? "" : "s"}`);
+    lines.push(
+      `### ${title} — ${fmt(sessions)} session${sessions === 1 ? "" : "s"} with step data (${fmt(allTime)} all-time)`,
+    );
     lines.push("");
     lines.push("| Stage | Step | Sessions reached | Of lesson |");
     lines.push("|---|---|---:|---:|");
