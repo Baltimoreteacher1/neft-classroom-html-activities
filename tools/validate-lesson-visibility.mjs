@@ -58,13 +58,29 @@ const BOOT_TIMEOUT = 30000;
 // One migrated decimal lesson, one migrated geometry lesson, one untouched
 // themed lesson, one Part 2. Small on purpose: this is a canary for the shared
 // shell, not a fleet sweep — every lesson rides the same panels.
-const SAMPLE = ["2-7", "5-3", "6-1"];
+/* The canary set is the DEFAULT, not the ceiling — see the note in
+ * validate-lesson-flow-walk.mjs. `--lessons 3-1,3-2` aims the same probe at a
+ * unit that is about to be taught and has never been opened. */
+const CLI_LESSONS = (() => {
+  const i = process.argv.indexOf("--lessons");
+  if (i === -1) return null;
+  const list = String(process.argv[i + 1] || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!list.length) {
+    console.error("--lessons was given no lesson ids");
+    process.exit(1);
+  }
+  return list;
+})();
+const SAMPLE = CLI_LESSONS || ["2-7", "5-3", "6-1"];
 const PART2 = "2-7-part2";
 /* The warm-up canary. 2-7 is the long-division lesson whose warm-up was rebuilt
  * as an on-ramp; 6-1 is decimal division. Two is deliberate — every lesson rides
  * the same renderWarmupPhase() card, so this is a canary for that shared shell,
  * not a fleet sweep. */
-const WARMUP_SAMPLE = ["2-7", "6-1"];
+const WARMUP_SAMPLE = CLI_LESSONS || ["2-7", "6-1"];
 
 let failures = 0;
 const fail = (msg) => {
