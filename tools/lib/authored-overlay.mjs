@@ -19,11 +19,22 @@
  * destructive") plus one bespoke preserver for vocabulary. A workaround is a
  * note asking humans to remember; this is a rule.
  *
- * THE RULE. The generator owns what it emits. Anything on disk it does not emit
- * is authored, and survives. That is one sentence, it needs no list of
- * protected key names, and it covers the next authored layer nobody has written
- * yet — which is the whole point, because both losses above were layers that
- * did not exist when the generator was written.
+ * THE FIRST RULE (2026-07, `mergeAuthoredOverlay`). The generator owns what it
+ * emits. Anything on disk it does not emit is authored, and survives. That is
+ * one sentence, it needs no list of protected key names, and it covers the next
+ * authored layer nobody has written yet.
+ *
+ * THE RULE THAT REPLACED IT (2026-08-29, `mergeAdditive`). The first rule was
+ * not enough, because authored work is not only NEW keys — it is also rewritten
+ * key ideas, re-framed Spanish, renamed warmup ids that key save/resume, and
+ * whole practice items the generator never produced. "The generator wins where
+ * it speaks" reverted all of that on every run (docs/known-defects.md,
+ * "generate-small-group-lessons.mjs reverts hand-improved content"). So for a
+ * lesson that already has a committed config, THE COMMITTED FILE IS CANONICAL
+ * and the generator is ADDITIVE ONLY: it never deletes, reorders, renames or
+ * replaces anything the file already has; it may only add keys that are absent
+ * and append items whose identity is absent. `mergeAuthoredOverlay` survives as
+ * the deliberate `--replace` path, which announces what it is about to undo.
  *
  * ARRAYS ARE THE DANGEROUS PART, and merging them by index is worse than losing
  * the data: `practice.approaching[3].choicesEs` is the Spanish for ONE question,
@@ -103,6 +114,202 @@ export function mergeAuthoredOverlay(generated, prior, opts = {}) {
 
   // A scalar the generator emitted. The generator is the source of truth for it.
   return generated;
+}
+
+/**
+ * Every identity signature an item answers to — `id:…`, `stem:…`, `term:…` —
+ * not just the first. Pairing on the FIRST key alone is how a renamed warmup id
+ * (`warmup-3-1-1` → `warmup-3-1-group1-1`, an authored rename that keys
+ * save/resume) looked like a brand-new question: same stem, different id, so an
+ * additive merge would have appended a duplicate. An item is "already there"
+ * when ANY of its signatures is.
+ */
+export function signaturesOf(node) {
+  if (!isPlainObject(node)) return [];
+  const out = [];
+  for (const key of IDENTITY_KEYS) {
+    const value = node[key];
+    if (typeof value === "string" && value.trim()) out.push(`${key}:${value.trim()}`);
+    else if (typeof value === "number") out.push(`${key}:${value}`);
+  }
+  return out;
+}
+
+/**
+ * The part of a generation that is the generator's OWN — not carried over from
+ * the base lesson it cloned.
+ *
+ * Both generators start from `clone(base)`, so a generation carries every field
+ * the base has gained since the variant was last written: `explore.discourse`,
+ * `launch.figure`, `revealWordProblem`, a base item's new `misconceptionTags`,
+ * the base's warmup questions. On 2026-08-29 a naive "add whatever is absent"
+ * would have written 113 of 168 small-group configs and 36 of 36 catch-ups
+ * with exactly that drift — including practice items a person had trimmed
+ * from a challenge group on purpose. The committed variant is canonical for
+ * what it inherits; base drift reaches it only through `--replace`.
+ *
+ * So: a scalar is the generator's own when it differs from the base at the
+ * same path; an object is kept only where it has such children; an array the
+ * base does not carry at all (`parallelPractice`, a tier the generator builds
+ * from scratch) is the generator's own as a whole; an array the base DOES carry
+ * contributes only the elements `isAuthoredItem` vouches for (the small-group
+ * generator vouches for its authored challenge tasks and nothing else — a
+ * sampled or cloned item is never an addition). Returns undefined when nothing
+ * is the generator's own.
+ *
+ * Whether an element may then be APPENDED to an array the committed file
+ * already has is `mergeAdditive`'s `mayAppend` — pass the same predicate, so a
+ * whole-array key is added when the file lacks it, but a committed array only
+ * ever grows by a vouched item.
+ *
+ * @param {any} generated
+ * @param {any} baseline  the base config the generation was cloned from
+ * @param {{ isAuthoredItem?: (item: object) => boolean }} [opts]
+ */
+export function authoredDelta(generated, baseline, opts = {}) {
+  const { isAuthoredItem = () => false } = opts;
+  if (Array.isArray(generated)) {
+    if (!Array.isArray(baseline)) return generated;
+    const items = generated.filter((item) => isPlainObject(item) && isAuthoredItem(item));
+    return items.length ? items : undefined;
+  }
+  if (isPlainObject(generated)) {
+    const base = isPlainObject(baseline) ? baseline : {};
+    const out = {};
+    for (const [key, value] of Object.entries(generated)) {
+      const child = authoredDelta(value, base[key], opts);
+      if (child !== undefined) out[key] = child;
+    }
+    return Object.keys(out).length ? out : undefined;
+  }
+  return generated === baseline ? undefined : generated;
+}
+
+/**
+ * The committed file is canonical; the generator may only ADD.
+ *
+ * Feed it `authoredDelta(...)`, not the raw generation — see above for why a
+ * cloned base field is not an addition.
+ *
+ * @param {any} committed  what is on disk — wins wherever it has a value
+ * @param {any} generated  what the generator built — consulted only for what
+ *                         the committed file lacks
+ * @param {{ onAdd?: (path: string) => void, mayAppend?: (item: object) => boolean, path?: string }} [opts]
+ *        onAdd is called with the dot-path of every value this merge added, so
+ *        a run reports its additions instead of hiding them in a diff.
+ *        mayAppend vouches for an element before it is appended to an array the
+ *        committed file already has; the default vouches for nothing.
+ * @returns {any} the committed value with absent keys / items appended
+ *
+ * Objects: every committed key is kept in committed order; a generated key the
+ * file lacks is appended. Arrays: the committed array is kept whole and in
+ * order; a generated element is appended only when `mayAppend` vouches for it,
+ * it carries an identity, and no committed element shares any of its
+ * signatures. Elements with no identity (arrays of strings — `lines`,
+ * `choices`, `hints`) are never merged: the committed array is the answer.
+ * Scalars: committed wins, always.
+ */
+export function mergeAdditive(committed, generated, opts = {}) {
+  const { onAdd = () => {}, mayAppend = () => false, path = "" } = opts;
+  const at = (key) => (path ? `${path}.${key}` : String(key));
+
+  if (committed === undefined) {
+    if (generated !== undefined) onAdd(path || "(root)");
+    return generated;
+  }
+  if (generated === undefined) return committed;
+
+  if (Array.isArray(committed)) {
+    if (!Array.isArray(generated)) return committed;
+    const present = new Set(committed.flatMap(signaturesOf));
+    const bySignature = new Map();
+    for (const item of committed) {
+      for (const sig of signaturesOf(item)) if (!bySignature.has(sig)) bySignature.set(sig, item);
+    }
+    const out = committed.map((item) => {
+      // A committed item may still be MISSING fields the generator now emits
+      // (a Spanish field, a new schema key): recurse so those are added.
+      const twin = generated.find((g) =>
+        signaturesOf(g).some((sig) => bySignature.get(sig) === item),
+      );
+      return twin === undefined
+        ? item
+        : mergeAdditive(item, twin, { onAdd, mayAppend, path: `${at(identityOf(item) || "?")}` });
+    });
+    for (const item of generated) {
+      const sigs = signaturesOf(item);
+      if (!sigs.length || sigs.some((sig) => present.has(sig))) continue;
+      if (!mayAppend(item)) continue;
+      for (const sig of sigs) present.add(sig);
+      onAdd(`${path}[${sigs[0]}]`);
+      out.push(item);
+    }
+    return out;
+  }
+
+  if (isPlainObject(committed)) {
+    if (!isPlainObject(generated)) return committed;
+    const out = { ...committed };
+    for (const [key, value] of Object.entries(generated)) {
+      out[key] = mergeAdditive(committed[key], value, { onAdd, mayAppend, path: at(key) });
+    }
+    return out;
+  }
+
+  return committed;
+}
+
+/**
+ * What writing `next` over `committed` would REMOVE or REPLACE, as dot-paths.
+ *
+ * `--replace` prints this per lesson before it writes, so a deliberate
+ * overwrite is a decision made with the list in hand, never a surprise found in
+ * a diff afterwards. Additions are not listed — they are what every run does.
+ */
+export function describeReplacements(committed, next, path = "") {
+  const out = [];
+  const at = (key) => (path ? `${path}.${key}` : String(key));
+  if (committed === undefined || committed === next) return out;
+  if (next === undefined) {
+    out.push(`remove   ${path || "(root)"}`);
+    return out;
+  }
+
+  if (Array.isArray(committed)) {
+    if (!Array.isArray(next)) {
+      out.push(`replace  ${path}`);
+      return out;
+    }
+    const nextBySig = new Map();
+    for (const item of next) for (const sig of signaturesOf(item)) nextBySig.set(sig, item);
+    const identified = committed.filter((item) => signaturesOf(item).length);
+    if (!identified.length) {
+      if (JSON.stringify(committed) !== JSON.stringify(next)) out.push(`replace  ${path}`);
+      return out;
+    }
+    for (const item of committed) {
+      const sigs = signaturesOf(item);
+      if (!sigs.length) continue;
+      const twin = sigs.map((sig) => nextBySig.get(sig)).find((x) => x !== undefined);
+      if (twin === undefined) out.push(`remove   ${path}[${sigs[0]}]`);
+      else out.push(...describeReplacements(item, twin, `${path}[${sigs[0]}]`));
+    }
+    return out;
+  }
+
+  if (isPlainObject(committed)) {
+    if (!isPlainObject(next)) {
+      out.push(`replace  ${path}`);
+      return out;
+    }
+    for (const [key, value] of Object.entries(committed)) {
+      out.push(...describeReplacements(value, next[key], at(key)));
+    }
+    return out;
+  }
+
+  if (committed !== next) out.push(`replace  ${path}`);
+  return out;
 }
 
 /** How many values an unmatched prior item was carrying, for the drop report. */

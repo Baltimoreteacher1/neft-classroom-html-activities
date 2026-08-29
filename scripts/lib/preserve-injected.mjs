@@ -116,13 +116,17 @@ export function preserveInjected(html, blocks) {
     const here = out.slice(lineStart, at);
     const ownLine = /^[ \t]*$/.test(here);
     const cut = ownLine ? lineStart : at;
-    // Restore the anchor tag's own indentation too, when the source had one and
-    // the freshly rendered page does not.
-    const anchor = ownLine && !here ? add[0].anchorIndent || "" : "";
+    // The anchor tag keeps the indentation it has ON DISK, whichever way the
+    // template and the page disagree. The injectors write the closing tag at
+    // column 0 while the compact shell template indents it, so restoring only
+    // the missing-indent direction left every small-group shell two lines
+    // different from itself on each regeneration — and a generator whose
+    // clean-tree run is never a no-op cannot be checked for anything.
+    const anchor = ownLine ? (add[0].anchorIndent ?? here) : "";
     const payload = `${add
       .map((b, i) => (i === 0 ? "" : b.blankBefore || "") + (b.indent || "") + b.text)
       .join("\n")}\n${anchor}`;
-    out = out.slice(0, cut) + payload + out.slice(cut);
+    out = out.slice(0, cut) + payload + out.slice(ownLine ? at : cut);
   }
   return out;
 }

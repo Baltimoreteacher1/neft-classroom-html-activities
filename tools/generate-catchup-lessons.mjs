@@ -3,11 +3,24 @@
 // Clone the band's LAST lesson config as structural base (renderer requires all
 // 5 phase sections), replace content: Big Ideas conceptIntro, merged vocab,
 // mixed practice sampled from every band lesson, middle lesson's exit ticket.
+//
+// THE COMMITTED CONFIG IS CANONICAL. A station that already has a committed
+// config.json is only ever ADDED to: nothing it holds is deleted, reordered,
+// renamed or replaced; keys it lacks and items whose identity is absent are
+// appended. A brand-new station is generated in full. `--replace` restores the
+// old "generator wins" overwrite for a deliberate content operation, warns
+// loudly, and lists per station what it undid. Same policy as
+// tools/generate-small-group-lessons.mjs; see docs/known-defects.md.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
-import { mergeAuthoredOverlay } from "./lib/authored-overlay.mjs";
+import {
+  authoredDelta,
+  describeReplacements,
+  mergeAdditive,
+  mergeAuthoredOverlay,
+} from "./lib/authored-overlay.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
@@ -18,7 +31,8 @@ const preferRich = (arr) =>
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
-const DRY = process.argv.includes("--dry");
+const DRY = process.argv.includes("--dry") || process.argv.includes("--dry-run");
+const REPLACE = process.argv.includes("--replace");
 
 const BASE_RE = /^(\d+)-(\d+)$/;
 const byUnit = new Map();
@@ -95,6 +109,8 @@ const rows = [];
 // because a preservation step that works silently looks exactly like one that
 // has stopped running.
 const preserved = [];
+const added = [];
+const replacements = [];
 for (const band of bands) {
   if (!band.ids.length) continue;
   // Each source carries its own current id and dotted display number, so a
@@ -289,6 +305,10 @@ for (const band of bands) {
     out.reflect = JSON.parse(JSON.stringify(mid.c.reflect));
     out.reflect.exitTicket.stem = `(Catch-up check, from Lesson ${mid.dot}) ${out.reflect.exitTicket.stem}`;
   }
+  // The MSTAR continuation packet is a whole-group surface (only
+  // engine/core/lesson-renderer.js renders it); the compact renderer has no
+  // slot for it, same as `notebook` above.
+  if (out.reflect) delete out.reflect.mstarPractice;
 
   // Sanity: every tier non-empty, all 5 phases present.
   for (const k of ["launch", "explore", "practice", "connect", "reflect"])
@@ -302,22 +322,36 @@ for (const band of bands) {
     throw new Error(`${id}: duplicate parallel-practice stems`);
 
   const baseId = lastSrc.id;
+  /* The committed station is canonical; this run may only add to it. `--replace`
+   * is the old rule (generator wins where it speaks, authored-only keys
+   * survive — tools/lib/authored-overlay.mjs) and it says what it undid. */
+  const file = join(LESSONS, id, "config.json");
+  let merged = out;
+  let prior;
+  if (existsSync(file)) {
+    try {
+      prior = JSON.parse(readFileSync(file, "utf8"));
+    } catch {
+      prior = undefined; // an unreadable prior config is not a reason to lose this run
+    }
+  }
+  if (prior !== undefined) {
+    if (REPLACE) {
+      merged = mergeAuthoredOverlay(out, prior);
+      const undone = describeReplacements(prior, merged);
+      if (undone.length) replacements.push({ id, undone });
+    } else {
+      // A catch-up authors no practice items of its own — every item is sampled
+      // from a source lesson — so nothing cloned from `lastSrc` is an addition.
+      const delta = authoredDelta(out, lastSrc.c);
+      merged =
+        delta === undefined
+          ? prior
+          : mergeAdditive(prior, delta, { onAdd: (path) => added.push(`${id}.${path}`) });
+    }
+  }
   if (!DRY) {
     mkdirSync(join(LESSONS, id), { recursive: true });
-    /* Generated base + authored overlay: the same rule the small-group
-     * generator now follows. A catch-up config is regenerated from its source
-     * lessons AND is written into afterwards by the Spanish overlay step, so a
-     * plain overwrite erases translations nobody re-derives. See
-     * tools/lib/authored-overlay.mjs. */
-    const file = join(LESSONS, id, "config.json");
-    let merged = out;
-    if (existsSync(file)) {
-      try {
-        merged = mergeAuthoredOverlay(out, JSON.parse(readFileSync(file, "utf8")));
-      } catch {
-        merged = out; // an unreadable prior config is not a reason to lose this run
-      }
-    }
     writeFileSync(file, JSON.stringify(merged, null, 2) + "\n");
     // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
     // These catch-up shells carry injected sentinel blocks; a plain overwrite
@@ -337,18 +371,24 @@ for (const band of bands) {
     search:
       `${baseId} catch-up catchup review lessons ${range.replace("–", "-")} ` +
       srcs.map((s) => s.c.title.toLowerCase()).join(" "),
+    // Counts describe what is on disk after this run, not the bare generation.
     counts: {
-      vocab: out.vocabulary.length,
-      approaching: out.practice.approaching.length,
-      onLevel: out.practice.onLevel.length,
-      extending: out.practice.extending.length,
-      optional: out.practice.optional.length,
-      parallel: out.parallelPractice.length,
+      vocab: merged.vocabulary.length,
+      approaching: merged.practice.approaching.length,
+      onLevel: merged.practice.onLevel.length,
+      extending: merged.practice.extending.length,
+      optional: merged.practice.optional.length,
+      parallel: merged.parallelPractice.length,
     },
   });
 }
 
-writeFileSync(new URL("./catchup-rows.json", import.meta.url), JSON.stringify(rows, null, 2));
+if (!DRY) {
+  writeFileSync(
+    new URL("./catchup-rows.json", import.meta.url),
+    JSON.stringify(rows, null, 2) + "\n",
+  );
+}
 console.log(`${DRY ? "[dry] " : ""}bands: ${rows.length}`);
 if (preserved.length) {
   console.log(`carried forward (not regenerable, would otherwise be deleted):`);
@@ -358,3 +398,25 @@ for (const r of rows)
   console.log(
     `${r.id.padEnd(14)} after ${r.afterLesson.padEnd(5)} ${r.range.padEnd(9)} v${r.counts.vocab} a${r.counts.approaching} o${r.counts.onLevel} e${r.counts.extending} opt${r.counts.optional} p${r.counts.parallel}`,
   );
+if (added.length) {
+  console.log(`values ${DRY ? "would be" : "were"} ADDED to committed stations (${added.length}):`);
+  console.log(added.map((l) => `  + ${l}`).join("\n"));
+} else {
+  console.log(`committed stations already hold everything the generator emits — nothing added.`);
+}
+if (REPLACE) {
+  console.warn(
+    `\n!!! --replace: committed content ${DRY ? "would be" : "was"} REPLACED. The committed ` +
+      `config is normally canonical; this run let the generator win. Review the diff before ` +
+      `committing.`,
+  );
+  if (!replacements.length) {
+    console.warn(`  (no committed value differed from the generation — nothing was undone)`);
+  }
+  const LIMIT = 40;
+  for (const { id, undone } of replacements) {
+    console.warn(`  ${id}: ${undone.length} value(s) undone`);
+    for (const line of undone.slice(0, LIMIT)) console.warn(`    ${line}`);
+    if (undone.length > LIMIT) console.warn(`    … and ${undone.length - LIMIT} more`);
+  }
+}

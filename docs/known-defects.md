@@ -67,21 +67,37 @@ already reads the field and can assert it in the same run.
 
 ## `generate-small-group-lessons.mjs` reverts hand-improved content
 
-**Status:** open. Found 2026-08-27 while adding challenge tasks. The generator
+**Status:** FIXED 2026-08-29. The committed `config.json` is canonical. For a
+lesson that already has one, both `tools/generate-small-group-lessons.mjs` and
+`tools/generate-catchup-lessons.mjs` are additive only: they never delete,
+reorder, rename or replace anything the file holds, and may only add a key the
+generator itself authors that the file lacks, or append an authored challenge
+task (`tools/lib/small-group-challenge-tasks.mjs`) whose identity is not there
+yet — nothing cloned from the base lesson counts as an addition. A variant with
+no committed config is generated in full, and `--replace` restores the old
+overwrite for a deliberate content operation, warning loudly and listing per
+lesson what it undoes. `tools/lib/authored-overlay.mjs` (`authoredDelta`,
+`mergeAdditive`) holds the rule; `tools/small-group-generator-idempotent.test.mjs`
+pins it. The rows manifests are now derived from the committed configs. The
+record below is left intact because it names the cause.
+
+**Was:** open. Found 2026-08-27 while adding challenge tasks. The generator
 cannot be run — a full run rewrites 505 files and silently undoes work that is
 already committed and live.
 
-**Reproduce.** On a clean tree, regenerate a lesson nobody has touched:
+**Reproduce — now the regression check.** On a clean tree, regenerate a lesson
+nobody has touched; the diff must be empty:
 
 ```
 node tools/generate-small-group-lessons.mjs --only 3-1
 git diff --stat lessons/3-1-group1 lessons/3-1-group2
-#  4 files changed, 19 insertions(+), 75 deletions(-)
+#  (no output)
+#  before the fix: 4 files changed, 19 insertions(+), 75 deletions(-)
 ```
 
 Nineteen lines in, seventy-five out, on a lesson the command was not asked to
-change. It is not idempotent, and the direction of the drift is the problem:
-the generator's output is BEHIND the committed configs.
+change. It was not idempotent, and the direction of the drift was the problem:
+the generator's output was BEHIND the committed configs.
 
 **What it takes back.** Three kinds of loss in that one probe:
 

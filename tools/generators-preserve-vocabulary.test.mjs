@@ -13,6 +13,12 @@
  * and the lists balloon to 24 entries. The generator carries forward whatever
  * is already on disk instead. This pins that.
  *
+ * Since 2026-08-29 the rule is stronger still: a committed config is canonical
+ * and the generator only ever ADDS what is its own, so source vocabulary is no
+ * longer re-merged into a station that already exists (that was base-lesson
+ * drift, and it dirtied 36 of 36 catch-ups on a clean tree). A NEW station
+ * still gets the merged vocabulary in full — both halves are pinned below.
+ *
  * Runs the real generator against a throwaway fixture via its own REPO env
  * hook, so it tests the shipped code path rather than a re-implementation, and
  * never touches the actual lessons tree.
@@ -142,15 +148,28 @@ try {
   if (!terms.includes("Term3C")) {
     fail(`Regeneration dropped "Term3C", a curated term past the top-2 cut.`);
   }
-  // The normal merge must still happen — preservation is additive, not a bypass.
-  for (const expected of ["Term1A", "Term2A"]) {
-    if (!terms.includes(expected)) {
-      fail(`Regeneration stopped merging source vocabulary: "${expected}" is missing.`);
+  if (!terms.includes("Term1A")) {
+    fail(`Regeneration dropped "Term1A", a committed term.`);
+  }
+  // The committed station is canonical: source vocabulary the station does not
+  // carry is base drift, not an addition, and stays out until --replace.
+  if (terms.includes("Term2A")) {
+    fail(`Regeneration re-merged source vocabulary ("Term2A") into a committed station.`);
+  }
+  if (terms.length !== 3) {
+    fail(`Expected the 3 committed terms untouched, got ${terms.length}: ${terms.join(", ")}.`);
+  }
+  // Guard the guard: a NEW station (no committed config) must still get the
+  // merged source vocabulary, or the fixture is not exercising the merge.
+  const fresh = JSON.parse(readFileSync(join(lessons, "1-5-catchup/config.json"), "utf8"));
+  const freshTerms = (fresh.vocabulary || []).map((v) => v.term);
+  for (const expected of ["Term4A", "Term5A"]) {
+    if (!freshTerms.includes(expected)) {
+      fail(`A new station stopped merging source vocabulary: "${expected}" is missing.`);
     }
   }
-  // Guard the guard: a fixture that produced nothing would pass every check above.
-  if (terms.length < 4) {
-    fail(`Only ${terms.length} term(s) produced — the fixture is not exercising the merge.`);
+  if (freshTerms.length < 4) {
+    fail(`Only ${freshTerms.length} term(s) on the new station — the merge is not running.`);
   }
 
   /* The small-group generator had the same defect on a smaller scale: it takes

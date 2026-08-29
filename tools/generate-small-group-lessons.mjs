@@ -15,6 +15,17 @@
 //   node tools/generate-small-group-lessons.mjs --dry      # report only
 //   node tools/generate-small-group-lessons.mjs --only 1-3 # single lesson (PoC)
 //   node tools/generate-small-group-lessons.mjs --configs-only # configs only, skip shells
+//   node tools/generate-small-group-lessons.mjs --replace --only 1-3 # deliberate overwrite
+//
+// THE COMMITTED CONFIG IS CANONICAL. For a lesson that already has a committed
+// config.json this generator is ADDITIVE ONLY: it never deletes or reorders
+// practice items, never renames ids, never replaces a value the file already
+// holds. It may only add keys the file lacks and append items whose identity is
+// absent (a new schema field, a newly authored challenge task, a missing Spanish
+// field). A variant with no committed config is generated in full. On a clean
+// tree a full run is therefore a no-op — tools/small-group-generator-idempotent
+// .test.mjs pins that. `--replace` restores the old "generator wins" overwrite
+// for a deliberate content operation, and says per lesson what it will undo.
 //
 // NOTE on --configs-only: it used to be a SAFETY flag ("preserve generated
 // shells") because writing index.html with a plain writeFileSync deleted every
@@ -27,10 +38,21 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
-import { authoredPaths, mergeAuthoredOverlay } from "./lib/authored-overlay.mjs";
+import {
+  authoredDelta,
+  authoredPaths,
+  describeReplacements,
+  mergeAdditive,
+  mergeAuthoredOverlay,
+  signaturesOf,
+} from "./lib/authored-overlay.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 import { authoredBank, authoredMoves } from "./lib/small-group-authored-banks.mjs";
-import { applyChallengeTasks, challengeFacilitation } from "./lib/small-group-challenge-tasks.mjs";
+import {
+  applyChallengeTasks,
+  CHALLENGE_TASKS,
+  challengeFacilitation,
+} from "./lib/small-group-challenge-tasks.mjs";
 import { buildTeacherMoves } from "./lib/small-group-facilitation.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 import {
@@ -130,6 +152,12 @@ const FACILITATION_ONLY = CHECK || process.argv.includes("--facilitation-only");
  * hatch exists so "the overlay always wins" can never become a reason a
  * correction cannot be applied — but it is opt-in, and it says so. */
 const PRUNE = process.argv.includes("--prune");
+/* Deliberately let the generator REPLACE what a committed config already holds
+ * (the pre-2026-08-29 behaviour: generator wins where it speaks, authored-only
+ * keys survive). Off by default because that behaviour reverted hand-improved
+ * key ideas, Spanish framing, warmup ids and whole practice items on every run
+ * — see docs/known-defects.md. Loud on purpose. */
+const REPLACE = PRUNE || process.argv.includes("--replace");
 const onlyIx = process.argv.indexOf("--only");
 const ONLY = onlyIx !== -1 ? process.argv[onlyIx + 1] : null;
 const MINIMUM_PRACTICE = 10;
@@ -163,6 +191,14 @@ function stripHeavy(out) {
   delete out.familyNotes;
   delete out.flagship;
   out.readiness = false;
+}
+
+/* The MSTAR continuation packet (`reflect.mstarPractice`) is a whole-group
+ * surface: only engine/core/lesson-renderer.js renders it, and no committed
+ * small-group config carries it. Both builders clone `base.reflect` AFTER
+ * stripHeavy() for the exit ticket, so it is dropped here, at the end. */
+function stripWholeGroupReflect(out) {
+  if (out.reflect) delete out.reflect.mstarPractice;
 }
 
 function _firstLine(x) {
@@ -407,6 +443,7 @@ function buildGroup1(base, u, m) {
     out.reflect.exitTicket.stem = `Quick check — you've got this: ${out.reflect.exitTicket.stem}`;
     // keep .hints so support is available on the check
   }
+  stripWholeGroupReflect(out);
 
   out.vocabulary = withPriorVocabulary((base.vocabulary || []).slice(0, 8), id);
 
@@ -590,6 +627,7 @@ function buildGroup2(base, u, m) {
     out.reflect = clone(base.reflect);
     out.reflect.exitTicket.stem = `Explain your thinking — ${out.reflect.exitTicket.stem}`;
   }
+  stripWholeGroupReflect(out);
 
   out.vocabulary = withPriorVocabulary((base.vocabulary || []).slice(0, 8), id);
 
@@ -640,64 +678,79 @@ function assertValid(id, out) {
 
 // ---------------------------------------------------------------- Write
 
-/* Every authored value this run carried forward, and every one it could not,
- * so a regeneration reports what it protected instead of hoping. */
+/* Every value this run added to a committed config, every authored value a
+ * `--replace` run carried forward, and every one it could not — so a
+ * regeneration reports what it did instead of hoping. */
 const overlayKept = [];
 const overlayDropped = [];
+const added = [];
+const replacements = [];
 const plannedWrites = [];
 
-/**
- * A small-group config is GENERATED, and it is also the file two later steps
- * write into: tools/apply-es-translations.mjs adds the Spanish overlay, and the
- * alignment pass adds `launch.conceptIntro.interactiveVisual`. Writing `out`
- * straight over the file erased both — reproduced on main, where `--only 5-10`
- * deleted 74 lines from 5-10-group1 including ten Spanish arrays.
- *
- * The rule is now one sentence: the generator owns what it emits, and anything
- * on disk it does not emit is authored and survives. `--prune` opts out for a
- * deliberate clean rebuild. See tools/lib/authored-overlay.mjs for why array
- * elements are paired by identity and never by index.
- */
-function withAuthoredOverlay(id, out) {
+function readPrior(id) {
   const file = join(LESSONS, id, "config.json");
-  if (PRUNE || !existsSync(file)) return out;
-  let prior;
+  if (!existsSync(file)) return undefined;
   try {
-    prior = JSON.parse(readFileSync(file, "utf8"));
+    return JSON.parse(readFileSync(file, "utf8"));
   } catch {
-    return out; // an unreadable prior config is not a reason to lose this run
+    return undefined; // an unreadable prior config is not a reason to lose this run
   }
-  for (const path of authoredPaths(out, prior)) overlayKept.push(`${id}.${path}`);
-  return mergeAuthoredOverlay(out, prior, {
-    onDrop: (path) => overlayDropped.push(`${id}.${path}`),
-  });
 }
 
-/* --dry-run: say exactly what a real run would touch, and what authored content
- * it would be protecting, without writing anything. */
-function planLesson(id, out) {
-  const file = join(LESSONS, id, "config.json");
+/**
+ * What this run will write for `id`, given what the generator built from `base`.
+ *
+ * Default — the committed config is canonical and the generator only ADDS to
+ * it, and only what is its OWN: a key it authors that the file lacks, or an
+ * authored challenge task (tools/lib/small-group-challenge-tasks.mjs) whose
+ * identity is not there yet. Nothing cloned from the base counts as an
+ * addition (tools/lib/authored-overlay.mjs, `authoredDelta` + `mergeAdditive`).
+ * A variant with no committed config is written in full. `--replace` is the
+ * old rule — the generator wins wherever it speaks, authored-only keys survive
+ * — and `--prune` writes the bare generation. Both announce what they undo.
+ */
+function reconcile(id, out, base) {
+  const prior = readPrior(id);
+  if (prior === undefined) return out;
+  if (!REPLACE) {
+    const authoredSigs = new Set((CHALLENGE_TASKS[id]?.add || []).flatMap(signaturesOf));
+    const isAuthoredItem = (item) => signaturesOf(item).some((sig) => authoredSigs.has(sig));
+    const delta = authoredDelta(out, base, { isAuthoredItem });
+    if (delta === undefined) return prior;
+    return mergeAdditive(prior, delta, {
+      mayAppend: isAuthoredItem,
+      onAdd: (path) => added.push(`${id}.${path}`),
+    });
+  }
+  let next = out;
+  if (!PRUNE) {
+    for (const path of authoredPaths(out, prior)) overlayKept.push(`${id}.${path}`);
+    next = mergeAuthoredOverlay(out, prior, {
+      onDrop: (path) => overlayDropped.push(`${id}.${path}`),
+    });
+  }
+  const undone = describeReplacements(prior, next);
+  if (undone.length) replacements.push({ id, undone });
+  return next;
+}
+
+/* --dry-run: say exactly what a real run would touch, and what it would add to
+ * or (with --replace) take from each committed config, without writing. */
+function planLesson(id, out, base) {
   for (const p of ["config.json", "index.html", "lesson.js"]) {
     plannedWrites.push(
       `${existsSync(join(LESSONS, id, p)) ? "change" : "create"}  lessons/${id}/${p}`,
     );
   }
-  if (!existsSync(file)) return;
-  try {
-    const prior = JSON.parse(readFileSync(file, "utf8"));
-    for (const path of authoredPaths(out, prior)) overlayKept.push(`${id}.${path}`);
-    mergeAuthoredOverlay(out, prior, { onDrop: (path) => overlayDropped.push(`${id}.${path}`) });
-  } catch {
-    /* unreadable prior config: nothing to report about its overlay */
-  }
+  return reconcile(id, out, base);
 }
 
-function writeLesson(id, out) {
+function writeLesson(id, out, base) {
   mkdirSync(join(LESSONS, id), { recursive: true });
-  const merged = withAuthoredOverlay(id, out);
+  const merged = reconcile(id, out, base);
   recordWrite(join(LESSONS, id, "config.json"));
   writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(merged, null, 2) + "\n");
-  if (CONFIGS_ONLY) return;
+  if (CONFIGS_ONLY) return merged;
   // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
   // All 148 group/catch-up index.html shells carry injected sentinel blocks, and a
   // plain overwrite strips every one. On a brand-new lesson there is nothing to
@@ -709,6 +762,7 @@ function writeLesson(id, out) {
   );
   recordWrite(join(LESSONS, id, "lesson.js"));
   writeFileSync(join(LESSONS, id, "lesson.js"), LESSON_JS);
+  return merged;
 }
 
 // ---------------------------------------------------------------- Main
@@ -761,10 +815,14 @@ for (const baseId of bases) {
     const { id, out } = build(base, u, m);
     assertValid(id, out);
     const facilitation = extractFacilitation(out);
-    const studentOut = toStudentConfig(out);
+    const generated = toStudentConfig(out);
     facilitationByLesson[id] = facilitation;
-    if (!DRY && !FACILITATION_ONLY) writeLesson(id, studentOut);
-    else if (DRY && !FACILITATION_ONLY) planLesson(id, studentOut);
+    // The rows manifest is a side output of the CONFIGS — counts come from what
+    // is (or would be) on disk after this run, never from the bare generation.
+    let studentOut = generated;
+    if (!DRY && !FACILITATION_ONLY) studentOut = writeLesson(id, generated, base);
+    else if (DRY && !FACILITATION_ONLY) studentOut = planLesson(id, generated, base);
+    else studentOut = reconcile(id, generated, base);
     const group = facilitation.group;
     rows.push({
       id,
@@ -924,17 +982,50 @@ for (const r of rows)
  * variant of the targeted base.
  */
 setWriteSetRoot(ROOT);
+
+/* One report for both modes. Additions are what every run may do; replacements
+ * and removals happen only under --replace / --prune, and are listed per lesson
+ * so the person who asked for them can see exactly what they took back. */
+function reportReconciliation() {
+  const verb = DRY ? "would be" : "were";
+  if (added.length) {
+    console.log(`\nvalues ${verb} ADDED to committed configs (${added.length}):`);
+    console.log(added.map((l) => `  + ${l}`).join("\n"));
+  } else if (!FACILITATION_ONLY) {
+    console.log(`\ncommitted configs already hold everything the generator emits — nothing added.`);
+  }
+  if (!REPLACE) return;
+  const flag = PRUNE ? "--prune" : "--replace";
+  console.warn(
+    `\n!!! ${flag}: committed content ${DRY ? "would be" : "was"} REPLACED. The committed ` +
+      `config is normally canonical; this run let the generator win. Review the diff before ` +
+      `committing.`,
+  );
+  if (!replacements.length) {
+    console.warn(`  (no committed value differed from the generation — nothing was undone)`);
+    return;
+  }
+  const LIMIT = 40;
+  for (const { id, undone } of replacements) {
+    console.warn(`  ${id}: ${undone.length} value(s) undone`);
+    for (const line of undone.slice(0, LIMIT)) console.warn(`    ${line}`);
+    if (undone.length > LIMIT) console.warn(`    … and ${undone.length - LIMIT} more`);
+  }
+  if (overlayKept.length)
+    console.log(`authored-only values carried forward: ${overlayKept.length}`);
+  if (overlayDropped.length) {
+    console.warn(
+      `authored values that could NOT be placed (${overlayDropped.length}) — the item they ` +
+        `belonged to is no longer generated:\n  ${overlayDropped.join("\n  ")}`,
+    );
+  }
+}
+
 if (DRY) {
   console.log(`\n--dry-run — nothing was written.`);
   console.log(plannedWrites.map((l) => `  ${l}`).join("\n"));
   console.log(`  change  functions/teacher-small-group/_facilitation-data.js`);
-  console.log(`\nauthored values that would be preserved: ${overlayKept.length}`);
-  if (overlayDropped.length) {
-    console.warn(
-      `authored values AT RISK (${overlayDropped.length}) — the item they belong to is no ` +
-        `longer generated:\n  ${overlayDropped.join("\n  ")}`,
-    );
-  }
+  reportReconciliation();
 }
 if (!DRY) {
   if (ONLY) {
@@ -946,13 +1037,5 @@ if (!DRY) {
   }
   const files = writtenPaths();
   console.log(`\nwrote ${files.length} file(s)${ONLY ? ` (scope: --only ${ONLY})` : ""}`);
-  if (overlayKept.length) {
-    console.log(`authored values preserved: ${overlayKept.length}`);
-  }
-  if (overlayDropped.length) {
-    console.warn(
-      `authored values that could NOT be placed (${overlayDropped.length}) — the item they ` +
-        `belonged to is no longer generated:\n  ${overlayDropped.join("\n  ")}`,
-    );
-  }
+  reportReconciliation();
 }
