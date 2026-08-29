@@ -19,11 +19,16 @@
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 const DATABASE = "neft-student-progress";
 const argv = process.argv.slice(2);
 const LOCAL_DB = argv.includes("--db") ? argv[argv.indexOf("--db") + 1] : null;
+// `--out` exists so a test can run the REAL report against a synthetic database
+// without overwriting the real one. Without it, verifying the repair rule would
+// mean clobbering reports/usage-report.md with fixture numbers — the report is
+// read by a person, and a test must not leave a lie in it.
+const OUT = argv.includes("--out") ? argv[argv.indexOf("--out") + 1] : "reports/usage-report.md";
 
 /* ------------------------------------------------------------------ queries */
 
@@ -34,16 +39,82 @@ const LOCAL_DB = argv.includes("--db") ? argv[argv.indexOf("--db") + 1] : null;
 // play. Do not move this date to make a report look fuller.
 const TRUSTED_FROM = "2026-07-28";
 
+// The day `assets/lesson-telemetry.js` began measuring time on task per VISIBLE
+// STRETCH instead of per page load, and stopped writing rows for driven
+// browsers. Rows on either side of this date mean different things and cannot
+// be added together:
+//
+//   Before — every hide reported `now - pageLoad`, and `pagehide` plus
+//   `visibilitychange`->hidden both fired, so one stretch was usually written
+//   twice and each write restated the whole session. Summing those rows
+//   inflates: 4,705 of ~7,700 (session, seconds, lesson) groups were exact
+//   duplicate pairs, with a tail out to 27 copies. The honest reading of a
+//   cumulative, duplicated series is its MAXIMUM — that is the final elapsed
+//   total, and identical copies collapse into it. So old rows are REPAIRED by
+//   the max rule rather than trusted as written.
+//
+//   After — each row is one disjoint stretch of attention, so SUM is correct
+//   and max would undercount a lesson a student returned to.
+//
+// Same discipline as TRUSTED_FROM below: do not move this date to make a number
+// look better. Moving it earlier re-inflates; moving it later throws away real
+// measurements.
+const SEGMENT_TIME_FROM = "2026-08-29";
+
+// Sessions that never held anyone's attention are not evidence that a lesson
+// was used. Until the client fix above, `night-shift/modules/06-lesson-render.mjs`
+// booted every live lesson headlessly at 2am and each boot wrote a
+// `seconds: 0` row, so the 06:00-08:00Z window alone held 1,469 events and 343
+// phantom sessions, and lessons nobody had taught ranked in "most-used". Rather
+// than pattern-match the robot (a fragile guess about hours and user agents),
+// this asks the question that actually matters: did this session ever spend
+// MIN_ENGAGED_S on the lesson, or do anything other than open and close it?
+// Real short visits are counted as visits and simply do not clear the bar for
+// "used" — which is the truth about them.
+const MIN_ENGAGED_S = 2;
+
 const QUERIES = {
   lessonEvents: `SELECT lesson_slug AS slug, lesson_title AS title, COUNT(*) AS events,
       COUNT(DISTINCT json_extract(payload_json,'$.session')) AS sessions,
+      COUNT(DISTINCT CASE WHEN student_name IS NOT NULL AND student_name <> ''
+        THEN student_name END) AS students,
       MAX(created_at) AS last_seen
     FROM lesson_telemetry WHERE lesson_slug IS NOT NULL AND lesson_slug <> ''
     GROUP BY 1 ORDER BY events DESC`,
   eventTypes: `SELECT event_type AS type, COUNT(*) AS n FROM lesson_telemetry GROUP BY 1 ORDER BY n DESC`,
-  timeOnTask: `SELECT lesson_slug AS slug,
-      SUM(CAST(json_extract(payload_json,'$.props.seconds') AS INTEGER)) AS seconds
-    FROM lesson_telemetry WHERE event_type='time_on_task' GROUP BY 1 ORDER BY seconds DESC`,
+  // Per (lesson, session) first, so the repair rule can be applied inside the
+  // session it belongs to, then rolled up. A flat SUM over the raw table cannot
+  // express "max within a session, summed across sessions".
+  timeOnTask: `SELECT slug, SUM(seconds) AS seconds, COUNT(*) AS engaged_sessions
+    FROM (
+      SELECT lesson_slug AS slug,
+        json_extract(payload_json,'$.session') AS sess,
+        CASE WHEN MIN(created_at) >= '${SEGMENT_TIME_FROM}'
+          THEN SUM(CAST(json_extract(payload_json,'$.props.seconds') AS INTEGER))
+          ELSE MAX(CAST(json_extract(payload_json,'$.props.seconds') AS INTEGER))
+        END AS seconds
+      FROM lesson_telemetry WHERE event_type='time_on_task' GROUP BY 1,2
+    ) WHERE seconds >= ${MIN_ENGAGED_S}
+    GROUP BY 1 ORDER BY seconds DESC`,
+  // A lesson counts as USED when at least one session either held attention for
+  // MIN_ENGAGED_S or produced a learning event (an answer, a milestone, a step
+  // view) — never merely because a page loaded.
+  engagedLessons: `SELECT DISTINCT lesson_slug AS slug FROM (
+      SELECT lesson_slug, json_extract(payload_json,'$.session') AS sess
+        FROM lesson_telemetry WHERE event_type='time_on_task'
+        GROUP BY 1,2
+        HAVING MAX(CAST(json_extract(payload_json,'$.props.seconds') AS INTEGER)) >= ${MIN_ENGAGED_S}
+      UNION
+      SELECT lesson_slug, json_extract(payload_json,'$.session')
+        FROM lesson_telemetry WHERE event_type <> 'time_on_task'
+    ) WHERE lesson_slug IS NOT NULL AND lesson_slug <> ''`,
+  // What the old numbers were made of, kept visible so the correction is
+  // auditable instead of a silent restatement.
+  driveBy: `SELECT COUNT(*) AS sessions FROM (
+      SELECT lesson_slug, json_extract(payload_json,'$.session') AS sess
+        FROM lesson_telemetry WHERE event_type='time_on_task'
+        GROUP BY 1,2
+        HAVING MAX(CAST(json_extract(payload_json,'$.props.seconds') AS INTEGER)) < ${MIN_ENGAGED_S})`,
   milestones: `SELECT lesson_slug AS slug, json_extract(payload_json,'$.props.milestone') AS milestone, COUNT(*) AS n
     FROM lesson_telemetry WHERE event_type='milestone' GROUP BY 1,2`,
   // Accuracy is computed ONLY over rows this project can vouch for.
@@ -238,13 +309,25 @@ if (failures.length) {
 
 const lessons = lessonInventory();
 const _catalog = catalogInventory();
-const touched = new Set();
+// "Touched" used to mean any row at all, which is how a nightly robot put 90
+// untaught lessons on the used list. It now means a session that held someone's
+// attention or produced a learning event; `opened` keeps the looser count so
+// the gap between the two is visible rather than quietly corrected away.
+const opened = new Set();
 for (const row of data.lessonEvents) {
+  const dir = slugToLessonDir(row.slug || "");
+  if (dir) opened.add(dir);
+}
+const touched = new Set();
+for (const row of data.engagedLessons) {
   const dir = slugToLessonDir(row.slug || "");
   if (dir) touched.add(dir);
 }
 const untouched = lessons.filter((l) => !touched.has(l.dir));
+const driveByOnly = [...opened].filter((d) => !touched.has(d)).length;
+const driveBySessions = data.driveBy[0]?.sessions || 0;
 const secondsBySlug = new Map(data.timeOnTask.map((r) => [r.slug, r.seconds || 0]));
+const engagedBySlug = new Map(data.timeOnTask.map((r) => [r.slug, r.engaged_sessions || 0]));
 
 // data/catalog.json only lists 4 entries under "Game" — it is a curated
 // catalogue, not the inventory. The real marker for a playable game page is
@@ -267,8 +350,19 @@ lines.push(
   `- **${fmt(totalEvents)}** telemetry events across **${data.lessonEvents.length}** distinct lessons.`,
 );
 lines.push(
-  `- **${touched.size} of ${lessons.length}** lesson folders have ever reported activity — **${untouched.length} have never been opened** with telemetry on.`,
+  `- **${touched.size} of ${lessons.length}** lesson folders have ever held a student's attention — **${untouched.length} have never been used** with telemetry on.`,
 );
+if (driveByOnly || driveBySessions) {
+  lines.push(
+    `- Excluded as drive-by: **${fmt(driveBySessions)} session(s)** that opened a lesson and closed it inside ${MIN_ENGAGED_S}s` +
+      (driveByOnly ? `, which is the ONLY activity ${driveByOnly} lesson(s) have ever had.` : ".") +
+      " These are a mix — the nightly headless render check is in here, and so are" +
+      " real bounces and duplicate rows from the pre-" +
+      SEGMENT_TIME_FROM +
+      " client. They are excluded because none of them measured attention, not" +
+      " because all of them were robots.",
+  );
+}
 lines.push(
   `- **${playedGames.size} of ${gamePages}** playable game pages have ever recorded a score.`,
 );
@@ -285,12 +379,25 @@ lines.push("");
 
 lines.push("## Most-used lessons");
 lines.push("");
-lines.push("| Lesson | Events | Sessions | Time on task | Last seen |");
-lines.push("| --- | ---: | ---: | ---: | --- |");
-for (const r of data.lessonEvents.slice(0, 20)) {
-  const secs = secondsBySlug.get(r.slug) || 0;
+// Ranked by engaged sessions, not raw events. Event count rewards whatever
+// chatters most — a robot that loads a lesson nightly outranks a class that
+// worked through it once. "Per session" is the number a teacher can actually
+// read: how long the average student stayed. Named students are a floor, since
+// a student who never typed a name is still counted in sessions.
+lines.push("| Lesson | Engaged sessions | Time on task | Per session | Students | Last seen |");
+lines.push("| --- | ---: | ---: | ---: | ---: | --- |");
+const ranked = [...data.lessonEvents]
+  .map((r) => ({
+    ...r,
+    engaged: engagedBySlug.get(r.slug) || 0,
+    secs: secondsBySlug.get(r.slug) || 0,
+  }))
+  .filter((r) => r.engaged > 0)
+  .sort((a, b) => b.engaged - a.engaged || b.secs - a.secs);
+for (const r of ranked.slice(0, 20)) {
+  const per = r.engaged ? Math.round(r.secs / r.engaged / 60) : 0;
   lines.push(
-    `| ${r.title || r.slug} | ${fmt(r.events)} | ${fmt(r.sessions || 0)} | ${Math.round(secs / 60)} min | ${(r.last_seen || "").slice(0, 10)} |`,
+    `| ${r.title || r.slug} | ${fmt(r.engaged)} | ${Math.round(r.secs / 60)} min | ${per} min | ${fmt(r.students || 0)} | ${(r.last_seen || "").slice(0, 10)} |`,
   );
 }
 lines.push("");
@@ -400,10 +507,10 @@ lines.push("");
 for (const d of data.activeDays) lines.push(`- ${d.day}: ${fmt(d.events)}`);
 lines.push("");
 
-mkdirSync("reports", { recursive: true });
-writeFileSync("reports/usage-report.md", lines.join("\n"));
+mkdirSync(dirname(OUT), { recursive: true });
+writeFileSync(OUT, lines.join("\n"));
 
-console.log(`✓ reports/usage-report.md`);
+console.log(`✓ ${OUT}`);
 console.log(
   `  ${fmt(totalEvents)} events · ${touched.size}/${lessons.length} lessons touched · ${playedGames.size} games played · ${untouched.length} lessons silent`,
 );

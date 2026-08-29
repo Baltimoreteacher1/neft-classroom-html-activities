@@ -248,7 +248,26 @@ the strongest one(s) relevant to what you changed:
 > tool picker; it parses, lints, types, renders and serves 200, and a screenshot
 > gate cannot see it because a hairline hook IS pixels. The banned list is
 > deliberately short — only characters whose failure was observed here — and the
-> detector is run against the exact line that shipped before it is trusted).
+> detector is run against the exact line that shipped before it is trusted), and
+> `tools/telemetry-honesty.test.mjs` (the usage numbers are the ones "what should
+> I build next?" and "what is safe to delete?" get answered from, so they have to
+> be true — it drives `assets/lesson-telemetry.js` through real lifecycle events
+> in jsdom and runs the real `scripts/usage-report.mjs` against a synthetic
+> database whose answer is known by construction. Three defects made those
+> numbers false at once and each is pinned: a driven browser wrote student rows,
+> so `night-shift/modules/06-lesson-render.mjs` booting every live lesson
+> headlessly at 2am put 343 phantom sessions and lessons nobody had taught into
+> "most-used"; time on task restated the whole session on every hide, since
+> `startTs` was page load and never reset; and `pagehide` plus
+> `visibilitychange`->hidden both fired on a close, so most stretches were
+> written twice — only 2,322 of ~7,700 (session, seconds, lesson) groups were
+> singletons against 4,705 exact pairs and a tail out to 27 copies. The report
+> SUMs, so lesson 2-6 read 9,299 minutes against a true 2,820. **The bug was
+> never in what the code said** — every line of the old version was individually
+> reasonable, and the defect only appears when the events fire in the order a
+> browser fires them, which is why this drives events instead of reading source.
+> All six client detectors are mutation-proven against the exact shipped
+> behaviour).
 > It is wired into `npm run validate`, so every `ship` gates on it.
 > `npm run check` (Biome: lint **+ formatting**) is a member of the `qa:loop`
 > gate — it replaced `npm run lint` there on 2026-08-05, because `lint` alone

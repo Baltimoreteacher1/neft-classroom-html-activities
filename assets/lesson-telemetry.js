@@ -42,7 +42,25 @@
   if (window.NTtelemetry) return;
 
   var CFG = window.NT_TELEMETRY_CONFIG || {};
-  var ENABLED = CFG.enabled !== false;
+
+  // A driven browser is not a student. `night-shift/modules/06-lesson-render.mjs`
+  // boots every live lesson on eduwonderlab.com headlessly at 2am, and the
+  // Playwright gates (validate:flow-walk, validate:visibility,
+  // validate:lesson-boot) each open lessons too. Every one of those page loads
+  // used to write a `time_on_task` row into the production student database, so
+  // `report:usage` counted robots as classes: 1,469 events and 343 phantom
+  // "sessions" in the 06:00-08:00Z window, and lessons nobody had taught
+  // appeared in "most-used". `navigator.webdriver` is set by every automation
+  // protocol (CDP, WebDriver BiDi, Selenium) and by nothing else, so it is the
+  // one honest place to draw the line. Checked once, at the enable gate, rather
+  // than at each call site — one door, not eleven.
+  var AUTOMATED = false;
+  try {
+    AUTOMATED = navigator.webdriver === true;
+  } catch (_e) {
+    /* ancient browser — treat as human */
+  }
+  var ENABLED = CFG.enabled !== false && !AUTOMATED;
   var ENDPOINT = (CFG.endpoint || "/api/progress").replace(/\/+$/, "");
   var LS_QUEUE = "nt_telemetry_q_v1"; // distinct from nsr:/nt_/gfx namespaces
   var LS_STUDENT = "nt_student"; // shared with nt-page-enhance.js (read-only)
@@ -337,8 +355,40 @@
   }
 
   // ---- auto-capture wiring (best-effort, all guarded) ----------------------
+  // `startTs` is page load and stays that way: `lesson_complete.time_seconds`
+  // means "how long from opening the lesson to finishing it", which is elapsed
+  // time, not attention.
   var startTs = Date.now();
+  // `segmentTs` is the start of the CURRENT visible stretch, and it is what
+  // time-on-task is measured from. Two separate bugs made the old reading
+  // (which measured from `startTs` every time) untrue:
+  //
+  //   1. It never reset, so each hide re-reported the whole session. A student
+  //      who glanced away at 5, 10 and 15 minutes contributed 5+10+15 = 30
+  //      minutes of "time on task" for a 15-minute lesson, and the report SUMs.
+  //   2. `pagehide` and `visibilitychange`->hidden both fire on a real tab
+  //      close, so most stretches were written twice. Measured over the live
+  //      table: only 2,322 of ~7,700 (session, seconds, lesson) groups were
+  //      singletons; 4,705 were exact pairs and the tail ran to 27 copies.
+  //
+  // Resetting on emit fixes both — the second writer of a pair now measures a
+  // ~0-second stretch and MIN_SEGMENT_S drops it. Time spent hidden is not time
+  // on task, so returning to the tab restarts the clock rather than resuming it.
+  var segmentTs = Date.now();
+  // Below this, a "visit" is a page that opened and closed without a reader:
+  // a prerender, a bounced tab, or the second half of a duplicate pair. Writing
+  // it buys a row that can only dilute a median.
+  var MIN_SEGMENT_S = 2;
   var completeSent = false;
+
+  function emitTimeOnTask() {
+    var now = Date.now();
+    var dt = Math.round((now - segmentTs) / 1000);
+    segmentTs = now;
+    if (dt < MIN_SEGMENT_S) return false;
+    track("time_on_task", { seconds: dt });
+    return true;
+  }
 
   function gradedCardsTotal() {
     try {
@@ -477,14 +527,19 @@
       });
       var pageHide = function () {
         try {
-          var dt = Math.round((Date.now() - startTs) / 1000);
-          track("time_on_task", { seconds: dt });
+          emitTimeOnTask();
         } catch (_e) {}
         flush();
       };
       window.addEventListener("pagehide", pageHide);
       document.addEventListener("visibilitychange", function () {
-        if (document.visibilityState === "hidden") pageHide();
+        if (document.visibilityState === "hidden") {
+          pageHide();
+        } else {
+          // Back on the page: start a fresh stretch. Without this the minutes
+          // a lesson sat behind another tab would be billed as attention.
+          segmentTs = Date.now();
+        }
       });
     } catch (_e) {
       /* ignore */
