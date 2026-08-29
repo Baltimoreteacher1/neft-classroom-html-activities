@@ -1,7 +1,7 @@
 # Small-Group Studio 3.0 — Shipped Wave + Future Iterations
 
 Status: wave shipped 2026-07-16 (labs + persistence + language lanes).
-Scope: all 128 small-group lessons + 20 catch-ups (shared engine modules —
+Scope: all 168 small-group lessons + 36 catch-ups (204 as of 2026-08-29; shared engine modules —
 every upgrade lands everywhere with no regeneration).
 
 ## What shipped in this wave

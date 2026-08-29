@@ -84,9 +84,9 @@ const baseIds = new Set(lessons.filter((lesson) => !/-flagship$/.test(lesson.id)
 /* The printables a small-group or catch-up variant ships with, in the order the
  * teacher meets them at the table: the sheet the group writes on during the
  * session, then the packet that continues it afterwards. Presence is decided by
- * the file on disk — catch-ups have a worksheet and no practice set, and a
- * button for a page that is not there is the dead button this manifest refuses
- * to carry. Answer keys are deliberately absent: this manifest feeds a
+ * the file on disk — a lesson whose generator skipped it has no practice set,
+ * and a button for a page that is not there is the dead button this manifest
+ * refuses to carry. Answer keys are deliberately absent: this manifest feeds a
  * student-reachable surface, which is what FORBIDDEN_RESOURCE encodes above. */
 const GROUP_PRINTABLES = [
   ["worksheet", "worksheet.html"],

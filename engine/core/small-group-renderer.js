@@ -31,7 +31,7 @@ import {
   makePulse,
   selectedTalk,
 } from "./small-group-engagement.js";
-import { syncSmallGroupEvidence } from "./small-group-evidence.js";
+import { syncSmallGroupEvidence, trackSmallGroupStep } from "./small-group-evidence.js";
 import {
   createAdaptiveCoach,
   createAutoSupportTracker,
@@ -1245,6 +1245,7 @@ function renderStudio(config) {
       });
       if (save) {
         store.set(storeKey, i);
+        trackSmallGroupStep(config, { tab: id, step: live[i].label, index: i, count: live.length });
         panel.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     };
@@ -1385,7 +1386,14 @@ function renderStudio(config) {
   tabs = mountSmallGroupTabs(app, activeTabSteps, {
     store,
     voice,
-    onReach: (id) => reach.mark(id),
+    onReach: (id) => {
+      reach.mark(id);
+      trackSmallGroupStep(config, {
+        tab: id,
+        index: activeTabSteps.findIndex((step) => step.id === id),
+        count: activeTabSteps.length,
+      });
+    },
   });
   pendingMarks.forEach((id) => tabs.markDone(id));
   tally.update();

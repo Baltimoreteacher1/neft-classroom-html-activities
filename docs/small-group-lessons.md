@@ -11,33 +11,39 @@ full 5-phase lessons.
 | **Group 2 — Challenge**     | `N-M-group2`  | Students who get it      | Extension, justification, harder cases                           |
 | **Catch-Up**                | `N-M-catchup` | Missed a band of lessons | Big-ideas review across the band                                 |
 
-64 base lessons → **128** small-group + **20** catch-up lessons.
+84 base lessons → **168** small-group + **36** catch-up lessons (204 studio pages).
+84 base lessons → **168** small-group (84 Group 1 + 84 Group 2) + **36** catch-up
+lessons. Every one of the 204 carries `worksheet.html`, `worksheet-2.html`, a
+continuation **Practice Set** (`practice.html` + key — catch-ups since
+2026-08-29) and `homework.docx`.
 
-## Experience (compact renderer)
+## Experience (Studio 5 — tabbed)
 
 `engine/core/small-group-renderer.js` (`bootSmallGroup(config)`) renders a
-single-scroll, color-coded page — support = blue, challenge = amber, catch-up =
-teal. No identity screen, phase nav, notice/wonder, or discovery. Four sections:
+color-coded studio — support = blue, challenge = amber, catch-up = teal — as a
+hero, a readiness pulse, and **three tabs**, each a chip strip of sub-steps
+with one moment on screen at a time (position saved per student):
 
-1. **Review the skill** — key idea + worked example (I-do) + guided (we-do) with
-   sentence frames.
-2. **Key vocabulary** — compact cards with interactive **cloze** fill-in.
-3. **Practice** — interactive problems (below).
-4. **Quick check** — the exit ticket.
+1. **Focus & Learn** — 🔑 Key Words (cloze, EN/ES/VI/AR lanes) → 🧱 Build the
+   Idea (I-do → We-do stage cards, Explore Lab) → 📝 Worked Model.
+2. **Practice Studio** — 🤝 Guided (adaptive coach) → ✏️ On My Own (notebook-
+   first cards; two misses open the guidance) → 🗣️ Talk It Out (Group 1 and
+   catch-up: consensus lab).
+3. **Check & Growth** — ✅ Check (exit ticket; Math Check lab on Group 2) →
+   💭 Reflect → 📈 Grow (mastery ladder, success-criteria self-check) →
+   🚀 Mission (Apply, Go Deeper).
 
-### Interactive practice
+Around the tabs: progress meter + streak, station timer, Math Move of the Day,
+tool drawer, Focus Mode, save/resume, print-expands-everything, Student
+Passport XP. Teacher mode (`?teacher=1`, served by
+`functions/teacher-small-group/`) adds the evidence console, misconception
+card, rhythm coach and the printable facilitation plan.
 
-- **Fill-in-the-blank** answers — horizontal (`a op b = [__]`) and **vertical
-  stacked column** layouts, auto-checked (numeric-tolerant).
-- **Guided-solve** (1–2 per small group) — a progressive, type-as-you-go worked
-  problem: enter each number to unlock the next step, building the full solution.
-- **Word-bank scaffold** (Group 1 + Catch-Up) — tap-to-fill answer chips.
-- **Hint ladder**, **error-analysis** (find + fix the mistake), and a
-  reveal-model fallback for open-response.
-- **Teacher facilitation** panel (who to pull, moves, sentence frames).
+Telemetry (2026-08-29): every tab and sub-step arrival posts a name-free
+`sg_step_view` (class section only, same rule as the evidence summary) so
+`npm run report:usage` can show where a group stops.
 
 ### Built-in classroom layers (shared shell)
-
 `tools/lib/compact-shell.mjs` mounts, on every variant:
 
 - **Math Workbench** launcher (bottom-right button)
@@ -54,7 +60,7 @@ The compact **renderer** (`small-group-renderer.js`), not the shell, adds:
 
 ## Generators (source of truth — GENERATED, don't hand-edit)
 
-- `tools/generate-small-group-lessons.mjs` → 128 configs + shells + `small-group-rows.json`
+- `tools/generate-small-group-lessons.mjs` → 168 configs + shells + `small-group-rows.json`
 - `tools/generate-catchup-lessons.mjs` → 20 compact catch-up configs + `catchup-rows.json`
 - `tools/splice-small-group-curriculum.mjs` → inserts the two indented dropdown
   entries under each parent lesson (order: Lesson → Group 1 → Group 2 → Catch-Up)

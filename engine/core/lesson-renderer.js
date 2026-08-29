@@ -1041,6 +1041,11 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total, opt
   // phases, so navigation and progress must use the phase currently on screen.
   // Reading live state also keeps completion correct after resume/sidebar use.
   const activePhaseIdx = state.get().currentPhase ?? phaseIdx;
+  try {
+    window.NTtelemetry?.track?.("phase_complete", { phase: activePhaseIdx, name, correct, total });
+  } catch {
+    /* telemetry is optional */
+  }
   // Participation coins for non-practice phases
   if (activePhaseIdx !== 4) {
     state.awardPhaseParticipation(activePhaseIdx, 2);
@@ -6033,6 +6038,27 @@ let selectActStep = null;
 /** @type {{wrap:HTMLElement, steps:{key:string,icon:string,label:string}[], index:number, show:(i:number)=>void}|null} */
 let actStepNav = null;
 
+/* Step-level telemetry. Until 2026-08-29 the usage report could say only that
+   a lesson was OPENED (lesson_complete / time_on_task are lesson-grain), so a
+   lesson with many short sessions could not be told apart from one students
+   abandon at the same step every time. One event per step arrival, keyed by the
+   same stable step key save/resume uses, lets `npm run report:usage` draw the
+   funnel. Identity policy is unchanged — lesson-telemetry.js owns it — and a
+   page without the module is a silent no-op, never an error in the lesson. */
+function trackStepView(phaseIdx, step, index, count, restored) {
+  try {
+    window.NTtelemetry?.track?.("step_view", {
+      phase: phaseIdx,
+      step,
+      index,
+      count,
+      restored: !!restored,
+    });
+  } catch {
+    /* telemetry is optional */
+  }
+}
+
 /**
  * The step chain of the act currently on screen, or null when the mounted
  * phase has no strip. Never cached by callers — the phase re-render replaces it.
@@ -6094,6 +6120,7 @@ export function renderActSteps(el, state, phaseIdx, steps) {
     visited.add(i);
     actStepNav = { wrap, steps, index: i, show: (j) => show(j, true) };
     document.dispatchEvent(new CustomEvent("nt:actstep-changed", { detail: { index: i } }));
+    trackStepView(phaseIdx, steps[i].key, i, steps.length, !save);
     if (save) {
       // Saved by stable KEY, not index: the step list is conditional (a lesson
       // without vocabulary has no vocab step), so a saved index silently

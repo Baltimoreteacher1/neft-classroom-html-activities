@@ -67,6 +67,24 @@ const QUERIES = {
     FROM game_scores GROUP BY 1 ORDER BY plays DESC`,
   activeDays: `SELECT substr(created_at,1,10) AS day, COUNT(*) AS events
     FROM lesson_telemetry GROUP BY 1 ORDER BY day DESC LIMIT 21`,
+  // Step funnel (events shipped 2026-08-29). Interactive lessons send
+  // `step_view` {phase, step, index, count} from the act step strip; the
+  // small-group studio sends `sg_step_view` {tab, step, index, count} on every
+  // tab or sub-step arrival. Sessions, not clicks: a student who revisits a
+  // step counts once. Rows older than the ship date simply do not exist, so an
+  // empty result here means "not yet observed", never "nobody got past step 1".
+  stepFunnel: `SELECT lesson_slug AS slug, event_type AS type,
+      COALESCE(json_extract(payload_json,'$.props.phase'), json_extract(payload_json,'$.props.tab'), json_extract(payload_json,'$.tab')) AS stage,
+      COALESCE(json_extract(payload_json,'$.props.step'), json_extract(payload_json,'$.step'), '') AS step,
+      MIN(COALESCE(json_extract(payload_json,'$.props.index'), json_extract(payload_json,'$.index'))) AS idx,
+      COUNT(DISTINCT json_extract(payload_json,'$.session')) AS sessions
+    FROM lesson_telemetry
+    WHERE event_type IN ('step_view','sg_step_view')
+    GROUP BY 1,2,3,4 ORDER BY 1,3,5`,
+  lessonSessions: `SELECT lesson_slug AS slug,
+      COUNT(DISTINCT json_extract(payload_json,'$.session')) AS sessions
+    FROM lesson_telemetry
+    WHERE json_extract(payload_json,'$.session') IS NOT NULL GROUP BY 1`,
 };
 
 function query(sql) {
@@ -316,6 +334,50 @@ lines.push("");
 for (const l of untouched.slice(0, 60)) lines.push(`- \`lessons/${l.dir}/\` — ${l.title}`);
 if (untouched.length > 60) lines.push(`- _…and ${untouched.length - 60} more._`);
 lines.push("");
+
+lines.push("## Where students stop");
+lines.push("");
+lines.push(
+  "Sessions that reached each step, in the order the lesson presents them. A step",
+  "far below the one before it is where students leave. Interactive lessons",
+  "report acts and steps; the small-group studio reports tabs and sub-steps.",
+  "",
+);
+const funnelBySlug = new Map();
+for (const r of data.stepFunnel) {
+  if (!funnelBySlug.has(r.slug)) funnelBySlug.set(r.slug, []);
+  funnelBySlug.get(r.slug).push(r);
+}
+if (!funnelBySlug.size) {
+  lines.push(
+    "_No step-level events yet. `step_view` / `sg_step_view` shipped 2026-08-29; this",
+    "section fills in as classes run._",
+    "",
+  );
+} else {
+  const sessionsBySlug = new Map(data.lessonSessions.map((r) => [r.slug, r.sessions || 0]));
+  const ranked = [...funnelBySlug.entries()]
+    .map(([slug, rows]) => ({ slug, rows, sessions: sessionsBySlug.get(slug) || 0 }))
+    .sort((a, b) => b.sessions - a.sessions)
+    .slice(0, 25);
+  for (const { slug, rows, sessions } of ranked) {
+    const title = data.lessonEvents.find((r) => r.slug === slug)?.title || slug;
+    lines.push(`### ${title} — ${fmt(sessions)} session${sessions === 1 ? "" : "s"}`);
+    lines.push("");
+    lines.push("| Stage | Step | Sessions reached | Of lesson |");
+    lines.push("|---|---|---:|---:|");
+    const ordered = rows
+      .slice()
+      .sort(
+        (a, b) => String(a.stage).localeCompare(String(b.stage)) || (a.idx ?? 0) - (b.idx ?? 0),
+      );
+    for (const r of ordered) {
+      const pct = sessions ? Math.round((r.sessions / sessions) * 100) : 0;
+      lines.push(`| ${r.stage ?? "—"} | ${r.step || "(arrived)"} | ${fmt(r.sessions)} | ${pct}% |`);
+    }
+    lines.push("");
+  }
+}
 
 lines.push("## Event mix");
 lines.push("");

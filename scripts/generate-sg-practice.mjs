@@ -45,10 +45,15 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
-/** Group 1 and Group 2 wear the labels the curriculum hub already shows. */
+/** Group 1 and Group 2 wear the labels the curriculum hub already shows. A
+ *  catch-up reviews a band of lessons for students who missed it, so it takes
+ *  the supported form: frames, word bank, "change one number" closer. Until
+ *  2026-08-29 the 36 catch-ups were the only small-group lessons without a
+ *  continuation packet — the students most likely to need one. */
 const LEVELS = {
   group1: { name: "Group 1", badge: "Extra Support", supported: true },
   group2: { name: "Group 2", badge: "Challenge", supported: false },
+  catchup: { name: "Catch-Up", badge: "Big-Ideas Review", supported: true },
 };
 
 const esc = (s) =>
@@ -112,7 +117,7 @@ const JUSTIFY = [
 function loadTracks() {
   const rows = [];
   for (const dir of readdirSync(LESSONS, { withFileTypes: true })) {
-    const m = dir.isDirectory() && dir.name.match(/^(\d+-\d+)-(group[12])$/);
+    const m = dir.isDirectory() && dir.name.match(/^(\d+-\d+)-(group[12]|catchup)$/);
     if (!m) continue;
     const file = join(LESSONS, dir.name, "config.json");
     if (!existsSync(file)) continue;
@@ -130,7 +135,7 @@ function loadTracks() {
       (a.cfg.lesson ?? 0) - (b.cfg.lesson ?? 0) ||
       a.variant.localeCompare(b.variant),
   );
-  const tracks = { group1: [], group2: [] };
+  const tracks = { group1: [], group2: [], catchup: [] };
   for (const row of rows) tracks[row.variant].push(row);
   return { rows, tracks };
 }
@@ -652,9 +657,21 @@ function main() {
       id: row.id,
       cfg: row.cfg,
       level: LEVELS[row.variant],
-      headline: baseTitle(row.base) || row.cfg.title || row.id,
+      // A group variant is headed by its base lesson's title; a catch-up spans
+      // a band ("1.1–1.3 Catch-Up") and its own title is the only honest one.
+      headline:
+        row.variant === "catchup"
+          ? row.cfg.title || row.id
+          : baseTitle(row.base) || row.cfg.title || row.id,
       previous: prev
-        ? { id: prev.id, cfg: prev.cfg, label: `Lesson ${prev.cfg.unit}.${prev.cfg.lesson}` }
+        ? {
+            id: prev.id,
+            cfg: prev.cfg,
+            label:
+              prev.variant === "catchup"
+                ? prev.cfg.title || prev.id
+                : `Lesson ${prev.cfg.unit}.${prev.cfg.lesson}`,
+          }
         : null,
     };
     // A packet with no model and no checks would be four pages of ruled lines.
