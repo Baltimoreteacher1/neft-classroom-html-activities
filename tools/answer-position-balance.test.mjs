@@ -34,7 +34,7 @@
  *     tree every time or nothing downstream of it can be verified.
  */
 import { execFileSync } from "node:child_process";
-import { cpSync, globSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { globSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -153,11 +153,12 @@ const run = (args) =>
   });
 
 try {
-  cpSync(join(process.cwd(), "lessons"), join(dir, "lessons"), {
-    recursive: true,
-    filter: (src) => !src.includes("/lessons/") || /lessons(\/[^/]*)?$/.test(src) || true,
-  });
-
+  // The fixtures below are the whole world this half of the test needs: the
+  // tool globs `lessons/*/config.json` relative to its cwd, so an otherwise
+  // empty tree exercises it exactly. An earlier version copied the real
+  // `lessons/` in first — 595 MB and 6,488 files, on every `npm test` — which
+  // bought nothing and helped push the suite past the deploy gate's 900s
+  // timeout, aborting a push.
   const fixture = (id, cfg) => {
     const d = join(dir, "lessons", id);
     execFileSync("mkdir", ["-p", d]);
