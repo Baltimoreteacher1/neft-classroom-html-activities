@@ -61,6 +61,20 @@ try {
 
 const CLIENT = readFileSync(join(ROOT, "assets/lesson-telemetry.js"), "utf8");
 
+/* Every jsdom window opened here, so all of them can be closed. An unclosed
+ * window keeps its timers — and the process — alive. */
+const windows = [];
+function closeWindows() {
+  for (const w of windows) {
+    try {
+      w.close();
+    } catch {
+      /* already gone */
+    }
+  }
+  windows.length = 0;
+}
+
 /**
  * Boot the telemetry client in a fresh document and hand back a handle that can
  * move time, flip visibility, and read what was queued.
@@ -72,11 +86,15 @@ const CLIENT = readFileSync(join(ROOT, "assets/lesson-telemetry.js"), "utf8");
 function boot({ webdriver = false } = {}) {
   const dom = new JSDOM("<!doctype html><html><body></body></html>", {
     url: "https://eduwonderlab.com/lessons/2-6/",
-    pretendToBeVisual: true,
-    // Without this `window.eval` does not evaluate inside the jsdom realm, and
-    // the client's references to `window` resolve to nothing.
+    // `pretendToBeVisual` is deliberately OFF. It starts a requestAnimationFrame
+    // loop that holds the event loop open, so the process prints every passing
+    // assertion and then never exits — this file hung for 120s+ and was the
+    // single reason `npm test` ran over the deploy gate's 900s timeout, which
+    // aborted a push. Nothing here needs a paint clock; the lifecycle events are
+    // dispatched by hand.
     runScripts: "outside-only",
   });
+  windows.push(dom.window);
   const { window } = dom;
   Object.defineProperty(window.navigator, "webdriver", {
     value: webdriver,
@@ -211,6 +229,8 @@ check("a page that opens and closes instantly writes no row", () => {
     `a 0-second visit wrote ${t.times().length} row(s); these are the rows that put untaught lessons in "most-used"`,
   );
 });
+
+closeWindows();
 
 /* ------------------------------------------------- the report, end to end */
 
