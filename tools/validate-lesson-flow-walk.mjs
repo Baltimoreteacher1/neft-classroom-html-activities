@@ -62,7 +62,24 @@ const BOOT_TIMEOUT = 30000;
  * a geometry lesson with a different Act 2 shape; 6-1 has no Explore step, so
  * the walk must still be complete on a SHORTER chain — a hardcoded expectation
  * of six Act 2 steps would pass 2-7 and lie about 6-1. */
-const SAMPLE = ["2-7", "5-3", "6-1"];
+/* The canary set is the DEFAULT, not the ceiling. `--lessons 3-1,3-2` points
+ * the same walk at whatever is about to be taught: a unit nobody has opened yet
+ * has never had its forward button pressed by anyone, and "we check three
+ * lessons forever" is how that stays true until a class finds out. The default
+ * is unchanged, so the gate costs exactly what it did. */
+const SAMPLE = (() => {
+  const i = process.argv.indexOf("--lessons");
+  if (i === -1) return ["2-7", "5-3", "6-1"];
+  const list = String(process.argv[i + 1] || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!list.length) {
+    console.error("--lessons was given no lesson ids");
+    process.exit(1);
+  }
+  return list;
+})();
 
 /* THE STEP STRIP — the thin band of chips that says where you are in the lesson
  * and where you can go. Deliberately just this one.
