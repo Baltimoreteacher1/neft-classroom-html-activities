@@ -116,8 +116,23 @@ function collectItems(cfg) {
 
 /* --------------------------------------------------------- when NOT to move */
 
+/**
+ * A choice that is an assertion ABOUT the other choices. Deliberately narrow,
+ * and narrowed once already: the first version matched `\bthe first\b`,
+ * `\bthe last\b` and a case-insensitive `\b[a-d] and [a-d]\b`, which is
+ * ordinary mathematical English, not a reference to a choice. It pinned six
+ * answers at position A for phrases like "the first BAKERY", "the first AMOUNT"
+ * of a ratio, and "both b and c" — the variables in a(b + c). One of them was
+ * an exit ticket, which is the surface that decides mastery.
+ *
+ * So the letter forms now require a CAPITAL letter, which is how a choice is
+ * ever referred to ("Both A and C"), and the bare ordinals are gone. "All/none
+ * of the above" needs no such care — it can only mean the other choices.
+ */
 const POSITIONAL =
-  /\ball of the above\b|\bnone of the above\b|\bboth [a-d] and\b|\b[a-d] and [a-d]\b|\bthe first\b|\bthe last\b|todas las anteriores|ninguna de las anteriores/i;
+  /\ball of the above\b|\bnone of the above\b|\bboth of the above\b|todas las anteriores|ninguna de las anteriores/i;
+const POSITIONAL_CASED =
+  /\b(?:both|either|neither)\s+[A-D]\s+(?:and|or)\s+[A-D]\b|\bchoices?\s+[A-D]\b|\boptions?\s+[A-D]\b/;
 
 /**
  * A choice set is NUMERIC when every choice leads with a number. These get
@@ -142,9 +157,11 @@ function numericValues(choices) {
 
 function skipReason(item) {
   const choices = item.choices.map((c) => String(c ?? ""));
-  if (choices.length < 3) return "fewer than three choices";
-  if (choices.some((c) => POSITIONAL.test(c)))
-    return "a choice refers to the other choices or to a position";
+  // Two choices still balance — 50/50 is a real distribution, and pinning the
+  // true one at A is exactly the defect this exists to fix.
+  if (choices.length < 2) return "fewer than two choices";
+  if (choices.some((c) => POSITIONAL.test(c) || POSITIONAL_CASED.test(c)))
+    return "a choice refers to the other choices";
   return null;
 }
 
