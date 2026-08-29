@@ -1,129 +1,85 @@
 #!/usr/bin/env node
-// Guards the quality of `choiceFeedback` in lessons/*/config.json.
-//
-// `choiceFeedback[i]` is what a student reads after picking wrong answer i.
-// House standard: name the specific error and give the corrective move.
-// "Check your work." teaches nothing, and a self-contradicting sentence
-// ("6² = 36, not 36.") actively confuses.
-//
-// Three checks, all written to be false-positive free so the gate stays trusted:
-//
-//   0. COVERAGE — every wrong choice of a multiple-choice item has a message.
-//      Auditing only the text that exists let six items ship with a blank or
-//      absent `choiceFeedback`, which silently falls back to the generic
-//      "Not quite — take another look and try again."
-//   1. VAGUE — opens with a hedge verb AND carries no concrete detail.
-//      "Check the units — a wrapped surface is square, not cubic" passes:
-//      it opens with a hedge but names the actual error.
-//   2. SELF-CONTRADICTION — "= N, not N", the same value on both sides of a
-//      contrast. Deliberate contrasts ("-4, not 4", "8 ÷ 6, not 6 ÷ 8") differ
-//      on one side and are not flagged.
+/**
+ * Distractor feedback may only get better, never worse.
+ *
+ * `node tools/audit-distractor-feedback.mjs` counts the multiple-choice items
+ * whose `choiceFeedback` is authored AND clean — one line per wrong choice, no
+ * quoted answer, no named letter, no duplicates — across every pool the engine
+ * surfaces it on (practice tiers, warm-up, Connect, exit ticket). This pins the
+ * count as a floor: an edit that drops feedback, or authors a giveaway, fails
+ * here. Raise FLOOR whenever a wave lands; never lower it to make a run pass.
+ *
+ * The detector is self-tested first, in both directions, so a regex that quietly
+ * stopped matching cannot report a clean fleet.
+ */
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { auditItem } from "./audit-distractor-feedback.mjs";
 
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const AUDIT = join(ROOT, "tools", "audit-distractor-feedback.mjs");
 
-const LESSONS = "lessons";
+// Raise when a wave lands. 808 = the fleet on 2026-08-29 before the authoring
+// wave; the practice tiers were already covered, warm-up/Connect were not.
+const FLOOR = 808;
 
-const HEDGE =
-  /^(check|double-check|recheck|try|remember|make sure|review|look|think|consider|be careful|careful)\b/i;
-
-// concrete detail: a number, an operator, or a math noun/verb
-const SPECIFIC =
-  /\d|½|÷|×|·|\bper\b|\badd|\bsubtract|\bmultipl|\bdivid|\bsquare|\bcubic|\bnumerator|\bdenominator|\bsign|\bnegative|\bopposite|\bborrow|\bregroup|\bdecimal|\bunit|\bbase\b|\bheight|\bwidth|\blength|\bperimeter|\barea\b|\bvolume|\bnot\b|\binstead\b|\brather than|\bparallel|\bcoordinate|\bx-axis|\by-axis|\breciprocal|\bexponent|\binverse/i;
-
-// The trailing guards let a sentence-ending "." through while still rejecting
-// a longer number ("36" must not match inside "365" or "36.5").
-const CONTRADICTION = /=\s*(-?\d+(?:\.\d+)?)\s*,\s*not\s+\1(?!\d)(?!\.\d)(?!\w)/;
-
-function isVague(text) {
-  if (!HEDGE.test(text)) return false;
-  return !SPECIFIC.test(text) || text.trim().split(/\s+/).length <= 7;
-}
-
-function walk(node, visit) {
-  if (Array.isArray(node)) {
-    for (const child of node) walk(child, visit);
-  } else if (node && typeof node === "object") {
-    visit(node);
-    for (const value of Object.values(node)) walk(value, visit);
-  }
-}
-
-const vague = [];
-const contradictions = [];
-const uncovered = [];
-let lessonCount = 0;
-let feedbackCount = 0;
-
-for (const entry of readdirSync(LESSONS).sort()) {
-  const configPath = join(LESSONS, entry, "config.json");
-  let raw;
-  try {
-    if (!statSync(configPath).isFile()) continue;
-    raw = readFileSync(configPath, "utf8");
-  } catch {
-    continue;
-  }
-  lessonCount += 1;
-  const config = JSON.parse(raw);
-
-  walk(config, (obj) => {
-    // Coverage: a wrong choice with no message falls back to the generic
-    // "Not quite" and teaches nothing. Run before the text checks so an
-    // absent `choiceFeedback` array is caught rather than skipped.
-    if (
-      obj.type === "multiple-choice" &&
-      Array.isArray(obj.choices) &&
-      Number.isInteger(obj.correctIndex)
-    ) {
-      const messages = Array.isArray(obj.choiceFeedback) ? obj.choiceFeedback : [];
-      obj.choices.forEach((_, index) => {
-        if (index === obj.correctIndex) return;
-        const text = messages[index];
-        if (typeof text !== "string" || text.trim().length <= 10) {
-          uncovered.push(`${entry} [choice ${index}]: ${String(obj.stem || "").slice(0, 70)}`);
-        }
-      });
-    }
-
-    const feedback = obj.choiceFeedback;
-    if (!Array.isArray(feedback)) return;
-    feedback.forEach((text, index) => {
-      if (typeof text !== "string" || !text.trim()) return;
-      feedbackCount += 1;
-      const where = `${entry} [choice ${index}]`;
-      if (isVague(text)) vague.push(`${where}: ${text}`);
-      if (CONTRADICTION.test(text)) contradictions.push(`${where}: ${text}`);
-    });
-  });
-}
-
-const problems = [];
-if (uncovered.length) {
-  problems.push(
-    `${uncovered.length} wrong choice(s) with no feedback — these fall back to the generic "Not quite":\n` +
-      uncovered.map((u) => `    ${u}`).join("\n"),
-  );
-}
-if (vague.length) {
-  problems.push(
-    `${vague.length} vague wrong-answer message(s) — name the student's actual error instead:\n` +
-      vague.map((v) => `    ${v}`).join("\n"),
-  );
-}
-if (contradictions.length) {
-  problems.push(
-    `${contradictions.length} self-contradicting message(s) — same value on both sides of "not":\n` +
-      contradictions.map((c) => `    ${c}`).join("\n"),
-  );
-}
-
-if (problems.length) {
-  console.error("distractor-feedback: FAIL\n");
-  for (const problem of problems) console.error(`  ${problem}\n`);
-  process.exit(1);
-}
-
-console.log(
-  `distractor-feedback: PASS (${feedbackCount} messages across ${lessonCount} lesson configs)`,
+const item = (choiceFeedback) => ({
+  choices: ["12", "18", "6", "3"],
+  correctIndex: 1,
+  choiceFeedback,
+});
+assert.deepEqual(auditItem({ item: item(undefined), correct: 1 }), ["missing"]);
+assert.deepEqual(
+  auditItem({
+    item: item(["You added the two numbers.", "", "You halved instead.", "You divided by 4."]),
+    correct: 1,
+  }),
+  [],
+  "clean feedback passes",
 );
+assert.ok(
+  auditItem({ item: item(["The answer is 18.", "", "Halved.", "Divided."]), correct: 1 }).some(
+    (p) => /names the answer/.test(p),
+  ),
+  "naming the answer is a leak",
+);
+assert.ok(
+  auditItem({ item: item(["Pick B instead.", "", "Halved.", "Divided."]), correct: 1 }).some((p) =>
+    /names the answer/.test(p),
+  ),
+  "naming the letter is a leak",
+);
+assert.ok(
+  auditItem({ item: item(["Same line.", "", "Same line.", "Divided."]), correct: 1 }).some((p) =>
+    /duplicates/.test(p),
+  ),
+  "duplicate lines are caught",
+);
+assert.ok(
+  auditItem({
+    item: item(["Wrong.", "Feedback on the right one.", "Halved.", "Divided."]),
+    correct: 1,
+  }).some((p) => /correct choice but carries/.test(p)),
+  "feedback on the correct slot is caught",
+);
+
+let out = "";
+let code = 0;
+try {
+  out = execFileSync(process.execPath, [AUDIT, "--floor", String(FLOOR)], {
+    cwd: ROOT,
+    encoding: "utf8",
+  });
+} catch (e) {
+  code = e.status ?? 1;
+  out = `${e.stdout || ""}${e.stderr || ""}`;
+}
+const m = /distractor-feedback: (\d+)\/(\d+)/.exec(out);
+assert.ok(
+  m,
+  `audit output is unparseable — a gate that cannot read its subject is not a gate:\n${out.slice(0, 400)}`,
+);
+assert.equal(code, 0, `audit failed (floor ${FLOOR}):\n${out.slice(0, 1200)}`);
+console.log(`distractor-feedback ratchet: ${m[1]}/${m[2]} clean (floor ${FLOOR})`);

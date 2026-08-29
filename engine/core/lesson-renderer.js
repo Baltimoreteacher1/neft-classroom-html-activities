@@ -3393,9 +3393,18 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     // the warmup surface discarded every one of them — a student who missed a
     // question was told only that they missed it. Show the reasoning on a miss;
     // this is the one moment it is worth reading.
+    // Authored distractor feedback first (2026-08-29): what THIS wrong choice
+    // says about the thinking, in the student's words, before the explanation
+    // of the right one. Items without `choiceFeedback` read exactly as before.
+    const coach = Array.isArray(q.choiceFeedback)
+      ? String(q.choiceFeedback[selectedIdx] || "").trim()
+      : "";
+    const coachEs = Array.isArray(q.choiceFeedbackEs)
+      ? String(q.choiceFeedbackEs[selectedIdx] || "").trim()
+      : "";
     feedbackBox.innerHTML = `<strong>${stack("warmupIncorrect", { html: true })}</strong>${
-      q.explanation ? ` ${stackContent(q.explanation, q.explanationEs)}` : ""
-    }`;
+      coach ? ` ${stackContent(coach, coachEs)}` : ""
+    }${q.explanation ? ` ${stackContent(q.explanation, q.explanationEs)}` : ""}`;
   } else {
     feedbackBox.style.background = "#fffbe0";
     feedbackBox.style.color = "#92400e";
@@ -4858,9 +4867,16 @@ function renderConnectCheck(cfg, state) {
         b.classList.toggle("is-wrong", bi === picked && !isRight);
       });
       fb.classList.add("visible", isRight ? "is-correct" : "is-wrong");
+      // Authored distractor feedback (2026-08-29) names what the chosen wrong
+      // answer got wrong before the explanation of the right one. Items with no
+      // `choiceFeedback` read exactly as before.
+      const coach =
+        !isRight && Array.isArray(q.choiceFeedback)
+          ? String(q.choiceFeedback[picked] || "").trim()
+          : "";
       fb.innerHTML = `<span class="connect-check-icon">${isRight ? "✓" : "💡"}</span><span>${
         isRight ? "Yes — " : "Not quite. "
-      }${esc(q.explanation || "")}</span>`;
+      }${coach ? `${esc(coach)} ` : ""}${esc(q.explanation || "")}</span>`;
     };
 
     choices.forEach((choice, ci) => {
@@ -5377,6 +5393,52 @@ function renderReflectPhase(el, state, ctx, config) {
 
   // Q1 — authored skill-check MC.
   const q1Card = etCard("etQ1Label");
+  // Level-aware exit ticket (2026-08-29). Until now Practice was the only step
+  // that read the student's level; the ticket served every level identically.
+  // The MEASURED item stays the same for everyone — mastery has to stay
+  // comparable across levels — so the level changes the support around it:
+  //   Level 1 → the item's scaffold is open before the first attempt, exactly
+  //             what Practice does for level1 items (deriveScaffold).
+  //   Level 3 → after Q1 is answered, one Stretch item: a regenerated variant
+  //             of an `extending` problem (fresh numbers, so never the verbatim
+  //             item Practice just served). XP only; never touches mastery.
+  const ticketLevel = getLevel(state);
+  if (ticketLevel === "level1") {
+    const scaffoldText = deriveScaffold({ type: "multiple-choice", ...cfg.exitTicket });
+    if (scaffoldText) {
+      const hint = document.createElement("details");
+      hint.className = "scaffold-panel";
+      hint.open = true;
+      hint.innerHTML = `<summary>💡 Hint — read this first</summary><p style="margin:var(--sp-2) 0 0;">${esc(scaffoldText)}</p>`;
+      q1Card.append(hint);
+    }
+  }
+  const mountExitStretch = () => {
+    if (ticketLevel !== "level3" || q1Card.dataset.stretch) return;
+    q1Card.dataset.stretch = "1";
+    const pool = (config.practice?.extending || []).filter(
+      (item) => item && item.stem && (item.answer != null || Array.isArray(item.choices)),
+    );
+    // From the tail: Practice serves the tier from the front, so the last
+    // items are the ones a Level 3 student is least likely to have met.
+    for (let i = pool.length - 1; i >= 0; i--) {
+      const item = pool[i];
+      const card = document.createElement("div");
+      card.className = "card exit-ticket-card exit-ticket-stretch";
+      card.innerHTML = `<div class="badge badge-navy mb-4">${stackHtml("🟣 Level 3 · Stretch", "🟣 Nivel 3 · Reto")}</div>`;
+      const handle = attachRegenPractice(
+        card,
+        {
+          ...item,
+          answer: item.answer ?? item.choices?.[item.correctIndex ?? item.answerIndex ?? 0],
+        },
+        { label: "You are at Level 3 — one fresh stretch problem before you finish:" },
+      );
+      if (!handle) continue;
+      q1Card.after(card);
+      return;
+    }
+  };
   const finishRow = document.createElement("div");
   finishRow.className = "problem-check-row";
   finishRow.style.cssText = "justify-content:center; margin-top:var(--sp-4);";
@@ -5403,6 +5465,7 @@ function renderReflectPhase(el, state, ctx, config) {
         correct: isCorrect ? 1 : 0,
         total: 1,
       });
+      mountExitStretch();
       const finishBtn = document.createElement("button");
       finishBtn.type = "button";
       finishBtn.className = "btn btn-primary";
