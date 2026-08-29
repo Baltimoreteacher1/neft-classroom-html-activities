@@ -20,8 +20,9 @@ import { auditItem, taxonomyIds } from "./audit-misconception-tags.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const AUDIT = join(ROOT, "tools", "audit-misconception-tags.mjs");
 
-// 812 = small-group items tagged on 2026-08-29 after the core→variant copy.
-const FLOOR = 812;
+// 1092 = small-group items tagged after the 2026-08-29 authoring wave (eight
+// decimal tags on non-decimal items were cleared by misconception-tags-resolve).
+const FLOOR = 1092;
 
 const ids = taxonomyIds();
 assert.ok(ids.size >= 40, "taxonomy loaded");

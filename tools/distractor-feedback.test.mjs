@@ -21,9 +21,9 @@ import { auditItem } from "./audit-distractor-feedback.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const AUDIT = join(ROOT, "tools", "audit-distractor-feedback.mjs");
 
-// Raise when a wave lands. 808 = the fleet on 2026-08-29 before the authoring
-// wave; the practice tiers were already covered, warm-up/Connect were not.
-const FLOOR = 808;
+// Raise when a wave lands. 1420 = every multiple-choice item after the 2026-08-29
+// authoring wave (practice tiers were already covered; warm-up/Connect were not).
+const FLOOR = 1420;
 
 const item = (choiceFeedback) => ({
   choices: ["12", "18", "6", "3"],
