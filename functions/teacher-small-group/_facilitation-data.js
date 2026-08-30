@@ -1168,7 +1168,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Flipped the ratio; Combined the two amounts instead of comparing them. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Flipped the ratio; Combined the two amounts instead of comparing them; Compared two ratios without a common basis. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which quantity does the question name FIRST? Label both before you write.",
       lookFor:
@@ -1262,7 +1262,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Gave the total instead of the unit rate; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does ONE of them cost? Finish: “for one ___, there is ___.”",
       lookFor:
@@ -1310,7 +1310,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, how many TIMES bigger did the first amount get?",
       lookFor:
@@ -1359,7 +1359,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying; Flipped the ratio. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying; Flipped the ratio; Swapped the x and y coordinates. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, how many TIMES bigger did the first amount get?",
       lookFor:
