@@ -2781,7 +2781,7 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     </p>
   `;
 
-  const savedAnswers = state.getResponse(0, "warmup_answers") || {};
+  const savedAnswers = reconcileWarmupAnswers(state.getResponse(0, "warmup_answers"), warmup);
 
   // --- Warmup Timer (Teacher-Mode only) ---
   // The whole countdown — bar, controls, and auto-submit-on-expiry — is a
@@ -3129,6 +3129,9 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
 
       radio.addEventListener("change", () => {
         savedAnswers[qIdx] = cIdx;
+        // The text is what survives a reorder; the index is only a pointer.
+        (savedAnswers.texts ||= {})[qIdx] = String(q.choices[cIdx] ?? "");
+        savedAnswers.fp = warmupChoiceFingerprint(warmup);
         state.saveResponse(0, "warmup_answers", savedAnswers);
       });
 
@@ -3184,6 +3187,7 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
 
     let correctCount = 0;
     savedAnswers.checked = true;
+    savedAnswers.fp = warmupChoiceFingerprint(warmup);
 
     warmup.questions.forEach((q, qIdx) => {
       const qBox = questionsContainer.children[qIdx];
@@ -3348,6 +3352,69 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
 
   const btnRow = container.querySelector(".btn-warmup-actions") || container.lastChild;
   container.insertBefore(reteachBox, btnRow);
+}
+
+/**
+ * A saved warm-up answer is a CHOICE INDEX, so it means nothing on its own —
+ * it means whatever now sits at that position. When the answer-position pass
+ * reordered the curriculum's choices, every index already sitting in a
+ * student's localStorage silently began pointing at a different option. The
+ * score is re-derived on load (`selIdx === q.correctIndex`), so a student who
+ * genuinely scored 4/4 would come back to a lower score and their answer
+ * highlighted on an option they never picked. Nothing errors; it just quietly
+ * tells a child they were wrong when they were right.
+ *
+ * `fp` is a fingerprint of the choice ordering this answer set was recorded
+ * against. Three cases, and the fallback is always the safe one:
+ *
+ *   fp matches      — the lesson has not changed. Use the indices as-is.
+ *   fp differs      — the choices moved. Recover each answer by the TEXT the
+ *                     student actually picked, which is order-independent.
+ *   fp absent       — the answer predates this fix and carries no text, so
+ *                     there is nothing to recover from. Drop the selections and
+ *                     let the student answer again. Losing a warm-up selection
+ *                     is a smaller harm than showing a wrong score, and it is
+ *                     the only honest option when the old ordering is unknown.
+ *
+ * `checked` is cleared alongside the selections, or the card would render as
+ * already-scored with nothing in it.
+ */
+function warmupChoiceFingerprint(warmup) {
+  const src = (warmup?.questions || []).map((q) => (q.choices || []).join("\u0001")).join("\u0002");
+  let h = 2166136261;
+  for (let i = 0; i < src.length; i++) {
+    h ^= src.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+}
+
+function reconcileWarmupAnswers(saved, warmup) {
+  if (!saved || typeof saved !== "object") return {};
+  const fp = warmupChoiceFingerprint(warmup);
+  if (saved.fp === fp) return saved;
+
+  const questions = warmup?.questions || [];
+  const texts = saved.texts && typeof saved.texts === "object" ? saved.texts : null;
+  if (!texts) return {};
+
+  const recovered = { texts: {}, fp };
+  let anyLost = false;
+  questions.forEach((q, qIdx) => {
+    const picked = texts[qIdx];
+    if (picked == null) return;
+    const idx = (q.choices || []).findIndex((c) => String(c ?? "") === String(picked));
+    if (idx === -1) {
+      anyLost = true;
+      return;
+    }
+    recovered[qIdx] = idx;
+    recovered.texts[qIdx] = String(picked);
+  });
+  // A partially recovered set must not present itself as a finished, scored
+  // attempt — the missing answers would read as blanks the student left.
+  if (!anyLost && saved.checked) recovered.checked = true;
+  return recovered;
 }
 
 function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
