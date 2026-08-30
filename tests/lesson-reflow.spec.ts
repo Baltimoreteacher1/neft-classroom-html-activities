@@ -27,59 +27,108 @@ async function enterLesson(page: import("@playwright/test").Page) {
 
 test.describe("shared lesson shell reflow", () => {
   for (const lessonPath of ["/lessons/1-1/", "/lessons/10-3/"]) {
-    test(`bottom Continue buttons advance each shared lesson phase: ${lessonPath}`, async ({
-      page,
-    }) => {
+    test(`every step of the lesson offers a way forward: ${lessonPath}`, async ({ page }) => {
+      test.setTimeout(120_000);
       await page.goto(`${lessonPath}?sn=Navigation%20Tester`, { waitUntil: "networkidle" });
       await enterLesson(page);
 
-      // The hero stopped binding a phase name (it shows title/standard now);
-      // the shell's statement of "which phase am I on" is the active sidebar
-      // phase button, so that is what this spec reads.
-      await expect(page.locator(".phase-btn.active")).toContainText("Warmup");
-      await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Objectives");
-
-      await page.getByRole("button", { name: "Continue to Phase 3: Launch 🚀" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Launch");
-
-      // Address these boxes by what they ARE, not by where they sit. This used
-      // to take `.phase textarea` nth(0)/nth(1), which silently assumed the
-      // notice/wonder boxes were the first two textareas in the phase. The
-      // Which One Doesn't Belong opener now renders above them by design, and
-      // its textarea is collapsed until opened — so nth(0) resolved to a hidden
-      // element and the fill retried until the test timed out.
-      await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
-      await page.locator("#nw-wonder").fill("I wonder how the pattern will help me solve it.");
-
-      // The taught order: Launch → Vocab → Learn It → Explore → Practice. Every
-      // hop is a real button a student can press, which is the point — Vocab and
-      // Learn It used to advance ONLY by completing their activity, so a student
-      // who read the page without finishing it had no way forward.
+      // Asserted as a PROPERTY, not as a list of labels — the same reasoning
+      // tests/small-group-present.spec.ts gives for the presenter rail, and for
+      // the same reason: this spec used to walk a named chain
+      // ("Continue to Phase 2: Objectives 🎯" → "Continue to Phase 3: Launch 🚀")
+      // and the lesson shell moved to the 3-Act model underneath it. Act 1
+      // Warm-Up, Act 2 Lesson and Act 3 Exit Ticket are the phases now, and
+      // Objectives, Launch and the rest became STEPS inside them — see the
+      // phaseConfigs comment in engine/core/app.js ("The 3-Act names are the
+      // default because that is what a Reveal lesson is"). Nothing was broken;
+      // the spec was pinning names, so it went red on a deliberate change and
+      // stayed red.
       //
-      // Explore belongs in that chain, and this spec used to leave it out: it
-      // went Learn It → Practice and then failed waiting for a "Continue to
-      // Practice" button that is not on the Learn It panel and should not be.
-      // Learn It is pre-work FOR Explore, so it hands off to Explore — see the
-      // canonical-order comment in openExtra("learn") in engine/core/app.js —
-      // and jumping straight to Practice is the skipped-phase bug that hand-off
-      // exists to prevent. The spec was pinning the old behaviour, so the shell
-      // was reported broken for doing the right thing.
-      await page.getByRole("button", { name: "Continue to Vocab →" }).click();
-      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocabulary");
-      await page.getByRole("button", { name: "Continue to Learn It" }).click();
-      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
-      await page.getByRole("button", { name: "Continue to Explore" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Explore");
+      // What the spec is actually FOR survives that intact, and it is stated in
+      // its own words further down: "the no-dead-ends property this spec is
+      // really about". So that is what it asserts now — at every step a student
+      // can reach, there is a visible control that moves them on, all the way
+      // through all three Acts. Renaming a step, regrouping the strip, or
+      // adding a sub-step cannot make this stale again; only a genuine dead end
+      // can fail it.
+      const forward = () =>
+        page.evaluate(() => {
+          const visible = (el: Element) => {
+            const style = getComputedStyle(el);
+            const box = el.getBoundingClientRect();
+            return (
+              style.display !== "none" &&
+              style.visibility !== "hidden" &&
+              box.width > 0 &&
+              box.height > 0
+            );
+          };
+          const label = (el: Element) =>
+            (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim();
+          const button = Array.from(document.querySelectorAll("button")).find(
+            (el) => /^(Next:|Continue|Go to the next part)/i.test(label(el)) && visible(el),
+          );
+          const notice = document.querySelector("#nw-notice");
+          const wonder = document.querySelector("#nw-wonder");
+          return {
+            act: (document.querySelector(".phase-btn.active")?.textContent || "")
+              .replace(/\s+/g, " ")
+              .trim(),
+            next: button ? label(button) : null,
+            // Notice & Wonder gates its own hand-off, so the walk has to answer
+            // it rather than route around it — a student cannot skip it either.
+            gate: !!(notice && wonder && visible(notice) && visible(wonder)),
+          };
+        });
 
-      // Explore is the first GRADED phase in the chain, so it is the first hop
-      // with no labelled "Continue to …" of its own on these lessons: that
-      // button is rendered on the Turn & Talk path, and 1-1 and 10-3 open on an
-      // interactive activity instead. The shell's own next control is what a
-      // student who has read the phase without finishing the activity uses, and
-      // the no-dead-ends property this spec is really about is that it works.
-      await page.getByRole("button", { name: "Go to the next part of the lesson" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Practice");
+      const walked: string[] = [];
+      const acts = new Set<string>();
+      let reachedExitTicket = false;
+
+      // Generous cap: the chain is ~14 hops on 1-1 today and may grow. This is a
+      // runaway guard, not an expected length — asserting a step COUNT would be
+      // the same brittleness in another costume.
+      for (let step = 0; step < 40; step += 1) {
+        const state = await forward();
+        if (state.act) acts.add(state.act.replace(/[★\s]+$/u, "").trim());
+        if (/Exit Ticket/i.test(state.act)) reachedExitTicket = true;
+
+        expect(
+          state.next,
+          `dead end after ${walked.length} step(s) — on "${state.act}" a student has no visible way forward. Walked: ${walked.join(" → ")}`,
+        ).not.toBeNull();
+
+        if (state.gate) {
+          await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
+          await page.locator("#nw-wonder").fill("I wonder how the pattern helps me solve it.");
+        }
+
+        const clicked = await page.evaluate((wanted) => {
+          const visible = (el: Element) => {
+            const style = getComputedStyle(el);
+            const box = el.getBoundingClientRect();
+            return style.display !== "none" && box.width > 0 && box.height > 0;
+          };
+          const button = Array.from(document.querySelectorAll("button")).find(
+            (el) =>
+              (el.getAttribute("aria-label") || el.textContent || "")
+                .replace(/\s+/g, " ")
+                .trim() === wanted && visible(el),
+          );
+          if (!button) return false;
+          (button as HTMLElement).click();
+          return true;
+        }, state.next as string);
+
+        expect(clicked, `"${state.next}" was visible but could not be clicked`).toBe(true);
+        walked.push(state.next as string);
+        if (reachedExitTicket) break;
+        await page.waitForTimeout(400);
+      }
+
+      // All three Acts, in one unbroken walk from the top of the lesson.
+      expect(reachedExitTicket, `never reached Act 3. Walked: ${walked.join(" → ")}`).toBe(true);
+      expect(acts.size, `expected all three Acts, saw: ${[...acts].join(", ")}`).toBeGreaterThanOrEqual(3);
     });
   }
 

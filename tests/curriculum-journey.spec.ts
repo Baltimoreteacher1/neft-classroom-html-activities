@@ -32,7 +32,14 @@ import { expect, test, type Page } from "@playwright/test";
 async function enterTeacherMode(page: Page) {
   await page.addInitScript(() => {
     try {
-      localStorage.setItem("neft_teacher_mode_v1", "1");
+      // "nt-teacher-mode" is the key the SITE reads (STORAGE_MODE in
+      // assets/curriculum-enhancements.js, kept in sync with
+      // engine/core/teacher-mode.js). This spec was setting
+      // "neft_teacher_mode_v1", a name that appears nowhere in the product —
+      // so it seeded a key nothing reads, the hub booted in Student Mode, and
+      // every teacher-mode assertion below it had been failing since the
+      // rename. tests/small-group-present.spec.ts already uses the live key.
+      localStorage.setItem("nt-teacher-mode", "1");
     } catch {}
   });
   await page.goto("/curriculum/");
