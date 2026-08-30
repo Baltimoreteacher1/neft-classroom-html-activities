@@ -56,7 +56,7 @@ let JSDOM;
 try {
   ({ JSDOM } = await import("jsdom"));
 } catch {
-  skipExit("jsdom is not installed — the telemetry client cannot be driven.");
+  process.exit(skipExit("jsdom is not installed — the telemetry client cannot be driven."));
 }
 
 const CLIENT = readFileSync(join(ROOT, "assets/lesson-telemetry.js"), "utf8");
@@ -249,7 +249,7 @@ if (!sqliteOk) {
     console.error(`\n${failures.length} failure(s)`);
     process.exit(1);
   }
-  skipExit("sqlite3 is not installed — the report half could not run.");
+  process.exit(skipExit("sqlite3 is not installed — the report half could not run."));
 }
 
 const dir = mkdtempSync(join(tmpdir(), "telemetry-honesty-"));

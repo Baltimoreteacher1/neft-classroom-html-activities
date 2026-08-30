@@ -21,9 +21,11 @@ import { auditItem } from "./audit-distractor-feedback.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const AUDIT = join(ROOT, "tools", "audit-distractor-feedback.mjs");
 
-// Raise when a wave lands. 1420 = every multiple-choice item after the 2026-08-29
-// authoring wave (practice tiers were already covered; warm-up/Connect were not).
-const FLOOR = 1420;
+// Raise when a wave lands. 1432 = 1420 after the 2026-08-29 authoring wave, plus
+// the 12 Unit 3 stretch items authored 2026-08-30 into practice.extending on
+// lessons 3-1..3-4 (see reports/apply-day-tiers.md — those Apply Days were
+// showing a Level 3 that repeated Level 2).
+const FLOOR = 1432;
 
 const item = (choiceFeedback) => ({
   choices: ["12", "18", "6", "3"],
