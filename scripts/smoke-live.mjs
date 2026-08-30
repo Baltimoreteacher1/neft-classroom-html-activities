@@ -58,6 +58,25 @@ const PAGES = [
   // it proves the middleware is live. A 200 here would mean the gate is OFF.
   { path: "/teacher-tools/", marker: /<title/i, name: "teacher tools hub", authGated: true },
   { path: "/math/student-board/", marker: /<title/i, name: "class board" },
+  // The four Neft Hub short links. These are the ONLY checks here whose marker
+  // has to distinguish two live pages rather than a page from a 404 shell, so
+  // /<title/ would be useless: both candidate answers have one.
+  //
+  // `/hub` and friends are served by functions/<name>.js (see
+  // functions/_lib/serve-hub.js). If those functions ever stop taking
+  // precedence over the 301 the same paths still carry in `_redirects`, the
+  // redirect wins, fetch follows it to `/`, and the apex is answered by the
+  // Cloudflare Worker in the eduwonderlab-home repo — a DIFFERENT page, served
+  // 200, that a teacher handing out "eduwonderlab.com/start" does not want.
+  //
+  // "Neft Hub" is the discriminator: it appears 3x in this repo's index.html
+  // (title: "Neft Hub — Classroom Activities") and 0x in the worker's portal
+  // (title: "Neft · Home"). Verified by grep against both sources, not assumed.
+  ...["/hub", "/neft-hub", "/home", "/start"].map((path) => ({
+    path,
+    marker: /Neft Hub/,
+    name: "Neft Hub (short link)",
+  })),
   // One page per TEMPLATE, discovered from disk rather than listed here. The
   // seven paths above are the surfaces a class opens most; these cover the
   // layouts everything else is built from (games, projects, novels, printables,
