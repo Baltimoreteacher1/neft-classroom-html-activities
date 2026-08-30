@@ -56,12 +56,32 @@ test.describe("presenting a small-group studio", () => {
 
     // Step to a beat in that SAME tab, so its panel is on screen and the only
     // thing that can be hiding the lens is the blackout.
-    const beat = page
-      .locator(".pm-rail-phase")
-      .filter({ hasText: /problem 1|set up/ })
-      .first();
-    if (await beat.count()) await beat.click();
-    await expect(page.locator(`#${lensTab}`)).toBeVisible();
+    //
+    // Found by walking the rail, not by matching a beat title. This used to
+    // filter on /problem 1|set up/ and no studio renders those words any more —
+    // the beats are authored headings now ("Practice Studio", "Let's solve
+    // together", "Try it on your own"). Worse, it stepped under
+    // `if (await beat.count())`, so once the titles moved it silently clicked
+    // NOTHING and then asserted against whichever tab Present Mode happened to
+    // open on. Present Mode starts at beat 1, which is a different tab, so the
+    // panel was legitimately hidden and the spec reported the blackout broken.
+    // A step this spec depends on must fail loudly when it cannot be taken.
+    const beats = page.locator(".pm-rail-phase");
+    const beatCount = await beats.count();
+    expect(beatCount, "the presenter rail offers beats to step through").toBeGreaterThan(0);
+
+    let openedLensTab = false;
+    for (let i = 0; i < beatCount; i += 1) {
+      await beats.nth(i).click();
+      if (await page.locator(`#${lensTab}`).isVisible()) {
+        openedLensTab = true;
+        break;
+      }
+    }
+    expect(
+      openedLensTab,
+      `no beat in the rail opens #${lensTab}, the lens's own tab — so this spec cannot tell a blackout from a closed tab`,
+    ).toBe(true);
     await expect(lens, "the lens is blacked out while presenting").toBeHidden();
 
     // Every teacher-only surface, checked as painted output rather than as CSS.
@@ -147,13 +167,28 @@ test.describe("presenting a small-group studio", () => {
       .first()
       .click();
 
-    const words = page.locator(".sg-vcard");
-    await expect(words.first()).toBeVisible();
-    await expect(words.nth(1), "a later word is veiled on the first beat").toBeHidden();
+    // Address the word beats by their titles, not by rail position. This spec
+    // used to take beats 0 and 1, which assumed the studio opened on the
+    // vocabulary. It does not: the rail now leads with two "Focus & Learn"
+    // beats and the words start at index 2, so the old indices landed before
+    // any card had been revealed and read as a broken progressive reveal.
+    // "word N" is a stable contract — the sibling test above pins that those
+    // titles exist — whereas the position of the first word beat is not.
+    const wordBeat = (n: number) =>
+      page.locator(".pm-rail-phase").filter({ hasText: new RegExp(`word ${n}\\b`) }).first();
+    await expect(
+      wordBeat(1),
+      "the rail exposes the first vocabulary word as its own beat",
+    ).toBeVisible();
 
-    // Second beat: the first word stays up. Progressive, not one-at-a-time —
+    const words = page.locator(".sg-vcard");
+    await wordBeat(1).click();
+    await expect(words.first()).toBeVisible();
+    await expect(words.nth(1), "a later word is veiled on the first word beat").toBeHidden();
+
+    // Next word beat: the first word stays up. Progressive, not one-at-a-time —
     // students compare the words they have already met.
-    await page.locator(".pm-rail-phase").nth(1).click();
+    await wordBeat(2).click();
     await expect(words.first()).toBeVisible();
     await expect(words.nth(1)).toBeVisible();
 

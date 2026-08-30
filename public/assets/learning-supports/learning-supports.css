@@ -12,7 +12,12 @@
   --ewl-color-text-muted: #475569;
   --ewl-color-white: #ffffff;
   --ewl-color-focus: #3b82f6;
-  --ewl-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  /* The supports chrome genuinely floats over the lesson — a fixed rail, a
+     dialog, a panel — so it keeps elevation rather than a hairline. It is
+     softened from a 30px/15% double shadow because everything it now floats
+     ABOVE is flat: at the old weight the dock read as a different application
+     sitting on top of the page rather than part of it. */
+  --ewl-shadow: 0 6px 18px -8px rgba(15, 23, 42, 0.16);
 }
 
 /* Base Namespaced Reset & Typography */
@@ -48,7 +53,22 @@
 .ewl-supports-teacher-btn-container {
   position: fixed;
   top: 50%;
-  right: 0;
+  /* LEFT, not right. This tab used to dock on the right edge at 50%, on the
+     reasoning (above) that the middle-right was "clear of the bottom docks".
+     It is not clear: the right margin is the LESSON's rail, and at 1280x720 on
+     a small-group studio it already carries #nt-present-widget (y 158-437,
+     z-index 9999), .nt-tooldock (280-324), .sg-annotation-tools (394-442),
+     .ewl-supports-math-dock (464-603) and .sg-station-timer (664-702). This
+     tab measured y 280-440, so it sat on top of the Present button (286-390)
+     and, at equal z-index, won the hit test on DOM order — a teacher could not
+     start presenting at all.
+     There is no free 160px slot left on that edge; the largest gap is 70px. The
+     left margin carries only the Teacher Mode pill (top) and the focus FAB
+     (bottom), so it is clear from ~56px to ~662px at every width measured.
+     Keeping the tab in a margin is what "on the side" has to mean (see the
+     .nt-present-bar note in engine/styles/present-mode.css); it just has to be
+     the margin the lesson is not already using. */
+  left: 0;
   transform: translateY(-50%);
   z-index: 9999;
 }
@@ -61,9 +81,9 @@
   background: var(--ewl-color-primary);
   color: var(--ewl-color-white);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: none;
-  /* Rounded on the left only — the right side is flush against the viewport. */
-  border-radius: 14px 0 0 14px;
+  border-left: none;
+  /* Rounded on the right only — the left side is flush against the viewport. */
+  border-radius: 0 14px 14px 0;
   font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.01em;
@@ -79,8 +99,9 @@
 
 .ewl-supports-btn-teacher:hover {
   background-color: #334155;
-  /* Nudge out from the edge on hover instead of up. */
-  transform: translateX(-3px);
+  /* Nudge out from the edge on hover instead of up. Positive X now: the tab
+     is docked on the LEFT, so "out from the edge" is rightwards. */
+  transform: translateX(3px);
 }
 
 .ewl-supports-btn-teacher:active {
@@ -307,13 +328,18 @@
   max-height: 86vh;
 }
 
-/* Collapse (hide) button — small circle riding just right of the tools pill. */
+/* Collapse (hide) button — a circle riding just right of the tools pill.
+   44px, not 36px: this and the reopen pill are the two controls a student uses
+   to get the dock out of the way and bring it back, and they were the only
+   controls in the whole supports layer under the 44px floor the rest of it
+   holds to. The circle is the TARGET, not just the paint — a pseudo-element
+   patch would leave the two of them overlapping, since they sit 8px apart. */
 .ewl-supports-dock-collapse {
   pointer-events: auto;
   align-self: center;
   margin-left: 8px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--ewl-color-border);
   background: var(--ewl-color-bg-glass);
@@ -335,7 +361,8 @@
   display: none;
   align-items: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 18px;
   border-radius: 99px;
   border: 1px solid var(--ewl-color-border);
@@ -868,7 +895,11 @@ body.ewl-supports-comfort-active [data-ewl-supports-root] {
 
 /* 8. Print Suppression stylesheet */
 @media print {
-  body:not(.ewl-supports-print-enabled) [data-ewl-supports-root] {
+  body:not(.ewl-supports-print-enabled) [data-ewl-supports-root],
+  .ewl-supports-tools-dock,
+  .ewl-supports-dock-reopen,
+  .ewl-supports-dialog,
+  .ewl-supports-overlay {
     display: none !important;
   }
 }
@@ -2203,3 +2234,117 @@ body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-state::after 
    module that owns them: engine/styles/present-mode.css. The duplicate widget
    that used to be built here was removed so engine/core/present-mode.js is the
    single Presenter implementation on every lesson type. */
+
+/* --- This lesson's supports (teacher dialog, Phase 3) ---------------------
+ * A status block, not a second configuration surface. It lives inside the
+ * already teacher-gated Prepare Supports dialog, so students never see it. */
+.ewl-supports-lesson-profile {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid #d7e0ee;
+  border-radius: 12px;
+  background: #f7fafd;
+}
+
+.ewl-supports-lesson-profile h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.ewl-supports-lesson-profile-status {
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.ewl-supports-lesson-profile-dedup {
+  margin: 0 0 8px;
+  color: #55617a;
+  font-size: 0.92rem;
+}
+
+.ewl-supports-lesson-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  align-items: center;
+}
+
+.ewl-supports-lesson-profile-actions a.ewl-supports-preset-chip {
+  text-decoration: none;
+}
+
+.ewl-supports-lesson-profile-names {
+  margin: 0 0 6px;
+  color: #55617a;
+  font-size: 0.92rem;
+}
+
+/* A task modification is never folded into the support count or its colour —
+ * it gets its own line, its own border, and its own words. */
+.ewl-supports-lesson-profile-mod {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border: 2px solid #e0b48a;
+  border-radius: 8px;
+  background: #fffaf4;
+  color: #8a5a22;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+/* ── Narrow screens: the side tabs become nubs ─────────────────────────────
+   At 390px the two vertical tabs are 72px wide against a 390px viewport, and
+   they sit on top of the lesson — measured covering the lesson title in
+   Teacher Mode on a phone. (In Student Mode they do not render at all, which
+   is why this only bites a teacher working from a handset.)
+
+   This is the SAME treatment the teacher's minimize toggle already applies via
+   body.nt-overlays-compact — labels off, icon only — reached automatically by
+   width instead of by tapping. Both panels still open on tap and both keep a
+   44px touch target, so nothing becomes unreachable.
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .ewl-supports-tab-label {
+    display: none;
+  }
+
+  .ewl-supports-btn-teacher,
+  .ewl-supports-math-tab {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 6px;
+    font-size: 18px;
+  }
+
+  /* Re-anchor the math tab under the now-shorter Prepare Supports nub. */
+  .ewl-supports-math-dock {
+    top: calc(50% + 56px);
+  }
+}
+
+/* 7. Presenting: get out of the lesson's way entirely.
+ *
+ * engine/core/present-mode.js sets `body.nt-present` while a teacher is
+ * presenting. tests/small-group-present.spec.ts states the contract this
+ * satisfies, and states it as a PROPERTY rather than a selector list: no fixed
+ * chrome may overlap `.pm-rail`, because "each one that lands on the rail clips
+ * the beat labels the teacher is reading from".
+ *
+ * These docks are teacher CONFIGURATION — chosen before a lesson, not operated
+ * during one — so while presenting there is nothing to give up by hiding them,
+ * and a rail the teacher cannot read is a real cost. `display: none` rather
+ * than opacity/visibility so they leave the hit-testing tree too: a transparent
+ * dock that still swallows clicks on the rail beneath it is the same bug with
+ * better manners.
+ *
+ * Scoped to this layer's own docks. Other floating chrome the spec names
+ * (.nt-tooldock, .sg-annotation-tools) is owned elsewhere and is not this
+ * file's to hide. */
+body.nt-present .ewl-supports-teacher-btn-container,
+body.nt-present .ewl-supports-math-dock,
+body.nt-present .ewl-supports-min-toggle,
+body.nt-present .ewl-supports-tools-dock {
+  display: none !important;
+}

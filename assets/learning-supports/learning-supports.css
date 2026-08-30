@@ -53,7 +53,22 @@
 .ewl-supports-teacher-btn-container {
   position: fixed;
   top: 50%;
-  right: 0;
+  /* LEFT, not right. This tab used to dock on the right edge at 50%, on the
+     reasoning (above) that the middle-right was "clear of the bottom docks".
+     It is not clear: the right margin is the LESSON's rail, and at 1280x720 on
+     a small-group studio it already carries #nt-present-widget (y 158-437,
+     z-index 9999), .nt-tooldock (280-324), .sg-annotation-tools (394-442),
+     .ewl-supports-math-dock (464-603) and .sg-station-timer (664-702). This
+     tab measured y 280-440, so it sat on top of the Present button (286-390)
+     and, at equal z-index, won the hit test on DOM order — a teacher could not
+     start presenting at all.
+     There is no free 160px slot left on that edge; the largest gap is 70px. The
+     left margin carries only the Teacher Mode pill (top) and the focus FAB
+     (bottom), so it is clear from ~56px to ~662px at every width measured.
+     Keeping the tab in a margin is what "on the side" has to mean (see the
+     .nt-present-bar note in engine/styles/present-mode.css); it just has to be
+     the margin the lesson is not already using. */
+  left: 0;
   transform: translateY(-50%);
   z-index: 9999;
 }
@@ -66,9 +81,9 @@
   background: var(--ewl-color-primary);
   color: var(--ewl-color-white);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: none;
-  /* Rounded on the left only — the right side is flush against the viewport. */
-  border-radius: 14px 0 0 14px;
+  border-left: none;
+  /* Rounded on the right only — the left side is flush against the viewport. */
+  border-radius: 0 14px 14px 0;
   font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.01em;
@@ -84,8 +99,9 @@
 
 .ewl-supports-btn-teacher:hover {
   background-color: #334155;
-  /* Nudge out from the edge on hover instead of up. */
-  transform: translateX(-3px);
+  /* Nudge out from the edge on hover instead of up. Positive X now: the tab
+     is docked on the LEFT, so "out from the edge" is rightwards. */
+  transform: translateX(3px);
 }
 
 .ewl-supports-btn-teacher:active {
@@ -2306,4 +2322,29 @@ body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-state::after 
   .ewl-supports-math-dock {
     top: calc(50% + 56px);
   }
+}
+
+/* 7. Presenting: get out of the lesson's way entirely.
+ *
+ * engine/core/present-mode.js sets `body.nt-present` while a teacher is
+ * presenting. tests/small-group-present.spec.ts states the contract this
+ * satisfies, and states it as a PROPERTY rather than a selector list: no fixed
+ * chrome may overlap `.pm-rail`, because "each one that lands on the rail clips
+ * the beat labels the teacher is reading from".
+ *
+ * These docks are teacher CONFIGURATION — chosen before a lesson, not operated
+ * during one — so while presenting there is nothing to give up by hiding them,
+ * and a rail the teacher cannot read is a real cost. `display: none` rather
+ * than opacity/visibility so they leave the hit-testing tree too: a transparent
+ * dock that still swallows clicks on the rail beneath it is the same bug with
+ * better manners.
+ *
+ * Scoped to this layer's own docks. Other floating chrome the spec names
+ * (.nt-tooldock, .sg-annotation-tools) is owned elsewhere and is not this
+ * file's to hide. */
+body.nt-present .ewl-supports-teacher-btn-container,
+body.nt-present .ewl-supports-math-dock,
+body.nt-present .ewl-supports-min-toggle,
+body.nt-present .ewl-supports-tools-dock {
+  display: none !important;
 }
