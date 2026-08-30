@@ -262,6 +262,32 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Print the verifier's reasoning into the job log.
+          #
+          # Without this the action logs "full output hidden for security" and
+          # keeps the execution JSON in the runner's _temp, which is discarded
+          # with the runner — no artifact, nothing to read. A FAIL then arrives
+          # as one line:
+          #
+          #   ::error::Claude pre-deploy verification returned FAIL
+          #
+          # and the enforce step below blocks the merge without anyone being
+          # able to see what was objected to. A blocking gate whose objection
+          # cannot be read cannot be answered: the only available responses are
+          # to override it unread or to guess. Observed on PR #200, where the
+          # verifier returned FAIL after 15 turns and 5 denied tool calls — and
+          # its instructions end with "if you are uncertain, FAIL (fail
+          # closed)", so a blocked inspection and a real defect produce the same
+          # single line.
+          #
+          # The tradeoff this reverses: job logs are visible to anyone who can
+          # see the repo's Actions tab. What becomes visible is the verifier's
+          # review of a diff that is already in the PR, produced by an agent
+          # holding read-only tools (no Edit/Write, no wrangler, no deploy), and
+          # the action redacts secret-typed env values regardless. If that is
+          # still too much for this repo, revert this line rather than living
+          # with an unreadable gate.
+          show_full_output: true
           additional_permissions: |
             actions: read
           # Deny-by-default tool allowlist: read/inspect only. No Edit/Write,
