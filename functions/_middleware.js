@@ -55,58 +55,6 @@ function redirectFor(url) {
   return null;
 }
 
-// Short links that must land on the Neft Hub — this project's own index.html.
-//
-// They were 301s to `/` in data/routes.json, which reads correctly against this
-// repo and is wrong against production: eduwonderlab.com/ is owned by a
-// Cloudflare Worker in the eduwonderlab-home repo, so every one of these
-// delivered the personal portal instead of the classroom front door. The
-// worker's route is the apex root ONLY, so a non-root path like /hub is still
-// ours to answer — it just has to be answered with content rather than with a
-// redirect to a URL we do not control.
-//
-// A 200 rewrite in _redirects cannot do it: writeRedirects emits rewrites after
-// all 382 redirects, past the 100-rule cutoff measured on this project, where
-// they are silently dead. Redirecting to /index.html cannot either — Pages
-// canonicalizes that back to /, straight into the worker. Serving the root
-// asset from here is the one mechanism that both reaches the hub and runs
-// before the redirect table.
-//
-// Lowercase, with and without the trailing slash, matching redirectFor().
-const HUB_ALIASES = new Set([
-  "/hub",
-  "/hub/",
-  "/neft-hub",
-  "/neft-hub/",
-  "/home",
-  "/home/",
-  "/start",
-  "/start/",
-]);
-
-// Answer an alias with the root asset, keeping the alias in the address bar.
-//
-// Degrades to the old behaviour instead of inventing a new failure: if the root
-// asset does not come back 200, fall through to the 301 these paths have always
-// had. A short link that lands on the wrong page is a papercut; one that 500s in
-// front of a class is not.
-async function serveNeftHub(next, request, url) {
-  const root = new URL("/", url);
-  let response;
-  try {
-    response = await next(new Request(root, request));
-  } catch {
-    return Response.redirect(root.toString(), 301);
-  }
-  if (response.status !== 200) return Response.redirect(root.toString(), 301);
-
-  const headers = new Headers(response.headers);
-  // The alias and the canonical page are one document. Say so, rather than
-  // letting four URLs compete as duplicate content.
-  headers.set("Link", `<${root.toString()}>; rel="canonical"`);
-  return new Response(response.body, { status: 200, headers });
-}
-
 // Serve the asset, and fall back to the redirect map when Pages 404s.
 // Only GET/HEAD: replaying a POST to a new URL would silently drop its body.
 async function nextWithRedirectFallback(next, request, url) {
@@ -208,13 +156,6 @@ export async function onRequest(context) {
   }
 
   const p = url.pathname.toLowerCase();
-
-  // Serve the Neft Hub at its short links, ahead of the redirect table.
-  // These are public pages, so this sits before the teacher gate.
-  if ((request.method === "GET" || request.method === "HEAD") && HUB_ALIASES.has(p)) {
-    return serveNeftHub(next, request, url);
-  }
-
   const isFamilyPublishedFeed = p === "/api/family-connections/canvas-feed";
   const isPublicFamilySchedulingApi = [
     "/api/family-connections/schedule-availability",
