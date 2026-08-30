@@ -13,10 +13,12 @@ name: Pre-Deploy Gate
 #      validation, production build, and focused real-browser journeys
 #   2. claude-predeploy-verify — read-only Claude deploy-readiness review
 #
-# Claude `needs` the validate-and-build job and never runs unless it went green,
-# so the strict order between the two jobs holds. The gate only goes green if
-# every stage passes. Kept to two jobs on purpose — GitHub bills each job rounded
-# up to a whole minute, so extra jobs cost real allowance.
+# Claude `needs` the validate-and-build job, so the strict order between the two
+# holds — but since 2026-08-30 it runs even when that job went RED, because the
+# ordering was doing double duty as a filter and the filter had a hole. See the
+# comment on `claude-predeploy-verify` below. The gate only goes green if every
+# stage passes. Kept to two jobs on purpose — GitHub bills each job rounded up to
+# a whole minute, so extra jobs cost real allowance.
 #
 # Inside validate-and-build the steps deliberately do NOT abort each other. They
 # used to: a failing step skipped everything after it, so one run reported one
@@ -243,7 +245,24 @@ jobs:
     # claude-code-action only supports PR / comment contexts ("Unsupported event
     # type: push"), and PRs are where this gate blocks a merge to main anyway.
     # On direct pushes to main, validate-and-build still runs; this stage is skipped.
-    if: github.event_name == 'pull_request'
+    #
+    # `!cancelled()` since 2026-08-30. `needs:` alone also SKIPS this job whenever
+    # validate-and-build goes red, and the reasoning for that — "a red PR cannot
+    # merge anyway, so reviewing it is wasted minutes" — holds only while nobody
+    # merges a red PR. On 2026-08-30 three were: #204 and #205 were merged with
+    # the quality gate failing, and #200's earlier head sat in the same state.
+    # Every one of them shows this job as "skipped", which reads like a pass in
+    # the checks list and is not one. So the deploy-readiness review never
+    # examined the changes on the one day it most needed to.
+    #
+    # The failure mode is specific: skipping is safe exactly until someone
+    # overrides, and an override is when a second opinion is worth most. This
+    # review is also independent of the build — answer keys, exposed teacher
+    # surfaces and broken routes are readable in the diff whether or not
+    # Playwright passed — so there is no ordering reason to withhold it.
+    #
+    # The cost is real and small: one extra billed job-minute per red PR.
+    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     # Read-only: Claude inspects the change but must not write, commit, or deploy.
     permissions:
@@ -262,6 +281,36 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Print the verifier's reasoning into the job log.
+          #
+          # Without this the action logs "full output hidden for security" and
+          # leaves the execution JSON in the runner's _temp, which dies with the
+          # runner — no artifact, nothing to read. A FAIL then reaches a human as
+          # one line:
+          #
+          #   ::error::Claude pre-deploy verification returned FAIL
+          #
+          # and the enforce step below blocks the merge without anyone being able
+          # to see what was objected to. A blocking gate whose objection cannot be
+          # read cannot be answered: the only responses left are to override it
+          # unread, or to guess at a reason and reshape the change to fit the
+          # guess. Both look like diligence and neither is.
+          #
+          # That is not hypothetical. On PR #200 this gate returned FAIL after 15
+          # turns with 5 denied tool calls, and its prompt ends with "if you are
+          # uncertain whether something is safe, FAIL (fail closed)" — so an
+          # inspection it could not finish and a defect it genuinely found emit
+          # the identical line. #200 was merged on an owner decision with the
+          # objection still unknown. That should not be the normal case.
+          #
+          # The tradeoff being reversed: job logs are readable by anyone with
+          # Actions access. What becomes readable is a review of a diff already
+          # in the PR, written by an agent holding read-only tools (no Edit or
+          # Write, no wrangler, no deploy), with secret-typed env values redacted
+          # by the action either way. If that is ever judged too much for this
+          # repo, revert this line — but then also stop treating the gate as
+          # something a contributor can act on.
+          show_full_output: true
           additional_permissions: |
             actions: read
           # Deny-by-default tool allowlist: read/inspect only. No Edit/Write,
