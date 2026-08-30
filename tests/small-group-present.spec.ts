@@ -54,13 +54,25 @@ test.describe("presenting a small-group studio", () => {
       .click();
     await expect(page.locator("body")).toHaveClass(/nt-present/);
 
-    // Step to a beat in that SAME tab, so its panel is on screen and the only
-    // thing that can be hiding the lens is the blackout.
-    const beat = page
+    /* Step to a beat in that SAME tab, so its panel is on screen and the only
+     * thing that can be hiding the lens is the blackout.
+     *
+     * Anchored to the beats the Practice tab actually contributes to the rail.
+     * This looked for /problem 1|set up/ — labels the rail stopped using when
+     * it became a teaching plan (see the sibling spec that pins exactly that)
+     * — and the click was guarded by `if (await beat.count())`, so a stale
+     * label did not fail here: it SKIPPED the step in silence, left the
+     * practice panel hidden, and the assertion on the next line failed instead.
+     * That points the blame at the blackout, which was working the whole time.
+     * The step is required now, so a future rename fails at the rename. */
+    const practiceBeats = page
       .locator(".pm-rail-phase")
-      .filter({ hasText: /problem 1|set up/ })
-      .first();
-    if (await beat.count()) await beat.click();
+      .filter({ hasText: /Practice Studio|solve together|Try it on your own/ });
+    await expect(
+      practiceBeats.first(),
+      "the rail offers a beat belonging to the Practice tab",
+    ).toBeVisible();
+    await practiceBeats.first().click();
     await expect(page.locator(`#${lensTab}`)).toBeVisible();
     await expect(lens, "the lens is blacked out while presenting").toBeHidden();
 
@@ -147,13 +159,29 @@ test.describe("presenting a small-group studio", () => {
       .first()
       .click();
 
-    const words = page.locator(".sg-vcard");
-    await expect(words.first()).toBeVisible();
-    await expect(words.nth(1), "a later word is veiled on the first beat").toBeHidden();
+    /* Walk the WORD beats, not the first beats on the rail.
+     *
+     * The rail is a teaching plan — the sibling spec above pins that — so its
+     * opening beats are "Focus & Learn" and the vocabulary words start partway
+     * down: 18 beats on 1-1-group1, with the words at 3 through 7. This read
+     * `.pm-rail-phase` index 0 and 1, which are Focus & Learn beats where no
+     * word card is on screen at all, so it failed on the first assertion with
+     * every `.sg-vcard` hidden and never reached the property it is named for.
+     * Anchoring on the beat LABEL keeps it pointed at the words wherever the
+     * plan puts them. Measured on 1-1-group1: word beat 1 shows card 1 only,
+     * word beat 2 shows cards 1 and 2 — progressive reveal works, and always
+     * did. */
+    const wordBeats = page.locator(".pm-rail-phase").filter({ hasText: /Unlock the math words/ });
+    await expect(wordBeats.first(), "the rail reaches the vocabulary words").toBeVisible();
 
-    // Second beat: the first word stays up. Progressive, not one-at-a-time —
-    // students compare the words they have already met.
-    await page.locator(".pm-rail-phase").nth(1).click();
+    const words = page.locator(".sg-vcard");
+    await wordBeats.nth(0).click();
+    await expect(words.first()).toBeVisible();
+    await expect(words.nth(1), "a later word is veiled on the first word beat").toBeHidden();
+
+    // Second word beat: the first word stays up. Progressive, not one-at-a-time
+    // — students compare the words they have already met.
+    await wordBeats.nth(1).click();
     await expect(words.first()).toBeVisible();
     await expect(words.nth(1)).toBeVisible();
 
