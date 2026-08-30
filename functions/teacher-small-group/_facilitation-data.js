@@ -4,7 +4,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided when the problem multiplies; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which number did you make friendlier — and what did that cost you?",
       lookFor: "A student who names the strategy they used, not only the number they landed on.",
@@ -149,7 +149,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided when the problem multiplies; Added when the problem multiplies; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the bar graph, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -243,7 +243,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided when the problem multiplies; Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Before any numbers: what does '6 times as many' point back to in this problem?",
       lookFor:
@@ -293,7 +293,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided when the problem multiplies; Added when the problem multiplies; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the area model, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -529,12 +529,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided when the problem multiplies; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the percent grid, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "Are we splitting a total into groups, or building a total from groups?",
       lookFor:
-        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+        "Watch for the “Divided when the problem multiplies” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -554,10 +554,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Rewrite this as the opposite operation and show the two must agree.",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
+        "A student who can explain why the “Divided when the problem multiplies” error fails in every case, not just this one.",
+      ifStuck: "Ask for a second representation on the percent grid before any more explaining.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
     frames: [
@@ -823,7 +823,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Used the mean where the median was asked (or the reverse); Added the data set instead of averaging it. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the data set instead of averaging it; Used the mean where the median was asked (or the reverse). Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which word did the question use? What does that word tell you to DO?",
       lookFor:
@@ -1882,7 +1882,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides; Swapped area and perimeter. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Added when the problem multiplies; Swapped area and perimeter. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the area model, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
