@@ -46,9 +46,32 @@ name: Pre-Deploy Gate
 on:
   pull_request:
     branches: [main]
-  # Push to main is intentionally NOT a trigger: the pre-push hook runs this same
-  # QA loop locally before every push, and Cloudflare rebuilds on deploy — so
-  # gating here on each push duplicated that work. Runs on PRs + manual dispatch.
+  # Push to main IS a trigger, since 2026-08-30.
+  #
+  # It used to be excluded, on the reasoning that "the pre-push hook runs this
+  # same QA loop locally before every push, and Cloudflare rebuilds on deploy".
+  # The second half holds. The first half does not, in exactly the place it
+  # matters most: the local loop SKIPS the real-browser journeys whenever
+  # Chromium is not installed, and says so rather than failing —
+  #
+  #   SKIPPED: Chromium could not be launched — nothing was verified by this check.
+  #
+  # — so a contributor without browsers pushes a green-looking loop that checked
+  # none of the browser contracts. The hooks are also only wired by `npm ci`
+  # (the `prepare` script sets core.hooksPath), and .githooks/pre-commit records
+  # that they "had never been wired, so nobody had paid it".
+  #
+  # The result was not hypothetical. `main` carried TEN failing browser journeys
+  # — six stale specs and one real defect that stopped a teacher from starting
+  # a small-group presentation — and nothing reported it, because this gate only
+  # ever ran on pull requests and Cloudflare's own build does not run it. The
+  # branch that actually ships was the one branch never checked.
+  #
+  # This costs a run per push to main. That is the price of the deploying branch
+  # telling the truth about itself, and it is far below the cost of finding out
+  # from a classroom.
+  push:
+    branches: [main]
   workflow_dispatch:
 
 # Default to read-only for the whole workflow; individual jobs widen only as needed.
