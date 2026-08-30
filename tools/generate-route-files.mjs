@@ -124,6 +124,46 @@ export const PREFIX = ${JSON.stringify(prefix, null, 2)};
     encoding: "utf8",
     cwd: root,
   });
+
+  // Do not trust that formatter's stdout blindly.
+  //
+  // `npx biome` resolves biome from node_modules/.bin, and when that is missing
+  // npx will happily fetch an UNRELATED package named `biome` from the registry
+  // — there is one, at 0.3.3, and it exits 0 with an empty stdout. execFileSync
+  // therefore does not throw, `body` is "", and emit() overwrites the redirect
+  // map with an empty file while this script prints "Generated ... route files"
+  // and exits 0. That silently deletes the 404 fallback for every alias past
+  // the first 100 rules of _redirects — the 231 short links the map exists to
+  // keep alive — and `--check` reports the real committed map as "stale",
+  // sending whoever reads it to run the very command that destroys it.
+  //
+  // Observed exactly that way on a checkout without node_modules. Cheap to
+  // prevent, expensive to discover: the damage is a deploy away, and an empty
+  // generated file looks like a legitimate diff.
+  if (!body.trim()) {
+    console.error(
+      `Refusing to write an empty ${mapPath}.\n` +
+        "`npx biome format` produced no output. Biome is almost certainly not\n" +
+        "installed here, and npx resolved an unrelated `biome` package from the\n" +
+        "registry instead. Run `npm ci` and try again.\n" +
+        "Writing this out would have deleted the redirect fallback for every\n" +
+        "alias beyond the first 100 rules of _redirects.",
+    );
+    process.exit(1);
+  }
+
+  // A formatter must not lose rules. Compare against the source of truth rather
+  // than the input string, so this still holds if the template ever changes.
+  const expected = Object.keys(exact).length + prefix.length;
+  const found = (body.match(/^\s{2}"/gm) || []).length + (body.match(/^\s{2}\[/gm) || []).length;
+  if (found < expected) {
+    console.error(
+      `Refusing to write a truncated ${mapPath}: ` +
+        `${expected} rules went in, ${found} came out of the formatter.`,
+    );
+    process.exit(1);
+  }
+
   return emit(mapPath, body);
 }
 
