@@ -36,7 +36,12 @@ test.describe("shared lesson shell reflow", () => {
       // The hero stopped binding a phase name (it shows title/standard now);
       // the shell's statement of "which phase am I on" is the active sidebar
       // phase button, so that is what this spec reads.
-      await expect(page.locator(".phase-btn.active")).toContainText("Warmup");
+      // "Warm-Up", hyphenated. The label is localized — engine/core/i18n.js
+      // carries it as en "Warm-Up" / es "Calentamiento" — and this assertion
+      // still read the older unhyphenated spelling, so it had been red since
+      // the rename. Only this first phase is affected; the later phase names
+      // below ("Objectives", "Launch") never changed.
+      await expect(page.locator(".phase-btn.active")).toContainText("Warm-Up");
       await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
       await expect(page.locator(".phase-btn.active")).toContainText("Objectives");
 
