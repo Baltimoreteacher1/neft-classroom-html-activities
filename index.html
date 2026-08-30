@@ -1,4 +1,35 @@
 <!doctype html>
+<!--
+  THIS PAGE IS NOT WHAT eduwonderlab.com/ SERVES.
+
+  The apex root of the production domain is owned by a Cloudflare WORKER in a
+  separate repository — `eduwonderlab-home` (worker name
+  `eduwonderlab-home-redirect`), bound to the routes `eduwonderlab.com/` and
+  `www.eduwonderlab.com/`. It returns its own ~250-line tabbed portal
+  (Professional / Personal) from `src/home.html` there. That worker sits in
+  front of this Pages project, so editing THIS file changes nothing a visitor
+  to eduwonderlab.com/ will ever see.
+
+  Where this file IS served:
+    - the project's *.pages.dev root (previews, and any direct Pages URL);
+    - anywhere the worker route does not match — i.e. every apex-root request
+      that bypasses it.
+
+  Consequence worth knowing before you touch the redirect table: `/hub`,
+  `/neft-hub`, `/home` and `/start` are 301s to `/` (data/routes.json), so on
+  the production domain all four land on the WORKER's portal, not on this Neft
+  Hub page. `data/routes.json` still declares `"path": "/"` for the `neft-hub`
+  route and `"canonicalRoot": "/"` in its rules; both describe this repo's own
+  view of the site, not who answers the apex in production.
+
+  To change the real eduwonderlab.com homepage, edit `src/home.html` in
+  `eduwonderlab-home` and push to `master` there. Its CI diffs the file against
+  what production actually serves and refuses to deploy on drift.
+
+  The two surfaces are deliberately kept apart: the worker deploys in seconds,
+  independent of this project's ~25-step Vite build, so the domain's front door
+  can always be fixed even when this repo's build is red.
+-->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
