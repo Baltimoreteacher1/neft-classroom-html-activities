@@ -18,7 +18,30 @@ cd "$ROOT" || exit 1
 # full gate, so it can never be less safe than running everything, only faster
 # when coverage is provable. The full sweep still runs on push (qa:loop) and in
 # CI, which is where it belongs.
-if npm run --silent qa:fast >/dev/null 2>&1; then
+#
+# WHICH GATE TO RUN IS A QUESTION ABOUT package.json, NOT A REASON TO RUN ONE.
+# This selected the gate by RUNNING it:
+#
+#   if npm run --silent qa:fast >/dev/null 2>&1; then
+#     npm run qa:fast
+#   elif [[ -x scripts/codex/codex-verify.sh ]]; then
+#     scripts/codex/codex-verify.sh
+#
+# The condition executes the whole gate, discards its output, and then the body
+# executes it again — so a clean commit paid for TWO full runs, and this gate is
+# minutes, not seconds. Worse is the red path: a FAILING qa:fast makes the
+# condition false, so the commit was judged by codex-verify.sh instead — the
+# heavier gate this hook's own comment above says it was rewritten to stop
+# running — while the reason qa:fast actually failed went to /dev/null. Both
+# were observed on 2026-08-30: two failed commits reported only codex-verify's
+# `FAIL: npm run validate (exit 1)`, with no sign of the qa:fast run that had
+# already decided the outcome.
+#
+# Asking package.json whether the script exists answers the same question
+# without side effects, runs the gate exactly once, and — because the gate is
+# now the last command — makes its exit status the hook's, so a failure blocks
+# the commit with its output on screen.
+if node -e 'const s=require("./package.json").scripts||{};process.exit(s["qa:fast"]?0:1)' 2>/dev/null; then
   npm run qa:fast
 elif [[ -x scripts/codex/codex-verify.sh ]]; then
   scripts/codex/codex-verify.sh
