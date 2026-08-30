@@ -78,41 +78,62 @@ const VARIANT = /-(group1|group2|part2|catchup)$/;
 /* ------------------------------------------------------------ item surfaces */
 
 /**
- * Each surface names where its items live and which key holds the answer index.
- * `connect.check` stores it at `answer` while everything else uses
+ * Every multiple-choice item in the config, wherever it lives.
+ *
+ * This enumerated four surfaces at first — `warmup.questions`, `connect.check`,
+ * `reflect.exitTicket` and a walk of `practice` — and that was wrong in the way
+ * enumeration is always wrong here: it missed `groupLevels.level1`, the Apply
+ * Day tiers in a Part 2 config. The consequence was not a missed improvement
+ * but an INCONSISTENCY: `tools/authored-misconception-tags.json` is keyed by
+ * stem and holds one tag per choice index, applied to every lesson carrying
+ * that stem, so one copy of an item reordered while another did not left a
+ * single array that could not be correct for both.
+ *
+ * So the shape is the definition, not the location. A node with a `stem`, an
+ * array of `choices`, and an in-range integer answer index IS a
+ * multiple-choice item; nothing else in these configs has all three.
+ *
+ * `connect.check` stores its index at `answer` while everything else uses
  * `correctIndex` — a difference that has already produced one bug in this repo
- * (an answer key that marked A for everything), so it is declared once here
- * rather than rediscovered per call site.
+ * (an answer key that marked A for everything), so both are read here rather
+ * than assumed per call site.
  */
 function collectItems(cfg) {
   const out = [];
-  const push = (surface, holder, key) => {
-    if (!holder || !Array.isArray(holder.choices)) return;
-    if (!Number.isInteger(holder[key])) return;
-    out.push({ surface, item: holder, answerKey: key });
-  };
-
-  for (const q of cfg.warmup?.questions || []) push("warmup", q, "correctIndex");
-
-  const check = cfg.connect?.check;
-  for (const q of Array.isArray(check) ? check : check ? [check] : []) push("connect", q, "answer");
-
-  const exit = cfg.reflect?.exitTicket;
-  for (const q of Array.isArray(exit) ? exit : exit ? [exit] : []) push("exit", q, "correctIndex");
-
-  // Practice tiers nest by level and by optional/stretch pools, and the shape
-  // has moved before. Walking it is what keeps this correct across that.
-  const walk = (node) => {
-    if (Array.isArray(node)) return node.forEach(walk);
+  const walk = (node, path) => {
+    if (Array.isArray(node)) {
+      node.forEach((v) => walk(v, path));
+      return;
+    }
     if (!node || typeof node !== "object") return;
-    if (Array.isArray(node.choices) && Number.isInteger(node.correctIndex))
-      push("practice", node, "correctIndex");
-    for (const v of Object.values(node)) walk(v);
-  };
-  walk(cfg.practice);
 
+    if (Array.isArray(node.choices) && node.choices.length >= 2 && node.stem != null) {
+      const key = Number.isInteger(node.correctIndex)
+        ? "correctIndex"
+        : Number.isInteger(node.answer)
+          ? "answer"
+          : null;
+      if (key && node[key] >= 0 && node[key] < node.choices.length)
+        out.push({ surface: path, item: node, answerKey: key });
+    }
+    for (const [k, v] of Object.entries(node)) walk(v, path || k);
+  };
+
+  // The top-level key is the surface label, which keeps the report readable
+  // without the collector needing to know what surfaces exist.
+  for (const [k, v] of Object.entries(cfg)) walk(v, SURFACE_LABEL[k] || k);
   return out;
 }
+
+/** Only for reporting — never for deciding what is collected. */
+const SURFACE_LABEL = {
+  warmup: "warmup",
+  connect: "connect",
+  reflect: "exit",
+  practice: "practice",
+  groupLevels: "apply",
+  reviewWarmup: "warmup",
+};
 
 /* --------------------------------------------------------- when NOT to move */
 
@@ -243,16 +264,31 @@ let moved = 0;
 let filesChanged = 0;
 const changedParents = new Set();
 
+/**
+ * Variants ARE processed. They were skipped at first, on the reasoning that they
+ * are generated from their parent — but a small-group or catch-up session keeps
+ * its OWN copy of a practice item, so reordering only the parent left the same
+ * stem with two different choice orders. `tools/authored-misconception-tags.json`
+ * is keyed by stem and holds one tag per choice INDEX, applied to base and
+ * variants alike, so a single array could no longer be right for both and the
+ * gate failed on 1-3-group1 and 1-3-part2.
+ *
+ * Processing them is safe precisely because every placement rule here is a pure
+ * function of the item itself — numeric sets sort by value, everything else
+ * takes a target hashed from its own stem. The same item therefore lands in the
+ * same order wherever it appears, which is the invariant the stem-keyed file
+ * has always assumed. Warm-ups are still re-synced from the parent afterwards,
+ * so the byte-equality `warmup-sequencing.test.mjs` requires still holds.
+ */
 const selected = (id) => {
-  if (VARIANT.test(id)) return false;
-  if (ONLY.length) return ONLY.includes(id);
-  if (UNIT) return id.startsWith(`${UNIT}-`);
+  const base = id.replace(VARIANT, "");
+  if (ONLY.length) return ONLY.includes(id) || ONLY.includes(base);
+  if (UNIT) return base.startsWith(`${UNIT}-`);
   return true;
 };
 
 for (const file of files) {
   const id = file.split("/")[1];
-  if (VARIANT.test(id)) continue;
 
   const raw = readFileSync(file, "utf8");
   let cfg;
@@ -291,7 +327,7 @@ for (const file of files) {
   if (touched) {
     writeFileSync(file, `${JSON.stringify(cfg, null, 2)}\n`);
     filesChanged++;
-    changedParents.add(id);
+    changedParents.add(id.replace(VARIANT, ""));
   }
 }
 
