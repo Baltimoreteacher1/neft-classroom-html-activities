@@ -439,10 +439,39 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
  * and other information. It should be on the side"). The right rail is where
  * this page already keeps its teacher affordances, so it joins them as an edge
  * tab: the supports tabs sit around the middle, the workbench and the Next pill
- * at the bottom, and 22% leaves this one clear of both. */
+ * at the bottom.
+ *
+ * It sat at `top: 22%` on the strength of "22% leaves this one clear of both",
+ * and measurement says it did not. On a small-group studio this tab is 279px
+ * tall — a 107px rotated "Presenter" label, the 104px Present button, and a
+ * 26px minimise button — so 22% puts its bottom at 0.22h + 279, while the
+ * supports tab is CENTRED with a fixed 160px height and starts at 0.5h - 80.
+ * Those only clear each other above roughly 1300px of viewport height. Below
+ * that the supports tab covers the Present button outright, and because its
+ * container is `position: fixed; z-index: 9999` it takes the pointer: a teacher
+ * clicking Present opens Prepare Supports instead. Measured before this change,
+ * with `document.elementFromPoint` at the centre of the Present button:
+ *
+ *   1366x768   Present 297-401   Supports 304-464   COVERED
+ *   1280x800   Present 304-408   Supports 320-480   COVERED
+ *   1366x650   Present 272-376   Supports 245-405   COVERED
+ *   1920x1080  Present 417-521   Supports 460-620   clear
+ *
+ * Whole-group lessons were never affected — there this widget is `static` and
+ * 38px tall, inline in the header. Only the small-group studio renders it as
+ * the fixed side tab, which is why the four small-group-present specs were the
+ * ones going red.
+ *
+ * Anchoring to the TOP of the rail instead of a percentage is what makes it
+ * deterministic: the tab's height is a fixed pixel quantity, so pairing it with
+ * a percentage offset means the gap to the centred supports tab shrinks as the
+ * screen does — worst exactly where this site is used. Moving the SUPPORTS tab
+ * down instead was measured too and is worse: it frees Present at every size
+ * and then lands on #mwb-launcher and #nsr-launcher, the bottom docks its own
+ * comment says it chose the middle to avoid. */
 #nt-present-widget {
   position: fixed;
-  top: 22%;
+  top: 8px;
   right: 0;
   z-index: 9999;
   font-family:
@@ -492,6 +521,23 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
 /* Rotated text is unreadable on a phone-height screen; there the tab collapses
  * to the icon alone and keeps its 44px touch target. */
 @media (max-width: 700px) {
+  .nt-present-label {
+    display: none;
+  }
+}
+
+/* The same collapse, driven by HEIGHT, so the right rail fits on a classroom
+ * screen. The rail has to carry this tab, the centred 160px supports tab and
+ * the bottom launchers. With its label this tab is 279px, which clears a
+ * centred supports tab only above ~758px of viewport height — and the sizes
+ * this repo commits to in tests/lesson-reflow.spec.ts go down to 1024x640
+ * ("chromebook") and 1000x560 ("short laptop"). Dropping the rotated
+ * "Presenter" wordmark takes the tab to ~130px, which fits at every one of
+ * them; the 📽️ Present button itself is untouched and stays 104px, well over
+ * the 44px target. The label is a wordmark, not the control — losing it costs
+ * a teacher nothing that the icon and tooltip do not already say, and it is
+ * the only thing here that can give without taking a control off the rail. */
+@media (max-height: 849px) {
   .nt-present-label {
     display: none;
   }

@@ -17,9 +17,18 @@ import { expect, test, type Page } from "@playwright/test";
  *
  * /curriculum/ IS the console now (AUTH_CONTRACT §2b): the middleware serves it
  * only to a request that passed the password gate and redirects everyone else to
- * /curriculum/units/, so the page boots in Teacher Mode with no toggle and no
- * PIN. These specs run against the static `dist/` build, where no middleware
- * runs, so a plain goto() reaches it exactly as an authorized browser would.
+ * /curriculum/units/. These specs run against the static `dist/` build, where no
+ * middleware runs — and where nothing else turns Teacher Mode on either, so the
+ * seeded flag below is what puts the page in the state an authorized browser
+ * reaches. Measured: with no seed, `body` stays `"light-theme"`.
+ *
+ * The key is `nt-teacher-mode`, which is the ONE both the hub
+ * (assets/curriculum-enhancements.js `STORAGE_MODE`) and the lesson engine
+ * (engine/core/teacher-mode.js `TEACHER_KEY`) read; `saveTeacherMode()` writes
+ * "1"/"0" to it. This used to seed `neft_teacher_mode_v1`, a key nothing in the
+ * repo has ever read, so every test in this file died on the assertion below
+ * with `body class="light-theme"` — before exercising a single thing it names.
+ * A fixture that seeds the wrong key does not weaken a test, it deletes it.
  *
  * Anchored to the body class, NOT to the button's words — and no longer to the
  * toggle at all, because there is no toggle. `applyTeacherMode()` sets
@@ -32,7 +41,7 @@ import { expect, test, type Page } from "@playwright/test";
 async function enterTeacherMode(page: Page) {
   await page.addInitScript(() => {
     try {
-      localStorage.setItem("neft_teacher_mode_v1", "1");
+      localStorage.setItem("nt-teacher-mode", "1");
     } catch {}
   });
   await page.goto("/curriculum/");
