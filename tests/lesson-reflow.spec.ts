@@ -36,12 +36,69 @@ test.describe("shared lesson shell reflow", () => {
       // The hero stopped binding a phase name (it shows title/standard now);
       // the shell's statement of "which phase am I on" is the active sidebar
       // phase button, so that is what this spec reads.
-      await expect(page.locator(".phase-btn.active")).toContainText("Warmup");
-      await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Objectives");
+      //
+      // "Warm-Up", hyphenated, is Joel's own wording — 2026-08-28, quoted in
+      // tools/act-flow-contract.test.mjs: "Review (#1) should actually be called
+      // Warmup but then it should have a card at the bottom going to math notes
+      // review". That test pins the rail and the in-page heading to agree on it.
+      // This spec still read "Warmup" and so died on the FIRST assertion of a
+      // twelve-hop walk, taking the whole no-dead-ends property with it — the
+      // rail renders "1 / Warm-Up / ★★★".
+      await expect(page.locator(".phase-btn.active")).toContainText("Warm-Up");
 
-      await page.getByRole("button", { name: "Continue to Phase 3: Launch 🚀" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Launch");
+      /* Walk with the IN-PAGE control at the bottom of each step, which is what
+       * this spec is named for. There are two forward controls on the page and
+       * only one of them belongs to this test: the in-page button lives in
+       * `.act-step-next`, while `.nt-next-phase-btn` is the floating pill that
+       * `npm run validate:flow-walk` already walks in teacher mode. Selecting by
+       * text alone would resolve to whichever came first in the DOM, so the
+       * container is what distinguishes them.
+       *
+       * The 3-Act restructure (2026-08-25..28) is why the old hop list could not
+       * work: Objectives, Launch, Learn It, Explore and Practice stopped being
+       * top-level phases and became STEPS inside an act, so `.phase-btn.active`
+       * now names the act ("1 Warm-Up", "2 Lesson") and never those words. Every
+       * assertion here read the act button for a step name, and the button
+       * labels moved too — "Continue to Phase 2: Objectives 🎯" does not exist;
+       * within an act the control reads "Next: 📓 Math Notes →", and crossing
+       * into one it reads "Continue to Vocabulary 🔑". So this walks the steps
+       * on the act step strip and keeps the act button for act changes.
+       *
+       * Deliberately NOT re-implementing flow-walk's contract here. That gate
+       * owns the taught sequence, the label-is-a-promise property and the
+       * terminate condition, mutation-proven; a second hand-maintained copy of
+       * the same walk is the `tools/scorm/template/` shape this repo has been
+       * bitten by. What this keeps is its own property: the bottom control on
+       * each step is a real button that advances, so there are no dead ends.
+       *
+       * Every step's panel is in the DOM at once and only the current one is
+       * visible, so this has to ask for the visible control — without
+       * `:visible` the locator resolves to several buttons and Playwright
+       * refuses it in strict mode. It is scoped to `.act-step-panel` rather
+       * than `.act-step-next` because the LAST step of an act does not have a
+       * `.act-step-next` wrapper: its forward button sits directly in the panel
+       * and reads "Continue to Vocabulary 🔑" instead of "Next: … →". Scoping to
+       * the wrapper walks four steps and then finds nothing at the act
+       * boundary, which is the one hop most worth covering.
+       *
+       * A step panel can hold more than one primary button — the warm-up also
+       * shows "Submit Warmup Answers" — so the forward control is picked by its
+       * SHAPE, "Next: …" within an act and "Continue to …" across one. Matching
+       * the shape rather than a full label is deliberate: pinning whole strings
+       * ("Continue to Phase 2: Objectives 🎯") is what made this spec go stale
+       * against a rename it had no stake in. */
+      const inPageNext = page
+        .locator(".act-step-panel button.btn-primary:visible")
+        .filter({ hasText: /^(Next:|Continue to)\s/ });
+      const step = page.locator(".act-step-chip.is-current");
+
+      await expect(step).toContainText("Warm-Up");
+      await inPageNext.click();
+      await expect(step).toContainText("Math Notes");
+      await inPageNext.click();
+      await expect(step).toContainText("Objectives");
+      await inPageNext.click();
+      await expect(step).toContainText("Notice & Wonder");
 
       // Address these boxes by what they ARE, not by where they sit. This used
       // to take `.phase textarea` nth(0)/nth(1), which silently assumed the
@@ -52,34 +109,10 @@ test.describe("shared lesson shell reflow", () => {
       await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
       await page.locator("#nw-wonder").fill("I wonder how the pattern will help me solve it.");
 
-      // The taught order: Launch → Vocab → Learn It → Explore → Practice. Every
-      // hop is a real button a student can press, which is the point — Vocab and
-      // Learn It used to advance ONLY by completing their activity, so a student
-      // who read the page without finishing it had no way forward.
-      //
-      // Explore belongs in that chain, and this spec used to leave it out: it
-      // went Learn It → Practice and then failed waiting for a "Continue to
-      // Practice" button that is not on the Learn It panel and should not be.
-      // Learn It is pre-work FOR Explore, so it hands off to Explore — see the
-      // canonical-order comment in openExtra("learn") in engine/core/app.js —
-      // and jumping straight to Practice is the skipped-phase bug that hand-off
-      // exists to prevent. The spec was pinning the old behaviour, so the shell
-      // was reported broken for doing the right thing.
-      await page.getByRole("button", { name: "Continue to Vocab →" }).click();
-      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocabulary");
-      await page.getByRole("button", { name: "Continue to Learn It" }).click();
-      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
-      await page.getByRole("button", { name: "Continue to Explore" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Explore");
-
-      // Explore is the first GRADED phase in the chain, so it is the first hop
-      // with no labelled "Continue to …" of its own on these lessons: that
-      // button is rendered on the Turn & Talk path, and 1-1 and 10-3 open on an
-      // interactive activity instead. The shell's own next control is what a
-      // student who has read the phase without finishing the activity uses, and
-      // the no-dead-ends property this spec is really about is that it works.
-      await page.getByRole("button", { name: "Go to the next part of the lesson" }).click();
-      await expect(page.locator(".phase-btn.active")).toContainText("Practice");
+      // Crossing out of Act 1 into Act 2. This is the hop the act button is for.
+      await inPageNext.click();
+      await expect(page.locator(".phase-btn.active")).toContainText("Lesson");
+      await expect(step).toContainText("Vocabulary");
     });
   }
 
