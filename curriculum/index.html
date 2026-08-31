@@ -3618,6 +3618,9 @@
 
         <!-- Seasonal entry point: End-of-Year Command Center -->
         <style>
+          .eoy-callout[hidden] {
+            display: none;
+          }
           .eoy-callout {
             display: flex;
             flex-wrap: wrap;
@@ -3672,7 +3675,13 @@
           <a class="eoy-btn" href="/curriculum/projects/">Open Projects →</a>
         </section>
 
-        <section class="eoy-callout" aria-label="End-of-year resources">
+        <section
+          class="eoy-callout"
+          aria-label="End-of-year resources"
+          data-season-start="2027-05-01"
+          data-season-end="2027-08-31"
+          hidden
+        >
           <span class="eoy-text"
             >🎓 <b>End-of-Year Command Center</b> — quick review, MCAP practice, summer bridge, and
             final projects in one place.</span
@@ -3695,6 +3704,29 @@
           >
           <a class="eoy-btn" href="/curriculum/almost-right-lab/">Open the Lab →</a>
         </section>
+
+        <script>
+          /* Seasonal callouts — an element carrying data-season-start /
+             data-season-end ships `hidden` and is revealed only inside its
+             window. Default-hidden on purpose: if this script never runs, an
+             out-of-season card stays off rather than stuck on. */
+          (function () {
+            var today = new Date();
+            var stamp =
+              today.getFullYear() +
+              "-" +
+              String(today.getMonth() + 1).padStart(2, "0") +
+              "-" +
+              String(today.getDate()).padStart(2, "0");
+            var nodes = document.querySelectorAll("[data-season-start][data-season-end]");
+            for (var i = 0; i < nodes.length; i++) {
+              var el = nodes[i];
+              var from = el.getAttribute("data-season-start");
+              var to = el.getAttribute("data-season-end");
+              el.hidden = !(stamp >= from && stamp <= to);
+            }
+          })();
+        </script>
 
         <style>
           .teacher-tools {
