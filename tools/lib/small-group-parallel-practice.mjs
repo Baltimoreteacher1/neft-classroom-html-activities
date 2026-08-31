@@ -348,6 +348,23 @@ function unit1(context) {
   });
 }
 
+// Non-unit, already-lowest-terms fractions for unit2's lesson-1 (6-1) fraction
+// ÷ whole-number items — see the comment where this is used.
+const FRACTION_PAIRS = [
+  [2, 3],
+  [3, 4],
+  [2, 5],
+  [3, 5],
+  [4, 5],
+  [2, 7],
+  [3, 7],
+  [4, 7],
+  [3, 8],
+  [2, 9],
+  [5, 6],
+  [3, 10],
+];
+
 function unit2(context) {
   const lesson = context.lesson;
   return Array.from({ length: 12 }, (_, index) => {
@@ -360,10 +377,45 @@ function unit2(context) {
     let stem;
     let stemEs;
     if (lesson === 1) {
-      left = fraction(2 + (index % 4), 3 + (index % 3));
-      right = fraction(1, 4 + (index % 4));
-      stem = `How many groups of ${fractionText(right)} fit in ${fractionText(left)}?`;
-      stemEs = `¿Cuántos grupos de ${fractionText(right)} caben en ${fractionText(left)}?`;
+      // 6-1's objective is whole ÷ unit fraction AND fraction ÷ whole number —
+      // never fraction ÷ fraction, which is 6-2's strand. The generator this
+      // replaced put a non-unit fraction on BOTH sides ("how many groups of
+      // 1/4 fit in 2/3?"), so every one of 6-1's 12 guided-fill drills was
+      // 6-2's mathematics under 6-1's small group. Round-robin the two shapes
+      // 6-1 actually teaches, half and half, same as the lesson itself.
+      // 6 items of each shape per row (index 0..11). period-7 walk on k means
+      // k*3 mod 7 visits 6 distinct residues for k=0..5 — enough that the
+      // varying side of each pair (the unit-fraction denominator, or the
+      // whole-number divisor) never repeats within the 12, so no two stems
+      // collide even where the other side does. A period-5 walk would not:
+      // 6 values of k through a period-5 modulus must repeat by pigeonhole,
+      // which is exactly how the first version of this fix shipped item 1
+      // and item 11 as the same problem.
+      const k = Math.floor(index / 2);
+      const walk = (k * 3 + context.group) % 7;
+      if (index % 2 === 0) {
+        const whole = 2 + (k % 5);
+        const denom = 3 + walk;
+        left = fraction(whole, 1);
+        right = fraction(1, denom);
+        stem = `Divide the whole number by the unit fraction: ${fractionText(left)} ÷ ${fractionText(right)}.`;
+        stemEs = `Divide el número entero entre la fracción unitaria: ${fractionText(left)} ÷ ${fractionText(right)}.`;
+      } else {
+        // Numerators are never 1 — a numerator of exactly 1 is the unit
+        // fraction shape 6-1 already taught before this fix, and its own new
+        // practice covers it. Pulled from a curated, already-reduced list
+        // rather than built from k arithmetically: the arithmetic version
+        // (numerator = 2 + k%3, denom = numerator * small factor) kept landing
+        // on denominators that were multiples of the numerator, so `fraction()`
+        // silently reduced 2/4 and 3/6 both down to 1/2 — the unit fraction
+        // this branch exists to avoid, and four of the six items repeated it.
+        const [numerator, denom] = FRACTION_PAIRS[(k + context.group * 3) % FRACTION_PAIRS.length];
+        const whole = 2 + walk;
+        left = fraction(numerator, denom);
+        right = fraction(whole, 1);
+        stem = `Divide the fraction by the whole number: ${fractionText(left)} ÷ ${fractionText(right)}.`;
+        stemEs = `Divide la fracción entre el número entero: ${fractionText(left)} ÷ ${fractionText(right)}.`;
+      }
     } else if (lesson === 2) {
       left = fraction(3 + index + context.group, 1);
       right = fraction(1 + (index % 3), 2 + (index % 4));
