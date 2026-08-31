@@ -204,17 +204,122 @@ function buildCoordinateGame(_config, { title }) {
   });
 }
 
-function buildNumberLineGame(_config, { title }) {
-  const rounds = [
-    { q: "Which is greater: −2 or −5?", choices: ["−2", "−5", "Equal"], correct: 0 },
+/* Unit 7's four number-line lessons shared one fixed set of rounds, all of them
+ * whole integers — in three lessons whose objectives say "rational numbers,
+ * including fractions and decimals". A family playing along never met a
+ * negative fraction or decimal, which is the whole difficulty of 7-2 and 7-3.
+ * The set also drilled |−7| in 7-1, where absolute value has not been taught
+ * yet (it is 7-3's standard, 6.NOS.8). Rounds now come from what the lesson
+ * itself says it covers. Every answer below is checked against the number line:
+ *   −2 > −5 · opposite of −4 is 4 · opposite of 7 is −7 · 0 > −3
+ *   −2.05 > −2.5 · opposite of −3/4 is 3/4 · −1/2 is nearer 0 than −1.5 · −1/4 > −3/4
+ *   |−7| = 7 · |−3/4| = 3/4 · |2.5| = 2.5 · |−8| = 8 > |3| = 3
+ *   −1 < 0 < 2 · −7 < −3 < 1 · −2 < −0.5 < 0.5 · −4.5 is least of −4, −4.5, −3 */
+const NUMBER_LINE_ROUNDS = {
+  absoluteValue: [
     { q: "|−7| = ?", choices: ["7", "−7", "0", "14"], correct: 0 },
-    { q: "Order: −1, 0, 2", choices: ["−1, 0, 2", "2, 0, −1", "0, −1, 2", "2, −1, 0"], correct: 0 },
+    { q: "|−3/4| = ?", choices: ["3/4", "−3/4", "4/3", "0"], correct: 0 },
+    { q: "|2.5| = ?", choices: ["2.5", "−2.5", "0", "5"], correct: 0 },
+    {
+      q: "Greater absolute value: −8 or 3?",
+      choices: ["−8", "3", "Equal"],
+      correct: 0,
+      hint: "Absolute value is distance from zero, so ignore the sign.",
+    },
+  ],
+  ordering: [
+    {
+      q: "Least to greatest: −1, 0, 2",
+      choices: ["−1, 0, 2", "2, 0, −1", "0, −1, 2", "2, −1, 0"],
+      correct: 0,
+    },
+    {
+      q: "Least to greatest: −3, −7, 1",
+      choices: ["−7, −3, 1", "−3, −7, 1", "1, −3, −7", "−3, 1, −7"],
+      correct: 0,
+    },
+    {
+      q: "Least to greatest: −0.5, −2, 0.5",
+      choices: ["−2, −0.5, 0.5", "−0.5, −2, 0.5", "0.5, −0.5, −2", "−2, 0.5, −0.5"],
+      correct: 0,
+    },
+    { q: "Which is least: −4, −4.5, −3?", choices: ["−4.5", "−4", "−3", "They tie"], correct: 0 },
+  ],
+  rational: [
+    {
+      q: "Which is greater: −2.5 or −2.05?",
+      choices: ["−2.05", "−2.5", "Equal"],
+      correct: 0,
+      hint: "Further right on the number line is greater.",
+    },
+    { q: "Opposite of −3/4?", choices: ["3/4", "−3/4", "4/3", "0"], correct: 0 },
+    {
+      q: "Closer to 0: −1/2 or −1.5?",
+      choices: ["−1/2", "−1.5", "Equal"],
+      correct: 0,
+    },
+    { q: "Which is greater: −1/4 or −3/4?", choices: ["−1/4", "−3/4", "Equal"], correct: 0 },
+  ],
+  integers: [
+    { q: "Which is greater: −2 or −5?", choices: ["−2", "−5", "Equal"], correct: 0 },
     { q: "Opposite of −4?", choices: ["4", "−4", "0", "8"], correct: 0 },
-  ];
-  return mcSpeedGame("numberline", title, "Number Line Dash!", "¡Recta numérica!", rounds, {
-    en: "Right is greater on a horizontal number line.",
-    es: "A la derecha es mayor en una recta horizontal.",
-  });
+    { q: "Opposite of 7?", choices: ["−7", "7", "0", "14"], correct: 0 },
+    { q: "Which is greater: 0 or −3?", choices: ["0", "−3", "Equal"], correct: 0 },
+  ],
+};
+
+/** What this lesson puts on the number line, read from its own objective.
+ *  Most specific skill first, so it leads the round-robin. */
+function numberLineShapes(config) {
+  const said = `${config?.contentObjective || ""} ${config?.title || ""}`.toLowerCase();
+  const shapes = [];
+  if (/absolute value/.test(said)) shapes.push("absoluteValue");
+  if (/\bcompare\b|\border\b/.test(said)) shapes.push("ordering");
+  if (/rational number|fraction|decimal/.test(said)) shapes.push("rational");
+  // "an integer, fraction, or decimal" is a list of number types, not the
+  // lesson's topic — only the plural or an opposites lesson claims this shape.
+  if (/\bintegers\b|opposite/.test(said)) shapes.push("integers");
+  return shapes.length ? shapes : ["integers"];
+}
+
+function buildNumberLineGame(config, { title }) {
+  const shapes = numberLineShapes(config);
+  const rounds = pickRoundRobin(NUMBER_LINE_ROUNDS, shapes);
+  const coach = shapes.includes("absoluteValue")
+    ? {
+        en: "Absolute value is distance from zero, so it is never negative.",
+        es: "El valor absoluto es la distancia al cero, así que nunca es negativo.",
+      }
+    : shapes.includes("rational")
+      ? {
+          en: "Further right is greater — and that holds for fractions and decimals too.",
+          es: "Más a la derecha es mayor, y eso vale también para fracciones y decimales.",
+        }
+      : {
+          en: "Right is greater on a horizontal number line.",
+          es: "A la derecha es mayor en una recta horizontal.",
+        };
+  return mcSpeedGame("numberline", title, "Number Line Dash!", "¡Recta numérica!", rounds, coach);
+}
+
+/** Deal `count` rounds from the pools named by `shapes`, one shape at a time.
+ *
+ * Round-robin rather than concatenation: a lesson that teaches two things must
+ * play both, and taking the first four from a concatenated list lets the first
+ * pool fill every slot. Falls through to whatever pools still have rounds once
+ * one runs dry, and stops when they are all exhausted. */
+function pickRoundRobin(pools, shapes, count = 4) {
+  const rounds = [];
+  for (let turn = 0; rounds.length < count; turn++) {
+    const before = rounds.length;
+    for (const shape of shapes) {
+      if (rounds.length >= count) break;
+      const round = pools[shape]?.[turn];
+      if (round) rounds.push(round);
+    }
+    if (rounds.length === before) break; // every pool exhausted
+  }
+  return rounds;
 }
 
 /* Every 6.NOS.1 lesson used to share one fixed set of rounds — 6 ÷ ½, "½ of 8",
@@ -265,18 +370,7 @@ function fractionShapes(config) {
 
 function buildFractionGame(config, { title }) {
   const shapes = fractionShapes(config);
-  // Round-robin so every shape the lesson teaches is actually played, rather
-  // than the first shape filling all four slots.
-  const rounds = [];
-  for (let turn = 0; rounds.length < 4; turn++) {
-    const before = rounds.length;
-    for (const shape of shapes) {
-      if (rounds.length >= 4) break;
-      const round = FRACTION_ROUNDS[shape][turn];
-      if (round) rounds.push(round);
-    }
-    if (rounds.length === before) break; // every pool exhausted
-  }
+  const rounds = pickRoundRobin(FRACTION_ROUNDS, shapes);
   const coach = shapes.includes("mixed")
     ? {
         en: "Change mixed numbers to improper fractions first, then Keep, Change, Flip.",

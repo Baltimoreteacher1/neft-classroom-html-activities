@@ -10,6 +10,11 @@
  *      evaluate 2x at x = 4 and name the coefficient of 5y, in a lesson about
  *      dividing fractions.
  *
+ *   1b. The same defect, other direction: /\bratio/ matched "Rational", so
+ *      7-2, 7-3, 7-4 and 7-5 — "… Rational Numbers …" — were handed a
+ *      ratio-table homework for lessons about placing rational numbers on a
+ *      number line and on the coordinate plane.
+ *
  *   2. ANSWER POSITION. Rounds are authored answer-first and the runtime
  *      renders `choices` in order, so the first button was correct in every
  *      round of every family game. A student could clear the game without
@@ -79,6 +84,57 @@ function roundsFor(config) {
     questions,
     /(?<!1)\d\/\d+ ÷ \d+(?!\/)/,
     `6-1 plays no non-unit fraction ÷ whole number round: ${questions}`,
+  );
+}
+
+// ── 2b. A "Rational Numbers" lesson is not a ratio lesson. ─────────────────
+{
+  const wrong = [];
+  for (const id of ids) {
+    const config = configOf(id);
+    if (!String(config.standard).startsWith("6.NOS.")) continue;
+    const topic = detectVisualTopic(config);
+    if (topic === "ratios" || topic === "expressions")
+      wrong.push(`${id} (${config.title}) → ${topic}`);
+  }
+  assert.deepEqual(
+    wrong,
+    [],
+    `number-system lessons routed to an algebra homework:\n  ${wrong.join("\n  ")}`,
+  );
+}
+
+// Negative control: a real ratio lesson must still reach the ratio homework.
+{
+  assert.equal(detectVisualTopic({ standard: "6.AT.1", title: "Understand Ratios" }), "ratios");
+  assert.equal(
+    detectVisualTopic({ standard: "6.NOS.6", title: "Ratio Reasoning on a Number Line" }),
+    "ratios",
+    "the whole word 'Ratio' must still claim a lesson the standard does not settle",
+  );
+}
+
+// ── 2c. Unit 7 plays its own numbers, not integers only. ──────────────────
+{
+  // 7-2 and 7-3 say "rational numbers, including fractions and decimals";
+  // before this, every round they played was a whole integer.
+  for (const id of ["7-2", "7-3"]) {
+    const questions = (roundsFor(configOf(id)) || []).map((r) => r.q).join(" | ");
+    assert.match(
+      questions,
+      /\d+\/\d+|\d+\.\d+/,
+      `${id} teaches rational numbers but plays no fraction or decimal: ${questions}`,
+    );
+  }
+  // Absolute value is 7-3's standard (6.NOS.8). 7-1 must not pre-drill it.
+  // Tested per round, not on a joined string: the " | " separator is itself a
+  // pipe, and the first version of this assertion could never pass.
+  const sevenOne = (roundsFor(configOf("7-1")) || []).map((r) => r.q);
+  const bars = sevenOne.filter((q) => q.includes("|"));
+  assert.deepEqual(
+    bars,
+    [],
+    `7-1 plays absolute value, which 7-3 has not taught yet: ${bars.join(" / ")}`,
   );
 }
 

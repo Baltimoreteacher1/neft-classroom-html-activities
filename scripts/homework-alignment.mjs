@@ -80,7 +80,13 @@ export function detectVisualTopic(config) {
     /express|algebraic|variable|coefficient|like term|simplif|equivalent expression/i.test(title)
   )
     return "expressions";
-  if (standard.startsWith("6.AT") || /\bratio|unit rate|\brate\b|percent/i.test(title))
+  // "ratio" as a WHOLE word. As a prefix it also matches "Rational", and every
+  // unit-7 lesson titled "… Rational Numbers …" (7-2, 7-3, 7-4, 7-5) was handed
+  // a ratio-table homework — game, visual and guided-notes coaching — for
+  // lessons about placing rational numbers on a number line and on the
+  // coordinate plane. The 6.AT check above already claims every genuine ratio
+  // and percent lesson by standard, so nothing depends on the loose prefix.
+  if (standard.startsWith("6.AT") || /\bratios?\b|unit rate|\brate\b|percent/i.test(title))
     return "ratios";
   if (unit === 5 || standard === "6.GR.1") return "area";
   if (standard === "6.GR.2" || /volume/i.test(title)) return "volume";
