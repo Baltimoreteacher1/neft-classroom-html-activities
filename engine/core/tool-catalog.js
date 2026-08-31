@@ -189,11 +189,11 @@ export const TOOL_CATALOG = {
     name: "Divide Fractions Lab",
     nameEs: "Laboratorio de dividir fracciones",
     purpose:
-      "Work a fraction division one stage at a time: rewrite as improper fractions, keep–change–flip, then multiply and simplify.",
+      "Work a fraction division one stage at a time: put whole numbers over 1 (and rewrite any mixed number as an improper fraction), Keep–Change–Flip, then multiply and simplify.",
     purposeEs:
-      "Trabaja una división de fracciones por etapas: reescribe como fracciones impropias, mantén–cambia–invierte, y luego multiplica y simplifica.",
+      "Trabaja una división de fracciones por etapas: pon los números enteros sobre 1 (y reescribe cualquier número mixto como fracción impropia), Conserva–Cambia–Voltea, y luego multiplica y simplifica.",
     howTo: [
-      "Rewrite any mixed numbers as improper fractions.",
+      "If a number is whole, put a 1 under it. If it's a mixed number, rewrite it as an improper fraction.",
       "Keep the first fraction, change ÷ to ×, and flip the second.",
       "Multiply across, then simplify.",
     ],
@@ -785,7 +785,7 @@ export const TOOL_CATALOG = {
     howTo: [
       "Set the whole amount as a fraction.",
       "Set the serving size as a fraction.",
-      "Count the full pieces, then read the leftover.",
+      "Count the full pieces yourself, then type your count to check it.",
     ],
     tryThis: [
       "How many ¼-cup servings fit in 2 cups?",

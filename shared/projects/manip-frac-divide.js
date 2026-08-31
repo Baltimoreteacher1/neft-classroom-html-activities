@@ -6,9 +6,11 @@
           data-piece-label="cup per serving"></div>
    Students set a WHOLE amount (as a fraction) and a SERVING/PIECE size (as a
    fraction). The whole is drawn as a bar segmented into pieces of the serving
-   size; full pieces light up. Shows "whole ÷ serving = N" and any remainder.
-   Models 6.NOS.1 (dividing fractions). No dependencies; injects scoped styles
-   once. Keep numbers friendly — denominators are clamped to ≤ 12.
+   size; full pieces light up. The student counts the full pieces and types
+   that count in before "whole ÷ serving = N" and the remainder are revealed —
+   the bar is the model, not the answer key. Models 6.NOS.1 (dividing
+   fractions). No dependencies; injects scoped styles once. Denominators go up
+   to 60 (MAXD); MAXSEG still caps how many segments actually get drawn.
    ========================================================================== */
 (function () {
   "use strict";
@@ -39,6 +41,16 @@
       ".pki-fd-seg.full{background:linear-gradient(135deg,var(--tp-accent,#1763c7),var(--tp-accent2,#0e9a8c))}" +
       ".pki-fd-seg.part{background:repeating-linear-gradient(45deg,var(--tp-accent2,#0e9a8c),var(--tp-accent2,#0e9a8c) 6px,#bfe7e2 6px,#bfe7e2 12px);color:var(--tp-ink,#172033)}" +
       ".pki-fd-scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--tp-muted,#54677c);margin-top:4px;font-weight:700}" +
+      ".pki-fd-checkrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px}" +
+      ".pki-fd-checklab{font-size:.9rem;font-weight:700;color:var(--tp-ink,#172033)}" +
+      ".pki-fd-countinp{width:64px;text-align:center;font-size:1.05rem;font-weight:800;padding:.35em;border:2px solid var(--tp-line,#e4ebf2);border-radius:10px}" +
+      ".pki-fd-textbtn{font:inherit;font-weight:700;font-size:.85rem;border-radius:999px;padding:8px 16px;cursor:pointer;border:2px solid var(--tp-line,#e4ebf2)}" +
+      ".pki-fd-btn-check{background:var(--tp-accent,#1763c7);color:#fff;border-color:var(--tp-accent,#1763c7)}" +
+      ".pki-fd-btn-show{background:#fff;color:var(--tp-ink,#172033)}" +
+      ".pki-fd-checkstatus{min-height:1.2em;margin:0 0 6px;font-size:.88rem;font-weight:700}" +
+      ".pki-fd-checkstatus.ok{color:var(--tp-accent2,#0e9a8c)}" +
+      ".pki-fd-checkstatus.no{color:#c0392b}" +
+      ".pki-fd-reveal[hidden]{display:none}" +
       ".pki-fd-eq{border-radius:12px;padding:14px 16px;font-weight:800;font-size:1.15rem;background:linear-gradient(135deg,var(--tp-accent,#1763c7),var(--tp-accent2,#0e9a8c));color:#fff;box-shadow:0 8px 20px -8px rgba(12,27,42,.4);text-align:center}" +
       ".pki-fd-eq small{display:block;font-size:.82rem;font-weight:700;opacity:.92;margin-top:6px}" +
       ".pki-fd-note{margin:10px 0 0;font-size:.9rem;color:var(--tp-muted,#54677c)}" +
@@ -78,10 +90,13 @@
     return { n: n / g, d: d / g };
   }
 
+  var instanceCount = 0; // unique ids across multiple widgets on one page
+
   function init(el) {
     if (el.dataset.pkiManipDone) return;
     el.dataset.pkiManipDone = "1";
     injectStyle();
+    var seq = ++instanceCount;
 
     var wholeLabel = el.dataset.wholeLabel || "the whole";
     var pieceLabel = el.dataset.pieceLabel || "per piece";
@@ -92,7 +107,7 @@
     var wd = parseInt(el.dataset.defaultWholeD, 10) || 4;
     var pn = parseInt(el.dataset.defaultPieceN, 10) || 1;
     var pd = parseInt(el.dataset.defaultPieceD, 10) || 8;
-    var MAXD = 12;
+    var MAXD = 60; // was 12 — denominators like sixteenths/twentieths etc. now fit
     var MAXSEG = 60;
 
     el.classList.add("pki-fd");
@@ -106,8 +121,21 @@
       "</div>" +
       '<div class="pki-fd-barwrap"><div class="pki-fd-track" data-track></div>' +
       '<div class="pki-fd-scale"><span>0</span><span data-scale-end></span></div></div>' +
+      '<div class="pki-fd-checkrow">' +
+      '<label class="pki-fd-checklab" for="pki-fd-count-' +
+      seq +
+      '">How many full pieces do you count?</label>' +
+      '<input class="pki-fd-countinp" id="pki-fd-count-' +
+      seq +
+      '" type="number" min="0" inputmode="numeric" data-count-input>' +
+      '<button type="button" class="pki-fd-textbtn pki-fd-btn-check" data-check-btn>Check</button>' +
+      '<button type="button" class="pki-fd-textbtn pki-fd-btn-show" data-show-btn>Show me</button>' +
+      "</div>" +
+      '<p class="pki-fd-checkstatus" data-check-status role="status" aria-live="polite"></p>' +
+      '<div class="pki-fd-reveal" data-reveal hidden>' +
       '<div class="pki-fd-eq" data-eq></div>' +
-      '<p class="pki-fd-note" data-note></p>';
+      '<p class="pki-fd-note" data-note></p>' +
+      "</div>";
 
     function group(key, label, n, d) {
       return (
@@ -163,6 +191,12 @@
     var scaleEnd = el.querySelector("[data-scale-end]");
     var eqBox = el.querySelector("[data-eq]");
     var noteBox = el.querySelector("[data-note]");
+    var revealBox = el.querySelector("[data-reveal]");
+    var countInput = el.querySelector("[data-count-input]");
+    var checkStatus = el.querySelector("[data-check-status]");
+    var checkBtn = el.querySelector("[data-check-btn]");
+    var showBtn = el.querySelector("[data-show-btn]");
+    var currentWhole = 0; // the correct full-piece count for THIS render, set below
 
     function clampAll() {
       wn = Math.max(1, Math.min(144, wn));
@@ -202,8 +236,7 @@
       } else if (totalSlots > MAXSEG) {
         html =
           '<div class="pki-fd-seg full" style="flex-basis:100%">' +
-          whole +
-          " full pieces (too many to draw)</div>";
+          "too many full pieces to draw one by one</div>";
       } else {
         for (var i = 0; i < whole; i++) {
           html += '<div class="pki-fd-seg full">' + fracDisp(pn, pd) + "</div>";
@@ -264,6 +297,18 @@
           fracDisp(rem.n, rem.d) +
           " of one more piece — not an even split. Try a piece size that divides the whole evenly.";
       }
+
+      // The equation and note above ARE the answer, so they stay built but
+      // hidden until the student checks a count or asks to see it — building
+      // them here (instead of only on reveal) keeps the reveal instant and
+      // keeps this the one place the arithmetic is computed. Any change to
+      // the whole or piece invalidates whatever the student already typed, so
+      // the check UI resets every render, not just on first mount.
+      currentWhole = whole;
+      revealBox.hidden = true;
+      countInput.value = "";
+      checkStatus.textContent = "";
+      checkStatus.className = "pki-fd-checkstatus";
     }
 
     el.addEventListener("click", function (e) {
@@ -289,6 +334,36 @@
       else if (key === "pn") pn = v;
       else if (key === "pd") pd = v;
       render();
+    });
+
+    // The bar shows how many pieces FIT; it does not tell the student the
+    // count. Counting is the task, so the equation and note stay hidden
+    // until the student either checks their own count or asks to see it.
+    checkBtn.addEventListener("click", function () {
+      var raw = countInput.value;
+      var guess = parseInt(raw, 10);
+      if (raw === "" || isNaN(guess)) {
+        checkStatus.textContent = "Type how many full pieces you count first.";
+        checkStatus.className = "pki-fd-checkstatus";
+        return;
+      }
+      if (guess === currentWhole) {
+        checkStatus.textContent = "✅ Yes! Here is why:";
+        checkStatus.className = "pki-fd-checkstatus ok";
+        revealBox.hidden = false;
+      } else {
+        checkStatus.textContent = "Not quite — count the highlighted full pieces again.";
+        checkStatus.className = "pki-fd-checkstatus no";
+      }
+    });
+    countInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") checkBtn.click();
+    });
+    showBtn.addEventListener("click", function () {
+      countInput.value = currentWhole;
+      checkStatus.textContent = "";
+      checkStatus.className = "pki-fd-checkstatus";
+      revealBox.hidden = false;
     });
 
     render();

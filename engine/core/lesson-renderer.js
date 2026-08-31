@@ -405,11 +405,11 @@ function buildVisual(v) {
       });
     }
     case "fraction-divide": {
-      // Guided divide-fractions lab: rewrite to improper fractions, keep–change–
-      // flip, then multiply and simplify.
+      // Guided divide-fractions lab: whole numbers over 1, mixed numbers as
+      // improper fractions, then keep–change–flip, multiply and simplify.
       return interactiveVisualHost(v, {
         ariaLabel:
-          "Divide fractions lab. Rewrite as improper fractions, keep change flip, then multiply and simplify.",
+          "Divide fractions lab. Put whole numbers over 1, rewrite mixed numbers as improper fractions, then keep change flip, multiply and simplify.",
         fallback:
           "Divide-fractions workspace. Turn on JavaScript to keep, change, flip, and simplify.",
       });

@@ -121,6 +121,9 @@ function ensureStyles() {
   .fdiv-step[hidden]{display:none;}
   .fdiv-step-num{font-weight:700;color:${C.navy};font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
   .fdiv-prompt{font-size:.92rem;color:${C.ink};line-height:1.5;font-weight:500;}
+  .fdiv-rewrite-list{display:flex;flex-direction:column;gap:12px;}
+  .fdiv-rewrite-row+.fdiv-rewrite-row{padding-top:10px;border-top:1px dashed ${C.line};}
+  .fdiv-rewrite-hint{font-size:.92rem;color:${C.ink};line-height:1.5;font-weight:500;}
   .fdiv-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px;}
   .fdiv-inp{width:88px;border:2px dashed ${C.accent};border-radius:8px;background:#fff;color:${C.ink};font-weight:700;
     font-size:1rem;text-align:center;padding:6px 4px;box-sizing:border-box;}
@@ -161,7 +164,18 @@ function mountFractionDivide(host, cfg = {}) {
     return { destroy: () => wrap.remove() };
   }
 
-  // Which operands need rewriting to improper fractions.
+  // Which operands need rewriting, and which of two DIFFERENT moves that is.
+  // A bare whole number (3) is not "rewritten as an improper fraction" — it is
+  // put over 1, the exact move Keep-Change-Flip teaches ("put a 1 under the
+  // whole number"). Only a genuine mixed number (2 1/2) calls for the
+  // multiply-and-add conversion. Collapsing both under one "rewrite as an
+  // improper fraction" prompt named the wrong operation for every whole-number
+  // operand — most of this tool's own problems — and its "Not yet" hint then
+  // told a student to "multiply the whole number by the denominator" for an
+  // operand that has no denominator to multiply.
+  const isWholeStr = (s) => /^\d+$/.test(String(s).trim());
+  const aWhole = isWholeStr(dividendStr);
+  const bWhole = isWholeStr(divisorStr);
   const aNeeds = hasWholePart(dividendStr);
   const bNeeds = hasWholePart(divisorStr);
   const recip = { n: B.d, d: B.n }; // reciprocal of the divisor
@@ -169,25 +183,35 @@ function mountFractionDivide(host, cfg = {}) {
   const answer = reduce(product.n, product.d);
 
   const title = cfg.title || `Divide: ${dividendStr} ÷ ${divisorStr}`;
+  function rewriteRow(key, str, whole) {
+    const hint = whole
+      ? `${esc(str)} is a whole number — put a 1 under it.`
+      : `${esc(str)} is a mixed number — rewrite it as an improper fraction.`;
+    const placeholder = whole ? `${esc(str)}/1` : "a/b";
+    const ariaLabel = whole ? `${esc(str)} written over 1` : `${esc(str)} as an improper fraction`;
+    return (
+      `<div class="fdiv-rewrite-row">` +
+      `<div class="fdiv-rewrite-hint">${hint}</div>` +
+      `<div class="fdiv-row"><span class="fdiv-lab">${esc(str)} =</span>` +
+      `<input class="fdiv-inp" data-k="${key}" type="text" inputmode="numeric" aria-label="${ariaLabel}" placeholder="${placeholder}"></div>` +
+      `</div>`
+    );
+  }
   const rewriteInputs =
-    (aNeeds
-      ? `<span class="fdiv-lab">${esc(dividendStr)} =</span><input class="fdiv-inp" data-k="impA" type="text" inputmode="numeric" aria-label="${esc(dividendStr)} as an improper fraction" placeholder="a/b">`
-      : "") +
-    (bNeeds
-      ? `<span class="fdiv-lab">${esc(divisorStr)} =</span><input class="fdiv-inp" data-k="impB" type="text" inputmode="numeric" aria-label="${esc(divisorStr)} as an improper fraction" placeholder="a/b">`
-      : "");
+    (aNeeds ? rewriteRow("impA", dividendStr, aWhole) : "") +
+    (bNeeds ? rewriteRow("impB", divisorStr, bWhole) : "");
 
   wrap.innerHTML =
     `<div class="fdiv-title">${esc(title)}</div>` +
     `<div class="fdiv-hint">Keep–Change–Flip: keep the first fraction, change ÷ to ×, and flip the divisor. Type each answer as a fraction or mixed number.</div>` +
     `<div class="fdiv-problem" aria-hidden="true">${esc(dividendStr)} ÷ ${esc(divisorStr)}</div>` +
     `<div class="fdiv-steps">` +
-    // Step 1 (conditional) — improper fractions
+    // Step 1 (conditional) — get both operands into fraction form
     (aNeeds || bNeeds
       ? `<div class="fdiv-step" data-step="1">` +
-        `<div class="fdiv-step-num">Step 1 · Improper fractions</div>` +
-        `<div class="fdiv-prompt">Rewrite the whole or mixed number as an improper fraction:</div>` +
-        `<div class="fdiv-row">${rewriteInputs}<button type="button" class="fdiv-btn fdiv-btn-check" data-check="1">Check</button></div>` +
+        `<div class="fdiv-step-num">Step 1 · Fractions on both sides</div>` +
+        `<div class="fdiv-rewrite-list">${rewriteInputs}</div>` +
+        `<div class="fdiv-row"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="1">Check</button></div>` +
         `<div class="fdiv-status" data-status="1" role="status" aria-live="polite"></div>` +
         `</div>`
       : "") +
@@ -243,31 +267,37 @@ function mountFractionDivide(host, cfg = {}) {
   // A correct improper fraction must be written in plain "a/b" form (so a
   // retyped mixed/whole number is not accepted) AND equal the operand's value.
   const simpleFrac = (s) => /^\d+\s*\/\s*\d+$/.test(String(s).trim());
+  // Checked separately from the mixed-number case: a whole number's only
+  // correct answer is exactly N/1 (denominator 1), not any value-equal
+  // fraction like 2/2N — accepting those would let "put a 1 under it" pass
+  // without the student ever writing the 1.
+  function checkOperand(key, str, whole, value) {
+    const raw = inp(key).value;
+    const v = parseFrac(raw);
+    const ok = whole
+      ? !!v && v.d === 1 && v.n === value.n && simpleFrac(raw)
+      : !!v && fracEq(v, value) && simpleFrac(raw);
+    mark(inp(key), ok);
+    if (ok) return null;
+    return whole
+      ? `${str} goes over 1 — try ${str}/1.`
+      : `Multiply the whole number by the denominator, then add the numerator, for ${str}.`;
+  }
   function check1() {
-    let allOk = true;
+    const messages = [];
     if (aNeeds) {
-      const raw = inp("impA").value;
-      const v = parseFrac(raw);
-      const ok = !!v && fracEq(v, A) && simpleFrac(raw);
-      mark(inp("impA"), ok);
-      if (!ok) allOk = false;
+      const msg = checkOperand("impA", dividendStr, aWhole, A);
+      if (msg) messages.push(msg);
     }
     if (bNeeds) {
-      const raw = inp("impB").value;
-      const v = parseFrac(raw);
-      const ok = !!v && fracEq(v, B) && simpleFrac(raw);
-      mark(inp("impB"), ok);
-      if (!ok) allOk = false;
+      const msg = checkOperand("impB", divisorStr, bWhole, B);
+      if (msg) messages.push(msg);
     }
-    if (allOk) {
+    if (!messages.length) {
       setStatus(1, "Yes — now keep, change, flip.", true);
       reveal(2);
     } else {
-      setStatus(
-        1,
-        "Not yet — multiply the whole number by the denominator, then add the numerator.",
-        false,
-      );
+      setStatus(1, `Not yet — ${messages.join(" ")}`, false);
     }
   }
 

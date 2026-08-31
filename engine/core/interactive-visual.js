@@ -138,8 +138,9 @@ const REGISTRY = {
     const { renderDecimalQuotient } = await import("../components/decimal-quotient.js");
     return renderDecimalQuotient(host, cfg);
   },
-  // Guided "divide fractions" lab: rewrite to improper fractions, keep–change–
-  // flip, then multiply and simplify (staged fill-ins).
+  // Guided "divide fractions" lab: whole numbers go over 1, mixed numbers
+  // rewrite as improper fractions, then keep–change–flip, multiply and
+  // simplify (staged fill-ins).
   "fraction-divide": async (host, cfg) => {
     const { renderFractionDivide } = await import("../components/fraction-divide.js");
     return renderFractionDivide(host, cfg);
