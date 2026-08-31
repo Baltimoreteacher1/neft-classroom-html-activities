@@ -42,6 +42,9 @@ const ONLY = arg("--lesson");
 const SAMPLE = Number(arg("--sample", "0")) || 0;
 const CONCURRENCY = Number(arg("--concurrency", "4")) || 4;
 const PHASE_COUNT = 8; // Warmup, Objectives, Launch, Explore, Practice, Connect, Reflect, Objectives
+// Apply Day declares its own three (see bootPartTwo's phaseMeta).
+const PHASE_COUNT_BY_RENDERER = { "part-two": 3 };
+const phaseCountFor = (renderer) => PHASE_COUNT_BY_RENDERER[renderer] ?? PHASE_COUNT;
 // A paced Learn It panel shows one line per click; no authored example runs
 // anywhere near this many, so the cap only stops a runaway, never a real walk.
 const PACE_CLICK_LIMIT = 40;
@@ -56,7 +59,69 @@ function classifyHost(h) {
   return "ok";
 }
 
+/**
+ * A verdict for a KIND, from every sighting of it in one lesson.
+ *
+ * classifyHost judges a single sighting, and a single sighting is not enough to
+ * convict: every REGISTRY entry is an `async` factory that dynamic-imports its
+ * component, so on the first visit to a phase a host can be collected after
+ * mountInteractiveVisuals() found it but before the chunk resolved and the flag
+ * landed. That reads as `unknown-kind` — indistinguishable from a real miss.
+ *
+ * The distinguishing fact is that a REGISTRY miss returns early EVERY time. It
+ * can never mount, on any phase, on any visit. So a kind that carries the flag
+ * at even one sighting is registered, and a kind that rendered content at even
+ * one sighting reaches the student. Judging the kind across all of its sightings
+ * is therefore exactly as strong for the defect this gate exists to catch, and
+ * silent about the hydration race that is not a defect at all.
+ *
+ * Measured: this was condemning `tape-diagram` on 3-1 and `long-division-builder`
+ * on 2-6 — both verified rendering, with 4 and 28 live controls — as part of 237
+ * findings on a fleet run that also found 1,639 healthy host renders.
+ */
+function classifyKind(sightings) {
+  if (sightings.some((h) => h.mountedFlag && h.hasContent)) return "ok";
+  if (sightings.some((h) => h.mountedFlag)) return "empty";
+  return "unknown-kind";
+}
+
 function selfTest() {
+  const kindCases = [
+    ["mounted with content anywhere is ok", [{ mountedFlag: true, hasContent: true }], "ok"],
+    [
+      "unflagged first, healthy later, is the hydration race — not a miss",
+      [
+        { mountedFlag: false, hasContent: false },
+        { mountedFlag: true, hasContent: true },
+      ],
+      "ok",
+    ],
+    [
+      "never flagged on any sighting is a real REGISTRY miss",
+      [
+        { mountedFlag: false, hasContent: false },
+        { mountedFlag: false, hasContent: false },
+      ],
+      "unknown-kind",
+    ],
+    [
+      "flagged everywhere but never any content is still empty",
+      [
+        { mountedFlag: true, hasContent: false },
+        { mountedFlag: true, hasContent: false },
+      ],
+      "empty",
+    ],
+  ];
+  const badKinds = kindCases.filter(([, input, want]) => classifyKind(input) !== want);
+  if (badKinds.length) {
+    console.error(`classifyKind self-test: ${badKinds.length} FAILED`);
+    for (const [name, input, want] of badKinds) {
+      console.error(`  ✗ ${name}: expected ${want}, got ${classifyKind(input)}`);
+    }
+    process.exit(1);
+  }
+
   const cases = [
     ["rendered widget is ok", { mountedFlag: true, hasContent: true }, "ok"],
     ["flagged but empty is a failure", { mountedFlag: true, hasContent: false }, "empty"],
@@ -227,6 +292,12 @@ function rendererFor(id) {
   const src = readFileSync(entry, "utf8");
   if (src.includes("bootSmallGroup")) return "small-group";
   if (src.includes("bootFlagship")) return "flagship";
+  // Apply Day. bootPartTwo goes through the same createApp as bootLesson, so it
+  // takes the identical identity-gate-then-rma:navigate walk — it just declares
+  // three phases (Warm-Up, Today's Problem, Group Work) instead of eight. It was
+  // absent here, so all 76 Apply Day pages resolved to "unknown" and were
+  // reported as "did not boot" — 152 findings for pages nothing had looked at.
+  if (src.includes("bootPartTwo")) return "part-two";
   if (src.includes("bootLesson")) return "core";
   return "unknown";
 }
@@ -294,7 +365,7 @@ async function probeLesson(browser, id) {
       booted = true;
       await page.waitForTimeout(1200);
       push(await collectHosts(page), 0);
-    } else if (renderer === "core" || renderer === "flagship") {
+    } else if (renderer === "core" || renderer === "flagship" || renderer === "part-two") {
       // A flagship is the CORE app wrapped in a themed mission intro
       // (engine/templates/flagship/flagship.js imports bootLesson), so it needs
       // the entry click FIRST and then the identical core flow. Every flagship
@@ -339,7 +410,7 @@ async function probeLesson(browser, id) {
         await page.close();
         return { id, renderer, booted: false, hosts, mountWarnings, pageErrors };
       }
-      for (let phase = 0; phase < PHASE_COUNT; phase++) {
+      for (let phase = 0; phase < phaseCountFor(renderer); phase++) {
         await page.evaluate(() => {
           const wrap = document.querySelector(".nt-nb");
           if (wrap) {
@@ -533,23 +604,30 @@ for (const r of results.sort((a, b) => a.id.localeCompare(b.id))) {
       flagship:
         "flagship never opened its mission (content did not grow after .flagship-mission-start)",
       "small-group": "small-group lesson never rendered",
+      "part-two": "Apply Day app never booted (no __ntLessonClearApi after the identity gate)",
     };
     failures.push(`${r.id} [${r.renderer}]: ${why[r.renderer] || "did not boot"}`);
     continue;
   }
   totalHosts += r.hosts.length;
-  // The same host is seen once per phase visit; report each distinct problem once.
+  // The same host is seen once per phase visit, and one bad sighting does not
+  // convict a kind — see classifyKind. Judge each kind on all of its sightings.
   const seen = new Set();
+  const byKind = new Map();
   for (const h of r.hosts) {
-    const verdict = classifyHost(h);
+    if (!byKind.has(h.kind)) byKind.set(h.kind, []);
+    byKind.get(h.kind).push(h);
+  }
+  for (const [kind, sightings] of byKind) {
+    const verdict = classifyKind(sightings);
     if (verdict === "ok") continue;
-    const key = `${h.kind}:${verdict}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    seen.add(`${kind}:${verdict}`);
+    // Name a phase where it actually went wrong, not merely the first visit.
+    const worst = sightings.find((h) => classifyHost(h) === verdict) || sightings[0];
     failures.push(
       verdict === "unknown-kind"
-        ? `${r.id}: "${h.kind}" is not in the interactive-visual REGISTRY — renders nothing (phase ${h.phase})`
-        : `${r.id}: "${h.kind}" mounted but rendered no content (phase ${h.phase})`,
+        ? `${r.id}: "${kind}" is not in the interactive-visual REGISTRY — renders nothing (phase ${worst.phase})`
+        : `${r.id}: "${kind}" mounted but rendered no content (phase ${worst.phase})`,
     );
   }
   for (const h of r.hosts) {
