@@ -217,17 +217,81 @@ function buildNumberLineGame(_config, { title }) {
   });
 }
 
-function buildFractionGame(_config, { title }) {
-  const rounds = [
-    { q: "6 ÷ ½ = ?", choices: ["12", "3", "6", "1/12"], correct: 0 },
-    { q: "½ of 8 = ?", choices: ["4", "2", "16", "6"], correct: 0 },
-    { q: "Which is larger: ⅔ or ½?", choices: ["⅔", "½", "Equal"], correct: 0 },
-    { q: "2 ÷ ¼ = ?", choices: ["8", "2", "4", "½"], correct: 0 },
-  ];
-  return mcSpeedGame("fraction", title, "Fraction Finder!", "¡Fracciones!", rounds, {
-    en: "Dividing by a fraction = multiply by its reciprocal.",
-    es: "Dividir por una fracción = multiplicar por su recíproco.",
-  });
+/* Every 6.NOS.1 lesson used to share one fixed set of rounds — 6 ÷ ½, "½ of 8",
+ * "which is larger, ⅔ or ½", 2 ÷ ¼ — and only two of those four are division of
+ * fractions at all. No round ever divided a fraction BY a whole number, which is
+ * half of 6-1's objective, and none used a numerator other than 1, so a family
+ * playing along practised a narrower problem than the one on their student's
+ * worksheet. The rounds are drawn instead from the shapes the lesson's own
+ * objective says it divides. Every quotient below is exact:
+ *   6 ÷ 1/2 = 12   2 ÷ 1/4 = 8    3 ÷ 1/3 = 9     5 ÷ 1/2 = 10
+ *   3/4 ÷ 2 = 3/8  2/3 ÷ 4 = 1/6
+ *   3/4 ÷ 1/2 = 1 1/2             5/6 ÷ 1/3 = 2 1/2
+ *   1 1/2 ÷ 1/2 = 3  2 1/4 ÷ 3 = 3/4  2 1/2 ÷ 1 1/4 = 2  3 1/3 ÷ 2 = 1 2/3 */
+const FRACTION_ROUNDS = {
+  wholeByFraction: [
+    { q: "6 ÷ 1/2 = ?", choices: ["12", "3", "6", "1/12"], correct: 0 },
+    { q: "2 ÷ 1/4 = ?", choices: ["8", "2", "4", "1/2"], correct: 0 },
+    { q: "3 ÷ 1/3 = ?", choices: ["9", "1", "3", "1/9"], correct: 0 },
+    { q: "5 ÷ 1/2 = ?", choices: ["10", "2 1/2", "5", "1/10"], correct: 0 },
+  ],
+  fractionByWhole: [
+    { q: "3/4 ÷ 2 = ?", choices: ["3/8", "1 1/2", "3/4", "1/8"], correct: 0 },
+    { q: "2/3 ÷ 4 = ?", choices: ["1/6", "8/3", "3/8", "2/3"], correct: 0 },
+  ],
+  fractionByFraction: [
+    { q: "3/4 ÷ 1/2 = ?", choices: ["1 1/2", "3/8", "2/3", "1/4"], correct: 0 },
+    { q: "5/6 ÷ 1/3 = ?", choices: ["2 1/2", "5/18", "1/2", "3/5"], correct: 0 },
+  ],
+  mixed: [
+    { q: "1 1/2 ÷ 1/2 = ?", choices: ["3", "3/4", "1", "2"], correct: 0 },
+    { q: "2 1/4 ÷ 3 = ?", choices: ["3/4", "6 3/4", "1 1/4", "3"], correct: 0 },
+    { q: "2 1/2 ÷ 1 1/4 = ?", choices: ["2", "3 1/8", "1 1/4", "1/2"], correct: 0 },
+    { q: "3 1/3 ÷ 2 = ?", choices: ["1 2/3", "6 2/3", "2/3", "5"], correct: 0 },
+  ],
+};
+
+/** The division shapes this lesson teaches, read from its own objective. */
+function fractionShapes(config) {
+  const said = `${config?.contentObjective || ""} ${config?.title || ""}`.toLowerCase();
+  const shapes = [];
+  if (/whole numbers? by (a )?(unit )?fractions?/.test(said)) shapes.push("wholeByFraction");
+  if (/fractions? by a whole number/.test(said)) shapes.push("fractionByWhole");
+  if (/fractions? by a fraction/.test(said)) shapes.push("fractionByFraction");
+  if (/mixed numbers?/.test(said)) shapes.push("mixed");
+  // A problem-solving lesson names no shape of its own — it applies all of them.
+  return shapes.length ? shapes : ["wholeByFraction", "fractionByWhole", "fractionByFraction"];
+}
+
+function buildFractionGame(config, { title }) {
+  const shapes = fractionShapes(config);
+  // Round-robin so every shape the lesson teaches is actually played, rather
+  // than the first shape filling all four slots.
+  const rounds = [];
+  for (let turn = 0; rounds.length < 4; turn++) {
+    const before = rounds.length;
+    for (const shape of shapes) {
+      if (rounds.length >= 4) break;
+      const round = FRACTION_ROUNDS[shape][turn];
+      if (round) rounds.push(round);
+    }
+    if (rounds.length === before) break; // every pool exhausted
+  }
+  const coach = shapes.includes("mixed")
+    ? {
+        en: "Change mixed numbers to improper fractions first, then Keep, Change, Flip.",
+        es: "Primero conviertan los números mixtos en fracciones impropias, luego Conserva, Cambia, Voltea.",
+      }
+    : shapes.includes("fractionByWhole")
+      ? {
+          en: "Write any whole number over 1, then Keep, Change, Flip.",
+          es: "Escriban cualquier número entero sobre 1, luego Conserva, Cambia, Voltea.",
+        }
+      : {
+          en: "Dividing by a fraction = multiply by its reciprocal.",
+          es: "Dividir por una fracción = multiplicar por su recíproco.",
+        };
+  return mcSpeedGame("fraction", title, "Fraction Finder!", "¡Fracciones!", rounds, coach);
 }
 
 function buildAreaGame(_config, { title }) {
@@ -411,17 +475,40 @@ function _shuffleChoices(correct, pool) {
   return all;
 }
 
+/* Every round above is authored with its answer first, and the Play-tab runtime
+ * renders `choices` in the order it is given — so before this shuffle the first
+ * button was the right one in every round of every family game, and a student
+ * could clear the game without reading a question. That is the same answer-
+ * position bias already fixed across the lesson fleet; the family homework was
+ * the surface it missed. Seeded from the round's own content, so the order is
+ * stable across builds and a no-op regeneration does not churn 84 files. */
+function shuffleChoices(round, seedKey) {
+  if (!Array.isArray(round.choices) || round.choices.length < 2) return round;
+  return { ...round, choices: seededShuffle(round.choices, `${seedKey}|${round.q}`) };
+}
+
 function mcSpeedGame(id, _title, nameEn, nameEs, rounds, coach) {
-  const normalized = rounds.map((r) => {
-    if (Array.isArray(r.choices) && typeof r.choices[0] === "string") {
-      return {
-        q: r.q,
-        choices: r.choices.map((t, i) => ({ text: t, isCorrect: i === r.correct })),
-        hint: r.hint || "",
-      };
-    }
-    return r;
-  });
+  const normalized = rounds
+    .map((r) => {
+      if (Array.isArray(r.choices) && typeof r.choices[0] === "string") {
+        return {
+          q: r.q,
+          choices: r.choices.map((t, i) => ({ text: t, isCorrect: i === r.correct })),
+          hint: r.hint || "",
+        };
+      }
+      // `correct` is a positional index; once the choices move it is a lie, so
+      // the flag has to be on the choice itself before anything is shuffled.
+      if (Array.isArray(r.choices) && typeof r.correct === "number") {
+        const { correct, ...rest } = r;
+        return {
+          ...rest,
+          choices: r.choices.map((c, i) => ({ ...c, isCorrect: c.isCorrect || i === correct })),
+        };
+      }
+      return r;
+    })
+    .map((r) => shuffleChoices(r, id));
   const data = JSON.stringify(normalized).replace(/'/g, "&#39;");
   return {
     type: "mc-speed",

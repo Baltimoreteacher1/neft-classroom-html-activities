@@ -63,6 +63,16 @@ export function detectVisualTopic(config) {
   // distinct concept from naming the parts of an expression, even though both can
   // carry standard 6.AT.7. Detect by title so the big-idea visual matches the lesson.
   if (/propert/i.test(title) || /distributive/i.test(title)) return "properties";
+  // The standard decides before the algebra title-keywords get a vote. Those
+  // keywords are a fallback for lessons whose standard is ambiguous, and read in
+  // the other order the bare word "express" is not specific enough to be one:
+  // 6-1 and 6-2 are titled "Division Expressions with Fractions and …", matched
+  // /express/, and shipped their families an ALGEBRA homework — a Play-tab game
+  // asking parents to evaluate 2x at x = 4 and name the coefficient of 5y, a
+  // variable-substitution visual lab, and expression vocabulary — in two lessons
+  // about dividing fractions. "Numerical expression" is this curriculum's own
+  // phrase for exactly what 6.NOS.1 does, so the title can never separate the two.
+  if (standard === "6.NOS.1") return "fractions";
   if (
     standard.startsWith("6.AT.6") ||
     standard === "6.AT.7" ||
