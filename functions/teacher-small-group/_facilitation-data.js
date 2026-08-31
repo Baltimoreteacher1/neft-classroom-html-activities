@@ -2367,7 +2367,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided fractions without inverting; Divided numerators and denominators straight across. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
       lookFor:
