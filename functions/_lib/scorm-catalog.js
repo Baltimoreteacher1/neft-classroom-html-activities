@@ -94,13 +94,22 @@ function lessonResource(pathname) {
  * identical name and no way to tell which was which. The label is what a teacher
  * reads in a course list, so it names the day, not the directory.
  *
- * Deliberately covers `part2` ONLY for now. `group1`, `group2` and `catchup` sit
- * on the same collision and the fix is one line each, but renaming ~204 existing
- * packages is a change to what teachers already see and has not been asked for.
- * Add them here when it is.
+ * Every variant directory that is its own assignable is labelled. Without the
+ * group/catch-up entries, downloading the packages for one lesson produced FOUR
+ * Canvas assignments with one identical name — the core lesson, both small
+ * groups and the catch-up station — and no way to tell which was which.
+ *
+ * The labels are the site's OWN words for these surfaces, read off
+ * /curriculum/units/ ("Small Group: Group 1" + the `badge-sg` reading "Extra
+ * Support" / "Challenge") and the catch-up resources ("Catch-Up Station"), so
+ * the name in Canvas matches the row the teacher clicked to get there. They are
+ * level labels in the curriculum's vocabulary, never a language-program one.
  */
 const VARIANT_LABELS = {
   part2: "Part II: Apply",
+  group1: "Small Group 1 (Extra Support)",
+  group2: "Small Group 2 (Challenge)",
+  catchup: "Catch-Up Station",
 };
 
 const RESOURCE_LABELS = {

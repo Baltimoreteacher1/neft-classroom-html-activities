@@ -65,12 +65,37 @@ t("the download filename spends its readable half on the day, not on the id agai
   assert.equal(shortNameForId("6-1-part2"), "Part_II_Apply");
 });
 
-t("unlabelled variants and core routes are untouched", () => {
-  // group1/group2/catchup sit on the same collision and are deliberately NOT
-  // labelled yet (see VARIANT_LABELS). This pins that decision so relabelling
-  // ~204 packages has to be a choice someone makes, not a side effect.
+t("every variant of one lesson gets a DIFFERENT Canvas name", () => {
+  // The whole point. Downloading one lesson's packages used to produce four
+  // Canvas assignments with one identical name — core, both small groups and
+  // the catch-up station — and nothing to tell them apart in a course list.
+  const of = (suffix) => canonicalTitle(`https://eduwonderlab.com/lessons/1-3${suffix}/`).title;
+  const titles = ["", "-part2", "-group1", "-group2", "-catchup"].map(of);
+  assert.equal(
+    new Set(titles).size,
+    titles.length,
+    `two variants of lesson 1-3 share a Canvas title:\n  ${titles.join("\n  ")}`,
+  );
+  // The labels are the site's own words for these surfaces (/curriculum/units/
+  // badges), so Canvas matches the row the teacher clicked.
+  assert.equal(of("-group1"), "EduWonderLab — Lesson 1-3 · Small Group 1 (Extra Support)");
+  assert.equal(of("-group2"), "EduWonderLab — Lesson 1-3 · Small Group 2 (Challenge)");
+  assert.equal(of("-catchup"), "EduWonderLab — Lesson 1-3 · Catch-Up Station");
+  // A level label is never a language-program label ([[feedback_level_labeling]]).
+  for (const title of titles) {
+    assert.doesNotMatch(title, /\bESOL\b/i, `a package title says ESOL: ${title}`);
+  }
+});
+
+t("the download filenames are distinct too, and still readable", () => {
+  const names = ["1-3", "1-3-part2", "1-3-group1", "1-3-group2", "1-3-catchup"].map(shortNameForId);
+  assert.equal(new Set(names).size, names.length, `filename collision: ${names.join(" | ")}`);
+  assert.equal(shortNameForId("1-3-group1"), "Small_Group_1_Extra_Support");
+});
+
+t("core lessons and their sub-resources are untouched", () => {
   assert.match(
-    canonicalTitle("https://eduwonderlab.com/lessons/1-3-group1/").title,
+    canonicalTitle("https://eduwonderlab.com/lessons/1-3/").title,
     /Lesson 1-3: Math is In My World$/,
   );
   assert.equal(
