@@ -19,6 +19,7 @@
 //     eagerly if it wants to.
 
 import { attachManipulativePersistence } from "./manipulative-state.js";
+import { renderPredictGate } from "./predict-then-reveal.js";
 
 // Load a classic (non-module) script once and resolve when it has executed.
 // Memoized by src so repeated grapher mounts share one network fetch/parse.
@@ -427,32 +428,45 @@ export function mountInteractiveVisuals(root, opts) {
     } catch (_e) {
       cfg = {};
     }
-    Promise.resolve()
-      .then(() => factory(host, cfg))
-      .then((handle) => {
-        if (handle) host.__ivHandle = handle;
-      })
-      .catch((err) => {
-        // Never let a manipulative failure break the lesson — but never fail
-        // SILENTLY either. The <noscript> fallback does not display when JS is
-        // on, so a thrown factory used to leave a blank gap where the model
-        // should be, and the student had no way to tell a broken tool from a
-        // page that simply had nothing there. Say what happened, and clear the
-        // mounted flag so the next render of this phase can retry (a chunk 404
-        // right after a deploy is transient).
-        console.warn(`interactive-visual: failed to mount "${host.dataset.visual}"`, err);
-        delete host.dataset.ivMounted;
-        if (!host.querySelector(":scope > *:not(noscript)")) {
-          const note = document.createElement("p");
-          note.className = "interactive-visual-error";
-          note.setAttribute("role", "status");
-          note.style.cssText =
-            "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:500; line-height:1.5;";
-          note.textContent =
-            "This model could not load right now. Reload the page to try again — the rest of the lesson still works.";
-          host.appendChild(note);
-        }
-      });
+    // Ask before the tool computes. The gate declines (returns false) whenever
+    // the answer is not certain from this config, or in Notice & Wonder — so the
+    // default path below is exactly the shipped behaviour.
+    const mount = () =>
+      Promise.resolve()
+        .then(() => factory(host, cfg))
+        .then((handle) => {
+          if (handle) host.__ivHandle = handle;
+        })
+        .catch((err) => {
+          // Never let a manipulative failure break the lesson — but never fail
+          // SILENTLY either. The <noscript> fallback does not display when JS is
+          // on, so a thrown factory used to leave a blank gap where the model
+          // should be, and the student had no way to tell a broken tool from a
+          // page that simply had nothing there. Say what happened, and clear the
+          // mounted flag so the next render of this phase can retry (a chunk 404
+          // right after a deploy is transient).
+          console.warn(`interactive-visual: failed to mount "${host.dataset.visual}"`, err);
+          delete host.dataset.ivMounted;
+          if (!host.querySelector(":scope > *:not(noscript)")) {
+            const note = document.createElement("p");
+            note.className = "interactive-visual-error";
+            note.setAttribute("role", "status");
+            note.style.cssText =
+              "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:500; line-height:1.5;";
+            note.textContent =
+              "This model could not load right now. Reload the page to try again — the rest of the lesson still works.";
+            host.appendChild(note);
+          }
+        });
+
+    // A gate that throws must cost the student a question, never the tool.
+    let gated = false;
+    try {
+      gated = renderPredictGate(host, host.dataset.visual, cfg, mount);
+    } catch (_e) {
+      gated = false;
+    }
+    if (!gated) mount();
   });
 
   // Opt-in persistence: callers that have a lesson state store pass it, and what

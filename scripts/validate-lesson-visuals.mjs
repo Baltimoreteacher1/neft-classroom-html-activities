@@ -323,8 +323,14 @@ const collectHosts = (page) =>
     [...document.querySelectorAll(".interactive-visual[data-visual]")].map((el) => ({
       kind: el.dataset.visual || "(none)",
       mountedFlag: el.dataset.ivMounted === "1",
-      // Real, student-facing output — not just any child node.
-      hasContent: !!el.querySelector("svg, canvas, input, button, select, model-viewer"),
+      // Real, student-facing output — not just any child node, and explicitly
+      // NOT the predict-then-reveal card. That card is made of buttons, so a
+      // host still showing its question would otherwise satisfy this check
+      // while the tool behind it had never mounted at all — the card would
+      // mask exactly the defect this gate exists to find.
+      hasContent: [...el.querySelectorAll("svg, canvas, input, button, select, model-viewer")].some(
+        (n) => !n.closest(".iv-predict"),
+      ),
       // A tool can render perfectly and still be broken. /lessons/2-11/ mounted
       // the Decimal Columns lab with no operands, so Number(undefined) became
       // NaN and the digit cells spelled "N a N" down the column — a host that
@@ -340,6 +346,22 @@ const collectHosts = (page) =>
       })(),
     })),
   );
+
+/**
+ * Answer any predict-then-reveal card, the way a student does, so what gets
+ * measured is the TOOL and not its question. Which choice is picked does not
+ * matter — right or wrong, the model opens; a wrong answer just lingers on the
+ * coaching line longer, which is what the wait covers.
+ */
+async function dismissPredictCards(page) {
+  const clicked = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll(".iv-predict")];
+    cards.forEach((c) => c.querySelector(".iv-predict-choice")?.click());
+    return cards.length;
+  });
+  if (clicked) await page.waitForTimeout(3000);
+  return clicked;
+}
 
 /** Boot one lesson the way its renderer requires, and collect what rendered. */
 async function probeLesson(browser, id) {
@@ -364,6 +386,7 @@ async function probeLesson(browser, id) {
       // Whole lesson renders on one page — nothing to navigate.
       booted = true;
       await page.waitForTimeout(1200);
+      await dismissPredictCards(page);
       push(await collectHosts(page), 0);
     } else if (renderer === "core" || renderer === "flagship" || renderer === "part-two") {
       // A flagship is the CORE app wrapped in a themed mission intro
@@ -432,6 +455,7 @@ async function probeLesson(browser, id) {
           phase,
         );
         await page.waitForTimeout(1100);
+        await dismissPredictCards(page);
         push(await collectHosts(page), phase);
       }
       // The eight graded phases are not the whole lesson. The Learn It tab mounts
@@ -476,6 +500,7 @@ async function probeLesson(browser, id) {
           await page.waitForTimeout(350);
         }
         await page.waitForTimeout(600);
+        await dismissPredictCards(page);
         push(await collectHosts(page), `tab:${kind}`);
       }
     } else {
