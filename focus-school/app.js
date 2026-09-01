@@ -451,7 +451,7 @@
       color,
     });
     return {
-      version: 11,
+      version: 12,
       settings: {
         studentName: "",
         gmail: "",
@@ -511,6 +511,11 @@
       activity: {}, // { dateKey: { tasks, focusMin, routines } }
       wins: [],
       points: 0,
+      // XP is an append-only event set so simultaneous earnings on two linked
+      // devices add together instead of the larger total overwriting the
+      // smaller one. pointBase carries the pre-ledger/legacy total.
+      pointBase: 0,
+      pointEvents: [], // [{ id, amount, ts }]
       daily: { goal: "", goalDate: "" },
       // { dateKey: true } — marks days the "did you write everything down?"
       // capture prompt was answered, so it only nudges once per day.
@@ -589,9 +594,57 @@
     };
   }
 
+  function normalizePointEvents(events) {
+    const byId = new Map();
+    for (const raw of Array.isArray(events) ? events : []) {
+      if (!raw || typeof raw !== "object") continue;
+      const id = String(raw.id || "").slice(0, 120);
+      const amount = Math.max(0, Math.round(Number(raw.amount) || 0));
+      if (!id || !amount) continue;
+      const event = { id, amount, ts: Math.max(0, Number(raw.ts) || 0) };
+      const prior = byId.get(id);
+      // Conflicting copies should still converge deterministically. A real
+      // event ID is immutable, so this is only a corruption/legacy safeguard.
+      if (
+        !prior ||
+        event.amount > prior.amount ||
+        (event.amount === prior.amount && event.ts > prior.ts)
+      ) {
+        byId.set(id, event);
+      }
+    }
+    return [...byId.values()].sort((a, b) => a.ts - b.ts || a.id.localeCompare(b.id));
+  }
+
+  function pointSnapshot(raw) {
+    const source = raw && typeof raw === "object" ? raw : {};
+    const pointEvents = normalizePointEvents(source.pointEvents);
+    const eventTotal = pointEvents.reduce((sum, event) => sum + event.amount, 0);
+    const statedTotal = Math.max(0, Math.round(Number(source.points) || 0));
+    const explicitBase = Math.max(0, Math.round(Number(source.pointBase) || 0));
+    const hasExplicitBase = Object.prototype.hasOwnProperty.call(source, "pointBase");
+    // A legacy payload has only the aggregate total, so that total becomes its
+    // baseline. Once pointBase exists, base+events is canonical: trusting an
+    // old client's derived `points` as a second baseline could double-count an
+    // event whose metadata that client did not preserve during the rollout.
+    const impliedBase = Math.max(0, statedTotal - eventTotal);
+    const pointBase = hasExplicitBase ? explicitBase : impliedBase;
+    return { pointBase, pointEvents, points: pointBase + eventTotal };
+  }
+
+  function mergePointSnapshots(local, remote) {
+    const left = pointSnapshot(local);
+    const right = pointSnapshot(remote);
+    const pointEvents = normalizePointEvents([...left.pointEvents, ...right.pointEvents]);
+    const pointBase = Math.max(left.pointBase, right.pointBase);
+    const points = pointBase + pointEvents.reduce((sum, event) => sum + event.amount, 0);
+    return { pointBase, pointEvents, points };
+  }
+
   function normalize(x) {
     const base = seed();
     if (!x || typeof x !== "object") return base;
+    const pointState = pointSnapshot(x);
     const s = { ...base.settings, ...(x.settings || {}) };
     s.welcomeDismissed = !!(x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed);
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
@@ -677,7 +730,7 @@
       routineLog: normalizeRoutineLog(x.routineLog),
       activity: x.activity && typeof x.activity === "object" ? x.activity : {},
       wins: Array.isArray(x.wins) ? x.wins : [],
-      points: Number(x.points) || 0,
+      ...pointState,
       daily: { ...base.daily, ...(x.daily || {}) },
       captureLog: x.captureLog && typeof x.captureLog === "object" ? x.captureLog : {},
       gcal:
@@ -2713,7 +2766,11 @@
   function addPoints(amount) {
     if (!amount || amount <= 0) return;
     const oldLevel = Math.floor((state.points || 0) / 100) + 1;
-    state.points = (state.points || 0) + amount;
+    const pointState = pointSnapshot(state);
+    state.pointBase = pointState.pointBase;
+    state.pointEvents = pointState.pointEvents;
+    state.pointEvents.push({ id: uid("xp"), amount: Math.round(amount), ts: Date.now() });
+    state.points = pointState.points + Math.round(amount);
     const newLevel = Math.floor(state.points / 100) + 1;
 
     // Add XP to garden and award water drops
@@ -9134,8 +9191,11 @@ Due May 31"></textarea>
       }
     }
 
-    // 10. Merge points / XP
-    merged.points = Math.max(local.points || 0, remote.points || 0);
+    // 10. Merge points / XP. Totals alone cannot distinguish "same progress"
+    // from two devices earning concurrently, so union immutable award events
+    // and add them to the largest legacy baseline. Event IDs make retries and
+    // repeated pulls idempotent.
+    Object.assign(merged, mergePointSnapshots(local, remote));
 
     // 11. Merge settings (take remote if remote is newer, but preserve local sync config)
     if ((remote.updatedAt || 0) > (local.updatedAt || 0)) {
@@ -15127,6 +15187,7 @@ function repairMissedWork() {
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
       academicHelpPrompt,
+      addPoints,
       buildWorkloadForecast,
       buildDailyBriefing,
       buildImportCandidates,
@@ -15143,8 +15204,10 @@ function repairMissedWork() {
       mergeRoutineItems,
       mergeRoutineLogs,
       mergeStates,
+      mergePointSnapshots,
       nextRoutineWindow,
       normalize,
+      pointSnapshot,
       normalizeChangeEvent,
       importCandidateKey,
       estimateDailyCapacity,
