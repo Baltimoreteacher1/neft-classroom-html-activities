@@ -2243,10 +2243,16 @@
       (title ? "&title=" + encodeURIComponent(title) : "")
     );
   }
-  function makeScormLink(target, title, label, className) {
+  // `hrefTitle` splits the two jobs the title used to do at once: what the
+  // tooltip SHOWS, and what the URL ASKS FOR. Pass "" to send no title at all,
+  // so functions/_lib/scorm-catalog.js names the package canonically — that is
+  // the only way a chip and a hand-typed /api/scorm URL can be guaranteed to
+  // produce the same Canvas title. Omit it entirely and the old behaviour
+  // (tooltip and URL share one string) is unchanged.
+  function makeScormLink(target, title, label, className, hrefTitle) {
     var a = document.createElement("a");
     a.className = className;
-    a.href = scormDownloadHref(target, title);
+    a.href = scormDownloadHref(target, hrefTitle === undefined ? title : hrefTitle);
     // Unmistakable wording. "Export" / "Download package" / "LMS file" all
     // leave a teacher guessing which of several formats they just got; this
     // names the destination and the format, and the second line is the
@@ -2286,6 +2292,34 @@
       var moreBody = ensureOutlineMore(link.parentElement);
       moreBody.appendChild(makeScormLink(href, title, "⬇", "scorm-dl"));
     });
+
+  // Apply Day (Part II). These rows are static anchors on /curriculum/units/:
+  // Part 2 is deliberately outside LESSON_ROUTES and the launch manifest's
+  // HUB_TOTAL, so it never flows through makeOutlineItem or the lesson picker —
+  // which made it the one student lesson surface on the site with no Canvas
+  // package at all. Chipped here, next to the link a teacher already clicks.
+  //
+  // No title is sent with the request: the server names it "Lesson 6-1 · Part
+  // II: Apply" from the route itself, so this chip, the /teacher-tools/
+  // scorm-builder and a hand-typed /api/scorm URL cannot drift apart.
+  document.querySelectorAll('.res-row a.res[href*="-part2/"]').forEach(function (link) {
+    var href = link.getAttribute("href") || "";
+    var m = /^\/lessons\/(\d+-\d+)-part2\/$/.exec(href);
+    // The lesson page only. Its two worksheets are printables that live at
+    // the same prefix, and a SCORM package that iframes a worksheet can never
+    // report a grade — the same reason canPackageForScorm drops file targets.
+    if (!m) return;
+    if (!canPackageForScorm(href)) return;
+    if (link.parentElement.querySelector(".scorm-dl-part2")) return;
+    var chip = makeScormLink(
+      href,
+      "Lesson " + m[1] + " \u00b7 Part II: Apply",
+      "\ud83c\udf93 Canvas (SCORM)",
+      "res scorm-dl scorm-dl-part2",
+      "",
+    );
+    link.parentElement.insertBefore(chip, link.nextSibling);
+  });
 
   function ensureOutlineMore(li) {
     if (!li) return null;

@@ -168,6 +168,15 @@ check(
   "missing the per-lesson Canvas (SCORM) download button (scorm-lesson-btn)",
 );
 check(/\/api\/scorm\?activity=/.test(behaviour), "missing /api/scorm download link construction");
+// Apply Day (Part II) is the one lesson surface the picker cannot reach — it is
+// deliberately outside LESSON_ROUTES — so its chips come from a dedicated pass
+// over the static /curriculum/units/ rows. Nothing else would notice if a hub
+// rewrite dropped it: the page would still look complete, with 76 lessons
+// quietly unpublishable to Canvas.
+check(
+  /scorm-dl-part2/.test(behaviour),
+  "missing the Apply Day (Part II) Canvas (SCORM) chip pass (scorm-dl-part2)",
+);
 // The hub HTML must be re-checked with the server on every load so new lesson
 // ordering appears immediately. `no-cache` and `no-store` both guarantee that;
 // what must never appear is a positive max-age, which would let a browser show

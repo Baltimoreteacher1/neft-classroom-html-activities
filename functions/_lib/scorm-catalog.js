@@ -56,10 +56,21 @@ function normPath(p) {
   return s.toLowerCase();
 }
 
+/** The lesson-directory match: `[, id, variant]` or null. */
+function lessonDirMatch(pathname) {
+  return /^\/lessons\/([0-9]+-[0-9]+)(?:-([a-z0-9]+))?\//i.exec(normPath(pathname));
+}
+
 /** "1-1" from /lessons/1-1/..., or "" when the path is not lesson-scoped. */
 function lessonIdFromPath(pathname) {
-  const m = /^\/lessons\/([0-9]+-[0-9]+)(?:-[a-z0-9]+)?\//i.exec(normPath(pathname));
+  const m = lessonDirMatch(pathname);
   return m ? m[1] : "";
+}
+
+/** "part2" from /lessons/6-1-part2/..., or "" for the core lesson directory. */
+function lessonVariantFromPath(pathname) {
+  const m = lessonDirMatch(pathname);
+  return m && m[2] ? m[2].toLowerCase() : "";
 }
 
 /** The sub-resource a lesson path points at: "", "homework", "worksheet", … */
@@ -73,6 +84,24 @@ function lessonResource(pathname) {
     .replace(/\.html?$/, "");
   return rest.replace(/\/+$/, "");
 }
+
+/**
+ * A lesson DIRECTORY suffix that makes the page a different assignable than the
+ * core lesson: /lessons/6-1-part2/ is Apply Day, not Lesson 6-1.
+ *
+ * Without this, every variant borrowed the core lesson's title, so a teacher who
+ * published Lesson 6-1 and its Apply Day saw two Canvas assignments with one
+ * identical name and no way to tell which was which. The label is what a teacher
+ * reads in a course list, so it names the day, not the directory.
+ *
+ * Deliberately covers `part2` ONLY for now. `group1`, `group2` and `catchup` sit
+ * on the same collision and the fix is one line each, but renaming ~204 existing
+ * packages is a change to what teachers already see and has not been asked for.
+ * Add them here when it is.
+ */
+const VARIANT_LABELS = {
+  part2: "Part II: Apply",
+};
 
 const RESOURCE_LABELS = {
   "": "",
@@ -118,10 +147,18 @@ export function canonicalTitle(lessonUrl) {
     // An unrecognized sub-resource still gets the lesson's real name rather
     // than falling back to a slug — the lesson title is the useful half.
     const suffix = res === undefined ? "" : res;
+    // A labelled variant directory NAMES the assignable, so it replaces the
+    // lesson's topic rather than appending to it: "Lesson 6-1 · Part II: Apply".
+    // The topic already sits one row above it in any Canvas course list, and
+    // repeating it is what pushed these titles past what a teacher can scan.
+    const variant = VARIANT_LABELS[lessonVariantFromPath(pathname)];
+    const stem = variant ? `Lesson ${id} · ${variant}` : `Lesson ${id}`;
     return {
       title: suffix
-        ? `EduWonderLab — Lesson ${id} ${suffix}`
-        : `EduWonderLab — Lesson ${id}: ${lesson.title}`,
+        ? `EduWonderLab — ${stem} ${suffix}`
+        : variant
+          ? `EduWonderLab — ${stem}`
+          : `EduWonderLab — ${stem}: ${lesson.title}`,
       known: true,
     };
   }
@@ -207,6 +244,11 @@ export function shortNameForId(id) {
   }
   const scoped = /^(\d+-\d+)-(.+)$/.exec(base);
   if (scoped) {
+    // A labelled variant first: without it "6-1-part2" fell through to the
+    // slug branch and named the file EduWonderLab_6-1-part2_part2_SCORM.zip,
+    // spending the readable half of the name on a repeat of the id.
+    const variant = VARIANT_LABELS[scoped[2].toLowerCase()];
+    if (variant) return titleSlug(variant);
     const label = RESOURCE_LABELS[scoped[2]];
     if (label) return titleSlug(label);
     // An unrecognized sub-resource keeps its own words rather than borrowing
