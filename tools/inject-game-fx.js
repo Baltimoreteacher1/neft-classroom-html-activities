@@ -87,6 +87,33 @@ function walk(dir, out) {
   }
 }
 
+/**
+ * Index of the REAL closing tag — the one that closes the document, not a
+ * literal `"</head>"` / `"</body>"` sitting inside an inline <script>.
+ *
+ * Game pages embed print/export/share generators that build a whole HTML
+ * document inside a JS template string, so the first `</body>` in the file is
+ * routinely a string literal. Splicing there puts the injected `</script>` into
+ * the page's own inline script and terminates it early — the page still parses
+ * and still serves 200, and the game is dead.
+ *
+ * Same shape as tools/inject-save-resume.js:realCloseIndex (commit 045d3433d);
+ * candidates with balanced <script>/</script> before them, last one wins.
+ */
+function realCloseIndex(html, closeTag) {
+  const lower = html.toLowerCase();
+  const candidates = [];
+  let i = lower.indexOf(closeTag);
+  while (i !== -1) {
+    const before = lower.slice(0, i);
+    const opens = (before.match(/<script\b/g) || []).length;
+    const closes = (before.match(/<\\?\/script>/g) || []).length;
+    if (opens === closes) candidates.push(i);
+    i = lower.indexOf(closeTag, i + 1);
+  }
+  return candidates.length ? candidates[candidates.length - 1] : -1;
+}
+
 function revert(html) {
   const re = new RegExp(
     `\\s*${BEGIN.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${END.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
@@ -117,8 +144,27 @@ function processFile(file) {
     return;
   }
 
-  html = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
-  html = html.replace(/<\/body>/i, `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`);
+  // Splice BEFORE the closing tag rather than regex-replacing it. Two reasons,
+  // both of which this file used to get wrong with `html.replace(/<\/body>/i, …)`:
+  //
+  //   1. A first-match replace lands on whichever `</head>` / `</body>` appears
+  //      first, including one inside an inline template string — the exact bug
+  //      already fixed in tools/inject-save-resume.js (6270f79f9) and
+  //      tools/inject-math-workbench.js (1dfb1e171). game-fx never got the fix.
+  //   2. The replacement re-emitted a literal lowercase `</body>`, silently
+  //      case-folding a page written with `</BODY>`. Splicing leaves the
+  //      original closer, whatever its case, exactly where it was.
+  const headAt = realCloseIndex(html, "</head>");
+  if (headAt === -1) {
+    report.skippedNoTags.push(file);
+    return;
+  }
+  html = html.slice(0, headAt) + `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n` + html.slice(headAt);
+  // Body anchor: the LAST </body> is the document's real close (same rule as
+  // inject-save-resume.js:165-166 and inject-math-workbench.js:149-150).
+  const bodies = [...html.matchAll(/<\/body>/gi)];
+  const bodyAt = bodies[bodies.length - 1].index;
+  html = html.slice(0, bodyAt) + `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n` + html.slice(bodyAt);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }

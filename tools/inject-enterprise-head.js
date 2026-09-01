@@ -87,13 +87,29 @@ const escapeAttr = (s) =>
  * pages, forever. The injector is wired into `npm run build`, so that is a diff
  * on every deploy of a repo that auto-commits — and
  * tools/build-injectors-idempotent.test.mjs is what caught it.
+ *
+ * It removes EVERY occurrence of the pair, not just the first (`indexOf` finds
+ * one). This file's idempotency is strip-then-rebuild, so a surplus block was
+ * PERMANENT: a page that somehow held two — a concurrent writer, an interrupted
+ * run, a generator that copied a page that already had one — got one stripped
+ * and one re-added, arriving back at two, on every build, forever. Nothing
+ * downstream could repair it, because `--revert` strips through this same
+ * function and so left one block behind too. Meanwhile the page shipped two
+ * <link rel="canonical"> and two sets of og: tags to Google Classroom, Canvas
+ * and iMessage, which is the one thing this layer exists to get right.
+ *
+ * The per-block removal below is unchanged; only the loop around it is new, so
+ * the asymmetric-strip fix documented above still holds exactly as before.
  */
 const stripBlock = (html, begin, end) => {
-  const b = html.indexOf(begin);
-  if (b === -1) return html;
-  const e = html.indexOf(end, b);
-  if (e === -1) return html; // unbalanced — leave for validate:injection to flag
-  return html.slice(0, b).replace(/[ \t]*$/, "") + html.slice(e + end.length).replace(/^\n/, "");
+  let out = html;
+  for (;;) {
+    const b = out.indexOf(begin);
+    if (b === -1) return out;
+    const e = out.indexOf(end, b);
+    if (e === -1) return out; // unbalanced — leave for validate:injection to flag
+    out = out.slice(0, b).replace(/[ \t]*$/, "") + out.slice(e + end.length).replace(/^\n/, "");
+  }
 };
 
 function extractTitle(html) {
