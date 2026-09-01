@@ -277,6 +277,125 @@ for (const [standard, items] of Object.entries(bank.bank)) {
     dueInScope.standard,
     "a due standard inside the scope is asked first",
   );
+  /* THE ONE-QUESTION BONUS MUST STILL SPACE.
+   *
+   * The warm-up asks a single Remember When as a bonus. With SPREAD taken in a
+   * FIXED order that single pick is always offset 0 — the lesson before
+   * yesterday's — on every lesson of the year, and the week-ago / fortnight-ago
+   * reach that makes spaced retrieval work is never asked at all.
+   *
+   * This is asserted on a SYNTHETIC history where every candidate is usable, on
+   * purpose. Measured over the real sequence the difference is only a skew
+   * (offset 0 wins 49% of lessons unrotated vs 21% rotated) because real
+   * candidates are often unusable and fall through to the next offset anyway —
+   * a property test over real data PASSES against the fixed order and would
+   * have been a gate that never fires. Here all three offsets are always
+   * available, so consecutive positions must ask three DIFFERENT distances or
+   * the rotation is gone.
+   */
+  {
+    const item = (lesson) => ({
+      type: "multiple-choice",
+      stem: `In lesson ${lesson}, what is 2 + 2?`,
+      choices: ["3", "4", "5"],
+      correctIndex: 1,
+    });
+    /* 20 lessons back, each teaching its own standard with one banked item, so
+     * `usable()` never rejects a candidate and the offset chosen is purely the
+     * scheduler's decision. */
+    const history = Array.from({ length: 20 }, (_v, i) => ({
+      id: `T-${i}`,
+      standard: `T.STD.${i}`,
+    }));
+    const fixture = Object.fromEntries(
+      history.map((e) => [e.standard, [{ lesson: e.id, ...item(e.id) }]]),
+    );
+    const pickAt = (length) =>
+      selectReviewItems([], fixture, {
+        exclude: "T.TODAY",
+        // before.length drives the rotation, so vary the history LENGTH while
+        // keeping every candidate identical in kind.
+        before: history.slice(0, length),
+        max: 1,
+      })[0];
+
+    const runs = [pickAt(18), pickAt(19), pickAt(20)];
+    checks += 1;
+    assert.ok(
+      runs.every(Boolean),
+      "the synthetic history produced no pick — the fixture no longer exercises the scheduler",
+    );
+    const offsets = runs.map((p, i) =>
+      history
+        .slice(0, 18 + i)
+        .slice(1)
+        .findIndex((e) => e.id === p.lesson),
+    );
+    checks += 1;
+    assert.equal(
+      new Set(offsets).size,
+      3,
+      `three consecutive lessons asked distances ${offsets.join(", ")} — the bonus is not ` +
+        "rotating through SPREAD, so it only ever asks about the lesson before yesterday's",
+    );
+    checks += 1;
+    assert.deepEqual(
+      [...offsets].sort((a, b) => a - b),
+      [0, 3, 8],
+      "the rotation no longer covers the authored spread (recent / ~a week / ~a fortnight)",
+    );
+    // PURE: the same position asks the same distance every time. A clock or a
+    // random seed here would make the schedule unassertable and unteachable.
+    checks += 1;
+    assert.equal(pickAt(18).lesson, pickAt(18).lesson, "the bonus pick is not deterministic");
+    checks += 1;
+    assert.equal(
+      pickAt(19).lesson,
+      runs[1].lesson,
+      "the bonus pick changed between two identical calls",
+    );
+  }
+
+  /* COVERAGE, over the real sequence.
+   *
+   * A lesson with nothing to remember correctly renders no bonus, so "some
+   * lessons have none" is not by itself a defect — but it is exactly how a
+   * broken scope, a stale bank or an over-tight filter would present: silently,
+   * as a warm-up that simply has no bonus today. A floor turns that from
+   * invisible into a failure.
+   *
+   * The legitimate gaps are the OPENING of the year. Remember When may only ask
+   * about lessons taught before today's, and never yesterday's (that is the
+   * Warm-Up's job directly above it), so the first lessons of the district
+   * sequence have nothing left to reach back to. Asserted as a position rule,
+   * not as a hardcoded id list, so re-paced units do not need an edit here. */
+  {
+    const missing = [];
+    for (const entry of bank.sequence) {
+      const hist = taughtBefore(bank.sequence, entry.id);
+      const pick = selectReviewItems([], bank.bank, {
+        exclude: entry.standard,
+        before: hist,
+        max: 1,
+      });
+      if (!pick.length) missing.push({ id: entry.id, at: hist.length });
+    }
+    const covered = bank.sequence.length - missing.length;
+    checks += 1;
+    assert.ok(
+      covered >= Math.round(bank.sequence.length * 0.9),
+      `only ${covered}/${bank.sequence.length} paced lessons render a Remember When bonus — ` +
+        `missing: ${missing.map((m) => m.id).join(", ")}`,
+    );
+    checks += 1;
+    assert.deepEqual(
+      missing.filter((m) => m.at > 3).map((m) => m.id),
+      [],
+      "a lesson with real history renders no bonus — the scope or the bank is broken, " +
+        "not the calendar",
+    );
+  }
+
   // No history at all → the old behaviour: due standards only, nothing invented.
   checks += 1;
   assert.deepEqual(

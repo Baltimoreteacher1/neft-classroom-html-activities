@@ -137,7 +137,24 @@ export function selectReviewItems(
 
   if (scoped) {
     const candidates = before.slice(1);
-    for (const offset of SPREAD) {
+    // WHICH DISTANCE gets asked rotates with the lesson's place in the year.
+    //
+    // The opener used to ask three questions and took SPREAD in order, so a
+    // fresh device saw all three distances every day and the order did not
+    // matter. The warm-up bonus asks ONE (Joel, 2026-09-01), and a fixed order
+    // means offset 0 always wins: every student on a fresh device is asked
+    // about the lesson-before-yesterday, every single day, and the week-ago and
+    // fortnight-ago reach — the entire point of spacing — is never asked at all.
+    //
+    // Rotating by `before.length` (how many lessons the class has been taught,
+    // which advances by exactly one per lesson) cycles recent → about a week →
+    // a couple of weeks across consecutive lessons. It stays pure: no clock, no
+    // device state, no randomness, so the same lesson always asks the same
+    // distance and a test can assert it. A device WITH a Leitner schedule is
+    // unaffected — due standards are still chosen first, above.
+    const turn = before.length % SPREAD.length;
+    const spread = SPREAD.slice(turn).concat(SPREAD.slice(0, turn));
+    for (const offset of spread) {
       if (picked.length >= max) break;
       const entry = candidates[offset];
       if (!entry || !usable(entry.standard)) continue;
