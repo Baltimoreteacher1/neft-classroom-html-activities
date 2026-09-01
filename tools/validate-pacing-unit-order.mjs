@@ -337,6 +337,20 @@ if (!picker.includes("/data/pacing-unit-ranges.json")) {
 if (/unitOrder\s*\.\s*sort\s*\(/.test(picker)) {
   fail("the hub picker sorts unitOrder, which destroys the district sequence");
 }
+/* The Command Center's Unit Map is the SECOND view of this order on the same
+ * page, and it shipped for months following the curriculum's numbering while
+ * the picker above it followed the district's. Both now read one derivation;
+ * this pins that they still do. The rendered rows are asserted separately by
+ * tools/unit-map-sequence.test.mjs. */
+if (!/function deriveUnitSequence\(/.test(picker)) {
+  fail("the shared district-order derivation is gone — the picker and Unit Map can drift again");
+}
+if ((picker.match(/deriveUnitSequence\(/g) || []).length < 3) {
+  fail(
+    "deriveUnitSequence is no longer called by both the picker and the Unit Map — " +
+      "one of the two views has its own copy of the district order",
+  );
+}
 
 /* 8. Hub "today's unit" dates are generated, not a second authored calendar.
  * The crosswalk used to type start_date/end_date by hand; they drifted ~27 days

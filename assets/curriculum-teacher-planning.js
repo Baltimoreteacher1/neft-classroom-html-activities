@@ -11,6 +11,155 @@
     return node;
   }
 
+  /* ── The district's teaching order — ONE derivation, two readers ───────────
+   * WHICH units and lessons exist is the curriculum's answer; WHAT ORDER they
+   * are taught in is the district's, and they are not the same answer. The
+   * manifest numbers units 1..10; this district teaches Pre, 3, 4, 6, 7, 8, 9,
+   * 5, 2, 10, and assembles the Pre-Unit out of lessons that live in four
+   * different canonical units (1-1, 2-6, 2-7, 6-1, 6-2).
+   *
+   * The Class → Unit → Lesson picker got this right and the Unit Map did not:
+   * the map listed units 1,2,3… and read membership off `lesson.unit`, so a
+   * teacher in November scrolled past six units they teach in spring, and
+   * "Unit 1" showed the "Math Is…" arc instead of the Pre-Unit sequence they
+   * were actually teaching (Joel, 2026-09-01: "the teacher command center unit
+   * map doesn't follow correct sequence of lessons"). Two views of one
+   * curriculum on one page disagreed about the order of the year.
+   *
+   * So the derivation lives here once and both call it. Sources, unchanged:
+   *   unit ORDER + district labels   data/pacing-unit-ranges.json
+   *   assembled unit MEMBERSHIP      data/pacing-unit-lessons.json
+   * Both are ADVISORY: unreadable means fall back to manifest order, never an
+   * empty list. Teaching continues when planning data does not.
+   */
+  function deriveUnitSequence(lessons, projects, pacing, authored) {
+    var lessonsByUnit = Object.create(null);
+    var manifestOrder = [];
+    var byId = Object.create(null);
+    (lessons || []).forEach(function (l) {
+      var key = String(l.unit);
+      if (!lessonsByUnit[key]) {
+        lessonsByUnit[key] = [];
+        manifestOrder.push(key);
+      }
+      lessonsByUnit[key].push(l);
+      byId[l.id] = l;
+    });
+
+    /* End-of-unit culminating projects go LAST in their unit, because that is
+     * when they are taught — the multi-day performance task at the end, not
+     * lesson zero. Appended rather than merged so a unit with no project simply
+     * has no project row instead of a dead one. */
+    var projectsByUnit = Object.create(null);
+    (projects || []).forEach(function (p) {
+      if (!p || !p.resources || !p.resources.lesson) return;
+      var key = String(p.unit);
+      (projectsByUnit[key] = projectsByUnit[key] || []).push(p);
+    });
+
+    var authoredUnits = (authored && authored.units) || {};
+    var authoredLessons = Object.create(null);
+    var labels = Object.create(null);
+    var order = [];
+    ((pacing && pacing.units) || []).forEach(function (entry) {
+      // MSTAR and friends carry no curriculumUnit and own no lessons: they are
+      // pacing entries, not units of this list.
+      if (!entry || entry.curriculumUnit == null) return;
+      var key = String(entry.curriculumUnit);
+      if (order.indexOf(key) !== -1) return;
+
+      var authoredEntry = authoredUnits[entry.key];
+      if (authoredEntry && Array.isArray(authoredEntry.lessons)) {
+        /* Resolve ids against the manifest and drop anything it does not have,
+         * so a retired lesson leaves a shorter sequence rather than a dead row.
+         * validate:pacing-unit-order fails on that mismatch, so the silent
+         * shortening cannot survive a build. */
+        var resolved = authoredEntry.lessons
+          .map(function (id) {
+            return byId[id];
+          })
+          .filter(Boolean);
+        if (resolved.length) authoredLessons[key] = resolved;
+      }
+
+      if (!lessonsByUnit[key] && !authoredLessons[key]) return;
+      order.push(key);
+      if (entry.districtLabel) labels[key] = entry.districtLabel;
+    });
+    /* A unit the pacing plan does not mention is APPENDED, never dropped: the
+     * curriculum is the authority on what exists, and silently hiding a real
+     * unit because a schedule forgot it is the worse failure. */
+    manifestOrder.forEach(function (key) {
+      if (order.indexOf(key) === -1) order.push(key);
+    });
+
+    return {
+      order: order,
+      /* The district's own label when the pacing plan gives one ("Unit 3:
+       * Ratios & Rates", "Pre-Unit: Course 1 Pre Unit") — the teacher is
+       * following that document, and the Pre-Unit is not called "Unit 1" on
+       * it. Plain "Unit N" otherwise. */
+      label: function (key) {
+        return labels[String(key)] || "Unit " + key;
+      },
+      /* An authored sequence wins for THIS unit only; every other unit keeps its
+       * ordinary manifest membership and order. Entries are tagged so a caller
+       * can label a project differently from a lesson without re-deriving which
+       * is which. */
+      entriesFor: function (unit) {
+        var key = String(unit);
+        var out = (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
+          return { item: l, kind: "lesson" };
+        });
+        (projectsByUnit[key] || []).forEach(function (p) {
+          out.push({ item: p, kind: "project" });
+        });
+        return out;
+      },
+      /* Which unit key a lesson is shown under in DISTRICT order. A lesson
+       * listed in an assembled unit is still its own canonical unit's lesson —
+       * 2-6 appears in the Pre-Unit AND in Unit 2 — so this answers "where does
+       * the map open when this lesson is selected?", preferring the assembled
+       * unit the district actually teaches it in. */
+      unitOf: function (lessonId) {
+        for (var i = 0; i < order.length; i += 1) {
+          var key = order[i];
+          var seq = authoredLessons[key];
+          if (seq && seq.some((l) => l.id === lessonId)) return key;
+        }
+        return null;
+      },
+    };
+  }
+
+  /* The pacing files are fetched once per page and shared. window.NTJsonCache is
+   * what three other hub scripts already use for these paths, so the Unit Map
+   * costs no extra request on a page whose picker has already loaded them. */
+  var pacingPromise = null;
+  function loadPacingSources() {
+    if (pacingPromise) return pacingPromise;
+    var cache = window.NTJsonCache;
+    function get(path) {
+      return (
+        cache
+          ? cache.json(path)
+          : fetch(path, { credentials: "same-origin" }).then(function (r) {
+              if (!r.ok) throw new Error(String(r.status));
+              return r.json();
+            })
+      ).catch(function () {
+        return null;
+      });
+    }
+    pacingPromise = Promise.all([
+      get("/data/pacing-unit-ranges.json"),
+      get("/data/pacing-unit-lessons.json"),
+    ]).then(function (r) {
+      return { pacing: r[0], authored: r[1] };
+    });
+    return pacingPromise;
+  }
+
   function lessonSelect(context, value) {
     var select = context.el("select", "ctw-select");
     select.appendChild(option(document, "", "No lesson selected"));
@@ -271,57 +420,97 @@
       heading(
         context,
         "Unit Map",
-        "Scan the sequence, readiness, standards, timing, and student launch for every lesson.",
-      ),
-    );
-    var units = Array.from(
-      new Set(
-        context.lessons.map(function (lesson) {
-          return lesson.unit;
-        }),
+        "Scan the sequence, readiness, standards, timing, and student launch for every lesson — in the order the district teaches them.",
       ),
     );
     var unitSelect = context.el("select", "ctw-select");
-    units.forEach(function (number) {
-      unitSelect.appendChild(option(document, String(number), `Unit ${number}`));
-    });
-    unitSelect.value = String(selected.unit);
     card.appendChild(unitSelect);
     var list = context.el("div", "ctw-planning-grid");
+    card.appendChild(list);
+    stage.replaceChildren(card);
 
-    function paint() {
-      list.replaceChildren();
-      context.lessons
-        .filter(function (lesson) {
-          return lesson.unit === Number(unitSelect.value);
-        })
-        .forEach(function (lesson) {
+    /* The unit dropdown and every row below it are ordered by the DISTRICT's
+     * sequence, not the curriculum's numbering, and assembled units (the
+     * Pre-Unit) list their authored membership — the same derivation the
+     * Class → Unit → Lesson picker on this page uses, so the two cannot
+     * disagree about the order of the year. See deriveUnitSequence().
+     *
+     * The pacing files are advisory and load asynchronously, so the map paints
+     * once, when the order is known, rather than painting the manifest order
+     * first and re-sorting under the teacher's eyes. */
+    loadPacingSources().then(function (sources) {
+      var sequence = deriveUnitSequence(
+        context.lessons,
+        (context.data && context.data.launch && context.data.launch.endOfUnit) || [],
+        sources.pacing,
+        sources.authored,
+      );
+      if (!sequence.order.length) return;
+      sequence.order.forEach(function (key) {
+        unitSelect.appendChild(option(document, key, sequence.label(key)));
+      });
+      /* Open on the unit the SELECTED lesson is taught in. For a lesson the
+       * district pulled into an assembled unit (2-6 is taught in the Pre-Unit)
+       * that is the assembled unit, not its canonical number — otherwise
+       * picking the lesson the teacher is on lands them in a unit they teach
+       * in March. */
+      var openAt = selected ? sequence.unitOf(selected.id) || String(selected.unit) : null;
+      unitSelect.value =
+        openAt && sequence.order.indexOf(openAt) !== -1 ? openAt : sequence.order[0];
+
+      function paint() {
+        list.replaceChildren();
+        sequence.entriesFor(unitSelect.value).forEach(function (entry) {
+          var lesson = entry.item;
           var row = context.el("article", "ctw-unit-row");
           var title = context.el("div", "ctw-row-copy");
           title.appendChild(
-            context.el("strong", "ctw-row-title", `${lesson.id} · ${lesson.title}`),
+            context.el(
+              "strong",
+              "ctw-row-title",
+              entry.kind === "project" ? `🏆 ${lesson.title}` : `${lesson.id} · ${lesson.title}`,
+            ),
           );
+          /* A culminating project carries no standard or per-lesson timing the
+           * way a lesson does; saying "undefined · undefined · Ready" would be
+           * worse than saying what it is. */
           title.appendChild(
-            context.el("p", null, `${lesson.standard} · ${lesson.timeEstimate} · Ready`),
+            context.el(
+              "p",
+              null,
+              entry.kind === "project"
+                ? "End-of-unit culminating project"
+                : `${lesson.standard} · ${lesson.timeEstimate} · Ready`,
+            ),
           );
           row.appendChild(title);
           var objective = context.el("div", "ctw-row-copy");
-          objective.appendChild(context.el("p", null, lesson.objective));
-          objective.appendChild(context.el("p", null, `Language: ${lesson.languageObjective}`));
+          objective.appendChild(context.el("p", null, lesson.objective || ""));
+          if (lesson.languageObjective) {
+            objective.appendChild(context.el("p", null, `Language: ${lesson.languageObjective}`));
+          }
           row.appendChild(objective);
           var actions = context.el("div", "ctw-planning-actions");
-          actions.appendChild(context.link("Teach", lesson.resources.lesson));
-          actions.appendChild(
-            context.link("Student launch", context.studentUrl(lesson), "ctw-student"),
-          );
+          if (lesson.resources && lesson.resources.lesson) {
+            actions.appendChild(
+              context.link(
+                entry.kind === "project" ? "Open project" : "Teach",
+                lesson.resources.lesson,
+              ),
+            );
+          }
+          if (entry.kind === "lesson") {
+            actions.appendChild(
+              context.link("Student launch", context.studentUrl(lesson), "ctw-student"),
+            );
+          }
           row.appendChild(actions);
           list.appendChild(row);
         });
-    }
-    unitSelect.addEventListener("change", paint);
-    paint();
-    card.appendChild(list);
-    stage.replaceChildren(card);
+      }
+      unitSelect.addEventListener("change", paint);
+      paint();
+    });
   }
 
   function recommendation(context, title, count, text, href) {
@@ -639,111 +828,22 @@
         partTwoByParent[p2.parent] = p2;
       });
 
-      /* End-of-unit culminating projects, keyed by unit. They are offered at the
-       * BOTTOM of the Lesson dropdown (see lessonsFor) and open through the same
-       * expansion as a lesson, so a teacher reaches the project the same way
-       * they reach anything else they teach. */
-      var projectsByUnit = Object.create(null);
-      (manifest.endOfUnit || []).forEach(function (p) {
-        if (!p || !p.resources || !p.resources.lesson) return;
-        var key = String(p.unit);
-        (projectsByUnit[key] = projectsByUnit[key] || []).push(p);
-      });
+      /* End-of-unit culminating projects are offered at the BOTTOM of the Lesson
+       * dropdown and open through the same expansion as a lesson, so a teacher
+       * reaches the project the same way they reach anything else they teach.
+       * deriveUnitSequence() places them; see its note. */
 
       /* renderOpen resolves whatever the Lesson dropdown selected, and that is
        * now lessons AND projects. Looking only at `lessons` is why an option can
        * be selectable and expand to nothing. */
       var openable = lessons.concat(manifest.endOfUnit || []);
 
-      /* WHICH units exist is the curriculum's answer; WHAT ORDER they are taught
-       * in is the district's, and they are not the same answer.
-       *
-       * The manifest lists units 1..10 because that is how the curriculum is
-       * numbered. This district does not teach them in that order — it teaches
-       * Pre, 3, 4, 6, 7, 8, 9, 5, 2, then 10 — so a dropdown reading "Unit 1,
-       * Unit 2, Unit 3…" is not a neutral presentation of the curriculum, it is
-       * an assertion about the sequence, and it is wrong. A teacher opening the
-       * picker in November scrolls past six units they will not teach until
-       * spring to reach the one they are in.
-       *
-       * The order therefore comes from data/pacing-unit-ranges.json, which
-       * tools/import-pacing-baseline.mjs generates from the district plan and
-       * validate:pacing-unit-order pins. Numeric and alphabetical sorting are
-       * both explicitly wrong here, and so is raw manifest order — this reorders
-       * it deliberately rather than leaving it alone.
-       *
-       * Two entries in the pacing plan are not units of this dropdown. MSTAR
-       * carries no curriculumUnit and owns no lessons, so it cannot be a Lesson-
-       * bearing option; it is a pacing entry and it stays in the planner. The
-       * Pre-Unit maps to curriculum unit 1 and is shown under the district's own
-       * label for it, because that is the name on the plan the teacher is
-       * following.
-       *
-       * A unit the pacing plan does not mention is APPENDED, never dropped: the
-       * curriculum is the authority on what exists, and silently hiding a real
-       * unit because a schedule forgot it is the worse failure.
-       *
-       * Class section does not appear in this derivation at all — all three
-       * classes are taught the same curriculum in the same district order. */
-      var lessonsByUnit = Object.create(null);
-      var manifestOrder = [];
-      lessons.forEach(function (l) {
-        var key = String(l.unit);
-        if (!lessonsByUnit[key]) {
-          lessonsByUnit[key] = [];
-          manifestOrder.push(key);
-        }
-        lessonsByUnit[key].push(l);
-      });
-
-      /* AUTHORED MEMBERSHIP. Some paced units are ASSEMBLED rather than
-       * inherited from the curriculum's numbering. The Pre-Unit is the case that
-       * forced this: it is a Grade 5 review sequence drawn from several canonical
-       * units (1-1, then the division-algorithm pair 2-6/2-7, then the fraction-
-       * division pair 6-1/6-2), and reading its membership off `unit === 1` gave
-       * the Unit 1 "Math Is…" arc instead — a different thing entirely.
-       *
-       * data/pacing-unit-lessons.json is the one place that decision lives, keyed
-       * by the PACING key ("PRE"), holding lesson IDS ONLY. Titles resolve from
-       * the manifest below, so a renamed lesson is renamed here too, and listing
-       * 2-6 here does not move it: it is still a Unit 2 lesson and still appears
-       * in Unit 2's own list. */
-      var authoredUnits = (authored && authored.units) || {};
-
-      var unitLabels = Object.create(null);
-      var unitOrder = [];
-      var authoredLessons = Object.create(null);
-      var byId = Object.create(null);
-      lessons.forEach(function (l) {
-        byId[l.id] = l;
-      });
-      var paced = (pacing && pacing.units) || [];
-      paced.forEach(function (entry) {
-        if (entry.curriculumUnit == null) return; // MSTAR and friends: not a unit here.
-        var key = String(entry.curriculumUnit);
-        if (unitOrder.indexOf(key) !== -1) return;
-
-        var authoredEntry = authoredUnits[entry.key];
-        if (authoredEntry && Array.isArray(authoredEntry.lessons)) {
-          /* Resolve ids against the manifest and drop anything it does not have,
-           * so a retired lesson leaves a shorter sequence rather than a dead
-           * option. validate:pacing-unit-order fails on that mismatch, so the
-           * silent shortening cannot survive a build. */
-          var resolved = authoredEntry.lessons
-            .map(function (id) {
-              return byId[id];
-            })
-            .filter(Boolean);
-          if (resolved.length) authoredLessons[key] = resolved;
-        }
-
-        if (!lessonsByUnit[key] && !authoredLessons[key]) return;
-        unitOrder.push(key);
-        if (entry.districtLabel) unitLabels[key] = entry.districtLabel;
-      });
-      manifestOrder.forEach(function (key) {
-        if (unitOrder.indexOf(key) === -1) unitOrder.push(key);
-      });
+      /* The district's order, derived in ONE place this file shares with the
+       * Unit Map — see deriveUnitSequence(). Class section does not appear in it
+       * at all: all three classes are taught the same curriculum in the same
+       * district order. */
+      var sequence = deriveUnitSequence(lessons, manifest.endOfUnit, pacing, authored);
+      var unitOrder = sequence.order;
 
       var classes = classSections().map(function (id) {
         return { value: id, label: id };
@@ -757,31 +857,16 @@
 
       function unitItems() {
         return unitOrder.map(function (u) {
-          // The district's own label when the pacing plan gives one ("Unit 3:
-          // Ratios & Rates", "Pre-Unit: Course 1 Pre Unit") — the teacher is
-          // following that document, and the Pre-Unit is not called "Unit 1" on
-          // it. Plain "Unit N" otherwise.
-          return { value: u, label: unitLabels[u] || "Unit " + u };
+          return { value: u, label: sequence.label(u) };
         });
       }
 
       function lessonsFor(unit) {
-        /* An authored sequence wins for THIS unit only; every other unit keeps
-         * its ordinary manifest membership and order. */
-        var key = String(unit);
-        var items = (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
-          return { value: l.id, label: l.id + " · " + l.title };
+        return sequence.entriesFor(unit).map(function (entry) {
+          return entry.kind === "project"
+            ? { value: entry.item.id, label: entry.item.title }
+            : { value: entry.item.id, label: entry.item.id + " · " + entry.item.title };
         });
-        /* The culminating project goes LAST, because that is when it is taught —
-         * it is the multi-day performance task at the end of the unit, not
-         * lesson zero. The manifest already carries it as an `endOfUnit` entry
-         * with `lesson: 999` precisely so it sorts there, and it is appended
-         * rather than merged into the lesson list so a unit with no project
-         * simply does not get the option instead of getting a dead one. */
-        (projectsByUnit[key] || []).forEach(function (p) {
-          items.push({ value: p.id, label: p.title });
-        });
-        return items;
       }
 
       function setDisabled(select, disabled, placeholder) {
