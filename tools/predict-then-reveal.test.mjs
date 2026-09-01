@@ -183,8 +183,131 @@ test("the bar-chart shape question matches what the data actually does", () => {
   assert.ok(checked >= 20, `expected most bar-charts to be predictable, checked ${checked}`);
 });
 
+test("an authored predict block is well formed on every lesson that has one", () => {
+  const authored = ALL.filter((p) => p.cfg.predict);
+  assert.ok(authored.length >= 10, `only ${authored.length} authored blocks found`);
+  for (const { id, cfg } of authored) {
+    const a = cfg.predict;
+    const got = derivePrediction(cfg.kind, cfg);
+    assert.ok(got, `${id}: authored block did not produce a card`);
+    assert.equal(correctOf(got), a.choices[a.correctIndex], `${id}: wrong choice marked correct`);
+    assert.ok(a.explanation && a.explanation.trim(), `${id}: no explanation`);
+    // The coaching line is the point of authoring these: a wrong answer gets a
+    // reason of its own, not one line shared by all three.
+    assert.equal(
+      a.choiceFeedback.length,
+      a.choices.length,
+      `${id}: choiceFeedback does not line up with choices — feedback would attach to the wrong answer`,
+    );
+    assert.equal(
+      a.choiceFeedback[a.correctIndex].trim(),
+      "",
+      `${id}: the correct choice carries wrong-answer coaching`,
+    );
+    for (let i = 0; i < a.choices.length; i++) {
+      if (i === a.correctIndex) continue;
+      assert.ok(a.choiceFeedback[i].trim().length > 15, `${id}: choice ${i} has no real coaching`);
+    }
+    assert.equal(new Set(a.choices).size, a.choices.length, `${id}: repeats a choice`);
+    // An authored card must route its per-choice coaching, not the explanation.
+    assert.equal(
+      got.feedbackFor(a.correctIndex === 0 ? 1 : 0),
+      a.choiceFeedback[a.correctIndex === 0 ? 1 : 0],
+    );
+  }
+});
+
+test("authored questions outrank derived ones", () => {
+  const cfg = {
+    kind: "prism-volume",
+    l: 8,
+    w: 3,
+    h: 10,
+    predict: { stem: "Authored?", choices: ["a", "b"], correctIndex: 1, explanation: "x" },
+  };
+  assert.equal(derivePrediction("prism-volume", cfg).prompt, "Authored?");
+});
+
+test("a malformed authored block is declined, never half-rendered", () => {
+  const base = { kind: "ratio-table-builder" };
+  const bad = [
+    { predict: { stem: "", choices: ["a", "b"], correctIndex: 0 } },
+    { predict: { stem: "q", choices: ["a"], correctIndex: 0 } },
+    { predict: { stem: "q", choices: ["a", "b"], correctIndex: 5 } },
+    { predict: { stem: "q", choices: ["a", "a"], correctIndex: 0 } },
+    { predict: { stem: "q", choices: ["a", "b"] } },
+  ];
+  for (const b of bad)
+    assert.equal(derivePrediction("ratio-table-builder", { ...base, ...b }), null);
+});
+
+test("manip derives only where its attrs determine the answer", () => {
+  const mk = (manip, attrs) => ({ kind: "manip", manip, attrs });
+  // Determined.
+  assert.equal(
+    correctOf(derivePrediction("manip", mk("percent-bar", { base: 60, percent: 25 }))),
+    "15",
+  );
+  assert.equal(
+    correctOf(
+      derivePrediction("manip", mk("composite-split", { w: 10, h: 6, "notch-w": 4, "notch-h": 3 })),
+    ),
+    "48",
+  );
+  assert.equal(
+    correctOf(
+      derivePrediction(
+        "manip",
+        mk("expr-machine", {
+          "default-a": 8,
+          "default-x": 4,
+          "default-b": 25,
+          "coef-name": "dollars per hour",
+          "var-name": "hours",
+          "const-name": "one-time fee",
+        }),
+      ),
+    ),
+    "57",
+  );
+  assert.equal(
+    correctOf(derivePrediction("manip", mk("dot-plot", { values: [38, 38, 41, 45, 53] }))),
+    "41",
+  );
+  // NOT determined — a canvas range or a bare variable is not a question.
+  for (const m of [
+    mk("coord-plot", { range: 20 }),
+    mk("number-line", { range: 20, unit: "" }),
+    mk("algebra-tiles", { var: "x", "x-default": 4 }),
+    mk("frac-divide", {}),
+    mk("balance", {}),
+  ]) {
+    assert.equal(derivePrediction("manip", m), null, `${m.manip} has no problem in its config`);
+  }
+});
+
+test("every real manip placement is either derivable or declined, never wrong", () => {
+  const DET = {
+    "percent-bar": (a) => (a.percent / 100) * a.base,
+    "composite-split": (a) => a.w * a.h - a["notch-w"] * a["notch-h"],
+    "expr-machine": (a) => a["default-a"] * a["default-x"] + a["default-b"],
+  };
+  let checked = 0;
+  for (const { id, cfg } of ALL.filter((p) => p.cfg.kind === "manip")) {
+    const got = derivePrediction("manip", cfg);
+    const fn = DET[cfg.manip];
+    if (!fn || !cfg.attrs) continue;
+    assert.ok(got, `${id}: ${cfg.manip} should derive from ${JSON.stringify(cfg.attrs)}`);
+    assert.equal(Number(correctOf(got)), Number(fn(cfg.attrs).toFixed(6)), `${id}: ${cfg.manip}`);
+    checked++;
+  }
+  assert.ok(checked >= 4, `expected several determinate manips, checked ${checked}`);
+});
+
 test("every card offers real alternatives and exactly one right answer", () => {
-  for (const { id, cfg } of ALL.filter((p) => KINDS.has(p.cfg.kind))) {
+  for (const { id, cfg } of ALL.filter(
+    (p) => KINDS.has(p.cfg.kind) || p.cfg.predict || p.cfg.kind === "manip",
+  )) {
     const got = derivePrediction(cfg.kind, cfg);
     if (!got) continue;
     assert.ok(got.choices.length >= 2, `${id}: ${cfg.kind} offers ${got.choices.length} choice(s)`);
@@ -201,7 +324,9 @@ test("every card offers real alternatives and exactly one right answer", () => {
 
 test("the correct answer does not settle at one position", () => {
   const positions = new Map();
-  for (const { cfg } of ALL.filter((p) => KINDS.has(p.cfg.kind))) {
+  for (const { cfg } of ALL.filter(
+    (p) => KINDS.has(p.cfg.kind) || p.cfg.predict || p.cfg.kind === "manip",
+  )) {
     const got = derivePrediction(cfg.kind, cfg);
     if (!got) continue;
     positions.set(got.answerIndex, (positions.get(got.answerIndex) || 0) + 1);

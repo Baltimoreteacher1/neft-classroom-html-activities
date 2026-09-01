@@ -243,11 +243,188 @@ const DERIVERS = {
   },
 };
 
+/**
+ * An AUTHORED question, written into the lesson config as `predict`.
+ *
+ * Derivers only reach the tools whose mathematics their config determines. A
+ * ratio-table-builder carries nothing but a label — the student supplies the
+ * ratio — so no deriver can ask it anything, and the only honest way to gate it
+ * is for a person to write the question.
+ *
+ * The shape is deliberately `mstarPractice`'s, field for field: stem, choices,
+ * correctIndex, explanation, choiceFeedback. That is the idiom the curriculum
+ * already writes assessment items in, so authoring one of these is a thing
+ * somebody already knows how to do, and choiceFeedback lets a wrong answer be
+ * answered specifically rather than with one line for all three.
+ */
+function authoredPrediction(cfg) {
+  const a = cfg && cfg.predict;
+  if (!a || typeof a !== "object") return null;
+  const stem = typeof a.stem === "string" ? a.stem.trim() : "";
+  const choices = Array.isArray(a.choices) ? a.choices.map(String) : [];
+  const i = a.correctIndex;
+  if (!stem || choices.length < 2) return null;
+  if (!Number.isInteger(i) || i < 0 || i >= choices.length) return null;
+  if (new Set(choices).size !== choices.length) return null;
+  const fb = Array.isArray(a.choiceFeedback) ? a.choiceFeedback : [];
+  return {
+    prompt: stem,
+    choices,
+    answerIndex: i,
+    because: String(a.explanation || "").trim(),
+    // Per-choice coaching when it was written; the explanation otherwise.
+    feedbackFor: (picked) => {
+      const one = typeof fb[picked] === "string" ? fb[picked].trim() : "";
+      return one || String(a.explanation || "").trim();
+    },
+    unit: "",
+  };
+}
+
+/**
+ * `manip` is a wrapper: the real tool is `cfg.manip`, and its problem — when it
+ * has one — lives in `cfg.attrs`. Most of them have none. coord-plot and
+ * number-line carry only a canvas `range`, and algebra-tiles only a variable
+ * name and a starting value, so there is no question in the config to ask. Those
+ * get no card, which is the point of rule 1.
+ */
+const MANIP_DERIVERS = {
+  // base and percent are both given, so the answer is determined.
+  "percent-bar": (at) => {
+    const base = at.base;
+    const pct = at.percent;
+    if (![base, pct].every((v) => typeof v === "number" && Number.isFinite(v))) return null;
+    if (base <= 0 || pct <= 0) return null;
+    const correct = tidy((pct / 100) * base);
+    return {
+      stem: `Before you shade it — what is ${tidy(pct)}% of ${tidy(base)}?`,
+      correct,
+      distractors: [tidy(base - (pct / 100) * base), tidy(pct), tidy(base / pct)],
+      because: `${tidy(pct)}% means ${tidy(pct)} out of every 100, so multiply: ${tidy(base)} × ${tidy(pct)}/100 = ${correct}.`,
+      seed: `pct:${base}:${pct}`,
+    };
+  },
+  // A ratio with both parts named: scaling it is the whole task.
+  "ratio-build": (at) => {
+    const a = at["default-a"];
+    const b = at["default-b"];
+    const la = String(at["label-a"] || "").trim();
+    const lb = String(at["label-b"] || "").trim();
+    if (![a, b].every((v) => typeof v === "number" && Number.isFinite(v) && v > 0)) return null;
+    if (!la || !lb) return null;
+    const f = 3;
+    const correct = tidy(b * f);
+    return {
+      stem: `Before you build it — the ratio is ${tidy(a)} ${la} to ${tidy(b)} ${lb}. For ${tidy(a * f)} ${la}, how many ${lb}?`,
+      correct,
+      distractors: [tidy(b + f), tidy(b + (a * f - a)), tidy(a * f)],
+      because: `Both parts scale by the same factor. ${tidy(a)} × ${f} = ${tidy(a * f)}, so ${tidy(b)} × ${f} = ${correct}. Adding the factor to one part instead of multiplying both is the slip to watch.`,
+      seed: `rb:${a}:${b}:${la}`,
+    };
+  },
+  // Two fractions drawn side by side; whether they match is decidable.
+  "fraction-bar": (at) => {
+    const pa = at["parts-a"];
+    const sa = at["shaded-a"];
+    const pb = at["parts-b"];
+    const sb = at["shaded-b"];
+    if (![pa, sa, pb, sb].every((v) => typeof v === "number" && Number.isFinite(v))) return null;
+    if (pa <= 0 || pb <= 0) return null;
+    const same = sa / pa === sb / pb;
+    const correct = same ? "They cover the same amount" : "They cover different amounts";
+    return {
+      stem: `Before you compare them — does ${sa}/${pa} cover the same amount of the bar as ${sb}/${pb}?`,
+      correct,
+      distractors: [same ? "They cover different amounts" : "They cover the same amount"],
+      because: same
+        ? `${sa}/${pa} and ${sb}/${pb} are equivalent — more pieces, but each piece is smaller, so the shaded amount is the same.`
+        : `${sa}/${pa} and ${sb}/${pb} are not equivalent: ${tidy(sa / pa)} against ${tidy(sb / pb)}.`,
+      seed: `fb:${sa}:${pa}:${sb}:${pb}`,
+    };
+  },
+  // A rectangle with a rectangular notch removed — subtract the two areas.
+  "composite-split": (at) => {
+    const { w, h } = at;
+    const nw = at["notch-w"];
+    const nh = at["notch-h"];
+    if (![w, h, nw, nh].every((v) => typeof v === "number" && Number.isFinite(v) && v > 0))
+      return null;
+    const correct = tidy(w * h - nw * nh);
+    return {
+      stem: `Before you split it — a ${tidy(w)} by ${tidy(h)} rectangle has a ${tidy(nw)} by ${tidy(nh)} corner removed. What area is left?`,
+      correct,
+      distractors: [tidy(w * h), tidy(nw * nh), tidy(w * h + nw * nh)],
+      because: `Find the whole rectangle, then take away the notch: ${tidy(w)} × ${tidy(h)} = ${tidy(w * h)}, minus ${tidy(nw)} × ${tidy(nh)} = ${tidy(nw * nh)}, leaves ${correct}.`,
+      seed: `cs:${w}:${h}:${nw}:${nh}`,
+    };
+  },
+  // ax + b with every part named and a starting value for x.
+  "expr-machine": (at) => {
+    const a = at["default-a"];
+    const x = at["default-x"];
+    const b = at["default-b"];
+    if (![a, x, b].every((v) => typeof v === "number" && Number.isFinite(v))) return null;
+    const coef = String(at["coef-name"] || "").trim();
+    const vn = String(at["var-name"] || "").trim();
+    const cn = String(at["const-name"] || "").trim();
+    if (!coef || !vn || !cn) return null;
+    const correct = tidy(a * x + b);
+    return {
+      stem: `Before you run it — at ${tidy(a)} ${coef} for ${tidy(x)} ${vn}, plus a ${tidy(b)} ${cn}, what is the total?`,
+      correct,
+      distractors: [tidy((a + b) * x), tidy(a * x), tidy(a + x + b)],
+      because: `Multiply before you add: ${tidy(a)} × ${tidy(x)} = ${tidy(a * x)}, then add the ${cn} of ${tidy(b)} to get ${correct}. Adding the fee first and then multiplying charges it every time.`,
+      seed: `em:${a}:${x}:${b}`,
+    };
+  },
+  // A dot plot's values are listed, so its centre is determined.
+  "dot-plot": (at) => {
+    const v = Array.isArray(at.values)
+      ? at.values.filter((n) => typeof n === "number" && Number.isFinite(n))
+      : [];
+    if (v.length < 3) return null;
+    const sorted = [...v].sort((x, y) => x - y);
+    const mid =
+      sorted.length % 2
+        ? sorted[(sorted.length - 1) / 2]
+        : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
+    const correct = tidy(mid);
+    const mean = v.reduce((s, n) => s + n, 0) / v.length;
+    return {
+      stem: `Before you plot them — for ${sorted.join(", ")}, what is the median?`,
+      correct,
+      distractors: [tidy(mean), tidy(sorted[0]), tidy(sorted[sorted.length - 1])],
+      because: `The median is the middle value once they are in order: ${sorted.join(", ")} → ${correct}. The mean is a different centre.`,
+      seed: `dp:${sorted.join(",")}`,
+    };
+  },
+};
+
+function manipPrediction(cfg) {
+  const sub = typeof cfg.manip === "string" ? cfg.manip : "";
+  const fn = MANIP_DERIVERS[sub];
+  const attrs = cfg.attrs;
+  if (!fn || !attrs || typeof attrs !== "object") return null;
+  const spec = fn(attrs);
+  if (!spec || spec.correct === null || spec.correct === undefined) return null;
+  return {
+    prompt: spec.stem,
+    ...orderChoices(spec.correct, spec.distractors, spec.seed),
+    because: spec.because,
+    unit: "",
+  };
+}
+
 export function derivePrediction(kind, cfg) {
-  const fn = DERIVERS[kind];
-  if (!fn || !cfg || typeof cfg !== "object") return null;
+  if (!cfg || typeof cfg !== "object") return null;
   try {
-    return fn(cfg) || null;
+    // An authored question outranks a derived one on every kind: a person who
+    // wrote it knows the lesson, and a deriver only knows the config.
+    const written = authoredPrediction(cfg);
+    if (written) return written;
+    if (kind === "manip") return manipPrediction(cfg);
+    const fn = DERIVERS[kind];
+    return fn ? fn(cfg) || null : null;
   } catch (_) {
     return null; // a deriver that throws must not cost the student the tool
   }
@@ -325,7 +502,8 @@ export function renderPredictGate(host, kind, cfg, reveal) {
           el.style.opacity = "0.55";
         }
       });
-      verdict.textContent = (right ? "Yes — " : "Not quite — ") + p.because;
+      const coaching = typeof p.feedbackFor === "function" ? p.feedbackFor(i) : p.because;
+      verdict.textContent = (right ? "Yes — " : "Not quite — ") + (coaching || p.because);
       verdict.classList.add(right ? "is-right" : "is-wrong");
       // Open the tool either way. The model is where the thinking continues;
       // withholding it from a student who guessed wrong punishes the guess.
