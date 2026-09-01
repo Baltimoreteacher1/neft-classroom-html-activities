@@ -202,7 +202,53 @@
       item.instructional_days = live.instructional_days;
     });
   }
+  /**
+   * The sequence dropdown used to carry its own dates, typed into the option
+   * text in curriculum/index.html: "Seq 2: Unit 3: Ratios & Rates (9/14/26 -
+   * 10/19/26)". That is the second authored calendar this file was already
+   * cleaned of — pacing-date-parity.test.mjs forbids one in the crosswalk after
+   * the hub's hand-typed copy drifted 27 days on Unit 7 — except it survived in
+   * label form, where a JS-source check cannot see it. So the console SHOWED
+   * 9/14 while getActiveDistrictSeq() ACTED on 9/9: same record, two calendars.
+   *
+   * Labels are now printed from the same item the behaviour reads, so they
+   * cannot disagree by construction, and they follow a live pacing change out
+   * of the planner instead of staying frozen at import time.
+   */
+  function syncSeqLabels() {
+    // Printing a label must never be able to break the console. This runs ahead
+    // of `window.getActiveDistrictSeq` being published, so an exception here
+    // would leave the pacing API undefined and take the whole panel with it —
+    // for a cosmetic date string. A missing label is survivable; a missing
+    // getActiveDistrictSeq() is not.
+    try {
+      syncSeqLabelsUnsafe();
+    } catch (_) {
+      /* labels stay as they are; the pacing API still publishes */
+    }
+  }
+
+  function syncSeqLabelsUnsafe() {
+    const select = document.getElementById("district-seq-select");
+    if (!select) return;
+    crosswalk.forEach(function (item) {
+      const opt = select.querySelector('option[value="' + item.sequence + '"]');
+      if (!opt || !item.start_date || !item.end_date) return;
+      // Strip any trailing "(…)" first so repeated calls stay idempotent.
+      const name = opt.textContent
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\s*\([^()]*\)\s*$/, "");
+      opt.textContent = name + " (" + item.start_date + " - " + item.end_date + ")";
+    });
+  }
+
   applyGeneratedDates();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", syncSeqLabels);
+  } else {
+    syncSeqLabels();
+  }
 
   window.getActiveDistrictSeq = function () {
     const select = document.getElementById("district-seq-select");
@@ -515,6 +561,9 @@
           lesson.standards = canonical.standard ? [canonical.standard] : [];
         });
       });
+
+      // The overlay just moved the dates; the labels have to move with them.
+      syncSeqLabels();
     });
   }
 
