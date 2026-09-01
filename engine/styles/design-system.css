@@ -4907,6 +4907,22 @@ html[lang^="es"] .i18n-es {
   flex-direction: column;
   gap: var(--sp-2);
 }
+
+/* Part 2 (Apply Day) "Solve it": the six guided moves laid out ACROSS rather
+   than down, so they read as one method instead of six assignments stacked a
+   screen-height apart. auto-fit lets the column count follow the viewport, so
+   a phone gets a single column with no separate breakpoint. */
+.p2-solve-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--sp-4);
+  align-items: start;
+  margin-top: var(--sp-4);
+}
+/* "My work" is where the arithmetic goes — full row, never a third of one. */
+.p2-solve-steps > .p2-solve-wide {
+  grid-column: 1 / -1;
+}
 /* Minimum-word goal counter (writing scaffold) */
 .syw-wordcount {
   align-self: flex-end;

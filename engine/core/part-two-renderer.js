@@ -33,6 +33,7 @@ import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-vi
 import {
   renderActSteps,
   renderComponent,
+  renderWarmupPhase,
   resolveContentObjective,
   resolveLanguageObjective,
 } from "./lesson-renderer.js";
@@ -109,37 +110,51 @@ function phaseHeading(host, num, icon, title, lede) {
  *                                                     📋 Today's Problem
  */
 
-/** ⚡ Yesterday's questions, autograded, easiest first. */
-function renderWarmupStep(host, config) {
+/**
+ * ⚡ Yesterday's questions — THE SAME WARM-UP SURFACE Part 1 uses.
+ *
+ * This used to render each question through `renderComponent`'s problem-card
+ * shell. That shell derives a ✏️ notebook setup per item (problem-shell.js
+ * `notebookPromptFor`), so a three-question autograded check opened Day 2 as
+ * three notebook assignments — and because its `onAnswer` was a no-op, nothing
+ * a student answered here was ever saved. Joel, 2026-09-01: "day 2 warmup
+ * questions should not involve the notebook — they should just look like
+ * regular warmup questions that check/submit at the end."
+ *
+ * Delegating instead of re-tuning is the point: a second implementation of "a
+ * warm-up" is what let the two drift apart, and Part 1's is the one carrying
+ * saved answers, the fingerprint reconcile, the score badge, one Check Answers
+ * at the end, and the ≤75% reteach helper.
+ *
+ * `reviewWarmup` is passed in AS `warmup` for the call only. The field stays
+ * distinct on disk for the reason generate-part-two.mjs states: `warmup`
+ * reviews the PREVIOUS lesson and a variant must not author its own, while
+ * Part 2's reviews THIS lesson, taught yesterday. Same shape, different day —
+ * and `gradable()` in the generator admits only multiple-choice items with a
+ * `correctIndex`, which is exactly what this renderer grades (228/228 verified).
+ */
+function renderWarmupStep(host, state, ctx, config) {
   const warmup = config.reviewWarmup;
-  const questions = warmup && Array.isArray(warmup.questions) ? warmup.questions : [];
-  if (!questions.length) return;
-  const card = el("section", "card");
-  card.append(
-    el(
-      "div",
-      null,
-      `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">⚡ ${esc(warmup.title || "Warm-Up")}</h3>
-       <p style="margin:0 0 14px; font-size:1rem; color:#475569;">${questions.length} questions from yesterday${warmup.prevLessonTitle ? ` — <strong>${esc(warmup.prevLessonTitle)}</strong>` : ""}. Autograded.</p>`,
-    ),
+  if (!warmup || !Array.isArray(warmup.questions) || !warmup.questions.length) return;
+  renderWarmupPhase(
+    host,
+    state,
+    ctx,
+    { ...config, warmup },
+    {
+      // Part 2's step strip owns the single forward move; a second exit button
+      // here is the skip-the-rest bug Act 1 already fixed.
+      standalone: false,
+      // No reaching further back: this step IS the review of yesterday.
+      retrieval: false,
+      // Day 2's warm-up reviews Day 1 of the SAME lesson, so the shared
+      // renderer's "Last Lesson Check" would name the wrong day.
+      heading: `${warmup.title || "Warm-Up: Yesterday's Lesson"}${
+        warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : ""
+      }`,
+      lede: "Quick check on yesterday's lesson — answer each one, then submit.",
+    },
   );
-  questions.forEach((q, i) => {
-    const slot = el("div");
-    slot.style.marginBottom = "14px";
-    card.append(slot);
-    // No interactive lab in the warm-up. renderComponent auto-mounts the
-    // long-division builder on any "a ÷ b" stem, so 2-7's three warm-up
-    // questions each arrived with a full lab attached — three labs before
-    // the first answer (Joel, 2026-08-26: "Do not include the interactive
-    // division lab features for the warm-up"). A warm-up is a quick
-    // autograded check; the lab lives in the group-work sets below.
-    renderComponent(slot, { ...q, suppressAutoDiagram: true }, () => {}, {
-      number: i + 1,
-      total: questions.length,
-      tier: "onLevel",
-    });
-  });
-  host.append(card);
 }
 
 /**
@@ -280,7 +295,7 @@ function renderReview(host, state, ctx, config) {
       key: "warmup",
       icon: "⚡",
       label: "Warm-Up",
-      render: (h) => renderWarmupStep(h, config),
+      render: (h) => renderWarmupStep(h, state, ctx, config),
     });
   }
   steps.push({
@@ -432,18 +447,32 @@ function renderProblem(host, state, ctx, config) {
   // The same "I'm stuck" bar the rest of the engine offers, on the problem that
   // is on this screen — `config.revealWordProblem` IS what is being solved here.
   mountStuckSupport(think, { config, state });
-  think.append(
+  // Laid out ACROSS, not down (Joel, 2026-09-01: "the steps should line up next
+  // to each other horizontally"). Stacked, the six moves read as six separate
+  // assignments and the student meets them one screen-height apart; side by
+  // side they read as one method, and KNOW sits next to NEED — which is exactly
+  // what the phase heading tells them to do first. `auto-fit` + a 16rem floor
+  // means the row count follows the screen instead of a guess, collapsing to a
+  // single column on a phone with no separate mobile rule.
+  const steps = el("div", "p2-solve-steps");
+  steps.append(
     field(state, 1, "know", "1 · What I KNOW", "The numbers and facts the problem gives me…"),
   );
-  think.append(
+  steps.append(
     field(state, 1, "need", "2 · What I NEED to find", "What is the problem actually asking for?"),
   );
-  think.append(field(state, 1, "plan", "3 · My plan", "First I will… then I will…"));
-  think.append(field(state, 1, "work", "4 · My work", "Show every step.", 6));
-  think.append(field(state, 1, "answer", "5 · My answer", "Include the units.", 2));
-  think.append(
+  steps.append(field(state, 1, "plan", "3 · My plan", "First I will… then I will…"));
+  // My work is where the arithmetic actually goes, so it spans the full row
+  // rather than being squeezed into a column — a six-row textarea at a third of
+  // the width is not somewhere a student can show every step.
+  const work = field(state, 1, "work", "4 · My work", "Show every step.", 6);
+  work.classList.add("p2-solve-wide");
+  steps.append(work);
+  steps.append(field(state, 1, "answer", "5 · My answer", "Include the units.", 2));
+  steps.append(
     field(state, 1, "why", "6 · How I know it is reasonable", "Compare it to an estimate.", 3),
   );
+  think.append(steps);
   host.append(think);
 
   host.append(advanceButton("Break into groups 👥 →", state, ctx, 1));

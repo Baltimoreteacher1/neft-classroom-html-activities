@@ -2689,7 +2689,31 @@ function isSpiralWarmup(warmup) {
   return String(warmup?.kind || "") === "spiral";
 }
 
-function renderWarmupPhase(el, state, ctx, config, opts = {}) {
+/**
+ * The warm-up surface. EXPORTED because Part 2 (Apply Day) opens with a warm-up
+ * too, and its own hand-rolled version had drifted into something else: it fed
+ * each question through `renderComponent`'s problem-card shell, which derives a
+ * ✏️ notebook setup per item, so a quick autograded check arrived as three
+ * notebook assignments and its answers were never saved at all (its `onAnswer`
+ * was a no-op). Joel, 2026-09-01: "day 2 warmup questions should not involve
+ * the notebook — they should just look like regular warmup questions that
+ * check/submit at the end."
+ *
+ * One renderer, so "what a warm-up is" cannot mean two things again. Callers
+ * with no `config.warmup` of their own pass their own questions in as one
+ * (see part-two-renderer.js).
+ *
+ * @param {object} opts
+ * @param {boolean} [opts.standalone] false → no phase header and no exit
+ *   button; the caller's step strip owns the one forward move.
+ * @param {string} [opts.heading] override the derived warm-up heading.
+ * @param {string} [opts.lede] override the derived one-line instruction.
+ * @param {boolean} [opts.retrieval] false → no spaced-retrieval bonus. Day 2
+ *   already reviewed Day 1 in its own step; reaching further back a second time
+ *   on the same lesson is the "second warm-up to survive" shape this file
+ *   removed from Act 1.
+ */
+export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   const warmup = config.warmup;
   // Phase 1 is always in the sidebar (phaseConfigs is a fixed eight-phase list),
   // so returning empty here left a lesson with no authored warmup showing a
@@ -2751,12 +2775,21 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   const isSpiral = isSpiralWarmup(warmup);
   const spiralFrom = warmup.spiralFrom ? ` (${warmup.spiralFrom})` : "";
   const prevTitle = warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : "";
-  const warmupHeading = isSpiral
-    ? `Warm-Up: Skills You Need Today${esc(spiralFrom)}`
-    : `Warm-Up: Last Lesson Check${esc(prevTitle)}`;
-  const warmupLede = isSpiral
-    ? "Quick check on the skills today's lesson builds on."
-    : "Quick check on the last lesson — answer each one, then submit.";
+  // `opts.heading`/`opts.lede` override, for a caller whose warm-up reviews a
+  // different day than this heading logic assumes. Deliberately NOT read from
+  // `warmup.title`: all 281 core configs carry one ("Warmup: Prerequisite
+  // Review"), and honouring it would rename every Part 1 warm-up on the site as
+  // a side effect of a Part 2 fix.
+  const warmupHeading =
+    opts.heading ||
+    (isSpiral
+      ? `Warm-Up: Skills You Need Today${esc(spiralFrom)}`
+      : `Warm-Up: Last Lesson Check${esc(prevTitle)}`);
+  const warmupLede =
+    opts.lede ||
+    (isSpiral
+      ? "Quick check on the skills today's lesson builds on."
+      : "Quick check on the last lesson — answer each one, then submit.");
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
       <h3 style="margin:0; font-size:20px; font-weight:700; color:#14223a;">⚡ ${warmupHeading}</h3>
@@ -3154,12 +3187,16 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   // `display:contents` so the host itself is not a flex item — an empty host
   // would otherwise leave a 16px gap under the last real question on the many
   // lessons that have nothing to remember.
-  const retrievalHost = document.createElement("div");
-  retrievalHost.style.display = "contents";
-  questionsContainer.append(retrievalHost);
-  mountRetrievalOpener(retrievalHost, config, state, 0, { variant: "bonus", max: 1 }).catch(() => {
-    /* the bonus is additive — never block Warmup on it */
-  });
+  if (opts.retrieval !== false) {
+    const retrievalHost = document.createElement("div");
+    retrievalHost.style.display = "contents";
+    questionsContainer.append(retrievalHost);
+    mountRetrievalOpener(retrievalHost, config, state, 0, { variant: "bonus", max: 1 }).catch(
+      () => {
+        /* the bonus is additive — never block Warmup on it */
+      },
+    );
+  }
 
   const btnRow = document.createElement("div");
   btnRow.style.cssText =
