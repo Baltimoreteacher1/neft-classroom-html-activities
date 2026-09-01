@@ -162,32 +162,65 @@ function esc(s) {
 
 /**
  * Mount the opener into `host`.
+ *
+ * `opts.variant` picks how it presents itself:
+ *   - "bonus" (what the warm-up uses): the LAST question of the warm-up, marked
+ *     as a bonus. Joel, 2026-09-01 — a three-question indigo block sitting
+ *     ABOVE the warm-up read as a second warm-up to get through before the real
+ *     one, and students met the hardest recall of the day cold. As the final
+ *     bonus item it is optional in feel, costs nothing when skipped, and still
+ *     gets answered by the students it helps.
+ *   - anything else: the standalone opener card (unchanged).
+ * `opts.max` caps the item count; the bonus asks one, because "the last
+ * question" is one question.
+ *
  * @returns {Promise<number>} how many review items rendered (0 = nothing due)
  */
-export async function mountRetrievalOpener(host, config, state, phaseId) {
+export async function mountRetrievalOpener(host, config, state, phaseId, opts = {}) {
   if (!host) return 0;
+  const bonus = opts.variant === "bonus";
+  const max = Number.isFinite(opts.max) && opts.max > 0 ? Math.floor(opts.max) : MAX_ITEMS;
   const signal = typeof window !== "undefined" ? window.NTSignal : null;
   const canSchedule = !!signal && typeof signal.dueStandards === "function";
-  const due = canSchedule ? signal.dueStandards(MAX_ITEMS + 2) : [];
+  const due = canSchedule ? signal.dueStandards(max + 2) : [];
 
   const { bank, sequence } = await loadRetrievalBank();
   const before = taughtBefore(sequence, config?.lessonId);
   // Nothing to remember and nothing due: no empty card.
   if (!before.length && !due.length) return 0;
 
-  const picks = selectReviewItems(due, bank, { exclude: config?.standard || "", before });
+  const picks = selectReviewItems(due, bank, { exclude: config?.standard || "", before, max });
   if (!picks.length) return 0;
 
   const card = document.createElement("section");
-  card.className = "card card-indigo retrieval-card";
+  card.className = bonus
+    ? "warmup-question-card retrieval-card retrieval-card-bonus"
+    : "card card-indigo retrieval-card";
   card.setAttribute("aria-labelledby", "retrieval-heading");
-  card.innerHTML = `
+  if (bonus) {
+    // Matches the warm-up question cards it now sits among (same radius, pad and
+    // stem size), with an indigo spine so it still reads as a different KIND of
+    // question rather than a fifth one of today's.
+    card.style.cssText =
+      "border:1px solid #c7d2fe; border-left:6px solid #4f46e5; border-radius:12px; padding:16px; background:#f6f7ff;";
+    card.innerHTML = `
+    <div id="retrieval-heading" style="font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:6px;">
+      <span style="color:#4f46e5; font-weight:800; margin-right:6px;">⭐ Bonus.</span> 🔁 Remember When
+    </div>
+    <p style="margin:0 0 12px; font-size:15px; font-weight:500; line-height:1.5; color:#4b5563;">
+      ${picks.length === 1 ? "One question" : `${picks.length} questions`} from earlier this year — extra credit for your brain, not for your score.
+      This is practice at <em>remembering</em>, which is what makes it stick.
+    </p>
+  `;
+  } else {
+    card.innerHTML = `
     <h3 id="retrieval-heading" style="margin:0 0 var(--sp-2)">🔁 Remember When</h3>
     <p style="margin:0 0 var(--sp-3); color:var(--muted)">
       ${picks.length === 1 ? "One question" : `${picks.length} questions`} from earlier this year.
       You are not being graded — this is practice at <em>remembering</em>, which is what makes it stick.
     </p>
   `;
+  }
 
   const list = document.createElement("div");
   list.className = "retrieval-items";
@@ -236,7 +269,9 @@ export async function mountRetrievalOpener(host, config, state, phaseId) {
         answered += 1;
         status.textContent =
           answered >= picks.length
-            ? "Review done — nice. On to today."
+            ? bonus
+              ? "Bonus done — nice. That one was pure memory."
+              : "Review done — nice. On to today."
             : `${answered} of ${picks.length} done.`;
         state?.saveResponse?.(phaseId, `retrieval_${pick.standard}`, isCorrect ? "y" : "n");
       },

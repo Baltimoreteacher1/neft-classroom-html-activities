@@ -2729,18 +2729,6 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     );
   }
 
-  // Spaced retrieval runs BEFORE today's warmup. The warmup reviews the previous
-  // lesson (yesterday); this reviews lessons taught EARLIER in the district's
-  // scope and sequence (days to weeks ago), never yesterday's and never one the
-  // class has not met. They answer different questions and both belong here,
-  // in that order — nearest first, so the student warms up before reaching back.
-  // Renders nothing on a course opener or an unpaced lesson.
-  const retrievalHost = document.createElement("div");
-  el.append(retrievalHost);
-  mountRetrievalOpener(retrievalHost, config, state, 0).catch(() => {
-    /* the opener is additive — never block Warmup on it */
-  });
-
   const card = document.createElement("div");
   card.className = "card card-warmup-phase";
   card.style.cssText =
@@ -3150,6 +3138,27 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     }
 
     questionsContainer.append(qBox);
+  });
+
+  // "Remember When" — spaced retrieval — is the LAST question of the warm-up,
+  // and it is a BONUS. The warm-up above reviews the previous lesson
+  // (yesterday); this reviews lessons taught EARLIER in the district's scope and
+  // sequence (days to weeks ago), never yesterday's and never one the class has
+  // not met. It used to open the phase, above today's questions, which put the
+  // hardest recall of the day first and read as a second warm-up to survive
+  // before the real one (Joel, 2026-09-01). At the end it is optional in feel,
+  // costs a student nothing to skip, is scored separately from the warm-up
+  // (`#warmupScoreBadge` counts `warmup.questions` only), and still reaches the
+  // students it helps. Renders nothing on a course opener or an unpaced lesson.
+  //
+  // `display:contents` so the host itself is not a flex item — an empty host
+  // would otherwise leave a 16px gap under the last real question on the many
+  // lessons that have nothing to remember.
+  const retrievalHost = document.createElement("div");
+  retrievalHost.style.display = "contents";
+  questionsContainer.append(retrievalHost);
+  mountRetrievalOpener(retrievalHost, config, state, 0, { variant: "bonus", max: 1 }).catch(() => {
+    /* the bonus is additive — never block Warmup on it */
   });
 
   const btnRow = document.createElement("div");

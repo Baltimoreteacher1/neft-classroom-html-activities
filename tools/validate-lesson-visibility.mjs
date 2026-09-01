@@ -353,8 +353,18 @@ async function checkWarmupAnswerable(page, id) {
     };
     const card = document.querySelector(".card-warmup-phase");
     if (!card) return { card: false };
-    const radios = [...card.querySelectorAll("input[type=radio]")];
+    /* "Remember When" is a BONUS question appended after today's questions and
+     * deliberately outside the score. Counted separately from here down, or
+     * every count below would silently absorb it and this gate would stop
+     * measuring the warm-up it exists to measure. */
+    const bonus = card.querySelector(".retrieval-card-bonus");
+    const list = card.querySelector(".warmup-questions-list");
+    const own = (radio) => !radio.closest(".retrieval-card");
+    const radios = [...card.querySelectorAll("input[type=radio]")].filter(own);
     const targets = radios.map((radio) => radio.closest("label") || radio);
+    const bonusTargets = bonus
+      ? [...bonus.querySelectorAll("input[type=radio]")].map((r) => r.closest("label") || r)
+      : [];
     const submit = [...card.querySelectorAll("button")].find((b) =>
       /submit warmup|enviar respuestas/i.test(b.textContent || ""),
     );
@@ -364,6 +374,12 @@ async function checkWarmupAnswerable(page, id) {
       cardH: Math.round(card.getBoundingClientRect().height),
       radios: targets.length,
       visibleRadios: targets.filter((t) => painted(t, 10)).length,
+      bonus: !!bonus,
+      /* The ask was "the LAST question in the warm-up questions" — so its place
+       * in the list is part of the contract, not decoration. */
+      bonusLast: !!bonus && !!list && list.lastElementChild?.contains(bonus),
+      bonusPainted: !!bonus && painted(bonus, 40),
+      bonusVisibleRadios: bonusTargets.filter((t) => painted(t, 10)).length,
       submit: !!submit,
       submitVisible: submit ? painted(submit, 40) : false,
       submitBox: submit
@@ -388,6 +404,19 @@ async function checkWarmupAnswerable(page, id) {
   else if (!shape.submitVisible)
     fail(`${id}: the warm-up Submit button measures ${shape.submitBox} — it cannot be pressed`);
   if (!shape.badgeVisible) fail(`${id}: the warm-up score badge is not visible before submitting`);
+  /* The bonus is optional by design — most lessons early in the sequence have
+   * nothing to remember — so its ABSENCE is not a failure. Its presence has a
+   * shape: painted, answerable, and last. */
+  if (shape.bonus) {
+    if (!shape.bonusPainted)
+      fail(`${id}: the Remember When bonus is in the DOM but not painted in the warm-up`);
+    if (!shape.bonusLast)
+      fail(`${id}: the Remember When bonus is not the last question of the warm-up`);
+    if (shape.bonusVisibleRadios < 2)
+      fail(
+        `${id}: the Remember When bonus shows ${shape.bonusVisibleRadios} visible answer controls — it cannot be answered`,
+      );
+  }
 
   /* BEHAVIOUR. Answer every question, submit, and require a real score. The
    * badge starts as "N Questions · Autograded", so asserting it merely CHANGED
@@ -396,9 +425,14 @@ async function checkWarmupAnswerable(page, id) {
   const scored = await page.evaluate(async () => {
     const card = document.querySelector(".card-warmup-phase");
     const groups = new Map();
+    const bonusGroups = new Map();
     for (const radio of card.querySelectorAll("input[type=radio]")) {
-      if (!groups.has(radio.name)) groups.set(radio.name, radio);
+      const into = radio.closest(".retrieval-card") ? bonusGroups : groups;
+      if (!into.has(radio.name)) into.set(radio.name, radio);
     }
+    /* Answer the bonus too: the point of the check is that answering it moves
+     * the review schedule and NOT the warm-up score. */
+    for (const first of bonusGroups.values()) first.click();
     for (const first of groups.values()) first.click();
     const submit = [...card.querySelectorAll("button")].find((b) =>
       /submit warmup|enviar respuestas/i.test(b.textContent || ""),
@@ -410,6 +444,7 @@ async function checkWarmupAnswerable(page, id) {
     return {
       clicked: true,
       answered: groups.size,
+      bonusAnswered: bonusGroups.size,
       badgeText: badge ? badge.textContent.replace(/\s+/g, " ").trim() : "",
       badgePainted: badge ? badge.getClientRects().length > 0 : false,
     };
@@ -429,7 +464,10 @@ async function checkWarmupAnswerable(page, id) {
     );
   else
     note(
-      `${id}: warm-up answerable — ${shape.visibleRadios} visible controls, Submit ${shape.submitBox}, scored ${match[0]}`,
+      `${id}: warm-up answerable — ${shape.visibleRadios} visible controls, Submit ${shape.submitBox}, scored ${match[0]}` +
+        (shape.bonus
+          ? `, plus ${scored.bonusAnswered} Remember When bonus outside the score`
+          : ", no bonus due"),
     );
 }
 
