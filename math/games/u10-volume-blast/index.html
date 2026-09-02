@@ -1374,6 +1374,7 @@
         if (this.locked || !this.problem) return;
         this.locked = true;
         const correct = isCorrect(this.problem, this.built);
+        if (window.NeftScore) NeftScore.attempt(correct);
         if (correct) {
           SFX.good();
           JUICE.audio.correct(this.streak);
@@ -1556,16 +1557,15 @@
         JUICE.confetti(this, 1);
         JUICE.award(40, "u10-volume-blast");
 
-        // EduPulse reporting (guarded; safe no-op without bridge).
+        // Score reporting goes through NeftScore (attempt() at each judge
+        // above), which loads the bridge itself and beacons on pagehide. The
+        // old direct EduPulse.record here fired only if a student reached this
+        // screen with the bridge already loaded, and it passed no
+        // problemsCorrect at all -- so even a delivered row reported an
+        // accuracy that was never measured. That is why this game never
+        // produced a game_scores row.
         try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: document.title,
-              score: d.score,
-              stars: stars,
-              standard: "6.GR.2",
-              problemsAttempted: d.solved,
-            });
+          window.NeftScore && NeftScore.finish();
         } catch (e) {}
         srSay("Volume mastered! Final score " + d.score + ", " + stars + " stars.");
 
@@ -1739,6 +1739,10 @@
       });
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/game-score.js"></script>
+    <script>
+      window.NeftScore && NeftScore.init({ gameId: "u10-volume-blast", standard: "6.GR.2" });
+    </script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
