@@ -36,6 +36,7 @@ import {
   selectQuickCheckProblems,
 } from "./homework-guided-notes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
+import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
@@ -1078,6 +1079,10 @@ function generateHtml(lessonId, config) {
   const topic = detectVisualTopic(config);
   const lessonModel = selectLessonInteractiveModel(config);
 
+  const unitNum = parseInt(config.unit || String(lessonId).split("-")[0] || 1, 10);
+  const theme = getUnitTheme(unitNum);
+  const themeCss = renderUnitThemeCss(theme);
+
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length);
   const warmupHtml = warmup
@@ -1100,7 +1105,7 @@ function generateHtml(lessonId, config) {
     renderLearnTab(config, renderVisualMathLab(topic, config, lessonModel)),
     renderArcadeTabPanel(lessonId),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
-    renderTogetherTab(config),
+    renderTogetherTab(config, lessonId),
     renderCheckTab(quickCheckIntroHtml, warmupHtml, challengeHtml, morePracticeHtml),
     renderWorkbenchTab(),
     renderHelpTab(config),
@@ -1111,6 +1116,33 @@ function generateHtml(lessonId, config) {
 
   const tabsHtml = renderHomeworkTabs(tabPanels);
   const helpModalHtml = renderHelpModal();
+
+  const roadmapHtml = `
+  <nav class="hw-three-beats-roadmap" aria-label="Nightly 3-beat routine">
+    <div class="beat-pill" onclick="switchHomeworkTab('learn')" role="button" tabindex="0" aria-label="Step 1: Family Huddle">
+      <span class="beat-num">1</span>
+      <span class="beat-text">
+        <strong><span class="lang-en">Family Huddle</span><span class="lang-es" lang="es">Reunión Familiar</span></strong>
+        <small><span class="lang-en">Learn &amp; Talk (2-3 min)</span><span class="lang-es" lang="es">Aprender y hablar (2-3 min)</span></small>
+      </span>
+    </div>
+    <div class="beat-arrow" aria-hidden="true">➔</div>
+    <div class="beat-pill" onclick="switchHomeworkTab('check')" role="button" tabindex="0" aria-label="Step 2: Practice">
+      <span class="beat-num">2</span>
+      <span class="beat-text">
+        <strong><span class="lang-en">Practice</span><span class="lang-es" lang="es">Práctica</span></strong>
+        <small><span class="lang-en">3 Stars to Win (7-8 min)</span><span class="lang-es" lang="es">3 Estrellas para ganar</span></small>
+      </span>
+    </div>
+    <div class="beat-arrow" aria-hidden="true">➔</div>
+    <div class="beat-pill" onclick="switchHomeworkTab('done')" role="button" tabindex="0" aria-label="Step 3: Victory Lap">
+      <span class="beat-num">3</span>
+      <span class="beat-text">
+        <strong><span class="lang-en">Victory Lap</span><span class="lang-es" lang="es">Vuelta de Victoria</span></strong>
+        <small><span class="lang-en">Badge &amp; Play (2-3 min)</span><span class="lang-es" lang="es">Insignia y juego (2-3 min)</span></small>
+      </span>
+    </div>
+  </nav>`;
 
   return `<!doctype html>
 <html lang="en">
@@ -1158,6 +1190,8 @@ ${EDITORIAL_FONT_IMPORT}
   --shadow: 0 8px 30px rgba(18, 53, 91, 0.05);
   --shadow-sm: 0 4px 12px rgba(18, 53, 91, 0.02);
 }
+
+${themeCss}
 
 * { box-sizing: border-box; }
 body {
@@ -2739,6 +2773,8 @@ ${EDITORIAL_OVERRIDES}
 <div class="container" role="main">
 
   ${welcomeHtml}
+
+  ${roadmapHtml}
 
   ${tabsHtml}
 

@@ -22,6 +22,7 @@ import {
   translateFamilyText,
   translateLanguageObjective,
 } from "./homework-spanish.mjs";
+import { getUnitTheme } from "./homework-themes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
@@ -1013,13 +1014,19 @@ export function selectQuickCheckProblems(practice = {}, config = {}) {
 }
 
 export function renderWelcomeBanner(config, lessonId) {
-  const themeEmoji = config.themeEmoji || "🏠";
-  const title = config.title || "Tonight's Lesson";
   const unit = config.unit || 1;
+  const theme = getUnitTheme(unit);
+  const themeEmoji = config.themeEmoji || theme.emoji || "🏠";
+  const title = config.title || "Tonight's Lesson";
   const standard = config.standard || "";
 
   return `
     <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="unit-world-badge">
+        <span class="unit-world-icon" aria-hidden="true">${theme.emoji}</span>
+        <span class="lang-en">Unit ${unit} World: ${esc(theme.nameEn)}</span>
+        <span class="lang-es" lang="es">Unidad ${unit}: ${esc(theme.nameEs)}</span>
+      </div>
       <div class="welcome-hero">
         <span class="welcome-emoji" aria-hidden="true">${esc(themeEmoji)}</span>
         <div class="welcome-titles">
@@ -1145,12 +1152,62 @@ export function renderConceptExplainer(config) {
     </section>`;
 }
 
-export function renderTryTogether(config) {
+export function renderTryTogether(config, lessonId = "") {
   const activity = tryTogetherActivity(config);
+  const unitNum = parseInt(config.unit || 1, 10);
+  const lessonMatch = String(lessonId).match(/(\d+)-(\d+)/);
+  const lessonNum = lessonMatch ? parseInt(lessonMatch[2], 10) : 1;
+  const hookIndex = (unitNum * 7 + lessonNum) % 3;
+
+  let hookBanner = "";
+  if (hookIndex === 0) {
+    hookBanner = `
+      <div class="huddle-hook-banner hook-debate">
+        <span class="huddle-hook-icon" aria-hidden="true">🗣️</span>
+        <div class="huddle-hook-titles">
+          <strong><span class="lang-en">Would You Rather? · Family Math Debate</span><span class="lang-es" lang="es">¿Qué prefieres? · Debate Matemático</span></strong>
+          <span><span class="lang-en">Choose a side with your student and defend your mathematical thinking!</span><span class="lang-es" lang="es">¡Elige una opción con tu estudiante y defiende tu razonamiento matemático!</span></span>
+        </div>
+      </div>
+      <div class="parent-coach-prompt">
+        <strong>💬 Parent Coach / Guía para familias:</strong>
+        <span class="lang-en">Ask: "Which option makes more sense or is the better deal, and why? Show me with numbers or pictures."</span>
+        <span class="lang-es" lang="es">Pregunta: "¿Qué opción tiene más sentido o es mejor opción, y por qué? Muéstramelo con números o dibujos."</span>
+      </div>`;
+  } else if (hookIndex === 1) {
+    hookBanner = `
+      <div class="huddle-hook-banner hook-detective">
+        <span class="huddle-hook-icon" aria-hidden="true">🕵️‍♂️</span>
+        <div class="huddle-hook-titles">
+          <strong><span class="lang-en">Spot the Slip · Math Detective</span><span class="lang-es" lang="es">Encuentra el error · Detective Matemático</span></strong>
+          <span><span class="lang-en">A student solved a problem and made a common slip. Can you find where they went off track?</span><span class="lang-es" lang="es">Alguien cometió un error común al resolver. ¿Pueden encontrar en qué paso falló?</span></span>
+        </div>
+      </div>
+      <div class="parent-coach-prompt">
+        <strong>💬 Parent Coach / Guía para familias:</strong>
+        <span class="lang-en">Ask: "Look at the steps closely. What is the one thing they forgot to check?"</span>
+        <span class="lang-es" lang="es">Pregunta: "Mira los pasos con atención. ¿Qué fue lo que olvidó revisar?"</span>
+      </div>`;
+  } else {
+    hookBanner = `
+      <div class="huddle-hook-banner hook-teacher">
+        <span class="huddle-hook-icon" aria-hidden="true">🎓</span>
+        <div class="huddle-hook-titles">
+          <strong><span class="lang-en">Student-as-Teacher · 60-Second Challenge</span><span class="lang-es" lang="es">Estudiante como profe · Reto de 60 segundos</span></strong>
+          <span><span class="lang-en">Student challenge: Teach your family this concept in under 60 seconds!</span><span class="lang-es" lang="es">Reto para el estudiante: ¡Explica este concepto a tu familia en menos de 60 segundos!</span></span>
+        </div>
+      </div>
+      <div class="parent-coach-prompt">
+        <strong>💬 Family role / Rol de la familia:</strong>
+        <span class="lang-en">Listen without interrupting for 1 minute, then ask: "Can you show me one quick example?"</span>
+        <span class="lang-es" lang="es">Escuchen sin interrumpir por 1 minuto, luego pregunten: "¿Puedes mostrarme un ejemplo rápido?"</span>
+      </div>`;
+  }
 
   return `
     <section class="guided-section card section-together" aria-label="Try this together">
       <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      ${hookBanner}
       ${
         activity.scenarioEn
           ? `<p class="try-scenario lang-en">${esc(activity.scenarioEn)}</p>
@@ -1484,13 +1541,29 @@ export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
   return `<div ${tabPanelAttrs("words", true)}>${inner.replace(/<section[^>]*>|<\/section>/g, "")}</div>`;
 }
 
-export function renderTogetherTab(config) {
-  const inner = renderTryTogether(config).replace(/<section[^>]*>|<\/section>/g, "");
+export function renderTogetherTab(config, lessonId = "") {
+  const inner = renderTryTogether(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
   return `<div ${tabPanelAttrs("together", true)}>${inner}</div>`;
 }
 
 export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", moreHtml = "") {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
+
+  const starsBar = `
+    <div class="stars-to-win-bar">
+      <div class="stars-to-win-title">
+        <span>⭐</span>
+        <div>
+          <span class="lang-en"><strong>3 Stars to Win:</strong> Complete 3 problems to finish tonight's goal!</span>
+          <span class="lang-es" lang="es"><strong>3 Estrellas para Ganar:</strong> ¡Completen 3 problemas para terminar la meta de hoy!</span>
+        </div>
+      </div>
+      <div class="stars-milestone-chips" aria-hidden="true">
+        <span class="star-chip">🌱 Warm-Up ★</span>
+        <span class="star-chip">🚀 Level-Up ★★</span>
+        <span class="star-chip">🏆 Victory ★★★</span>
+      </div>
+    </div>`;
 
   const warmupBlock = warmupHtml
     ? `
@@ -1506,6 +1579,11 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
               <span class="lang-en">Easier problems to practice the idea. Do these first together.</span>
               <span class="lang-es" lang="es">Problemas más fáciles para practicar la idea. Hagan estos primero juntos.</span>
             </p>
+            <div class="parent-coach-prompt">
+              <strong>💬 Parent Coach / Guía para familias:</strong>
+              <span class="lang-en">Ask: "What do you notice first about this problem? Can you draw or write the first step?"</span>
+              <span class="lang-es" lang="es">Pregunta: "¿Qué notas primero sobre este problema? ¿Puedes dibujar o escribir el primer paso?"</span>
+            </div>
           </div>
         </div>
         <section class="problems-container" aria-label="Practice problems">${warmupHtml}</section>

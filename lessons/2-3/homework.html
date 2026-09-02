@@ -45,6 +45,188 @@
   --shadow-sm: 0 4px 12px rgba(18, 53, 91, 0.02);
 }
 
+
+/* --- Unit ${theme.unit} Visual World: ${theme.nameEn} --- */
+:root {
+  --navy: ${colors.navy};
+  --navy-light: ${colors.navyLight};
+  --teal: ${colors.teal};
+  --teal-ink: ${colors.tealInk};
+  --teal-light: ${colors.tealLight};
+  --amber: ${colors.amber};
+  --amber-light: ${colors.amberLight};
+  --hw-world-border: ${colors.cardBorder};
+}
+
+header.homework-header,
+.family-welcome {
+  background: ${colors.heroGradient} !important;
+  border: 1.5px solid ${colors.cardBorder} !important;
+}
+
+.unit-world-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  margin-bottom: 8px;
+}
+
+.hw-three-beats-roadmap {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid ${colors.cardBorder};
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+@media (max-width: 600px) {
+  .hw-three-beats-roadmap {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .hw-three-beats-roadmap .beat-arrow {
+    display: none;
+  }
+}
+
+.beat-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.beat-pill:hover {
+  background: var(--teal-light);
+  border-color: var(--teal);
+}
+.beat-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.beat-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.beat-text strong {
+  font-size: 13.5px;
+  color: var(--navy);
+}
+.beat-text small {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.beat-arrow {
+  color: var(--teal);
+  font-weight: 800;
+  font-size: 16px;
+  user-select: none;
+}
+
+/* 3 Stars Milestone Bar on Quick Check */
+.stars-to-win-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
+  border: 1.5px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.stars-to-win-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14.5px;
+  color: var(--navy);
+}
+.stars-milestone-chips {
+  display: flex;
+  gap: 6px;
+}
+.star-chip {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #ffffff;
+  border: 1px solid var(--teal);
+  color: var(--navy);
+}
+
+/* Rotated Huddle Activity Card */
+.huddle-hook-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  padding: 12px 14px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 16px;
+}
+.huddle-hook-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+.huddle-hook-titles strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  color: var(--navy);
+}
+.huddle-hook-titles span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.parent-coach-prompt {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.4;
+}
+.parent-coach-prompt strong {
+  color: #92400e;
+}
+
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -2707,6 +2889,11 @@ header.packet h1::after{
 
   
     <header class="family-welcome card" aria-label="Family Math Night welcome">
+      <div class="unit-world-badge">
+        <span class="unit-world-icon" aria-hidden="true">🕵️</span>
+        <span class="lang-en">Unit 2 World: Data Detective Agency</span>
+        <span class="lang-es" lang="es">Unidad 2: Agencia de Detectives de Datos</span>
+      </div>
       <div class="welcome-hero">
         <span class="welcome-emoji" aria-hidden="true">🏀</span>
         <div class="welcome-titles">
@@ -2737,6 +2924,33 @@ header.packet h1::after{
         </div>
       </div>
     </header>
+
+  
+  <nav class="hw-three-beats-roadmap" aria-label="Nightly 3-beat routine">
+    <div class="beat-pill" onclick="switchHomeworkTab('learn')" role="button" tabindex="0" aria-label="Step 1: Family Huddle">
+      <span class="beat-num">1</span>
+      <span class="beat-text">
+        <strong><span class="lang-en">Family Huddle</span><span class="lang-es" lang="es">Reunión Familiar</span></strong>
+        <small><span class="lang-en">Learn &amp; Talk (2-3 min)</span><span class="lang-es" lang="es">Aprender y hablar (2-3 min)</span></small>
+      </span>
+    </div>
+    <div class="beat-arrow" aria-hidden="true">➔</div>
+    <div class="beat-pill" onclick="switchHomeworkTab('check')" role="button" tabindex="0" aria-label="Step 2: Practice">
+      <span class="beat-num">2</span>
+      <span class="beat-text">
+        <strong><span class="lang-en">Practice</span><span class="lang-es" lang="es">Práctica</span></strong>
+        <small><span class="lang-en">3 Stars to Win (7-8 min)</span><span class="lang-es" lang="es">3 Estrellas para ganar</span></small>
+      </span>
+    </div>
+    <div class="beat-arrow" aria-hidden="true">➔</div>
+    <div class="beat-pill" onclick="switchHomeworkTab('done')" role="button" tabindex="0" aria-label="Step 3: Victory Lap">
+      <span class="beat-num">3</span>
+      <span class="beat-text">
+        <strong><span class="lang-en">Victory Lap</span><span class="lang-es" lang="es">Vuelta de Victoria</span></strong>
+        <small><span class="lang-en">Badge &amp; Play (2-3 min)</span><span class="lang-es" lang="es">Insignia y juego (2-3 min)</span></small>
+      </span>
+    </div>
+  </nav>
 
   
     <div class="homework-tabs-shell" data-tab-count="10">
@@ -3070,6 +3284,19 @@ header.packet h1::after{
 <div class="tab-panel-inner" data-tab-panel="together" id="hw_panel_together" role="tabpanel" hidden>
     
       <h2 class="section-title">🤝 <span class="lang-en">Try this together</span><span class="lang-es" lang="es">Inténtenlo juntos</span></h2>
+      
+      <div class="huddle-hook-banner hook-teacher">
+        <span class="huddle-hook-icon" aria-hidden="true">🎓</span>
+        <div class="huddle-hook-titles">
+          <strong><span class="lang-en">Student-as-Teacher · 60-Second Challenge</span><span class="lang-es" lang="es">Estudiante como profe · Reto de 60 segundos</span></strong>
+          <span><span class="lang-en">Student challenge: Teach your family this concept in under 60 seconds!</span><span class="lang-es" lang="es">Reto para el estudiante: ¡Explica este concepto a tu familia en menos de 60 segundos!</span></span>
+        </div>
+      </div>
+      <div class="parent-coach-prompt">
+        <strong>💬 Family role / Rol de la familia:</strong>
+        <span class="lang-en">Listen without interrupting for 1 minute, then ask: "Can you show me one quick example?"</span>
+        <span class="lang-es" lang="es">Escuchen sin interrumpir por 1 minuto, luego pregunten: "¿Puedes mostrarme un ejemplo rápido?"</span>
+      </div>
       <p class="try-scenario lang-en">Minutes spent reading each night this week: 20, 35, 15, 30, 25.</p>
              <p class="try-scenario lang-es" lang="es">Minutos de lectura cada noche esta semana: 20, 35, 15, 30, 25.</p>
       <p class="try-together-note bilingual-block">
@@ -3223,6 +3450,11 @@ header.packet h1::after{
               <span class="lang-en">Easier problems to practice the idea. Do these first together.</span>
               <span class="lang-es" lang="es">Problemas más fáciles para practicar la idea. Hagan estos primero juntos.</span>
             </p>
+            <div class="parent-coach-prompt">
+              <strong>💬 Parent Coach / Guía para familias:</strong>
+              <span class="lang-en">Ask: "What do you notice first about this problem? Can you draw or write the first step?"</span>
+              <span class="lang-es" lang="es">Pregunta: "¿Qué notas primero sobre este problema? ¿Puedes dibujar o escribir el primer paso?"</span>
+            </div>
           </div>
         </div>
         <section class="problems-container" aria-label="Practice problems">
