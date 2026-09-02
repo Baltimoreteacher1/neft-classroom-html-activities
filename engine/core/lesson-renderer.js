@@ -3125,6 +3125,27 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:800; margin-right:6px;">Q${qIdx + 1}.</span> ${stackContent(q.stem, q.stemEs)}`;
     qBox.append(qTitle);
 
+    // A warm-up question may carry its own figure, and until now this renderer
+    // silently dropped it: it draws a stem and a set of choices, full stop. A
+    // question whose stem says "the model shows…" then has no model on screen,
+    // which is unanswerable rather than merely plain — and it is exactly the
+    // shape the state test opens with (read a tape diagram, choose the
+    // expression it represents). Rendered through the same buildVisual bridge
+    // renderComponent uses, so a warm-up figure and a practice figure are the
+    // same figure. Only `diagram` is honoured, never the stem auto-extractor:
+    // a warm-up is a quick autograded check and must not grow an interactive
+    // lab it did not ask for.
+    if (q.diagram?.kind) {
+      const fig = document.createElement("div");
+      fig.className = "problem-item-figure";
+      fig.style.cssText = "margin:0 0 12px;";
+      fig.innerHTML = buildVisual(q.diagram);
+      if (fig.firstElementChild) {
+        qBox.append(fig);
+        mountInteractiveVisuals(fig);
+      }
+    }
+
     const choicesGroup = document.createElement("div");
     choicesGroup.style.cssText = "display:flex; flex-direction:column; gap:8px;";
 
