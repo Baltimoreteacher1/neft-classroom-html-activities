@@ -35,6 +35,7 @@ import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
 import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { initPresentMode } from "./present-mode.js";
 import { reportScore } from "./score-reporter.js";
+import { isScormLaunch } from "./scorm-bridge.js";
 import {
   clearLessonStorage,
   clearStudentLessonState,
@@ -540,21 +541,39 @@ function mountClassRoster(screen, nameInput, periodInput, startBtn) {
 }
 
 function showIdentityScreen(root, config) {
-  // Canvas/SCORM auto-identify: when the SCORM wrapper hands us the LMS student
-  // name (sn) — and optional roster id (si) — skip the name-entry screen and
-  // launch straight in, already identified. Guarded on `sn` so a normal visit
-  // to the live site is byte-identical to before.
+  // Canvas/SCORM identity: the SCORM wrapper hands us the LMS student name
+  // (sn) — and optional roster id (si) — read from cmi.core.student_name at
+  // launch (functions/_lib/scorm-sco.js).
+  //
+  // A SCORM launch USED TO go straight in, skipping the name screen entirely.
+  // It no longer does (Joel, 2026-09-02: "when I post the assignments (the
+  // scorm versions of the interactive lessons) for students it is not having
+  // them put their name"). Every student now passes through the same name card
+  // they get on the live site — the LMS name is PRE-FILLED and Start is already
+  // enabled, so it costs one tap, and a student whose Canvas name is wrong or
+  // unfamiliar ("Rivera, Ana Maria" for a girl who writes "Ana") can correct it
+  // before any work is saved under it.
+  //
+  // SCOPED TO `lms=scorm`, which is what the SCO actually sends. A bare `?sn=`
+  // deep link still launches straight in: that is how the QA harness drives a
+  // pre-identified lesson (validate-lesson-visibility, validate-lesson-flow-walk,
+  // validate-notebook-render, visual-baseline all navigate to `?sn=`), and
+  // making those land on a name card would mean four gates measuring the cover
+  // instead of the lesson.
+  //
+  // `si` still wins as the STUDENT ID: it is the stable roster key resume and
+  // grade sync are built on, so editing the display name never orphans work.
   const launchParams = new URLSearchParams(window.location.search);
   const lmsName = (launchParams.get("sn") || "").trim();
-  if (lmsName) {
-    const lmsId = (launchParams.get("si") || "").trim();
-    const studentId = normalizeStudentId(lmsId || lmsName);
+  const lmsId = (launchParams.get("si") || "").trim();
+  const confirmName = Boolean(lmsName) && isScormLaunch();
+  if (lmsName && !confirmName) {
     try {
       window.NeftIdentity?.set({ name: lmsName, section: "" });
     } catch {
       /* identity is an enhancement — never block launching the lesson */
     }
-    initMainApp(root, config, studentId, lmsName, "");
+    initMainApp(root, config, normalizeStudentId(lmsId || lmsName), lmsName, "");
     return;
   }
 
@@ -605,8 +624,19 @@ function showIdentityScreen(root, config) {
         }
       }
     }
+    // Under an LMS launch the roster is authoritative: a remembered session
+    // belonging to somebody else is last period's student on a shared
+    // Chromebook, and resuming it would put this student's work under their
+    // name without ever asking. Only this student's own session resumes.
+    if (
+      activeSession &&
+      confirmName &&
+      normalizeStudentId(activeSession.name) !== normalizeStudentId(lmsName)
+    ) {
+      activeSession = null;
+    }
     if (activeSession && activeSession.name) {
-      const studentId = normalizeStudentId(activeSession.name);
+      const studentId = normalizeStudentId(lmsId || activeSession.name);
       try {
         window.NeftIdentity?.set({ name: activeSession.name, section: activeSession.period || "" });
       } catch (_) {}
@@ -715,11 +745,28 @@ function showIdentityScreen(root, config) {
 
   startBtn.addEventListener("click", launchApp);
 
-  // Optional class roster: when the lesson is opened with ?class=<code> (a link
-  // the teacher distributes), show a name dropdown instead of free typing so
-  // names match Canvas exactly. No roster data is stored on the server — it
-  // travels only in the teacher's link.
-  mountClassRoster(screen, nameInput, periodInput, startBtn);
+  if (confirmName) {
+    // Pre-filled and ready: the student reads their name, fixes it if it is
+    // wrong, and presses Start. Selecting the text means one keystroke replaces
+    // it rather than landing mid-name.
+    nameInput.value = lmsName;
+    startBtn.disabled = false;
+    updateSavedHighlight();
+    const hint = document.createElement("p");
+    hint.className = "identity-lms-hint";
+    hint.style.cssText = "margin:-6px 0 10px; font-size:0.85rem; color:#475569; line-height:1.45;";
+    hint.textContent =
+      "This is the name your teacher sees. Fix it if it is not how you write your name, then press Start.";
+    nameInput.insertAdjacentElement("afterend", hint);
+  } else {
+    // Optional class roster: when the lesson is opened with ?class=<code> (a
+    // link the teacher distributes), show a name dropdown instead of free
+    // typing so names match Canvas exactly. No roster data is stored on the
+    // server — it travels only in the teacher's link. Skipped under an LMS
+    // launch: Canvas has already named this student, and a roster picker would
+    // throw that away and make them hunt for themselves in a list.
+    mountClassRoster(screen, nameInput, periodInput, startBtn);
+  }
 
   if (saved.length) {
     const list = screen.querySelector("#id-saved-list");
@@ -754,7 +801,7 @@ function showIdentityScreen(root, config) {
   function launchApp() {
     const name = nameInput.value.trim();
     if (!name) return;
-    const studentId = normalizeStudentId(name);
+    const studentId = normalizeStudentId(lmsId || name);
     const period = periodInput.value.trim();
     // Persist active session so page refresh never returns to sign-in screen
     try {

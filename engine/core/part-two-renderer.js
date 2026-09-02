@@ -205,21 +205,33 @@ function renderMathNotesReviewStep(host, config) {
   renderMathNotesStep(host, config);
 }
 
-/** 🎯 The same two goals as yesterday — they have not changed on day 2. */
-function renderObjectivesStep(host, config) {
-  // resolveContentObjective / resolveLanguageObjective return text that is
-  // ALREADY HTML-escaped, so running esc() over them again would print "&amp;".
+/**
+ * The two goals, as a card. Both places Part II shows them render THIS — the
+ * opening step in phase 0 and the closing card at the end of Group Work — so
+ * the objectives a student reads at the end are the same strings, from the same
+ * source, as the ones they read at the start.
+ *
+ * resolveContentObjective / resolveLanguageObjective return text that is
+ * ALREADY HTML-escaped, so running esc() over them again would print "&amp;".
+ */
+function objectivesCard(config, heading, lede) {
   const goals = el("section", "card card-teal");
   goals.append(
     el(
       "div",
       null,
-      `<h3 style="margin:0 0 10px; font-size:1.3rem; color:#0f172a;">📌 What we are still working on</h3>
+      `<h3 style="margin:0 0 ${lede ? "4px" : "10px"}; font-size:1.3rem; color:#0f172a;">${heading}</h3>
+       ${lede ? `<p style="margin:0 0 12px; font-size:1rem; color:#475569;">${lede}</p>` : ""}
        <p style="margin:0 0 6px; font-size:1.1rem; font-weight:700; color:#0f172a; line-height:1.5;">🎯 ${resolveContentObjective(config)}</p>
        <p style="margin:0; font-size:1.05rem; font-weight:600; color:#334155; line-height:1.5;">🗣️ ${resolveLanguageObjective(config)}</p>`,
     ),
   );
-  host.append(goals);
+  return goals;
+}
+
+/** 🎯 The same two goals as yesterday — they have not changed on day 2. */
+function renderObjectivesStep(host, config) {
+  host.append(objectivesCard(config, "📌 What we are still working on", ""));
 }
 
 /**
@@ -547,6 +559,21 @@ function renderGroups(host, state, _ctx, config) {
   // lesson and its own small-group variants. The MODIFICATION line under each
   // chip is what that table does differently, not a different subject.
   renderLevels(host, state, config);
+
+  // ── Card 4 · the objectives again, at the very end ────────────────────────
+  // Joel, 2026-09-02: "include the objectives (again) after the 3 Group work …
+  // a card 4 that is the Objectives (do not take it away from the beginning —
+  // just add it at the end)". The opening card sets the goal; this one closes
+  // the loop, so the last thing a table reads before "We're done" is what the
+  // day was for. Same strings, same source as phase 0's Objectives step — this
+  // is a second RENDER of the objectives, never a second copy of them.
+  host.append(
+    objectivesCard(
+      config,
+      "🎯 Today's goals — did we meet them?",
+      "Read these again with your group before you finish. Can each person say how today's work met them?",
+    ),
+  );
 
   const sample = config.revealWordProblem && config.revealWordProblem.sampleAnswer;
   if (sample && isTeacherMode()) {

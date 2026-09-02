@@ -167,8 +167,76 @@ function renderableVisualKinds() {
   return kinds;
 }
 
+/**
+ * AUTHORED warm-up questions, keyed by core lesson id (data/part-two-warmup-inserts.json).
+ *
+ * Part II copies its mathematics; it does not write any. That rule has one
+ * documented exception, and this is it. MSTAR asks a shape the core practice
+ * banks do not: read a MODEL — a tape diagram, most often — and choose the
+ * expression it represents. A warm-up assembled only from copied practice can
+ * therefore never contain the question type the state test opens with, no
+ * matter which three items it picks (Joel, 2026-09-02: "a tape diagram question
+ * that they might see on MSTAR").
+ *
+ * The exception is kept narrow on purpose: the questions live in DATA, not in
+ * this script, they are APPENDED after the copied ones (the warm-up still opens
+ * where every student can get in, and no copied question is displaced), and
+ * every one is held to the same authoring contract as a lesson config item —
+ * choiceFeedback for every choice, a hint ladder, the Spanish lane. Anything
+ * that fails validateInsert() is dropped rather than shipped half-built.
+ */
+function readWarmupInserts() {
+  const path = join(ROOT, "data/part-two-warmup-inserts.json");
+  if (!existsSync(path)) return {};
+  const raw = JSON.parse(readFileSync(path, "utf8"));
+  const out = {};
+  for (const [id, items] of Object.entries(raw)) {
+    if (id.startsWith("_") || !Array.isArray(items)) continue;
+    const kept = items.filter((item) => validateInsert(id, item));
+    if (kept.length) out[id] = kept;
+  }
+  return out;
+}
+
+/**
+ * An insert must be renderable and completely authored, because nothing
+ * upstream of here reviewed it: it never passed through a lesson config, so the
+ * gates that hold `lessons/<id>/config.json` to the distractor-feedback and
+ * bilingual standards never saw it. A half-authored question in a warm-up is
+ * worse than three copied ones.
+ */
+function validateInsert(id, item) {
+  const fail = (why) => {
+    throw new Error(`data/part-two-warmup-inserts.json — ${id}: ${why}`);
+  };
+  if (!gradable(item)) fail("not a gradable multiple-choice item");
+  if (!visualRenders(item)) fail(`visual kind "${item.visual.kind}" has no renderer`);
+  const diagramKind = item.diagram && item.diagram.kind;
+  if (diagramKind && !RENDERABLE_KINDS.has(String(diagramKind))) {
+    fail(`diagram kind "${diagramKind}" has no renderer`);
+  }
+  if (item.correctIndex < 0 || item.correctIndex >= item.choices.length) {
+    fail("correctIndex is outside the choices");
+  }
+  if (!Array.isArray(item.choiceFeedback) || item.choiceFeedback.length !== item.choices.length) {
+    fail("every choice needs a choiceFeedback entry (tools/distractor-feedback.test.mjs)");
+  }
+  if (!item.explanation) fail("no explanation");
+  if (!Array.isArray(item.hints) || item.hints.length < 3) fail("needs a three-rung hint ladder");
+  if (
+    !item.stemEs ||
+    !Array.isArray(item.choicesEs) ||
+    item.choicesEs.length !== item.choices.length
+  ) {
+    fail("the Spanish lane is incomplete (stemEs + one choicesEs per choice)");
+  }
+  return true;
+}
+
 const RENDERABLE_KINDS = renderableVisualKinds();
 const INTERACTIVE_KINDS = interactiveKinds();
+// Initialised after RENDERABLE_KINDS: validateInsert() reads it.
+const WARMUP_INSERTS = readWarmupInserts();
 
 /**
  * True when Part 2 can draw whatever figure the item declares.
@@ -203,8 +271,9 @@ function gradable(item) {
 /**
  * Part 2 opens with a WARM-UP on yesterday's lesson, not a single quick check
  * (Joel, 2026-08-26: "instead of quick check ... have a warmup part"). Every
- * question is one the core lesson already wrote, so Part 2 still authors no
- * mathematics.
+ * question is one the core lesson already wrote — with the single documented
+ * exception of the authored MSTAR-style items in WARMUP_INSERTS, which are
+ * appended last and cover a question shape no core practice bank contains.
  *
  * IT IS NOT `config.warmup`, and the field is called `reviewWarmup` to keep
  * that clear. `warmup` is a defined contract in this repo: it reviews the
@@ -216,7 +285,7 @@ function gradable(item) {
  * Easiest first: this is a "do you still have yesterday" check at the start of
  * a second day, so it opens where every student can get in.
  */
-function buildWarmup(config, title) {
+function buildWarmup(id, config, title) {
   const p = config.practice || {};
   const seen = new Set();
   const questions = [];
@@ -228,6 +297,17 @@ function buildWarmup(config, title) {
       seen.add(key);
       questions.push(item);
     }
+  }
+  // The authored MSTAR-style question goes LAST, after the copied ones. It is
+  // the hardest thing on the card — read a model, then pick the expression —
+  // and the warm-up is ordered easiest first, so it closes the card instead of
+  // guarding the door. Appending also means it ADDS to the warm-up rather than
+  // pushing a copied question out of the three-item window above.
+  for (const insert of WARMUP_INSERTS[id] || []) {
+    const key = String(insert.stem || insert.prompt);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    questions.push(insert);
   }
   if (!questions.length) return null;
   return {
@@ -490,7 +570,7 @@ function buildConfig(id, core, readVariant) {
   for (const key of CARRIED) {
     if (core[key] !== undefined) out[key] = core[key];
   }
-  const warmup = buildWarmup(core, core.title);
+  const warmup = buildWarmup(id, core, core.title);
   if (warmup) out.reviewWarmup = warmup;
   const highlights = buildHighlights(core);
   if (highlights) out.reviewHighlights = highlights;
