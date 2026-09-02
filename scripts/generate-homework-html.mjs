@@ -480,7 +480,8 @@ const TOPIC_GUIDE = {
     draw: "Start at (0,0), move across x, then up or down to y.",
     drawEs: "Empieza en (0,0), avanza en x, luego sube o baja en y.",
     coach: "Ask: 'Did we move horizontally across the floor first, before going up or down?'",
-    coachEs: "Pregunta: '¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?'",
+    coachEs:
+      "Pregunta: '¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?'",
   },
   "number-line": {
     en: "Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.",
@@ -495,8 +496,10 @@ const TOPIC_GUIDE = {
     es: "Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).",
     draw: "Divide bars or lines into equal pieces to see the sizes clearly.",
     drawEs: "Divide barras o rectas en partes iguales para ver los tamaños con claridad.",
-    coach: "Ask: 'Can we combine slices from different sized pizzas, or do we need equal slices first?'",
-    coachEs: "Pregunta: '¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?'",
+    coach:
+      "Ask: 'Can we combine slices from different sized pizzas, or do we need equal slices first?'",
+    coachEs:
+      "Pregunta: '¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?'",
   },
   decimals: {
     en: "Line up the decimal points like buttons on a shirt so dollars stay with dollars and dimes stay with dimes.",
@@ -511,8 +514,10 @@ const TOPIC_GUIDE = {
     es: "Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.",
     draw: "Draw a balance scale showing both sides equal.",
     drawEs: "Dibuja una balanza que muestre ambos lados iguales.",
-    coach: "Ask: 'What operation is connected to the variable, and what is the opposite operation to undo it?'",
-    coachEs: "Pregunta: '¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?'",
+    coach:
+      "Ask: 'What operation is connected to the variable, and what is the opposite operation to undo it?'",
+    coachEs:
+      "Pregunta: '¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?'",
   },
   inequalities: {
     en: "Solve like an equation, then test a number: shade all numbers that make the comparison true.",
@@ -520,7 +525,8 @@ const TOPIC_GUIDE = {
     draw: "Use an open circle for < or > and a solid filled circle for ≤ or ≥, then shade.",
     drawEs: "Usa círculo abierto para < o > y círculo relleno para ≤ o ≥, luego sombrea.",
     coach: "Ask: 'Is the endpoint included (solid dot) or not included (open circle)?'",
-    coachEs: "Pregunta: '¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?'",
+    coachEs:
+      "Pregunta: '¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?'",
   },
   expressions: {
     en: "Combine matching parts together — letters with letters and regular numbers with regular numbers.",
@@ -535,8 +541,10 @@ const TOPIC_GUIDE = {
     es: "Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.",
     draw: "Line up values from least to greatest to see the spread and middle.",
     drawEs: "Ordena los valores de menor a mayor para ver la dispersión y el centro.",
-    coach: "Ask: 'Would 10 classmates give 10 different answers, or would everyone give the exact same answer?'",
-    coachEs: "Pregunta: '¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?'",
+    coach:
+      "Ask: 'Would 10 classmates give 10 different answers, or would everyone give the exact same answer?'",
+    coachEs:
+      "Pregunta: '¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?'",
   },
   factors: {
     en: "Factors are the building blocks that multiply to make a number (e.g. 2 × 3 = 6). Multiples are skip-counting.",
