@@ -263,6 +263,10 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "mt-4";
+  // Registered as a live region while still empty, so the feedback written
+  // into it later is announced — an alert born in the same task is not.
+  feedbackSlot.setAttribute("role", "status");
+  feedbackSlot.setAttribute("aria-live", "polite");
   wrapper.append(feedbackSlot);
 
   function handleDrop(data, bucketTerm, dropZone) {
@@ -343,7 +347,6 @@ function buildExamples(term) {
 function showFb(slot, type, msg) {
   const fb = document.createElement("div");
   fb.className = `feedback feedback-${type} visible`;
-  fb.setAttribute("role", "alert");
   fb.innerHTML = `<span class="feedback-icon">${type === "success" ? "✓" : "💡"}</span><span>${msg}</span>`;
   slot.innerHTML = "";
   slot.append(fb);

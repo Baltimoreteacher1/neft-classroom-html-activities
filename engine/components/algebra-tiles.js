@@ -232,6 +232,10 @@ export function renderAlgebraTiles(
 
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "mt-4";
+  // Registered as a live region while still empty, so the feedback written
+  // into it later is announced — an alert born in the same task is not.
+  feedbackSlot.setAttribute("role", "status");
+  feedbackSlot.setAttribute("aria-live", "polite");
   wrapper.append(feedbackSlot);
 
   const checkBtn = document.createElement("button");
@@ -273,7 +277,6 @@ function showFb(slot, type, msg) {
   // at-fb-enter drives a fade-in (and icon pulse for hints); reduced-motion
   // users get the same final state with no animation.
   fb.className = `feedback feedback-${type} visible at-fb-enter`;
-  fb.setAttribute("role", "alert");
   fb.innerHTML = `<span class="feedback-icon">${type === "success" ? "✓" : "💡"}</span><span>${msg}</span>`;
   slot.innerHTML = "";
   slot.append(fb);

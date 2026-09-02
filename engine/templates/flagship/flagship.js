@@ -79,10 +79,65 @@ export function bootFlagship(config) {
   // Show the mission intro, then boot the underlying phase engine and attach
   // the narrative HUD that updates per scene.
   showMissionIntro(fl, config, () => {
-    bootLesson(mergedConfig);
-    attachSceneHud(scenes, fl);
-    attachCompletionWatcher(fl, config);
+    try {
+      bootLesson(mergedConfig);
+    } catch (err) {
+      // The shell guard in lesson-shell-guard.js goes inert the moment
+      // anything paints, and the mission intro has already painted — so a
+      // throw here used to leave a silent half-rendered page with no message
+      // and no reload path. Tell the student, and tell telemetry.
+      showBootFailure(err);
+      return;
+    }
+    try {
+      attachSceneHud(scenes, fl);
+      attachCompletionWatcher(fl, config);
+    } catch (err) {
+      // The lesson itself booted; losing the narrative HUD is not worth a
+      // student-facing error card. Report it and let the lesson stand.
+      reportBootError(err);
+    }
   });
+}
+
+function reportBootError(err) {
+  console.error("[flagship] boot error", err);
+  try {
+    window.NTUsage?.reportError?.(
+      "flagship-boot: " + (err && err.message ? err.message : String(err)),
+    );
+  } catch (_) {
+    /* telemetry must never compound a failure */
+  }
+}
+
+// Same card, language, and posture as lesson-shell-guard.js's fallback — that
+// guard owns "never painted", this owns "crashed after the mission intro".
+function showBootFailure(err) {
+  reportBootError(err);
+  if (document.getElementById("nt-shell-fallback")) return;
+  const app = document.getElementById("app") || document.body;
+  const box = document.createElement("div");
+  box.id = "nt-shell-fallback";
+  box.setAttribute("role", "alert");
+  box.style.cssText =
+    "max-width:520px;margin:64px auto;padding:32px 28px;background:#fff;" +
+    "border:1px solid #d7e2ed;border-radius:16px;box-shadow:0 10px 30px rgba(18,53,91,.10);" +
+    "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#21313f;text-align:center;";
+  box.innerHTML =
+    '<div style="font-size:44px;line-height:1" aria-hidden="true">📚</div>' +
+    '<h1 style="font-size:22px;color:#12355b;margin:14px 0 8px">This lesson is having trouble loading</h1>' +
+    '<p style="font-size:16px;line-height:1.5;color:#5f6f80;margin:0 0 20px">' +
+    "Don't worry — your saved work is safe. Try reloading the page. " +
+    "If it still doesn't load, tell your teacher.</p>" +
+    '<button type="button" id="nt-shell-reload" style="background:#12355b;color:#fff;border:0;' +
+    'border-radius:10px;padding:12px 26px;font-size:16px;font-weight:700;cursor:pointer;min-height:44px">' +
+    "Reload lesson</button>" +
+    '<p style="margin:16px 0 0"><a href="/curriculum/" style="color:#0d7a76;font-size:15px;font-weight:600">' +
+    "← Back to the Curriculum Hub</a></p>";
+  app.appendChild(box);
+  const btn = document.getElementById("nt-shell-reload");
+  if (btn) btn.addEventListener("click", () => window.location.reload());
 }
 
 const SCENE_PHASE_NAMES = ["launch", "vocab", "explore", "practice", "connect", "reflect"];

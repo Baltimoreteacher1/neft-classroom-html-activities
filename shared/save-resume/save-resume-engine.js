@@ -1596,6 +1596,7 @@
     ui.panel = panel;
     ui.status = panel.querySelector("#nsr-status");
     ui.dot = launcher.querySelector("#nsr-dot");
+    ui.launcher = launcher;
 
     wirePanel(self, panel);
     setStatus(self, self.record ? "saved" : "idle");
@@ -1828,6 +1829,16 @@
     var text = STATUS_TEXT[key] || key;
     if (ui.status) ui.status.textContent = text;
     if (ui.dot) ui.dot.className = "nsr-dot nsr-dot-" + key;
+    // #nsr-status is a live region inside the panel, and the panel is
+    // aria-hidden whenever it is closed — so with the panel closed the status
+    // was reachable by nobody: the dot is aria-hidden and the launcher title
+    // was static. Mirror the status onto the launcher so a student who tabs
+    // to (or hovers) the one always-visible control hears the current state.
+    if (ui.launcher) {
+      var label = "Save / Resume your work — " + text;
+      ui.launcher.title = label;
+      ui.launcher.setAttribute("aria-label", label);
+    }
     // Brief confirmation pulse on the launcher when a save lands, so students
     // get visible feedback even with the panel closed. Restarts cleanly.
     if ((key === "saved" || key === "saved-local") && ui.root) {

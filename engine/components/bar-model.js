@@ -396,6 +396,10 @@ function renderRatioBarModel(container, config) {
 
   const solutionSlot = document.createElement("div");
   solutionSlot.className = "mt-4";
+  // Registered as a live region while still empty, so the feedback written
+  // into it later is announced — an alert born in the same task is not.
+  solutionSlot.setAttribute("role", "status");
+  solutionSlot.setAttribute("aria-live", "polite");
 
   let revealed = false;
   revealBtn.addEventListener("click", () => {
@@ -414,7 +418,6 @@ function renderRatioBarModel(container, config) {
 function showFb(slot, type, msg) {
   const fb = document.createElement("div");
   fb.className = `feedback feedback-${type} visible`;
-  fb.setAttribute("role", "alert");
   fb.innerHTML = `<span class="feedback-icon">${type === "success" ? "✓" : "💡"}</span><span>${msg}</span>`;
   slot.innerHTML = "";
   slot.append(fb);

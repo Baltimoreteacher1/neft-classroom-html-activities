@@ -409,6 +409,10 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
   // Submit / feedback (formative, never blocks the lesson)
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "mt-4";
+  // Registered as a live region while still empty, so the feedback written
+  // into it later is announced — an alert born in the same task is not.
+  feedbackSlot.setAttribute("role", "status");
+  feedbackSlot.setAttribute("aria-live", "polite");
   card.append(feedbackSlot);
 
   const submitBtn = document.createElement("button");
@@ -419,12 +423,10 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
     const fb = document.createElement("div");
     if (written === 0) {
       fb.className = "feedback feedback-hint visible twr-feedback";
-      fb.setAttribute("role", "alert");
       fb.innerHTML =
         '<span class="feedback-icon">💡</span><span>Write at least one sentence to get started — use a starter above.</span>';
     } else {
       fb.className = "feedback feedback-success visible twr-feedback";
-      fb.setAttribute("role", "status");
       fb.innerHTML =
         '<span class="feedback-icon">✓</span><span>Your writing is saved. Read it out loud to check it sounds right.</span>';
       // Success polish: highlight frame + confetti (both reduced-motion safe).
