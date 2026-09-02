@@ -29,6 +29,9 @@ h1 { font-size: 28px; color: #12355b; margin: 6px 0 4px; }
 .choice.is-wrong { border-color: #ef4444; background: #fef2f2; }
 textarea.response { width: 100%; min-height: 110px; border: 2px solid #d7e2ed; border-radius: 10px; padding: 12px 14px; font: inherit; font-size: 16px; }
 .hand-scored { font-size: 14px; color: #5f6f80; margin-top: 8px; }
+.mode-bar .mode-label { font-size: 16px; margin-bottom: 4px; }
+.mode-bar .actions { margin: 10px 0; }
+.look-fors { background: #f8fbff; border: 1px solid #d7e2ed; border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 14.5px; }
 .fb { display: none; border-radius: 10px; padding: 12px 14px; margin-top: 10px; font-size: 15.5px; }
 .fb.visible { display: block; }
 .fb-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
@@ -68,6 +71,14 @@ button.btn:focus-visible, .choice:focus-within { outline: 3px solid #0d7a76; out
         <p><strong>How this works:</strong> Answer every question, then press <em>Submit &amp; Grade</em>. Selected-response parts grade instantly with an explanation for each; written responses go to your teacher. Your answers save on this device.</p>
         <p style="margin-top:0.6em"><strong>On the real MSTAR:</strong> math runs as three 40-minute sessions, in English, on a computer. Here there is no clock — practice the thinking first; the pacing comes with rehearsal.</p>
       </div>
+      <div class="card mode-bar">
+        <p class="mode-label"><strong>Written responses:</strong> how should the explain-the-error questions be scored?</p>
+        <div class="actions" role="group" aria-label="Written response scoring mode">
+          <button type="button" class="btn btn-primary" data-mode-btn="auto" aria-pressed="true">Score my writing now</button>
+          <button type="button" class="btn btn-secondary" data-mode-btn="manual" aria-pressed="false">My teacher scores it</button>
+        </div>
+        <p class="muted">Instant scoring checks whether your explanation states the value and uses the reasoning the question is about. It matches words and numbers, so a right answer worded differently can score low — your teacher can always re-score it from the answer key.</p>
+      </div>
       <div id="scoreBox" class="score-box" role="status" aria-live="polite" tabindex="-1"></div>
     <div class="card" data-item="1">
       <div class="item-head"><span class="item-num">1</span><span class="item-tag">6.AT.11</span><span class="item-tag">Explore Relationships Between Two Variables</span></div>
@@ -103,7 +114,8 @@ button.btn:focus-visible, .choice:focus-within { outline: 3px solid #0d7a76; out
       <p class="scenario">Ramona is graphing sales at the stadium pretzel stand. Pretzels cost $6 each, and her table shows 1 pretzel with $6, 2 pretzels with $12, and 3 pretzels with $18. She labels the horizontal axis 'number of pretzels' and the vertical axis 'total cost'. For 3 pretzels she plots the point (18, 3).</p>
       <p class="stem">Explain Ramona's misconception and give the correct ordered pair for 3 pretzels.</p>
       <textarea class="response" data-q="q2w" rows="5" aria-label="Your explanation for question 2"></textarea>
-      <p class="hand-scored">✍️ Written response — your teacher scores this part (2 points).</p>
+      <p class="hand-scored" data-written-note="q2w">✍️ Written response — 2 points.</p>
+      <div class="fb" data-fb="q2w" role="status" aria-live="polite"></div>
     </div>
     <div class="card" data-item="3">
       <div class="item-head"><span class="item-num">3</span><span class="item-tag">6.AT.11</span><span class="item-tag">Write Equations to Represent Relationships Between Two Variables</span></div>
@@ -203,8 +215,32 @@ button.btn:focus-visible, .choice:focus-within { outline: 3px solid #0d7a76; out
 (function () {
   "use strict";
   var KEY = {"q1":{"correct":[0,2,4],"multi":true,"explanation":"In each true statement the quantity named is the one that is chosen, and the other quantity responds to it. In the spring statement the student chooses the weights, so the weights are independent and the stretch is dependent. In the ticket statement the number of tickets is chosen and the cost responds, so the cost is dependent no matter what the problem asks for."},"q3a":{"correct":[3],"explanation":"The studio charges $7.50 for every class, so the total cost is the rate times the number of classes: c = 7.5n. The dependent variable, the cost, stands alone on the left, and the independent variable, the classes, is multiplied by the rate.","choiceFeedback":["This adds the price once rather than charging it per class. Each of the n classes costs $7.50.","This makes the number of classes depend on the cost. The cost is what depends on the classes.","This divides by the price. Each class ADDS $7.50, so multiply.",""]},"q3b":{"correct":[3],"explanation":"A rate applies to every class, so the operation is multiplication and the total for 4 classes is 7.5 × 4 = $30. Adding gives $11.50, which charges the fee only once. The cost depends on the classes, not the other way around, so the cost is the variable that stands alone.","choiceFeedback":[]},"q4a":{"correct":[0],"explanation":"Substitute 1,800 for b to get 45m = 1,800, then divide both sides by 45: m = 1,800 ÷ 45 = 40 minutes. Checking the answer, 45 × 40 = 1,800 bottles.","choiceFeedback":[]},"q4b":{"correct":[2],"explanation":"In b = 45m the 45 is multiplied by m, so dividing both sides by 45 undoes the multiplication and gives m = 40. Multiplying 1,800 by 45 gives 81,000, far more minutes than the whole order needs, and subtracting treats the rate as a one-time amount instead of a rate for every minute.","choiceFeedback":[]}};
+  var WRITING = {"q2w":{"values":["3","18"],"reason":["number","pretzels","first","horizontal","axis","point"],"handOnly":false}};
   var STORE = "mstar-practice:u9-a";
+  var MODE_STORE = STORE + ":writing-mode";
   var autoTotal = Object.keys(KEY).length;
+  // Only items the scorer can actually judge are auto-scored; the rest always
+  // go to the teacher, in either mode, and never enter the auto total.
+  var writtenKeys = Object.keys(WRITING).filter(function (q) { return !WRITING[q].handOnly; });
+  var handOnlyKeys = Object.keys(WRITING).filter(function (q) { return WRITING[q].handOnly; });
+  var writtenTotal = writtenKeys.length * 2; // 2 points each, as the rubric scores them
+
+  /* Written responses can be scored two ways, and the choice is the teacher's:
+   *   "auto"   — the page scores them against the look-fors derived from each
+   *              item's own rubric, so the whole test self-grades (and, inside
+   *              Canvas, the reported percent includes the writing).
+   *   "manual" — the page checks nothing and the teacher scores the writing
+   *              from the answer key, which is how these items were designed.
+   * Auto is PROVISIONAL by construction: it can only see whether the words and
+   * values the author used are present, so a right answer in different words
+   * scores low. The teacher's score always wins, and the page says so. */
+  function writingMode() {
+    try { return localStorage.getItem(MODE_STORE) === "manual" ? "manual" : "auto"; }
+    catch (_) { return "auto"; }
+  }
+  function setWritingMode(mode) {
+    try { localStorage.setItem(MODE_STORE, mode); } catch (_) { /* storage blocked */ }
+  }
 
   function load() {
     try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (_) { return {}; }
@@ -261,20 +297,124 @@ button.btn:focus-visible, .choice:focus-within { outline: 3px solid #0d7a76; out
     return right ? 1 : 0;
   }
 
+  /* Score one written response against its own look-fors. Returns 0-2 with the
+   * evidence it used, so the feedback can name what was found and what was not
+   * rather than announcing a bare number. */
+  function gradeWriting(q) {
+    var spec = WRITING[q];
+    var text = String(state[q] || "").trim();
+    if (!text) return { score: 0, empty: true, missingValues: spec.values.slice(), missingTerms: spec.reason.slice() };
+
+    var lower = text.toLowerCase();
+    var digits = (lower.match(/-?\d[\d,]*\.?\d*/g) || []).map(function (n) {
+      return String(Number(n.replace(/,/g, "")));
+    });
+    var missingValues = spec.values.filter(function (v) {
+      return digits.indexOf(String(Number(v))) === -1;
+    });
+    var hasValue = spec.values.length === 0 || missingValues.length < spec.values.length;
+
+    // Stem-match at 6 characters so "aligned" satisfies "alignment".
+    var foundTerms = [];
+    var missingTerms = [];
+    spec.reason.forEach(function (term) {
+      var stem = term.slice(0, 6);
+      (lower.indexOf(stem) !== -1 ? foundTerms : missingTerms).push(term);
+    });
+    // Needs at least two of the concept words, or all of them when the author
+    // used fewer than two — one shared word is a coincidence, not an argument.
+    var needed = Math.min(2, spec.reason.length);
+    var hasReason = spec.reason.length === 0 ? false : foundTerms.length >= needed;
+
+    var score = hasValue && hasReason ? 2 : hasValue || hasReason ? 1 : 0;
+    return { score: score, hasValue: hasValue, hasReason: hasReason, missingValues: missingValues, missingTerms: missingTerms };
+  }
+
+  function showWritingFeedback(q, r) {
+    var fb = document.querySelector('[data-fb="' + q + '"]');
+    if (!fb) return;
+    var parts = [];
+    if (r.empty) {
+      parts.push("— Nothing written yet.");
+    } else {
+      parts.push((r.score === 2 ? "✓ " : "◐ ") + "Provisional score: " + r.score + " of 2.");
+      if (r.hasValue && WRITING[q].values.length) parts.push("You stated the correct value.");
+      if (!r.hasValue && r.missingValues.length) parts.push("I could not find the value this asks for.");
+      if (r.hasReason) parts.push("You explained the reasoning.");
+      else if (r.missingTerms.length) {
+        parts.push("Say more about why: try writing about " + r.missingTerms.slice(0, 3).join(", ") + ".");
+      }
+    }
+    parts.push("This is practice feedback from matching words and numbers — your teacher makes the final call.");
+    fb.textContent = parts.join(" ");
+    fb.className = "fb visible " + (r.score === 2 ? "fb-correct" : "fb-wrong");
+  }
+
+  function applyWritingMode() {
+    var manual = writingMode() === "manual";
+    document.querySelectorAll("[data-written-note]").forEach(function (note) {
+      var handOnly = handOnlyKeys.indexOf(note.getAttribute("data-written-note")) !== -1;
+      note.textContent =
+        manual || handOnly
+          ? "✍️ Written response — your teacher scores this part (2 points)."
+          : "✍️ Written response — 2 points, scored when you submit. Your teacher can re-score it.";
+    });
+    document.querySelectorAll("[data-mode-btn]").forEach(function (btn) {
+      var on = btn.getAttribute("data-mode-btn") === (manual ? "manual" : "auto");
+      btn.className = "btn " + (on ? "btn-primary" : "btn-secondary");
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (manual) {
+      writtenKeys.forEach(function (q) {
+        var fb = document.querySelector('[data-fb="' + q + '"]');
+        if (fb) { fb.textContent = ""; fb.className = "fb"; }
+      });
+    }
+  }
+
+  document.querySelectorAll("[data-mode-btn]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setWritingMode(btn.getAttribute("data-mode-btn"));
+      applyWritingMode();
+    });
+  });
+  applyWritingMode();
+
   var submitBtn = document.getElementById("submitBtn");
   if (submitBtn) submitBtn.addEventListener("click", function () {
     var score = 0;
     Object.keys(KEY).forEach(function (q) { score += gradeOne(q); });
+
+    var manual = writingMode() === "manual";
+    var writingScore = 0;
+    if (!manual) {
+      writtenKeys.forEach(function (q) {
+        var r = gradeWriting(q);
+        writingScore += r.score;
+        showWritingFeedback(q, r);
+      });
+    }
+
+    var earned = score + (manual ? 0 : writingScore);
+    var possible = autoTotal + (manual ? 0 : writtenTotal);
     var box = document.getElementById("scoreBox");
     box.className = "score-box visible";
-    box.textContent = "Auto-scored: " + score + " of " + autoTotal + " selected-response parts correct." +
-      (1 ? " Plus 1 written response(s) your teacher scores." : "");
+    box.textContent =
+      "Scored " + earned + " of " + possible + " points — " +
+      score + " of " + autoTotal + " selected-response parts" +
+      (manual || !writtenKeys.length ? "" : ", plus " + writingScore + " of " + writtenTotal + " writing points (provisional — your teacher can re-score)") +
+      "." +
+      (manual && writtenKeys.length + handOnlyKeys.length
+        ? " Your " + (writtenKeys.length + handOnlyKeys.length) + " written response(s) go to your teacher."
+        : handOnlyKeys.length
+          ? " Your teacher scores " + handOnlyKeys.length + " more written response(s) by hand."
+          : "");
     box.focus();
     // Inside a Canvas SCORM launch the grade bridge is on the page; report the
-    // auto-scored percent silently. reportScore is repeatable, so a retake
-    // simply reports again. Outside Canvas the bridge is absent and this no-ops.
-    if (window.NeftCanvasBridge && autoTotal) {
-      try { window.NeftCanvasBridge.reportScore(Math.round((score / autoTotal) * 100)); } catch (_) { /* bridge must never break grading */ }
+    // percent silently. reportScore is repeatable, so a retake simply reports
+    // again. Outside Canvas the bridge is absent and this no-ops.
+    if (window.NeftCanvasBridge && possible) {
+      try { window.NeftCanvasBridge.reportScore(Math.round((earned / possible) * 100)); } catch (_) { /* bridge must never break grading */ }
     }
   });
 

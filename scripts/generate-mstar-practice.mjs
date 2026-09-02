@@ -200,6 +200,9 @@ h1 { font-size: 28px; color: #12355b; margin: 6px 0 4px; }
 .choice.is-wrong { border-color: #ef4444; background: #fef2f2; }
 textarea.response { width: 100%; min-height: 110px; border: 2px solid #d7e2ed; border-radius: 10px; padding: 12px 14px; font: inherit; font-size: 16px; }
 .hand-scored { font-size: 14px; color: #5f6f80; margin-top: 8px; }
+.mode-bar .mode-label { font-size: 16px; margin-bottom: 4px; }
+.mode-bar .actions { margin: 10px 0; }
+.look-fors { background: #f8fbff; border: 1px solid #d7e2ed; border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 14.5px; }
 .fb { display: none; border-radius: 10px; padding: 12px 14px; margin-top: 10px; font-size: 15.5px; }
 .fb.visible { display: block; }
 .fb-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
@@ -323,8 +326,154 @@ ${head}
       <p class="scenario">${esc(item.scenario)}</p>
       <p class="stem">${esc(item.prompt)}</p>
       <textarea class="response" data-q="q${n}w" rows="5" aria-label="Your explanation for question ${n}"></textarea>
-      <p class="hand-scored">✍️ Written response — your teacher scores this part (2 points).</p>
+      <p class="hand-scored" data-written-note="q${n}w">✍️ Written response — 2 points.</p>
+      <div class="fb" data-fb="q${n}w" role="status" aria-live="polite"></div>
     </div>`;
+}
+
+/* ── written-response look-fors ───────────────────────────────────────────────
+ * An explain-the-error item can be auto-scored ONLY against what its own author
+ * wrote. Nothing here is invented or inferred from a word list of mine:
+ *
+ *   VALUE  — the numbers in `rubric.score1`, which is the author's own
+ *            statement of the minimum ("gives 10.05 without explaining"), with
+ *            `correctAnswer` as the fallback when score1 states no number.
+ *   REASON — content words that appear in BOTH `rubric.score2` AND
+ *            `correctAnswer`. Two independently authored fields agreeing on a
+ *            word is the evidence that the word carries the concept; either one
+ *            alone would drag in that sentence's incidental vocabulary.
+ *
+ * The result is a PROVISIONAL score. A short correct answer phrased in words
+ * the author did not use will score low, which is exactly why the teacher's
+ * manual score always overrides and why the page says so rather than presenting
+ * the machine's number as the grade.
+ * ------------------------------------------------------------------------- */
+
+// Words that carry no mathematics: rubric scaffolding ("student explains"),
+// and ordinary English. Kept deliberately short and general — a longer list
+// would start deciding which mathematics counts.
+const RUBRIC_STOPWORDS = new Set([
+  "student",
+  "students",
+  "explains",
+  "explain",
+  "explanation",
+  "describes",
+  "describe",
+  "shows",
+  "show",
+  "very",
+  "computes",
+  "compute",
+  "gives",
+  "give",
+  "given",
+  "states",
+  "state",
+  "identifies",
+  "identify",
+  "answer",
+  "answers",
+  "correct",
+  "correctly",
+  "without",
+  "response",
+  "unrelated",
+  "agrees",
+  "score",
+  "that",
+  "with",
+  "this",
+  "then",
+  "than",
+  "them",
+  "they",
+  "their",
+  "there",
+  "from",
+  "into",
+  "each",
+  "must",
+  "have",
+  "here",
+  "what",
+  "when",
+  "where",
+  "which",
+  "would",
+  "could",
+  "should",
+  "because",
+  "about",
+  "under",
+  "over",
+  "same",
+  "also",
+  "using",
+  "used",
+  "uses",
+  "make",
+  "makes",
+  "made",
+  "does",
+  "doing",
+  "gets",
+  "just",
+  "only",
+  "more",
+  "most",
+  "some",
+  "both",
+  "were",
+  "will",
+  "your",
+  "you",
+]);
+
+function numbersIn(text) {
+  return (String(text || "").match(/-?\d[\d,]*\.?\d*/g) || [])
+    .map((n) => n.replace(/,/g, "").replace(/\.$/, ""))
+    .filter((n) => n.length && Number.isFinite(Number(n)));
+}
+
+function contentWords(text) {
+  return new Set(
+    String(text || "")
+      .toLowerCase()
+      .replace(/[^a-z\s-]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length >= 4 && !RUBRIC_STOPWORDS.has(w)),
+  );
+}
+
+function writingLookFors(item) {
+  const score1Numbers = numbersIn(item.rubric?.score1);
+  const values = score1Numbers.length ? score1Numbers : numbersIn(item.correctAnswer);
+  // Deduplicate and keep the LAST value when several appear: the rubric states
+  // the operation and then its result ("9.60 + 0.45 = 10.05"), and the result
+  // is the claim being checked.
+  const uniqueValues = [...new Set(values)];
+
+  const inScore2 = contentWords(item.rubric?.score2);
+  const inModel = contentWords(item.correctAnswer);
+  const reason = [...inScore2].filter((w) => inModel.has(w));
+
+  const lookFors = {
+    // A value the student must state. Empty for a conceptual item that states
+    // no number — then the score rests on reasoning alone, as it should.
+    values: uniqueValues.slice(-3),
+    // Stem-matched at 6 characters so ordinary inflection ("aligned"/"aligning")
+    // is not read as absence — the same rule validate:learn-it-scope uses.
+    reason: reason.slice(0, 8),
+  };
+
+  /* An item whose rubric and model answer share NO content word gives the
+   * scorer nothing to recognise reasoning by, and a 2 would then be
+   * unreachable no matter how well the student argued. Such items are not
+   * auto-scored at all: they go to the teacher and their points leave the
+   * auto-scored total, rather than sitting at a ceiling of 1 forever. */
+  lookFors.handOnly = lookFors.reason.length === 0;
+  return lookFors;
 }
 
 // KEY holds only what grading needs; feedback text stays in the DOM-free map
@@ -355,13 +504,59 @@ function studentKey(items) {
   return key;
 }
 
-function studentScript(storageKey, key, writtenCount) {
+/** The writing-scoring choice, offered only when the form HAS written items. */
+function modeBarHtml() {
+  return `      <div class="card mode-bar">
+        <p class="mode-label"><strong>Written responses:</strong> how should the explain-the-error questions be scored?</p>
+        <div class="actions" role="group" aria-label="Written response scoring mode">
+          <button type="button" class="btn btn-primary" data-mode-btn="auto" aria-pressed="true">Score my writing now</button>
+          <button type="button" class="btn btn-secondary" data-mode-btn="manual" aria-pressed="false">My teacher scores it</button>
+        </div>
+        <p class="muted">Instant scoring checks whether your explanation states the value and uses the reasoning the question is about. It matches words and numbers, so a right answer worded differently can score low — your teacher can always re-score it from the answer key.</p>
+      </div>`;
+}
+
+/** Look-fors for each written response, keyed like the choice questions. */
+function writingKey(items) {
+  const key = {};
+  items.forEach((item, idx) => {
+    if (item.type !== "error-analysis") return;
+    key[`q${idx + 1}w`] = writingLookFors(item);
+  });
+  return key;
+}
+
+function studentScript(storageKey, key, writing) {
   return `<script>
 (function () {
   "use strict";
   var KEY = ${JSON.stringify(key)};
+  var WRITING = ${JSON.stringify(writing)};
   var STORE = ${JSON.stringify(storageKey)};
+  var MODE_STORE = STORE + ":writing-mode";
   var autoTotal = Object.keys(KEY).length;
+  // Only items the scorer can actually judge are auto-scored; the rest always
+  // go to the teacher, in either mode, and never enter the auto total.
+  var writtenKeys = Object.keys(WRITING).filter(function (q) { return !WRITING[q].handOnly; });
+  var handOnlyKeys = Object.keys(WRITING).filter(function (q) { return WRITING[q].handOnly; });
+  var writtenTotal = writtenKeys.length * 2; // 2 points each, as the rubric scores them
+
+  /* Written responses can be scored two ways, and the choice is the teacher's:
+   *   "auto"   — the page scores them against the look-fors derived from each
+   *              item's own rubric, so the whole test self-grades (and, inside
+   *              Canvas, the reported percent includes the writing).
+   *   "manual" — the page checks nothing and the teacher scores the writing
+   *              from the answer key, which is how these items were designed.
+   * Auto is PROVISIONAL by construction: it can only see whether the words and
+   * values the author used are present, so a right answer in different words
+   * scores low. The teacher's score always wins, and the page says so. */
+  function writingMode() {
+    try { return localStorage.getItem(MODE_STORE) === "manual" ? "manual" : "auto"; }
+    catch (_) { return "auto"; }
+  }
+  function setWritingMode(mode) {
+    try { localStorage.setItem(MODE_STORE, mode); } catch (_) { /* storage blocked */ }
+  }
 
   function load() {
     try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (_) { return {}; }
@@ -418,20 +613,124 @@ function studentScript(storageKey, key, writtenCount) {
     return right ? 1 : 0;
   }
 
+  /* Score one written response against its own look-fors. Returns 0-2 with the
+   * evidence it used, so the feedback can name what was found and what was not
+   * rather than announcing a bare number. */
+  function gradeWriting(q) {
+    var spec = WRITING[q];
+    var text = String(state[q] || "").trim();
+    if (!text) return { score: 0, empty: true, missingValues: spec.values.slice(), missingTerms: spec.reason.slice() };
+
+    var lower = text.toLowerCase();
+    var digits = (lower.match(/-?\\d[\\d,]*\\.?\\d*/g) || []).map(function (n) {
+      return String(Number(n.replace(/,/g, "")));
+    });
+    var missingValues = spec.values.filter(function (v) {
+      return digits.indexOf(String(Number(v))) === -1;
+    });
+    var hasValue = spec.values.length === 0 || missingValues.length < spec.values.length;
+
+    // Stem-match at 6 characters so "aligned" satisfies "alignment".
+    var foundTerms = [];
+    var missingTerms = [];
+    spec.reason.forEach(function (term) {
+      var stem = term.slice(0, 6);
+      (lower.indexOf(stem) !== -1 ? foundTerms : missingTerms).push(term);
+    });
+    // Needs at least two of the concept words, or all of them when the author
+    // used fewer than two — one shared word is a coincidence, not an argument.
+    var needed = Math.min(2, spec.reason.length);
+    var hasReason = spec.reason.length === 0 ? false : foundTerms.length >= needed;
+
+    var score = hasValue && hasReason ? 2 : hasValue || hasReason ? 1 : 0;
+    return { score: score, hasValue: hasValue, hasReason: hasReason, missingValues: missingValues, missingTerms: missingTerms };
+  }
+
+  function showWritingFeedback(q, r) {
+    var fb = document.querySelector('[data-fb="' + q + '"]');
+    if (!fb) return;
+    var parts = [];
+    if (r.empty) {
+      parts.push("— Nothing written yet.");
+    } else {
+      parts.push((r.score === 2 ? "✓ " : "◐ ") + "Provisional score: " + r.score + " of 2.");
+      if (r.hasValue && WRITING[q].values.length) parts.push("You stated the correct value.");
+      if (!r.hasValue && r.missingValues.length) parts.push("I could not find the value this asks for.");
+      if (r.hasReason) parts.push("You explained the reasoning.");
+      else if (r.missingTerms.length) {
+        parts.push("Say more about why: try writing about " + r.missingTerms.slice(0, 3).join(", ") + ".");
+      }
+    }
+    parts.push("This is practice feedback from matching words and numbers — your teacher makes the final call.");
+    fb.textContent = parts.join(" ");
+    fb.className = "fb visible " + (r.score === 2 ? "fb-correct" : "fb-wrong");
+  }
+
+  function applyWritingMode() {
+    var manual = writingMode() === "manual";
+    document.querySelectorAll("[data-written-note]").forEach(function (note) {
+      var handOnly = handOnlyKeys.indexOf(note.getAttribute("data-written-note")) !== -1;
+      note.textContent =
+        manual || handOnly
+          ? "✍️ Written response — your teacher scores this part (2 points)."
+          : "✍️ Written response — 2 points, scored when you submit. Your teacher can re-score it.";
+    });
+    document.querySelectorAll("[data-mode-btn]").forEach(function (btn) {
+      var on = btn.getAttribute("data-mode-btn") === (manual ? "manual" : "auto");
+      btn.className = "btn " + (on ? "btn-primary" : "btn-secondary");
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (manual) {
+      writtenKeys.forEach(function (q) {
+        var fb = document.querySelector('[data-fb="' + q + '"]');
+        if (fb) { fb.textContent = ""; fb.className = "fb"; }
+      });
+    }
+  }
+
+  document.querySelectorAll("[data-mode-btn]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setWritingMode(btn.getAttribute("data-mode-btn"));
+      applyWritingMode();
+    });
+  });
+  applyWritingMode();
+
   var submitBtn = document.getElementById("submitBtn");
   if (submitBtn) submitBtn.addEventListener("click", function () {
     var score = 0;
     Object.keys(KEY).forEach(function (q) { score += gradeOne(q); });
+
+    var manual = writingMode() === "manual";
+    var writingScore = 0;
+    if (!manual) {
+      writtenKeys.forEach(function (q) {
+        var r = gradeWriting(q);
+        writingScore += r.score;
+        showWritingFeedback(q, r);
+      });
+    }
+
+    var earned = score + (manual ? 0 : writingScore);
+    var possible = autoTotal + (manual ? 0 : writtenTotal);
     var box = document.getElementById("scoreBox");
     box.className = "score-box visible";
-    box.textContent = "Auto-scored: " + score + " of " + autoTotal + " selected-response parts correct." +
-      (${writtenCount} ? " Plus ${writtenCount} written response(s) your teacher scores." : "");
+    box.textContent =
+      "Scored " + earned + " of " + possible + " points — " +
+      score + " of " + autoTotal + " selected-response parts" +
+      (manual || !writtenKeys.length ? "" : ", plus " + writingScore + " of " + writtenTotal + " writing points (provisional — your teacher can re-score)") +
+      "." +
+      (manual && writtenKeys.length + handOnlyKeys.length
+        ? " Your " + (writtenKeys.length + handOnlyKeys.length) + " written response(s) go to your teacher."
+        : handOnlyKeys.length
+          ? " Your teacher scores " + handOnlyKeys.length + " more written response(s) by hand."
+          : "");
     box.focus();
     // Inside a Canvas SCORM launch the grade bridge is on the page; report the
-    // auto-scored percent silently. reportScore is repeatable, so a retake
-    // simply reports again. Outside Canvas the bridge is absent and this no-ops.
-    if (window.NeftCanvasBridge && autoTotal) {
-      try { window.NeftCanvasBridge.reportScore(Math.round((score / autoTotal) * 100)); } catch (_) { /* bridge must never break grading */ }
+    // percent silently. reportScore is repeatable, so a retake simply reports
+    // again. Outside Canvas the bridge is absent and this no-ops.
+    if (window.NeftCanvasBridge && possible) {
+      try { window.NeftCanvasBridge.reportScore(Math.round((earned / possible) * 100)); } catch (_) { /* bridge must never break grading */ }
     }
   });
 
@@ -455,13 +754,14 @@ function studentPage(unit, unitName, formLetter, items) {
         <p><strong>How this works:</strong> Answer every question, then press <em>Submit &amp; Grade</em>. Selected-response parts grade instantly with an explanation for each; written responses go to your teacher. Your answers save on this device.</p>
         <p style="margin-top:0.6em"><strong>On the real MSTAR:</strong> math runs as three 40-minute sessions, in English, on a computer. Here there is no clock — practice the thinking first; the pacing comes with rehearsal.</p>
       </div>
+${writtenCount ? modeBarHtml() : ""}
       <div id="scoreBox" class="score-box" role="status" aria-live="polite" tabindex="-1"></div>
 ${items.map((item, idx) => studentItemHtml(item, idx + 1)).join("\n")}
       <div class="actions">
         <button type="button" class="btn btn-primary" id="submitBtn">Submit &amp; Grade</button>
         <button type="button" class="btn btn-secondary" id="resetBtn">Reset</button>
       </div>
-${studentScript(storageKey, studentKey(items), writtenCount)}`;
+${studentScript(storageKey, studentKey(items), writingKey(items))}`;
   return shell({
     title: `Unit ${unit} MSTAR-Style Practice Test · Form ${formLetter.toUpperCase()}`,
     description: `Interactive MSTAR-style practice test for Unit ${unit} (${unitName}), Form ${formLetter.toUpperCase()} — auto-graded selected response with explanations, written responses for teacher scoring.`,
@@ -517,7 +817,21 @@ ${head}
         <p><b>Score 0:</b> ${esc(item.rubric.score0 || "")}</p>
         <p><b>Model:</b> ${esc(item.correctAnswer)}</p>
       </div>
+${lookForsHtml(item)}
     </div>`;
+}
+
+/** What the page's instant scoring checks, shown ONLY to the teacher — so the
+ *  provisional number can be judged rather than trusted. Derived from the two
+ *  fields above it, so a teacher can see it is reading their own rubric. */
+function lookForsHtml(item) {
+  const { values, reason } = writingLookFors(item);
+  return `      <div class="look-fors">
+        <p><b>Instant scoring looks for</b> (2 pts = value + reasoning; 1 pt = one of them):</p>
+        <p>Value: ${values.length ? esc(values.join(", ")) : "<i>none stated in the rubric — this item scores on reasoning alone</i>"}</p>
+        <p>Reasoning words (any 2): ${reason.length ? esc(reason.join(", ")) : "<i>none shared by the rubric and the model answer — hand-score this one</i>"}</p>
+        <p class="muted">Word matching cannot judge an argument. A student who reasons correctly in other words will score low here; re-score from the rubric above.</p>
+      </div>`;
 }
 
 function keyPage(unit, unitName, formLetter, items) {
