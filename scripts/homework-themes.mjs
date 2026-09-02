@@ -1,7 +1,7 @@
 /**
  * Unit Thematic Worlds for EduWonderLab Family Homework.
  * Gives each of the 10 Grade 6 math units a distinct visual identity,
- * theme palette, hero badge, and motif while keeping high contrast & readability.
+ * theme palette, hero badge, and motif while ensuring high-contrast readability.
  */
 
 export const UNIT_THEMES = {
@@ -36,11 +36,11 @@ export const UNIT_THEMES = {
     colors: {
       navy: "#064e3b",
       navyLight: "#047857",
-      teal: "#059669",
-      tealInk: "#065f46",
-      tealLight: "#d1fae5",
-      amber: "#10b981",
-      amberLight: "#ecfdf5",
+      teal: "#047857",
+      tealInk: "#064e3b",
+      tealLight: "#ecfdf5",
+      amber: "#b45309",
+      amberLight: "#fef3c7",
       cardBorder: "#a7f3d0",
       heroGradient: "linear-gradient(135deg, #064e3b 0%, #047857 100%)",
     },
@@ -54,15 +54,15 @@ export const UNIT_THEMES = {
     emoji: "⚙️",
     motif: "gears",
     colors: {
-      navy: "#78350f",
-      navyLight: "#92400e",
-      teal: "#d97706",
-      tealInk: "#b45309",
+      navy: "#451a03",
+      navyLight: "#78350f",
+      teal: "#b45309",
+      tealInk: "#92400e",
       tealLight: "#fef3c7",
-      amber: "#f59e0b",
+      amber: "#d97706",
       amberLight: "#fffbeb",
       cardBorder: "#fde68a",
-      heroGradient: "linear-gradient(135deg, #78350f 0%, #92400e 100%)",
+      heroGradient: "linear-gradient(135deg, #451a03 0%, #78350f 100%)",
     },
   },
   4: {
@@ -74,15 +74,15 @@ export const UNIT_THEMES = {
     emoji: "🏷️",
     motif: "tag",
     colors: {
-      navy: "#881337",
-      navyLight: "#9f1239",
-      teal: "#e11d48",
-      tealInk: "#be123c",
+      navy: "#4c0519",
+      navyLight: "#881337",
+      teal: "#be123c",
+      tealInk: "#9f1239",
       tealLight: "#ffe4e6",
-      amber: "#f43f5e",
+      amber: "#e11d48",
       amberLight: "#fff1f2",
       cardBorder: "#fecdd3",
-      heroGradient: "linear-gradient(135deg, #881337 0%, #9f1239 100%)",
+      heroGradient: "linear-gradient(135deg, #4c0519 0%, #881337 100%)",
     },
   },
   5: {
@@ -94,15 +94,15 @@ export const UNIT_THEMES = {
     emoji: "📐",
     motif: "blueprint",
     colors: {
-      navy: "#1e3a8a",
-      navyLight: "#1d4ed8",
-      teal: "#0284c7",
-      tealInk: "#0369a1",
+      navy: "#172554",
+      navyLight: "#1e3a8a",
+      teal: "#0369a1",
+      tealInk: "#075985",
       tealLight: "#e0f2fe",
-      amber: "#d97706",
+      amber: "#b45309",
       amberLight: "#fef3c7",
       cardBorder: "#bfdbfe",
-      heroGradient: "linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)",
+      heroGradient: "linear-gradient(135deg, #172554 0%, #1e3a8a 100%)",
     },
   },
   6: {
@@ -114,15 +114,15 @@ export const UNIT_THEMES = {
     emoji: "🍰",
     motif: "recipe",
     colors: {
-      navy: "#581c87",
-      navyLight: "#6b21a8",
-      teal: "#7c3aed",
-      tealInk: "#6d28d9",
+      navy: "#3b0764",
+      navyLight: "#581c87",
+      teal: "#6d28d9",
+      tealInk: "#5b21b6",
       tealLight: "#f3e8ff",
-      amber: "#10b981",
+      amber: "#047857",
       amberLight: "#ecfdf5",
       cardBorder: "#e9d5ff",
-      heroGradient: "linear-gradient(135deg, #581c87 0%, #6b21a8 100%)",
+      heroGradient: "linear-gradient(135deg, #3b0764 0%, #581c87 100%)",
     },
   },
   7: {
@@ -134,15 +134,15 @@ export const UNIT_THEMES = {
     emoji: "🧭",
     motif: "radar",
     colors: {
-      navy: "#090d16",
-      navyLight: "#1e293b",
-      teal: "#06b6d4",
-      tealInk: "#0891b2",
+      navy: "#020617",
+      navyLight: "#0f172a",
+      teal: "#0891b2",
+      tealInk: "#0e7490",
       tealLight: "#cffafe",
-      amber: "#38bdf8",
-      amberLight: "#f0f9ff",
+      amber: "#0284c7",
+      amberLight: "#e0f2fe",
       cardBorder: "#a5f3fc",
-      heroGradient: "linear-gradient(135deg, #090d16 0%, #1e293b 100%)",
+      heroGradient: "linear-gradient(135deg, #020617 0%, #0f172a 100%)",
     },
   },
   8: {
@@ -156,10 +156,10 @@ export const UNIT_THEMES = {
     colors: {
       navy: "#1e1b4b",
       navyLight: "#312e81",
-      teal: "#4f46e5",
-      tealInk: "#4338ca",
+      teal: "#4338ca",
+      tealInk: "#3730a3",
       tealLight: "#e0e7ff",
-      amber: "#ef4444",
+      amber: "#b91c1c",
       amberLight: "#fee2e2",
       cardBorder: "#c7d2fe",
       heroGradient: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)",
@@ -174,15 +174,15 @@ export const UNIT_THEMES = {
     emoji: "⚡",
     motif: "conveyor",
     colors: {
-      navy: "#14532d",
-      navyLight: "#166534",
+      navy: "#052e16",
+      navyLight: "#14532d",
       teal: "#15803d",
       tealInk: "#166534",
       tealLight: "#dcfce7",
-      amber: "#f97316",
+      amber: "#c2410c",
       amberLight: "#ffedd5",
       cardBorder: "#bbf7d0",
-      heroGradient: "linear-gradient(135deg, #14532d 0%, #166534 100%)",
+      heroGradient: "linear-gradient(135deg, #052e16 0%, #14532d 100%)",
     },
   },
   10: {
@@ -194,15 +194,15 @@ export const UNIT_THEMES = {
     emoji: "🏆",
     motif: "trophy",
     colors: {
-      navy: "#4a044e",
-      navyLight: "#701a75",
-      teal: "#c026d3",
-      tealInk: "#a21caf",
+      navy: "#3b0764",
+      navyLight: "#4a044e",
+      teal: "#a21caf",
+      tealInk: "#86198f",
       tealLight: "#fae8ff",
-      amber: "#eab308",
+      amber: "#b45309",
       amberLight: "#fef9c3",
       cardBorder: "#f5d0fe",
-      heroGradient: "linear-gradient(135deg, #4a044e 0%, #701a75 100%)",
+      heroGradient: "linear-gradient(135deg, #3b0764 0%, #4a044e 100%)",
     },
   },
 };
@@ -221,22 +221,22 @@ export function getUnitTheme(unitNumber) {
 export function renderUnitThemeCss(theme) {
   const { colors } = theme;
   return `
-/* --- Unit \${theme.unit} Visual World: \${theme.nameEn} --- */
+/* --- Unit ${theme.unit} Visual World: ${theme.nameEn} --- */
 :root {
-  --navy: \${colors.navy};
-  --navy-light: \${colors.navyLight};
-  --teal: \${colors.teal};
-  --teal-ink: \${colors.tealInk};
-  --teal-light: \${colors.tealLight};
-  --amber: \${colors.amber};
-  --amber-light: \${colors.amberLight};
-  --hw-world-border: \${colors.cardBorder};
+  --navy: ${colors.navy};
+  --navy-light: ${colors.navyLight};
+  --teal: ${colors.teal};
+  --teal-ink: ${colors.tealInk};
+  --teal-light: ${colors.tealLight};
+  --amber: ${colors.amber};
+  --amber-light: ${colors.amberLight};
+  --hw-world-border: ${colors.cardBorder};
 }
 
 header.homework-header,
 .family-welcome {
-  background: \${colors.heroGradient} !important;
-  border: 1.5px solid \${colors.cardBorder} !important;
+  background: ${colors.heroGradient} !important;
+  border: 1.5px solid ${colors.cardBorder} !important;
 }
 
 .unit-world-badge {
@@ -263,7 +263,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid \${colors.cardBorder};
+  border: 1.5px solid ${colors.cardBorder};
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
