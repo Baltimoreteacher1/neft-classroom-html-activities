@@ -272,17 +272,23 @@ function parseKnownKinds() {
 function declaredKinds(config) {
   const out = [];
   const VISUAL_SLOTS = new Set(["diagram", "visual", "lab", "figure"]);
-  const walk = (node, path, inVisualSlot) => {
+  /* `sgFigure` rides on the ITEM; `kind` is one level down on its `visual`, and
+   * the walker has already descended past the item by the time it reads the
+   * kind. Carrying the flag down means the exemption below is decided by what
+   * the generator marked, not by matching path strings. */
+  const walk = (node, path, inVisualSlot, sgOwner) => {
     if (!node || typeof node !== "object") return;
     if (Array.isArray(node)) {
-      node.forEach((v, i) => walk(v, `${path}[${i}]`, inVisualSlot));
+      node.forEach((v, i) => walk(v, `${path}[${i}]`, inVisualSlot, sgOwner));
       return;
     }
-    if (inVisualSlot && typeof node.kind === "string") out.push({ kind: node.kind, path });
+    const owner = node.sgFigure === true ? true : sgOwner;
+    if (inVisualSlot && typeof node.kind === "string")
+      out.push({ kind: node.kind, path, sgFigure: Boolean(sgOwner) });
     for (const [k, v] of Object.entries(node))
-      walk(v, path ? `${path}.${k}` : k, VISUAL_SLOTS.has(k));
+      walk(v, path ? `${path}.${k}` : k, VISUAL_SLOTS.has(k), owner);
   };
-  walk(config, "", false);
+  walk(config, "", false, false);
   return out;
 }
 
@@ -571,7 +577,17 @@ for (const id of ids) {
     staticFailures.push(`${id}: config.json is not valid JSON — ${err.message.slice(0, 60)}`);
     continue;
   }
-  for (const { kind, path } of declaredKinds(config)) {
+  for (const { kind, path, sgFigure } of declaredKinds(config)) {
+    // Same exemption as the small-group `continue` above, for the same reason:
+    // an Apply Day's leveled banks are lifted from the small-group and catch-up
+    // parallel sets, and part-two-renderer.js draws those items with
+    // small-group-visual-practice.js — the dispatcher that owns xy-table,
+    // volume-prism and 41 more kinds buildVisual has never heard of. Judging
+    // them by the core switch reported 674 findings on figures a browser walk
+    // shows rendering. `sgFigure` is written by scripts/generate-part-two.mjs
+    // onto exactly the items it hands to that dispatcher; every other visual on
+    // the page is still judged here.
+    if (sgFigure) continue;
     if (!buildable.has(kind)) {
       staticFailures.push(
         `${id}: ${path}.kind = "${kind}" — buildVisual() has no case for it, so NOTHING renders`,

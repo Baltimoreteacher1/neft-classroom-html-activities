@@ -381,7 +381,16 @@ function inequalityLine(visual, values) {
     <text class="sg-ans sg-ans-3" x="${x}" y="105" text-anchor="middle">x ${esc(symbol)} ${esc(boundary)}</text>`;
 }
 
-function visualMarkup(item) {
+/* Exported for the Part 2 Apply Day renderer.
+ *
+ * The leveled table banks are lifted from the small-group and catch-up
+ * `parallelPractice` sets, every one of which declares a figure this file
+ * draws. Part 2 renders its problems through `renderComponent`, whose figure
+ * bridge is `buildVisual` in lesson-renderer.js — a different dispatcher with a
+ * different 39-kind vocabulary that overlaps this one on only five kinds. Part
+ * 2 therefore calls this function directly for those items rather than growing
+ * a second copy of the same 43 figure builders. */
+export function visualMarkup(item) {
   const visual = item.visual || {};
   const kind = String(visual.kind || "");
   // No authored visual → no figure. A generic chart built from scraped stem

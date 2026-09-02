@@ -170,10 +170,22 @@ function renderableVisualKinds() {
 const RENDERABLE_KINDS = renderableVisualKinds();
 const INTERACTIVE_KINDS = interactiveKinds();
 
-/** True when this renderer can draw whatever figure the item declares. */
+/**
+ * True when Part 2 can draw whatever figure the item declares.
+ *
+ * Two dispatchers, not one. `buildVisual` in lesson-renderer.js draws the 39
+ * kinds `renderComponent` knows; the variant parallel banks were authored
+ * against small-group-visual-practice.js, whose 43 kinds overlap those on five.
+ * An item carrying `sgFigure` is drawn by the second one — the Part 2 renderer
+ * calls it directly — so it renders even though `buildVisual` never heard of
+ * `xy-table`. Judging every item by RENDERABLE_KINDS alone is what dropped the
+ * whole scaffolded bank off the Apply Day tables.
+ */
 function visualRenders(item) {
   const kind = item && item.visual && item.visual.kind;
-  return !kind || RENDERABLE_KINDS.has(String(kind));
+  if (!kind) return true;
+  if (item.sgFigure) return true;
+  return RENDERABLE_KINDS.has(String(kind));
 }
 
 /** A self-grading multiple-choice item — the only kind a warm-up can mark. */
@@ -271,8 +283,22 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
   const cu = readVariant(`${id}-catchup`);
   const tier = (cfg, name) =>
     cfg && Array.isArray((cfg.practice || {})[name]) ? cfg.practice[name] : [];
+  /* The variant parallel banks, tagged with the dispatcher that owns their
+   * figures. Every item in them declares a `visual.kind` — the small-group gate
+   * refuses one that does not — but those kinds belong to
+   * engine/core/small-group-visual-practice.js, not to `buildVisual`, which is
+   * what `renderComponent` draws an item figure with. The Part 2 renderer reads
+   * `sgFigure` and calls that dispatcher directly; without the flag it cannot
+   * tell a kind it must skip from a kind another module draws, and
+   * `visualRenders` below would go on dropping all 2,376 of them. */
   const parallel = (cfg) =>
-    cfg && Array.isArray(cfg.parallelPractice) ? cfg.parallelPractice : [];
+    cfg && Array.isArray(cfg.parallelPractice)
+      ? cfg.parallelPractice.map((item) =>
+          item && typeof item === "object" && item.visual && item.visual.kind
+            ? { ...item, sgFigure: true }
+            : item,
+        )
+      : [];
 
   /* The lesson's own MSTAR item, flattened into an ordinary practice problem.
    *
@@ -331,25 +357,56 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
   // so those four configs hold about five distinct problems between them).
   const p1 = parallel(g1);
   const p2 = parallel(g2);
+  // The catch-up variant's bank was never read. It is the most scaffolded set
+  // the lesson owns and every item in it carries a figure (the small-group
+  // gate refuses a parallel item without `visual.kind`), which is exactly what
+  // Level 1 was short of on 68 of 76 Apply Days.
+  const pcu = parallel(cu);
   const h1 = Math.floor(p1.length / 2);
   const h2 = Math.floor(p2.length / 2);
+  const hcu = Math.floor(pcu.length / 2);
+
+  /* Two ordered streams, taken in turn rather than end to end.
+   *
+   * `practice.*` items are authored without figures — 0 of the 14 on a typical
+   * core lesson declare `visual` — while every one of the 2,376 items in the
+   * group and catch-up parallel banks does. Concatenating put the text pool
+   * first and the figure-bearing pool after it, so the five-item cap below
+   * spent every slot before reaching a single picture: 68 of 76 Apply Days
+   * shipped with no figure at any level, and Level 1 — whose `approaching`
+   * pool is the smallest and most heavily deduped — ran to 236 items against
+   * Level 2's 367, starving the table that needs the most practice.
+   *
+   * This is the same failure the Level 3 comment below already names ("anything
+   * appended here is what the cap throws away"), so it gets the same remedy,
+   * generalized: alternate. `primary` still leads, which keeps the item closest
+   * to today's skill in the first slot, and the cap now lands on a mix instead
+   * of on one end of the list. Nothing is reordered within a stream, the cap,
+   * the within-level dedupe, and Level 3's pinned state item all stand. */
+  const interleave = (primary, secondary) => {
+    const out = [];
+    for (let i = 0; i < Math.max(primary.length, secondary.length); i += 1) {
+      if (i < primary.length) out.push(primary[i]);
+      if (i < secondary.length) out.push(secondary[i]);
+    }
+    return out;
+  };
 
   const levels = {
-    level1: [
-      ...tier(config, "approaching"),
-      ...tier(g1, "approaching"),
-      ...tier(cu, "approaching"),
-      ...p1.slice(0, h1),
-    ],
-    level2: [
-      ...tier(config, "onLevel"),
-      ...tier(g1, "onLevel"),
-      ...tier(g2, "onLevel"),
-      ...tier(cu, "onLevel"),
-      ...tier(config, "optional"),
-      ...p1.slice(h1),
-      ...p2.slice(0, h2),
-    ],
+    level1: interleave(
+      [...tier(config, "approaching"), ...tier(g1, "approaching"), ...tier(cu, "approaching")],
+      [...pcu.slice(0, hcu), ...p1.slice(0, h1)],
+    ),
+    level2: interleave(
+      [
+        ...tier(config, "onLevel"),
+        ...tier(g1, "onLevel"),
+        ...tier(g2, "onLevel"),
+        ...tier(cu, "onLevel"),
+        ...tier(config, "optional"),
+      ],
+      [...p1.slice(h1), ...p2.slice(0, h2), ...pcu.slice(hcu)],
+    ),
     level3: [
       // FIRST, deliberately. Each level is capped at five and the pools are
       // ordered, so anything appended here is what the cap throws away — which
@@ -359,10 +416,10 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
       // measurement supports: cross-deduping in any claiming order simply moves
       // the shortage onto Level 2, the grade-level table.
       ...mstarProblems(config),
-      ...tier(config, "extending"),
-      ...tier(g2, "extending"),
-      ...tier(cu, "extending"),
-      ...p2.slice(h2),
+      ...interleave(
+        [...tier(config, "extending"), ...tier(g2, "extending"), ...tier(cu, "extending")],
+        [...p2.slice(h2)],
+      ),
     ],
   };
 
