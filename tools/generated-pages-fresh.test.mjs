@@ -51,6 +51,15 @@
  * deploy rebuilds it and it cannot go stale. Everything else that a student or
  * teacher can open is here.
  *
+ * The rule is about drift, not about lessons, so it reaches past lesson pages.
+ * mstar-practice/ was added on 2026-09-02: those unit practice tests are a
+ * committed second copy of the lessons' authored `mstarPractice` items and are
+ * absent from `npm run build`, which is the same pair of conditions. Edit an
+ * item and the lesson asks the new question immediately while the practice
+ * test — and the SCORM package pointing at it — would serve the old one
+ * forever. Its answer keys and hub are generated from the same run and are
+ * checked with it.
+ *
  * Each generator was confirmed DETERMINISTIC before being made a hard gate:
  * run twice from a clean tree, byte-identical output both times, and running it
  * again over its own output changes nothing. A non-deterministic generator
@@ -81,6 +90,11 @@ const GENERATORS = [
   ["slides.html", "../scripts/generate-slides.mjs", []],
   ["homework.html", "../scripts/generate-homework-html.mjs", []],
   ["editable-slides.html", "../scripts/generate-editable-slides-page.mjs", []],
+  [
+    "mstar-practice/ (unit practice tests + answer keys + hub)",
+    "../scripts/generate-mstar-practice.mjs",
+    [],
+  ],
 ];
 
 const stale = [];
@@ -97,7 +111,7 @@ for (const [page, rel, extraArgs] of GENERATORS) {
 assert.deepEqual(
   stale,
   [],
-  `Generated lesson page(s) no longer match their config.json:\n\n${stale.join("\n\n")}`,
+  `Generated page(s) no longer match the config.json they were built from:\n\n${stale.join("\n\n")}`,
 );
 
 console.log(`Generated pages fresh: ${GENERATORS.map(([p]) => p).join(", ")} match their configs.`);

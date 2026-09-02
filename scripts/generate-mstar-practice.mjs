@@ -36,7 +36,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "mstar-practice");
@@ -888,8 +888,23 @@ ${rows}
 
 /* ── main ─────────────────────────────────────────────────────────────────── */
 
+// --check compares what this generator WOULD write against what is committed,
+// without writing — the contract tools/generated-pages-fresh.test.mjs calls.
+// These pages are a second copy of the lessons' authored MSTAR items and do
+// NOT run inside `npm run build`, which is exactly the pair of conditions that
+// lets a generated page rot silently: edit an item, the lesson shows the new
+// question immediately and the practice test serves the old one forever.
+const CHECK = process.argv.includes("--check");
+const STALE = [];
+
 function write(rel, html) {
   const file = join(OUT, rel);
+  if (CHECK) {
+    // isGeneratedFresh re-splices the injected sentinel blocks already on disk
+    // before comparing, so a uifr stamp is never mistaken for staleness.
+    if (!isGeneratedFresh(file, html)) STALE.push(join("mstar-practice", rel));
+    return;
+  }
   mkdirSync(dirname(file), { recursive: true });
   // writeGenerated re-splices any injected sentinel layers already on disk
   // (uifr today; whatever comes next) so a regeneration cannot strip them —
@@ -929,6 +944,27 @@ function main() {
   }
 
   write("index.html", hubPage(built, empty, names, order));
+
+  if (CHECK) {
+    if (STALE.length) {
+      console.error(
+        `${STALE.length} MSTAR practice page(s) are STALE — the committed HTML no longer matches the lessons' authored mstarPractice items:\n  ${STALE.slice(
+          0,
+          15,
+        ).join("\n  ")}\n\nFix: node scripts/generate-mstar-practice.mjs`,
+      );
+      process.exit(1);
+    }
+    // A sweep that checked nothing must not report health: this gate is only
+    // meaningful while there are pages to compare.
+    if (!built.size) {
+      console.error("No MSTAR practice pages were checked — the sweep proved nothing.");
+      process.exit(1);
+    }
+    console.log(`MSTAR practice tests up to date (${built.size} units × 2 forms + keys).`);
+    return;
+  }
+
   console.log(
     `\nBuilt ${built.size} unit(s) × 2 forms (+ keys). Units with no authored MSTAR items (no test generated): ${
       empty.length ? empty.join(", ") : "none"
