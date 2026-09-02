@@ -1,4 +1,4 @@
-# Accessibility audit — 2026-08-22
+# Accessibility audit — 2026-09-02
 
 Target: `http://localhost:4179` · 22 pages · axe-core WCAG 2.1 A/AA
 
@@ -24,18 +24,18 @@ visually once; they are not counted as violations above.
 | Page | Focusable elements | Focus visibility | Positive tabindex |
 | --- | ---: | --- | ---: |
 | Home portal | 139 | custom (UA ring replaced) | 0 |
-| Curriculum hub | 55 | custom (UA ring replaced) | 0 |
+| Curriculum hub | 56 | custom (UA ring replaced) | 0 |
 | Activity directory | 478 | custom | 0 |
-| Lesson 1-1 (flagship interior) | 29 | custom (UA ring replaced) | 0 |
-| Lesson 6-13 (standard interior) | 43 | custom (UA ring replaced) | 0 |
+| Lesson 1-1 (flagship interior) | 4 | custom (UA ring replaced) | 0 |
+| Lesson 6-13 (standard interior) | 4 | custom (UA ring replaced) | 0 |
 | Class board | 18 | custom (UA ring replaced) | 0 |
 | ACCESS practice lab | 362 | custom | 0 |
 | Practice engine | 3 | custom | 0 |
-| Lesson Learn It | 27 | custom (UA ring replaced) | 0 |
+| Lesson Learn It | 26 | custom (UA ring replaced) | 0 |
 | Lesson vocabulary | 35 | custom (UA ring replaced) | 0 |
-| Lesson homework | 35 | custom (UA ring replaced) | 0 |
-| Lesson printable | 1 | browser default | 0 |
-| Family page | 2 | custom | 0 |
+| Lesson homework | 40 | custom (UA ring replaced) | 0 |
+| Lesson printable | 2 | custom | 0 |
+| Family page | 6 | custom | 0 |
 | Teacher notes | 8 | custom | 0 |
 | 2D game | 21 | custom | 0 |
 | 3D game | 21 | custom | 0 |
@@ -44,7 +44,7 @@ visually once; they are not counted as violations above.
 | Unit project worksheet | 18 | custom (UA ring replaced) | 0 |
 | Unit project answer key | 3 | custom | 0 |
 | Graphic novel | 16 | custom | 0 |
-| Small-group lesson | 52 | custom (UA ring replaced) | 0 |
+| Small-group lesson | 61 | custom (UA ring replaced) | 0 |
 
 `custom (UA ring replaced)` is the correct pattern — `outline: none`
 paired with a custom `:focus` style. `browser default` is acceptable.
