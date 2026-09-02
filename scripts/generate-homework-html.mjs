@@ -35,8 +35,8 @@ import {
   renderWorkbenchTab,
   selectQuickCheckProblems,
 } from "./homework-guided-notes.mjs";
-import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
+import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
