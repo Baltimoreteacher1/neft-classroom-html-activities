@@ -218,8 +218,27 @@ export function validateSmallGroups({ html, rows, root = ROOT }) {
     byParent.get(row.afterLesson).push(row);
   }
 
+  /* A lesson is a directory that HOLDS a lesson, not merely a directory whose
+   * name looks like one.
+   *
+   * Renumbering moves content with `git mv`, and git does not track
+   * directories, so the source directory survives on disk in every checkout
+   * that already had it — empty, untracked, ignored by nothing. The 2026-08-10
+   * publisher renumber left four that way (4-6 → 3-10, 4-7 → 3-8, plus 7-10 and
+   * 7-11), and because this gate counted directories it read them as four
+   * lessons with no small-group variants and failed:
+   *
+   *   small-groups: manifest covers 84 parents but 88 base lessons exist
+   *
+   * Nothing was missing. The gate was counting residue, and it failed only in
+   * the checkouts that happened to predate the move — green in CI, red on the
+   * machine doing the work, which is the worst possible place for a gate to
+   * disagree with itself. Requiring config.json makes the count mean what its
+   * error message already claims it means. A real lesson still has one, so a
+   * real lesson with no rows still fails here. */
   const baseLessons = readdirSync(join(root, "lessons"), { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && BASE_RE.test(entry.name))
+    .filter((entry) => existsSync(join(root, "lessons", entry.name, "config.json")))
     .map((entry) => entry.name)
     .sort();
   if (byParent.size !== baseLessons.length)

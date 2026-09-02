@@ -271,7 +271,15 @@ function parseKnownKinds() {
 /** Every `kind` a lesson config asks to be drawn, with the path that declared it. */
 function declaredKinds(config) {
   const out = [];
-  const VISUAL_SLOTS = new Set(["diagram", "visual", "lab", "figure"]);
+  /* `tool` belongs here for the same reason the other four do: it names a kind
+   * the renderer must draw, and an unknown one draws nothing at all. Apply Day
+   * configs carry `tool.kind` — the interactive the whole Group Work phase is
+   * built around — and it was outside this set, so the one figure on the page
+   * that a whole phase depends on was the one figure nothing checked. The
+   * generator picks that kind from a validated list, so the fleet was clean;
+   * the gate simply was not looking, and a gate that is not looking reports a
+   * pass either way. All 76 pass on the day this was added. */
+  const VISUAL_SLOTS = new Set(["diagram", "visual", "lab", "figure", "tool"]);
   /* `sgFigure` rides on the ITEM; `kind` is one level down on its `visual`, and
    * the walker has already descended past the item by the time it reads the
    * kind. Carrying the flag down means the exemption below is decided by what

@@ -29,6 +29,17 @@ const run = (env = {}) => {
         cwd: ROOT,
         encoding: "utf8",
         env: { ...process.env, ...env },
+        // execFileSync echoes the child's stderr to the parent unless stdio
+        // says otherwise. The empty-sweep case below drives the real validator
+        // into its real failure on purpose, so that echo printed
+        //
+        //   FAIL  validate:self-hosted-fonts: swept 0 HTML pages ...
+        //
+        // into a GREEN `npm run validate` log, one line above the ✔ that says
+        // the guard worked. A passing run must not print the word FAIL: someone
+        // reading the log has to either chase it or learn to skim past real
+        // ones. Piping keeps the text where the assertions can still read it.
+        stdio: ["ignore", "pipe", "pipe"],
       }),
     };
   } catch (e) {
