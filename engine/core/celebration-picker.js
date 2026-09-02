@@ -231,6 +231,12 @@ let currentAnimationId = null;
 export function fireCelebrationFX(type = "classic_confetti") {
   if (typeof document === "undefined") return;
 
+  // Canvas FX run on requestAnimationFrame, so the CSS reduced-motion blanket
+  // rule cannot touch them — honor the same media query the CSS motion layer
+  // and engagement.js's motionOK() use. Reduced-motion users keep the card,
+  // the message, and the sound; only the full-viewport particle loops go.
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+
   if (currentAnimationId) {
     cancelAnimationFrame(currentAnimationId);
     currentAnimationId = null;

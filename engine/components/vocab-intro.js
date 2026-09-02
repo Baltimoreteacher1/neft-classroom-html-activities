@@ -55,7 +55,7 @@ export function openVocabPopOut(t) {
       <div style="padding: 24px;">
         <!-- LARGE POP-OUT IMAGE -->
         <div style="background: #0f172a; border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 20px; border: 1.5px solid #cbd5e1;">
-          <img src="${imgSrc}" alt="${_esc(imgAlt)}" style="max-width: 100%; max-height: 360px; height: auto; border-radius: 10px; display: inline-block;" />
+          <img src="${imgSrc}" alt="${_esc(imgAlt)}" loading="lazy" decoding="async" style="max-width: 100%; max-height: 360px; height: auto; border-radius: 10px; display: inline-block;" />
         </div>
 
         <!-- ENGLISH DEFINITION -->

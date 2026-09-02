@@ -40,7 +40,7 @@ function openVisualLightbox(imgSrc, captionText) {
   modal.innerHTML = `
     <div style="max-width: 92vw; margin: auto; flex: 0 0 auto; text-align: center; color: white;" onclick="event.stopPropagation()">
       <div style="background: #0f172a; padding: 20px; border-radius: 24px; border: 2.5px solid #38bdf8; box-shadow: 0 25px 60px rgba(0,0,0,0.75);">
-        <img src="${imgSrc}" style="max-width: 100%; max-height: 68vh; border-radius: 14px; background: white; padding: 14px; display: inline-block;" />
+        <img src="${imgSrc}" alt="" decoding="async" style="max-width: 100%; max-height: 68vh; border-radius: 14px; background: white; padding: 14px; display: inline-block;" />
         <div style="margin-top: 18px; font-size: 1.15rem; font-weight: 700; line-height: 1.5; color: #f8fafc; max-width: 680px; margin-left: auto; margin-right: auto;">
           ${escHtml(captionText)}
         </div>
@@ -1818,7 +1818,7 @@ export function renderLearnItPanel(container, config, options = {}) {
   const visualCardHtml = visuals?.content?.src
     ? `<div class="vl-visual-card">
          <div class="vl-visual-img-wrap" id="vlVisualZoomTarget" title="Click to enlarge visual model">
-           <img src="${visuals.content.src}" alt="${escHtml(visuals.content.alt)}" loading="lazy" />
+           <img src="${visuals.content.src}" alt="${escHtml(visuals.content.alt)}" loading="lazy" decoding="async" />
          </div>
          <div class="vl-visual-caption">
            <span>📊 <strong>${isEs ? "Modelo visual:" : "The math as a picture:"}</strong> ${escHtml(visuals.content.caption)}</span>

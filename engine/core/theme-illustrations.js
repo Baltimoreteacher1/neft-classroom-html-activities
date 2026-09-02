@@ -253,7 +253,7 @@ export function themeIllustration(theme, figure, config) {
       const visuals = resolveObjectiveVisuals(config);
       if (visuals && visuals.content && visuals.content.src) {
         return `<div class="theme-hero-artwork" style="background:#ffffff; padding:12px; border-radius:14px; border:1.5px solid #cbd5e1; box-shadow:0 4px 14px rgba(0,0,0,0.06); text-align:center;">
-          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" decoding="async" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
         </div>`;
       }
     } catch (_e) {
@@ -275,7 +275,7 @@ export function renderThemeIllustration(host, theme, caption, figure, config) {
       const visuals = resolveObjectiveVisuals(config);
       if (visuals && visuals.content && visuals.content.src) {
         svgHtml = `<div class="theme-hero-artwork" style="background:#ffffff; padding:12px; border-radius:14px; border:1.5px solid #cbd5e1; box-shadow:0 4px 14px rgba(0,0,0,0.06); text-align:center;">
-          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" decoding="async" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
         </div>`;
         if (visuals.content.caption) {
           cleanCaption = visuals.content.caption;

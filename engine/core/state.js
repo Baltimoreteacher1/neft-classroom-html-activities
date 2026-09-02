@@ -75,23 +75,29 @@ export function clearStudentLessonState(lessonId, studentId) {
 export function findSavedStudents(lessonId) {
   const prefix = `${STORAGE_PREFIX}${lessonId}_`;
   const students = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k.startsWith(prefix)) {
-      try {
-        const saved = JSON.parse(localStorage.getItem(k));
-        if (saved.studentName) {
-          const phaseDone = (saved.phases || []).filter((p) => p.status === "completed").length;
-          students.push({
-            name: saved.studentName,
-            period: saved.studentPeriod || "",
-            id: k.slice(prefix.length),
-            phasesCompleted: phaseDone,
-            lastSaved: saved.lastSavedAt,
-          });
-        }
-      } catch (_) {}
+  // Same guard shape as clearLessonStorage: blocked storage (Safari private
+  // mode) must yield an empty roster, not a throw out of the resume path.
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(prefix)) {
+        try {
+          const saved = JSON.parse(localStorage.getItem(k));
+          if (saved.studentName) {
+            const phaseDone = (saved.phases || []).filter((p) => p.status === "completed").length;
+            students.push({
+              name: saved.studentName,
+              period: saved.studentPeriod || "",
+              id: k.slice(prefix.length),
+              phasesCompleted: phaseDone,
+              lastSaved: saved.lastSavedAt,
+            });
+          }
+        } catch (_) {}
+      }
     }
+  } catch (_) {
+    /* storage blocked — resume list is simply empty */
   }
   return students.sort((a, b) => (b.lastSaved || 0) - (a.lastSaved || 0));
 }
@@ -359,7 +365,11 @@ export function createState(lessonId, studentId) {
     },
 
     reset() {
-      localStorage.removeItem(key);
+      try {
+        localStorage.removeItem(key);
+      } catch (_) {
+        /* storage blocked — the in-memory reset below still applies */
+      }
       state = { ...defaults, startedAt: Date.now() };
       notify();
     },

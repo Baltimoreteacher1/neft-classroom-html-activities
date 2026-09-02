@@ -239,6 +239,10 @@ export function createEngagement(state) {
     },
 
     showConfetti(container) {
+      // Same guard as sparkleBurst/flyXPOrbs: reduced-motion users get no
+      // particles at all — the CSS blanket rule only shortens the fall, and
+      // 120 DOM nodes are still built without this.
+      if (!motionOK()) return;
       if (!container) container = document.querySelector(".celebration-overlay");
       if (!container) {
         // No page-provided overlay: mount an ephemeral one so celebration

@@ -2680,6 +2680,14 @@ body:has(.identity-screen) .export-toolbar {
   pointer-events: none;
 }
 
+/* The radio itself is a zero-opacity absolute box, so the global
+   :focus-visible ring paints on nothing — put the keyboard ring on the
+   option row the student is actually arrowing through instead. */
+.mc-option-label:has(input[type="radio"]:focus-visible) {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
 .custom-radio {
   width: 22px;
   height: 22px;
@@ -3322,7 +3330,9 @@ body:has(.identity-screen) .export-toolbar {
   .export-toolbar,
   .minimap-hud,
   .streak-display,
-  .celebration-overlay {
+  .celebration-overlay,
+  .obj-popup-backdrop,
+  .nt-entrance-overlay {
     display: none !important;
   }
   .app {

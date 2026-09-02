@@ -2342,7 +2342,7 @@ function renderObjectives(el, config, state, opts = {}) {
       <details class="objective-more" style="margin-top:12px;">
       <summary style="cursor:pointer; font-size:.92rem; font-weight:700; color:${o.ink}; padding:6px 0; list-style-position:inside;">${o.icon} See the visual model &amp; talk prompts</summary>
       <div class="visual-model-wrapper" style="margin-top:10px; margin-bottom:4px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 1px 2px rgba(18,53,91,0.05); background:#0b0f19; cursor:zoom-in;">
-        <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
+        <img src="${o.img}" alt="${esc(o.alt)}" loading="lazy" decoding="async" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:700; line-height:1.5; -webkit-font-smoothing:antialiased;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
             <span>${o.icon} <strong>Visual Representation</strong></span>
@@ -2793,7 +2793,7 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
       <h3 style="margin:0; font-size:20px; font-weight:700; color:#14223a;">⚡ ${warmupHeading}</h3>
-      <div id="warmupScoreBadge" style="font-size:13.5px; font-weight:700; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:10px;">
+      <div id="warmupScoreBadge" role="status" aria-live="polite" style="font-size:13.5px; font-weight:700; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:10px;">
         ${warmup.questions.length} Questions · Autograded
       </div>
     </div>
@@ -3151,6 +3151,10 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
 
     const feedbackBox = document.createElement("div");
     feedbackBox.className = "warmup-fb-box";
+    // Feedback is announced, not just coloured — same contract as
+    // `.problem-check-result`. The region exists before Submit fills it.
+    feedbackBox.setAttribute("role", "status");
+    feedbackBox.setAttribute("aria-live", "polite");
     feedbackBox.style.cssText =
       "display:none; font-size:15.5px; font-weight:600; line-height:1.5; padding:11px 14px; border-radius:8px; margin-top:10px;";
 
@@ -4986,6 +4990,10 @@ function renderConnectCheck(cfg, state) {
 
     const fb = document.createElement("div");
     fb.className = "connect-check-feedback";
+    // Feedback is announced, not just coloured — same contract as
+    // `.problem-check-result`. The region exists before a choice fills it.
+    fb.setAttribute("role", "status");
+    fb.setAttribute("aria-live", "polite");
 
     // Restore a previously chosen answer so Save/Resume brings the student back
     // to the graded state rather than a blank question.
@@ -5239,6 +5247,10 @@ function renderConnectPhase(el, state, ctx, config, opts = {}) {
 
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "mt-4";
+  // Registered as a live region while still empty, so the submit feedback
+  // written into it later is announced — an alert born in the same task is not.
+  feedbackSlot.setAttribute("role", "status");
+  feedbackSlot.setAttribute("aria-live", "polite");
   respCard.append(feedbackSlot);
 
   const submitBtn = document.createElement("button");
@@ -5251,7 +5263,6 @@ function renderConnectPhase(el, state, ctx, config, opts = {}) {
     feedbackSlot.innerHTML = "";
     const fb = document.createElement("div");
     fb.className = `feedback feedback-${type} visible`;
-    fb.setAttribute("role", "alert");
     fb.innerHTML = `<span class="feedback-icon">${
       type === "success" ? "✓" : "💡"
     }</span><span>${esc(message)}</span>`;

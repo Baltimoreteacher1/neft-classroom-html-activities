@@ -313,6 +313,10 @@ export function renderMultipleChoice(container, opts) {
 
   const feedbackSlot = document.createElement("div");
   feedbackSlot.className = "problem-check-result";
+  // Registered as a live region while still empty: a region that gains its
+  // aria attributes in the same task that fills it is not reliably announced.
+  feedbackSlot.setAttribute("role", "status");
+  feedbackSlot.setAttribute("aria-live", "polite");
   wrapper.append(feedbackSlot);
 
   const checkRow = document.createElement("div");
@@ -417,7 +421,6 @@ export function renderMultipleChoice(container, opts) {
     }
 
     feedbackSlot.className = `problem-check-result visible ${isCorrect ? "is-correct" : "is-incorrect"}`;
-    feedbackSlot.setAttribute("role", "alert");
     // The named diagnosis rides ABOVE the coaching sentence as a short chip. It
     // is a noun phrase ("Added the denominators") where the sentence is a next
     // step, so the two do not repeat each other, and a student who reads only

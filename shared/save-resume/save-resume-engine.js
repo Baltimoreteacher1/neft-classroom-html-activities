@@ -1079,7 +1079,7 @@
         // Welcome-back path: auto-resume this browser's most recent session.
         var self = this;
         this._loadAndRestore(lastCode, true).then(function (ok) {
-          if (ok) showToast(self, "Welcome back — your work was restored.");
+          if (ok) showToast(self, withLastSaved(self, "Welcome back — your work was restored."));
           else if (!isGame) openPanel(self); // session vanished; let them choose
         });
       }
@@ -1841,6 +1841,27 @@
       }, 1200);
     }
   }
+  // "…was restored." says nothing about WHEN — a student sitting down after a
+  // break deserves to know which session came back. Same-day saves show the
+  // time, older saves the date; an unreadable timestamp changes nothing.
+  function withLastSaved(self, msg) {
+    return safe(
+      function () {
+        var ts = self.record && self.record.updatedAt;
+        if (!ts) return msg;
+        var d = new Date(ts);
+        if (isNaN(d.getTime())) return msg;
+        var sameDay = d.toDateString() === new Date().toDateString();
+        var when = sameDay
+          ? d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+          : d.toLocaleDateString([], { month: "short", day: "numeric" });
+        return msg.replace(/\.$/, "") + " (saved " + when + ").";
+      },
+      "toast-when",
+      msg,
+    );
+  }
+
   var toastTimer;
   function showToast(_self, msg) {
     var t = document.getElementById("nsr-toast");
