@@ -509,6 +509,87 @@ async function checkWarmupAnswerable(page, id) {
     fail(`${PART2}: phase 1 is "${g.name}", not the Warm-Up/Review look-back`);
   if (g.labs === 0 && g.answerable >= 4)
     note(`${PART2}: warm-up clean (0 labs, ${g.answerable} visible controls)`);
+
+  /* Part 2 shows the objectives TWICE — the opening step in phase 0, and again
+   * as the last card of Group Work (Joel, 2026-09-02: "include the objectives
+   * (again) after the 3 Group work. So it should be a card 4 that is the
+   * Objectives (do not take it away from the beginning -- just add it at the
+   * end)"). Recorded in data/product-decisions.json as
+   * `part-two-objectives-repeat-at-end`: this is a DECISION, not a regression
+   * pin, so reversing it means updating that entry, not deleting this check.
+   *
+   * Pinned in a browser rather than by reading part-two-renderer.js, because
+   * the failure this guards against is not a deleted line — both renders come
+   * from one objectivesCard() call site each, and a refactor that moves the
+   * closing one above the leveled sets, or renders it into a detached node,
+   * leaves the source looking entirely correct. "Last card of the phase" and
+   * "actually painted" are only answerable from the page. */
+  const partTwoObjectivesAtEnd = async () => {
+    /* "do not take it away from the beginning" is half the instruction, so the
+     * opening step is asserted here too — otherwise a change that MOVED the
+     * objectives to the end would pass a check that only looks at the end. */
+    const opening = await page.evaluate(() => {
+      const step = [...document.querySelectorAll(".act-step-panel")].find((p) =>
+        /What we are still working on/.test(p.textContent || ""),
+      );
+      if (!step) return null;
+      return [...step.querySelectorAll("p")]
+        .map((p) => p.textContent.trim())
+        .filter((t) => /^(🎯|🗣️)/.test(t)).length;
+    });
+    if (opening === null) fail(`${PART2}: phase 0 no longer opens with the Objectives step`);
+    else if (opening !== 2)
+      fail(`${PART2}: the opening Objectives step shows ${opening} goals, expected 2`);
+
+    const jumped = await page.evaluate(() => {
+      const b = [...document.querySelectorAll("button")].find((x) =>
+        /Group Work/i.test(x.textContent || ""),
+      );
+      if (!b) return false;
+      b.click();
+      return true;
+    });
+    if (!jumped) fail(`${PART2}: no Group Work phase button to open`);
+    else {
+      await page.waitForTimeout(700);
+      const gw = await page.evaluate(() => {
+        const active = document.querySelector(".phase.active");
+        if (!active) return { error: "no active phase" };
+        const cards = [...active.querySelectorAll("section.card")];
+        const card = cards.find((c) => /🎯/.test(c.querySelector("h3")?.textContent || ""));
+        if (!card)
+          return { headings: cards.map((c) => (c.querySelector("h3")?.textContent || "").trim()) };
+        return {
+          headings: cards.map((c) => (c.querySelector("h3")?.textContent || "").trim()),
+          isLast: cards[cards.length - 1] === card,
+          painted: card.getClientRects().length > 0,
+          goals: [...card.querySelectorAll("p")]
+            .map((p) => p.textContent.trim())
+            .filter((t) => /^(🎯|🗣️)/.test(t)).length,
+        };
+      });
+      if (gw.error) fail(`${PART2}: Group Work did not render — ${gw.error}`);
+      else if (gw.goals === undefined)
+        fail(
+          `${PART2}: Group Work has no closing Objectives card — cards are [${gw.headings.join(" | ")}]`,
+        );
+      else if (!gw.isLast)
+        fail(
+          `${PART2}: the closing Objectives card is not the last card of Group Work — [${gw.headings.join(" | ")}]`,
+        );
+      else if (!gw.painted)
+        fail(`${PART2}: the closing Objectives card is in the DOM but not painted`);
+      else if (gw.goals !== 2)
+        fail(
+          `${PART2}: the closing Objectives card shows ${gw.goals} goals, expected the content and language objectives`,
+        );
+      else
+        note(
+          `${PART2}: Group Work ends on the Objectives card (${gw.headings.length} cards, both goals painted)`,
+        );
+    }
+  };
+  await partTwoObjectivesAtEnd();
   await page.close();
 }
 
