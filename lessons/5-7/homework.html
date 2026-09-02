@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 5 Visual World: Architect Studio --- */
+/* --- Clean Unified Theme: Unit 5 (Architect Studio) --- */
 :root {
-  --navy: #172554;
-  --navy-light: #1e3a8a;
-  --teal: #0369a1;
-  --teal-ink: #075985;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
   --teal-light: #e0f2fe;
-  --amber: #b45309;
+  --amber: #d97706;
   --amber-light: #fef3c7;
-  --hw-world-border: #bfdbfe;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%) !important;
-  border: 1.5px solid #bfdbfe !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #bfdbfe;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3585,13 +3680,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3610,7 +3713,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</span><span class="lang-es" lang="es">Un prisma triangular tiene dos bases triangulares, cada una con un área de 12 cm², y tres caras rectangulares con áreas de 30 cm², 40 cm² y 40 cm². ¿Cuál es el área de superficie total?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm²." data-explanation-es="Área de superficie = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².">
+        <div class="mc-options" data-correct="2" data-explanation="SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm²." data-explanation-es="Área de superficie = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm²." data-choice-feedback='[&quot;You added the three rectangles but left out both triangular bases.&quot;,&quot;You included only one triangular base — a prism has two matching triangular ends to add.&quot;,&quot;&quot;,&quot;Check the units — surface area is measured in square units, not cubic.&quot;]' data-topic="area">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
@@ -3641,17 +3744,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="1">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3682,7 +3793,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?</span><span class="lang-es" lang="es">Un prisma triangular tiene bases triangulares con base 6 in y altura 4 in. El prisma mide 10 in de largo y los dos lados inclinados del triángulo miden 5 in cada uno. ¿Cuál es el área de superficie?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in²." data-explanation-es="Bases triangulares: 2 × (½ × 6 × 4) = 24 in². Tres caras rectangulares: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². Área de superficie = 24 + 160 = 184 in².">
+        <div class="mc-options" data-correct="2" data-explanation="Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in²." data-explanation-es="Bases triangulares: 2 × (½ × 6 × 4) = 24 in². Tres caras rectangulares: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². Área de superficie = 24 + 160 = 184 in²." data-choice-feedback='[&quot;You added the two slanted rectangular faces and the bases but missed the bottom rectangular face.&quot;,&quot;You added the three rectangular faces but left out the two triangular bases.&quot;,&quot;&quot;,&quot;Check the units — a wrapped surface is measured in square units, not cubic.&quot;]' data-topic="area">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -3713,17 +3824,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="2">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3770,7 +3889,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A triangular prism is 10 in long. Its triangle ends have base 8 in, height 6 in, and sides 8, 6, and 10 in. Find its surface area.</span><span class="lang-es" lang="es">Un prisma triangular mide 10 in de largo. Sus extremos triangulares tienen base 8 in, altura 6 in y lados de 8, 6 y 10 in. Halla su área de superficie.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in²." data-explanation-es="Dos extremos triangulares: 2 × (½ × 8 × 6) = 48 in². Tres rectángulos: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². Área de superficie = 48 + 240 = 288 in².">
+        <div class="mc-options" data-correct="2" data-explanation="Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in²." data-explanation-es="Dos extremos triangulares: 2 × (½ × 8 × 6) = 48 in². Tres rectángulos: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². Área de superficie = 48 + 240 = 288 in²." data-choice-feedback='[&quot;You found the triangular ends but forgot to add the three rectangular sides.&quot;,&quot;You found the rectangular sides but forgot to add the two triangular ends.&quot;,&quot;&quot;,&quot;Check the units — wrapping a surface uses square units, not cubic.&quot;]' data-topic="area">
           
             <label class="mc-option-label" id="label_q_3_0">
               <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
@@ -3801,17 +3920,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="3">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3873,17 +4000,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="4">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3986,17 +4121,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="5">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4111,13 +4254,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4200,17 +4351,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="7">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4328,13 +4487,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4353,7 +4520,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</span><span class="lang-es" lang="es">¿Cuál es el área de superficie de un prisma rectangular con l = 5 cm, w = 4 cm, h = 3 cm?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm²." data-explanation-es="Área de superficie = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².">
+        <div class="mc-options" data-correct="2" data-explanation="SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm²." data-explanation-es="Área de superficie = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm²." data-choice-feedback='[&quot;You found half the faces — remember each face has a matching opposite face to double.&quot;,&quot;That&#039;s the volume — surface area adds up all six face areas instead of multiplying three edges.&quot;,&quot;&quot;,&quot;Check the units — a surface measurement needs square units, not cubic.&quot;]' data-topic="area">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4384,17 +4551,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="9">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4508,13 +4683,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4533,7 +4716,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">How many faces does a triangular prism have?</span><span class="lang-es" lang="es">¿Cuántas caras tiene un prisma triangular?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces." data-explanation-es="Un prisma triangular tiene 5 caras: 2 bases triangulares y 3 caras laterales rectangulares.">
+        <div class="mc-options" data-correct="2" data-explanation="A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces." data-explanation-es="Un prisma triangular tiene 5 caras: 2 bases triangulares y 3 caras laterales rectangulares." data-choice-feedback='[&quot;That&#039;s just the rectangular sides — don&#039;t forget the two triangular ends.&quot;,&quot;Count again — a triangular prism has more rectangular sides than that, plus its two ends.&quot;,&quot;&quot;,&quot;That&#039;s the face count for a rectangular prism — a triangular prism has one fewer face.&quot;]' data-topic="area">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4564,17 +4747,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="11">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4605,7 +4796,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A rectangular time capsule box measures 3 in by 4 in by 5 in. How much wrapping paper covers its surface (no overlap)?</span><span class="lang-es" lang="es">Una caja rectangular para una cápsula del tiempo mide 3 in por 4 in por 5 in. ¿Cuánto papel de envolver cubre su superficie (sin traslape)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="SA = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in²." data-explanation-es="Área de superficie = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in².">
+        <div class="mc-options" data-correct="2" data-explanation="SA = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in²." data-explanation-es="Área de superficie = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in²." data-choice-feedback='[&quot;You found the sum of three face areas but forgot each face has a matching opposite one.&quot;,&quot;That&#039;s the volume — surface area needs the sum of all six face areas, not length × width × height.&quot;,&quot;&quot;,&quot;Check the units — a wrapped surface is measured in square units, not cubic.&quot;]' data-topic="area">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4636,17 +4827,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="12">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4677,7 +4876,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A rectangular capsule crate is 6 cm long, 5 cm wide, and 4 cm tall. How much cardboard is needed to cover all its faces?</span><span class="lang-es" lang="es">Una caja rectangular para cápsulas mide 6 cm de largo, 5 cm de ancho y 4 cm de alto. ¿Cuánto cartón se necesita para cubrir todas sus caras?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="SA = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm²." data-explanation-es="Área de superficie = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm².">
+        <div class="mc-options" data-correct="2" data-explanation="SA = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm²." data-explanation-es="Área de superficie = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm²." data-choice-feedback='[&quot;You added three face areas but forgot each one has a matching opposite face to double.&quot;,&quot;That&#039;s the volume calculation — surface area needs the sum of all six face areas instead.&quot;,&quot;&quot;,&quot;Check the units — covering a surface uses square units, not cubic units.&quot;]' data-topic="area">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4708,17 +4907,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).</span><span class="lang-es" lang="es">Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">Delinea el piso plano y multiplica la base por la altura.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we counting the outside border or the square tiles inside?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Estamos contando el borde de afuera o los cuadrados de adentro?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">👆 Toca para graficar: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Outline the flat floor and multiply base by height.</span><span class="lang-es" lang="es">👆 Toca para graficar: Delinea el piso plano y multiplica la base por la altura.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="13">
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -6390,7 +6597,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6398,11 +6605,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6419,14 +6633,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6627,15 +6850,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

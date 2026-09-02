@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 6 Visual World: Culinary & Recipe Lab --- */
+/* --- Clean Unified Theme: Unit 6 (Culinary & Recipe Lab) --- */
 :root {
-  --navy: #3b0764;
-  --navy-light: #581c87;
-  --teal: #6d28d9;
-  --teal-ink: #5b21b6;
-  --teal-light: #f3e8ff;
-  --amber: #047857;
-  --amber-light: #ecfdf5;
-  --hw-world-border: #e9d5ff;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
+  --teal-light: #e0f2fe;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #3b0764 0%, #581c87 100%) !important;
-  border: 1.5px solid #e9d5ff !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #e9d5ff;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3587,17 +3682,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="0">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3628,7 +3731,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the first step in evaluating 2 1/2 ÷ 1/4?</span><span class="lang-es" lang="es">¿Cuál es el primer paso para evaluar 2 1/2 ÷ 1/4?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="A mixed number cannot be flipped or multiplied as it stands, so rewrite it first: 2 1/2 = 5/2. Then Keep, Change, Flip gives 5/2 × 4/1 = 10." data-explanation-es="Un número mixto no se puede voltear ni multiplicar tal como está, así que primero reescríbelo: 2 1/2 = 5/2. Luego Mantén, Cambia, Voltea da 5/2 × 4/1 = 10.">
+        <div class="mc-options" data-correct="0" data-explanation="A mixed number cannot be flipped or multiplied as it stands, so rewrite it first: 2 1/2 = 5/2. Then Keep, Change, Flip gives 5/2 × 4/1 = 10." data-explanation-es="Un número mixto no se puede voltear ni multiplicar tal como está, así que primero reescríbelo: 2 1/2 = 5/2. Luego Mantén, Cambia, Voltea da 5/2 × 4/1 = 10." data-choice-feedback='[&quot;&quot;,&quot;A mixed number has no single numerator and denominator to flip.&quot;,&quot;Dropping the half changes the problem into a different one.&quot;,&quot;Division is not solved by adding the parts.&quot;]' data-topic="fractions">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
@@ -3659,17 +3762,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="1">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3817,13 +3928,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3922,17 +4041,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="3">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4036,13 +4163,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4178,13 +4313,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4214,7 +4357,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the reciprocal of 3/5?</span><span class="lang-es" lang="es">¿Cuál es el recíproco de 3/5?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="To find the reciprocal, flip the fraction. The reciprocal of 3/5 is 5/3." data-explanation-es="Para hallar el recíproco, invierte la fracción. El recíproco de 3/5 es 5/3.">
+        <div class="mc-options" data-correct="2" data-explanation="To find the reciprocal, flip the fraction. The reciprocal of 3/5 is 5/3." data-explanation-es="Para hallar el recíproco, invierte la fracción. El recíproco de 3/5 es 5/3." data-choice-feedback='[&quot;That flips only the 3. A reciprocal flips the WHOLE fraction, so both the 3 and the 5 change places.&quot;,&quot;That is the original fraction, unflipped. A reciprocal swaps the top and bottom numbers, so 3/5 becomes 5/3.&quot;,&quot;&quot;,&quot;The bottom number was used for both spots. Keep both numbers — just trade their places: the 3 moves down, the 5 moves up.&quot;]' data-topic="fractions">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -4245,17 +4388,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="6">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4359,13 +4510,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4415,17 +4574,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="8">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4456,7 +4623,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A recipe needs 2/3 cup of sugar. You only have a 1/6-cup scoop. How many scoops do you need?</span><span class="lang-es" lang="es">Una receta necesita 2/3 de taza de azúcar. Solo tienes una cuchara medidora de 1/6 de taza. ¿Cuántas cucharadas necesitas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4 scoops." data-explanation-es="2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4 cucharadas.">
+        <div class="mc-options" data-correct="2" data-explanation="2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4 scoops." data-explanation-es="2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4 cucharadas." data-choice-feedback='[&quot;Only 2 scoops of 1/6 cup makes 2/6 = 1/3 cup — not enough sugar. Use Keep, Change, Flip on 2/3 ÷ 1/6 and simplify what you get.&quot;,&quot;Multiplying doesn&#039;t answer &#039;how many fit.&#039; Divide the whole by the piece size.&quot;,&quot;&quot;,&quot;The dividend (whole) goes first. The divisor (piece size) is second.&quot;]' data-topic="fractions">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4487,17 +4654,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="9">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4528,7 +4703,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Lock 2 — The vault dial reads a fraction problem: What is (2/3) ÷ (1/6) in simplest form?</span><span class="lang-es" lang="es">Candado 2 — El disco de la bóveda muestra un problema con fracciones: ¿cuánto es (2/3) ÷ (1/6) en su forma más simple?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="(2/3) ÷ (1/6) = (2/3) × (6/1) = 12/3 = 4. The dial unlocks at 4." data-explanation-es="(2/3) ÷ (1/6) = (2/3) × (6/1) = 12/3 = 4. El disco se abre en 4.">
+        <div class="mc-options" data-correct="2" data-explanation="(2/3) ÷ (1/6) = (2/3) × (6/1) = 12/3 = 4. The dial unlocks at 4." data-explanation-es="(2/3) ÷ (1/6) = (2/3) × (6/1) = 12/3 = 4. El disco se abre en 4." data-choice-feedback='[&quot;That&#039;s computing with whole numbers. Remember: dividing by 1/4 is different than dividing by 4.&quot;,&quot;You need to divide by the fraction, not by its denominator alone.&quot;,&quot;&quot;,&quot;Does dividing by a fraction smaller than 1 make the answer bigger or smaller?&quot;]' data-topic="fractions">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4559,17 +4734,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="10">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4600,7 +4783,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is 1/2 ÷ 1/4?</span><span class="lang-es" lang="es">¿Cuánto es 1/2 ÷ 1/4?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Two 1/4-size pieces fit into 1/2." data-explanation-es="1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Dos pedazos de tamaño 1/4 caben en 1/2.">
+        <div class="mc-options" data-correct="2" data-explanation="1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Two 1/4-size pieces fit into 1/2." data-explanation-es="1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Dos pedazos de tamaño 1/4 caben en 1/2." data-choice-feedback='[&quot;That&#039;s multiplication or another operation. Division asks &#039;how many of this size fit in the whole.&#039;&quot;,&quot;Does dividing by 1/3 make the quotient bigger or smaller than the dividend? Check your answer.&quot;,&quot;&quot;,&quot;You have the dividend and divisor backward. Which is the whole, and which is the piece size?&quot;]' data-topic="fractions">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4631,17 +4814,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="11">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4672,7 +4863,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is 3/4 ÷ 1/8?</span><span class="lang-es" lang="es">¿Cuánto es 3/4 ÷ 1/8?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Six 1/8-size pieces fit into 3/4." data-explanation-es="3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Seis pedazos de tamaño 1/8 caben en 3/4.">
+        <div class="mc-options" data-correct="1" data-explanation="3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Six 1/8-size pieces fit into 3/4." data-explanation-es="3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Seis pedazos de tamaño 1/8 caben en 3/4." data-choice-feedback='[&quot;That&#039;s multiplication or another operation. Division asks &#039;how many of this size fit in the whole.&#039;&quot;,&quot;&quot;,&quot;You have the dividend and divisor backward. Which is the whole, and which is the piece size?&quot;,&quot;Does dividing by 1/3 make the quotient bigger or smaller than the dividend? Check your answer.&quot;]' data-topic="fractions">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4703,17 +4894,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="12">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4744,7 +4943,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is 2/3 ÷ 1/3?</span><span class="lang-es" lang="es">¿Cuánto es 2/3 ÷ 1/3?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="2/3 ÷ 1/3 = 2/3 × 3/1 = 6/3 = 2. Two 1/3-size pieces fit into 2/3." data-explanation-es="2/3 ÷ 1/3 = 2/3 × 3/1 = 6/3 = 2. Dos pedazos de tamaño 1/3 caben en 2/3.">
+        <div class="mc-options" data-correct="1" data-explanation="2/3 ÷ 1/3 = 2/3 × 3/1 = 6/3 = 2. Two 1/3-size pieces fit into 2/3." data-explanation-es="2/3 ÷ 1/3 = 2/3 × 3/1 = 6/3 = 2. Dos pedazos de tamaño 1/3 caben en 2/3." data-choice-feedback='[&quot;You have the dividend and divisor backward. Which is the whole, and which is the piece size?&quot;,&quot;&quot;,&quot;That&#039;s multiplication or another operation. Division asks &#039;how many of this size fit in the whole.&#039;&quot;,&quot;Does dividing by 1/3 make the quotient bigger or smaller than the dividend? Check your answer.&quot;]' data-topic="fractions">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4775,17 +4974,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).</span><span class="lang-es" lang="es">Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Can we combine slices from different sized pizzas, or do we need equal slices first?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Divide bars or lines into equal pieces to see the sizes clearly.</span><span class="lang-es" lang="es">👆 Toca para graficar: Divide barras o rectas en partes iguales para ver los tamaños con claridad.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="13">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -6457,7 +6664,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6465,11 +6672,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6486,14 +6700,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6694,15 +6917,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

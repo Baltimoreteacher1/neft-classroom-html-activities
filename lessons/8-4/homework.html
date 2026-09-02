@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 8 Visual World: Codebreaker Vault --- */
+/* --- Clean Unified Theme: Unit 8 (Codebreaker Vault) --- */
 :root {
-  --navy: #1e1b4b;
-  --navy-light: #312e81;
-  --teal: #4338ca;
-  --teal-ink: #3730a3;
-  --teal-light: #e0e7ff;
-  --amber: #b91c1c;
-  --amber-light: #fee2e2;
-  --hw-world-border: #c7d2fe;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
+  --teal-light: #e0f2fe;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
-  border: 1.5px solid #c7d2fe !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #c7d2fe;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3641,13 +3736,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3728,13 +3831,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3781,17 +3892,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="2">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3866,17 +3985,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="3">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3938,17 +4065,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="4">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3979,7 +4114,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A parking garage charges if your stay is more than 2 hours. Which inequality represents times t that are charged?</span><span class="lang-es" lang="es">Un estacionamiento cobra si tu estancia dura más de 2 horas. ¿Qué desigualdad representa los tiempos t que se cobran?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;More than 2 hours&#039; means strictly greater than: t &gt; 2. Exactly 2 hours is not charged." data-explanation-es="&#039;Más de 2 horas&#039; significa estrictamente mayor que: t &gt; 2. Exactamente 2 horas no se cobra.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;More than 2 hours&#039; means strictly greater than: t &gt; 2. Exactly 2 hours is not charged." data-explanation-es="&#039;Más de 2 horas&#039; significa estrictamente mayor que: t &gt; 2. Exactamente 2 horas no se cobra." data-choice-feedback='[&quot;&quot;,&quot;Think about the driver who stays exactly 2 hours. Your symbol charges them — does &#039;more than 2 hours&#039; include exactly 2?&quot;,&quot;This describes short stays, which are not charged. Check which side of 2 the symbol opens toward.&quot;,&quot;This would charge a stay of exactly 2 hours, and it also covers shorter stays. &#039;More than 2&#039; leaves 2 out and looks above it.&quot;]' data-topic="inequalities">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -4010,17 +4145,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="5">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4062,7 +4205,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which inequality represents: &#039;The temperature is less than 40 degrees&#039;?</span><span class="lang-es" lang="es">¿Qué desigualdad representa: &#039;La temperatura es menor que 40 grados&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Less than&#039; means &lt;, so the inequality is t &lt; 40." data-explanation-es="&#039;Menor que&#039; significa &lt;, así que la desigualdad es t &lt; 40.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Less than&#039; means &lt;, so the inequality is t &lt; 40." data-explanation-es="&#039;Menor que&#039; significa &lt;, así que la desigualdad es t &lt; 40." data-choice-feedback='[&quot;&quot;,&quot;Your symbol opens toward temperatures ABOVE 40. &#039;Less than 40&#039; lives on the other side — which way should the symbol point?&quot;,&quot;The ≤ symbol lets the temperature be exactly 40. &#039;Less than 40&#039; leaves 40 out.&quot;,&quot;An equals sign pins the temperature to a single value, but this situation describes a whole range of temperatures.&quot;]' data-topic="inequalities">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -4093,17 +4236,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="6">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4134,7 +4285,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which inequality represents: &#039;A store can hold no more than 75 people&#039;?</span><span class="lang-es" lang="es">¿Qué desigualdad representa: &#039;Una tienda puede albergar no más de 75 personas&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;No more than&#039; means less than or equal to, so p ≤ 75." data-explanation-es="&#039;No más de&#039; significa menor que o igual a, así que p ≤ 75.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;No more than&#039; means less than or equal to, so p ≤ 75." data-explanation-es="&#039;No más de&#039; significa menor que o igual a, así que p ≤ 75." data-choice-feedback='[&quot;&quot;,&quot;Almost — check the boundary. Is a store holding EXACTLY 75 people breaking the rule? Your symbol says yes; re-read &#039;no more than.&#039;&quot;,&quot;This says the store always holds 75 or more people, which is the opposite of a limit. &#039;No more than&#039; caps the number.&quot;,&quot;This describes crowds larger than the limit. &#039;No more than 75&#039; means the store never goes above 75.&quot;]' data-topic="inequalities">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -4165,17 +4316,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="7">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4206,7 +4365,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which inequality represents: &#039;The speed limit is more than 25 mph&#039;?</span><span class="lang-es" lang="es">¿Qué desigualdad representa: &#039;El límite de velocidad es más de 25 mph&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;More than&#039; means strictly greater than, so s &gt; 25." data-explanation-es="&#039;Más de&#039; significa estrictamente mayor que, así que s &gt; 25.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;More than&#039; means strictly greater than, so s &gt; 25." data-explanation-es="&#039;Más de&#039; significa estrictamente mayor que, así que s &gt; 25." data-choice-feedback='[&quot;&quot;,&quot;Test the boundary value: is 25 itself &#039;more than 25&#039;? Your symbol includes it — decide whether the words allow that.&quot;,&quot;The symbol points the wrong way. &#039;More than&#039; describes speeds above 25, not below it.&quot;,&quot;An equals sign names one exact speed, but &#039;more than 25&#039; covers every speed above 25.&quot;]' data-topic="inequalities">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4237,17 +4396,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="8">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4278,7 +4445,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which inequality represents: &#039;You must be at least 48 inches tall to ride&#039;?</span><span class="lang-es" lang="es">¿Qué desigualdad representa: &#039;Debes medir al menos 48 pulgadas de estatura para subir&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;At least&#039; means greater than or equal to, so h ≥ 48." data-explanation-es="&#039;Al menos&#039; significa mayor que o igual a, así que h ≥ 48.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;At least&#039; means greater than or equal to, so h ≥ 48." data-explanation-es="&#039;Al menos&#039; significa mayor que o igual a, así que h ≥ 48." data-choice-feedback='[&quot;&quot;,&quot;So close — test the boundary. Does a rider who is EXACTLY 48 inches tall get to ride? Your strict symbol turns that rider away.&quot;,&quot;This describes riders who are too short to ride. Check which direction the symbol opens.&quot;,&quot;This would let anyone shorter than 48 inches ride. &#039;At least 48&#039; makes 48 the smallest allowed height, not the largest.&quot;]' data-topic="inequalities">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4309,17 +4476,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="9">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4350,7 +4525,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A witness reports that fewer than 5 people entered the building. Which inequality shows the number n of people?</span><span class="lang-es" lang="es">Un testigo informa que menos de 5 personas entraron al edificio. ¿Qué desigualdad muestra el número n de personas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Fewer than 5&#039; does not include 5, so n &lt; 5." data-explanation-es="&#039;Menos de 5&#039; no incluye el 5, así que n &lt; 5.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Fewer than 5&#039; does not include 5, so n &lt; 5." data-explanation-es="&#039;Menos de 5&#039; no incluye el 5, así que n &lt; 5." data-choice-feedback='[&quot;&quot;,&quot;&#039;Fewer than 5&#039; does not include 5 itself, so equal to should not be allowed.&quot;,&quot;The symbol points the wrong way. &#039;Fewer than 5&#039; describes counts below 5.&quot;,&quot;This includes 5 and everything above it. &#039;Fewer than 5&#039; excludes 5 entirely.&quot;]' data-topic="inequalities">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4381,17 +4556,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="10">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4422,7 +4605,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A clue says the suspect carried at least 12 stolen gems. Which inequality shows the number g of gems?</span><span class="lang-es" lang="es">Una pista dice que el sospechoso llevaba al menos 12 gemas robadas. ¿Qué desigualdad muestra el número g de gemas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;At least 12&#039; includes 12 and any number above it, so g ≥ 12." data-explanation-es="&#039;Al menos 12&#039; incluye el 12 y cualquier número mayor, así que g ≥ 12.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;At least 12&#039; includes 12 and any number above it, so g ≥ 12." data-explanation-es="&#039;Al menos 12&#039; incluye el 12 y cualquier número mayor, así que g ≥ 12." data-choice-feedback='[&quot;&quot;,&quot;&#039;At least&#039; includes 12 itself, so the symbol must allow equal to as well as greater than.&quot;,&quot;This allows fewer than 12 gems. &#039;At least 12&#039; makes 12 the smallest possible number, not the largest.&quot;,&quot;This rules out 12 itself along with everything above it. &#039;At least&#039; points the other way and includes the boundary.&quot;]' data-topic="inequalities">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4453,17 +4636,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">👆 Toca para graficar: En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">👆 Toca para graficar: Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="11">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4611,13 +4802,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">On the number line, use an open/closed circle and shade the solutions.</span><span class="lang-es" lang="es">En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Solve like an equation, then shade the side that makes it true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y luego sombrea el lado que es verdadero.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Solve like an equation, then test a number: shade all numbers that make the comparison true.</span><span class="lang-es" lang="es">Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Use an open circle for &lt; or &gt; and a solid filled circle for ≤ or ≥, then shade.</span><span class="lang-es" lang="es">Usa círculo abierto para &lt; o &gt; y círculo relleno para ≤ o ≥, luego sombrea.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Is the endpoint included (solid dot) or not included (open circle)?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -6277,7 +6476,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6285,11 +6484,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6306,14 +6512,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6514,15 +6729,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

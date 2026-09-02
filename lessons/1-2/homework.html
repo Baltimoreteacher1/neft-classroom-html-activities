@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 1 Visual World: Voyage & Launchpad --- */
+/* --- Clean Unified Theme: Unit 1 (Voyage & Launchpad) --- */
 :root {
-  --navy: #0c2b54;
-  --navy-light: #16447c;
+  --navy: #15487f;
+  --navy-light: #1c5999;
   --teal: #0284c7;
   --teal-ink: #0369a1;
   --teal-light: #e0f2fe;
-  --amber: #f59e0b;
+  --amber: #d97706;
   --amber-light: #fef3c7;
-  --hw-world-border: #bae6fd;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #0c2b54 0%, #16447c 100%) !important;
-  border: 1.5px solid #bae6fd !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #bae6fd;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3446,7 +3541,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">You calculate 5/6 × 540 and get 650 meters. What does the checking step of your plan tell you?</span><span class="lang-es" lang="es">Calculas 5/6 × 540 y obtienes 650 metros. ¿Qué te dice el paso de revisión de tu plan?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="5/6 is less than 1, so 5/6 of 540 must land below 540. Getting 650 means the plan needs adjusting — which is exactly what checking is for." data-explanation-es="5/6 es menor que 1, así que 5/6 de 540 debe quedar por debajo de 540. Obtener 650 significa que hay que ajustar el plan — para eso sirve revisar.">
+        <div class="mc-options" data-correct="2" data-explanation="5/6 is less than 1, so 5/6 of 540 must land below 540. Getting 650 means the plan needs adjusting — which is exactly what checking is for." data-explanation-es="5/6 es menor que 1, así que 5/6 de 540 debe quedar por debajo de 540. Obtener 650 significa que hay que ajustar el plan — para eso sirve revisar." data-choice-feedback='[&quot;Close to 540 is not the test — the answer must be BELOW 540, because 5/6 is less than 1.&quot;,&quot;Comparing 650 to the fraction 5/6 mixes up two different kinds of quantities — compare the answer to 540 instead.&quot;,&quot;&quot;,&quot;This lesson says we check our progress on EVERY problem, not only when asked.&quot;]' data-topic="fallback">
           
             <label class="mc-option-label" id="label_q_0_0">
               <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
@@ -3477,17 +3572,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3633,13 +3736,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3676,17 +3787,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3749,17 +3868,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3788,7 +3915,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">The Rio de Janeiro building will be 9/10 as tall as One World Trade Center (540 meters). How tall will it be?</span><span class="lang-es" lang="es">El edificio de Río de Janeiro será 9/10 de alto que el One World Trade Center (540 metros). ¿Qué altura tendrá?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="9/10 × 540: one tenth of 540 is 54, and 9 tenths is 9 × 54 = 486 meters." data-explanation-es="9/10 × 540: un décimo de 540 es 54, y 9 décimos son 9 × 54 = 486 metros.">
+        <div class="mc-options" data-correct="1" data-explanation="9/10 × 540: one tenth of 540 is 54, and 9 tenths is 9 × 54 = 486 meters." data-explanation-es="9/10 × 540: un décimo de 540 es 54, y 9 décimos son 9 × 54 = 486 metros." data-choice-feedback='[&quot;54 meters is only 1/10 of 540 — you still need 9 of those tenths.&quot;,&quot;&quot;,&quot;594 meters ADDS one tenth (540 + 54) instead of taking 9 tenths of 540.&quot;,&quot;4,860 meters multiplies 540 by 9 but never divides by 10.&quot;]' data-topic="fallback">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -3819,17 +3946,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3858,7 +3993,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">The Tokyo building will be 6/5 as tall as One World Trade Center (540 meters). How tall will it be?</span><span class="lang-es" lang="es">El edificio de Tokio será 6/5 de alto que el One World Trade Center (540 metros). ¿Qué altura tendrá?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="6/5 × 540: one fifth of 540 is 108, and 6 fifths is 6 × 108 = 648 meters — taller than 540, because 6/5 is greater than 1." data-explanation-es="6/5 × 540: un quinto de 540 es 108, y 6 quintos son 6 × 108 = 648 metros — más alto que 540, porque 6/5 es mayor que 1.">
+        <div class="mc-options" data-correct="3" data-explanation="6/5 × 540: one fifth of 540 is 108, and 6 fifths is 6 × 108 = 648 meters — taller than 540, because 6/5 is greater than 1." data-explanation-es="6/5 × 540: un quinto de 540 es 108, y 6 quintos son 6 × 108 = 648 metros — más alto que 540, porque 6/5 es mayor que 1." data-choice-feedback='[&quot;108 meters is only 1/5 of 540 — you still need 6 of those fifths.&quot;,&quot;432 meters SUBTRACTS a fifth (540 − 108) instead of taking 6 fifths.&quot;,&quot;450 meters is 5/6 of 540 — that flips the fraction, and it belongs to the London building.&quot;,&quot;&quot;]' data-topic="fallback">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -3889,17 +4024,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3939,7 +4082,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">The London building will be 5/6 as tall as One World Trade Center, which is 540 meters. How tall will the London building be?</span><span class="lang-es" lang="es">El edificio de Londres será 5/6 de alto que el One World Trade Center, que mide 540 metros. ¿Qué altura tendrá el edificio de Londres?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="5/6 × 540: one sixth of 540 is 90, and 5 sixths is 5 × 90 = 450 meters." data-explanation-es="5/6 × 540: un sexto de 540 es 90, y 5 sextos son 5 × 90 = 450 metros.">
+        <div class="mc-options" data-correct="1" data-explanation="5/6 × 540: one sixth of 540 is 90, and 5 sixths is 5 × 90 = 450 meters." data-explanation-es="5/6 × 540: un sexto de 540 es 90, y 5 sextos son 5 × 90 = 450 metros." data-choice-feedback='[&quot;90 meters is only 1/6 of 540 — you still need to multiply by the 5 in the numerator.&quot;,&quot;&quot;,&quot;534 meters subtracts 6 from 540 instead of finding 5/6 OF 540.&quot;,&quot;648 meters is 6/5 of 540 — that flips the fraction and makes the building taller than 540.&quot;]' data-topic="fallback">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -3970,17 +4113,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4073,17 +4224,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4130,17 +4289,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4169,7 +4336,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Without computing the exact heights, order the three new buildings from shortest to tallest. (London: 5/6 of 540 m, Rio de Janeiro: 9/10 of 540 m, Tokyo: 6/5 of 540 m.)</span><span class="lang-es" lang="es">Sin calcular las alturas exactas, ordena los tres edificios nuevos del más bajo al más alto. (Londres: 5/6 de 540 m, Río de Janeiro: 9/10 de 540 m, Tokio: 6/5 de 540 m.)</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="Compare the fractions: 5/6 ≈ 0.83 is less than 9/10 = 0.9, and both are less than 6/5 = 1.2. Same whole, so the order of the fractions is the order of the heights." data-explanation-es="Compara las fracciones: 5/6 ≈ 0.83 es menor que 9/10 = 0.9, y ambas son menores que 6/5 = 1.2. El mismo entero, así que el orden de las fracciones es el orden de las alturas.">
+        <div class="mc-options" data-correct="3" data-explanation="Compare the fractions: 5/6 ≈ 0.83 is less than 9/10 = 0.9, and both are less than 6/5 = 1.2. Same whole, so the order of the fractions is the order of the heights." data-explanation-es="Compara las fracciones: 5/6 ≈ 0.83 es menor que 9/10 = 0.9, y ambas son menores que 6/5 = 1.2. El mismo entero, así que el orden de las fracciones es el orden de las alturas." data-choice-feedback='[&quot;That puts 9/10 below 5/6 — but 9/10 = 0.9 is GREATER than 5/6 ≈ 0.83.&quot;,&quot;That is tallest to shortest — the question asks for shortest to tallest.&quot;,&quot;Tokyo&#039;s 6/5 is greater than 1, so Tokyo must be last, not in the middle.&quot;,&quot;&quot;]' data-topic="fallback">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4200,17 +4367,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4257,17 +4432,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4314,17 +4497,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4353,7 +4544,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Without calculating, which new building must be TALLER than One World Trade Center, and why?</span><span class="lang-es" lang="es">Sin calcular, ¿cuál edificio nuevo debe ser MÁS ALTO que el One World Trade Center, y por qué?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Multiplying 540 by a fraction greater than 1 gives more than 540. Only 6/5 is greater than 1; 5/6 and 9/10 are both less than 1." data-explanation-es="Multiplicar 540 por una fracción mayor que 1 da más de 540. Solo 6/5 es mayor que 1; 5/6 y 9/10 son ambas menores que 1.">
+        <div class="mc-options" data-correct="1" data-explanation="Multiplying 540 by a fraction greater than 1 gives more than 540. Only 6/5 is greater than 1; 5/6 and 9/10 are both less than 1." data-explanation-es="Multiplicar 540 por una fracción mayor que 1 da más de 540. Solo 6/5 es mayor que 1; 5/6 y 9/10 son ambas menores que 1." data-choice-feedback='[&quot;The 6 in 5/6 is the denominator — 5/6 is less than 1, so the London building is SHORTER than 540 meters.&quot;,&quot;&quot;,&quot;Close to 1 is not greater than 1 — 9/10 of 540 is still less than 540 meters.&quot;,&quot;A fraction GREATER than 1, like 6/5, makes the product greater than 540.&quot;]' data-topic="fallback">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4384,17 +4575,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz un dibujo rápido, una recta numérica o una tabla.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4474,13 +4673,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Draw a quick model — a picture, a number line, or a table.</span><span class="lang-es" lang="es">Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Take it one step at a time and show how you got each number.</span><span class="lang-es" lang="es">Hazlo paso a paso y muestra cómo obtuviste cada número.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Take it one step at a time: find what the question gives you, what it asks for, and picture the action.</span><span class="lang-es" lang="es">Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Sketch a quick picture, number line, or table.</span><span class="lang-es" lang="es">Haz un dibujo rápido, una recta numérica o una tabla.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;In your own words, what is happening in this problem?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;En tus propias palabras, ¿qué está pasando en este problema?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -6133,7 +6340,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6141,11 +6348,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6162,14 +6376,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6370,15 +6593,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

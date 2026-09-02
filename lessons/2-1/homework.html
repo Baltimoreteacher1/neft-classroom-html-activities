@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 2 Visual World: Data Detective Agency --- */
+/* --- Clean Unified Theme: Unit 2 (Data Detective Agency) --- */
 :root {
-  --navy: #064e3b;
-  --navy-light: #047857;
-  --teal: #047857;
-  --teal-ink: #064e3b;
-  --teal-light: #ecfdf5;
-  --amber: #b45309;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
+  --teal-light: #e0f2fe;
+  --amber: #d97706;
   --amber-light: #fef3c7;
-  --hw-world-border: #a7f3d0;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #064e3b 0%, #047857 100%) !important;
-  border: 1.5px solid #a7f3d0 !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #a7f3d0;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3618,13 +3713,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3671,17 +3774,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="1">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3712,7 +3823,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A coach asks: &quot;How many hours does each athlete on the track team sleep the night before a meet?&quot; Why is this a statistical question?</span><span class="lang-es" lang="es">Un entrenador pregunta: «¿Cuántas horas duerme cada atleta del equipo de atletismo la noche antes de una competencia?» ¿Por qué es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="A statistical question anticipates variability. Different athletes sleep different amounts, so the data collected will vary." data-explanation-es="Una pregunta estadística anticipa variabilidad. Distintos atletas duermen cantidades distintas, así que los datos recolectados van a variar.">
+        <div class="mc-options" data-correct="2" data-explanation="A statistical question anticipates variability. Different athletes sleep different amounts, so the data collected will vary." data-explanation-es="Una pregunta estadística anticipa variabilidad. Distintos atletas duermen cantidades distintas, así que los datos recolectados van a variar." data-choice-feedback='[&quot;Sports is a topic—what specific part makes this statistical?&quot;,&quot;Numbers can appear in fixed-answer questions too—why is this different?&quot;,&quot;&quot;,&quot;Who asks the question doesn&#039;t determine if it&#039;s statistical—look deeper.&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -3743,17 +3854,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="2">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3800,7 +3919,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A survey asks 30 students how many books they read last month, collecting 30 answers. What makes this a statistical question?</span><span class="lang-es" lang="es">Una encuesta pregunta a 30 estudiantes cuántos libros leyeron el mes pasado y recoge 30 respuestas. ¿Qué hace que esta sea una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Statistical questions anticipate variability in the data collected across many people." data-explanation-es="Las preguntas estadísticas anticipan variabilidad en los datos recolectados entre muchas personas.">
+        <div class="mc-options" data-correct="2" data-explanation="Statistical questions anticipate variability in the data collected across many people." data-explanation-es="Las preguntas estadísticas anticipan variabilidad en los datos recolectados entre muchas personas." data-choice-feedback='[&quot;A topic doesn&#039;t determine if a question is statistical—what else matters?&quot;,&quot;If everyone read the same number, would this be statistical?&quot;,&quot;&quot;,&quot;One answer means fixed, not statistical—but do the answers vary here?&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_3_0">
               <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
@@ -3831,17 +3950,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="3">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3872,7 +3999,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">The team analyst writes four questions for the scouting report. Which one is a statistical question?</span><span class="lang-es" lang="es">El analista del equipo escribe cuatro preguntas para el informe de exploración. ¿Cuál es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="&quot;How many rebounds does each player grab per game?&quot; anticipates variability — different players grab different numbers of rebounds, so you must collect data. The other three each have one fixed answer." data-explanation-es="«¿Cuántos rebotes atrapa cada jugador por partido?» anticipa variabilidad: distintos jugadores atrapan distintos números de rebotes, así que hay que recolectar datos. Las otras tres tienen una sola respuesta fija.">
+        <div class="mc-options" data-correct="2" data-explanation="&quot;How many rebounds does each player grab per game?&quot; anticipates variability — different players grab different numbers of rebounds, so you must collect data. The other three each have one fixed answer." data-explanation-es="«¿Cuántos rebotes atrapa cada jugador por partido?» anticipa variabilidad: distintos jugadores atrapan distintos números de rebotes, así que hay que recolectar datos. Las otras tres tienen una sola respuesta fija." data-choice-feedback='[&quot;Numbers alone don&#039;t make it statistical—does this have variation across cases, or one fixed answer?&quot;,&quot;This measures one thing—would different answers come from different cases?&quot;,&quot;&quot;,&quot;This follows a fixed rule for all teams—would you get different answers?&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -3903,17 +4030,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="4">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3944,7 +4079,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Why does the question &quot;How many minutes did each athlete warm up before the game?&quot; count as a statistical question?</span><span class="lang-es" lang="es">¿Por qué la pregunta «¿Cuántos minutos calentó cada atleta antes del partido?» cuenta como una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="A statistical question anticipates variability. Different athletes warm up for different amounts of time, so the data you collect will vary." data-explanation-es="Una pregunta estadística anticipa variabilidad. Distintos atletas calientan durante tiempos distintos, así que los datos que recolectes van a variar.">
+        <div class="mc-options" data-correct="1" data-explanation="A statistical question anticipates variability. Different athletes warm up for different amounts of time, so the data you collect will vary." data-explanation-es="Una pregunta estadística anticipa variabilidad. Distintos atletas calientan durante tiempos distintos, así que los datos que recolectes van a variar." data-choice-feedback='[&quot;Measurements in minutes are used in both types—what about this makes it statistical?&quot;,&quot;&quot;,&quot;If every athlete warmed the same amount, would the question need data?&quot;,&quot;Being about sports doesn&#039;t make it statistical—look for variability.&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -3975,17 +4110,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="5">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4078,13 +4221,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4103,7 +4254,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Why is &#039;How many hours of sleep did each student get last night?&#039; a statistical question?</span><span class="lang-es" lang="es">¿Por qué «¿Cuántas horas durmió cada estudiante anoche?» es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="A statistical question anticipates variability — different students slept different amounts, so the data will vary." data-explanation-es="Una pregunta estadística anticipa variabilidad: distintos estudiantes durmieron cantidades distintas, así que los datos van a variar.">
+        <div class="mc-options" data-correct="0" data-explanation="A statistical question anticipates variability — different students slept different amounts, so the data will vary." data-explanation-es="Una pregunta estadística anticipa variabilidad: distintos estudiantes durmieron cantidades distintas, así que los datos van a variar." data-choice-feedback='[&quot;&quot;,&quot;Sleep is a topic, not why it&#039;s statistical—which choice describes variability?&quot;,&quot;Hours are numbers, but are they used only in statistical questions?&quot;,&quot;If everyone slept 8 hours, would this be a statistical question?&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -4134,17 +4285,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="7">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4206,17 +4365,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="8">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4247,7 +4414,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which of these would collect data that VARIES (making it a statistical question)?</span><span class="lang-es" lang="es">¿Cuál de estas recolectaría datos que VARÍAN (lo que la convierte en una pregunta estadística)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Number of siblings varies from student to student, so the collected data will vary — that makes it statistical. The others each have one fixed answer." data-explanation-es="El número de hermanos varía de un estudiante a otro, así que los datos recolectados van a variar, y eso la hace estadística. Las demás tienen una sola respuesta fija.">
+        <div class="mc-options" data-correct="0" data-explanation="Number of siblings varies from student to student, so the collected data will vary — that makes it statistical. The others each have one fixed answer." data-explanation-es="El número de hermanos varía de un estudiante a otro, así que los datos recolectados van a variar, y eso la hace estadística. Las demás tienen una sola respuesta fija." data-choice-feedback='[&quot;&quot;,&quot;Days in a week is constant—does it vary?&quot;,&quot;Minutes in an hour don&#039;t change—does it vary?&quot;,&quot;12+12 always equals 24—would data vary?&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4278,17 +4445,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="9">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4343,17 +4518,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="10">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4441,13 +4624,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4466,7 +4657,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which of the following is a statistical question?</span><span class="lang-es" lang="es">¿Cuál de las siguientes es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&quot;How many points did each player score?&quot; is statistical because different players will have different scores — there is variability in the data." data-explanation-es="«¿Cuántos puntos anotó cada jugador?» es estadística porque distintos jugadores tendrán puntajes distintos: hay variabilidad en los datos.">
+        <div class="mc-options" data-correct="0" data-explanation="&quot;How many points did each player score?&quot; is statistical because different players will have different scores — there is variability in the data." data-explanation-es="«¿Cuántos puntos anotó cada jugador?» es estadística porque distintos jugadores tendrán puntajes distintos: hay variabilidad en los datos." data-choice-feedback='[&quot;&quot;,&quot;A free throw&#039;s points are fixed—does this question ask about variation?&quot;,&quot;What sport is played doesn&#039;t vary—do different people answer this differently?&quot;,&quot;Halves in a game is a rule—does it change from one observation to another?&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4497,17 +4688,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="12">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4538,7 +4737,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which question is NOT a statistical question?</span><span class="lang-es" lang="es">¿Cuál pregunta NO es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="&quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people." data-explanation-es="«¿Cuántas entradas tiene un partido de béisbol?» tiene una sola respuesta fija (9): no hay variabilidad. Las otras preguntas dan respuestas distintas para distintas personas.">
+        <div class="mc-options" data-correct="2" data-explanation="&quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people." data-explanation-es="«¿Cuántas entradas tiene un partido de béisbol?» tiene una sola respuesta fija (9): no hay variabilidad. Las otras preguntas dan respuestas distintas para distintas personas." data-choice-feedback='[&quot;Each player hit a different number of home runs—would the answer vary?&quot;,&quot;Different runners train different miles—would the data vary?&quot;,&quot;&quot;,&quot;Each player has a different height—would the answers vary?&quot;]' data-topic="statistics">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4569,17 +4768,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.</span><span class="lang-es" lang="es">Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Would 10 classmates give 10 different answers, or would everyone give the exact same answer?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Line up values from least to greatest to see the spread and middle.</span><span class="lang-es" lang="es">👆 Toca para graficar: Ordena los valores de menor a mayor para ver la dispersión y el centro.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="13">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -6286,7 +6493,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6294,11 +6501,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6315,14 +6529,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6523,15 +6746,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

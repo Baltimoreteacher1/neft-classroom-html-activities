@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 8 Visual World: Codebreaker Vault --- */
+/* --- Clean Unified Theme: Unit 8 (Codebreaker Vault) --- */
 :root {
-  --navy: #1e1b4b;
-  --navy-light: #312e81;
-  --teal: #4338ca;
-  --teal-ink: #3730a3;
-  --teal-light: #e0e7ff;
-  --amber: #b91c1c;
-  --amber-light: #fee2e2;
-  --hw-world-border: #c7d2fe;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
+  --teal-light: #e0f2fe;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
-  border: 1.5px solid #c7d2fe !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #c7d2fe;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3554,17 +3649,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3808,13 +3911,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3958,13 +4069,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4030,17 +4149,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4093,17 +4220,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4132,7 +4267,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">The lab tech says: &#039;5 times the number of evidence bags b equals 35.&#039; Which equation represents this clue?</span><span class="lang-es" lang="es">El técnico del laboratorio dice: &#039;5 veces el número de bolsas de evidencia b es igual a 35.&#039; ¿Cuál ecuación representa esta pista?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;5 times the number&#039; means 5 times b, so 5b = 35. Check: 5 × 7 = 35." data-explanation-es="&#039;5 veces el número&#039; significa 5 por b, así que 5b = 35. Comprueba: 5 × 7 = 35.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;5 times the number&#039; means 5 times b, so 5b = 35. Check: 5 × 7 = 35." data-explanation-es="&#039;5 veces el número&#039; significa 5 por b, así que 5b = 35. Comprueba: 5 × 7 = 35." data-choice-feedback='[&quot;&quot;,&quot;\&quot;Times\&quot; means multiply, not add.&quot;,&quot;That shows subtracting 5. The words say 5 times.&quot;,&quot;\&quot;Times\&quot; means multiply, not divide.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -4163,17 +4298,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4213,7 +4356,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which equation represents: &#039;A number plus 12 equals 30&#039;?</span><span class="lang-es" lang="es">¿Cuál ecuación representa: &#039;Un número más 12 es igual a 30&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Plus&#039; means addition, so the equation is n + 12 = 30." data-explanation-es="&#039;Más&#039; significa suma, así que la ecuación es n + 12 = 30.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Plus&#039; means addition, so the equation is n + 12 = 30." data-explanation-es="&#039;Más&#039; significa suma, así que la ecuación es n + 12 = 30." data-choice-feedback='[&quot;&quot;,&quot;Subtraction says the number SHRANK by 12, but the story says &#039;plus 12.&#039; Match the operation word in the sentence to the symbol in the equation.&quot;,&quot;Check the operation: \&quot;plus\&quot; means add, not multiply.&quot;,&quot;The problem asks you to add, not divide.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -4244,17 +4387,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4283,7 +4434,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which equation represents: &#039;Three times a number equals 21&#039;?</span><span class="lang-es" lang="es">¿Cuál ecuación representa: &#039;Tres veces un número es igual a 21&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Three times&#039; means multiply by 3, so the equation is 3n = 21." data-explanation-es="&#039;Tres veces&#039; significa multiplicar por 3, así que la ecuación es 3n = 21.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Three times&#039; means multiply by 3, so the equation is 3n = 21." data-explanation-es="&#039;Tres veces&#039; significa multiplicar por 3, así que la ecuación es 3n = 21." data-choice-feedback='[&quot;&quot;,&quot;\&quot;Times\&quot; means multiply, not add.&quot;,&quot;That shows subtracting 3. The words say three times.&quot;,&quot;\&quot;Times\&quot; means multiply, not divide.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -4314,17 +4465,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4353,7 +4512,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Is n = 3 a solution of n + 5 = 9?</span><span class="lang-es" lang="es">¿n = 3 es una solución de n + 5 = 9?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Substitute the value and check whether the statement is true: 3 + 5 = 8, and 8 ≠ 9, so 3 is not a solution." data-explanation-es="Sustituye el valor y revisa si el enunciado es verdadero: 3 + 5 = 8, y 8 ≠ 9, así que 3 no es una solución.">
+        <div class="mc-options" data-correct="1" data-explanation="Substitute the value and check whether the statement is true: 3 + 5 = 8, and 8 ≠ 9, so 3 is not a solution." data-explanation-es="Sustituye el valor y revisa si el enunciado es verdadero: 3 + 5 = 8, y 8 ≠ 9, así que 3 no es una solución." data-choice-feedback='[&quot;Being smaller than 9 does not make a value a solution.&quot;,&quot;&quot;,&quot;An equation is true or false — close does not count.&quot;,&quot;Substituting is exactly how you check a value without solving.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4384,17 +4543,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4423,7 +4590,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which equation represents: &#039;A number divided by 4 equals 8&#039;?</span><span class="lang-es" lang="es">¿Cuál ecuación representa: &#039;Un número dividido entre 4 es igual a 8&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Divided by 4&#039; means division: n / 4 = 8." data-explanation-es="&#039;Dividido entre 4&#039; significa división: n / 4 = 8.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Divided by 4&#039; means division: n / 4 = 8." data-explanation-es="&#039;Dividido entre 4&#039; significa división: n / 4 = 8." data-choice-feedback='[&quot;&quot;,&quot;\&quot;Divided\&quot; means division, not multiplication.&quot;,&quot;That shows subtracting 4. The words say divided by 4.&quot;,&quot;Use division here, not addition.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4454,17 +4621,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4493,7 +4668,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which equation represents: &#039;Seven less than a number is 18&#039;?</span><span class="lang-es" lang="es">¿Cuál ecuación representa: &#039;Siete menos que un número es 18&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Seven less than a number&#039; means start with the number and subtract 7: n − 7 = 18." data-explanation-es="&#039;Siete menos que un número&#039; significa empezar con el número y restar 7: n − 7 = 18.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Seven less than a number&#039; means start with the number and subtract 7: n − 7 = 18." data-explanation-es="&#039;Siete menos que un número&#039; significa empezar con el número y restar 7: n − 7 = 18." data-choice-feedback='[&quot;&quot;,&quot;Start with the variable, then subtract — not the other way.&quot;,&quot;The clue says \&quot;fewer\&quot; or \&quot;less\&quot; — use subtraction, not addition.&quot;,&quot;Use subtraction for \&quot;fewer\&quot; or \&quot;less,\&quot; not division.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4524,17 +4699,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4563,7 +4746,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</span><span class="lang-es" lang="es">Un detective encontró algunas huellas dactilares el lunes y 14 más el martes, para un total de 30. ¿Cuál ecuación representa esto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The detective&#039;s Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30." data-explanation-es="Las huellas del lunes (f) más 14 más es igual a 30: f + 14 = 30.">
+        <div class="mc-options" data-correct="0" data-explanation="The detective&#039;s Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30." data-explanation-es="Las huellas del lunes (f) más 14 más es igual a 30: f + 14 = 30." data-choice-feedback='[&quot;&quot;,&quot;The 14 were found in addition to Monday&#039;s, so they are added, not subtracted.&quot;,&quot;Multiplying would mean the Monday prints were repeated 14 times over. The words say 14 more prints were found, which is about combining amounts.&quot;,&quot;Dividing splits the prints into 14 equal groups, which is not what happened on Tuesday. Reread what the detective did with the 14 new prints.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4594,17 +4777,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4684,13 +4875,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4709,7 +4908,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A witness statement reads: &#039;A number c of security cameras plus 6 more equals 19.&#039; Which equation matches?</span><span class="lang-es" lang="es">Una declaración de un testigo dice: &#039;Un número c de cámaras de seguridad más 6 más es igual a 19.&#039; ¿Cuál ecuación corresponde?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Plus 6 more&#039; means + 6 and &#039;equals 19&#039; means = 19, so c + 6 = 19. Check: 13 + 6 = 19." data-explanation-es="&#039;Más 6 más&#039; significa + 6 y &#039;es igual a 19&#039; significa = 19, así que c + 6 = 19. Comprueba: 13 + 6 = 19.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Plus 6 more&#039; means + 6 and &#039;equals 19&#039; means = 19, so c + 6 = 19. Check: 13 + 6 = 19." data-explanation-es="&#039;Más 6 más&#039; significa + 6 y &#039;es igual a 19&#039; significa = 19, así que c + 6 = 19. Comprueba: 13 + 6 = 19." data-choice-feedback='[&quot;&quot;,&quot;Check the operation: \&quot;plus\&quot; means add, not multiply.&quot;,&quot;That shows removing 6. The words say plus 6.&quot;,&quot;The problem asks you to add, not divide.&quot;]' data-topic="equations">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4740,17 +4939,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.</span><span class="lang-es" lang="es">Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">Dibuja una balanza que muestre ambos lados iguales.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;What operation is connected to the variable, and what is the opposite operation to undo it?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Draw a balance scale showing both sides equal.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja una balanza que muestre ambos lados iguales.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -6420,7 +6627,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6428,11 +6635,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6449,14 +6663,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6657,15 +6880,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 7 Visual World: Cartesian Odyssey --- */
+/* --- Clean Unified Theme: Unit 7 (Cartesian Odyssey) --- */
 :root {
-  --navy: #020617;
-  --navy-light: #0f172a;
-  --teal: #0891b2;
-  --teal-ink: #0e7490;
-  --teal-light: #cffafe;
-  --amber: #0284c7;
-  --amber-light: #e0f2fe;
-  --hw-world-border: #a5f3fc;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
+  --teal-light: #e0f2fe;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #020617 0%, #0f172a 100%) !important;
-  border: 1.5px solid #a5f3fc !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #a5f3fc;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3567,13 +3662,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3592,7 +3695,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the opposite of 0?</span><span class="lang-es" lang="es">¿Cuál es el opuesto de 0?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="Zero is 0 units from itself, so there is no other side to move to. Zero is its own opposite." data-explanation-es="El cero está a 0 unidades de sí mismo, así que no hay otro lado al que moverse. El cero es su propio opuesto.">
+        <div class="mc-options" data-correct="3" data-explanation="Zero is 0 units from itself, so there is no other side to move to. Zero is its own opposite." data-explanation-es="El cero está a 0 unidades de sí mismo, así que no hay otro lado al que moverse. El cero es su propio opuesto." data-choice-feedback='[&quot;There is no separate point for -0 on the number line. Writing a negative sign in front of 0 still names the same single point, 0.&quot;,&quot;The opposite of a number is one specific number, not a whole group of them. Every number has exactly one opposite.&quot;,&quot;Zero does have an opposite. Since its distance from 0 is 0, it lands right back on itself.&quot;,&quot;&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
@@ -3623,17 +3726,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="1">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3744,17 +3855,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="2">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3832,17 +3951,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="3">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3873,7 +4000,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which statement about 0 is TRUE?</span><span class="lang-es" lang="es">¿Qué enunciado sobre el 0 es VERDADERO?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Integers are the counting numbers, their opposites, and 0. Zero is 0 units from itself, so it is its own opposite." data-explanation-es="Los enteros son los números para contar, sus opuestos y el 0. El cero está a 0 unidades de sí mismo, así que es su propio opuesto.">
+        <div class="mc-options" data-correct="0" data-explanation="Integers are the counting numbers, their opposites, and 0. Zero is 0 units from itself, so it is its own opposite." data-explanation-es="Los enteros son los números para contar, sus opuestos y el 0. El cero está a 0 unidades de sí mismo, así que es su propio opuesto." data-choice-feedback='[&quot;&quot;,&quot;Negative integers are less than 0, and 0 is not less than itself. Zero is neither negative nor positive.&quot;,&quot;Positive integers are greater than 0, and 0 is not greater than itself. The missing sign does not make it positive.&quot;,&quot;Zero is explicitly part of the definition: integers are the counting numbers, their opposites, and 0.&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -3904,17 +4031,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="4">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4011,13 +4146,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4047,7 +4190,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which list of integers is ordered from LEAST to GREATEST?</span><span class="lang-es" lang="es">¿Qué lista de enteros está ordenada de MENOR a MAYOR?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Least to greatest reads left to right on the number line: -8, then -3, then 0, then 5." data-explanation-es="De menor a mayor se lee de izquierda a derecha en la recta numérica: -8, luego -3, luego 0 y luego 5.">
+        <div class="mc-options" data-correct="0" data-explanation="Least to greatest reads left to right on the number line: -8, then -3, then 0, then 5." data-explanation-es="De menor a mayor se lee de izquierda a derecha en la recta numérica: -8, luego -3, luego 0 y luego 5." data-choice-feedback='[&quot;&quot;,&quot;The two negatives are swapped. Among negative integers, the one with the larger digit is farther LEFT of 0, which makes it the smaller value.&quot;,&quot;Zero is not the least value here. Every negative integer sits to the left of 0, so both negatives must come before it.&quot;,&quot;This list runs greatest to least. The question asks for the smallest value first.&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -4078,17 +4221,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="6">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4199,17 +4350,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="7">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4240,7 +4399,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Badwater Basin is 86 meters below sea level, and sea level is 0. Which integer represents that elevation?</span><span class="lang-es" lang="es">Badwater Basin está 86 metros bajo el nivel del mar, y el nivel del mar es 0. ¿Qué entero representa esa elevación?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Below sea level means less than 0, so the elevation is written with a negative sign: -86 meters." data-explanation-es="Bajo el nivel del mar significa menos que 0, así que la elevación se escribe con signo negativo: -86 metros.">
+        <div class="mc-options" data-correct="0" data-explanation="Below sea level means less than 0, so the elevation is written with a negative sign: -86 meters." data-explanation-es="Bajo el nivel del mar significa menos que 0, así que la elevación se escribe con signo negativo: -86 metros." data-choice-feedback='[&quot;&quot;,&quot;The digits got reversed here: the sign is right but the distance is not. The sign says 86 meters, not 68.&quot;,&quot;Zero is sea level itself, the surface of the water — not a spot 86 meters underneath it.&quot;,&quot;This is 86 meters ABOVE sea level. Dropping the negative sign moves the point to the wrong side of 0.&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4271,17 +4430,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="8">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4312,7 +4479,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">In Reykjavik the temperature was -9°C. What is the opposite of -9?</span><span class="lang-es" lang="es">En Reikiavik la temperatura era -9°C. ¿Cuál es el opuesto de -9?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="The opposite of a number is the same distance from 0 on the other side, so the opposite of -9 is 9." data-explanation-es="El opuesto de un número está a la misma distancia de 0 pero del otro lado, así que el opuesto de -9 es 9.">
+        <div class="mc-options" data-correct="3" data-explanation="The opposite of a number is the same distance from 0 on the other side, so the opposite of -9 is 9." data-explanation-es="El opuesto de un número está a la misma distancia de 0 pero del otro lado, así que el opuesto de -9 es 9." data-choice-feedback='[&quot;Doubling the distance from 0 is not the same as crossing to the other side. The opposite keeps the distance 9 and only changes the direction.&quot;,&quot;A number cannot be its own opposite unless it is 0. The opposite of a negative number is on the other side of 0, so it is positive.&quot;,&quot;Zero is its own opposite, but it is not the opposite of -9 — it is 9 units away from -9, not on the far side of 0.&quot;,&quot;&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4343,17 +4510,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="9">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4384,7 +4559,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">At 6 a.m. in Reykjavik the temperature was -12°C. At 2 p.m. it was the opposite of the 6 a.m. temperature, and at 11 p.m. it was the opposite of the 2 p.m. temperature. What were the temperatures at 2 p.m. and 11 p.m.?</span><span class="lang-es" lang="es">A las 6 a.m. en Reikiavik la temperatura era -12°C. A las 2 p.m. era la opuesta a la de las 6 a.m., y a las 11 p.m. era la opuesta a la de las 2 p.m. ¿Cuáles eran las temperaturas a las 2 p.m. y a las 11 p.m.?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="The opposite of -12 is 12, so 2 p.m. was 12°C. The opposite of 12 is -12, so 11 p.m. was back to -12°C." data-explanation-es="El opuesto de -12 es 12, así que a las 2 p.m. era 12°C. El opuesto de 12 es -12, así que a las 11 p.m. volvió a -12°C.">
+        <div class="mc-options" data-correct="2" data-explanation="The opposite of -12 is 12, so 2 p.m. was 12°C. The opposite of 12 is -12, so 11 p.m. was back to -12°C." data-explanation-es="El opuesto de -12 es 12, así que a las 2 p.m. era 12°C. El opuesto de 12 es -12, así que a las 11 p.m. volvió a -12°C." data-choice-feedback='[&quot;The two times are switched. The first opposite is taken from -12, so 2 p.m. has to land on the positive side of 0.&quot;,&quot;Zero is its own opposite, so the opposite of -12 cannot be 0. An opposite stays the same distance from 0, which is 12 units here.&quot;,&quot;&quot;,&quot;The 2 p.m. reading is right, but the second step doubled the distance from 0 instead of crossing back over 0. The opposite of 12 keeps the distance 12.&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4415,17 +4590,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="10">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4456,7 +4639,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A football team starts at the line of scrimmage, which is 0. During one series they had a 10-yard loss, a 4-yard gain, a 3-yard loss, and a 21-yard gain. Where does the series leave them?</span><span class="lang-es" lang="es">Un equipo de fútbol americano empieza en la línea de golpeo, que es 0. En una serie tuvo una pérdida de 10 yardas, una ganancia de 4 yardas, una pérdida de 3 yardas y una ganancia de 21 yardas. ¿Dónde termina la serie?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Write each play as an integer: -10, 4, -3, 21. Combining them gives -10 + 4 - 3 + 21 = 12, so the team ends 12 yards past the line of scrimmage." data-explanation-es="Escribe cada jugada como entero: -10, 4, -3, 21. Al combinarlos: -10 + 4 - 3 + 21 = 12, así que el equipo termina 12 yardas más allá de la línea de golpeo.">
+        <div class="mc-options" data-correct="1" data-explanation="Write each play as an integer: -10, 4, -3, 21. Combining them gives -10 + 4 - 3 + 21 = 12, so the team ends 12 yards past the line of scrimmage." data-explanation-es="Escribe cada jugada como entero: -10, 4, -3, 21. Al combinarlos: -10 + 4 - 3 + 21 = 12, así que el equipo termina 12 yardas más allá de la línea de golpeo." data-choice-feedback='[&quot;The 4-yard gain got left out of the count. Every play changes the team&#039;s position, gains and losses alike.&quot;,&quot;&quot;,&quot;The 3-yard loss was counted as a gain here. A loss moves the team backward, so it is a negative integer.&quot;,&quot;This adds all four plays as if every one were a gain. Losses have to be written as negative integers before you combine them.&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4487,17 +4670,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="11">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4528,7 +4719,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Badwater Basin is at -86 meters. Which elevation is FARTHER below sea level than Badwater Basin?</span><span class="lang-es" lang="es">Badwater Basin está a -86 metros. ¿Qué elevación está MÁS abajo del nivel del mar que Badwater Basin?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Farther below sea level means farther to the left of 0. -120 is 120 units below 0, which is deeper than 86 units below 0." data-explanation-es="Más abajo del nivel del mar significa más a la izquierda del 0. -120 está 120 unidades bajo 0, más profundo que 86 unidades bajo 0.">
+        <div class="mc-options" data-correct="0" data-explanation="Farther below sea level means farther to the left of 0. -120 is 120 units below 0, which is deeper than 86 units below 0." data-explanation-es="Más abajo del nivel del mar significa más a la izquierda del 0. -120 está 120 unidades bajo 0, más profundo que 86 unidades bajo 0." data-choice-feedback='[&quot;&quot;,&quot;This spot is only 40 meters below sea level, so it is closer to the surface than -86, not deeper.&quot;,&quot;Zero is sea level, the surface itself. Nothing at 0 is below sea level at all.&quot;,&quot;This elevation is 86 meters ABOVE sea level, on the opposite side of 0 from Badwater Basin.&quot;]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4559,17 +4750,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">Marca los números en la recta numérica en orden.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Place each number on the line — order tells you which is greater.</span><span class="lang-es" lang="es">Coloca cada número en la recta — el orden dice cuál es mayor.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.</span><span class="lang-es" lang="es">Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Which number is further to the right? That one is always greater!&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Cuál número está más a la derecha? ¡Ese siempre es mayor!&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Mark the numbers on the number line in order.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta numérica en orden.</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot the numbers on the line in order from left (least) to right (greatest).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="12">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -6248,7 +6447,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6256,11 +6455,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6277,14 +6483,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6485,15 +6700,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

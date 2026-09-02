@@ -435,94 +435,124 @@ function lessonConfigs() {
 // Topic-aware one-liners woven into the step guide (bilingual + what to draw).
 const TOPIC_GUIDE = {
   exponents: {
-    en: "Write the base, then multiply it by itself once for each exponent.",
-    es: "Escribe la base y multiplícala por sí misma una vez por cada exponente.",
-    draw: "Show the repeated multiplication (example: 2³ = 2 × 2 × 2).",
-    drawEs: "Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).",
+    en: "The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).",
+    es: "El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).",
+    draw: "Write out the repeated multiplication chain.",
+    drawEs: "Escribe la cadena de multiplicación repetida.",
+    coach: "Ask: 'Are we multiplying by the top number, or multiplying copies together?'",
+    coachEs: "Pregunta: '¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?'",
   },
   ratios: {
-    en: "Find the unit rate or use a ratio table to scale up or down.",
-    es: "Halla la tasa unitaria o usa una tabla de razones para escalar.",
-    draw: "Fill the ratio table — keep both rows multiplying by the same number.",
-    drawEs: "Llena la tabla de razones — multiplica ambas filas por el mismo número.",
+    en: "A ratio is like a recipe: if you double or scale one amount, multiply or divide the other by the exact same number.",
+    es: "Una razón es como una receta: si duplicas una cantidad, multiplica o divide la otra por el mismo número.",
+    draw: "Use a simple two-column table to scale both quantities together.",
+    drawEs: "Usa una tabla de dos columnas para escalar ambas cantidades juntas.",
+    coach: "Ask: 'What happened to the first number? Can we do that same action to the second?'",
+    coachEs: "Pregunta: '¿Qué le pasó al primer número? ¿Podemos hacerle lo mismo al segundo?'",
   },
   area: {
-    en: "Count or multiply the units that cover the shape (base × height).",
-    es: "Cuenta o multiplica las unidades que cubren la figura (base × altura).",
-    draw: "Outline the shape on the grid and count the square units inside.",
-    drawEs: "Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.",
+    en: "Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).",
+    es: "Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).",
+    draw: "Outline the flat floor and multiply base by height.",
+    drawEs: "Delinea el piso plano y multiplica la base por la altura.",
+    coach: "Ask: 'Are we counting the outside border or the square tiles inside?'",
+    coachEs: "Pregunta: '¿Estamos contando el borde de afuera o los cuadrados de adentro?'",
   },
   volume: {
-    en: "Multiply length × width × height to fill the box with unit cubes.",
-    es: "Multiplica largo × ancho × alto para llenar la caja con cubos.",
-    draw: "Label the prism with its length, width, and height.",
-    drawEs: "Rotula el prisma con su largo, ancho y alto.",
+    en: "Imagine packing unit cubes into a box: multiply length × width × height to find total cubic units inside.",
+    es: "Imagina llenar una caja con cubos: multiplica largo × ancho × alto para hallar los cubos totales adentro.",
+    draw: "Label the three box dimensions: length, width, and height.",
+    drawEs: "Rotula las tres dimensiones de la caja: largo, ancho y alto.",
+    coach: "Ask: 'How many cubes fit on the bottom floor, and how many floors high is the box?'",
+    coachEs: "Pregunta: '¿Cuántos cubos caben en la base y cuántos pisos de alto tiene la caja?'",
   },
   "surface-area": {
-    en: "Find the area of every face, then add them all together.",
-    es: "Halla el área de cada cara y luego súmalas todas.",
-    draw: "Label each face of the prism, then write its area.",
-    drawEs: "Rotula cada cara del prisma y escribe su área.",
+    en: "Unfold the 3D shape like a cardboard box. Find the flat area of each face, then add them all together.",
+    es: "Desdobla la figura 3D como una caja de cartón. Halla el área de cada cara y súmalas todas.",
+    draw: "Draw the unfolded net and label each of the flat faces.",
+    drawEs: "Dibuja la plantilla desdoblada y rotula cada una de las caras planas.",
+    coach: "Ask: 'How many flat faces does this box have? Did we find the area of each one?'",
+    coachEs: "Pregunta: '¿Cuántas caras planas tiene esta caja? ¿Hallamos el área de cada una?'",
   },
   "coordinate-plane": {
-    en: "Start at (0, 0). Move right/left for x, then up/down for y.",
-    es: "Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.",
-    draw: "Plot each point on the grid and label it (x, y).",
-    drawEs: "Marca cada punto en la cuadrícula y rotúlalo (x, y).",
+    en: "Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).",
+    es: "Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).",
+    draw: "Start at (0,0), move across x, then up or down to y.",
+    drawEs: "Empieza en (0,0), avanza en x, luego sube o baja en y.",
+    coach: "Ask: 'Did we move horizontally across the floor first, before going up or down?'",
+    coachEs: "Pregunta: '¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?'",
   },
   "number-line": {
-    en: "Place each number on the line — order tells you which is greater.",
-    es: "Coloca cada número en la recta — el orden dice cuál es mayor.",
-    draw: "Mark the numbers on the number line in order.",
-    drawEs: "Marca los números en la recta numérica en orden.",
+    en: "Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.",
+    es: "Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.",
+    draw: "Plot the numbers on the line in order from left (least) to right (greatest).",
+    drawEs: "Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).",
+    coach: "Ask: 'Which number is further to the right? That one is always greater!'",
+    coachEs: "Pregunta: '¿Cuál número está más a la derecha? ¡Ese siempre es mayor!'",
   },
   fractions: {
-    en: "Use a common denominator, or a number line, before you compare or add.",
-    es: "Usa un denominador común, o una recta numérica, antes de comparar o sumar.",
-    draw: "Split the number line into equal parts to show the fractions.",
-    drawEs: "Divide la recta numérica en partes iguales para mostrar las fracciones.",
+    en: "To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).",
+    es: "Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).",
+    draw: "Divide bars or lines into equal pieces to see the sizes clearly.",
+    drawEs: "Divide barras o rectas en partes iguales para ver los tamaños con claridad.",
+    coach: "Ask: 'Can we combine slices from different sized pizzas, or do we need equal slices first?'",
+    coachEs: "Pregunta: '¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?'",
   },
   decimals: {
-    en: "Line up the decimal points and keep each digit in its place value.",
-    es: "Alinea los puntos decimales y mantén cada dígito en su valor posicional.",
-    draw: "Mark the decimals on the number line between the whole numbers.",
-    drawEs: "Marca los decimales en la recta numérica entre los enteros.",
+    en: "Line up the decimal points like buttons on a shirt so dollars stay with dollars and dimes stay with dimes.",
+    es: "Alinea los puntos decimales como botones de camisa para que las unidades queden juntas.",
+    draw: "Stack the numbers with their decimal dots aligned straight down.",
+    drawEs: "Coloca los números uno sobre otro con los puntos decimales bien alineados.",
+    coach: "Ask: 'Are our decimal dots lined up in a straight vertical line?'",
+    coachEs: "Pregunta: '¿Están nuestros puntos decimales alineados en una línea vertical recta?'",
   },
   equations: {
-    en: "Keep both sides equal — do the same thing to undo the operation.",
-    es: "Mantén ambos lados iguales — haz lo mismo para deshacer la operación.",
-    draw: "Picture a balance: what you do to one side, do to the other.",
-    drawEs: "Imagina una balanza: lo que haces a un lado, hazlo al otro.",
+    en: "Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.",
+    es: "Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.",
+    draw: "Draw a balance scale showing both sides equal.",
+    drawEs: "Dibuja una balanza que muestre ambos lados iguales.",
+    coach: "Ask: 'What operation is connected to the variable, and what is the opposite operation to undo it?'",
+    coachEs: "Pregunta: '¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?'",
   },
   inequalities: {
-    en: "Solve like an equation, then shade the side that makes it true.",
-    es: "Resuelve como una ecuación y luego sombrea el lado que es verdadero.",
-    draw: "On the number line, use an open/closed circle and shade the solutions.",
-    drawEs: "En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.",
+    en: "Solve like an equation, then test a number: shade all numbers that make the comparison true.",
+    es: "Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.",
+    draw: "Use an open circle for < or > and a solid filled circle for ≤ or ≥, then shade.",
+    drawEs: "Usa círculo abierto para < o > y círculo relleno para ≤ o ≥, luego sombrea.",
+    coach: "Ask: 'Is the endpoint included (solid dot) or not included (open circle)?'",
+    coachEs: "Pregunta: '¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?'",
   },
   expressions: {
-    en: "Combine like terms; substitute the value, then follow the order of operations.",
-    es: "Combina términos semejantes; sustituye el valor y sigue el orden de operaciones.",
-    draw: "Box each term so you can see what to combine.",
-    drawEs: "Encierra cada término para ver qué combinar.",
+    en: "Combine matching parts together — letters with letters and regular numbers with regular numbers.",
+    es: "Combina las partes iguales: letras con letras y números solos con números solos.",
+    draw: "Put boxes around letter terms and circles around plain numbers.",
+    drawEs: "Encierra en cajas los términos con letra y en círculos los números solos.",
+    coach: "Ask: 'Can we add apples and oranges together, or do we group matching items together?'",
+    coachEs: "Pregunta: '¿Podemos sumar peras con manzanas, o agrupamos lo que coincide junto?'",
   },
   statistics: {
-    en: "Organize the data first, then find the center or spread you need.",
-    es: "Organiza los datos primero, luego halla el centro o la dispersión.",
-    draw: "Plot each data value above the number line.",
-    drawEs: "Marca cada valor de datos sobre la recta numérica.",
+    en: "Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.",
+    es: "Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.",
+    draw: "Line up values from least to greatest to see the spread and middle.",
+    drawEs: "Ordena los valores de menor a mayor para ver la dispersión y el centro.",
+    coach: "Ask: 'Would 10 classmates give 10 different answers, or would everyone give the exact same answer?'",
+    coachEs: "Pregunta: '¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?'",
   },
   factors: {
-    en: "List factors or multiples in order so none are missed.",
-    es: "Enumera factores o múltiplos en orden para no olvidar ninguno.",
-    draw: "Make a factor list or a tree to break the number apart.",
-    drawEs: "Haz una lista de factores o un árbol para descomponer el número.",
+    en: "Factors are the building blocks that multiply to make a number (e.g. 2 × 3 = 6). Multiples are skip-counting.",
+    es: "Los factores son los bloques que se multiplican para formar un número (ej. 2 × 3 = 6). Los múltiplos son el conteo a saltos.",
+    draw: "Make a factor rainbow or factor tree to see all the pairs.",
+    drawEs: "Haz un arcoíris o árbol de factores para ver todas las parejas.",
+    coach: "Ask: 'What two numbers can multiply together to make this number?'",
+    coachEs: "Pregunta: '¿Qué dos números pueden multiplicarse para formar este número?'",
   },
   fallback: {
-    en: "Take it one step at a time and show how you got each number.",
-    es: "Hazlo paso a paso y muestra cómo obtuviste cada número.",
-    draw: "Draw a quick model — a picture, a number line, or a table.",
-    drawEs: "Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.",
+    en: "Take it one step at a time: find what the question gives you, what it asks for, and picture the action.",
+    es: "Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.",
+    draw: "Sketch a quick picture, number line, or table.",
+    drawEs: "Haz un dibujo rápido, una recta numérica o una tabla.",
+    coach: "Ask: 'In your own words, what is happening in this problem?'",
+    coachEs: "Pregunta: 'En tus propias palabras, ¿qué está pasando en este problema?'",
   },
 };
 
@@ -587,18 +617,26 @@ function topicGuide(topic) {
   return TOPIC_GUIDE[topic] || TOPIC_GUIDE.fallback;
 }
 
-// Collapsible "How to solve it" routine — visible guidance, bilingual.
+// Collapsible "How to solve it" routine — visual parent guidance, bilingual.
 function renderStepGuide(topic) {
   const g = topicGuide(topic);
   return `
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">${esc(g.draw)}</span><span class="lang-es" lang="es">${esc(g.drawEs)}</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">${esc(g.en)}</span><span class="lang-es" lang="es">${esc(g.es)}</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">${esc(g.en)}</span><span class="lang-es" lang="es">${esc(g.es)}</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">${esc(g.draw)}</span><span class="lang-es" lang="es">${esc(g.drawEs)}</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> ${esc(g.coach || "Ask: What is happening in this problem?")}</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> ${esc(g.coachEs || "Pregunta: ¿Qué está pasando en este problema?")}</span></p>
+          </div>
+        </div>
       </details>`;
 }
 
@@ -661,7 +699,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       <div class="problem-body">
         <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
         ${renderFamilyTip("multiple-choice")}
-        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""}>
+        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-topic="${esc(topic)}">
           ${choices
             .map(
               (choice, cIdx) => `
@@ -3337,7 +3375,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -3345,11 +3383,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -3366,14 +3411,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -3574,15 +3628,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

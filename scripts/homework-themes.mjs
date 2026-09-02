@@ -1,8 +1,20 @@
 /**
- * Unit Thematic Worlds for EduWonderLab Family Homework.
- * Gives each of the 10 Grade 6 math units a distinct visual identity,
- * theme palette, hero badge, and motif while ensuring high-contrast readability.
+ * Clean, Unified Theme Engine for EduWonderLab Family Homework.
+ * Provides a single, simple, professional, high-contrast color scheme across all 10 units,
+ * while retaining distinct unit titles, emojis, and thematic taglines.
  */
+
+const UNIFIED_PALETTE = {
+  navy: "#15487f",
+  navyLight: "#1c5999",
+  teal: "#0284c7",
+  tealInk: "#0369a1",
+  tealLight: "#e0f2fe",
+  amber: "#d97706",
+  amberLight: "#fef3c7",
+  cardBorder: "#cbd5e1",
+  heroGradient: "linear-gradient(135deg, #15487f 0%, #0f2b5c 100%)",
+};
 
 export const UNIT_THEMES = {
   1: {
@@ -13,17 +25,7 @@ export const UNIT_THEMES = {
     taglineEs: "Las matemáticas son mías · Comienza el viaje",
     emoji: "🚀",
     motif: "compass",
-    colors: {
-      navy: "#0c2b54",
-      navyLight: "#16447c",
-      teal: "#0284c7",
-      tealInk: "#0369a1",
-      tealLight: "#e0f2fe",
-      amber: "#f59e0b",
-      amberLight: "#fef3c7",
-      cardBorder: "#bae6fd",
-      heroGradient: "linear-gradient(135deg, #0c2b54 0%, #16447c 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   2: {
     unit: 2,
@@ -33,17 +35,7 @@ export const UNIT_THEMES = {
     taglineEs: "Investiga, analiza y descubre patrones",
     emoji: "🕵️",
     motif: "chart",
-    colors: {
-      navy: "#064e3b",
-      navyLight: "#047857",
-      teal: "#047857",
-      tealInk: "#064e3b",
-      tealLight: "#ecfdf5",
-      amber: "#b45309",
-      amberLight: "#fef3c7",
-      cardBorder: "#a7f3d0",
-      heroGradient: "linear-gradient(135deg, #064e3b 0%, #047857 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   3: {
     unit: 3,
@@ -53,17 +45,7 @@ export const UNIT_THEMES = {
     taglineEs: "Equilibra razones, ajusta tasas y escala",
     emoji: "⚙️",
     motif: "gears",
-    colors: {
-      navy: "#451a03",
-      navyLight: "#78350f",
-      teal: "#b45309",
-      tealInk: "#92400e",
-      tealLight: "#fef3c7",
-      amber: "#d97706",
-      amberLight: "#fffbeb",
-      cardBorder: "#fde68a",
-      heroGradient: "linear-gradient(135deg, #451a03 0%, #78350f 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   4: {
     unit: 4,
@@ -73,17 +55,7 @@ export const UNIT_THEMES = {
     taglineEs: "Porcentajes, descuentos y valor del mundo real",
     emoji: "🏷️",
     motif: "tag",
-    colors: {
-      navy: "#4c0519",
-      navyLight: "#881337",
-      teal: "#be123c",
-      tealInk: "#9f1239",
-      tealLight: "#ffe4e6",
-      amber: "#e11d48",
-      amberLight: "#fff1f2",
-      cardBorder: "#fecdd3",
-      heroGradient: "linear-gradient(135deg, #4c0519 0%, #881337 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   5: {
     unit: 5,
@@ -93,17 +65,7 @@ export const UNIT_THEMES = {
     taglineEs: "Planos, figuras geométricas y espacio 3D",
     emoji: "📐",
     motif: "blueprint",
-    colors: {
-      navy: "#172554",
-      navyLight: "#1e3a8a",
-      teal: "#0369a1",
-      tealInk: "#075985",
-      tealLight: "#e0f2fe",
-      amber: "#b45309",
-      amberLight: "#fef3c7",
-      cardBorder: "#bfdbfe",
-      heroGradient: "linear-gradient(135deg, #172554 0%, #1e3a8a 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   6: {
     unit: 6,
@@ -113,17 +75,7 @@ export const UNIT_THEMES = {
     taglineEs: "División de fracciones, decimales y porciones",
     emoji: "🍰",
     motif: "recipe",
-    colors: {
-      navy: "#3b0764",
-      navyLight: "#581c87",
-      teal: "#6d28d9",
-      tealInk: "#5b21b6",
-      tealLight: "#f3e8ff",
-      amber: "#047857",
-      amberLight: "#ecfdf5",
-      cardBorder: "#e9d5ff",
-      heroGradient: "linear-gradient(135deg, #3b0764 0%, #581c87 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   7: {
     unit: 7,
@@ -133,17 +85,7 @@ export const UNIT_THEMES = {
     taglineEs: "Navega 4 cuadrantes, enteros y coordenadas",
     emoji: "🧭",
     motif: "radar",
-    colors: {
-      navy: "#020617",
-      navyLight: "#0f172a",
-      teal: "#0891b2",
-      tealInk: "#0e7490",
-      tealLight: "#cffafe",
-      amber: "#0284c7",
-      amberLight: "#e0f2fe",
-      cardBorder: "#a5f3fc",
-      heroGradient: "linear-gradient(135deg, #020617 0%, #0f172a 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   8: {
     unit: 8,
@@ -153,17 +95,7 @@ export const UNIT_THEMES = {
     taglineEs: "Equilibra ecuaciones, desbloquea variables y resuelve",
     emoji: "🔐",
     motif: "vault",
-    colors: {
-      navy: "#1e1b4b",
-      navyLight: "#312e81",
-      teal: "#4338ca",
-      tealInk: "#3730a3",
-      tealLight: "#e0e7ff",
-      amber: "#b91c1c",
-      amberLight: "#fee2e2",
-      cardBorder: "#c7d2fe",
-      heroGradient: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   9: {
     unit: 9,
@@ -173,17 +105,7 @@ export const UNIT_THEMES = {
     taglineEs: "Entrada, salida, ecuaciones y gráficas",
     emoji: "⚡",
     motif: "conveyor",
-    colors: {
-      navy: "#052e16",
-      navyLight: "#14532d",
-      teal: "#15803d",
-      tealInk: "#166534",
-      tealLight: "#dcfce7",
-      amber: "#c2410c",
-      amberLight: "#ffedd5",
-      cardBorder: "#bbf7d0",
-      heroGradient: "linear-gradient(135deg, #052e16 0%, #14532d 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
   10: {
     unit: 10,
@@ -193,17 +115,7 @@ export const UNIT_THEMES = {
     taglineEs: "Dominio final e impacto en el mundo real",
     emoji: "🏆",
     motif: "trophy",
-    colors: {
-      navy: "#3b0764",
-      navyLight: "#4a044e",
-      teal: "#a21caf",
-      tealInk: "#86198f",
-      tealLight: "#fae8ff",
-      amber: "#b45309",
-      amberLight: "#fef9c3",
-      cardBorder: "#f5d0fe",
-      heroGradient: "linear-gradient(135deg, #3b0764 0%, #4a044e 100%)",
-    },
+    colors: UNIFIED_PALETTE,
   },
 };
 
@@ -216,12 +128,12 @@ export function getUnitTheme(unitNumber) {
 }
 
 /**
- * Generates the CSS snippet overriding theme variables for a specific unit.
+ * Generates the unified CSS snippet for consistent, readable family homework styling.
  */
 export function renderUnitThemeCss(theme) {
   const { colors } = theme;
   return `
-/* --- Unit ${theme.unit} Visual World: ${theme.nameEn} --- */
+/* --- Clean Unified Theme: Unit ${theme.unit} (${theme.nameEn}) --- */
 :root {
   --navy: ${colors.navy};
   --navy-light: ${colors.navyLight};
@@ -243,7 +155,7 @@ header.homework-header,
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -253,7 +165,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -263,7 +175,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid ${colors.cardBorder};
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -399,6 +311,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 `;
 }

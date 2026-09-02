@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 6 Visual World: Culinary & Recipe Lab --- */
+/* --- Clean Unified Theme: Unit 6 (Culinary & Recipe Lab) --- */
 :root {
-  --navy: #3b0764;
-  --navy-light: #581c87;
-  --teal: #6d28d9;
-  --teal-ink: #5b21b6;
-  --teal-light: #f3e8ff;
-  --amber: #047857;
-  --amber-light: #ecfdf5;
-  --hw-world-border: #e9d5ff;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
+  --teal-light: #e0f2fe;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #3b0764 0%, #581c87 100%) !important;
-  border: 1.5px solid #e9d5ff !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #e9d5ff;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3529,17 +3624,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3616,17 +3719,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -3750,13 +3861,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3927,17 +4046,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4083,13 +4210,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4139,17 +4274,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4189,7 +4332,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which expression shows 5³ as repeated multiplication?</span><span class="lang-es" lang="es">¿Qué expresión muestra 5³ como una multiplicación repetida?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="5³ means use 5 as a factor 3 times: 5 × 5 × 5. The exponent tells how many times to multiply, not what to multiply by." data-explanation-es="5³ significa usar 5 como factor 3 veces: 5 × 5 × 5. El exponente indica cuántas veces se multiplica, no por cuánto se multiplica.">
+        <div class="mc-options" data-correct="1" data-explanation="5³ means use 5 as a factor 3 times: 5 × 5 × 5. The exponent tells how many times to multiply, not what to multiply by." data-explanation-es="5³ significa usar 5 como factor 3 veces: 5 × 5 × 5. El exponente indica cuántas veces se multiplica, no por cuánto se multiplica." data-choice-feedback='[&quot;The exponent 3 means three factors of 5, not three copies written as 3×3×3×3×3.&quot;,&quot;&quot;,&quot;The exponent tells you to multiply 5, not multiply it by 3.&quot;,&quot;Adding is different from multiplying. Exponents mean repeated multiplication.&quot;]' data-topic="exponents">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -4220,17 +4363,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4332,13 +4483,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4357,7 +4516,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A synth pattern repeats 7 × 7 × 7. How do you write that as a power?</span><span class="lang-es" lang="es">Un patrón de sintetizador repite 7 × 7 × 7. ¿Cómo se escribe eso como una potencia?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343." data-explanation-es="La base 7 se usa como factor 3 veces, así que la potencia es 7³. 7³ = 7 × 7 × 7 = 343.">
+        <div class="mc-options" data-correct="1" data-explanation="The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343." data-explanation-es="La base 7 se usa como factor 3 veces, así que la potencia es 7³. 7³ = 7 × 7 × 7 = 343." data-choice-feedback='[&quot;You switched base and exponent. The base repeats; the exponent counts times.&quot;,&quot;&quot;,&quot;You wrote 7 times 3, but the exponent tells you how many 7&#039;s to multiply.&quot;,&quot;That mixes the base with the exponent. What&#039;s the base, and how many times does it repeat?&quot;]' data-topic="exponents">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4388,17 +4547,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4500,13 +4667,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4525,7 +4700,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the value of 4³?</span><span class="lang-es" lang="es">¿Cuál es el valor de 4³?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="4³ = 4 × 4 × 4 = 64." data-explanation-es="4³ = 4 × 4 × 4 = 64.">
+        <div class="mc-options" data-correct="3" data-explanation="4³ = 4 × 4 × 4 = 64." data-explanation-es="4³ = 4 × 4 × 4 = 64." data-choice-feedback='[&quot;That&#039;s not matching the repeated multiplication 4 × 4 × 4.&quot;,&quot;Did you multiply base by exponent (4 × 3)? The exponent counts how many 4&#039;s.&quot;,&quot;Look at the power: 4³ has a 4 and a 3, but not 43.&quot;,&quot;&quot;]' data-topic="exponents">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4556,17 +4731,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4595,7 +4778,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the value of 6²?</span><span class="lang-es" lang="es">¿Cuál es el valor de 6²?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="6² = 6 × 6 = 36." data-explanation-es="6² = 6 × 6 = 36.">
+        <div class="mc-options" data-correct="2" data-explanation="6² = 6 × 6 = 36." data-explanation-es="6² = 6 × 6 = 36." data-choice-feedback='[&quot;6² = 6 × 6, not 6 + 2.&quot;,&quot;Did you multiply base by exponent? Write 6 × 6 instead.&quot;,&quot;&quot;,&quot;That mixes the digits. Is the power 62 or 6²?&quot;]' data-topic="exponents">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4626,17 +4809,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4665,7 +4856,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Evaluate: 3 × (4 + 2)²</span><span class="lang-es" lang="es">Evalúa: 3 × (4 + 2)²</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="4 + 2 = 6. 6² = 36. 3 × 36 = 108." data-explanation-es="4 + 2 = 6. 6² = 36. 3 × 36 = 108.">
+        <div class="mc-options" data-correct="2" data-explanation="4 + 2 = 6. 6² = 36. 3 × 36 = 108." data-explanation-es="4 + 2 = 6. 6² = 36. 3 × 36 = 108." data-choice-feedback='[&quot;You stopped after the exponent. 6² = 36 is only the middle step — the 3 in front still has to be multiplied in.&quot;,&quot;Order of operations: do the parentheses and exponent first, then multiply.&quot;,&quot;&quot;,&quot;Did you just compute 3 × 6 × 2 instead of respecting the exponent?&quot;]' data-topic="exponents">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4696,17 +4887,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -4735,7 +4934,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">The drum loop plays 3⁴ beats. What is the value of 3⁴?</span><span class="lang-es" lang="es">El bucle de batería toca 3⁴ tiempos. ¿Cuál es el valor de 3⁴?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12." data-explanation-es="3⁴ significa usar 3 como factor 4 veces: 3 × 3 × 3 × 3 = 81. NO es 3 × 4 = 12.">
+        <div class="mc-options" data-correct="3" data-explanation="3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12." data-explanation-es="3⁴ significa usar 3 como factor 4 veces: 3 × 3 × 3 × 3 = 81. NO es 3 × 4 = 12." data-choice-feedback='[&quot;Check the value. Is 7 anywhere in this power?&quot;,&quot;Did you multiply the base by the exponent instead? Try: 3 × 3 × 3 × 3.&quot;,&quot;That&#039;s 3³. Count how many 3&#039;s to multiply in 3⁴.&quot;,&quot;&quot;]' data-topic="exponents">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4766,17 +4965,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).</span><span class="lang-es" lang="es">El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">Escribe la cadena de multiplicación repetida.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Are we multiplying by the top number, or multiplying copies together?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Write out the repeated multiplication chain.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Escribe la cadena de multiplicación repetida.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
             <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
             <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
@@ -6446,7 +6653,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6454,11 +6661,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6475,14 +6689,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6683,15 +6906,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

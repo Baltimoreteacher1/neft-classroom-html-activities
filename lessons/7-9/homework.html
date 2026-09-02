@@ -46,29 +46,29 @@
 }
 
 
-/* --- Unit 7 Visual World: Cartesian Odyssey --- */
+/* --- Clean Unified Theme: Unit 7 (Cartesian Odyssey) --- */
 :root {
-  --navy: #020617;
-  --navy-light: #0f172a;
-  --teal: #0891b2;
-  --teal-ink: #0e7490;
-  --teal-light: #cffafe;
-  --amber: #0284c7;
-  --amber-light: #e0f2fe;
-  --hw-world-border: #a5f3fc;
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0284c7;
+  --teal-ink: #0369a1;
+  --teal-light: #e0f2fe;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --hw-world-border: #cbd5e1;
 }
 
 header.homework-header,
 .family-welcome {
-  background: linear-gradient(135deg, #020617 0%, #0f172a 100%) !important;
-  border: 1.5px solid #a5f3fc !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
 }
 
 .unit-world-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 99px;
@@ -78,7 +78,7 @@ header.homework-header,
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 8px;
 }
 
@@ -88,7 +88,7 @@ header.homework-header,
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1.5px solid #a5f3fc;
+  border: 1.5px solid var(--hw-world-border);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -224,6 +224,101 @@ header.homework-header,
 }
 .parent-coach-prompt strong {
   color: #92400e;
+}
+
+/* Visual Explanation Card */
+.visual-explanation-card {
+  background: #f8fafc;
+  border: 1.5px solid #0284c7;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.45;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+.visual-explanation-card .exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+.visual-explanation-card .exp-trap {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  color: #991b1b;
+}
+.visual-explanation-card .exp-why {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+.visual-explanation-card .exp-coach {
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Visual Parent Step Guide in problem cards */
+.hw-step-guide {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+.hw-step-guide summary {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: #0369a1;
+  cursor: pointer;
+  outline: none;
+}
+.hw-step-guide[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e0f2fe;
+  padding-bottom: 6px;
+}
+.hw-step-guide .guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 600px) {
+  .hw-step-guide .guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-card {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.guide-card strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0c4a6e;
+  font-size: 12.5px;
+  margin-bottom: 3px;
 }
 
 
@@ -3541,13 +3636,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3639,13 +3742,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -3664,7 +3775,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Vega reflects a palm-tree marker at (8, -6) across the x-axis. Which coordinate changes its sign?</span><span class="lang-es" lang="es">Vega refleja un marcador de palmera en (8, -6) sobre el eje x. ¿Cuál coordenada cambia de signo?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Across the x-axis the rule is (x, y) -&gt; (x, -y), so only the y-coordinate flips sign. (8, -6) becomes (8, 6)." data-explanation-es="Sobre el eje x la regla es (x, y) → (x, -y), así que solo la coordenada y cambia de signo. El punto (8, -6) se convierte en (8, 6).">
+        <div class="mc-options" data-correct="1" data-explanation="Across the x-axis the rule is (x, y) -&gt; (x, -y), so only the y-coordinate flips sign. (8, -6) becomes (8, 6)." data-explanation-es="Sobre el eje x la regla es (x, y) → (x, -y), así que solo la coordenada y cambia de signo. El punto (8, -6) se convierte en (8, 6)." data-choice-feedback='[&quot;Reflecting across the x-axis flips the point up-down. Does an up-down flip move the point left or right at all? That decides which coordinate changes.&quot;,&quot;&quot;,&quot;Flipping both is what happens after two reflections, one across each axis. A single reflection touches only one coordinate.&quot;,&quot;If nothing changed, the point would land back on itself. A reflection across an axis always moves a point to the mirror side.&quot;]' data-topic="coordinate-plane">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -3695,17 +3806,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="2">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3752,7 +3871,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Point A is at (-3, 5). It is reflected over the x-axis to A&#039;, then A&#039; is reflected over the y-axis to A&#039;&#039;. What are the coordinates of A&#039;&#039;?</span><span class="lang-es" lang="es">El punto A está en (-3, 5). Se refleja sobre el eje x hasta A&#039;, y luego A&#039; se refleja sobre el eje y hasta A&#039;&#039;. ¿Cuáles son las coordenadas de A&#039;&#039;?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Over x-axis: (-3, 5) → (-3, -5). Then over y-axis: (-3, -5) → (3, -5). Both coordinates changed sign." data-explanation-es="Sobre el eje x: (-3, 5) → (-3, -5). Luego sobre el eje y: (-3, -5) → (3, -5). Ambas coordenadas cambiaron de signo.">
+        <div class="mc-options" data-correct="2" data-explanation="Over x-axis: (-3, 5) → (-3, -5). Then over y-axis: (-3, -5) → (3, -5). Both coordinates changed sign." data-explanation-es="Sobre el eje x: (-3, 5) → (-3, -5). Luego sobre el eje y: (-3, -5) → (3, -5). Ambas coordenadas cambiaron de signo." data-choice-feedback='[&quot;The first coordinate at origin is not 1.&quot;,&quot;One coordinate is correct, but check the other.&quot;,&quot;&quot;,&quot;Both coordinates at origin are the same value — 0.&quot;]' data-topic="coordinate-plane">
           
             <label class="mc-option-label" id="label_q_3_0">
               <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
@@ -3783,17 +3902,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="3">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3936,17 +4063,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="4">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -3977,7 +4112,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Captain Vega folds the map along the x-axis. A marker at (7, 2) lands on its mirror image. What are the new coordinates?</span><span class="lang-es" lang="es">La Capitana Vega dobla el mapa a lo largo del eje x. Un marcador en (7, 2) cae sobre su imagen reflejada. ¿Cuáles son las nuevas coordenadas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="Folding along (reflecting across) the x-axis flips the sign of the y-coordinate only. (7, 2) becomes (7, -2)." data-explanation-es="Doblar sobre el eje x (reflejar a través de él) cambia solo el signo de la coordenada y. El punto (7, 2) se convierte en (7, -2).">
+        <div class="mc-options" data-correct="3" data-explanation="Folding along (reflecting across) the x-axis flips the sign of the y-coordinate only. (7, 2) becomes (7, -2)." data-explanation-es="Doblar sobre el eje x (reflejar a través de él) cambia solo el signo de la coordenada y. El punto (7, 2) se convierte en (7, -2)." data-choice-feedback='[&quot;That is what you get if you changed the sign of both coordinates. Instead: Folding along (reflecting across) the x-axis flips the sign of the y-coordinate only.&quot;,&quot;Both coordinates changed sign, which describes two folds rather than one. Folding along the x-axis changes only one of them.&quot;,&quot;The coordinates traded places. A reflection keeps x first and y second and only changes a sign.&quot;,&quot;&quot;]' data-topic="coordinate-plane">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -4008,17 +4143,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="5">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4133,13 +4276,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4209,13 +4360,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4234,7 +4393,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the reflection of (4, -3) over the x-axis?</span><span class="lang-es" lang="es">¿Cuál es la reflexión de (4, -3) sobre el eje x?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="Reflecting over the x-axis changes the sign of the y-coordinate. The x stays the same (4), and the y changes from -3 to 3. The answer is (4, 3)." data-explanation-es="Reflejar sobre el eje x cambia el signo de la coordenada y. La x se mantiene igual (4) y la y pasa de -3 a 3. La respuesta es (4, 3).">
+        <div class="mc-options" data-correct="3" data-explanation="Reflecting over the x-axis changes the sign of the y-coordinate. The x stays the same (4), and the y changes from -3 to 3. The answer is (4, 3)." data-explanation-es="Reflejar sobre el eje x cambia el signo de la coordenada y. La x se mantiene igual (4) y la y pasa de -3 a 3. La respuesta es (4, 3)." data-choice-feedback='[&quot;That is what you get if you changed the sign of both coordinates. Instead: Reflecting over the x-axis changes the sign of the y-coordinate.&quot;,&quot;Both coordinates changed sign here, which is what two reflections would do. A single reflection over the x-axis leaves one coordinate untouched — decide which one.&quot;,&quot;The two numbers traded places. Reflecting never swaps x with y; it only changes a sign.&quot;,&quot;&quot;]' data-topic="coordinate-plane">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4265,17 +4424,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="8">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4306,7 +4473,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">What is the reflection of (-2, 6) over the y-axis?</span><span class="lang-es" lang="es">¿Cuál es la reflexión de (-2, 6) sobre el eje y?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -2 to 2, and y stays 6. The answer is (2, 6)." data-explanation-es="Reflejar sobre el eje y cambia el signo de la coordenada x. La x pasa de -2 a 2 y la y se mantiene en 6. La respuesta es (2, 6).">
+        <div class="mc-options" data-correct="1" data-explanation="Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -2 to 2, and y stays 6. The answer is (2, 6)." data-explanation-es="Reflejar sobre el eje y cambia el signo de la coordenada x. La x pasa de -2 a 2 y la y se mantiene en 6. La respuesta es (2, 6)." data-choice-feedback='[&quot;That is what you get if you changed the sign of both coordinates. Instead: Reflecting over the y-axis changes the sign of the x-coordinate.&quot;,&quot;&quot;,&quot;Both signs flipped in this point. A reflection over the y-axis changes only one coordinate — think about which one the vertical axis affects.&quot;,&quot;The coordinates were swapped instead of reflected. Keep x in the first position and y in the second, then change only a sign.&quot;]' data-topic="coordinate-plane">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4337,17 +4504,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="9">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4495,13 +4670,21 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
@@ -4551,17 +4734,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="11">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4592,7 +4783,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which point is on the y-axis?</span><span class="lang-es" lang="es">¿Qué punto está sobre el eje y?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Points on the y-axis have x-coordinate = 0. (0, 5) is on the y-axis." data-explanation-es="Los puntos sobre el eje y tienen la coordenada x = 0. El punto (0, 5) está sobre el eje y.">
+        <div class="mc-options" data-correct="1" data-explanation="Points on the y-axis have x-coordinate = 0. (0, 5) is on the y-axis." data-explanation-es="Los puntos sobre el eje y tienen la coordenada x = 0. El punto (0, 5) está sobre el eje y." data-choice-feedback='[&quot;That point sits off to one side of the vertical axis. A point resting on the y-axis has an x-coordinate of exactly 0.&quot;,&quot;&quot;,&quot;Not quite. Points on the y-axis have x-coordinate = ___.&quot;,&quot;You swapped the x and y—the first number is horizontal, second is vertical.&quot;]' data-topic="coordinate-plane">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4623,17 +4814,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="12">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -4664,7 +4863,7 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A buried chest is marked at (-5, 3). Vega folds the map along the y-axis to find its mirror twin. Where is the twin?</span><span class="lang-es" lang="es">Un cofre enterrado está marcado en (-5, 3). Vega dobla el mapa a lo largo del eje y para hallar su gemelo reflejado. ¿Dónde está el gemelo?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Reflecting across the y-axis flips the sign of the x-coordinate only. (-5, 3) becomes (5, 3)." data-explanation-es="Reflejar sobre el eje y cambia solo el signo de la coordenada x. El punto (-5, 3) se convierte en (5, 3).">
+        <div class="mc-options" data-correct="2" data-explanation="Reflecting across the y-axis flips the sign of the x-coordinate only. (-5, 3) becomes (5, 3)." data-explanation-es="Reflejar sobre el eje y cambia solo el signo de la coordenada x. El punto (-5, 3) se convierte en (5, 3)." data-choice-feedback='[&quot;That is what you get if you changed the sign of both coordinates. Instead: Reflecting across the y-axis flips the sign of the x-coordinate only.&quot;,&quot;The coordinates were swapped and a sign was changed. Reflections never reorder the pair.&quot;,&quot;&quot;,&quot;Both signs changed in this point. Reflecting across the y-axis leaves one coordinate exactly as it was.&quot;]' data-topic="coordinate-plane">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4695,17 +4894,25 @@ header.packet h1::after{
     
       
       <details class="hw-step-guide">
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
+        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <p><span class="lang-en">Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).</span><span class="lang-es" lang="es">Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).</span></p>
+          </div>
+          <div class="guide-card">
+            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <p><span class="lang-en">Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">Empieza en (0,0), avanza en x, luego sube o baja en y.</span></p>
+          </div>
+          <div class="guide-card" style="grid-column: 1 / -1;">
+            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <p><span class="lang-en"><strong>Parent prompt:</strong> Ask: &#039;Did we move horizontally across the floor first, before going up or down?&#039;</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> Pregunta: &#039;¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?&#039;</span></p>
+          </div>
+        </div>
       </details>
       <div class="hw-workspace">
         <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Start at (0,0), move across x, then up or down to y.</span><span class="lang-es" lang="es">👆 Toca para graficar: Empieza en (0,0), avanza en x, luego sube o baja en y.</span></div>
           <div class="hw-visual-frame hw-interactive" data-interactive="coordinate-plane" data-pidx="13">
             <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -6377,7 +6584,7 @@ function checkProblem(idx, options) {
   let feedbackMessage = "";
 
   section.classList.remove("correct", "incorrect");
-  const explanationBoxes = section.querySelectorAll(".explanation-box");
+  const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
   if (type === "multiple-choice") {
@@ -6385,11 +6592,18 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let choiceFeedback = [];
+      try {
+        choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+      } catch (e) {
+        choiceFeedback = [];
+      }
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
+      let selectedFeedback = "";
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -6406,14 +6620,23 @@ function checkProblem(idx, options) {
           // Highlight correct label as correct
           const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
           if (correctLabel) correctLabel.classList.add("is-correct");
+          selectedFeedback = choiceFeedback[val] || "";
         }
       }
       
-      // Append explanation if checked
-      if (selected && explanation) {
+      // Append visual explanation if checked
+      if (selected) {
         const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.innerHTML = "<strong>Concept Check:</strong> " + explanation;
+        expDiv.className = "visual-explanation-card explanation-box";
+        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+        if (!isProblemCorrect && selectedFeedback) {
+          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        }
+        if (explanation) {
+          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+        }
+        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
       
@@ -6614,15 +6837,11 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = explanation
-          ? "Correct! " + explanation
-          : "Correct! Nice work on this one.";
+        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else {
-        feedbackMessage = explanation
-          ? "Not quite — the correct choice is highlighted. " + explanation
-          : "Not quite — the correct choice is highlighted in green.";
+        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");
