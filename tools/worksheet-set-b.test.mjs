@@ -42,7 +42,7 @@ assert.ok(dirs.length > 200, `expected the worksheet fleet, found ${dirs.length}
 
 /** What Set A prints, mirroring buildWorksheet's own pool selection exactly. */
 function setAPool(cfg) {
-  const kind = kindOf(cfg.lessonId);
+  const kind = kindOf(cfg.lessonId, cfg);
   const app = printable(cfg.practice?.approaching);
   const on = printable(cfg.practice?.onLevel);
   const ext = printable(cfg.practice?.extending);
@@ -113,7 +113,7 @@ for (const id of dirs) {
   // A small-group Set B stays inside the practice pools — Apply Day is exempt:
   // it has no small-group Practice Set packet to collide with, and its review
   // warm-up is its own spiral content.
-  const k = kindOf(id);
+  const k = kindOf(id, cfg);
   if (k !== "core" && k !== "partTwo" && items.some((p) => p.origin && p.origin !== "practice")) {
     failures.push(`${id}: a small-group Set B took an item from the Practice Set's pools`);
   }

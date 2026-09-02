@@ -1551,7 +1551,7 @@ function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
     // list of practice items regardless of lesson kind, and the group-specific
     // extras on Set A (discourse card, author-your-own challenge) are once-per-
     // lesson activities, not something to hand out a second time.
-    const pageClass = SET_B_PAGE_CLASS[kindOf(lessonId)] || "ws-core-tier-page";
+    const pageClass = SET_B_PAGE_CLASS[kindOf(lessonId, cfg)] || "ws-core-tier-page";
     pages = setBPages(cfg)
       .map((p) =>
         buildCoreTierPage(cfg, p.pool, p.label, p.sub, {
@@ -1562,7 +1562,7 @@ function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
         }),
       )
       .join("\n");
-  } else if (lessonId.includes("-part2")) {
+  } else if (lessonId.includes("-part2") || kindOf(lessonId, cfg) === "partTwo") {
     // Apply Day. Its practice is authored under `groupLevels.level1/2/3` rather
     // than under `practice.*`, which is why the generator skipped all 76 of
     // these lessons in silence. The tiers overlap as authored, so the split is

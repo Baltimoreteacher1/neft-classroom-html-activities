@@ -362,7 +362,20 @@ const orphans = [];
 // which means a future manifest change could silently pull a scaffold into the
 // gate, or silently drop a real pathway and look identical. Declaring it makes
 // the disk-vs-manifest reconciliation exact and checkable.
-const DECLARED_NON_PATHWAYS = new Set(["_template", "_incoming-decks", "1-1-flagship"]);
+// `6-1-6-2-practice` is a hand-authored bridge review spanning two lessons
+// (6.NOS.1) — it boots through bootPartTwo like any -part2 page and lives
+// under lessons/ for that reason, but it is not part of the numbered
+// curriculum spine (id shape, not a real unit·lesson slot) and was never
+// meant to enter the launch manifest, the pacing baseline, or scope-and-
+// sequence. Its SCORM package is built directly against its live URL path
+// (`build-scorm.mjs /lessons/6-1-6-2-practice/`), the same "any activity"
+// pathway ratio-color-mixer uses, not through manifest membership.
+const DECLARED_NON_PATHWAYS = new Set([
+  "_template",
+  "_incoming-decks",
+  "1-1-flagship",
+  "6-1-6-2-practice",
+]);
 
 // Reconcile disk against the manifest, both directions. 289 lesson.js files on
 // disk = 288 manifest pathways + 1 declared scaffold.

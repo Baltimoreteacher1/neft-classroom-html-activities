@@ -188,7 +188,16 @@ export function smallGroupReserve(cfg, kind) {
   ];
 }
 
-export function kindOf(lessonId) {
+/**
+ * `cfg` is optional and only used as a fallback: a hand-authored lesson whose
+ * practice is authored under `groupLevels.level1/2/3` (the Apply Day shape)
+ * but whose id does not end in `-part2` — e.g. a bridge review spanning two
+ * lessons — would otherwise fall through to "core", which reads
+ * `practice.approaching/onLevel/extending` and finds nothing, silently
+ * printing an empty worksheet. Checking the actual shape, not just the id,
+ * is what the `-part2` check was already a proxy for.
+ */
+export function kindOf(lessonId, cfg) {
   const id = String(lessonId || "");
   if (id.includes("-group1")) return "group1";
   if (id.includes("-group2")) return "group2";
@@ -197,6 +206,7 @@ export function kindOf(lessonId) {
   // `practice.*`, which is why the worksheet generator skipped all 76 of these
   // lessons in silence until 2026-08-28 — `hasAny` asked only about `practice`.
   if (id.includes("-part2")) return "partTwo";
+  if (Array.isArray(cfg?.groupLevels?.level1) && !cfg?.practice) return "partTwo";
   return "core";
 }
 
@@ -339,7 +349,7 @@ const MIN_PER_SHEET = 4;
  * tier list uses, so both sets run through one page builder.
  */
 export function setBPages(cfg) {
-  const kind = kindOf(cfg?.lessonId);
+  const kind = kindOf(cfg?.lessonId, cfg);
   const reserve = dedupe(
     kind === "core"
       ? coreReserve(cfg)

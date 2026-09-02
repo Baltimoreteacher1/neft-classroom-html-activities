@@ -210,8 +210,22 @@ assert.equal(REQUIRED_FIELDS["long-division-builder"].ok({ dividend: 10, divisor
 // roles — it authors no explore/practice tool, mounts no manipulative drawer,
 // and has no `?mode=tools` surface for a tool to be invisible on. Sweeping it
 // would report 76 lessons as missing a tool that was never meant to be there.
+//
+// Same reasoning excludes any id outside the numbered curriculum spine
+// (`<unit>-<lesson>`, optionally with a known variant suffix) — the spine test
+// curriculum-scope-sequence.mjs uses (BASE_LESSON_RE). A hand-authored bonus
+// page such as a cross-lesson bridge practice activity lives under lessons/
+// for engine reasons only; it has the same Part-2-shaped Group Work practice
+// with no explore/tools mode, so it is not a lesson this gate can judge either.
+const CORE_LESSON_ID = /^\d+-\d+(-(group[12]|catchup))?$/;
 const lessonIds = readdirSync(url("../lessons"), { withFileTypes: true })
-  .filter((e) => e.isDirectory() && e.name !== "_template" && !e.name.endsWith("-part2"))
+  .filter(
+    (e) =>
+      e.isDirectory() &&
+      e.name !== "_template" &&
+      !e.name.endsWith("-part2") &&
+      CORE_LESSON_ID.test(e.name),
+  )
   .map((e) => e.name)
   .sort();
 

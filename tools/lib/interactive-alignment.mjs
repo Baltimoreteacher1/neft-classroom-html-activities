@@ -487,12 +487,22 @@ export function topicAgrees(toolKey, standard, standardTopics) {
 // Learn-It tool at all, so every mapping the resolver produced for it was for a
 // tool that is not on the page.
 const VARIANT = /-(group[12]|catchup|part2)$/;
+// Same spine test curriculum-scope-sequence.mjs uses (BASE_LESSON_RE): only
+// <unit>-<lesson> ids and their known variant suffixes are numbered curriculum
+// content. A hand-authored bonus page living under lessons/ for engine reasons
+// (e.g. a cross-lesson bridge practice activity) is neither — it has no
+// standards-mapped explore/tool section for this gate to check, so counting it
+// as a 85th "canonical" lesson would make the fleet-size self-check below lie.
+const CORE_ID = /^\d+-\d+$/;
 
 export function readFleet(root) {
   const dir = join(root, "lessons");
   const lessons = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
+    const variantMatch = VARIANT.exec(entry.name);
+    const baseId = variantMatch ? entry.name.replace(VARIANT, "") : entry.name;
+    if (!CORE_ID.test(baseId)) continue;
     const path = join(dir, entry.name, "config.json");
     if (!existsSync(path)) continue;
     let config;
@@ -501,7 +511,7 @@ export function readFleet(root) {
     } catch {
       continue;
     }
-    const variant = VARIANT.exec(entry.name);
+    const variant = variantMatch;
     lessons.push({
       id: entry.name,
       parent: variant ? entry.name.replace(VARIANT, "") : null,
