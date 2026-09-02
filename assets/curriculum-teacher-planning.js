@@ -32,7 +32,7 @@
    * Both are ADVISORY: unreadable means fall back to manifest order, never an
    * empty list. Teaching continues when planning data does not.
    */
-  function deriveUnitSequence(lessons, projects, pacing, authored) {
+  function deriveUnitSequence(lessons, projects, pacing, authored, assessments) {
     var lessonsByUnit = Object.create(null);
     var manifestOrder = [];
     var byId = Object.create(null);
@@ -55,6 +55,17 @@
       if (!p || !p.resources || !p.resources.lesson) return;
       var key = String(p.unit);
       (projectsByUnit[key] = projectsByUnit[key] || []).push(p);
+    });
+
+    /* MSTAR practice tests sit AFTER the final lesson and BEFORE the project:
+     * they rehearse the unit a teacher just finished teaching, while the
+     * project stays the unit's closing row — a placement the picker test pins.
+     * Same dead-row rule as projects: no resource, no row. */
+    var assessmentsByUnit = Object.create(null);
+    (assessments || []).forEach(function (t) {
+      if (!t || !t.resources || !t.resources.lesson) return;
+      var key = String(t.unit);
+      (assessmentsByUnit[key] = assessmentsByUnit[key] || []).push(t);
     });
 
     var authoredUnits = (authored && authored.units) || {};
@@ -110,6 +121,9 @@
         var key = String(unit);
         var out = (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
           return { item: l, kind: "lesson" };
+        });
+        (assessmentsByUnit[key] || []).forEach(function (t) {
+          out.push({ item: t, kind: "assessment" });
         });
         (projectsByUnit[key] || []).forEach(function (p) {
           out.push({ item: p, kind: "project" });
@@ -444,6 +458,7 @@
         (context.data && context.data.launch && context.data.launch.endOfUnit) || [],
         sources.pacing,
         sources.authored,
+        (context.data && context.data.launch && context.data.launch.unitAssessments) || [],
       );
       if (!sequence.order.length) return;
       sequence.order.forEach(function (key) {
@@ -836,13 +851,19 @@
       /* renderOpen resolves whatever the Lesson dropdown selected, and that is
        * now lessons AND projects. Looking only at `lessons` is why an option can
        * be selectable and expand to nothing. */
-      var openable = lessons.concat(manifest.endOfUnit || []);
+      var openable = lessons.concat(manifest.endOfUnit || [], manifest.unitAssessments || []);
 
       /* The district's order, derived in ONE place this file shares with the
        * Unit Map — see deriveUnitSequence(). Class section does not appear in it
        * at all: all three classes are taught the same curriculum in the same
        * district order. */
-      var sequence = deriveUnitSequence(lessons, manifest.endOfUnit, pacing, authored);
+      var sequence = deriveUnitSequence(
+        lessons,
+        manifest.endOfUnit,
+        pacing,
+        authored,
+        manifest.unitAssessments,
+      );
       var unitOrder = sequence.order;
 
       var classes = classSections().map(function (id) {
@@ -863,7 +884,7 @@
 
       function lessonsFor(unit) {
         return sequence.entriesFor(unit).map(function (entry) {
-          return entry.kind === "project"
+          return entry.kind === "project" || entry.kind === "assessment"
             ? { value: entry.item.id, label: entry.item.title }
             : { value: entry.item.id, label: entry.item.id + " · " + entry.item.title };
         });
@@ -933,10 +954,12 @@
         if (!lesson) return;
 
         var isProject = lesson.kind === "endOfUnit";
+        var isAssessment = lesson.kind === "unitAssessment";
+        var isLesson = !isProject && !isAssessment;
 
         var head = document.createElement("p");
         head.className = "tws-open-title";
-        head.textContent = isProject ? lesson.title : "Lesson " + lesson.id + " — " + lesson.title;
+        head.textContent = isLesson ? "Lesson " + lesson.id + " — " + lesson.title : lesson.title;
         openBox.appendChild(head);
 
         var row = document.createElement("p");
@@ -950,7 +973,11 @@
           var a = document.createElement("a");
           a.className = "tws-btn";
           a.href = lessonHref;
-          a.textContent = isProject ? "Open culminating project" : "Open whole-group lesson";
+          a.textContent = isProject
+            ? "Open culminating project"
+            : isAssessment
+              ? "Open practice test"
+              : "Open whole-group lesson";
           row.appendChild(a);
         }
         /* The class travels with the lesson, so the supports surface opens on
@@ -965,7 +992,7 @@
         /* Day 2 of this lesson, when it has one. 76 of the 84 core lessons do —
          * the 8 without are the "Math is…" mindset lessons whose Apply is a
          * reflection prompt, and they get no button rather than a dead one. */
-        var p2 = !isProject ? partTwoByParent[lesson.id] : null;
+        var p2 = isLesson ? partTwoByParent[lesson.id] : null;
         if (p2) {
           var p2a = document.createElement("a");
           p2a.className = "tws-btn ghost";
@@ -974,7 +1001,7 @@
           row.appendChild(p2a);
         }
 
-        if (!isProject) {
+        if (isLesson) {
           var supports = document.createElement("a");
           supports.className = "tws-btn ghost";
           supports.href =

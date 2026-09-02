@@ -35,12 +35,14 @@ const DISTRICT_UNIT_ORDER = PACING.units
   .map((u) => String(u.curriculumUnit));
 
 /** The Lesson dropdown offers the unit's lessons AND, at the bottom, its
- *  culminating project. Assertions about LESSON membership take the lesson
- *  portion — identified from the manifest's own endOfUnit ids, never from an id
- *  shape, so a lesson that starts looking like a project id cannot be dropped
- *  silently. The project's own placement is asserted separately below. */
+ *  MSTAR practice tests followed by its culminating project. Assertions about
+ *  LESSON membership take the lesson portion — identified from the manifest's
+ *  own endOfUnit and unitAssessments ids, never from an id shape, so a lesson
+ *  that starts looking like a project id cannot be dropped silently. The
+ *  placement of the appended rows is asserted separately below. */
 const PROJECT_IDS = new Set((MANIFEST.endOfUnit || []).map((p) => p.id));
-const lessonsOnly = (values) => values.filter((v) => !PROJECT_IDS.has(v));
+const ASSESSMENT_IDS = new Set((MANIFEST.unitAssessments || []).map((t) => t.id));
+const lessonsOnly = (values) => values.filter((v) => !PROJECT_IDS.has(v) && !ASSESSMENT_IDS.has(v));
 
 let pass = 0;
 async function t(name, fn) {
@@ -530,6 +532,47 @@ await t("the project option is labelled from the manifest, not composed here", a
     `the Lesson dropdown does not offer "${project.title}"`,
   );
 });
+
+/* ===========================================================================
+ * MSTAR PRACTICE TESTS — after the final lesson, before the project
+ * ======================================================================== */
+await t(
+  "each unit's MSTAR practice tests sit after the last lesson, before the project",
+  async () => {
+    const p = await mount();
+    const byUnit = new Map();
+    for (const test of MANIFEST.unitAssessments || []) {
+      const key = String(test.unit);
+      if (!byUnit.has(key)) byUnit.set(key, []);
+      byUnit.get(key).push(test);
+    }
+    for (const [unit, tests] of byUnit) {
+      p.change(p.unit, unit);
+      const values = p.values(p.lesson);
+      if (!values.length) continue; // a unit this district does not pace
+      const lastLessonIdx = values.reduce(
+        (acc, v, i) => (!PROJECT_IDS.has(v) && !ASSESSMENT_IDS.has(v) ? i : acc),
+        -1,
+      );
+      for (const test of tests) {
+        const idx = values.indexOf(test.id);
+        assert.ok(idx !== -1, `Unit ${unit}'s "${test.title}" is not offered`);
+        assert.ok(
+          idx > lastLessonIdx,
+          `Unit ${unit}'s "${test.title}" does not come after the final lesson`,
+        );
+        const projectIdx = values.findIndex((v) => PROJECT_IDS.has(v));
+        if (projectIdx !== -1) {
+          assert.ok(
+            idx < projectIdx,
+            `Unit ${unit}'s "${test.title}" does not come before the culminating project`,
+          );
+        }
+      }
+    }
+    assert.ok(byUnit.size > 0, "no unitAssessments in the manifest — the sweep proved nothing");
+  },
+);
 
 await t("choosing a project expands to the project, not to nothing", async () => {
   /* The expansion used to resolve the selection against `lessons` only, so a
