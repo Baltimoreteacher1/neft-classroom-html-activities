@@ -33,9 +33,10 @@
 //         mstar-practice/unit-<u>-form-<a|b>/index.html
 //         mstar-practice/unit-<u>-form-<a|b>-answer-key/index.html
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "mstar-practice");
@@ -227,7 +228,15 @@ const SR_BODY = `  <!-- nsr-injected:begin (multi-day save/resume — tools/inje
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->`;
 
-function shell({ title, description, crumb, body, saveResume }) {
+// Same sentinel block tools/inject-canvas-bridge.js writes, emitted by the
+// generator so a regeneration cannot strip the bridge off a cataloged page —
+// the injector recognizes its own marker and skips. Student form pages only:
+// the hub assigns nothing and the answer keys are teacher surfaces.
+const CANVAS_BRIDGE = `  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->`;
+
+function shell({ title, description, crumb, body, saveResume, canvasBridge }) {
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -246,6 +255,7 @@ ${saveResume ? SR_HEAD : ""}
 ${body}
     </div>
 ${saveResume ? SR_BODY : ""}
+${canvasBridge ? CANVAS_BRIDGE : ""}
   </body>
 </html>
 `;
@@ -417,6 +427,12 @@ function studentScript(storageKey, key, writtenCount) {
     box.textContent = "Auto-scored: " + score + " of " + autoTotal + " selected-response parts correct." +
       (${writtenCount} ? " Plus ${writtenCount} written response(s) your teacher scores." : "");
     box.focus();
+    // Inside a Canvas SCORM launch the grade bridge is on the page; report the
+    // auto-scored percent silently. reportScore is repeatable, so a retake
+    // simply reports again. Outside Canvas the bridge is absent and this no-ops.
+    if (window.NeftCanvasBridge && autoTotal) {
+      try { window.NeftCanvasBridge.reportScore(Math.round((score / autoTotal) * 100)); } catch (_) { /* bridge must never break grading */ }
+    }
   });
 
   var resetBtn = document.getElementById("resetBtn");
@@ -452,6 +468,7 @@ ${studentScript(storageKey, studentKey(items), writtenCount)}`;
     crumb: `Unit ${unit} · Form ${formLetter.toUpperCase()}`,
     body,
     saveResume: true,
+    canvasBridge: true,
   });
 }
 
@@ -560,7 +577,11 @@ ${rows}
 function write(rel, html) {
   const file = join(OUT, rel);
   mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, html);
+  // writeGenerated re-splices any injected sentinel layers already on disk
+  // (uifr today; whatever comes next) so a regeneration cannot strip them —
+  // the repo-wide generator rule. The nsr and canvas-bridge blocks this
+  // template emits itself are recognized by their injectors and left alone.
+  writeGenerated(file, html);
   console.log("  wrote", join("mstar-practice", rel));
 }
 

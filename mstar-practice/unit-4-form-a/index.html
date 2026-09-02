@@ -52,6 +52,9 @@ button.btn:focus-visible, .choice:focus-within { outline: 3px solid #0d7a76; out
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+    <!-- uifr-injected:begin -->
+    <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (mstar-practice/unit-4-form-a/): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
+    <!-- uifr-injected:end -->
   </head>
   <body>
     <div class="container">
@@ -295,6 +298,12 @@ button.btn:focus-visible, .choice:focus-within { outline: 3px solid #0d7a76; out
     box.textContent = "Auto-scored: " + score + " of " + autoTotal + " selected-response parts correct." +
       (1 ? " Plus 1 written response(s) your teacher scores." : "");
     box.focus();
+    // Inside a Canvas SCORM launch the grade bridge is on the page; report the
+    // auto-scored percent silently. reportScore is repeatable, so a retake
+    // simply reports again. Outside Canvas the bridge is absent and this no-ops.
+    if (window.NeftCanvasBridge && autoTotal) {
+      try { window.NeftCanvasBridge.reportScore(Math.round((score / autoTotal) * 100)); } catch (_) { /* bridge must never break grading */ }
+    }
   });
 
   var resetBtn = document.getElementById("resetBtn");
@@ -309,5 +318,8 @@ button.btn:focus-visible, .choice:focus-within { outline: 3px solid #0d7a76; out
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
   </body>
 </html>
