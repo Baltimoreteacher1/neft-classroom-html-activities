@@ -9,8 +9,9 @@
  *
  *   1. THREE GENERATIONS SIDE BY SIDE. scorm-packages/ is gitignored and purely
  *      additive: nothing prunes it. It accumulated `neft-lesson-*.zip`,
- *      `Neft_*_Interactive_SCORM.zip` and the current
- *      `EduWonderLab_*_SCORM.zip` — 1019 files for 433 distinct activities.
+ *      `Neft_*_Interactive_SCORM.zip`, `EduWonderLab_*_SCORM.zip` and the
+ *      current, unprefixed `<id>_<Title>_SCORM.zip` — 1019 files for 433
+ *      distinct activities.
  *      277 old packages carry the SAME <manifest identifier> as a current one,
  *      so an LMS that keys on the manifest id sees a re-import of an activity
  *      the teacher believes is new, and the upload picker offers three files
@@ -116,11 +117,20 @@ for (const name of zips) {
   }
 }
 
+// Names produced by the builder today: <id>_<Short_Title>_SCORM.zip, with none
+// of the retired generation prefixes (`neft-`, `Neft_`, `EduWonderLab_`).
+const CURRENT_NAME = /^(?!neft[-_]|EduWonderLab_)[A-Za-z0-9._-]+_SCORM\.zip$/i;
+
 // A duplicated manifest identifier is the stale-generation signature. Name the
 // current package (the one the builder produces today) and list what shadows it.
 for (const [mid, names] of byManifestId)
   if (names.length > 1) {
-    const current = names.find((n) => n.startsWith("EduWonderLab_"));
+    // Which of the shadowing files is the one the builder produces TODAY? The
+    // detector used to key on the "EduWonderLab_" prefix, which is exactly the
+    // thing the current generation dropped — so it is now the negative test:
+    // current names carry neither the `neft-` nor the `Neft_` nor the brand
+    // prefix of the three older generations.
+    const current = names.find((n) => CURRENT_NAME.test(n));
     stale.push(
       `identifier "${mid}" is carried by ${names.length} packages: ${names.join(", ")}` +
         (current ? ` — current is ${current}` : ""),

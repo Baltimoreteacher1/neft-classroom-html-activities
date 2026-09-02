@@ -250,15 +250,18 @@ export function packageFileName(id, codes) {
   const base = (codes ? String(id).replace(/-codes$/, "") : String(id))
     .replace(/[^A-Za-z0-9._-]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  // Runtime v2 naming: EduWonderLab_<id>_<Short_Title>_SCORM.zip.
-  //   EduWonderLab_1-1_Math_Is_Mine_SCORM.zip
-  //   EduWonderLab_1-1-homework_Homework_SCORM.zip
-  //   EduWonderLab_ratio-color-mixer_Ratio_Color_Mixer_SCORM.zip
+  // Runtime v2 naming: <id>_<Short_Title>_SCORM.zip.
+  //   1-1_Math_Is_Mine_SCORM.zip
+  //   1-1-homework_Homework_SCORM.zip
+  //   ratio-color-mixer_Ratio_Color_Mixer_SCORM.zip
+  // The "EduWonderLab_" prefix every name once carried was pure repetition —
+  // it is the same on all 500+ packages, so it only pushed the part a teacher
+  // scans for (the lesson id and title) further right in Canvas's file picker.
   // Deterministic (same inputs → same name, no hash, no timestamp), ASCII-only,
   // and free of every character Windows rejects (\ / : * ? " < > |) and of
   // spaces, which break naive shell and LMS-upload tooling.
   const short = shortNameForId(id);
-  const parts = ["EduWonderLab", base, short, codes ? "SaveCodes" : "", "SCORM"].filter(Boolean);
+  const parts = [base, short, codes ? "SaveCodes" : "", "SCORM"].filter(Boolean);
   return `${parts.join("_").slice(0, 140)}.zip`;
 }
 

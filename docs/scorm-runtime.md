@@ -416,15 +416,21 @@ Accessibility of the shell (the lesson has its own coverage):
 ## 10. Package naming and titles
 
 ```
-EduWonderLab_<activity-id>_<Short_Title>[_SaveCodes]_SCORM.zip
+<activity-id>_<Short_Title>[_SaveCodes]_SCORM.zip
 ```
 
 ```
-EduWonderLab_1-1_Math_is_Mine_SCORM.zip
-EduWonderLab_5-1_Determine_the_Area_of_Parallelograms_and_Rho_SCORM.zip
-EduWonderLab_1-1-homework_Homework_SCORM.zip
-EduWonderLab_ratio-color-mixer_Ratio_Paint_Mixer_Lab_SCORM.zip
+1-1_Math_is_Mine_SCORM.zip
+5-1_Determine_the_Area_of_Parallelograms_and_Rho_SCORM.zip
+1-1-homework_Homework_SCORM.zip
+ratio-color-mixer_Ratio_Paint_Mixer_Lab_SCORM.zip
 ```
+
+Names carry no brand prefix. Every package would repeat the same one, so it
+only pushed the id and title — the part a teacher scans in Canvas's file
+picker — further right. The manifest `<title>` Canvas displays is still
+branded; only the filename changed, and the SCORM identifier never depended
+on it.
 
 No random names, no hash as the primary name, no spaces, and none of the
 characters Windows rejects (`\ / : * ? " < > |`). Deterministic: the same id

@@ -48,7 +48,7 @@ not once per commit.
 
 ## Manual Canvas Student View run
 
-Package: `scorm-packages/EduWonderLab_1-1_Math_is_Mine_SCORM.zip`
+Package: `scorm-packages/1-1_Math_is_Mine_SCORM.zip`
 (rebuild with `npm run scorm -- 1-1 "Lesson 1-1: Math is Mine"`).
 
 A package **wraps the live site** — it does not contain the lesson. So this test

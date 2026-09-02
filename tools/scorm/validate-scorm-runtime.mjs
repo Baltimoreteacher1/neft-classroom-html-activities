@@ -212,8 +212,11 @@ for (const f of FAMILIES) {
 const names = new Map();
 for (const b of built) {
   const name = packageFileName(b.pkg.id, b.pkg.codes);
-  if (!/^EduWonderLab_[A-Za-z0-9._-]+_SCORM\.zip$/.test(name))
-    fail(`${b.name}: "${name}" does not follow EduWonderLab_<id>_<title>_SCORM.zip`);
+  if (!/^[A-Za-z0-9._-]+_SCORM\.zip$/.test(name))
+    fail(`${b.name}: "${name}" does not follow <id>_<title>_SCORM.zip`);
+  // The brand prefix was dropped from download names: it repeated on every
+  // package and only delayed the id a teacher actually scans for.
+  if (/eduwonderlab/i.test(name)) fail(`${b.name}: "${name}" still carries the brand prefix`);
   // Windows rejects \ / : * ? " < > | ; spaces break naive upload tooling.
   if (/[\\/:*?"<>|\s]/.test(name)) fail(`${b.name}: "${name}" is not filesystem-safe`);
   if (name.length > 150) fail(`${b.name}: "${name}" is too long for some filesystems`);

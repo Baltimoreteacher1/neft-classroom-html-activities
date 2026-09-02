@@ -632,7 +632,11 @@ function main() {
       cluster: pu.cluster,
       icon: identity.icon || "📘",
       identity: identity.title || "",
-      folder: safeName(`EduWonderLab_Unit-${pu.unit}_${pu.name}`, `Unit-${pu.unit}`),
+      // No brand prefix: the same thirteen characters on every unit folder and on
+      // every download's root, pushing the unit number a teacher scans for off
+      // the left edge of a Downloads list. The site the zip came from is not in
+      // question by the time it is on their disk.
+      folder: safeName(`Unit-${pu.unit}_${pu.name}`, `Unit-${pu.unit}`),
       lessons,
       resources: [],
     });

@@ -254,7 +254,7 @@ export function shortNameForId(id) {
   const scoped = /^(\d+-\d+)-(.+)$/.exec(base);
   if (scoped) {
     // A labelled variant first: without it "6-1-part2" fell through to the
-    // slug branch and named the file EduWonderLab_6-1-part2_part2_SCORM.zip,
+    // slug branch and named the file 6-1-part2_part2_SCORM.zip,
     // spending the readable half of the name on a repeat of the id.
     const variant = VARIANT_LABELS[scoped[2].toLowerCase()];
     if (variant) return titleSlug(variant);

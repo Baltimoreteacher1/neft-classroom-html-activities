@@ -648,6 +648,9 @@ async function startDownload() {
   }
 }
 
+// Download names carry no brand prefix. It was identical on every archive, so
+// it never told a teacher which download they were looking at — it only pushed
+// the unit and the preset, the parts that do, further right in a file list.
 function packageName(list, unit, preset) {
   const clean = safeName;
   if (unit && preset) {
@@ -658,13 +661,13 @@ function packageName(list, unit, preset) {
   const units = [...new Set(list.map((r) => r.unit))];
   const lessons = [...new Set(list.map((r) => r.lesson).filter(Boolean))];
   if (units.length === 1 && lessons.length === 1) {
-    return clean(`Unit-${units[0]}_Lesson-${lessons[0]}`, "EduWonderLab-Resources");
+    return clean(`Unit-${units[0]}_Lesson-${lessons[0]}`, "Selected-Resources");
   }
   if (units.length === 1) {
     const only = manifest.units.find((u) => u.unit === units[0]);
-    return clean(`${only.folder}_Selected`, "EduWonderLab-Resources");
+    return clean(`${only.folder}_Selected`, "Selected-Resources");
   }
-  return "EduWonderLab_Selected-Resources";
+  return "Selected-Resources";
 }
 
 /**

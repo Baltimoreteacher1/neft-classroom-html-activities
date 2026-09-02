@@ -88,7 +88,7 @@ test("the browser's safeName matches the generator's", () => {
     "  ...  ",
     "🏗️ Architect Challenge: GreenLine Transit",
     "SCORM · Pre-Test",
-    "EduWonderLab_Unit-10_Math Is...",
+    "Unit-10_Math Is...",
     "trailing dot.",
     "x".repeat(200),
   ];
