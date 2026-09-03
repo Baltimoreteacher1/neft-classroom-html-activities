@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">What is the volume of a rectangular prism with l = 4 in, w = 3 in, h = 5 in?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>12 in³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>24 in³</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>60 in³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>60 in²</span></li>
+      </ul>
+      <p class="ws-keynote">V = l × w × h = 4 × 3 × 5 = 60 cubic inches.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">A box has a volume of 36 cm³. Its length is 6 cm and width is 3 cm. What is the height?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>2 cm</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>3 cm</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>6 cm</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>12 cm</span></li>
+      </ul>
+      <p class="ws-keynote">V = l × w × h → 36 = 6 × 3 × h → 36 = 18h → h = 2 cm.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">How is volume different from area?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>Volume measures 3D space (cubic units); area measures 2D surface (square units)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Volume uses square units; area uses cubic units</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Volume only applies to cubes; area applies to all shapes</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>There is no difference</span></li>
+      </ul>
+      <p class="ws-keynote">Volume measures the space inside a 3D shape (cubic units like in³). Area measures a flat 2D surface (square units like in²).</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Two boxes: Box A is 10 × 5 × 4 inches. Box B is 8 × 6 × 5 inches. Which has more volume and by how much?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>Box B by 40 in³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Box A by 40 in³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Box B by 60 in³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>They're equal</span></li>
+      </ul>
+      <p class="ws-keynote">Box A: 10 × 5 × 4 = 200 in³. Box B: 8 × 6 × 5 = 240 in³. Box B is bigger by 40 in³.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">What is the volume of a prism with edge lengths 1/2 m, 3 m, and 4 m?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>3 m³</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>6 m³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>7.5 m³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>12 m³</span></li>
+      </ul>
+      <p class="ws-keynote">V = 1/2 × 3 × 4 = 6 m³.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">A cube has an edge length of 5 cm. What is its volume?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>15 cm³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>25 cm³</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>75 cm³</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>125 cm³</span></li>
+      </ul>
+      <p class="ws-keynote">A cube's volume is edge³ = 5 × 5 × 5 = 125 cm³.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: C</p>
       <p class="ws-stem">A container measures 1½ feet long, 2 feet wide, and 3 feet tall. What is its volume?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">Multiplying only the whole-number part drops the fractional part of the edge. Writing 1½ as 3/2 keeps the entire length in the product.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · 2 points</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · 2 points</span></div>
       <p class="ws-scenario-title">Type II Reasoning: Dropping the Fraction</p>
       <div class="ws-scenario">Omar found the volume of a box measuring 2½ ft by 4 ft by 2 ft. He wrote: 'V = 2 × 4 × 2 = 16 cubic feet' and said the half 'was too small to matter.'</div>
       <p class="ws-stem">Explain Omar's misconception and give the correct volume.</p>
@@ -129,10 +219,23 @@ body {
         <tr><th>0 points</th><td>Student agrees with Omar or gives an unrelated response.</td></tr>
       </table>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">A toy company ships action figures in boxes that are 4 × 3 × 6 inches. A shipping crate is 24 × 12 × 18 inches. How many action figure boxes fit in the crate? Explain your reasoning step by step.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> Each toy box holds 4 × 3 × 6 = 72 in³ and the crate holds 24 × 12 × 18 = 5184 in³, so 5184 ÷ 72 = 72 boxes fit. The division comes out exact because every crate edge is a whole-number multiple of a box edge: 24 ÷ 4 = 6 across, 12 ÷ 3 = 4 deep, and 18 ÷ 6 = 3 layers, and 6 × 4 × 3 = 72 confirms it.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/5-10/downloads/5-10-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

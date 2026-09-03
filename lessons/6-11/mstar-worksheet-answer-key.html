@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A ribbon is 4/5 of a yard long. Each bow uses 1/10 of a yard. Which equation finds how many bows can be made?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1/10 ÷ 4/5</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>4/5 ÷ 1/10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>4/5 × 1/10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>4/5 + 1/10</span></li>
+      </ul>
+      <p class="ws-keynote">The total (4/5 yard) is divided into groups of 1/10 yard each. The equation is 4/5 ÷ 1/10 = 4/5 × 10/1 = 40/5 = 8 bows.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A detective has 1/2 gallon of solution. Each test uses 1/8 gallon. How many tests can be run?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1/16</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>1/4</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>4</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>16</span></li>
+      </ul>
+      <p class="ws-keynote">1/2 ÷ 1/8 = 1/2 × 8/1 = 8/2 = 4 tests.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A trail is 3/4 mile long. A jogger runs laps of 1/4 mile each. How many laps does the jogger complete?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1/3 lap</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>3 laps</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>3/16 lap</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>4 laps</span></li>
+      </ul>
+      <p class="ws-keynote">3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 laps. This is reasonable: three 1/4-mile pieces fit into 3/4 mile.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A board is 5/6 foot long. Each shelf bracket needs 1/6 foot. How many brackets fit?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1/36</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>5</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>5/36</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>6</span></li>
+      </ul>
+      <p class="ws-keynote">5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 brackets.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Marcus solved 2/3 ÷ 1/4 and got 8/3 = 2 2/3. He says 'That can't be right because I started with less than 1.' Is Marcus's math correct? Is his reasoning correct?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>His math and reasoning are both correct — the answer should be less than 1</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>His math is wrong — the answer should be 1/6</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>His math is correct (2 2/3), but his reasoning is wrong — dividing by a small fraction gives a larger result</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>His math is wrong — the answer should be 8/12</span></li>
+      </ul>
+      <p class="ws-keynote">2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. This IS correct. When you divide by a number less than 1, the quotient is greater than the dividend.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Room 1 — Evidence Locker: Agent Torres has 7/8 pound of casting clay to lift footprints. Each cast uses 1/8 pound. How many casts can she make to unlock the door?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1/7</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>6</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>7</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>8</span></li>
+      </ul>
+      <p class="ws-keynote">The total (7/8 lb) is the dividend and each cast (1/8 lb) is the divisor: 7/8 ÷ 1/8 = 7/8 × 8/1 = 56/8 = 7 casts.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: D</p>
       <p class="ws-stem">A ribbon is 4 1/2 feet long. Marta cuts the whole ribbon into pieces that are each 3/4 foot long. How many pieces does she get?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">Asking how many pieces fit means dividing the total by the group size, in that order. Reversing the order or choosing another operation changes what the answer counts.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, D</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, D</span></div>
       <p class="ws-stem">A jug holds 3/4 gallon of juice. Each cup holds 1/8 gallon. Select ALL statements that correctly describe this situation.</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>The dividend is 3/4 gallon, the total amount of juice in the jug.</span></li>
@@ -130,10 +220,23 @@ body {
       </ul>
       <p class="ws-keynote">The total 3/4 gallon is the dividend and the cup size 1/8 gallon is the divisor, so the model is 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 cups. The value 3/32 comes from multiplying instead of dividing, and dividing by a number smaller than the dividend gives a quotient larger than 1 here.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Write your own fraction division word problem where the answer is 8. Then show the equation, solve it step by step, and explain how you know your answer is reasonable.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The safest way to build this problem is backwards: choose a group size, multiply it by 8, and let that product be the total in your story. For example, 8 groups of 1/2 make 4, so &quot;4 cups of trail mix packed into 1/2-cup bags&quot; gives 4 ÷ 1/2 = 4 × 2/1 = 8. The answer is reasonable because 8 groups of the size you chose rebuild the original total exactly.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/6-11/downloads/6-11-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

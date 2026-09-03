@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Simplify 7x + 3x.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>10x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>10x²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>21x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>73x</span></li>
+      </ul>
+      <p class="ws-keynote">7x + 3x = 10x. Add the coefficients: 7 + 3 = 10.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Simplify 9n + 4 + 2n.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>11n + 4</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>11n² + 4</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>15n</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>92n + 4</span></li>
+      </ul>
+      <p class="ws-keynote">9n + 2n = 11n. The constant 4 has no like term, so it stays. Result: 11n + 4.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which pair are like terms?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>6x and 2x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>6x and 6y</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>6x and 6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>6x and 2x²</span></li>
+      </ul>
+      <p class="ws-keynote">6x and 2x are like terms because they both have the same variable (x) raised to the same power (1).</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Simplify 5a + 3 + 2a.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>7a + 3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>7a² + 3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>10a</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>52a + 3</span></li>
+      </ul>
+      <p class="ws-keynote">5a + 2a = 7a. The constant 3 stays. Result: 7a + 3.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">The board shows 3x + 5x on one channel. Simplify it.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>8x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>8x²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>15x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>35x</span></li>
+      </ul>
+      <p class="ws-keynote">3x and 5x are like terms, so add the coefficients: 3 + 5 = 8. The variable x stays, giving 8x.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Simplify the track: 4a + 2 + a.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>5a + 2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>5a²+ 2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>6a</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>7a</span></li>
+      </ul>
+      <p class="ws-keynote">4a + a = 5a (remember a means 1a). The 2 has no like term, so it stays. Result: 5a + 2.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: B</p>
       <p class="ws-stem">Simplify the expression 8x + 3 + 2x − 1.</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">Only terms with the same variable part can be combined, and constants combine with constants. The constant 1 is being subtracted, so 3 − 1 = 2, and the x terms are added, not subtracted.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
       <p class="ws-stem">Select ALL statements that are true about the expression 5y + 7 + 3y + y.</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>5y, 3y, and y are like terms.</span></li>
@@ -130,10 +220,23 @@ body {
       </ul>
       <p class="ws-keynote">All three variable terms have the same variable part y, so they are like terms. A term written as y has an understood coefficient of 1, so 5 + 3 + 1 = 9, giving 9y. The constant 7 has no variable and stays separate, so the simplified expression is 9y + 7. The answer 8y + 7 leaves out the coefficient 1, and 16y wrongly folds the constant into the variable terms.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Three students simplified 4x + 3 + 2x + 5 + x differently. Student A got 7x + 8. Student B got 7x² + 8. Student C got 6x + 9. Who is correct? Explain the mistakes the other two students made.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> Student A is correct: 4x + 2x + x = 7x (the lone x counts as 1x) and 3 + 5 = 8, giving 7x + 8. Student B added the coefficients correctly but changed x into x², which combining like terms never does, and Student C left out the lone x and instead pulled a 1 into the constants, landing on 6x + 9.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/6-15/downloads/6-15-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

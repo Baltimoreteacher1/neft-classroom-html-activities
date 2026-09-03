@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which equation represents: 'A number plus 12 equals 30'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>n + 12 = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>n − 12 = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>12n = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>n / 12 = 30</span></li>
+      </ul>
+      <p class="ws-keynote">'Plus' means addition, so the equation is n + 12 = 30.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which equation represents: 'Seven less than a number is 18'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>n − 7 = 18</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>7 − n = 18</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>n + 7 = 18</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>n / 7 = 18</span></li>
+      </ul>
+      <p class="ws-keynote">'Seven less than a number' means start with the number and subtract 7: n − 7 = 18.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which equation represents: 'Three times a number equals 21'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>3n = 21</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>n + 3 = 21</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>n − 3 = 21</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>n / 3 = 21</span></li>
+      </ul>
+      <p class="ws-keynote">'Three times' means multiply by 3, so the equation is 3n = 21.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">Is n = 3 a solution of n + 5 = 9?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Yes, because 3 is smaller than 9</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>No, because 3 + 5 = 8, which does not equal 9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Yes, because 3 + 5 is close to 9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>You cannot tell without solving first</span></li>
+      </ul>
+      <p class="ws-keynote">Substitute the value and check whether the statement is true: 3 + 5 = 8, and 8 ≠ 9, so 3 is not a solution.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which equation represents: 'A number divided by 4 equals 8'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>n / 4 = 8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>4n = 8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>n − 4 = 8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>n + 4 = 8</span></li>
+      </ul>
+      <p class="ws-keynote">'Divided by 4' means division: n / 4 = 8.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>f + 14 = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>f − 14 = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>14f = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>f / 14 = 30</span></li>
+      </ul>
+      <p class="ws-keynote">The detective's Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: B</p>
       <p class="ws-stem">Marisol tests values in the equation 7 + m = 23. Which value of m makes the equation true?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">A value is a solution only when substituting it makes the left expression equal the right expression. Substituting 16 gives 23 = 23, so the equation is true. Adding 7 and 23 gives 30, and 7 + 30 = 37, which does not balance.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C</span></div>
       <p class="ws-stem">Select ALL statements that are true about equations and their solutions.</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>An equation is a math sentence that uses an equal sign to show two expressions have the same value.</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">The first three statements are true. The fourth is false because 4y + 2 has no equal sign, so it is an expression, not an equation. The fifth is false because 15 − 4 = 11, not 9; the value that makes x − 4 = 9 true is x = 13, since 13 − 4 = 9.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Write a real-world situation that can be modeled by the equation n / 5 = 9. Explain what n represents and verify your equation makes sense.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The equation n / 5 = 9 describes one amount being shared into 5 equal groups with 9 in each group, so a matching story could be n stickers split evenly among 5 friends with each friend getting 9. Since 5 groups of 9 rebuild the whole, n = 9 × 5 = 45, and 45 ÷ 5 = 9 checks the story.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/8-1/downloads/8-1-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

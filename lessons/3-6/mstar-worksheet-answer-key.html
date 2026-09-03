@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">There are 12 inches in 1 foot. How many inches are in 5 feet?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>7 inches</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>17 inches</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>50 inches</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>60 inches</span></li>
+      </ul>
+      <p class="ws-keynote">Inches are smaller than feet, so multiply by the unit ratio: 5 × 12 = 60 inches.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">There are 1,000 milliliters in 1 liter. How many milliliters are in 3 liters?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>30 mL</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>300 mL</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>1,003 mL</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>3,000 mL</span></li>
+      </ul>
+      <p class="ws-keynote">Multiply by the unit ratio: 3 × 1,000 = 3,000 milliliters.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">There are 16 ounces in 1 pound. How many pounds is 48 ounces?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>3 pounds</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>32 pounds</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>64 pounds</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>768 pounds</span></li>
+      </ul>
+      <p class="ws-keynote">Pounds are the LARGER unit, so divide: 48 ÷ 16 = 3 pounds.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A child is 4 feet tall. A ride requires 44 inches. Can the child ride?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>No, because 4 is less than 44</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Yes, because 4 feet = 44 inches exactly</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>Yes, because 4 feet = 48 inches, which is more than 44</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>You cannot compare feet and inches</span></li>
+      </ul>
+      <p class="ws-keynote">Convert first so both measurements use the same unit: 4 × 12 = 48 inches. 48 &gt; 44, so the child can ride.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Diamond needs 4 liters of water. Her bottle holds 500 milliliters. How many times must she fill it?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2 times</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>4 times</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>8 times</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>40 times</span></li>
+      </ul>
+      <p class="ws-keynote">Convert first: 4 L = 4,000 mL. Then solve ? × 500 = 4,000, giving 8 fills.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">How many inches are in 2 feet?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>12</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>14</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>24</span></li>
+      </ul>
+      <p class="ws-keynote">2 × 12 = 24 inches.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: D</p>
       <p class="ws-stem">A rope measures 7 feet. Using 1 foot = 12 inches, how long is the rope in inches?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">The smaller the unit, the more of them are needed to cover the same length. Since an inch is smaller than a foot, the count in inches must be larger.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · 2 points</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · 2 points</span></div>
       <p class="ws-scenario-title">Type II Reasoning: Converting the Wrong Direction</p>
       <div class="ws-scenario">Tariq converted 240 centimeters to meters. Knowing 1 meter = 100 centimeters, he wrote: '240 × 100 = 24,000 meters.'</div>
       <p class="ws-stem">Explain Tariq's misconception and give the correct conversion.</p>
@@ -129,10 +219,23 @@ body {
         <tr><th>0 points</th><td>Student agrees with Tariq or gives an unrelated response.</td></tr>
       </table>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Michael's mother is setting four fence posts. Each post needs 250 ounces of concrete mix, one bag holds 80 ounces, and each bag needs 1 quart of water. How many bags and how many cups of water does she need? Show your conversions.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> Total mix: 4 posts × 250 ounces = 1,000 ounces. Bags needed: 1,000 ÷ 80 = 12.5, and you cannot buy half a bag, so she needs 13 bags. Water: each bag takes 1 quart, so 13 bags take 13 quarts. Converting to cups with the unit ratio 4 cups : 1 quart, 13 × 4 = 52 cups of water. The two conversions go opposite ways: ounces to bags divides (a bag is the larger unit), while quarts to cups multiplies (a cup is the smaller unit).</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/3-6/downloads/3-6-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

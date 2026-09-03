@@ -185,6 +185,10 @@ const MANIFEST_KEY_TYPE = {
   homework: "homework",
   homeworkDocx: "homework-docx",
   studentPractice: "student-practice",
+  // Only the print-ready PDF is packaged: the interactive mstar-worksheet.html
+  // is reachable from the lesson picker and links this PDF itself, and two
+  // same-labelled rows per lesson would just be noise in the download hub.
+  mstarWorksheetPdf: "mstar-practice",
   activityPack: "activity-pack",
   subPlan: "sub-plan",
   interactive: "interactive-bundle",

@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -97,8 +113,76 @@ body {
       </div>
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">Warm up with the lesson's core skills — one best answer each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Evaluate 3 + 4 × 2.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>11</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>14</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>24</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">What does 2³ mean?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2 × 2 × 2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>2 × 3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>2 + 2 + 2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>3 × 3</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Sofia buys 4 tickets at $20 each and 2 tickets at $15 each. Which expression shows the total?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>4 × 20 + 2 × 15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>4 + 20 + 2 + 15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>(4 + 2) × (20 + 15)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>4 × 2 + 20 × 15</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Evaluate 5² + 3.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>13</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>16</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>28</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>64</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">What is the total of 2 × 15 + 4 × 20 + 8 × 2³?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>126</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>174</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>210</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>1,392</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Miguel evaluates 12 − 2 × 3 and gets 30. Margaret gets 6. Who is right?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Miguel, because he worked left to right</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Both are right</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Neither is right</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Margaret, because multiplication comes before subtraction</span></li>
+      </ul>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">These match the state test's formats: two-part questions, select-all, and written responses.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A</p>
       <p class="ws-stem">Evaluate the numerical expression 3 × 4² − 8.</p>
       <p class="ws-instruction">Fill in the bubble next to the one best answer.</p>
@@ -119,17 +203,31 @@ body {
       </ul>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
       <p class="ws-scenario-title">Type II Reasoning: Subtracting Too Soon</p>
       <div class="ws-scenario">Devon evaluated 20 − 2 × 3². His work was: 3² = 9, then 20 − 2 = 18, then 18 × 9 = 162. He wrote that the value of the expression is 162.</div>
       <p class="ws-stem">Explain Devon's misconception and give the correct value of the expression.</p>
       <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
       <div class="ws-lines"><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div></div>
     </section>
-    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written response.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Answer in writing, the way the state test's constructed responses work.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <p class="ws-stem">Seven friends split the bill for a pizza party. They order 4 pizzas at 3² dollars each, plus a one-time $6 delivery fee. Write ONE numerical expression for what each friend owes, evaluate it, and explain why the grouping symbols matter.</p>
+      <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
+
+      <div class="ws-lines"><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div></div>
+    </section>
+    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written responses.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/6-4/downloads/6-4-mstar-worksheet.pdf" download>⬇️ Download PDF</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

@@ -305,10 +305,47 @@ async function renderAllVariants(chrome, { id, srcHtml, baseName, outDir, manife
   return { wrote, skipped, attempted };
 }
 
+// Single-variant render (no level tiers) — used for the MSTAR practice
+// worksheets, which have one fixed print form per audience.
+async function renderSingle(chrome, { srcHtml, outDir, baseName, manifest, force }) {
+  const title = titleFromHtml(srcHtml) || baseName;
+  const outPath = join(outDir, `${baseName}.pdf`);
+  const hash = hashFor(srcHtml, "single");
+  if (!force && manifest[baseName] === hash && fileSize(outPath) > 0) {
+    return { wrote: 0, skipped: 1, attempted: 0 };
+  }
+  const tmpName = `.pdf-render-${process.pid}-single-${Math.random().toString(36).slice(2)}.html`;
+  const tmpHtmlPath = join(outDir, "..", tmpName);
+  let ok = false;
+  try {
+    writeFileSync(tmpHtmlPath, srcHtml);
+    ok = await renderPdf(chrome, tmpHtmlPath, outPath);
+  } catch (e) {
+    console.warn(`generate-pdf: failed for ${baseName}: ${e.message}`);
+  } finally {
+    try {
+      rmSync(tmpHtmlPath, { force: true });
+    } catch {}
+  }
+  if (ok) {
+    stampAccessibility(outPath, title);
+    manifest[baseName] = hash;
+    return { wrote: 1, skipped: 0, attempted: 1 };
+  }
+  delete manifest[baseName];
+  console.warn(`generate-pdf: no output for ${baseName}`);
+  return { wrote: 0, skipped: 0, attempted: 1 };
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const force = args.includes("--force");
-  const filter = args.filter((a) => a !== "--force");
+  // --mstar-only skips the notes sources. The notes PDFs' hash manifests are
+  // stale fleet-wide (their sources changed without a PDF regen), so a full
+  // run re-renders ~670 binaries — a repo-wide refresh that deserves its own
+  // deliberate commit, not a side effect of an MSTAR run.
+  const mstarOnly = args.includes("--mstar-only");
+  const filter = args.filter((a) => !a.startsWith("--"));
   const chrome = findChrome();
   const ids = lessonIds(filter);
 
@@ -335,7 +372,7 @@ async function main() {
     if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
     const manifest = readManifest(outDir);
 
-    for (const s of sources) {
+    for (const s of mstarOnly ? [] : sources) {
       const htmlPath = join(lessonsDir, id, s.src);
       if (!existsSync(htmlPath)) continue;
       let srcHtml;
@@ -349,6 +386,28 @@ async function main() {
         srcHtml,
         baseName: `${id}-notes${s.suffix}`,
         outDir,
+        manifest,
+        force,
+      });
+      wrote += res.wrote;
+      skipped += res.skipped;
+      attempted += res.attempted;
+    }
+
+    // MSTAR practice worksheet + gated answer key (single form, no levels).
+    for (const src of ["mstar-worksheet.html", "mstar-worksheet-answer-key.html"]) {
+      const htmlPath = join(lessonsDir, id, src);
+      if (!existsSync(htmlPath)) continue;
+      let srcHtml;
+      try {
+        srcHtml = readFileSync(htmlPath, "utf8");
+      } catch {
+        continue;
+      }
+      const res = await renderSingle(chrome, {
+        srcHtml,
+        outDir,
+        baseName: `${id}-${src.replace(/\.html$/, "")}`,
         manifest,
         force,
       });

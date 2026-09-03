@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which expression is equivalent to 4x + 3x?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>7x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>7x²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>12x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>43x</span></li>
+      </ul>
+      <p class="ws-keynote">4x + 3x = 7x. Combine the coefficients: 4 + 3 = 7.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which expression is equivalent to 2(m + 5)?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>2m + 10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>2m + 5</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>7m</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>m + 10</span></li>
+      </ul>
+      <p class="ws-keynote">2(m + 5) = 2m + 10 using the distributive property.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">Which property is shown: 3(x + 7) = 3x + 21?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Commutative</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>Distributive</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Associative</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Identity</span></li>
+      </ul>
+      <p class="ws-keynote">Multiplying 3 by each term inside the parentheses is the distributive property.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Simplify: 5n + 2n</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>7n</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>7n²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>10n</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>52n</span></li>
+      </ul>
+      <p class="ws-keynote">5n + 2n = 7n. Add the coefficients: 5 + 2 = 7. The variable stays as n.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Producer A wrote 2(x + 3) for a beat's cost. Which expression is equivalent?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>2x + 6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>2x + 3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>2x + 5</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>x + 6</span></li>
+      </ul>
+      <p class="ws-keynote">Distribute the 2 to each term inside: 2 · x + 2 · 3 = 2x + 6. Check x = 5: 2(5 + 3) = 16 and 2(5) + 6 = 16.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A track stacks 3x and then one more x. Which expression is equivalent to 3x + x?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>3x²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>3x</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>4x</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>4</span></li>
+      </ul>
+      <p class="ws-keynote">3x + x is 3 groups of x plus 1 more group of x = 4x. Add the coefficients: 3 + 1 = 4. Check x = 3: 3(3) + 3 = 12 and 4(3) = 12.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: A</p>
       <p class="ws-stem">Which expression is equivalent to 4(x + 3)?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">Equivalent expressions give the same value for every substitution. Distributing 4 to both terms produces 4x + 12, and a test value confirms the match.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · 2 points</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · 2 points</span></div>
       <p class="ws-scenario-title">Type II Reasoning: Testing Only One Value</p>
       <div class="ws-scenario">Priya claimed that 2x + x and 2x² are equivalent expressions. Her only check was x = 0. She wrote: 2(0) + 0 = 0 and 2(0)² = 0. Because both results were 0, she said the expressions are equivalent.</div>
       <p class="ws-stem">Explain Priya's misconception and give the correct simplified form of 2x + x.</p>
@@ -129,10 +219,23 @@ body {
         <tr><th>0 points</th><td>Student agrees with Priya that the expressions are equivalent or gives an unrelated response.</td></tr>
       </table>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">A student says 2x + 3 and 5x are equivalent because both equal 5 when x = 1. Is the student correct? Explain why testing one value is not enough to prove equivalence, and find a value of x where they give different results.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The student is not correct. Both expressions really do equal 5 when x = 1, but equivalence means equal for EVERY value of x, and one lucky match proves nothing. Testing x = 2 gives 2(2) + 3 = 7 while 5(2) = 10 — that single counterexample settles it.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/6-6/downloads/6-6-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

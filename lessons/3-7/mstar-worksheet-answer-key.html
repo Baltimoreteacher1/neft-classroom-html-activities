@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">1 kilometer ≈ 0.6 mile. About how many miles is 5 kilometers?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>3 miles</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>5.6 miles</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>8 miles</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>30 miles</span></li>
+      </ul>
+      <p class="ws-keynote">Scale the conversion factor by 5: 0.6 × 5 = 3 miles.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">1 pound ≈ 0.45 kilogram. About how many kilograms is 10 pounds?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>4.5 kg</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>10.45 kg</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>22 kg</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>45 kg</span></li>
+      </ul>
+      <p class="ws-keynote">Scale by 10: 0.45 × 10 = 4.5 kilograms.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">Which pair of units comes from two DIFFERENT measurement systems?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Inches and feet</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Cups and quarts</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Grams and kilograms</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>Miles and kilometers</span></li>
+      </ul>
+      <p class="ws-keynote">Miles are customary and kilometers are metric, so comparing them requires a between-systems conversion. The other pairs stay inside one system.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A sign in Mexico gives a distance of 80 kilometers. Using 1 km ≈ 0.6 mi, about how far is that in miles?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>About 8 miles</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>About 48 miles</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>About 80 miles</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>About 133 miles</span></li>
+      </ul>
+      <p class="ws-keynote">0.6 × 80 = 48 miles. Because a kilometer is shorter than a mile, the number of miles is smaller than the number of kilometers.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A dog weighs 31 pounds. Flea medicine comes in packages for 4–10 kg, 10–25 kg, and 25–40 kg. Which package is correct?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>The 4–10 kg package</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>The 10–25 kg package</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>The 25–40 kg package</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>None — 31 is above every range</span></li>
+      </ul>
+      <p class="ws-keynote">31 pounds ≈ 0.45 × 31 ≈ 14 kilograms, which falls inside the 10–25 kilogram package.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">1 inch ≈ 2.54 cm. About how many centimeters is 4 inches?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1.57 cm</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>6.54 cm</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>10.16 cm</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>254 cm</span></li>
+      </ul>
+      <p class="ws-keynote">Scale the conversion factor by 4: 2.54 × 4 = 10.16 centimeters.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: D</p>
       <p class="ws-stem">A backpack weighs 5 kilograms. Using 1 kilogram ≈ 2.2 pounds, about how much does it weigh in pounds?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">1 kilogram is about 2.2046 pounds. Between-system conversions are usually rounded, so results are approximations rather than exact values.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
       <p class="ws-stem">Select ALL statements that are true about converting measurements between systems:</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>A conversion ratio connects a unit in one system to a unit in another.</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">A, B, C, and E are true. D is false — converting changes the unit and the number, but the physical amount being measured stays exactly the same.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">The Golden Gate Bridge can hold about 35,924,000 pounds. An average midsize car weighs about 1,524 kilograms. Using 1 kilogram ≈ 2.2 pounds, about how many midsize cars could be on the bridge at one time? Explain each step, and say why your answer is an estimate.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> First convert one car's mass into pounds so both amounts share a unit: 1,524 × 2.2 ≈ 3,353 pounds per car. Then divide the bridge's capacity by the weight of one car: 35,924,000 ÷ 3,353 ≈ 10,700 cars. The answer is an estimate for two reasons: the conversion factor 2.2 is rounded (1 kilogram is about 2.2046 pounds), and 1,524 kilograms is itself an average car mass, not an exact one. Reporting 'about 10,700 cars' is honest; reporting 10,714.6 cars would claim precision the inputs never had.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/3-7/downloads/3-7-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

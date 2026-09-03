@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">Akela chooses how many hours of sunlight each tray gets. Which is the INDEPENDENT variable?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Plant height</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>Hours of sunlight</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Number of trays</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Number of seeds</span></li>
+      </ul>
+      <p class="ws-keynote">Akela chooses the sunlight, so sunlight is subject to choice — that makes it independent.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">In Akela's experiment, which is the DEPENDENT variable?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Hours of sunlight</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>The kind of seed</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>The size of the tray</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>Plant height</span></li>
+      </ul>
+      <p class="ws-keynote">Height responds to how much sunlight the tray received, so height is the dependent variable.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Claire burned 123 Calories on a 30-minute jog. Which quantity is subject to choice?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Calories she burns</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Her heart rate</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>Minutes she jogs</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>The weather</span></li>
+      </ul>
+      <p class="ws-keynote">Claire decides how long to jog. The Calories follow from that decision.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">Which sentence is written in the correct order?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Minutes jogged depends on Calories burned.</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Calories burned depends on Calories burned.</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Neither quantity depends on the other.</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>Calories burned depends on minutes jogged.</span></li>
+      </ul>
+      <p class="ws-keynote">The dependent quantity comes first in the sentence '___ depends on ___ .' Calories respond to time, so Calories depend on minutes.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A tray that got 2 hours of sun grew to 4 cm. A tray that got 6 hours grew to 12 cm. As sunlight increases, plant height…</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>decreases</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>stays the same</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>increases</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>cannot be determined</span></li>
+      </ul>
+      <p class="ws-keynote">2 hours gave 4 cm and 6 hours gave 12 cm, so more sunlight went with more height.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">You buy tickets at $45 each. Which quantity depends on the other?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>Total cost depends on number of tickets</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Number of tickets depends on total cost</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>The price per ticket depends on the total cost</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Nothing depends on anything here</span></li>
+      </ul>
+      <p class="ws-keynote">You choose how many tickets to buy; the total cost is the result of that choice.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: B</p>
       <p class="ws-stem">Devon adds a different number of scoops of plant food to each tray of seedlings. Two weeks later he counts the new leaves on every tray. Which pair correctly names the variables?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">The sentence check reads in only one direction. The leaves respond to the plant food, so the leaf count depends on the scoops, and the quantity that is depended on, the scoops, is the independent variable. The order in which Devon measures, the size of the numbers, and what the question asks about do not decide which variable is independent.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, C, E</span></div>
       <p class="ws-stem">Select ALL statements that name the independent variable correctly for their own situation.</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>A gardener chooses how many minutes to run the sprinkler, so the minutes the sprinkler runs is the independent variable.</span></li>
@@ -129,10 +219,14 @@ body {
       </ul>
       <p class="ws-keynote">In each true statement the quantity named is the one that is chosen, and the other quantity responds to it. In the spring statement the student chooses the weights, so the weights are independent and the stretch is dependent. In the ticket statement the number of tickets is chosen and the cost responds, so the cost is dependent no matter what the problem asks for.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/9-1/downloads/9-1-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

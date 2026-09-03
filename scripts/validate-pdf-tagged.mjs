@@ -32,7 +32,7 @@ function notesPdfsFor(id) {
   const dir = join(lessonsDir, id, "downloads");
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
-    .filter((f) => /-notes(-teacher)?(-l[123])?\.pdf$/.test(f))
+    .filter((f) => /(-notes(-teacher)?(-l[123])?|-mstar-worksheet(-answer-key)?)\.pdf$/.test(f))
     .map((f) => join(dir, f));
 }
 

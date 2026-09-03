@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">A museum has some paintings. After adding 12, they have 45. Which equation models this?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>p + 12 = 45</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>p − 12 = 45</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>12p = 45</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>p / 12 = 45</span></li>
+      </ul>
+      <p class="ws-keynote">'Adding 12' to the original number gives 45: p + 12 = 45. Solve: p = 33.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>3 + h &gt; 8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>3 + h = 8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>h &gt; 3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>8 + h &gt; 3</span></li>
+      </ul>
+      <p class="ws-keynote">3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which model is correct for: 'A number divided by 6 equals 7'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>n / 6 = 7</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>6n = 7</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>n − 6 = 7</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>n + 6 = 7</span></li>
+      </ul>
+      <p class="ws-keynote">Divided by 6 is n / 6. Equals 7 means = 7. So n / 6 = 7.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">A bus can carry at most 48 passengers. There are already 31 on board. Which inequality shows how many more can board?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>31 + p ≤ 48</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>31 + p &gt; 48</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>31 + p = 48</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>p − 31 ≤ 48</span></li>
+      </ul>
+      <p class="ws-keynote">'At most 48' means the total must be ≤ 48. So 31 + p ≤ 48. Solve: p ≤ 17.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A student solved 4n = 52 and got n = 13. Is the answer reasonable if n represents the number of notebooks in a box?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>No — 13 is too many notebooks</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>No — the answer should be 48</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>Yes — 13 notebooks per box is reasonable</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Yes — but only if n is a fraction</span></li>
+      </ul>
+      <p class="ws-keynote">4 × 13 = 52 ✓. 13 notebooks per box is a reasonable whole number answer.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Room 2: The vault keypad clue reads, 'A number of stolen coins plus 6 equals 14.' Solve x + 6 = 14 to find the code x.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>x = 2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>x = 6</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>x = 8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>x = 20</span></li>
+      </ul>
+      <p class="ws-keynote">Subtract 6 from both sides: x = 14 − 6 = 8. Check: 8 + 6 = 14 ✓</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: A</p>
       <p class="ws-stem">A school van can carry at most 14 passengers. There are already 9 passengers on board. Let p be the number of additional passengers who can get on. Which inequality models this situation?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">'At most 14' sets a maximum the total may reach but not pass, so 9 + p ≤ 14. Subtracting 9 from both sides gives p ≤ 5. Checking in context confirms it: 9 + 5 = 14 fits the van, while 9 + 6 = 15 is over the limit. The situation does not require the van to be full, so an equation would leave out the smaller totals that are also allowed.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C</span></div>
       <p class="ws-stem">A club has already sold 46 tickets and must sell at least 120 tickets in all. Let t be the number of additional tickets the club sells. Select ALL statements that are true about this situation.</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>The inequality 46 + t ≥ 120 models the situation.</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">The tickets already sold plus the additional tickets must reach at least 120, so the model is 46 + t ≥ 120. Subtracting 46 from both sides gives t ≥ 74. Selling exactly 74 more works because 46 + 74 = 120. The fourth statement points the symbol the wrong way, since 'at least' sets a minimum, not a maximum. The fifth is false because 46 + 70 = 116, which is short of 120.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Create two word problems about the same situation: one that requires an equation and one that requires an inequality. Solve both and explain why the models are different.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The two models differ because the two questions ask for different things. An equation fits when the situation names one exact amount, like 'I saved exactly $45', so it has a single solution. An inequality fits when the situation sets a minimum or a ceiling, like 'I need at least $45', so a whole range of values works. Same story, different clue words, different symbol.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/8-7/downloads/8-7-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

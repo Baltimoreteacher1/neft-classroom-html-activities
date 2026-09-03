@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">What is 3.4 × 2.6?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>0.884</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>8.48</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>8.84</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>88.4</span></li>
+      </ul>
+      <p class="ws-keynote">34 × 26 = 884. There are 2 total decimal places (1 + 1), so place the decimal to get 8.84.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">What is 0.7 × 1.5?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>0.105</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>1.05</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>1.50</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>10.5</span></li>
+      </ul>
+      <p class="ws-keynote">7 × 15 = 105. There are 2 total decimal places (1 + 1), so place the decimal to get 1.05.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">What is 5.3 × 4?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2.12</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>20.12</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>21.2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>212</span></li>
+      </ul>
+      <p class="ws-keynote">53 × 4 = 212. There is 1 total decimal place, so place the decimal to get 21.2.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">Which estimate is closest to 4.8 × 3.2?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>4 × 3 = 12</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>5 × 3 = 15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>5 × 4 = 20</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>48 × 32 = 1,536</span></li>
+      </ul>
+      <p class="ws-keynote">Round 4.8 to 5 and 3.2 to 3. The estimate 5 × 3 = 15 is closest to the exact answer 15.36.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A car travels 55.5 miles per hour for 2.4 hours. How far does it go?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>13.32 miles</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>57.9 miles</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>133.2 miles</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>1,332 miles</span></li>
+      </ul>
+      <p class="ws-keynote">555 × 24 = 13,320. Total decimal places: 1 + 1 = 2. Answer: 133.20 = 133.2 miles.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A customer orders 3 taco baskets at $4.25 each. What is the total before tax?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$1.275</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$12.15</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>$12.75</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$127.50</span></li>
+      </ul>
+      <p class="ws-keynote">3 × 425 = 1,275. The factor $4.25 has 2 decimal places, so 3 × $4.25 = $12.75.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: B</p>
       <p class="ws-stem">Find 2.4 × 0.5.</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">2.4 has 1 decimal place and 0.5 has 1, so the product has 1 + 1 = 2 decimal places before trailing zeros are dropped.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
       <p class="ws-stem">Select ALL statements that are true about multiplying decimals:</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>Multiply the factors as if they were whole numbers first.</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">A, B, C, and E are true. D is false — lining up decimal points is required for ADDING and subtracting, not for multiplying.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">A driver buys 9.5 gallons of gas at $3.40 per gallon. Show how to find the total cost. Use estimation to check if your answer is reasonable.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> Total cost is gallons times price per gallon, so the setup is 9.5 × $3.40. Multiplying 95 × 34 = 3,230 and giving the product 1 + 1 = 2 decimal places gives $32.30. Rounding to 10 gallons at about $3 each predicts roughly $30, so $32.30 is reasonable.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/2-12/downloads/2-12-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

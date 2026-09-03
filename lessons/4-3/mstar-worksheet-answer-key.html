@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Margaret's phone has 6 GB of storage and 4 GB is used. About what percent is used?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>About 25%</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>About 40%</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>About 70%</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>About 150%</span></li>
+      </ul>
+      <p class="ws-keynote">4 out of 6 is 2/3, which is about 67%, so 'about 70%' is the reasonable estimate.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">On the double number line for 6 GB, what amount lines up with 25%?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1.25 GB</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>1.5 GB</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>2.5 GB</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>4 GB</span></li>
+      </ul>
+      <p class="ws-keynote">25% of 6 GB is one quarter of 6, which is 1.5 GB.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which benchmark percents make good landmarks on a number line?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>0%, 25%, 50%, 75%, 100%</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>3%, 17%, 62%, 94%</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Only 50%</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Only 100%</span></li>
+      </ul>
+      <p class="ws-keynote">Multiples of 25 (and 10) are friendly landmarks because their amounts are easy to compute.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">To estimate 8.6% of 216 by rounding, which numbers should you use?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1% of 216</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>8% of 300</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>10% of 220</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>86% of 216</span></li>
+      </ul>
+      <p class="ws-keynote">8.6% rounds to 10% and 216 rounds to 220 — both are close to the originals and easy to compute.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">What is 10% of 220?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2.2</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>22</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>44</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>220</span></li>
+      </ul>
+      <p class="ws-keynote">10% as a decimal is 0.1, and 0.1 × 220 = 22.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">The Green-Team recycled 216 pounds; 8.6% was metal. Using compatible numbers 10% and 200, the estimate is:</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2 pounds</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>20 pounds</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>86 pounds</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>208 pounds</span></li>
+      </ul>
+      <p class="ws-keynote">10% of 200 = 0.1 × 200 = 20 pounds of metal.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: C</p>
       <p class="ws-stem">A jacket originally priced at $78.99 is on sale for 25% off. Which is the best estimate of the discount amount?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">25% equals 1/4. Finding half of half of a rounded friendly whole ($80) produces an accurate mental benchmark.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, D, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, D, E</span></div>
       <p class="ws-stem">Select ALL benchmark percent strategies that correctly estimate values:</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>To find 10% of any number, divide the number by 10 (move the decimal point one place left).</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">Options A, B, D, and E are valid mental benchmark strategies. Option C is incorrect because 50% means dividing by 2 (or multiplying by 0.5), not multiplying by 2.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Write your own estimation problem about percent, using a real situation from your life. Then solve it with a benchmark and say whether your estimate runs high or low.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> My playlist has 62 songs and about 48% are hip-hop. 48% is about 50%, and 62 is about 60, so about 30 songs. Both roundings moved in opposite directions, so my estimate is very close.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/4-3/downloads/4-3-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
