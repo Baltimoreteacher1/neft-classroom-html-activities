@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>44 in²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>48 in²</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>88 in²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>88 in³</span></li>
+      </ul>
+      <p class="ws-keynote">SA = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in².</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">How many faces does a rectangular prism have?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>4</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>12</span></li>
+      </ul>
+      <p class="ws-keynote">A rectangular prism has 6 faces: top, bottom, front, back, left, and right.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">Surface area is measured in which type of unit?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Cubic units (in³, cm³, ft³)</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>Square units (in², cm², ft²)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Linear units (in, cm, ft)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>No units needed</span></li>
+      </ul>
+      <p class="ws-keynote">Surface area measures flat surfaces, so it uses square units. Volume uses cubic units.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A cube has edges of 5 cm. What is its surface area?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>30 cm²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>125 cm²</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>150 cm²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>150 cm³</span></li>
+      </ul>
+      <p class="ws-keynote">A cube has 6 identical faces. Each face: 5 × 5 = 25 cm². Total SA = 6 × 25 = 150 cm².</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">You unfold a time capsule that is a cube. Its net shows 6 equal squares, and each square has an area of 4 cm². What is the cube's total surface area?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>10 cm²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>12 cm²</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>16 cm²</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>24 cm²</span></li>
+      </ul>
+      <p class="ws-keynote">A cube net has 6 equal square faces. With each face 4 cm², the surface area is 6 × 4 = 24 cm².</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Your team unfolds a rectangular time capsule box into a flat net. How many faces (flat sides) will the net show in all?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>4</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>5</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>8</span></li>
+      </ul>
+      <p class="ws-keynote">A rectangular prism has 6 faces — top, bottom, front, back, left, and right — so its net shows 6 faces.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: B</p>
       <p class="ws-stem">A net folds into a rectangular prism. How many rectangular faces does that net have?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">A net is a flat pattern that folds into the solid with every face present exactly once and no overlap.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
       <p class="ws-stem">Select ALL statements that are true about nets of three-dimensional figures:</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>A net shows every face of the solid laid flat.</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">A, B, C, and E are true. D is false — overlapping faces mean the pattern does not fold into the solid, so it is not a net.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Two boxes have the same volume of 60 in³. Box A is 5 × 4 × 3. Box B is 10 × 6 × 1. Which box uses less wrapping paper (has less surface area)? Show your calculations and explain why a more cube-like shape might use less material.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> Both boxes hold 60 in³, but wrapping paper is measured by surface area. Box A: 2(20) + 2(15) + 2(12) = 94 in². Box B: 2(60) + 2(10) + 2(6) = 152 in². Box A uses less paper because its dimensions are closer to a cube — flattening the same volume into 10 × 6 × 1 creates two huge 60 in² faces and a lot of extra covering.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/5-6/downloads/5-6-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A recipe uses 3 eggs for every 5 cups of flour. How many eggs are needed for 15 cups of flour?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>6</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>12</span></li>
+      </ul>
+      <p class="ws-keynote">The scale factor is 15 ÷ 5 = 3. Multiply the eggs by 3: 3 × 3 = 9 eggs.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which row does NOT belong in a ratio table for 4:5?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>6:10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>8:10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>12:15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>16:20</span></li>
+      </ul>
+      <p class="ws-keynote">6:10 simplifies to 3:5, not 4:5. The other ratios (8:10, 12:15, 16:20) all simplify to 4:5.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A ratio table shows 3:7, 6:14, and 9:21. What is the next row?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>10:24</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>12:28</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>12:24</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>15:28</span></li>
+      </ul>
+      <p class="ws-keynote">The pattern adds 3 to the first value and 7 to the second each time. After 9:21: 9+3=12 and 21+7=28. The next row is 12:28.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A ratio table for 2:5 starts with 2:5, 4:10. What is the third row?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>5:10</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>6:15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>6:12</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>8:15</span></li>
+      </ul>
+      <p class="ws-keynote">The additive pattern adds 2 to the first value and 5 to the second. 4+2=6 and 10+5=15. The third row is 6:15.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">In a ratio table, the ratio of sugar to butter is 3:2. If you use 12 cups of sugar, how many cups of butter do you need?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>6</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>10</span></li>
+      </ul>
+      <p class="ws-keynote">Scale factor: 12 ÷ 3 = 4. Multiply butter by 4: 2 × 4 = 8 cups of butter.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">A ratio table shows 5:8, 10:16, 15:24. What scale factor was used from the first row to the third row?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>5</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>8</span></li>
+      </ul>
+      <p class="ws-keynote">From 5 to 15: 15 ÷ 5 = 3. From 8 to 24: 24 ÷ 8 = 3. The scale factor is 3.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: B</p>
       <p class="ws-stem">A ratio table pairs 3 cups of flour with 2 cups of water. If the recipe is scaled to use 12 cups of flour, how much water is needed?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">Adding the same amount to both terms changes the relationship. Equivalent ratios require multiplying or dividing BOTH terms by the same non-zero factor.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, D, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, D, E</span></div>
       <p class="ws-stem">Select ALL statements that are true about ratio tables and equivalent ratios:</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>Multiplying both terms of a ratio by 3 produces an equivalent ratio.</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">A, B, D, and E are true. C is false — equivalence comes from multiplying or dividing both terms, never from adding.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">A recipe uses 4 cups of flour for every 3 cups of sugar. A student filled in a ratio table: 4:3, 8:6, 12:9, 14:12. Find and fix the error in the last row. Explain what went wrong.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The last row is wrong. The pattern multiplies by the same scale factor. 4×1=4, 4×2=8, 4×3=12, so the 4th row should be 4×4=16 cups of flour and 3×4=12 cups of sugar → 16:12. The student added 2 to 12 instead of adding 4. Or: 12+4=16, not 12+2=14.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/3-3/downloads/3-3-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

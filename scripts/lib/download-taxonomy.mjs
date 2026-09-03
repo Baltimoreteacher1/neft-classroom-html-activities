@@ -63,6 +63,17 @@ export const TYPES = [
   },
   { id: "catchup-lesson", label: "Catch-Up Station", group: "small-groups", folder: "Catch-Up" },
 
+  // MSTAR practice worksheet — the per-lesson printable rehearsal of the state
+  // test's formats (scripts/generate-mstar-worksheets.mjs). The HTML page and
+  // its print-ready PDF share this type; the answer key is teacher-gated and
+  // never packaged, same rule as every other key.
+  {
+    id: "mstar-practice",
+    label: "MSTAR Practice Worksheet",
+    group: "assessments",
+    folder: "MSTAR-Practice",
+  },
+
   // --- unit level ---
   { id: "pre-test", label: "Pre-Test", group: "assessments", folder: "Assessments" },
   { id: "post-test", label: "Post-Test", group: "assessments", folder: "Assessments" },

@@ -93,12 +93,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -117,12 +132,13 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 `;
 
-function shell({ title, lessonId, body }) {
+function shell({ title, lessonId, body, isKey = false }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -138,7 +154,10 @@ function shell({ title, lessonId, body }) {
 ${body}
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  ${downloadButton(lessonId, isKey)}
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 </body>
 </html>
 `;
@@ -161,6 +180,78 @@ ${
     <p class="ws-honesty">${esc(HONESTY)}</p>`;
 }
 
+/* ── comprehensive sections: composed from the lesson's OWN authored pools ──
+   Part A re-renders authored practice multiple-choice items in selected-
+   response format, and Part C lifts one authored open-response — the same
+   no-invention rule as Part B's mstarPractice items: this generator writes
+   layout, never mathematics. */
+
+const TIER_ORDER = ["approaching", "onLevel", "optional", "extending"];
+
+function normalizeStem(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Up to 6 authored multiple-choice items from the practice tiers, easiest tier
+ *  first, skipping any stem the MSTAR items already ask. */
+export function selectSkillsCheck(config, mstarItems, limit = 6) {
+  const taken = new Set();
+  for (const it of mstarItems) {
+    if (it.partA?.stem) taken.add(normalizeStem(it.partA.stem));
+    if (it.partB?.stem) taken.add(normalizeStem(it.partB.stem));
+    if (it.stem) taken.add(normalizeStem(it.stem));
+  }
+  const out = [];
+  for (const tier of TIER_ORDER) {
+    for (const p of config.practice?.[tier] || []) {
+      if (out.length >= limit) return out;
+      if (p.type !== "multiple-choice") continue;
+      if (!p.stem || !Array.isArray(p.choices) || p.choices.length < 2) continue;
+      if (
+        !Number.isInteger(p.correctIndex) ||
+        p.correctIndex < 0 ||
+        p.correctIndex >= p.choices.length
+      )
+        continue;
+      const key = normalizeStem(p.stem);
+      if (taken.has(key)) continue;
+      taken.add(key);
+      out.push(p);
+    }
+  }
+  return out;
+}
+
+/** One authored open-response with a model answer, hardest tier first. Skipped
+ *  entirely when the lesson authored none — absence is a pass, never filler. */
+export function selectWrittenResponse(config) {
+  for (const tier of [...TIER_ORDER].reverse()) {
+    for (const p of config.practice?.[tier] || []) {
+      if (p.type !== "open-response") continue;
+      const prompt = p.prompt || p.stem;
+      const model = p.modelAnswer || p.sampleAnswer || p.explanation;
+      if (prompt && model) return { prompt, model, sentenceStems: p.sentenceStems };
+    }
+  }
+  return null;
+}
+
+function sectionHeader(letter, en, note) {
+  return `    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part ${letter} — ${esc(en)}</h2>
+      <p class="ws-section-note">${esc(note)}</p>
+    </div>`;
+}
+
+function downloadButton(id, key) {
+  const file = `${id}-mstar-worksheet${key ? "-answer-key" : ""}.pdf`;
+  const label = key ? "⬇️ Download PDF (key)" : "⬇️ Download PDF";
+  return `<a class="ws-download-btn" href="/lessons/${esc(id)}/downloads/${esc(file)}" download>${label}</a>`;
+}
+
 /* ── student rendering ────────────────────────────────────────────────────── */
 
 function choicesHtml(choices, { multi = false, correct = null } = {}) {
@@ -179,6 +270,46 @@ ${choices
 
 function writingLines(n) {
   return `<div class="ws-lines">${'<div class="ws-line"></div>'.repeat(n)}</div>`;
+}
+
+function skillsItemHtml(p, n) {
+  return `    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question ${n}</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">${esc(p.stem)}</p>
+      ${choicesHtml(p.choices)}
+    </section>`;
+}
+
+function writtenItemHtml(wr, n) {
+  const stems =
+    Array.isArray(wr.sentenceStems) && wr.sentenceStems.length
+      ? `      <p class="ws-instruction">Sentence starters: ${wr.sentenceStems.map(esc).join(" · ")}</p>`
+      : "";
+  return `    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question ${n}</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <p class="ws-stem">${esc(wr.prompt)}</p>
+      <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
+${stems}
+      ${writingLines(7)}
+    </section>`;
+}
+
+function skillsKeyHtml(p, n) {
+  return `    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question ${n}</span><span class="ws-type">Selected response — correct: ${LETTERS[p.correctIndex]}</span></div>
+      <p class="ws-stem">${esc(p.stem)}</p>
+      ${choicesHtml(p.choices, { correct: p.correctIndex })}
+      ${p.explanation ? `<p class="ws-keynote">${esc(p.explanation)}</p>` : ""}
+    </section>`;
+}
+
+function writtenKeyHtml(wr, n) {
+  return `    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question ${n}</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">${esc(wr.prompt)}</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> ${esc(wr.model)}</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>`;
 }
 
 function studentItemHtml(item, n) {
@@ -284,14 +415,52 @@ function buildLesson(id, config, titles) {
   const standards = [...new Set(items.map((it) => it.standard).filter(Boolean))];
   if (!standards.length && config.standard) standards.push(config.standard);
 
+  const skills = selectSkillsCheck(config, items);
+  const written = selectWrittenResponse(config);
+
+  // Continuous numbering across parts: A (skills) → B (MSTAR items) → C (written).
+  let n = 0;
+  const studentA = skills.map((p) => skillsItemHtml(p, ++n)).join("\n");
+  const nAfterA = n;
+  const studentB = items.map((it) => studentItemHtml(it, ++n)).join("\n");
+  const nAfterB = n;
+  const studentC = written ? writtenItemHtml(written, ++n) : "";
+
+  n = 0;
+  const keyA = skills.map((p) => skillsKeyHtml(p, ++n)).join("\n");
+  n = nAfterA;
+  const keyB = items.map((it) => keyItemHtml(it, ++n)).join("\n");
+  n = nAfterB;
+  const keyC = written ? writtenKeyHtml(written, ++n) : "";
+
+  const sectionA = skills.length
+    ? `${sectionHeader("A", "Skills Check", "Warm up with the lesson's core skills — one best answer each.")}\n${studentA}`
+    : "";
+  const sectionB = `${sectionHeader(skills.length ? "B" : "A", "Test-Format Questions", "These match the state test's formats: two-part questions, select-all, and written responses.")}\n${studentB}`;
+  const sectionC = written
+    ? `${sectionHeader(skills.length ? "C" : "B", "Show Your Thinking", "Answer in writing, the way the state test's constructed responses work.")}\n${studentC}`
+    : "";
+
+  const keySectionA = skills.length
+    ? `${sectionHeader("A", "Skills Check", "One point each.")}\n${keyA}`
+    : "";
+  const keySectionB = `${sectionHeader(skills.length ? "B" : "A", "Test-Format Questions", "Scoring notes and distractor rationales below each item.")}\n${keyB}`;
+  const keySectionC = written
+    ? `${sectionHeader(skills.length ? "C" : "B", "Show Your Thinking", "Model answer and scoring guidance.")}\n${keyC}`
+    : "";
+
   const studentBody = `${headerHtml(id, title, standards, false)}
-${items.map((it, i) => studentItemHtml(it, i + 1)).join("\n")}
-    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written response.</footer>`;
+${sectionA}
+${sectionB}
+${sectionC}
+    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written response${skills.length ? "s" : ""}.</footer>`;
 
   const keyBody = `    <div class="ws-key-banner">🔑 Answer Key — Teacher Copy · Lesson ${esc(id)}</div>
 ${headerHtml(id, title, standards, true)}
-${items.map((it, i) => keyItemHtml(it, i + 1)).join("\n")}
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>`;
+${keySectionA}
+${keySectionB}
+${keySectionC}
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>`;
 
   const studentHtml = shell({
     title: `MSTAR Practice Worksheet — Lesson ${id}: ${title}`,
@@ -303,6 +472,7 @@ ${items.map((it, i) => keyItemHtml(it, i + 1)).join("\n")}
     title: `MSTAR Practice Worksheet Answer Key — Lesson ${id}: ${title}`,
     lessonId: id,
     body: keyBody,
+    isKey: true,
   }).replace('<html lang="en">', '<html lang="en" data-support-audience="teacher">');
 
   const studentFile = join(LESSONS, id, "mstar-worksheet.html");

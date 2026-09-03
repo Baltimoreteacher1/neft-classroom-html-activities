@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">$20 is 50% of what number?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$25</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>$40</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$70</span></li>
+      </ul>
+      <p class="ws-keynote">50% is half, so the part is half the whole. Doubling gives the whole: 20 ÷ 0.5 = 40.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which equation says &quot;30 is 25% of some number n&quot;?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>0.25n = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>n = 0.25 × 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>25n = 30</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>n = 30 + 25</span></li>
+      </ul>
+      <p class="ws-keynote">Percent × whole = part, so 0.25 × n = 30.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">$42 is 60% of the original price. Should the original price be more or less than $42?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>More, because 60% is less than the whole</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Less, because 60 is a big number</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Exactly $42</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>You cannot tell</span></li>
+      </ul>
+      <p class="ws-keynote">60% describes only part of the original price, so the whole original price must be larger than that part.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">75 minutes is 15% of the school day. How long is the school day?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>11.25 minutes</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>90 minutes</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>500 minutes</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>1,125 minutes</span></li>
+      </ul>
+      <p class="ws-keynote">Divide the part by the decimal: 75 ÷ 0.15 = 500 minutes.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A car is now worth $26,600, which is 70% of its purchase price. What was the purchase price?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$18,620</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$26,670</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>$38,000</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$45,200</span></li>
+      </ul>
+      <p class="ws-keynote">Write 0.7v = 26,600 and divide: v = 26,600 ÷ 0.7 = $38,000.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">Which statement correctly names the pieces of &quot;18 students is 30% of the class&quot;?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>18 is the whole, 30% is the part</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>30 is the part, 18 is the percent</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>The class size is the part</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>18 is the part, 30% is the percent, the class size is the whole</span></li>
+      </ul>
+      <p class="ws-keynote">The known count is the part, the percent describes it, and the missing class size is the whole (100%).</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: C</p>
       <p class="ws-stem">Marcus completed 18 math problems, which represents exactly 60% of his homework assignment. How many total problems are on the assignment?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">To find the whole given the part and percent, divide the given part by the percent expressed as a decimal: 18 ÷ 0.60 = 30.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
       <p class="ws-stem">A theater is at 80% capacity with 240 seats occupied. Select ALL statements that are mathematically true regarding this situation:</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>The total seating capacity of the theater is 300 seats (240 ÷ 0.80 = 300).</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">Statements A, B, C, and E are true. Statement D is false because 192 represents 80% of 240 (taking a percent of the part), rather than finding the whole capacity (300).</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">A toy store's puzzle stock was 25% 300-piece, 15% 500-piece, and the rest 1,000-piece. During a sale the store sold ALL of its 300-piece and 500-piece puzzles — 120 puzzles in total. How many of each type did the store have before the sale? Explain your reasoning.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The 120 puzzles sold were the 300-piece and 500-piece stock together, so they represent 25% + 15% = 40% of the whole stock. That makes 120 the part and 40% the percent, with the total stock unknown: 0.4t = 120, so t = 120 ÷ 0.4 = 300 puzzles in all. Now find each type as a part of that whole: 300-piece = 0.25 × 300 = 75 puzzles, 500-piece = 0.15 × 300 = 45 puzzles, and 1,000-piece = the remaining 60% = 0.6 × 300 = 180 puzzles. Check: 75 + 45 = 120 sold ✓, and 75 + 45 + 180 = 300 ✓.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/4-5/downloads/4-5-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

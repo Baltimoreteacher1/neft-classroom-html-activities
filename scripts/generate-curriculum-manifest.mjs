@@ -94,6 +94,15 @@ function resourcesFor(id) {
       file: `lessons/${id}/mstar-worksheet.html`,
       applicable: true,
     },
+    /* Print-ready PDF of the same sheet (generate-pdf.mjs), for the downloads
+       system and offline use. NOT in the launch manifest's SAFE_RESOURCE_KEYS —
+       its FORBIDDEN_RESOURCE deliberately rejects .pdf, and the picker links
+       the interactive page, whose own Download button serves this file. */
+    mstarWorksheetPdf: {
+      path: `/lessons/${id}/downloads/${id}-mstar-worksheet.pdf`,
+      file: `lessons/${id}/downloads/${id}-mstar-worksheet.pdf`,
+      applicable: true,
+    },
     homework: {
       path: `/lessons/${id}/homework.html`,
       file: `lessons/${id}/homework.html`,

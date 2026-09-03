@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -97,8 +113,76 @@ body {
       </div>
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">Warm up with the lesson's core skills — one best answer each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">What is the LCM of 3 and 5?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>5</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>30</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">What is the LCM of 6 and 8?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>14</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>24</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>48</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">What is the LCM of 4 and 10?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>20</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>40</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">What is the LCM of 2 and 7?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>7</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>14</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>8:30 AM (30 minutes later)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>8:40 AM (40 minutes later)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>9:00 AM (60 minutes later)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>9:20 AM (80 minutes later)</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">One machine runs every 4 min, another every 6 min. They just ran together. In how many minutes do they run together again?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>12</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>24</span></li>
+      </ul>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">These match the state test's formats: two-part questions, select-all, and written responses.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A</p>
       <p class="ws-stem">What is the least common multiple of 6 and 8?</p>
       <p class="ws-instruction">Fill in the bubble next to the one best answer.</p>
@@ -119,17 +203,31 @@ body {
       </ul>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
       <p class="ws-scenario-title">Type II Reasoning: Multiplying Instead of Listing</p>
       <div class="ws-scenario">Sofia found the least common multiple of 4 and 10 by multiplying the two numbers: 4 × 10 = 40. She wrote that the least common multiple of 4 and 10 is 40.</div>
       <p class="ws-stem">Explain Sofia's misconception and give the correct least common multiple.</p>
       <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
       <div class="ws-lines"><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div></div>
     </section>
-    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written response.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Answer in writing, the way the state test's constructed responses work.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <p class="ws-stem">You are making party favors. Glow sticks come in packs of 10 and bracelets come in packs of 4. What is the fewest of each you can buy so every favor has exactly one glow stick and one bracelet with none left over? Explain how the LCM solves this problem.</p>
+      <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
+
+      <div class="ws-lines"><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div></div>
+    </section>
+    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written responses.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/6-12/downloads/6-12-mstar-worksheet.pdf" download>⬇️ Download PDF</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

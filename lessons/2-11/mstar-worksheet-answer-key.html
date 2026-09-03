@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">What is 14.6 + 3.85?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>17.45</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>18.35</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>18.45</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>18.55</span></li>
+      </ul>
+      <p class="ws-keynote">Line up decimals: 14.60 + 3.85. Hundredths: 0 + 5 = 5. Tenths: 6 + 8 = 14, write 4 carry 1. Ones: 4 + 3 + 1 = 8. Tens: 1. Answer: 18.45.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">What is 20.3 − 7.48?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>12.18</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>12.82</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>12.92</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>13.82</span></li>
+      </ul>
+      <p class="ws-keynote">Rewrite as 20.30 − 7.48. Annex a zero so both have two decimal places. Work carefully with borrowing: 20.30 − 7.48 = 12.82.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">What is 9.05 + 4.7?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>13.12</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>13.57</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>13.75</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>14.75</span></li>
+      </ul>
+      <p class="ws-keynote">Line up decimals: 9.05 + 4.70. Hundredths: 5 + 0 = 5. Tenths: 0 + 7 = 7. Ones: 9 + 4 = 13. Answer: 13.75.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">What is 50 − 23.47?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>26.53</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>26.63</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>27.47</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>27.53</span></li>
+      </ul>
+      <p class="ws-keynote">Rewrite 50 as 50.00. Then 50.00 − 23.47 = 26.53. You must borrow across multiple places.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A student buys items costing $4.59, $12.75, and $3.80. What is the total cost?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$20.14</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$21.04</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>$21.14</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$21.24</span></li>
+      </ul>
+      <p class="ws-keynote">4.59 + 12.75 + 3.80 = 21.14. Line up decimal points and add column by column.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Case File: A crew member's snack receipt shows $27.60 for dried fruit and $15.45 for protein bars. What is the total on the receipt?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$42.05</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$42.95</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>$43.05</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$43.15</span></li>
+      </ul>
+      <p class="ws-keynote">Line up the decimal points: 27.60 + 15.45. Hundredths: 0 + 5 = 5. Tenths: 6 + 4 = 10, write 0 carry 1. Ones: 7 + 5 + 1 = 13, write 3 carry 1. Tens: 2 + 1 + 1 = 4. Total: $43.05.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: C</p>
       <p class="ws-stem">Find 12.4 + 3.75.</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">12.4 and 12.40 are equal in value. The zero simply fills the hundredths column so digits with the same place value line up in the same column.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · 2 points</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · 2 points</span></div>
       <p class="ws-scenario-title">Type II Reasoning: Lining Up the Wrong Edge</p>
       <div class="ws-scenario">Malik computed 9.6 + 0.45 by lining up the RIGHT-hand edges of the digits, as if adding whole numbers. He got 1.41.</div>
       <p class="ws-stem">Explain Malik's misconception and give the correct sum.</p>
@@ -129,10 +219,23 @@ body {
         <tr><th>0 points</th><td>Student agrees with Malik or gives an unrelated response.</td></tr>
       </table>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">A runner's lap times are 2.45 minutes, 2.6 minutes, and 2.38 minutes. Her personal record is 7.5 minutes total. Did she beat her record? Show all your work with decimal alignment and explain.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> Padded to hundredths, the three laps total 2.45 + 2.60 + 2.38 = 7.43 minutes. Compared place by place with 7.50, the tenths digit 4 is less than 5, so 7.43 &lt; 7.50 and she did beat her record — by 0.07 minute. The comparison only works because both numbers are written with the same number of decimal places.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/2-11/downloads/2-11-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

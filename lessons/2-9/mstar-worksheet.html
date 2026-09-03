@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -97,8 +113,76 @@ body {
       </div>
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">Warm up with the lesson's core skills — one best answer each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>4</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>−4</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>11</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>26</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>5</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>15</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">The mean of a data set is 20. A value is 26. What is the absolute deviation?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>−6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>26</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>46</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Team B — higher MAD means better performance</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Both are equally consistent</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Cannot tell from MAD alone</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Team A — lower MAD means scores are closer to the mean</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Two runners have the same average time of 60 seconds. Runner A's MAD is 1.2 seconds. Runner B's MAD is 5.8 seconds. Which runner is the coach more likely to pick for a relay race that needs a reliable time?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Runner B — higher MAD means faster potential</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Either — they have the same average</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Runner A — lower MAD means more consistent times</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Neither — MAD doesn't matter for relay races</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>5</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>8</span></li>
+      </ul>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">These match the state test's formats: two-part questions, select-all, and written responses.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A</p>
       <p class="ws-stem">A data set is 3, 5, 9, 11 with a mean of 7. What is the mean absolute deviation?</p>
       <p class="ws-instruction">Fill in the bubble next to the one best answer.</p>
@@ -119,17 +203,31 @@ body {
       </ul>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
       <p class="ws-scenario-title">Type II Reasoning: The Deviations That Cancel</p>
       <div class="ws-scenario">Sofia found the MAD of 3, 5, 9, 11 (mean 7). She used the signed differences −4, −2, 2, 4, added them to get 0, and concluded 'the MAD is 0, so there is no variability.'</div>
       <p class="ws-stem">Explain Sofia's misconception and give the correct MAD.</p>
       <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
       <div class="ws-lines"><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div></div>
     </section>
-    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written response.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Answer in writing, the way the state test's constructed responses work.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <p class="ws-stem">Two basketball teams both average 75 points per game. Team A's last 5 scores: 73, 76, 74, 77, 75. Team B's last 5 scores: 60, 90, 65, 85, 75. Calculate the MAD for each team and explain which team a coach would prefer if they need predictable scoring.</p>
+      <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
+
+      <div class="ws-lines"><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div></div>
+    </section>
+    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written responses.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/2-9/downloads/2-9-mstar-worksheet.pdf" download>⬇️ Download PDF</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

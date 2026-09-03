@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -97,8 +113,76 @@ body {
       </div>
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">Warm up with the lesson's core skills — one best answer each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">The assembly line produces 2.5 cars per hour. How many cars does it produce in one 8-hour shift?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>10.5 cars</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>16 cars</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>20 cars</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>25 cars</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Let h = hours of operation and c = cars produced. Which equation represents the assembly line?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>c = 2.5h</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>c = 2.5 + h</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>h = 2.5c</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>c = h ÷ 2.5</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Using the table (1 hour, 2.5 cars; 8 hours, 20 cars; 16 hours, 40 cars), how many cars are produced in 24 hours?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>26.5 cars</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>40 cars</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>50 cars</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>60 cars</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">Last year the student council washed 34 cars and raised $408. How much did they charge per car?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$10</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$12</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>$34</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$374</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">At $12 per car, how much does the student council raise by washing 20 cars?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$32</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$120</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>$200</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$240</span></li>
+      </ul>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response · <span class="ws-points">1 point</span></span></div>
+      <p class="ws-stem">The price is set at $12 per car. Which is the DEPENDENT variable at the car wash?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>The number of cars washed</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>The total amount of money raised</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>The price of $12 per car</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>The number of students on the council</span></li>
+      </ul>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">These match the state test's formats: two-part questions, select-all, and written responses.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A</p>
       <p class="ws-stem">A bottling machine fills 45 bottles each minute. The relationship is b = 45m, where m is the number of minutes the machine runs and b is the number of bottles filled. The crew needs 1,800 bottles. How many minutes must the machine run?</p>
       <p class="ws-instruction">Fill in the bubble next to the one best answer.</p>
@@ -119,17 +203,21 @@ body {
       </ul>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Written response · <span class="ws-points">2 points</span></span></div>
       <p class="ws-scenario-title">Type II Reasoning: Rounding Down on an At Least Problem</p>
       <div class="ws-scenario">The paint booth coats 6 car doors every hour, so d = 6h, where h is the hours the booth runs and d is the doors coated. Marisol needs 100 doors coated. She writes 6h = 100, divides to get 100 ÷ 6 = 16.66..., says the booth needs about 16 hours, and schedules 16 hours.</div>
       <p class="ws-stem">Explain Marisol's misconception and give the correct number of whole hours the booth must run.</p>
       <p class="ws-instruction">Write your answer in complete sentences. Show or explain your mathematical thinking.</p>
       <div class="ws-lines"><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div><div class="ws-line"></div></div>
     </section>
-    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written response.</footer>
+
+    <footer class="ws-footer">When you finish, check your reasoning with your teacher or family. Your teacher has the scoring guide for the written responses.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/9-4/downloads/9-4-mstar-worksheet.pdf" download>⬇️ Download PDF</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

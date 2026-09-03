@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which expression represents 'the product of 6 and a number n'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>6n</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>6 + n</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>n − 6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>n ÷ 6</span></li>
+      </ul>
+      <p class="ws-keynote">'Product' means multiplication, so the product of 6 and n is 6n.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which expression represents '9 less than a number y'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>y − 9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>9 − y</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>y + 9</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>9y</span></li>
+      </ul>
+      <p class="ws-keynote">'Less than' means subtract from the number, so it's y − 9.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which expression represents 'the sum of a number m and 15'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>m + 15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>m − 15</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>15m</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>m ÷ 15</span></li>
+      </ul>
+      <p class="ws-keynote">'Sum' means addition, so the sum of m and 15 is m + 15.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">Evaluate 4.25s + 23.50 when s = 10.</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$47.75</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>$66.00</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>$66.75</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$277.50</span></li>
+      </ul>
+      <p class="ws-keynote">Substitute s = 10: 4.25 × 10 + 23.50. Multiply first: 42.50, then add: 42.50 + 23.50 = $66.00.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">Which key word tells you to multiply?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>Product</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Sum</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Difference</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Quotient</span></li>
+      </ul>
+      <p class="ws-keynote">'Product' means multiplication. 'Sum' means addition, 'difference' means subtraction, and 'quotient' means division.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">The expression 8n + 15 gives the cost of n tickets plus a fee. What is the cost for 6 tickets?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>$29</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>$48</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>$63</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>$138</span></li>
+      </ul>
+      <p class="ws-keynote">Substitute n = 6: 8 × 6 + 15 = 48 + 15 = $63.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: A</p>
       <p class="ws-stem">A concert ticket costs 8 dollars. The website also charges one 5 dollar service fee for the whole order. Let t represent the number of tickets bought in one order. Which expression gives the total cost in dollars?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">A per-item price becomes the coefficient of the variable and a one-time charge becomes a constant. Substituting t = 6 into 8t + 5 gives 53 dollars.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, D</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, D</span></div>
       <p class="ws-stem">Select ALL statements that are true about the algebraic expression 7n + 4.</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>The variable is n.</span></li>
@@ -130,10 +220,23 @@ body {
       </ul>
       <p class="ws-keynote">In 7n + 4 the variable is n, its coefficient is 7, and 4 is the constant. Substituting n = 3 gives 7 × 3 + 4 = 21 + 4 = 25. A value of 33 comes from combining 7 and 4 into 11 first, which is not allowed because 7n and 4 are not like terms. The term 7n means 7 times n.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Field day needs one $4.25 item per student plus a one-time $23.50 shipping fee. Write the expression, then find the cost for 30 students AND for 60 students. Does doubling the students double the cost? Explain.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The expression is 4.25s + 23.50. For s = 30: 4.25 × 30 + 23.50 = 127.50 + 23.50 = $151.00. For s = 60: 4.25 × 60 + 23.50 = 255.00 + 23.50 = $278.50. Doubling the students does NOT double the cost. Twice $151.00 would be $302.00, but the actual cost is $278.50 — a difference of exactly $23.50. The reason is that only the 4.25s term depends on the number of students; the shipping fee is a constant charged once no matter how many students come, so it is not doubled along with everything else.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/6-5/downloads/6-5-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

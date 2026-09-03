@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">What does 3 ÷ 1/4 mean?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>How many 1/4-size pieces fit into 3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>1/4 of 3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>3 groups of 1/4</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>3 minus 1/4</span></li>
+      </ul>
+      <p class="ws-keynote">3 ÷ 1/4 asks how many 1/4-size pieces fit into 3. To find that, put a 1 under the 3 and use Keep, Change, Flip: 3/1 × 4/1 = 12.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: B</span></div>
+      <p class="ws-stem">Which expression means 'how many 1/3-size pieces are in 2'?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1/3 ÷ 2</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">B</span><span>2 ÷ 1/3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>2 × 1/3</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>2 + 1/3</span></li>
+      </ul>
+      <p class="ws-keynote">Finding how many 1/3-size pieces fit into 2 is written 2 ÷ 1/3. Put a 1 under the 2, then Keep, Change, Flip: 2/1 × 3/1 = 6.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">A rope is 4 feet long. How many 1/2-foot pieces can be cut from it?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1/2 piece</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>2 pieces</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>4 pieces</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>8 pieces</span></li>
+      </ul>
+      <p class="ws-keynote">Write 4 ÷ 1/2. Put a 1 under the 4, then Keep, Change, Flip: 4/1 × 2/1 = 8 pieces.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">A half-pan of brownies is shared equally among 4 people. How much of the whole pan does each get?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>1/8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>1/2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>2</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>4/2</span></li>
+      </ul>
+      <p class="ws-keynote">This is 1/2 ÷ 4. The whole number is second this time, so put a 1 under the 4, then Keep, Change, Flip: 1/2 × 1/4 = 1/8 of the whole pan.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Agent Cole has 3/4 of a pound of fingerprint powder and splits it equally into 2 kits. How much powder goes in each kit?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>1 1/2 pounds</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>1/8 pound</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>3/8 pound</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>3/4 pound</span></li>
+      </ul>
+      <p class="ws-keynote">Write 3/4 ÷ 2 as 3/4 ÷ 2/1. Keep, Change, Flip: 3/4 × 1/2 = 3/8 pound in each kit. The top number does not have to be a 1 — the steps are exactly the same.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: A</span></div>
+      <p class="ws-stem">What is 2/3 ÷ 4?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">A</span><span>1/6</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>2/7</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>3/8</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>8/3</span></li>
+      </ul>
+      <p class="ws-keynote">Write the 4 as 4/1. Keep, Change, Flip: 2/3 × 1/4 = 2/12 = 1/6. Dividing by a whole number bigger than 1 makes the piece smaller, and 1/6 is smaller than 2/3.</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: D</p>
       <p class="ws-stem">What is the value of 6 ÷ 1/5?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">Keep, change, flip works only after the whole number is written as a fraction over 1, and only the second fraction gets flipped. That gives 6/1 × 5/1 = 30.</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
       <p class="ws-stem">Select ALL statements that are true about the expression 4 ÷ 1/3.</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>The whole number 4 can be written as the fraction 4/1.</span></li>
@@ -130,10 +220,23 @@ body {
       </ul>
       <p class="ws-keynote">Write 4 as 4/1, keep it, change ÷ to ×, and flip 1/3 to 3/1. Then 4/1 × 3/1 = 12/1 = 12. The quotient 4/3 comes from multiplying by 1/3 instead of dividing, and dividing by a number smaller than 1 makes the quotient larger, not smaller.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">Dividing 6 by 1/2 gives 12, but dividing 6 by 2 gives 3. How can dividing by a smaller number (1/2) give a bigger answer than dividing by a larger number (2)? Explain using a real-world example.</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> The two expressions ask different questions, and the flip shows why. 6 ÷ 2 is 6/1 × 1/2 = 3, because flipping 2/1 gives a factor smaller than 1. 6 ÷ 1/2 is 6/1 × 2/1 = 12, because flipping 1/2 gives a factor larger than 1. Dividing by a number less than 1 always makes the quotient grow.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/6-1/downloads/6-1-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

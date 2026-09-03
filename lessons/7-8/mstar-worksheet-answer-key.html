@@ -52,12 +52,27 @@ body {
 .ws-line { border-bottom: 1.2px solid #b9c6d4; height: 26px; }
 .ws-points { font-size: 12px; color: var(--muted); font-weight: 700; }
 .ws-footer { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-.ws-print-btn {
-  position: fixed; right: 18px; bottom: 18px; background: var(--navy); color: #fff;
+.ws-action-bar { position: fixed; right: 18px; bottom: 18px; display: flex; gap: 10px; }
+.ws-print-btn, .ws-download-btn {
+  background: var(--navy); color: #fff; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 12px 20px; font-size: 15px; font-weight: 700;
   cursor: pointer; box-shadow: 0 8px 20px -8px rgba(18,53,91,.6); min-height: 44px;
+  font-family: var(--font-body);
 }
+.ws-download-btn { background: var(--teal-ink); }
+.ws-download-btn:hover { background: var(--teal); }
 .ws-print-btn:hover { background: #18466f; }
+.ws-section-head {
+  margin: 26px 0 14px;
+  padding: 10px 14px;
+  background: var(--cream);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+}
+.ws-section-head:first-of-type { margin-top: 18px; }
+.ws-section-title { margin: 0; font-size: 17px; color: var(--navy); }
+.ws-section-note { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); }
 .ws-correct { background: #e6f7ef; border-radius: 8px; }
 .ws-correct .ws-bub { background: var(--teal); border-color: var(--teal-ink); color: #fff; }
 .ws-keynote {
@@ -76,7 +91,8 @@ body {
   body { background: #fff; font-size: 13px; }
   .ws-page { padding: 0; max-width: none; }
   .ws-sheet { border: 0; border-radius: 0; padding: 0; }
-  .ws-print-btn { display: none; }
+  .ws-action-bar { display: none; }
+  .ws-section-head { break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .ws-scenario, .ws-keynote, .ws-correct { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 </style>
@@ -95,8 +111,82 @@ body {
 
     </header>
     <p class="ws-honesty">These are MSTAR-style questions written for this curriculum to rehearse the format. They are not official Maryland assessment items. MSTAR — Maryland's new state test, first given in spring 2027 — uses the same kinds of questions you see here: selected response, select-all, two-part evidence questions, and written responses.</p>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part A — Skills Check</h2>
+      <p class="ws-section-note">One point each.</p>
+    </div>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Two-part question</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 1</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">In which quadrant is the point (-4, 5)?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Quadrant I</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Quadrant III</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>Quadrant II</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Quadrant IV</span></li>
+      </ul>
+      <p class="ws-keynote">The x-coordinate is negative (left) and the y-coordinate is positive (up). Left and up is Quadrant II.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">A point has a positive x-coordinate and a negative y-coordinate. Which quadrant is it in?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Quadrant I</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Quadrant II</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>Quadrant IV</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>Quadrant III</span></li>
+      </ul>
+      <p class="ws-keynote">Positive x (right) and negative y (down) = Quadrant IV (bottom-right).</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 3</span><span class="ws-type">Selected response — correct: C</span></div>
+      <p class="ws-stem">Which point is located on the x-axis?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>(-4, -4)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>(0, 4)</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">C</span><span>(4, 0)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">D</span><span>(4, 4)</span></li>
+      </ul>
+      <p class="ws-keynote">A point is on the x-axis when its y-coordinate is 0. (4, 0) is on the x-axis.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 4</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">Point A is at (-5, 3). If you move 8 units to the right, what are the new coordinates?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>(-13, 3)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>(-5, 11)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>(-5, -5)</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>(3, 3)</span></li>
+      </ul>
+      <p class="ws-keynote">Moving right means adding to the x-coordinate: -5 + 8 = 3. The y stays the same. New point: (3, 3).</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 5</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">In which quadrant is the point (-3, 5)?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>Quadrant I</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>Quadrant III</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>Quadrant IV</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>Quadrant II</span></li>
+      </ul>
+      <p class="ws-keynote">Negative x with positive y places the point in Quadrant II.</p>
+    </section>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 6</span><span class="ws-type">Selected response — correct: D</span></div>
+      <p class="ws-stem">What are the coordinates of a point 4 units right and 2 units down from the origin?</p>
+      <ul class="ws-opts">
+        <li class="ws-opt"><span class="ws-bub ws-round">A</span><span>(-4, 2)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">B</span><span>(-2, 4)</span></li>
+        <li class="ws-opt"><span class="ws-bub ws-round">C</span><span>(2, -4)</span></li>
+        <li class="ws-opt ws-correct"><span class="ws-bub ws-round">D</span><span>(4, -2)</span></li>
+      </ul>
+      <p class="ws-keynote">Right is +x and down is -y, so the point is (4, -2).</p>
+    </section>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part B — Test-Format Questions</h2>
+      <p class="ws-section-note">Scoring notes and distractor rationales below each item.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 7</span><span class="ws-type">Two-part question</span></div>
       <p class="ws-part">Part A — correct answer: A</p>
       <p class="ws-stem">In which quadrant does the point (−4, 3) lie?</p>
       <ul class="ws-opts">
@@ -118,7 +208,7 @@ body {
       <p class="ws-keynote">Quadrant IV is the lower-right region: x is positive (right of the y-axis) and y is negative (below the x-axis).</p>
     </section>
     <section class="ws-item">
-      <div class="ws-item-head"><span class="ws-qnum">Question 2</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
+      <div class="ws-item-head"><span class="ws-qnum">Question 8</span><span class="ws-type">Select all that apply — correct: A, B, C, E</span></div>
       <p class="ws-stem">Select ALL statements that are true about the four quadrants:</p>
       <ul class="ws-opts">
         <li class="ws-opt ws-correct"><span class="ws-bub ws-square">A</span><span>Quadrant I contains points with both coordinates positive.</span></li>
@@ -129,10 +219,23 @@ body {
       </ul>
       <p class="ws-keynote">A, B, C, and E are true. D is false — the quadrants are numbered COUNTERCLOCKWISE from the upper right: I, II, III, IV.</p>
     </section>
-    <footer class="ws-footer">Answer Key. Score the written response with the rubric above; award partial credit per the 1-point row.</footer>
+    <div class="ws-section-head">
+      <h2 class="ws-section-title">Part C — Show Your Thinking</h2>
+      <p class="ws-section-note">Model answer and scoring guidance.</p>
+    </div>
+    <section class="ws-item">
+      <div class="ws-item-head"><span class="ws-qnum">Question 9</span><span class="ws-type">Written response · 2 points</span></div>
+      <p class="ws-stem">A point starts in Quadrant I at (4, 6). Describe a move that puts it in Quadrant III. What must happen to both coordinates? Can you give the exact new coordinates after your move?</p>
+      <p class="ws-keynote"><strong>Model answer:</strong> Quadrant III is the bottom-left region, so both coordinates have to end up negative. Starting at (4, 6), you need to move more than 4 units left to push x below 0 and more than 6 units down to push y below 0. Moving 6 left and 8 down, for example, lands on (-2, -2), which is Quadrant III because x and y are both negative.</p>
+      <p class="ws-instruction">Award 2 points for a complete explanation with correct mathematics, 1 point for a correct answer with thin reasoning, 0 for an unrelated response.</p>
+    </section>
+    <footer class="ws-footer">Answer Key. Score written responses with the rubric and guidance above; award partial credit per the 1-point rows.</footer>
   </div>
 </div>
-<button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+<div class="ws-action-bar">
+  <a class="ws-download-btn" href="/lessons/7-8/downloads/7-8-mstar-worksheet-answer-key.pdf" download>⬇️ Download PDF (key)</a>
+  <button type="button" class="ws-print-btn" onclick="window.print()">🖨️ Print</button>
+</div>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
