@@ -4424,9 +4424,184 @@ body.lang-mode-es .tab-es {
   color: var(--ink);
 }
 
+/* Arcade picker — four games, one open at a time */
+.fam-arcade-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.fam-arcade-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 15px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, color .16s ease, background .16s ease;
+}
+.fam-arcade-chip:hover { transform: translateY(-1px); border-color: var(--teal); color: var(--ink); }
+.fam-arcade-chip:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-arcade-chip.is-active {
+  background: linear-gradient(135deg, #14406e, #0f2b50);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 18px -10px rgba(15,43,80,.9);
+}
+.fam-arcade-chip-icon { font-size: 16px; }
+
+/* Sort It! */
+.fam-sort-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  min-height: 48px;
+}
+.fam-sort-card {
+  padding: 11px 16px;
+  min-height: 44px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.fam-sort-card:hover { transform: translateY(-2px); border-color: var(--teal); }
+.fam-sort-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-sort-card.is-picked {
+  border-color: var(--amber);
+  background: var(--amber-light);
+  box-shadow: 0 0 0 4px rgba(242,193,91,.28);
+}
+.fam-sort-card.is-placed { display: none; }
+@keyframes famShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.fam-sort-card.is-wrong {
+  animation: famShake .3s ease;
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+.fam-sort-bins { display: flex; gap: 10px; }
+.fam-sort-bin {
+  flex: 1 1 0;
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 12px;
+  border: 2px dashed var(--teal);
+  border-radius: 14px;
+  background: var(--teal-light);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal-ink);
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+}
+.fam-sort-bin:hover { background: #cdeeea; transform: translateY(-2px); }
+.fam-sort-bin:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-sort-bin-label { text-align: center; line-height: 1.25; }
+.fam-sort-bin-count {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.fam-sort-feedback { margin: 12px 0 0; font-size: 14px; color: var(--ink); min-height: 20px; }
+.fam-sort-done {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Would You Rather? */
+.fam-wyr-options {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.fam-wyr-option {
+  flex: 1 1 0;
+  min-height: 92px;
+  padding: 16px 14px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.fam-wyr-option:hover { transform: translateY(-2px); border-color: var(--amber); }
+.fam-wyr-option:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-wyr-option.is-chosen {
+  border-color: var(--amber);
+  background: var(--amber-light);
+  box-shadow: 0 0 0 4px rgba(242,193,91,.24);
+}
+.fam-wyr-or {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+.fam-wyr-reveal {
+  margin-top: 14px;
+  padding: 13px 15px;
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  border-radius: 12px;
+}
+.fam-wyr-reveal-title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--teal-ink);
+}
+.fam-wyr-why { margin: 0 0 10px; font-size: 14.5px; color: var(--ink); }
+.fam-wyr-progress { margin: 12px 0 0; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+
 @media (max-width: 560px) {
   .fam-memory-grid { grid-template-columns: repeat(2, 1fr); }
   .fam-mem-card { min-height: 64px; }
+  .fam-wyr-options { flex-direction: column; }
+  .fam-wyr-or { align-self: flex-start; }
+  .fam-sort-bins { flex-direction: column; }
 }
 
 @media print {
@@ -5794,16 +5969,37 @@ header.packet h1::after{
     </div>
       
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Half of 50","b":"25"},{"a":"Double 35","b":"70"},{"a":"10% of 200","b":"20"},{"a":"24 ÷ 6","b":"4"}],"tf":[{"en":"Estimating before you solve helps you catch mistakes.","es":"Estimar antes de resolver ayuda a detectar errores.","answer":true,"whyEn":"If your estimate says 'about 20' and you get 200, something slipped.","whyEs":"Si la estimación dice 'como 20' y sale 200, algo falló."},{"en":"There is only one correct way to solve a math problem.","es":"Solo hay una forma correcta de resolver un problema de matemáticas.","answer":false,"whyEn":"Draw it, build it, count up, use a rule — different roads to the same answer are the point of math talk!","whyEs":"Dibujar, construir, contar, usar una regla: distintos caminos a la misma respuesta. ¡De eso se trata hablar de matemáticas!"},{"en":"10% of 200 is 20.","es":"El 10% de 200 es 20.","answer":true,"whyEn":"10% means one tenth: 200 ÷ 10 = 20.","whyEs":"10% significa una décima parte: 200 ÷ 10 = 20."},{"en":"Making a mistake in math means you're bad at math.","es":"Equivocarse en matemáticas significa ser malo para las matemáticas.","answer":false,"whyEn":"Mistakes are data! Finding and fixing them is how mathematicians actually work.","whyEs":"¡Los errores son información! Encontrarlos y corregirlos es como trabajan los matemáticos de verdad."},{"en":"Explaining your thinking out loud helps you understand it better.","es":"Explicar tu razonamiento en voz alta ayuda a entenderlo mejor.","answer":true,"whyEn":"Teaching someone else is the strongest form of studying — that's why this homework asks families to talk.","whyEs":"Enseñar a otra persona es la forma más fuerte de estudiar: por eso esta tarea invita a conversar en familia."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Half of 50","b":"25"},{"a":"Double 35","b":"70"},{"a":"10% of 200","b":"20"},{"a":"24 ÷ 6","b":"4"}],"tf":[{"en":"Estimating before you solve helps you catch mistakes.","es":"Estimar antes de resolver ayuda a detectar errores.","answer":true,"whyEn":"If your estimate says 'about 20' and you get 200, something slipped.","whyEs":"Si la estimación dice 'como 20' y sale 200, algo falló."},{"en":"There is only one correct way to solve a math problem.","es":"Solo hay una forma correcta de resolver un problema de matemáticas.","answer":false,"whyEn":"Draw it, build it, count up, use a rule — different roads to the same answer are the point of math talk!","whyEs":"Dibujar, construir, contar, usar una regla: distintos caminos a la misma respuesta. ¡De eso se trata hablar de matemáticas!"},{"en":"10% of 200 is 20.","es":"El 10% de 200 es 20.","answer":true,"whyEn":"10% means one tenth: 200 ÷ 10 = 20.","whyEs":"10% significa una décima parte: 200 ÷ 10 = 20."},{"en":"Making a mistake in math means you're bad at math.","es":"Equivocarse en matemáticas significa ser malo para las matemáticas.","answer":false,"whyEn":"Mistakes are data! Finding and fixing them is how mathematicians actually work.","whyEs":"¡Los errores son información! Encontrarlos y corregirlos es como trabajan los matemáticos de verdad."},{"en":"Explaining your thinking out loud helps you understand it better.","es":"Explicar tu razonamiento en voz alta ayuda a entenderlo mejor.","answer":true,"whyEn":"Teaching someone else is the strongest form of studying — that's why this homework asks families to talk.","whyEs":"Enseñar a otra persona es la forma más fuerte de estudiar: por eso esta tarea invita a conversar en familia."}],"sort":{"a":{"en":"Reasonable estimate","es":"Estimación razonable"},"b":{"en":"Not reasonable","es":"No es razonable"},"cards":[{"t":"A door is about 7 feet tall","bucket":0,"en":"About right for a doorway.","es":"Más o menos correcto para una puerta."},{"t":"A door is about 70 feet tall","bucket":1,"en":"That is a seven-story building.","es":"Eso es un edificio de siete pisos."},{"t":"A gallon of milk weighs about 8 lb","bucket":0,"en":"Close to real.","es":"Cerca de lo real."},{"t":"A pencil weighs about 5 lb","bucket":1,"en":"That is a bowling ball.","es":"Eso es una bola de boliche."},{"t":"A school bus holds about 50 riders","bucket":0,"en":"A believable capacity.","es":"Una capacidad creíble."},{"t":"A school bus holds about 5,000 riders","bucket":1,"en":"That is a stadium.","es":"Eso es un estadio."}]},"wyr":[{"a":{"en":"Get the answer fast and maybe wrong","es":"Tener la respuesta rápido y quizá mal"},"b":{"en":"Take twice as long and be sure","es":"Tardar el doble y estar seguro"},"en":"In math class, being sure wins — checking is part of the work, not extra credit.","es":"En matemáticas gana estar seguro: comprobar es parte del trabajo, no crédito extra."},{"a":{"en":"Explain how you solved it","es":"Explicar cómo lo resolviste"},"b":{"en":"Just write the answer","es":"Solo escribir la respuesta"},"en":"Explaining — a student who can explain it can still do it next week.","es":"Explicar: quien puede explicarlo todavía puede hacerlo la próxima semana."}]};</script>
       <div class="fam-game-head">
-        <span class="fam-game-badge">🎲 FAMILY GAME BREAK / JUEGOS EN FAMILIA</span>
+        <span class="fam-game-badge">🎮 FAMILY ARCADE / SALA DE JUEGOS EN FAMILIA</span>
         <p class="fam-game-lead">
-          <span class="lang-en">Two quick games about tonight's math — play as a team, no timer, replay as often as you like!</span>
-          <span class="lang-es" lang="es">Dos juegos rápidos sobre las matemáticas de hoy. Jueguen en equipo, sin cronómetro, ¡repitan las veces que quieran!</span>
+          <span class="lang-en">Four quick games about tonight's math. Pick one, play as a team — no timer, replay as often as you like.</span>
+          <span class="lang-es" lang="es">Cuatro juegos rápidos sobre las matemáticas de hoy. Escojan uno y jueguen en equipo: sin cronómetro, repitan cuanto quieran.</span>
         </p>
+        <div class="fam-arcade-picker" role="group" aria-label="Choose a game">
+        <button type="button" class="fam-arcade-chip is-active" data-arcade-game="memory"
+          onclick="showArcadeGame('memory')" aria-pressed="true">
+          <span class="fam-arcade-chip-icon" aria-hidden="true">🃏</span>
+          <span class="lang-en">Memory Flip</span><span class="lang-es" lang="es">Memoria</span>
+        </button>
+        <button type="button" class="fam-arcade-chip" data-arcade-game="tf"
+          onclick="showArcadeGame('tf')" aria-pressed="false">
+          <span class="fam-arcade-chip-icon" aria-hidden="true">🎯</span>
+          <span class="lang-en">True or False?</span><span class="lang-es" lang="es">¿Verdadero o falso?</span>
+        </button>
+        <button type="button" class="fam-arcade-chip" data-arcade-game="sort"
+          onclick="showArcadeGame('sort')" aria-pressed="false">
+          <span class="fam-arcade-chip-icon" aria-hidden="true">🗂️</span>
+          <span class="lang-en">Sort It!</span><span class="lang-es" lang="es">¡A clasificar!</span>
+        </button>
+        <button type="button" class="fam-arcade-chip" data-arcade-game="wyr"
+          onclick="showArcadeGame('wyr')" aria-pressed="false">
+          <span class="fam-arcade-chip-icon" aria-hidden="true">🤔</span>
+          <span class="lang-en">Would You Rather?</span><span class="lang-es" lang="es">¿Qué prefieres?</span>
+        </button></div>
       </div>
 
-      <div class="fam-game-card" id="fam_memory_game">
+      <div class="fam-game-card" id="fam_memory_game" data-arcade-panel="memory">
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🃏 <span class="lang-en">Memory Flip: Math Twins</span><span class="lang-es" lang="es">Memoria: Gemelos Matemáticos</span></h3>
           <button type="button" class="btn btn-sm btn-secondary" onclick="resetMemoryGame()">🔄 <span class="lang-en">Shuffle &amp; Restart</span><span class="lang-es" lang="es">Mezclar y reiniciar</span></button>
@@ -5820,7 +6016,7 @@ header.packet h1::after{
         <p class="fam-memory-win" id="fam_memory_win" hidden>🎉 <span class="lang-en">All twins found! Can you beat your flip count on a rematch?</span><span class="lang-es" lang="es">¡Encontraron todas las parejas! ¿Pueden lograrlo con menos vueltas en la revancha?</span></p>
       </div>
 
-      <div class="fam-game-card" id="fam_tf_game">
+      <div class="fam-game-card" id="fam_tf_game" data-arcade-panel="tf" hidden>
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🎯 <span class="lang-en">True or False? Family Face-Off</span><span class="lang-es" lang="es">¿Verdadero o falso? Duelo Familiar</span></h3>
           <button type="button" class="btn btn-sm btn-secondary" onclick="resetTfGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
@@ -5842,6 +6038,52 @@ header.packet h1::after{
         </div>
         <p class="fam-tf-score" id="fam_tf_score" aria-live="polite"></p>
         <div class="fam-tf-done" id="fam_tf_done" hidden></div>
+      </div>
+
+      <div class="fam-game-card" id="fam_sort_game" data-arcade-panel="sort" hidden>
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🗂️ <span class="lang-en">Sort It!</span><span class="lang-es" lang="es">¡A clasificar!</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetSortGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Tap a card, then tap the bin it belongs in. Talk it through before you tap!</span>
+          <span class="lang-es" lang="es">Toquen una tarjeta y luego el cesto al que pertenece. ¡Conversen antes de tocar!</span>
+        </p>
+        <div class="fam-sort-cards" id="fam_sort_cards" role="group" aria-label="Cards to sort"></div>
+        <div class="fam-sort-bins">
+          <button type="button" class="fam-sort-bin" data-bin="0" onclick="dropSortCard(0)">
+            <span class="fam-sort-bin-label" id="fam_sort_bin0"></span>
+            <span class="fam-sort-bin-count" id="fam_sort_bin0_count">0</span>
+          </button>
+          <button type="button" class="fam-sort-bin" data-bin="1" onclick="dropSortCard(1)">
+            <span class="fam-sort-bin-label" id="fam_sort_bin1"></span>
+            <span class="fam-sort-bin-count" id="fam_sort_bin1_count">0</span>
+          </button>
+        </div>
+        <p class="fam-sort-feedback" id="fam_sort_feedback" aria-live="polite"></p>
+        <div class="fam-sort-done" id="fam_sort_done" hidden></div>
+      </div>
+
+      <div class="fam-game-card" id="fam_wyr_game" data-arcade-panel="wyr" hidden>
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🤔 <span class="lang-en">Would You Rather?</span><span class="lang-es" lang="es">¿Qué prefieres?</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetWyrGame()">🔄 <span class="lang-en">Start Over</span><span class="lang-es" lang="es">Empezar de nuevo</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Everyone votes and says WHY. Then tap to see what the math says — sometimes it is a tie!</span>
+          <span class="lang-es" lang="es">Todos votan y dicen POR QUÉ. Luego toquen para ver qué dicen las matemáticas: ¡a veces es empate!</span>
+        </p>
+        <div class="fam-wyr-options">
+          <button type="button" class="fam-wyr-option" id="fam_wyr_a" onclick="voteWyr(0)"></button>
+          <span class="fam-wyr-or" aria-hidden="true">OR</span>
+          <button type="button" class="fam-wyr-option" id="fam_wyr_b" onclick="voteWyr(1)"></button>
+        </div>
+        <div class="fam-wyr-reveal" id="fam_wyr_reveal" hidden aria-live="polite">
+          <p class="fam-wyr-reveal-title">🔎 <span class="lang-en">What the math says</span><span class="lang-es" lang="es">Lo que dicen las matemáticas</span></p>
+          <p class="fam-wyr-why" id="fam_wyr_why"></p>
+          <button type="button" class="btn btn-primary btn-sm" id="fam_wyr_next" onclick="nextWyr()">➔ <span class="lang-en">Next round</span><span class="lang-es" lang="es">Siguiente ronda</span></button>
+        </div>
+        <p class="fam-wyr-progress" id="fam_wyr_progress" aria-live="polite"></p>
       </div>
     </div>
       
@@ -7891,10 +8133,170 @@ function resetTfGame() {
   renderTfQuestion();
 }
 
+/* ── Arcade picker: one game visible at a time ─────────────────────────── */
+function showArcadeGame(id) {
+  document.querySelectorAll('[data-arcade-panel]').forEach(function (p) {
+    p.hidden = p.dataset.arcadePanel !== id;
+  });
+  document.querySelectorAll('[data-arcade-game]').forEach(function (c) {
+    const on = c.dataset.arcadeGame === id;
+    c.classList.toggle('is-active', on);
+    c.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
+}
+
+/* ── Sort It! — tap a card, tap a bin ──────────────────────────────────── */
+var famSort = { picked: null, placed: 0, right: 0 };
+
+function resetSortGame() {
+  const data = famGamesData();
+  const wrap = document.getElementById('fam_sort_cards');
+  if (!data || !data.sort || !wrap) return;
+  famSort = { picked: null, placed: 0, right: 0 };
+  setBiText(document.getElementById('fam_sort_bin0'), data.sort.a.en, data.sort.a.es);
+  setBiText(document.getElementById('fam_sort_bin1'), data.sort.b.en, data.sort.b.es);
+  document.getElementById('fam_sort_bin0_count').textContent = '0';
+  document.getElementById('fam_sort_bin1_count').textContent = '0';
+  const fb = document.getElementById('fam_sort_feedback');
+  if (fb) fb.textContent = '';
+  const done = document.getElementById('fam_sort_done');
+  if (done) done.hidden = true;
+
+  const cards = data.sort.cards.slice();
+  for (var i = cards.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = cards[i]; cards[i] = cards[j]; cards[j] = t;
+  }
+  wrap.innerHTML = '';
+  cards.forEach(function (c, idx) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'fam-sort-card';
+    btn.textContent = c.t;
+    btn.dataset.bucket = String(c.bucket);
+    btn.dataset.whyEn = c.en;
+    btn.dataset.whyEs = c.es;
+    btn.dataset.idx = String(idx);
+    btn.addEventListener('click', function () { pickSortCard(btn); });
+    wrap.appendChild(btn);
+  });
+}
+
+function pickSortCard(btn) {
+  if (btn.classList.contains('is-placed')) return;
+  document.querySelectorAll('.fam-sort-card').forEach(function (c) { c.classList.remove('is-picked'); });
+  btn.classList.add('is-picked');
+  famSort.picked = btn;
+  setBiText(
+    document.getElementById('fam_sort_feedback'),
+    'Now tap the bin where "' + btn.textContent + '" belongs.',
+    'Ahora toquen el cesto donde va "' + btn.textContent + '".',
+  );
+}
+
+function dropSortCard(bin) {
+  const data = famGamesData();
+  const btn = famSort.picked;
+  const fb = document.getElementById('fam_sort_feedback');
+  if (!data || !btn) {
+    setBiText(fb, 'Tap a card first, then tap a bin.', 'Primero toquen una tarjeta y luego un cesto.');
+    return;
+  }
+  const correct = Number(btn.dataset.bucket) === bin;
+  famSort.placed++;
+  if (correct) {
+    famSort.right++;
+    btn.classList.add('is-placed', 'is-right');
+    const countEl = document.getElementById('fam_sort_bin' + bin + '_count');
+    countEl.textContent = String(Number(countEl.textContent) + 1);
+    setBiText(fb, '✅ Yes — ' + btn.dataset.whyEn, '✅ Sí — ' + btn.dataset.whyEs);
+    if (typeof playCorrectSound === 'function') playCorrectSound();
+  } else {
+    btn.classList.add('is-wrong');
+    setTimeout(function () { btn.classList.remove('is-wrong'); }, 600);
+    setBiText(fb, '❌ Other bin — ' + btn.dataset.whyEn, '❌ El otro cesto — ' + btn.dataset.whyEs);
+  }
+  btn.classList.remove('is-picked');
+  famSort.picked = null;
+
+  const remaining = document.querySelectorAll('.fam-sort-card:not(.is-placed)').length;
+  if (remaining === 0) {
+    const done = document.getElementById('fam_sort_done');
+    if (done) {
+      done.hidden = false;
+      const tries = famSort.placed;
+      setBiText(
+        done,
+        '🎉 All sorted! You placed 6 cards in ' + tries + ' tries.',
+        '🎉 ¡Todo clasificado! Colocaron 6 tarjetas en ' + tries + ' intentos.',
+      );
+    }
+    if (typeof triggerCelebration === 'function') triggerCelebration();
+  }
+}
+
+/* ── Would You Rather? — vote, then reveal the mathematics ─────────────── */
+var famWyr = { idx: 0, voted: false };
+
+function resetWyrGame() {
+  famWyr = { idx: 0, voted: false };
+  renderWyr();
+}
+
+function renderWyr() {
+  const data = famGamesData();
+  if (!data || !data.wyr) return;
+  const round = data.wyr[famWyr.idx];
+  const a = document.getElementById('fam_wyr_a');
+  const b = document.getElementById('fam_wyr_b');
+  const reveal = document.getElementById('fam_wyr_reveal');
+  const prog = document.getElementById('fam_wyr_progress');
+  if (!round) {
+    setBiText(
+      prog,
+      '🏆 That is every round — start over any time, or argue about the last one a while longer.',
+      '🏆 Esas son todas las rondas. Empiecen de nuevo cuando quieran, o sigan discutiendo la última.',
+    );
+    if (a) a.hidden = true;
+    if (b) b.hidden = true;
+    if (reveal) reveal.hidden = true;
+    return;
+  }
+  famWyr.voted = false;
+  if (a) { a.hidden = false; a.classList.remove('is-chosen'); setBiText(a, round.a.en, round.a.es); }
+  if (b) { b.hidden = false; b.classList.remove('is-chosen'); setBiText(b, round.b.en, round.b.es); }
+  if (reveal) reveal.hidden = true;
+  setBiText(
+    prog,
+    'Round ' + (famWyr.idx + 1) + ' of ' + data.wyr.length + ' · everyone votes, then say why',
+    'Ronda ' + (famWyr.idx + 1) + ' de ' + data.wyr.length + ' · todos votan y dicen por qué',
+  );
+}
+
+function voteWyr(which) {
+  const data = famGamesData();
+  const round = data && data.wyr[famWyr.idx];
+  if (!round || famWyr.voted) return;
+  famWyr.voted = true;
+  const chosen = document.getElementById(which === 0 ? 'fam_wyr_a' : 'fam_wyr_b');
+  if (chosen) chosen.classList.add('is-chosen');
+  setBiText(document.getElementById('fam_wyr_why'), round.en, round.es);
+  const reveal = document.getElementById('fam_wyr_reveal');
+  if (reveal) reveal.hidden = false;
+}
+
+function nextWyr() {
+  famWyr.idx++;
+  renderWyr();
+}
+
 function initFamilyGames() {
   if (!famGamesData() || !document.getElementById('fam_game_break')) return;
   resetMemoryGame();
   resetTfGame();
+  resetSortGame();
+  resetWyrGame();
 }
 
 /* Tonight's Path roadmap: light up the current stop, keep a persistent check
