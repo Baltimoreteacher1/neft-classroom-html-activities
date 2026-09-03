@@ -5766,6 +5766,10 @@ function restoreParentSignoff() {
 function initHomeworkPage() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  // Measure again once fonts and images have settled: a reading taken mid
+  // layout reported the status bar three times its rendered height, and the
+  // floating launchers are positioned off that number.
+  window.addEventListener('load', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
