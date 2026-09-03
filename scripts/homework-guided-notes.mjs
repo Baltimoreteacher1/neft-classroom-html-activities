@@ -4028,6 +4028,780 @@ const FAMILY_TF_QUESTIONS = {
   ],
 };
 
+/**
+ * SORT IT! — tap a card, tap the bucket it belongs in. Two buckets, six cards,
+ * authored per topic. Categorising is the reasoning the practice items rarely
+ * ask for out loud, and it is the one game shape where a wrong answer teaches
+ * something specific (each card carries its own why).
+ */
+const FAMILY_SORT_GAMES = {
+  ratios: {
+    a: { en: "Equivalent to 2 : 3", es: "Equivale a 2 : 3" },
+    b: { en: "NOT equivalent to 2 : 3", es: "NO equivale a 2 : 3" },
+    cards: [
+      { t: "4 : 6", bucket: 0, en: "Both parts times 2.", es: "Las dos partes por 2." },
+      {
+        t: "3 : 4",
+        bucket: 1,
+        en: "That is 2:3 with 1 ADDED to each part — adding breaks a ratio.",
+        es: "Eso es 2:3 con 1 SUMADO a cada parte; sumar rompe la razón.",
+      },
+      { t: "6 : 9", bucket: 0, en: "Both parts times 3.", es: "Las dos partes por 3." },
+      { t: "10 : 15", bucket: 0, en: "Both parts times 5.", es: "Las dos partes por 5." },
+      {
+        t: "3 : 2",
+        bucket: 1,
+        en: "Same numbers, opposite order — order matters in a ratio.",
+        es: "Mismos números, orden opuesto: el orden importa en una razón.",
+      },
+      {
+        t: "5 : 6",
+        bucket: 1,
+        en: "No single number multiplies 2:3 into 5:6.",
+        es: "Ningún número multiplica 2:3 para dar 5:6.",
+      },
+    ],
+  },
+  fractions: {
+    a: { en: "Answer is MORE than 4", es: "El resultado es MÁS de 4" },
+    b: { en: "Answer is LESS than 4", es: "El resultado es MENOS de 4" },
+    cards: [
+      {
+        t: "4 ÷ 1/2",
+        bucket: 0,
+        en: "8 — dividing by a half doubles.",
+        es: "8: dividir entre un medio duplica.",
+      },
+      {
+        t: "4 ÷ 2",
+        bucket: 1,
+        en: "2 — dividing by a number bigger than 1 shrinks.",
+        es: "2: dividir entre un número mayor que 1 reduce.",
+      },
+      {
+        t: "4 ÷ 1/4",
+        bucket: 0,
+        en: "16 — sixteen quarters fit in 4.",
+        es: "16: dieciséis cuartos caben en 4.",
+      },
+      { t: "4 ÷ 4", bucket: 1, en: "1.", es: "1." },
+      {
+        t: "4 ÷ 1/3",
+        bucket: 0,
+        en: "12 — twelve thirds fit in 4.",
+        es: "12: doce tercios caben en 4.",
+      },
+      { t: "4 ÷ 8", bucket: 1, en: "1/2.", es: "1/2." },
+    ],
+  },
+  decimals: {
+    a: { en: "Greater than 0.5", es: "Mayor que 0.5" },
+    b: { en: "Less than 0.5", es: "Menor que 0.5" },
+    cards: [
+      {
+        t: "0.35",
+        bucket: 1,
+        en: "35 hundredths is less than 50 hundredths.",
+        es: "35 centésimas es menos que 50 centésimas.",
+      },
+      { t: "0.7", bucket: 0, en: "0.70 beats 0.50.", es: "0.70 es más que 0.50." },
+      { t: "0.05", bucket: 1, en: "Only 5 hundredths.", es: "Solo 5 centésimas." },
+      { t: "0.51", bucket: 0, en: "Just past a half.", es: "Apenas pasa la mitad." },
+      {
+        t: "0.499",
+        bucket: 1,
+        en: "Close, but still under a half.",
+        es: "Cerca, pero todavía menos de la mitad.",
+      },
+      {
+        t: "0.8",
+        bucket: 0,
+        en: "8 tenths is more than 5 tenths.",
+        es: "8 décimas es más que 5 décimas.",
+      },
+    ],
+  },
+  division: {
+    a: { en: "Divides evenly (no remainder)", es: "División exacta (sin residuo)" },
+    b: { en: "Leaves a remainder", es: "Deja residuo" },
+    cards: [
+      { t: "84 ÷ 4", bucket: 0, en: "21 exactly.", es: "21 exacto." },
+      { t: "75 ÷ 10", bucket: 1, en: "7 remainder 5.", es: "7 con residuo 5." },
+      { t: "144 ÷ 12", bucket: 0, en: "12 exactly.", es: "12 exacto." },
+      { t: "50 ÷ 8", bucket: 1, en: "6 remainder 2.", es: "6 con residuo 2." },
+      { t: "600 ÷ 5", bucket: 0, en: "120 exactly.", es: "120 exacto." },
+      { t: "29 ÷ 3", bucket: 1, en: "9 remainder 2.", es: "9 con residuo 2." },
+    ],
+  },
+  factors: {
+    a: { en: "Prime", es: "Primo" },
+    b: { en: "Composite", es: "Compuesto" },
+    cards: [
+      { t: "13", bucket: 0, en: "Only 1 and 13 divide it.", es: "Solo 1 y 13 lo dividen." },
+      { t: "21", bucket: 1, en: "3 × 7.", es: "3 × 7." },
+      { t: "2", bucket: 0, en: "The only even prime.", es: "El único primo par." },
+      {
+        t: "51",
+        bucket: 1,
+        en: "3 × 17 — it looks prime but is not.",
+        es: "3 × 17: parece primo pero no lo es.",
+      },
+      {
+        t: "29",
+        bucket: 0,
+        en: "No factor below 6 divides it.",
+        es: "Ningún factor menor que 6 lo divide.",
+      },
+      {
+        t: "1",
+        bucket: 1,
+        en: "Trick card — 1 is NEITHER. It has one factor, and a prime needs two.",
+        es: "Carta trampa: el 1 no es NINGUNO. Tiene un factor, y un primo necesita dos.",
+      },
+    ],
+  },
+  exponents: {
+    a: { en: "Equals 16", es: "Es igual a 16" },
+    b: { en: "Does NOT equal 16", es: "NO es igual a 16" },
+    cards: [
+      { t: "2⁴", bucket: 0, en: "2 × 2 × 2 × 2 = 16.", es: "2 × 2 × 2 × 2 = 16." },
+      { t: "4²", bucket: 0, en: "4 × 4 = 16.", es: "4 × 4 = 16." },
+      {
+        t: "2 × 4",
+        bucket: 1,
+        en: "8 — this is the base-times-exponent trap.",
+        es: "8: esta es la trampa de base por exponente.",
+      },
+      { t: "8²", bucket: 1, en: "64.", es: "64." },
+      { t: "16¹", bucket: 0, en: "One copy of 16.", es: "Una copia de 16." },
+      { t: "4 × 2", bucket: 1, en: "8, not 16.", es: "8, no 16." },
+    ],
+  },
+  expressions: {
+    a: { en: "Same as 3n", es: "Igual que 3n" },
+    b: { en: "Different from 3n", es: "Diferente de 3n" },
+    cards: [
+      { t: "n + n + n", bucket: 0, en: "Three copies added.", es: "Tres copias sumadas." },
+      { t: "n³", bucket: 1, en: "That is n × n × n.", es: "Eso es n × n × n." },
+      {
+        t: "n × 3",
+        bucket: 0,
+        en: "Order does not matter in multiplication.",
+        es: "El orden no importa al multiplicar.",
+      },
+      { t: "3 + n", bucket: 1, en: "Adding 3, not tripling.", es: "Sumar 3, no triplicar." },
+      { t: "n(3)", bucket: 0, en: "Also 3 times n.", es: "También 3 por n." },
+      {
+        t: "3ⁿ",
+        bucket: 1,
+        en: "3 multiplied by itself n times.",
+        es: "3 multiplicado por sí mismo n veces.",
+      },
+    ],
+  },
+  equations: {
+    a: { en: "x = 5 makes it TRUE", es: "x = 5 la hace VERDADERA" },
+    b: { en: "x = 5 makes it FALSE", es: "x = 5 la hace FALSA" },
+    cards: [
+      { t: "x + 3 = 8", bucket: 0, en: "5 + 3 = 8. ✓", es: "5 + 3 = 8. ✓" },
+      { t: "2x = 10", bucket: 0, en: "2 × 5 = 10. ✓", es: "2 × 5 = 10. ✓" },
+      {
+        t: "x − 1 = 6",
+        bucket: 1,
+        en: "5 − 1 = 4, not 6. (x = 7)",
+        es: "5 − 1 = 4, no 6. (x = 7)",
+      },
+      { t: "x ÷ 5 = 1", bucket: 0, en: "5 ÷ 5 = 1. ✓", es: "5 ÷ 5 = 1. ✓" },
+      {
+        t: "3x = 12",
+        bucket: 1,
+        en: "3 × 5 = 15, not 12. (x = 4)",
+        es: "3 × 5 = 15, no 12. (x = 4)",
+      },
+      { t: "x + 5 = 10", bucket: 0, en: "5 + 5 = 10. ✓", es: "5 + 5 = 10. ✓" },
+    ],
+  },
+  inequalities: {
+    a: { en: "8 is allowed", es: "El 8 sí se permite" },
+    b: { en: "8 is NOT allowed", es: "El 8 NO se permite" },
+    cards: [
+      {
+        t: "x > 8",
+        bucket: 1,
+        en: "Greater than 8 excludes 8 itself.",
+        es: "Mayor que 8 excluye al propio 8.",
+      },
+      {
+        t: "x ≥ 8",
+        bucket: 0,
+        en: "The line under the symbol includes 8.",
+        es: "La rayita bajo el símbolo incluye al 8.",
+      },
+      { t: "x < 10", bucket: 0, en: "8 is under 10.", es: "8 es menor que 10." },
+      { t: "x ≤ 7", bucket: 1, en: "8 is past the limit.", es: "8 pasa el límite." },
+      { t: "x ≥ 9", bucket: 1, en: "8 falls short.", es: "8 no alcanza." },
+      {
+        t: "x ≤ 8",
+        bucket: 0,
+        en: "At most 8 includes exactly 8.",
+        es: "Máximo 8 incluye exactamente 8.",
+      },
+    ],
+  },
+  properties: {
+    a: { en: "Always equal", es: "Siempre iguales" },
+    b: { en: "Not always equal", es: "No siempre iguales" },
+    cards: [
+      {
+        t: "6 × 4  and  4 × 6",
+        bucket: 0,
+        en: "Commutative property of multiplication.",
+        es: "Propiedad conmutativa de la multiplicación.",
+      },
+      {
+        t: "10 − 3  and  3 − 10",
+        bucket: 1,
+        en: "7 and −7. Subtraction is not commutative.",
+        es: "7 y −7. La resta no es conmutativa.",
+      },
+      {
+        t: "2(5 + 1)  and  2×5 + 2×1",
+        bucket: 0,
+        en: "Distributive property.",
+        es: "Propiedad distributiva.",
+      },
+      {
+        t: "12 ÷ 4  and  4 ÷ 12",
+        bucket: 1,
+        en: "3 and 1/3. Division is not commutative.",
+        es: "3 y 1/3. La división no es conmutativa.",
+      },
+      {
+        t: "9 + 0  and  9",
+        bucket: 0,
+        en: "Identity property of addition.",
+        es: "Propiedad de identidad de la suma.",
+      },
+      {
+        t: "2 + (3 × 4)  and  (2 + 3) × 4",
+        bucket: 1,
+        en: "14 and 20 — order of operations matters.",
+        es: "14 y 20: el orden de las operaciones importa.",
+      },
+    ],
+  },
+  area: {
+    a: { en: "Measured in square units", es: "Se mide en unidades cuadradas" },
+    b: { en: "NOT measured in square units", es: "NO se mide en unidades cuadradas" },
+    cards: [
+      {
+        t: "Carpet for a floor",
+        bucket: 0,
+        en: "Covering a surface is area.",
+        es: "Cubrir una superficie es área.",
+      },
+      {
+        t: "Fence around a yard",
+        bucket: 1,
+        en: "Distance around is perimeter — plain units.",
+        es: "La distancia alrededor es perímetro: unidades simples.",
+      },
+      {
+        t: "Paint for one wall",
+        bucket: 0,
+        en: "Covering a surface again.",
+        es: "Otra vez cubrir una superficie.",
+      },
+      {
+        t: "Ribbon around a gift",
+        bucket: 1,
+        en: "A length, not a covering.",
+        es: "Un largo, no una cobertura.",
+      },
+      {
+        t: "Base × height of a parallelogram",
+        bucket: 0,
+        en: "Two lengths multiplied give square units.",
+        es: "Dos largos multiplicados dan unidades cuadradas.",
+      },
+      {
+        t: "How tall a triangle is",
+        bucket: 1,
+        en: "One measurement — a length.",
+        es: "Una sola medida: un largo.",
+      },
+    ],
+  },
+  volume: {
+    a: { en: "Volume (cubic units)", es: "Volumen (unidades cúbicas)" },
+    b: { en: "Surface area (square units)", es: "Área de superficie (unidades cuadradas)" },
+    cards: [
+      {
+        t: "Cereal that fits in the box",
+        bucket: 0,
+        en: "What fits inside is volume.",
+        es: "Lo que cabe adentro es volumen.",
+      },
+      {
+        t: "Wrapping paper for the box",
+        bucket: 1,
+        en: "Covering the outside.",
+        es: "Cubrir el exterior.",
+      },
+      { t: "Water a fish tank holds", bucket: 0, en: "Filling a space.", es: "Llenar un espacio." },
+      {
+        t: "Glass to build the tank",
+        bucket: 1,
+        en: "The faces themselves.",
+        es: "Las caras mismas.",
+      },
+      {
+        t: "l × w × h",
+        bucket: 0,
+        en: "Three dimensions multiplied.",
+        es: "Tres dimensiones multiplicadas.",
+      },
+      {
+        t: "Adding up all 6 faces",
+        bucket: 1,
+        en: "That is surface area.",
+        es: "Eso es área de superficie.",
+      },
+    ],
+  },
+  "surface-area": {
+    a: { en: "Surface area", es: "Área de superficie" },
+    b: { en: "Volume", es: "Volumen" },
+    cards: [
+      { t: "Paint the outside of a box", bucket: 0, en: "Covering faces.", es: "Cubrir caras." },
+      {
+        t: "Sand that fills a box",
+        bucket: 1,
+        en: "Filling the inside.",
+        es: "Llenar el interior.",
+      },
+      {
+        t: "Add the areas of all faces",
+        bucket: 0,
+        en: "The definition of surface area.",
+        es: "La definición de área de superficie.",
+      },
+      {
+        t: "Count the unit cubes inside",
+        bucket: 1,
+        en: "Counting the inside is volume.",
+        es: "Contar el interior es volumen.",
+      },
+      {
+        t: "Unfold the box into a net",
+        bucket: 0,
+        en: "A net shows every face to add.",
+        es: "La plantilla muestra cada cara que se suma.",
+      },
+      {
+        t: "Measured in cubic units",
+        bucket: 1,
+        en: "Cubic units always mean volume.",
+        es: "Las unidades cúbicas siempre son volumen.",
+      },
+    ],
+  },
+  statistics: {
+    a: { en: "Statistical question", es: "Pregunta estadística" },
+    b: { en: "Not statistical", es: "No es estadística" },
+    cards: [
+      {
+        t: "How tall are the students in my class?",
+        bucket: 0,
+        en: "Answers vary from person to person.",
+        es: "Las respuestas varían de persona a persona.",
+      },
+      { t: "How tall am I?", bucket: 1, en: "One fixed answer.", es: "Una sola respuesta fija." },
+      {
+        t: "How many minutes do people sleep?",
+        bucket: 0,
+        en: "Varies across people.",
+        es: "Varía entre personas.",
+      },
+      {
+        t: "What is my shoe size?",
+        bucket: 1,
+        en: "One answer about one person.",
+        es: "Una respuesta sobre una persona.",
+      },
+      {
+        t: "How long is the bus ride for riders?",
+        bucket: 0,
+        en: "Different riders, different times.",
+        es: "Distintos pasajeros, distintos tiempos.",
+      },
+      { t: "How many days are in June?", bucket: 1, en: "Always 30.", es: "Siempre 30." },
+    ],
+  },
+  "number-line": {
+    a: { en: "Greater than −3", es: "Mayor que −3" },
+    b: { en: "Less than −3", es: "Menor que −3" },
+    cards: [
+      {
+        t: "0",
+        bucket: 0,
+        en: "Zero is right of every negative.",
+        es: "El cero está a la derecha de todo negativo.",
+      },
+      { t: "−7", bucket: 1, en: "Further left than −3.", es: "Más a la izquierda que −3." },
+      { t: "−1", bucket: 0, en: "Closer to zero than −3 is.", es: "Más cerca de cero que −3." },
+      { t: "−10", bucket: 1, en: "Much further left.", es: "Mucho más a la izquierda." },
+      {
+        t: "2",
+        bucket: 0,
+        en: "Positive beats any negative.",
+        es: "Un positivo supera a cualquier negativo.",
+      },
+      {
+        t: "−3.5",
+        bucket: 1,
+        en: "Half a step further left than −3.",
+        es: "Medio paso más a la izquierda que −3.",
+      },
+    ],
+  },
+  "coordinate-plane": {
+    a: { en: "Quadrant II (left, up)", es: "Cuadrante II (izquierda, arriba)" },
+    b: { en: "Not in Quadrant II", es: "No está en el cuadrante II" },
+    cards: [
+      { t: "(−3, 5)", bucket: 0, en: "Negative x, positive y.", es: "x negativa, y positiva." },
+      {
+        t: "(3, 5)",
+        bucket: 1,
+        en: "Both positive — Quadrant I.",
+        es: "Ambas positivas: cuadrante I.",
+      },
+      { t: "(−1, 2)", bucket: 0, en: "Left and up.", es: "Izquierda y arriba." },
+      {
+        t: "(−4, −2)",
+        bucket: 1,
+        en: "Both negative — Quadrant III.",
+        es: "Ambas negativas: cuadrante III.",
+      },
+      { t: "(−6, 1)", bucket: 0, en: "Left and up again.", es: "Otra vez izquierda y arriba." },
+      {
+        t: "(2, −5)",
+        bucket: 1,
+        en: "Right and down — Quadrant IV.",
+        es: "Derecha y abajo: cuadrante IV.",
+      },
+    ],
+  },
+  fallback: {
+    a: { en: "Reasonable estimate", es: "Estimación razonable" },
+    b: { en: "Not reasonable", es: "No es razonable" },
+    cards: [
+      {
+        t: "A door is about 7 feet tall",
+        bucket: 0,
+        en: "About right for a doorway.",
+        es: "Más o menos correcto para una puerta.",
+      },
+      {
+        t: "A door is about 70 feet tall",
+        bucket: 1,
+        en: "That is a seven-story building.",
+        es: "Eso es un edificio de siete pisos.",
+      },
+      {
+        t: "A gallon of milk weighs about 8 lb",
+        bucket: 0,
+        en: "Close to real.",
+        es: "Cerca de lo real.",
+      },
+      {
+        t: "A pencil weighs about 5 lb",
+        bucket: 1,
+        en: "That is a bowling ball.",
+        es: "Eso es una bola de boliche.",
+      },
+      {
+        t: "A school bus holds about 50 riders",
+        bucket: 0,
+        en: "A believable capacity.",
+        es: "Una capacidad creíble.",
+      },
+      {
+        t: "A school bus holds about 5,000 riders",
+        bucket: 1,
+        en: "That is a stadium.",
+        es: "Eso es un estadio.",
+      },
+    ],
+  },
+};
+
+/**
+ * WOULD YOU RATHER? — two defensible-sounding options, a family vote, then the
+ * mathematics that settles it. There is no losing move: the point is that a
+ * family argues about numbers for two minutes and then checks.
+ */
+const FAMILY_WYR = {
+  ratios: [
+    {
+      a: { en: "A 12 oz drink for $3", es: "Una bebida de 12 oz por $3" },
+      b: { en: "A 20 oz drink for $4", es: "Una bebida de 20 oz por $4" },
+      en: "The 20 oz is the better buy: 20¢ per ounce beats 25¢ per ounce.",
+      es: "La de 20 oz conviene más: 20¢ por onza contra 25¢ por onza.",
+    },
+    {
+      a: { en: "Mix juice 2 parts to 3 parts water", es: "Mezclar jugo 2 partes por 3 de agua" },
+      b: { en: "Mix juice 4 parts to 6 parts water", es: "Mezclar jugo 4 partes por 6 de agua" },
+      en: "Trick question — they taste identical. 2:3 and 4:6 are equivalent ratios.",
+      es: "Pregunta trampa: saben igual. 2:3 y 4:6 son razones equivalentes.",
+    },
+  ],
+  fractions: [
+    {
+      a: { en: "Half of a large pizza", es: "La mitad de una pizza grande" },
+      b: { en: "Three quarters of a small pizza", es: "Tres cuartos de una pizza pequeña" },
+      en: "It depends on the whole! A fraction only means something next to the size it is a fraction OF.",
+      es: "¡Depende del entero! Una fracción solo significa algo junto al tamaño DEL que es fracción.",
+    },
+    {
+      a: { en: "Split 4 candy bars among 8 people", es: "Repartir 4 barras entre 8 personas" },
+      b: { en: "Split 3 candy bars among 6 people", es: "Repartir 3 barras entre 6 personas" },
+      en: "Same share: both are 1/2 a bar each. 4÷8 = 3÷6 = 1/2.",
+      es: "La misma porción: media barra cada quien. 4÷8 = 3÷6 = 1/2.",
+    },
+  ],
+  decimals: [
+    {
+      a: { en: "Get $0.75 every day for a week", es: "Recibir $0.75 cada día por una semana" },
+      b: { en: "Get $5.00 once", es: "Recibir $5.00 una sola vez" },
+      en: "The daily deal wins: 7 × $0.75 = $5.25.",
+      es: "Gana lo diario: 7 × $0.75 = $5.25.",
+    },
+    {
+      a: { en: "A 0.5 lb slice of cake", es: "Una rebanada de 0.5 lb de pastel" },
+      b: { en: "A 0.45 lb slice of cake", es: "Una rebanada de 0.45 lb de pastel" },
+      en: "0.5 is bigger — 0.50 vs 0.45. More digits does not mean a bigger number.",
+      es: "0.5 es mayor: 0.50 contra 0.45. Más dígitos no significa número más grande.",
+    },
+  ],
+  division: [
+    {
+      a: {
+        en: "Share 100 stickers among 8 friends",
+        es: "Repartir 100 calcomanías entre 8 amigos",
+      },
+      b: { en: "Share 60 stickers among 5 friends", es: "Repartir 60 calcomanías entre 5 amigos" },
+      en: "The second: 12 each, versus 12 each with 4 left over. Same share, cleaner split.",
+      es: "La segunda: 12 para cada quien, contra 12 y sobran 4. Misma porción, reparto más limpio.",
+    },
+    {
+      a: {
+        en: "Ride in a van holding 7, with 50 people",
+        es: "Ir en una van de 7, con 50 personas",
+      },
+      b: {
+        en: "Ride in a van holding 9, with 50 people",
+        es: "Ir en una van de 9, con 50 personas",
+      },
+      en: "The 9-seat van: 6 vans instead of 8. Both round UP — nobody rides in a fraction of a van.",
+      es: "La van de 9: 6 vans en vez de 8. Las dos redondean HACIA ARRIBA: nadie viaja en una fracción de van.",
+    },
+  ],
+  factors: [
+    {
+      a: { en: "Get $1 for every factor of 24", es: "Recibir $1 por cada factor de 24" },
+      b: { en: "Get $1 for every factor of 30", es: "Recibir $1 por cada factor de 30" },
+      en: "Tie! Both have 8 factors. 24: 1,2,3,4,6,8,12,24. 30: 1,2,3,5,6,10,15,30.",
+      es: "¡Empate! Ambos tienen 8 factores. 24: 1,2,3,4,6,8,12,24. 30: 1,2,3,5,6,10,15,30.",
+    },
+    {
+      a: { en: "Arrange 36 chairs in a rectangle", es: "Acomodar 36 sillas en rectángulo" },
+      b: { en: "Arrange 37 chairs in a rectangle", es: "Acomodar 37 sillas en rectángulo" },
+      en: "36 — it has 9 factors, so 9 arrangements. 37 is prime: one long row only.",
+      es: "36: tiene 9 factores, así que 9 arreglos. 37 es primo: solo una fila larga.",
+    },
+  ],
+  exponents: [
+    {
+      a: { en: "$100 today", es: "$100 hoy" },
+      b: { en: "1¢ doubled every day for 3 weeks", es: "1¢ duplicado cada día por 3 semanas" },
+      en: "Take the penny! Day 21 alone is 2²⁰ cents — over $10,000.",
+      es: "¡Toma el centavo! Solo el día 21 son 2²⁰ centavos: más de $10,000.",
+    },
+    {
+      a: { en: "Fold a paper 10 times", es: "Doblar un papel 10 veces" },
+      b: { en: "Stack 100 sheets of paper", es: "Apilar 100 hojas de papel" },
+      en: "Ten folds wins: 2¹⁰ = 1,024 layers.",
+      es: "Ganan los diez dobleces: 2¹⁰ = 1,024 capas.",
+    },
+  ],
+  expressions: [
+    {
+      a: { en: "Earn 5h dollars for h hours", es: "Ganar 5h dólares por h horas" },
+      b: { en: "Earn h + 20 dollars for h hours", es: "Ganar h + 20 dólares por h horas" },
+      en: "Depends on h! At h = 5 they tie at 25. Work fewer hours and the +20 wins; more and 5h does.",
+      es: "¡Depende de h! En h = 5 empatan en 25. Con menos horas gana el +20; con más gana 5h.",
+    },
+    {
+      a: { en: "3 pizzas at p dollars each", es: "3 pizzas a p dólares cada una" },
+      b: { en: "p + p + p dollars", es: "p + p + p dólares" },
+      en: "Identical — 3p and p + p + p are the same expression.",
+      es: "Idénticas: 3p y p + p + p son la misma expresión.",
+    },
+  ],
+  equations: [
+    {
+      a: { en: "Solve x + 17 = 42", es: "Resolver x + 17 = 42" },
+      b: { en: "Solve 17x = 42", es: "Resolver 17x = 42" },
+      en: "The first is friendlier: x = 25. The second gives a fraction, 42/17.",
+      es: "La primera es más amable: x = 25. La segunda da una fracción, 42/17.",
+    },
+    {
+      a: { en: "Save $3 a week toward $24", es: "Ahorrar $3 por semana para $24" },
+      b: { en: "Save $4 a week toward $24", es: "Ahorrar $4 por semana para $24" },
+      en: "$4 a week: 4w = 24 gives 6 weeks, versus 8 weeks at $3.",
+      es: "$4 por semana: 4s = 24 da 6 semanas, contra 8 semanas con $3.",
+    },
+  ],
+  inequalities: [
+    {
+      a: { en: "A ride needing h ≥ 48 inches", es: "Un juego que pide h ≥ 48 pulgadas" },
+      b: { en: "A ride needing h > 48 inches", es: "Un juego que pide h > 48 pulgadas" },
+      en: "The first, if you are exactly 48 inches — ≥ lets you on, > does not.",
+      es: "El primero, si mides exactamente 48 pulgadas: ≥ te deja pasar, > no.",
+    },
+    {
+      a: { en: "Spend at most $20", es: "Gastar máximo $20" },
+      b: { en: "Spend less than $20", es: "Gastar menos de $20" },
+      en: "'At most' (c ≤ 20) is better — it lets you spend exactly $20.",
+      es: "'Máximo' (c ≤ 20) es mejor: te deja gastar exactamente $20.",
+    },
+  ],
+  properties: [
+    {
+      a: { en: "Compute 4 × 99 the long way", es: "Calcular 4 × 99 a la larga" },
+      b: { en: "Compute 4 × 100 − 4", es: "Calcular 4 × 100 − 4" },
+      en: "The second — same answer (396) by the distributive property, and you can do it in your head.",
+      es: "La segunda: misma respuesta (396) por la propiedad distributiva, y se hace mentalmente.",
+    },
+    {
+      a: { en: "Buy 6 packs of 4 pens", es: "Comprar 6 paquetes de 4 plumas" },
+      b: { en: "Buy 4 packs of 6 pens", es: "Comprar 4 paquetes de 6 plumas" },
+      en: "Same 24 pens — the commutative property. Pick by price, not by count.",
+      es: "Las mismas 24 plumas: propiedad conmutativa. Elijan por precio, no por cantidad.",
+    },
+  ],
+  area: [
+    {
+      a: { en: "A 6 ft by 4 ft rug", es: "Un tapete de 6 pies por 4" },
+      b: { en: "A 5 ft by 5 ft rug", es: "Un tapete de 5 pies por 5" },
+      en: "The square one: 25 sq ft versus 24. Same perimeter, more floor covered.",
+      es: "El cuadrado: 25 pies² contra 24. Mismo perímetro, más piso cubierto.",
+    },
+    {
+      a: { en: "A triangle with base 10, height 4", es: "Un triángulo de base 10 y altura 4" },
+      b: { en: "A rectangle 4 by 4", es: "Un rectángulo de 4 por 4" },
+      en: "The triangle: ½ × 10 × 4 = 20 square units, against the rectangle's 16.",
+      es: "El triángulo: ½ × 10 × 4 = 20 unidades cuadradas, contra 16 del rectángulo.",
+    },
+  ],
+  volume: [
+    {
+      a: { en: "A box 2 × 3 × 6", es: "Una caja de 2 × 3 × 6" },
+      b: { en: "A box 3 × 3 × 4", es: "Una caja de 3 × 3 × 4" },
+      en: "Both hold 36 cubic units — different shapes, same volume.",
+      es: "Ambas caben 36 unidades cúbicas: distinta forma, mismo volumen.",
+    },
+    {
+      a: { en: "Double the height of a box", es: "Duplicar la altura de una caja" },
+      b: { en: "Double every edge of a box", es: "Duplicar cada arista de una caja" },
+      en: "Doubling every edge — that multiplies volume by 8, not 2.",
+      es: "Duplicar cada arista: eso multiplica el volumen por 8, no por 2.",
+    },
+  ],
+  "surface-area": [
+    {
+      a: { en: "Wrap a 2 × 2 × 2 cube", es: "Envolver un cubo de 2 × 2 × 2" },
+      b: { en: "Wrap a 1 × 2 × 4 box", es: "Envolver una caja de 1 × 2 × 4" },
+      en: "The cube needs less paper: 24 sq units versus 28 — and both hold the same 8 cubic units.",
+      es: "El cubo necesita menos papel: 24 unidades² contra 28, y ambos caben lo mismo (8 unidades³).",
+    },
+    {
+      a: { en: "Paint 5 faces of a cube", es: "Pintar 5 caras de un cubo" },
+      b: { en: "Paint all 6 faces", es: "Pintar las 6 caras" },
+      en: "Five, if it sits on the floor — the bottom face never shows. Real painters count that way.",
+      es: "Cinco, si está en el piso: la cara de abajo no se ve. Los pintores de verdad cuentan así.",
+    },
+  ],
+  statistics: [
+    {
+      a: { en: "Be judged on your MEAN score", es: "Que te evalúen por tu media" },
+      b: { en: "Be judged on your MEDIAN score", es: "Que te evalúen por tu mediana" },
+      en: "The median, if you had one terrible day — one low outlier drags the mean, not the median.",
+      es: "La mediana, si tuviste un mal día: un valor atípico bajo arrastra la media, no la mediana.",
+    },
+    {
+      a: { en: "Ask 5 people a survey question", es: "Preguntar a 5 personas" },
+      b: { en: "Ask 500 people the same question", es: "Preguntar a 500 personas lo mismo" },
+      en: "500 — more data means the shape of the answer is far more trustworthy.",
+      es: "500: más datos hacen que la forma de la respuesta sea mucho más confiable.",
+    },
+  ],
+  "number-line": [
+    {
+      a: { en: "Owe $5", es: "Deber $5" },
+      b: { en: "Owe $12", es: "Deber $12" },
+      en: "Owing $5 (−5) is better — it sits further right on the number line, closer to zero.",
+      es: "Deber $5 (−5) es mejor: está más a la derecha en la recta, más cerca de cero.",
+    },
+    {
+      a: { en: "A day at −2 °C", es: "Un día a −2 °C" },
+      b: { en: "A day at 2 °C", es: "Un día a 2 °C" },
+      en: "+2 °C is warmer. Both are 2 from zero — same absolute value, opposite directions.",
+      es: "+2 °C es más cálido. Ambos están a 2 del cero: mismo valor absoluto, direcciones opuestas.",
+    },
+  ],
+  "coordinate-plane": [
+    {
+      a: { en: "Meet a friend at (3, 4)", es: "Ver a un amigo en (3, 4)" },
+      b: { en: "Meet a friend at (4, 3)", es: "Ver a un amigo en (4, 3)" },
+      en: "Different corners! Order matters: (3,4) is right 3 up 4; (4,3) is right 4 up 3.",
+      es: "¡Esquinas distintas! El orden importa: (3,4) es 3 a la derecha y 4 arriba; (4,3) al revés.",
+    },
+    {
+      a: {
+        en: "Give directions as 'go left a lot'",
+        es: "Dar indicaciones como 've mucho a la izquierda'",
+      },
+      b: { en: "Give directions as (−6, 2)", es: "Dar indicaciones como (−6, 2)" },
+      en: "Coordinates — that is the whole reason the plane exists: exactness.",
+      es: "Las coordenadas: para eso existe el plano, para la exactitud.",
+    },
+  ],
+  fallback: [
+    {
+      a: { en: "Get the answer fast and maybe wrong", es: "Tener la respuesta rápido y quizá mal" },
+      b: { en: "Take twice as long and be sure", es: "Tardar el doble y estar seguro" },
+      en: "In math class, being sure wins — checking is part of the work, not extra credit.",
+      es: "En matemáticas gana estar seguro: comprobar es parte del trabajo, no crédito extra.",
+    },
+    {
+      a: { en: "Explain how you solved it", es: "Explicar cómo lo resolviste" },
+      b: { en: "Just write the answer", es: "Solo escribir la respuesta" },
+      en: "Explaining — a student who can explain it can still do it next week.",
+      es: "Explicar: quien puede explicarlo todavía puede hacerlo la próxima semana.",
+    },
+  ],
+};
+
+function familySortGame(topic) {
+  return FAMILY_SORT_GAMES[topic] || FAMILY_SORT_GAMES.fallback;
+}
+
+function familyWyr(topic) {
+  return FAMILY_WYR[topic] || FAMILY_WYR.fallback;
+}
+
 function familyGamePairs(topic) {
   return FAMILY_GAME_PAIRS[topic] || FAMILY_GAME_PAIRS.fallback;
 }
@@ -4041,23 +4815,49 @@ function familyTfQuestions(topic) {
  * the Together tab. Data ships as a JSON island (window.__HW_FAMGAMES__, `<`
  * escaped) so the game logic in HOMEWORK_TABS_JS stays free of content.
  */
+/**
+ * THE FAMILY ARCADE — four games behind one picker, one visible at a time.
+ * Stacked, four games made the Together tab a scroll; as an arcade they read
+ * as a choice, which is what makes a family pick one. Every game is
+ * collaborative, replayable and NEVER timed (site rule). Content ships as a
+ * JSON island so the engines in HOMEWORK_TABS_JS stay free of mathematics.
+ */
+const ARCADE_GAMES = [
+  { id: "memory", icon: "🃏", en: "Memory Flip", es: "Memoria" },
+  { id: "tf", icon: "🎯", en: "True or False?", es: "¿Verdadero o falso?" },
+  { id: "sort", icon: "🗂️", en: "Sort It!", es: "¡A clasificar!" },
+  { id: "wyr", icon: "🤔", en: "Would You Rather?", es: "¿Qué prefieres?" },
+];
+
 export function renderFamilyGameBreak(topic) {
   const pairs = familyGamePairs(topic);
   const tf = familyTfQuestions(topic);
-  const payload = JSON.stringify({ pairs, tf }).replace(/</g, "\\u003c");
+  const sort = familySortGame(topic);
+  const wyr = familyWyr(topic);
+  const payload = JSON.stringify({ pairs, tf, sort, wyr }).replace(/</g, "\\u003c");
+
+  const picker = ARCADE_GAMES.map(
+    (g, i) => `
+        <button type="button" class="fam-arcade-chip${i === 0 ? " is-active" : ""}" data-arcade-game="${g.id}"
+          onclick="showArcadeGame('${g.id}')" aria-pressed="${i === 0 ? "true" : "false"}">
+          <span class="fam-arcade-chip-icon" aria-hidden="true">${g.icon}</span>
+          <span class="lang-en">${g.en}</span><span class="lang-es" lang="es">${g.es}</span>
+        </button>`,
+  ).join("");
 
   return `
     <div class="fam-game-break card-ish" id="fam_game_break">
       <script>window.__HW_FAMGAMES__ = ${payload};</script>
       <div class="fam-game-head">
-        <span class="fam-game-badge">🎲 FAMILY GAME BREAK / JUEGOS EN FAMILIA</span>
+        <span class="fam-game-badge">🎮 FAMILY ARCADE / SALA DE JUEGOS EN FAMILIA</span>
         <p class="fam-game-lead">
-          <span class="lang-en">Two quick games about tonight's math — play as a team, no timer, replay as often as you like!</span>
-          <span class="lang-es" lang="es">Dos juegos rápidos sobre las matemáticas de hoy. Jueguen en equipo, sin cronómetro, ¡repitan las veces que quieran!</span>
+          <span class="lang-en">Four quick games about tonight's math. Pick one, play as a team — no timer, replay as often as you like.</span>
+          <span class="lang-es" lang="es">Cuatro juegos rápidos sobre las matemáticas de hoy. Escojan uno y jueguen en equipo: sin cronómetro, repitan cuanto quieran.</span>
         </p>
+        <div class="fam-arcade-picker" role="group" aria-label="Choose a game">${picker}</div>
       </div>
 
-      <div class="fam-game-card" id="fam_memory_game">
+      <div class="fam-game-card" id="fam_memory_game" data-arcade-panel="memory">
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🃏 <span class="lang-en">Memory Flip: Math Twins</span><span class="lang-es" lang="es">Memoria: Gemelos Matemáticos</span></h3>
           <button type="button" class="btn btn-sm btn-secondary" onclick="resetMemoryGame()">🔄 <span class="lang-en">Shuffle &amp; Restart</span><span class="lang-es" lang="es">Mezclar y reiniciar</span></button>
@@ -4074,7 +4874,7 @@ export function renderFamilyGameBreak(topic) {
         <p class="fam-memory-win" id="fam_memory_win" hidden>🎉 <span class="lang-en">All twins found! Can you beat your flip count on a rematch?</span><span class="lang-es" lang="es">¡Encontraron todas las parejas! ¿Pueden lograrlo con menos vueltas en la revancha?</span></p>
       </div>
 
-      <div class="fam-game-card" id="fam_tf_game">
+      <div class="fam-game-card" id="fam_tf_game" data-arcade-panel="tf" hidden>
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🎯 <span class="lang-en">True or False? Family Face-Off</span><span class="lang-es" lang="es">¿Verdadero o falso? Duelo Familiar</span></h3>
           <button type="button" class="btn btn-sm btn-secondary" onclick="resetTfGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
@@ -4096,6 +4896,52 @@ export function renderFamilyGameBreak(topic) {
         </div>
         <p class="fam-tf-score" id="fam_tf_score" aria-live="polite"></p>
         <div class="fam-tf-done" id="fam_tf_done" hidden></div>
+      </div>
+
+      <div class="fam-game-card" id="fam_sort_game" data-arcade-panel="sort" hidden>
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🗂️ <span class="lang-en">Sort It!</span><span class="lang-es" lang="es">¡A clasificar!</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetSortGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Tap a card, then tap the bin it belongs in. Talk it through before you tap!</span>
+          <span class="lang-es" lang="es">Toquen una tarjeta y luego el cesto al que pertenece. ¡Conversen antes de tocar!</span>
+        </p>
+        <div class="fam-sort-cards" id="fam_sort_cards" role="group" aria-label="Cards to sort"></div>
+        <div class="fam-sort-bins">
+          <button type="button" class="fam-sort-bin" data-bin="0" onclick="dropSortCard(0)">
+            <span class="fam-sort-bin-label" id="fam_sort_bin0"></span>
+            <span class="fam-sort-bin-count" id="fam_sort_bin0_count">0</span>
+          </button>
+          <button type="button" class="fam-sort-bin" data-bin="1" onclick="dropSortCard(1)">
+            <span class="fam-sort-bin-label" id="fam_sort_bin1"></span>
+            <span class="fam-sort-bin-count" id="fam_sort_bin1_count">0</span>
+          </button>
+        </div>
+        <p class="fam-sort-feedback" id="fam_sort_feedback" aria-live="polite"></p>
+        <div class="fam-sort-done" id="fam_sort_done" hidden></div>
+      </div>
+
+      <div class="fam-game-card" id="fam_wyr_game" data-arcade-panel="wyr" hidden>
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🤔 <span class="lang-en">Would You Rather?</span><span class="lang-es" lang="es">¿Qué prefieres?</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetWyrGame()">🔄 <span class="lang-en">Start Over</span><span class="lang-es" lang="es">Empezar de nuevo</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Everyone votes and says WHY. Then tap to see what the math says — sometimes it is a tie!</span>
+          <span class="lang-es" lang="es">Todos votan y dicen POR QUÉ. Luego toquen para ver qué dicen las matemáticas: ¡a veces es empate!</span>
+        </p>
+        <div class="fam-wyr-options">
+          <button type="button" class="fam-wyr-option" id="fam_wyr_a" onclick="voteWyr(0)"></button>
+          <span class="fam-wyr-or" aria-hidden="true">OR</span>
+          <button type="button" class="fam-wyr-option" id="fam_wyr_b" onclick="voteWyr(1)"></button>
+        </div>
+        <div class="fam-wyr-reveal" id="fam_wyr_reveal" hidden aria-live="polite">
+          <p class="fam-wyr-reveal-title">🔎 <span class="lang-en">What the math says</span><span class="lang-es" lang="es">Lo que dicen las matemáticas</span></p>
+          <p class="fam-wyr-why" id="fam_wyr_why"></p>
+          <button type="button" class="btn btn-primary btn-sm" id="fam_wyr_next" onclick="nextWyr()">➔ <span class="lang-en">Next round</span><span class="lang-es" lang="es">Siguiente ronda</span></button>
+        </div>
+        <p class="fam-wyr-progress" id="fam_wyr_progress" aria-live="polite"></p>
       </div>
     </div>`;
 }
@@ -5472,10 +6318,170 @@ function resetTfGame() {
   renderTfQuestion();
 }
 
+/* ── Arcade picker: one game visible at a time ─────────────────────────── */
+function showArcadeGame(id) {
+  document.querySelectorAll('[data-arcade-panel]').forEach(function (p) {
+    p.hidden = p.dataset.arcadePanel !== id;
+  });
+  document.querySelectorAll('[data-arcade-game]').forEach(function (c) {
+    const on = c.dataset.arcadeGame === id;
+    c.classList.toggle('is-active', on);
+    c.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
+}
+
+/* ── Sort It! — tap a card, tap a bin ──────────────────────────────────── */
+var famSort = { picked: null, placed: 0, right: 0 };
+
+function resetSortGame() {
+  const data = famGamesData();
+  const wrap = document.getElementById('fam_sort_cards');
+  if (!data || !data.sort || !wrap) return;
+  famSort = { picked: null, placed: 0, right: 0 };
+  setBiText(document.getElementById('fam_sort_bin0'), data.sort.a.en, data.sort.a.es);
+  setBiText(document.getElementById('fam_sort_bin1'), data.sort.b.en, data.sort.b.es);
+  document.getElementById('fam_sort_bin0_count').textContent = '0';
+  document.getElementById('fam_sort_bin1_count').textContent = '0';
+  const fb = document.getElementById('fam_sort_feedback');
+  if (fb) fb.textContent = '';
+  const done = document.getElementById('fam_sort_done');
+  if (done) done.hidden = true;
+
+  const cards = data.sort.cards.slice();
+  for (var i = cards.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = cards[i]; cards[i] = cards[j]; cards[j] = t;
+  }
+  wrap.innerHTML = '';
+  cards.forEach(function (c, idx) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'fam-sort-card';
+    btn.textContent = c.t;
+    btn.dataset.bucket = String(c.bucket);
+    btn.dataset.whyEn = c.en;
+    btn.dataset.whyEs = c.es;
+    btn.dataset.idx = String(idx);
+    btn.addEventListener('click', function () { pickSortCard(btn); });
+    wrap.appendChild(btn);
+  });
+}
+
+function pickSortCard(btn) {
+  if (btn.classList.contains('is-placed')) return;
+  document.querySelectorAll('.fam-sort-card').forEach(function (c) { c.classList.remove('is-picked'); });
+  btn.classList.add('is-picked');
+  famSort.picked = btn;
+  setBiText(
+    document.getElementById('fam_sort_feedback'),
+    'Now tap the bin where "' + btn.textContent + '" belongs.',
+    'Ahora toquen el cesto donde va "' + btn.textContent + '".',
+  );
+}
+
+function dropSortCard(bin) {
+  const data = famGamesData();
+  const btn = famSort.picked;
+  const fb = document.getElementById('fam_sort_feedback');
+  if (!data || !btn) {
+    setBiText(fb, 'Tap a card first, then tap a bin.', 'Primero toquen una tarjeta y luego un cesto.');
+    return;
+  }
+  const correct = Number(btn.dataset.bucket) === bin;
+  famSort.placed++;
+  if (correct) {
+    famSort.right++;
+    btn.classList.add('is-placed', 'is-right');
+    const countEl = document.getElementById('fam_sort_bin' + bin + '_count');
+    countEl.textContent = String(Number(countEl.textContent) + 1);
+    setBiText(fb, '✅ Yes — ' + btn.dataset.whyEn, '✅ Sí — ' + btn.dataset.whyEs);
+    if (typeof playCorrectSound === 'function') playCorrectSound();
+  } else {
+    btn.classList.add('is-wrong');
+    setTimeout(function () { btn.classList.remove('is-wrong'); }, 600);
+    setBiText(fb, '❌ Other bin — ' + btn.dataset.whyEn, '❌ El otro cesto — ' + btn.dataset.whyEs);
+  }
+  btn.classList.remove('is-picked');
+  famSort.picked = null;
+
+  const remaining = document.querySelectorAll('.fam-sort-card:not(.is-placed)').length;
+  if (remaining === 0) {
+    const done = document.getElementById('fam_sort_done');
+    if (done) {
+      done.hidden = false;
+      const tries = famSort.placed;
+      setBiText(
+        done,
+        '🎉 All sorted! You placed 6 cards in ' + tries + ' tries.',
+        '🎉 ¡Todo clasificado! Colocaron 6 tarjetas en ' + tries + ' intentos.',
+      );
+    }
+    if (typeof triggerCelebration === 'function') triggerCelebration();
+  }
+}
+
+/* ── Would You Rather? — vote, then reveal the mathematics ─────────────── */
+var famWyr = { idx: 0, voted: false };
+
+function resetWyrGame() {
+  famWyr = { idx: 0, voted: false };
+  renderWyr();
+}
+
+function renderWyr() {
+  const data = famGamesData();
+  if (!data || !data.wyr) return;
+  const round = data.wyr[famWyr.idx];
+  const a = document.getElementById('fam_wyr_a');
+  const b = document.getElementById('fam_wyr_b');
+  const reveal = document.getElementById('fam_wyr_reveal');
+  const prog = document.getElementById('fam_wyr_progress');
+  if (!round) {
+    setBiText(
+      prog,
+      '🏆 That is every round — start over any time, or argue about the last one a while longer.',
+      '🏆 Esas son todas las rondas. Empiecen de nuevo cuando quieran, o sigan discutiendo la última.',
+    );
+    if (a) a.hidden = true;
+    if (b) b.hidden = true;
+    if (reveal) reveal.hidden = true;
+    return;
+  }
+  famWyr.voted = false;
+  if (a) { a.hidden = false; a.classList.remove('is-chosen'); setBiText(a, round.a.en, round.a.es); }
+  if (b) { b.hidden = false; b.classList.remove('is-chosen'); setBiText(b, round.b.en, round.b.es); }
+  if (reveal) reveal.hidden = true;
+  setBiText(
+    prog,
+    'Round ' + (famWyr.idx + 1) + ' of ' + data.wyr.length + ' · everyone votes, then say why',
+    'Ronda ' + (famWyr.idx + 1) + ' de ' + data.wyr.length + ' · todos votan y dicen por qué',
+  );
+}
+
+function voteWyr(which) {
+  const data = famGamesData();
+  const round = data && data.wyr[famWyr.idx];
+  if (!round || famWyr.voted) return;
+  famWyr.voted = true;
+  const chosen = document.getElementById(which === 0 ? 'fam_wyr_a' : 'fam_wyr_b');
+  if (chosen) chosen.classList.add('is-chosen');
+  setBiText(document.getElementById('fam_wyr_why'), round.en, round.es);
+  const reveal = document.getElementById('fam_wyr_reveal');
+  if (reveal) reveal.hidden = false;
+}
+
+function nextWyr() {
+  famWyr.idx++;
+  renderWyr();
+}
+
 function initFamilyGames() {
   if (!famGamesData() || !document.getElementById('fam_game_break')) return;
   resetMemoryGame();
   resetTfGame();
+  resetSortGame();
+  resetWyrGame();
 }
 
 /* Tonight's Path roadmap: light up the current stop, keep a persistent check
@@ -8677,9 +9683,184 @@ body.lang-mode-es .tab-es {
   color: var(--ink);
 }
 
+/* Arcade picker — four games, one open at a time */
+.fam-arcade-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.fam-arcade-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 15px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, color .16s ease, background .16s ease;
+}
+.fam-arcade-chip:hover { transform: translateY(-1px); border-color: var(--teal); color: var(--ink); }
+.fam-arcade-chip:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-arcade-chip.is-active {
+  background: linear-gradient(135deg, #14406e, #0f2b50);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 18px -10px rgba(15,43,80,.9);
+}
+.fam-arcade-chip-icon { font-size: 16px; }
+
+/* Sort It! */
+.fam-sort-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  min-height: 48px;
+}
+.fam-sort-card {
+  padding: 11px 16px;
+  min-height: 44px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.fam-sort-card:hover { transform: translateY(-2px); border-color: var(--teal); }
+.fam-sort-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-sort-card.is-picked {
+  border-color: var(--amber);
+  background: var(--amber-light);
+  box-shadow: 0 0 0 4px rgba(242,193,91,.28);
+}
+.fam-sort-card.is-placed { display: none; }
+@keyframes famShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.fam-sort-card.is-wrong {
+  animation: famShake .3s ease;
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+.fam-sort-bins { display: flex; gap: 10px; }
+.fam-sort-bin {
+  flex: 1 1 0;
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 12px;
+  border: 2px dashed var(--teal);
+  border-radius: 14px;
+  background: var(--teal-light);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal-ink);
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+}
+.fam-sort-bin:hover { background: #cdeeea; transform: translateY(-2px); }
+.fam-sort-bin:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-sort-bin-label { text-align: center; line-height: 1.25; }
+.fam-sort-bin-count {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.fam-sort-feedback { margin: 12px 0 0; font-size: 14px; color: var(--ink); min-height: 20px; }
+.fam-sort-done {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Would You Rather? */
+.fam-wyr-options {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.fam-wyr-option {
+  flex: 1 1 0;
+  min-height: 92px;
+  padding: 16px 14px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.fam-wyr-option:hover { transform: translateY(-2px); border-color: var(--amber); }
+.fam-wyr-option:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-wyr-option.is-chosen {
+  border-color: var(--amber);
+  background: var(--amber-light);
+  box-shadow: 0 0 0 4px rgba(242,193,91,.24);
+}
+.fam-wyr-or {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+.fam-wyr-reveal {
+  margin-top: 14px;
+  padding: 13px 15px;
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  border-radius: 12px;
+}
+.fam-wyr-reveal-title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--teal-ink);
+}
+.fam-wyr-why { margin: 0 0 10px; font-size: 14.5px; color: var(--ink); }
+.fam-wyr-progress { margin: 12px 0 0; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+
 @media (max-width: 560px) {
   .fam-memory-grid { grid-template-columns: repeat(2, 1fr); }
   .fam-mem-card { min-height: 64px; }
+  .fam-wyr-options { flex-direction: column; }
+  .fam-wyr-or { align-self: flex-start; }
+  .fam-sort-bins { flex-direction: column; }
 }
 
 @media print {
