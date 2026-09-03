@@ -4067,9 +4067,177 @@ body.lang-mode-es .tab-es {
   .hw-journey-min { display: none; }
 }
 
+/* ============================================================
+   Family Game Break — Memory Flip + True/False Face-Off.
+   ============================================================ */
+.fam-game-break {
+  margin-top: 22px;
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 14px 34px -22px rgba(18,53,91,.5);
+}
+.fam-game-head { margin-bottom: 14px; }
+.fam-game-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: #6b21a8;
+  background: #f3e8ff;
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+.fam-game-lead { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
+.fam-game-card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.fam-game-card:last-child { margin-bottom: 0; }
+.fam-game-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fam-game-h3 { margin: 0; font-size: 16.5px; color: var(--navy); }
+.fam-game-h3 .lang-es { font-weight: 600; }
+.fam-game-card .lang-en + .lang-es { border-left: 0; padding-left: 0; }
+.fam-game-sub { margin: 8px 0 12px; font-size: 13.5px; color: var(--muted); }
+
+/* Memory Flip */
+.fam-memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.fam-mem-card {
+  position: relative;
+  min-height: 76px;
+  border: 2px solid var(--navy-light);
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  cursor: pointer;
+  padding: 6px;
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+.fam-mem-card::before {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,.85);
+  font-size: 26px;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+.fam-mem-card:hover { transform: translateY(-2px); }
+.fam-mem-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-mem-face {
+  display: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+.fam-mem-card.is-up, .fam-mem-card.is-matched {
+  background: #fff;
+  border-color: var(--teal);
+}
+.fam-mem-card.is-up::before, .fam-mem-card.is-matched::before { content: none; }
+.fam-mem-card.is-up .fam-mem-face, .fam-mem-card.is-matched .fam-mem-face {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  text-align: center;
+}
+.fam-mem-card.is-matched {
+  background: var(--success-bg);
+  border-color: var(--success);
+  cursor: default;
+}
+.fam-memory-status { margin: 10px 0 0; font-size: 13.5px; color: var(--muted); }
+.fam-memory-win {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* True/False Face-Off */
+.fam-tf-turn { font-size: 13px; font-weight: 800; color: var(--teal-ink); margin-bottom: 6px; }
+.fam-tf-statement {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.fam-tf-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.fam-tf-btn {
+  flex: 1 1 140px;
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.fam-tf-true { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+.fam-tf-true:hover:not(:disabled) { background: var(--success); color: #fff; }
+.fam-tf-false { background: var(--error-bg); border-color: var(--error); color: var(--error); }
+.fam-tf-false:hover:not(:disabled) { background: var(--error); color: #fff; }
+.fam-tf-btn:disabled { opacity: .55; cursor: default; }
+.fam-tf-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-tf-feedback {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border: 1px solid #f0d9a0;
+  border-radius: 12px;
+}
+.fam-tf-verdict { margin: 0 0 6px; font-weight: 800; font-size: 14.5px; }
+.fam-tf-verdict.is-right { color: var(--success); }
+.fam-tf-verdict.is-wrong { color: var(--error); }
+.fam-tf-why { margin: 0 0 10px; font-size: 14px; color: var(--ink); }
+.fam-tf-score { margin: 10px 0 0; font-size: 13px; font-weight: 700; color: var(--muted); }
+.fam-tf-done {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .fam-memory-grid { grid-template-columns: repeat(2, 1fr); }
+  .fam-mem-card { min-height: 64px; }
+}
+
 @media print {
   .hw-journey, .hw-quickplan { display: none; }
   .fam-act-card { break-inside: avoid; }
+  /* The interactive games are screen-only; paper families have the Activity
+     Corner and the printable practice instead. */
+  .fam-game-break { display: none; }
 }
 
 
@@ -5142,6 +5310,58 @@ header.packet h1::after{
           <span class="lang-en" id="math_talk_follow_en">Follow-up: Point to where the numbers match the visual model.</span>
           <span class="lang-es" lang="es" id="math_talk_follow_es">Seguimiento: Señala dónde los números coinciden con el modelo visual.</span>
         </p>
+      </div>
+    </div>
+      
+    <div class="fam-game-break card-ish" id="fam_game_break">
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"(3, 2) from the origin","b":"Right 3, up 2"},{"a":"(−1, 4) lives in…","b":"Quadrant II"},{"a":"(0, 0) is called…","b":"The origin"},{"a":"(2, −5) lives in…","b":"Quadrant IV"}],"tf":[{"en":"(3, 2) and (2, 3) are the same point.","es":"(3, 2) y (2, 3) son el mismo punto.","answer":false,"whyEn":"Order matters: (3, 2) is right 3 up 2; (2, 3) is right 2 up 3. Two different spots!","whyEs":"El orden importa: (3, 2) es 3 a la derecha y 2 arriba; (2, 3) es 2 a la derecha y 3 arriba. ¡Dos lugares distintos!"},{"en":"The first number in an ordered pair tells you how far to move left or right.","es":"El primer número de un par ordenado dice cuánto moverse a la izquierda o derecha.","answer":true,"whyEn":"x first (across), y second (up/down) — 'you crawl before you climb.'","whyEs":"Primero x (horizontal), luego y (vertical): 'primero caminas, luego subes'."},{"en":"(0, 0) is called the origin.","es":"(0, 0) se llama el origen.","answer":true,"whyEn":"It's where the two axes cross — every trip starts there.","whyEs":"Es donde se cruzan los dos ejes: todo viaje empieza allí."},{"en":"(−1, 4) is in Quadrant IV.","es":"(−1, 4) está en el cuadrante IV.","answer":false,"whyEn":"Negative x, positive y → Quadrant II (upper left). Quadrant IV is +x, −y.","whyEs":"x negativa, y positiva → cuadrante II (arriba a la izquierda). El IV es +x, −y."},{"en":"The four quadrants are numbered going counterclockwise.","es":"Los cuatro cuadrantes se numeran en sentido contrario a las manecillas.","answer":true,"whyEn":"I (top right) → II (top left) → III (bottom left) → IV (bottom right).","whyEs":"I (arriba derecha) → II (arriba izquierda) → III (abajo izquierda) → IV (abajo derecha)."}]};</script>
+      <div class="fam-game-head">
+        <span class="fam-game-badge">🎲 FAMILY GAME BREAK / JUEGOS EN FAMILIA</span>
+        <p class="fam-game-lead">
+          <span class="lang-en">Two quick games about tonight's math — play as a team, no timer, replay as often as you like!</span>
+          <span class="lang-es" lang="es">Dos juegos rápidos sobre las matemáticas de hoy. Jueguen en equipo, sin cronómetro, ¡repitan las veces que quieran!</span>
+        </p>
+      </div>
+
+      <div class="fam-game-card" id="fam_memory_game">
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🃏 <span class="lang-en">Memory Flip: Math Twins</span><span class="lang-es" lang="es">Memoria: Gemelos Matemáticos</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetMemoryGame()">🔄 <span class="lang-en">Shuffle &amp; Restart</span><span class="lang-es" lang="es">Mezclar y reiniciar</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Flip two cards to find each problem's twin answer. Fewer flips = sharper memory!</span>
+          <span class="lang-es" lang="es">Volteen dos tarjetas para encontrar la pareja de cada problema. ¡Menos vueltas = mejor memoria!</span>
+        </p>
+        <div class="fam-memory-grid" id="fam_memory_grid" role="group" aria-label="Memory matching game"></div>
+        <p class="fam-memory-status" id="fam_memory_status" aria-live="polite">
+          <span class="lang-en">Matches: <strong id="fam_mem_matches">0</strong> / 4 · Flips: <strong id="fam_mem_flips">0</strong></span>
+          <span class="lang-es" lang="es">Parejas: <strong id="fam_mem_matches_es">0</strong> / 4 · Vueltas: <strong id="fam_mem_flips_es">0</strong></span>
+        </p>
+        <p class="fam-memory-win" id="fam_memory_win" hidden>🎉 <span class="lang-en">All twins found! Can you beat your flip count on a rematch?</span><span class="lang-es" lang="es">¡Encontraron todas las parejas! ¿Pueden lograrlo con menos vueltas en la revancha?</span></p>
+      </div>
+
+      <div class="fam-game-card" id="fam_tf_game">
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🎯 <span class="lang-en">True or False? Family Face-Off</span><span class="lang-es" lang="es">¿Verdadero o falso? Duelo Familiar</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetTfGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Take turns — student answers one, then a family member answers the next. Watch for the trick statements!</span>
+          <span class="lang-es" lang="es">Por turnos: el estudiante responde una y luego un familiar responde la siguiente. ¡Cuidado con las trampas!</span>
+        </p>
+        <div class="fam-tf-turn" id="fam_tf_turn" aria-live="polite"></div>
+        <p class="fam-tf-statement" id="fam_tf_statement"></p>
+        <div class="fam-tf-buttons">
+          <button type="button" class="btn fam-tf-btn fam-tf-true" id="fam_tf_true_btn" onclick="answerTf(true)">✓ <span class="lang-en">TRUE</span><span class="lang-es" lang="es">VERDADERO</span></button>
+          <button type="button" class="btn fam-tf-btn fam-tf-false" id="fam_tf_false_btn" onclick="answerTf(false)">✗ <span class="lang-en">FALSE</span><span class="lang-es" lang="es">FALSO</span></button>
+        </div>
+        <div class="fam-tf-feedback" id="fam_tf_feedback" hidden aria-live="polite">
+          <p class="fam-tf-verdict" id="fam_tf_verdict"></p>
+          <p class="fam-tf-why" id="fam_tf_why"></p>
+          <button type="button" class="btn btn-primary btn-sm" id="fam_tf_next_btn" onclick="nextTf()">➔ <span class="lang-en">Next statement</span><span class="lang-es" lang="es">Siguiente</span></button>
+        </div>
+        <p class="fam-tf-score" id="fam_tf_score" aria-live="polite"></p>
+        <div class="fam-tf-done" id="fam_tf_done" hidden></div>
       </div>
     </div>
       
@@ -7144,6 +7364,206 @@ function journeyStorageKey() {
   return 'hw_journey_' + (window.LESSON_ID || location.pathname);
 }
 
+/* ── Family Game Break (Together tab) ─────────────────────────────────────
+   Two content-free game engines; the content ships as the JSON island
+   window.__HW_FAMGAMES__ rendered by renderFamilyGameBreak(). No timers. */
+var famMem = { first: null, lock: false, matches: 0, flips: 0 };
+var famTf = { idx: 0, score: 0, answered: 0 };
+
+function famGamesData() {
+  var d = window.__HW_FAMGAMES__;
+  return d && Array.isArray(d.pairs) && Array.isArray(d.tf) ? d : null;
+}
+
+function resetMemoryGame() {
+  var data = famGamesData();
+  var grid = document.getElementById('fam_memory_grid');
+  if (!data || !grid) return;
+  famMem = { first: null, lock: false, matches: 0, flips: 0 };
+  var win = document.getElementById('fam_memory_win');
+  if (win) win.hidden = true;
+  updateMemoryStatus();
+  var faces = [];
+  data.pairs.forEach(function (p, i) {
+    faces.push({ pair: i, text: p.a });
+    faces.push({ pair: i, text: p.b });
+  });
+  // Runtime shuffle on purpose — each rematch deals a fresh layout.
+  for (var i = faces.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = faces[i]; faces[i] = faces[j]; faces[j] = t;
+  }
+  grid.innerHTML = '';
+  faces.forEach(function (f) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'fam-mem-card';
+    btn.dataset.pair = String(f.pair);
+    btn.setAttribute('aria-label', 'Face-down card');
+    var inner = document.createElement('span');
+    inner.className = 'fam-mem-face';
+    inner.textContent = f.text;
+    btn.appendChild(inner);
+    btn.addEventListener('click', function () { flipMemoryCard(btn); });
+    grid.appendChild(btn);
+  });
+}
+
+function updateMemoryStatus() {
+  ['fam_mem_matches', 'fam_mem_matches_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(famMem.matches);
+  });
+  ['fam_mem_flips', 'fam_mem_flips_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(famMem.flips);
+  });
+}
+
+function flipMemoryCard(btn) {
+  if (famMem.lock || btn.classList.contains('is-up') || btn.classList.contains('is-matched')) return;
+  btn.classList.add('is-up');
+  btn.setAttribute('aria-label', btn.querySelector('.fam-mem-face').textContent);
+  famMem.flips++;
+  updateMemoryStatus();
+  if (!famMem.first) { famMem.first = btn; return; }
+  var a = famMem.first;
+  famMem.first = null;
+  if (a.dataset.pair === btn.dataset.pair) {
+    a.classList.add('is-matched');
+    btn.classList.add('is-matched');
+    famMem.matches++;
+    updateMemoryStatus();
+    if (typeof playCorrectSound === 'function') playCorrectSound();
+    if (famMem.matches >= 4) {
+      var win = document.getElementById('fam_memory_win');
+      if (win) win.hidden = false;
+      if (typeof triggerCelebration === 'function') triggerCelebration();
+    }
+  } else {
+    famMem.lock = true;
+    setTimeout(function () {
+      a.classList.remove('is-up');
+      btn.classList.remove('is-up');
+      a.setAttribute('aria-label', 'Face-down card');
+      btn.setAttribute('aria-label', 'Face-down card');
+      famMem.lock = false;
+    }, 950);
+  }
+}
+
+/* The page has three language modes (bilingual default / en / es), carried by
+   CSS on .lang-en/.lang-es spans — so JS-written text uses the SAME span pair
+   and inherits whichever mode the family picked, live. */
+function setBiText(el, en, es) {
+  if (!el) return;
+  el.textContent = '';
+  var a = document.createElement('span');
+  a.className = 'lang-en';
+  a.textContent = en;
+  var b = document.createElement('span');
+  b.className = 'lang-es';
+  b.setAttribute('lang', 'es');
+  b.textContent = es;
+  el.appendChild(a);
+  el.appendChild(b);
+}
+
+function renderTfQuestion() {
+  var data = famGamesData();
+  if (!data) return;
+  var q = data.tf[famTf.idx];
+  var turnEl = document.getElementById('fam_tf_turn');
+  var stEl = document.getElementById('fam_tf_statement');
+  var fb = document.getElementById('fam_tf_feedback');
+  var doneEl = document.getElementById('fam_tf_done');
+  var btnT = document.getElementById('fam_tf_true_btn');
+  var btnF = document.getElementById('fam_tf_false_btn');
+  if (!q) {
+    if (stEl) stEl.textContent = '';
+    if (turnEl) turnEl.textContent = '';
+    if (btnT) btnT.hidden = true;
+    if (btnF) btnF.hidden = true;
+    if (fb) fb.hidden = true;
+    if (doneEl) {
+      doneEl.hidden = false;
+      var perfect = famTf.score === data.tf.length;
+      var lead = perfect ? '🏆 ' : '🎉 ';
+      setBiText(
+        doneEl,
+        lead + 'Team score: ' + famTf.score + ' out of ' + data.tf.length + (perfect ? ' — perfect game!' : '. Read the whys together and rematch!'),
+        lead + 'Resultado del equipo: ' + famTf.score + ' de ' + data.tf.length + (perfect ? ' — ¡puntuación perfecta!' : '. Revisen los porqués y jueguen otra vez.'),
+      );
+      if (typeof triggerCelebration === 'function' && perfect) triggerCelebration();
+    }
+    return;
+  }
+  if (doneEl) doneEl.hidden = true;
+  if (btnT) { btnT.hidden = false; btnT.disabled = false; }
+  if (btnF) { btnF.hidden = false; btnF.disabled = false; }
+  if (fb) fb.hidden = true;
+  var who = famTf.idx % 2 === 0;
+  var pos = ' · ' + (famTf.idx + 1) + ' / ' + data.tf.length;
+  setBiText(
+    turnEl,
+    (who ? "🧑‍🎓 Student's turn" : "👪 Family member's turn") + pos,
+    (who ? '🧑‍🎓 Turno del estudiante' : '👪 Turno de la familia') + pos,
+  );
+  setBiText(stEl, q.en, q.es);
+  updateTfScore();
+}
+
+function updateTfScore() {
+  var el = document.getElementById('fam_tf_score');
+  if (!el) return;
+  var tail = famTf.score + ' / ' + famTf.answered;
+  setBiText(el, 'Team score: ' + tail, 'Puntos del equipo: ' + tail);
+}
+
+function answerTf(saidTrue) {
+  var data = famGamesData();
+  var q = data && data.tf[famTf.idx];
+  if (!q) return;
+  var btnT = document.getElementById('fam_tf_true_btn');
+  var btnF = document.getElementById('fam_tf_false_btn');
+  if (btnT) btnT.disabled = true;
+  if (btnF) btnF.disabled = true;
+  var right = saidTrue === q.answer;
+  famTf.answered++;
+  if (right) famTf.score++;
+  var verdict = document.getElementById('fam_tf_verdict');
+  var why = document.getElementById('fam_tf_why');
+  var fb = document.getElementById('fam_tf_feedback');
+  if (verdict) {
+    setBiText(
+      verdict,
+      right ? '✅ Correct!' : '❌ Not quite — it was ' + (q.answer ? 'TRUE.' : 'FALSE.'),
+      right ? '✅ ¡Correcto!' : '❌ No exactamente — era ' + (q.answer ? 'VERDADERO.' : 'FALSO.'),
+    );
+    verdict.className = 'fam-tf-verdict ' + (right ? 'is-right' : 'is-wrong');
+  }
+  setBiText(why, q.whyEn, q.whyEs);
+  if (fb) fb.hidden = false;
+  if (right && typeof playCorrectSound === 'function') playCorrectSound();
+  updateTfScore();
+}
+
+function nextTf() {
+  famTf.idx++;
+  renderTfQuestion();
+}
+
+function resetTfGame() {
+  famTf = { idx: 0, score: 0, answered: 0 };
+  renderTfQuestion();
+}
+
+function initFamilyGames() {
+  if (!famGamesData() || !document.getElementById('fam_game_break')) return;
+  resetMemoryGame();
+  resetTfGame();
+}
+
 /* Tonight's Path roadmap: light up the current stop, keep a persistent check
    on every stop the family has visited for THIS lesson. */
 function updateJourneyMap(tabId) {
@@ -7431,6 +7851,7 @@ function initHomeworkPage() {
   restoreParentSignoff();
   initDrawCanvases();
   initHomeworkVocabPopups();
+  initFamilyGames();
 }
 
 if (document.readyState === 'loading') {

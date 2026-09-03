@@ -83,6 +83,17 @@ function resourcesFor(id) {
       file: `lessons/${id}/worksheet-2.html`,
       applicable: true,
     },
+    /* The printable MSTAR-style practice worksheet (generate-mstar-worksheets.mjs)
+       — the per-lesson rehearsal of the state test's question formats. Same
+       rule as worksheet/worksheet2: a sheet the manifest does not name is a
+       sheet the lesson picker cannot offer. Only the 72 lessons that author
+       mstarPractice items have one (units 1 and 10 do not), so presence is the
+       file on disk. Its answer key is excluded like Set A's and Set B's. */
+    mstarWorksheet: {
+      path: `/lessons/${id}/mstar-worksheet.html`,
+      file: `lessons/${id}/mstar-worksheet.html`,
+      applicable: true,
+    },
     homework: {
       path: `/lessons/${id}/homework.html`,
       file: `lessons/${id}/homework.html`,
