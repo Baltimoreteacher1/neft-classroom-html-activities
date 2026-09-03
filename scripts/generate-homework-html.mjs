@@ -27,7 +27,6 @@ import {
   renderHelpModal,
   renderHelpTab,
   renderHomeworkTabs,
-  renderJourneyMap,
   renderLearnTab,
   renderMoreTab,
   renderPlayTabPanel,
@@ -1152,7 +1151,6 @@ function generateHtml(lessonId, config) {
   const themeCss = renderUnitThemeCss(theme);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
-  const journeyHtml = renderJourneyMap();
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length);
   const warmupHtml = warmup
     .map((p, idx) =>
@@ -2767,6 +2765,323 @@ body { font-size: 15px; line-height: 1.58; }
   .worked-step { break-inside: avoid; box-shadow: none; }
   .card { box-shadow: none; }
 }
+
+/* ============================================================
+   FAMILY MISSION DESIGN SYSTEM — the last layer, and the one that
+   decides how the page FEELS. Everything above grew one wave at a
+   time: each addition brought its own badge colour, its own card
+   weight and its own heading size, so a family met a pile of parts
+   rather than one designed page. This layer states the shared rules
+   once — surface, rhythm, type scale, accent, motion — and the
+   sections inherit them.
+
+   It uses !important only where the "Apple-Grade Pill" block above
+   already does; specificity cannot win against a bare !important, and
+   splitting that block apart is a bigger, riskier edit than owning
+   the handful of properties this layer overrides.
+   ============================================================ */
+
+/* --- Paper: warm, with a whisper of the classroom's graph texture --- */
+body {
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(rgba(18,53,91,.030) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18,53,91,.030) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-attachment: fixed;
+}
+
+/* --- Control deck: the tab row and the progress rail are ONE object,
+       not two floating bars stacked on each other. --- */
+.homework-tab-chrome {
+  background: rgba(255,255,255,.96) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: 0 10px 30px -14px rgba(15,23,42,.22);
+  overflow: hidden;
+  margin-bottom: 26px !important;
+}
+.homework-tab-bar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 9px 12px !important;
+}
+/* The five stops a family is asked to walk read as primary; the five
+   optional surfaces read as what they are. */
+.homework-tab-btn.is-bonus { opacity: .72; font-weight: 600 !important; }
+.homework-tab-btn.is-bonus:hover { opacity: 1; }
+.homework-tab-btn.is-bonus.is-active { opacity: 1; }
+.homework-tab-btn.is-core.is-active {
+  background: linear-gradient(135deg, #14406e, #0f2b50) !important;
+}
+.homework-tab-divider {
+  flex: 0 0 auto;
+  width: 1px;
+  align-self: stretch;
+  margin: 4px 6px;
+  background: var(--line);
+}
+.homework-tab-bonus-label {
+  flex: 0 0 auto;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-right: 2px;
+}
+.homework-tab-bonus-label .lang-es { color: var(--muted); }
+.homework-tab-bonus-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-rail { background: linear-gradient(180deg, rgba(247,244,236,.5), rgba(255,255,255,0)); }
+
+/* --- Section headings: one confident scale, an accent dot instead of
+       five different coloured pills, Spanish as a full-ink partner line. --- */
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.5vw, 25px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  color: var(--navy);
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.section-title::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(242,193,91,.22);
+  align-self: center;
+}
+
+/* --- Cards: one surface, one radius, one shadow. --- */
+.guided-section.card,
+.card-ish,
+.card {
+  border-radius: 20px !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 1px 2px rgba(18,53,91,.04), 0 18px 40px -30px rgba(18,53,91,.55) !important;
+}
+
+/* --- One badge shape. Waves added a teal pill, a coral pill, a purple
+       pill and an amber pill for the same job; the shape now carries the
+       meaning and colour is reserved for the accent. --- */
+.fam-act-badge,
+.fam-game-badge,
+.math-talk-badge,
+.spotlight-badge {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display) !important;
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: .09em !important;
+  text-transform: uppercase;
+  color: var(--navy) !important;
+  background: linear-gradient(135deg, #fdf3dc, #f7f4ec) !important;
+  border: 1px solid rgba(242,193,91,.55) !important;
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+}
+
+/* --- Bilingual, two ways.
+   Spanish keeps FULL ink everywhere — the separation is structural, never a
+   fade (a faded Spanish read as "English written twice"). But the structure
+   has to fit the container: in prose the two languages stack with a teal rule,
+   while inside a chip, a tab or a rail label they must sit on ONE line with a
+   visible separator, or "5 stops" and "5 paradas" run together into nonsense. */
+.hw-stat .lang-es,
+.hw-hero-kicker .lang-es,
+.hw-rail-title .lang-es,
+.hw-rail-bonus .lang-es,
+.homework-tab-bonus-label .lang-es,
+.fam-act-meta .lang-es,
+.hw-quickplan-summary .lang-es {
+  display: inline !important;
+}
+.hw-stat .lang-en + .lang-es::before,
+.hw-hero-kicker .lang-en + .lang-es::before,
+.hw-rail-title .lang-en + .lang-es::before,
+.hw-rail-bonus .lang-en + .lang-es::before,
+.homework-tab-bonus-label .lang-en + .lang-es::before,
+.hw-quickplan-summary .lang-en + .lang-es::before {
+  content: "·";
+  margin: 0 7px;
+  opacity: .6;
+}
+/* The same rule, stated once for every control: inside a button or a summary,
+   the two languages share one line with a separator. Stacking them there
+   doubled the height of every chip and filter and read as one garbled string
+   ("All Todos", "Needs Review Por repasar"). Prose is unaffected — it keeps
+   the stacked treatment with the teal rule. */
+button .lang-en + .lang-es,
+summary .lang-en + .lang-es {
+  display: inline;
+  border-left: 0;
+  padding-left: 0;
+  margin-top: 0;
+}
+button .lang-en + .lang-es::before,
+summary .lang-en + .lang-es::before {
+  content: "·";
+  margin: 0 6px;
+  opacity: .6;
+}
+/* Two controls read better stacked and keep it: the rail's five stops (a map,
+   where the label sits under its dot) and the tab bar (which shows one
+   language at a time already). */
+.hw-rail-label .lang-en + .lang-es,
+.tab-label .lang-en + .lang-es { display: block; }
+.hw-rail-label .lang-en + .lang-es::before,
+.tab-label .lang-en + .lang-es::before { content: none; }
+
+/* On the dark hero, every Spanish line inherits the hero's light ink rather
+   than the global dark --ink, which was rendering it near-invisible. */
+.hw-hero .lang-es { color: inherit; }
+.hw-hero .lang-en + .lang-es { border-left-color: rgba(242,193,91,.5); }
+
+/* Section headings: English line, Spanish line beneath at full ink — a
+   partner line, not a second competing title on the same row. */
+.section-title { flex-wrap: wrap; row-gap: 2px; }
+.section-title .lang-es {
+  /* The heading is a flex row, so the partner line needs a full-width basis to
+     drop beneath the English rather than sit beside it as a second title. */
+  flex: 0 0 100%;
+  margin-top: 1px;
+  padding-left: 18px;
+  border-left: 0;
+  font-size: .66em;
+  font-weight: 600;
+  color: var(--teal-ink);
+  letter-spacing: 0;
+}
+
+/* The Listen button now renders INSIDE the heading (see renderLearnTab), so it
+   sits on the heading row instead of alone in a band of dead space. */
+.btn-listen-concept {
+  margin-left: auto;
+  align-self: center;
+  flex: 0 0 auto;
+  font-size: 12.5px;
+}
+/* The concept figure is the point of that section — frame it instead of
+   letting it drift in the middle of an empty card. */
+.concept-visual-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 20px;
+  padding: 22px 18px;
+  background: linear-gradient(180deg, #fbfdff, var(--cream));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+/* The figure is the point of that card — let it use the width it has instead
+   of sitting small in the middle of it. */
+.concept-visual-wrap > svg { width: 100%; max-width: 560px; height: auto; }
+
+/* --- Motion: one orchestrated reveal when a family lands on a stop.
+       Respects reduced-motion via the global rule already in this file. --- */
+@keyframes hwRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+/* Gated on a class JS adds after boot. An entrance animation whose start
+   state is opacity:0 hides the page's content until it runs — if the script
+   never runs, a family gets a blank page, which is the one failure this site
+   spends a whole gate on. No class, no animation, everything visible. */
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > * {
+  animation: hwRise .5s cubic-bezier(.22,.9,.3,1) both;
+}
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(1) { animation-delay: .02s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(2) { animation-delay: .08s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(3) { animation-delay: .14s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(4) { animation-delay: .20s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(n+5) { animation-delay: .26s; }
+body.hw-motion-ready .hw-hero { animation: hwRise .6s cubic-bezier(.22,.9,.3,1) both; }
+
+/* --- Interactive surfaces lift on hover, so a family can tell what is
+       tappable from what is text. --- */
+.fam-act-card, .fam-game-card, .vocab-card, .problem-card {
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.fam-act-card:hover, .fam-game-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--teal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.hw-motion-ready [data-tab-panel]:not([hidden]) > *,
+  body.hw-motion-ready .hw-hero { animation: none !important; }
+}
+
+/* --- Phone: the briefing has to fit the screen a family actually holds.
+   At 390px the hero ran 797px — a screen and a half of chrome before any
+   mathematics — because the stat chips wrapped to three rows, the language
+   control to two, and the kicker to two. Same content, tighter frame. --- */
+@media (max-width: 700px) {
+  .hw-hero-kicker { font-size: 10.5px; padding: 5px 11px 5px 6px; margin-bottom: 12px; gap: 6px; }
+  .hw-hero-kicker-icon { width: 20px; height: 20px; font-size: 11px; }
+  .hw-hero-lesson { margin-top: 14px; padding-top: 12px; }
+  .hw-hero-lead { margin-top: 10px; font-size: 14px; }
+  .hw-hero-stats {
+    margin-top: 14px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .hw-hero-stats::-webkit-scrollbar { display: none; }
+  .hw-stat { flex: 0 0 auto; padding: 6px 12px; font-size: 12px; }
+  .hw-hero-controls { margin-top: 14px; }
+  .hw-hero .lang-selector-card { gap: 8px; }
+  .hw-hero .lang-selector-title { flex: 0 0 100%; font-size: 10.5px; }
+  /* One row of three, never a stacked column: the three modes are a choice
+     between peers and reading them as a vertical list says otherwise. */
+  /* flex-direction is set to column by an older mobile rule for the standalone
+     selector; inside the hero the three modes stay a row. */
+  .hw-hero .lang-selector-buttons {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  .hw-hero .lang-toggle-btn {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  /* The full "Bilingual / Bilingüe" cannot fit a third of a phone; the flag
+     pair already carries it, and the label returns above 700px. */
+  .hw-hero .lang-toggle-btn[data-lang-mode="bilingual"] span { display: none; }
+  .hw-hero .hw-quickplan { margin-top: 14px; }
+  /* The opacity difference already says which tabs are optional; the divider
+     and its label cost a whole extra row at this width. */
+  .homework-tab-divider, .homework-tab-bonus-label { display: none; }
+}
+
+@media print {
+  body { background-image: none; }
+  .homework-tab-chrome, .hw-rail { display: none; }
+  .hw-hero { background: #fff !important; color: #000 !important; box-shadow: none; }
+  .hw-hero .welcome-title-en, .hw-hero-lesson-title { color: #000 !important; }
+}
 ${EDITORIAL_OVERRIDES}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -2815,8 +3130,6 @@ ${EDITORIAL_OVERRIDES}
 <div class="container" role="main">
 
   ${welcomeHtml}
-
-  ${journeyHtml}
 
   ${tabsHtml}
 
