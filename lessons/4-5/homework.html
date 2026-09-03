@@ -3705,7 +3705,6 @@ body.lang-mode-es .tab-es {
   position: fixed !important;
   inset: 0 !important;
   z-index: 1200 !important;
-  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 20px !important;
@@ -3713,6 +3712,12 @@ body.lang-mode-es .tab-es {
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
   animation: objFadeIn 0.2s ease !important;
+}
+.obj-popup-backdrop:not([hidden]) {
+  display: flex !important;
+}
+.obj-popup-backdrop[hidden] {
+  display: none !important;
 }
 .obj-popup {
   position: relative !important;
@@ -6943,14 +6948,34 @@ function initHomeworkVocabPopups() {
   });
 
   var backdrop = null, lastFocus = null, keyHandler = null;
+  function closePopup() {
+    var bd = window.__hwVocabBackdrop || backdrop;
+    if (!bd) return;
+    bd.setAttribute('hidden', '');
+    bd.hidden = true;
+    bd.style.display = 'none';
+    document.body.classList.remove('obj-popup-open');
+    if (keyHandler) { document.removeEventListener('keydown', keyHandler); keyHandler = null; }
+    if (lastFocus && lastFocus.focus) {
+      try { lastFocus.focus(); } catch(_e) {}
+    }
+    lastFocus = null;
+  }
+  window.__closeHwVocabPopup = closePopup;
+
   function getPopup() {
-    if (backdrop) return backdrop;
+    if (window.__hwVocabBackdrop && document.body.contains(window.__hwVocabBackdrop)) {
+      backdrop = window.__hwVocabBackdrop;
+      return backdrop;
+    }
     backdrop = document.createElement('div');
     backdrop.className = 'obj-popup-backdrop';
+    backdrop.setAttribute('hidden', '');
     backdrop.hidden = true;
+    backdrop.style.display = 'none';
     backdrop.innerHTML =
       '<div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="hw-obj-term">' +
-      '<button type="button" class="obj-popup-close" aria-label="Close">&times;</button>' +
+      '<button type="button" class="obj-popup-close" aria-label="Close" onclick="window.__closeHwVocabPopup && window.__closeHwVocabPopup()">&times;</button>' +
       '<h3 id="hw-obj-term" class="obj-popup-term"></h3>' +
       '<p class="obj-popup-translation"><span class="obj-popup-tr-label">Español:</span> <span class="obj-popup-tr-es" lang="es"></span></p>' +
       '<p class="obj-popup-def"></p>' +
@@ -6958,8 +6983,27 @@ function initHomeworkVocabPopups() {
       '<figure class="obj-popup-visual"><img class="obj-popup-img" alt="" /><figcaption class="obj-popup-example"></figcaption></figure>' +
       '</div>';
     document.body.appendChild(backdrop);
-    backdrop.addEventListener('click', function(e) { if (e.target === backdrop) closePopup(); });
-    backdrop.querySelector('.obj-popup-close').addEventListener('click', closePopup);
+    window.__hwVocabBackdrop = backdrop;
+    backdrop.addEventListener('click', function(e) {
+      if (e.target === backdrop) {
+        e.preventDefault();
+        e.stopPropagation();
+        closePopup();
+      }
+    });
+    var closeBtn = backdrop.querySelector('.obj-popup-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closePopup();
+      });
+      closeBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closePopup();
+      });
+    }
     return backdrop;
   }
   function openPopup(entry) {
@@ -6983,19 +7027,14 @@ function initHomeworkVocabPopups() {
     if (entry.defEs) { esEl.textContent = String(entry.defEs); esEl.hidden = false; }
     else { esEl.textContent = ''; esEl.hidden = true; }
     lastFocus = document.activeElement;
+    bd.removeAttribute('hidden');
     bd.hidden = false;
+    bd.style.display = 'flex';
     document.body.classList.add('obj-popup-open');
-    bd.querySelector('.obj-popup-close').focus();
+    var cb = bd.querySelector('.obj-popup-close');
+    if (cb && cb.focus) cb.focus();
     keyHandler = function(e) { if (e.key === 'Escape') closePopup(); };
     document.addEventListener('keydown', keyHandler);
-  }
-  function closePopup() {
-    if (!backdrop) return;
-    backdrop.hidden = true;
-    document.body.classList.remove('obj-popup-open');
-    if (keyHandler) { document.removeEventListener('keydown', keyHandler); keyHandler = null; }
-    if (lastFocus && lastFocus.focus) lastFocus.focus();
-    lastFocus = null;
   }
   container.addEventListener('click', function(e) {
     var btn = e.target && e.target.closest ? e.target.closest('.obj-term') : null;
