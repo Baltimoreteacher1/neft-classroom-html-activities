@@ -1075,6 +1075,64 @@ export function renderWelcomeBanner(config, lessonId) {
     </header>`;
 }
 
+/**
+ * Tonight's Path — a visual roadmap of the 5 core stops through the homework,
+ * so a family opening a 10-tab page knows exactly where to go and how long it
+ * takes. Stops light up as they are visited (see updateJourneyMap in
+ * HOMEWORK_TABS_JS; visits persist per lesson in localStorage). The extra tabs
+ * (Workbench, Arcade, Play, Help, More) stay available but are framed as
+ * optional, which is what makes the page feel followable instead of endless.
+ */
+const JOURNEY_STOPS = [
+  { id: "learn", icon: "📖", en: "Learn", es: "Aprender", min: 5 },
+  { id: "words", icon: "📚", en: "Words", es: "Palabras", min: 3 },
+  { id: "together", icon: "🤝", en: "Together", es: "Juntos", min: 7 },
+  { id: "check", icon: "✅", en: "Check", es: "Repaso", min: 10 },
+  { id: "done", icon: "🎉", en: "Done", es: "Listo", min: 1 },
+];
+
+export function renderJourneyMap() {
+  const stopsHtml = JOURNEY_STOPS.map(
+    (s, i) => `
+      <li class="hw-journey-item">
+        <button type="button" class="hw-journey-stop" data-journey-stop="${s.id}" onclick="switchHomeworkTab('${s.id}')"
+          aria-label="Go to ${s.en} (about ${s.min} minutes)">
+          <span class="hw-journey-bubble"><span class="hw-journey-icon" aria-hidden="true">${s.icon}</span><span class="hw-journey-check" aria-hidden="true">✓</span></span>
+          <span class="hw-journey-label"><span class="hw-journey-num">${i + 1}.</span> <span class="lang-en">${s.en}</span><span class="lang-es" lang="es">${s.es}</span></span>
+          <span class="hw-journey-min">~${s.min} min</span>
+        </button>
+      </li>`,
+  ).join("");
+
+  return `
+    <nav class="hw-journey card" aria-label="Tonight's homework path">
+      <div class="hw-journey-head">
+        <span class="hw-journey-kicker">🗺️ <span class="lang-en">TONIGHT'S PATH</span><span class="lang-es" lang="es">LA RUTA DE HOY</span></span>
+        <p class="hw-journey-sub">
+          <span class="lang-en">Five stops, about 25 minutes together. Tap a stop to jump there — everything else (Workbench, Arcade, Play) is bonus.</span>
+          <span class="lang-es" lang="es">Cinco paradas, unos 25 minutos juntos. Toquen una parada para ir allí; lo demás (Pizarra, Sala de juegos, Jugar) es extra.</span>
+        </p>
+      </div>
+      <ol class="hw-journey-track">${stopsHtml}</ol>
+      <details class="hw-quickplan">
+        <summary class="hw-quickplan-summary">
+          <span class="hw-quickplan-icon" aria-hidden="true">⏰</span>
+          <strong><span class="lang-en">Only have 10 minutes tonight?</span><span class="lang-es" lang="es">¿Solo tienen 10 minutos hoy?</span></strong>
+          <span class="hw-quickplan-chevron" aria-hidden="true">▾</span>
+        </summary>
+        <ol class="hw-quickplan-steps">
+          <li><span class="lang-en"><strong>2 min:</strong> Read the Big Idea out loud on the Learn stop.</span><span class="lang-es" lang="es"><strong>2 min:</strong> Lean en voz alta la idea principal en la parada Aprender.</span></li>
+          <li><span class="lang-en"><strong>3 min:</strong> Do just the FIRST Try Together step on the Together stop.</span><span class="lang-es" lang="es"><strong>3 min:</strong> Hagan solo el PRIMER paso de Intentar Juntos en la parada Juntos.</span></li>
+          <li><span class="lang-en"><strong>5 min:</strong> Answer the 3 Warm-up problems on the Check stop. That's a real study session — great job!</span><span class="lang-es" lang="es"><strong>5 min:</strong> Contesten los 3 problemas de calentamiento en la parada Repaso. Eso ya es una buena sesión de estudio. ¡Bien hecho!</span></li>
+        </ol>
+        <p class="hw-quickplan-note">
+          <span class="lang-en">💛 Short and calm beats long and stressful. Ten focused minutes tonight is a win.</span>
+          <span class="lang-es" lang="es">💛 Corto y tranquilo vale más que largo y estresante. Diez minutos concentrados hoy ya son un logro.</span>
+        </p>
+      </details>
+    </nav>`;
+}
+
 export function renderLearningTonight(config) {
   const { en, es } = learningTonight(config);
   const vocab = (config.vocabulary || []).slice(0, 5);
@@ -1795,6 +1853,1356 @@ export function getTopicMisconception(topic) {
   );
 }
 
+/**
+ * Family Activity Corner — hands-on, no-device mini-activities a family can do
+ * tonight with things already in the house. Three per topic, each with concrete
+ * steps and one talk-about-it question. Collaborative by design: none of these
+ * are races or timed (see the no-timed-games rule for this site). Rendered on
+ * the Together tab by renderFamilyActivityCorner().
+ */
+const FAMILY_ACTIVITIES = {
+  ratios: [
+    {
+      icon: "🥣",
+      titleEn: "Recipe Remix",
+      titleEs: "Receta a escala",
+      materialsEn: "Any recipe (box, jar, or online screenshot), paper",
+      materialsEs: "Cualquier receta (caja, frasco o foto), papel",
+      minutes: 10,
+      steps: [
+        {
+          en: "Pick a simple recipe and write down two ingredient amounts, like 2 cups of flour and 3 cups of water.",
+          es: "Escojan una receta sencilla y anoten dos cantidades, por ejemplo 2 tazas de harina y 3 tazas de agua.",
+        },
+        {
+          en: "Double the recipe together. Multiply BOTH amounts by 2 and write the new ratio.",
+          es: "Dupliquen la receta juntos. Multipliquen LAS DOS cantidades por 2 y escriban la nueva razón.",
+        },
+        {
+          en: "Now cut the original recipe in half. What happens to each amount?",
+          es: "Ahora reduzcan la receta original a la mitad. ¿Qué pasa con cada cantidad?",
+        },
+      ],
+      talkEn:
+        "If we only doubled the flour and not the water, would the recipe still taste right? Why not?",
+      talkEs: "Si solo duplicamos la harina y no el agua, ¿la receta sabría igual? ¿Por qué no?",
+    },
+    {
+      icon: "🛒",
+      titleEn: "Better-Buy Detective",
+      titleEs: "Detective del mejor precio",
+      materialsEn: "Two package sizes of the same food (or a store flyer)",
+      materialsEs: "Dos tamaños del mismo producto (o un folleto de la tienda)",
+      minutes: 10,
+      steps: [
+        {
+          en: "Find the same item in two sizes — for example, 12 oz for $3 and 20 oz for $4.",
+          es: "Busquen el mismo producto en dos tamaños; por ejemplo, 12 oz por $3 y 20 oz por $4.",
+        },
+        {
+          en: "Find the price for ONE ounce of each (price ÷ ounces). That is the unit rate.",
+          es: "Calculen el precio de UNA onza de cada uno (precio ÷ onzas). Esa es la tasa unitaria.",
+        },
+        {
+          en: "Decide together: which one is the better buy? Defend your answer with the numbers.",
+          es: "Decidan juntos: ¿cuál conviene más? Defiendan su respuesta con los números.",
+        },
+      ],
+      talkEn:
+        "Is the bigger package ALWAYS the better deal? How could a store trick someone who doesn't check?",
+      talkEs:
+        "¿El paquete grande SIEMPRE conviene más? ¿Cómo podría la tienda engañar a quien no revisa?",
+    },
+    {
+      icon: "🚶",
+      titleEn: "Family Walking Rate",
+      titleEs: "Nuestro ritmo al caminar",
+      materialsEn: "A hallway or sidewalk, a phone clock",
+      materialsEs: "Un pasillo o la acera, el reloj del teléfono",
+      minutes: 10,
+      steps: [
+        {
+          en: "Count how many steps your student takes in one minute of normal walking.",
+          es: "Cuenten cuántos pasos da su estudiante en un minuto caminando normal.",
+        },
+        {
+          en: "Write it as a rate: steps per 1 minute. Predict how many steps 5 minutes would take.",
+          es: "Escríbanlo como tasa: pasos por 1 minuto. Predigan cuántos pasos serían en 5 minutos.",
+        },
+        {
+          en: "Multiply to check the prediction. Try it with another family member's pace and compare rates.",
+          es: "Multipliquen para comprobar la predicción. Prueben con el ritmo de otro familiar y comparen tasas.",
+        },
+      ],
+      talkEn: "Whose rate was faster? How do the numbers prove it?",
+      talkEs: "¿Qué ritmo fue más rápido? ¿Cómo lo demuestran los números?",
+    },
+  ],
+  fractions: [
+    {
+      icon: "🫓",
+      titleEn: "Fair-Share Kitchen",
+      titleEs: "Cocina de porciones justas",
+      materialsEn: "A tortilla, sandwich, or sheet of paper; a butter knife or scissors",
+      materialsEs: "Una tortilla, un sándwich o una hoja de papel; un cuchillo sin filo o tijeras",
+      minutes: 10,
+      steps: [
+        {
+          en: "Cut (or fold) the tortilla into fourths. Ask: how many 1/4 pieces are in ONE whole?",
+          es: "Corten (o doblen) la tortilla en cuartos. Pregunta: ¿cuántos pedazos de 1/4 hay en UNA entera?",
+        },
+        {
+          en: "Now imagine 2 tortillas. How many 1/4 pieces in 2 wholes? Write it as 2 ÷ 1/4.",
+          es: "Ahora imaginen 2 tortillas. ¿Cuántos pedazos de 1/4 hay en 2 enteras? Escríbanlo como 2 ÷ 1/4.",
+        },
+        {
+          en: "Check by counting the pieces. Does the answer get bigger or smaller than 2? Talk about why.",
+          es: "Comprueben contando los pedazos. ¿La respuesta es mayor o menor que 2? Hablen de por qué.",
+        },
+      ],
+      talkEn: "Why does dividing by a fraction give MORE pieces, not fewer?",
+      talkEs: "¿Por qué dividir entre una fracción da MÁS pedazos y no menos?",
+    },
+    {
+      icon: "🍚",
+      titleEn: "Measuring-Cup Challenge",
+      titleEs: "Reto de la taza medidora",
+      materialsEn: "Measuring cups, rice or dry beans, a bowl",
+      materialsEs: "Tazas medidoras, arroz o frijoles secos, un tazón",
+      minutes: 10,
+      steps: [
+        {
+          en: "Predict: how many 1/3-cup scoops will it take to fill 2 cups?",
+          es: "Predigan: ¿cuántas medidas de 1/3 de taza se necesitan para llenar 2 tazas?",
+        },
+        {
+          en: "Scoop and count together. Write the matching division problem: 2 ÷ 1/3.",
+          es: "Midan y cuenten juntos. Escriban la división que corresponde: 2 ÷ 1/3.",
+        },
+        {
+          en: "Try it again with 1/2-cup scoops. Which scoop needed more trips? Why?",
+          es: "Repitan con medidas de 1/2 taza. ¿Cuál medida necesitó más viajes? ¿Por qué?",
+        },
+      ],
+      talkEn: "Before scooping, how could you KNOW the answer without counting?",
+      talkEs: "Antes de medir, ¿cómo podrían SABER la respuesta sin contar?",
+    },
+    {
+      icon: "🧵",
+      titleEn: "String Split",
+      titleEs: "Cortar la cuerda",
+      materialsEn: "String, yarn, or paper strip; ruler; scissors",
+      materialsEs: "Cuerda, estambre o tira de papel; regla; tijeras",
+      minutes: 10,
+      steps: [
+        {
+          en: "Cut a piece of string 3 feet (or 90 cm) long and measure it together.",
+          es: "Corten una cuerda de 3 pies (o 90 cm) y mídanla juntos.",
+        },
+        {
+          en: "Predict how many 1/2-foot (15 cm) pieces you can cut from it. Write the division.",
+          es: "Predigan cuántos pedazos de 1/2 pie (15 cm) saldrán. Escriban la división.",
+        },
+        {
+          en: "Cut and count. Compare the count with your division answer.",
+          es: "Corten y cuenten. Comparen el conteo con el resultado de la división.",
+        },
+      ],
+      talkEn: "What would happen to the number of pieces if each piece were half as long?",
+      talkEs: "¿Qué pasaría con el número de pedazos si cada pedazo midiera la mitad?",
+    },
+  ],
+  decimals: [
+    {
+      icon: "🧾",
+      titleEn: "Receipt Roundup",
+      titleEs: "La suma del recibo",
+      materialsEn: "Any store receipt, paper, pencil",
+      materialsEs: "Cualquier recibo de la tienda, papel, lápiz",
+      minutes: 10,
+      steps: [
+        {
+          en: "Each person picks 3 prices from the receipt and estimates the total in their head.",
+          es: "Cada persona escoge 3 precios del recibo y estima el total mentalmente.",
+        },
+        {
+          en: "Now add the exact amounts on paper, lining up the decimal points.",
+          es: "Ahora sumen las cantidades exactas en papel, alineando los puntos decimales.",
+        },
+        {
+          en: "Compare the estimate with the exact answer. How close were you?",
+          es: "Comparen la estimación con la respuesta exacta. ¿Qué tan cerca quedaron?",
+        },
+      ],
+      talkEn: "Why does lining up the decimal points matter when we add money?",
+      talkEs: "¿Por qué importa alinear los puntos decimales al sumar dinero?",
+    },
+    {
+      icon: "💵",
+      titleEn: "Exact-Change Counter",
+      titleEs: "El cambio exacto",
+      materialsEn: "A few coins and bills (or paper play money)",
+      materialsEs: "Algunas monedas y billetes (o dinero de papel)",
+      minutes: 10,
+      steps: [
+        {
+          en: "One person is the cashier. Price an item at something like $3.67.",
+          es: "Una persona es el cajero. Pongan un precio como $3.67 a un objeto.",
+        },
+        {
+          en: "Pay with a $5 bill. The student computes the change on paper by subtracting decimals.",
+          es: "Paguen con un billete de $5. El estudiante calcula el cambio restando decimales en papel.",
+        },
+        {
+          en: "Count the real coins to check. Switch roles and try a new price.",
+          es: "Cuenten las monedas para comprobar. Cambien de papel y prueben otro precio.",
+        },
+      ],
+      talkEn: "What is a quick way to check change without redoing the whole subtraction?",
+      talkEs: "¿Cuál es una forma rápida de revisar el cambio sin repetir toda la resta?",
+    },
+    {
+      icon: "⚖️",
+      titleEn: "Kitchen-Scale Math",
+      titleEs: "Matemáticas con la balanza",
+      materialsEn: "Kitchen scale (or nutrition labels), two foods",
+      materialsEs: "Balanza de cocina (o etiquetas de alimentos), dos alimentos",
+      minutes: 10,
+      steps: [
+        {
+          en: "Weigh two items (or read two label weights), like 1.4 lb and 0.75 lb.",
+          es: "Pesen dos artículos (o lean dos etiquetas), por ejemplo 1.4 lb y 0.75 lb.",
+        },
+        {
+          en: "Add the weights on paper. Then find how much heavier one is than the other.",
+          es: "Sumen los pesos en papel. Luego calculen cuánto más pesa uno que el otro.",
+        },
+        {
+          en: "Estimate first each time, then compute. Compare estimates with exact answers.",
+          es: "Estimen primero cada vez y luego calculen. Comparen las estimaciones con las respuestas exactas.",
+        },
+      ],
+      talkEn: "When is an estimate good enough, and when do we need the exact decimal?",
+      talkEs: "¿Cuándo basta una estimación y cuándo necesitamos el decimal exacto?",
+    },
+  ],
+  division: [
+    {
+      icon: "🍬",
+      titleEn: "Snack Divider",
+      titleEs: "Reparte la merienda",
+      materialsEn: "A bag of small snacks (crackers, grapes, cereal)",
+      materialsEs: "Una bolsa de meriendas pequeñas (galletas, uvas, cereal)",
+      minutes: 10,
+      steps: [
+        {
+          en: "Count the snacks in the bag — the bigger the number, the better.",
+          es: "Cuenten las meriendas de la bolsa; entre más grande el número, mejor.",
+        },
+        {
+          en: "Divide them equally among everyone at the table, one round at a time.",
+          es: "Repártanlas en partes iguales entre todos, una ronda a la vez.",
+        },
+        {
+          en: "Write the division problem it matches, including the remainder. Who gets the leftovers?",
+          es: "Escriban la división que corresponde, con el residuo. ¿Quién se queda con lo que sobra?",
+        },
+      ],
+      talkEn: "What does the remainder MEAN here? What are fair ways to handle it?",
+      talkEs: "¿Qué SIGNIFICA el residuo aquí? ¿Cuáles son formas justas de repartirlo?",
+    },
+    {
+      icon: "🥚",
+      titleEn: "Egg-Carton Groups",
+      titleEs: "Grupos con el cartón de huevos",
+      materialsEn: "An empty egg carton, dry beans or coins",
+      materialsEs: "Un cartón de huevos vacío, frijoles secos o monedas",
+      minutes: 10,
+      steps: [
+        {
+          en: "Grab a big handful of beans and count them — say you get 74.",
+          es: "Tomen un puñado grande de frijoles y cuéntenlos; digamos que salen 74.",
+        },
+        {
+          en: "Fill the carton cups evenly, one bean per cup, around and around.",
+          es: "Llenen los espacios del cartón por igual, un frijol por espacio, ronda tras ronda.",
+        },
+        {
+          en: "Write the result as division: 74 ÷ 12. How many in each cup, and how many left over?",
+          es: "Escríbanlo como división: 74 ÷ 12. ¿Cuántos en cada espacio y cuántos sobran?",
+        },
+      ],
+      talkEn: "How is dealing beans into cups the same as the division algorithm on paper?",
+      talkEs: "¿En qué se parece repartir frijoles a la división escrita en papel?",
+    },
+    {
+      icon: "🎉",
+      titleEn: "Party Planner",
+      titleEs: "Planificador de fiesta",
+      materialsEn: "Paper and pencil",
+      materialsEs: "Papel y lápiz",
+      minutes: 10,
+      steps: [
+        {
+          en: "Invent a party: 58 guests are coming, and each table seats 8.",
+          es: "Inventen una fiesta: vienen 58 invitados y cada mesa tiene 8 asientos.",
+        },
+        {
+          en: "Divide to find how many tables you need. What does the remainder tell you?",
+          es: "Dividan para saber cuántas mesas se necesitan. ¿Qué les dice el residuo?",
+        },
+        {
+          en: "Change the numbers (more guests, bigger tables) and solve again together.",
+          es: "Cambien los números (más invitados, mesas más grandes) y resuelvan otra vez juntos.",
+        },
+      ],
+      talkEn: "Why do we ROUND UP the number of tables even when the remainder is small?",
+      talkEs: "¿Por qué REDONDEAMOS HACIA ARRIBA el número de mesas aunque el residuo sea pequeño?",
+    },
+  ],
+  factors: [
+    {
+      icon: "🫘",
+      titleEn: "Rectangle Factor Hunt",
+      titleEs: "Cacería de factores con rectángulos",
+      materialsEn: "24 small objects (beans, coins, pasta)",
+      materialsEs: "24 objetos pequeños (frijoles, monedas, pasta)",
+      minutes: 10,
+      steps: [
+        {
+          en: "Arrange all 24 objects into a rectangle — for example, 4 rows of 6.",
+          es: "Acomoden los 24 objetos en un rectángulo; por ejemplo, 4 filas de 6.",
+        },
+        {
+          en: "Find EVERY rectangle you can make with all 24. Each one shows a factor pair!",
+          es: "Encuentren TODOS los rectángulos posibles con los 24. ¡Cada uno muestra un par de factores!",
+        },
+        {
+          en: "List the factor pairs you found. Try again with 18 or 30 objects.",
+          es: "Anoten los pares de factores que encontraron. Repitan con 18 o 30 objetos.",
+        },
+      ],
+      talkEn:
+        "Which numbers make only ONE rectangle (a single row)? What are those numbers called?",
+      talkEs:
+        "¿Qué números solo forman UN rectángulo (una sola fila)? ¿Cómo se llaman esos números?",
+    },
+    {
+      icon: "👏",
+      titleEn: "Clap Together (LCM)",
+      titleEs: "Aplaudir juntos (mcm)",
+      materialsEn: "Just your hands",
+      materialsEs: "Solo sus manos",
+      minutes: 5,
+      steps: [
+        {
+          en: "Count out loud together from 1. One person claps on every multiple of 4.",
+          es: "Cuenten en voz alta desde 1. Una persona aplaude en cada múltiplo de 4.",
+        },
+        {
+          en: "The other person claps on every multiple of 6.",
+          es: "La otra persona aplaude en cada múltiplo de 6.",
+        },
+        {
+          en: "Notice the first number where you BOTH clap. That is the least common multiple!",
+          es: "Fíjense en el primer número donde aplauden LOS DOS. ¡Ese es el mínimo común múltiplo!",
+        },
+      ],
+      talkEn: "When will you clap together again after the first time? Do you see a pattern?",
+      talkEs: "¿Cuándo volverán a aplaudir juntos después de la primera vez? ¿Ven un patrón?",
+    },
+    {
+      icon: "🚪",
+      titleEn: "Prime Detective",
+      titleEs: "Detective de primos",
+      materialsEn: "Numbers around you: doors, license plates, cabinets",
+      materialsEs: "Números a su alrededor: puertas, placas, alacenas",
+      minutes: 10,
+      steps: [
+        {
+          en: "Find a number around the house or street — an address, a page number, a jersey.",
+          es: "Busquen un número en la casa o la calle: una dirección, una página, una camiseta.",
+        },
+        {
+          en: "Decide together: prime or composite? Prove it by hunting for factors.",
+          es: "Decidan juntos: ¿primo o compuesto? Demuéstrenlo buscando factores.",
+        },
+        {
+          en: "Take turns finding numbers for each other. Explain every answer out loud.",
+          es: "Túrnense para buscar números. Expliquen cada respuesta en voz alta.",
+        },
+      ],
+      talkEn: "Why does checking factors up to half the number (or its square root) find them all?",
+      talkEs: "¿Por qué basta revisar factores hasta la mitad del número para encontrarlos todos?",
+    },
+  ],
+  exponents: [
+    {
+      icon: "📄",
+      titleEn: "Paper-Folding Powers",
+      titleEs: "Potencias al doblar papel",
+      materialsEn: "One sheet of paper",
+      materialsEs: "Una hoja de papel",
+      minutes: 5,
+      steps: [
+        {
+          en: "Fold the paper in half and count the layers. Fold again. And again.",
+          es: "Doblen la hoja a la mitad y cuenten las capas. Doblen otra vez. Y otra.",
+        },
+        {
+          en: "Record the layers after each fold: 2, 4, 8, 16… Write each as a power of 2.",
+          es: "Anoten las capas tras cada doblez: 2, 4, 8, 16… Escriban cada una como potencia de 2.",
+        },
+        {
+          en: "Predict the layers for 7 folds (2⁷) before you run out of paper. Compute it!",
+          es: "Predigan las capas con 7 dobleces (2⁷) antes de que el papel no dé más. ¡Calcúlenlo!",
+        },
+      ],
+      talkEn: "Why does the paper get impossible to fold so fast? What does that say about powers?",
+      talkEs:
+        "¿Por qué tan pronto ya no se puede doblar el papel? ¿Qué nos dice eso de las potencias?",
+    },
+    {
+      icon: "🍚",
+      titleEn: "The Doubling Rice Story",
+      titleEs: "El arroz que se duplica",
+      materialsEn: "A few grains of rice (or draw dots), paper",
+      materialsEs: "Unos granos de arroz (o dibujen puntos), papel",
+      minutes: 10,
+      steps: [
+        {
+          en: "Start a story: day 1 you get 1 grain of rice, and it doubles every day.",
+          es: "Empiecen un cuento: el día 1 reciben 1 grano de arroz, y cada día se duplica.",
+        },
+        {
+          en: "Make a table for days 1-7. Write each amount as a power of 2.",
+          es: "Hagan una tabla para los días 1 a 7. Escriban cada cantidad como potencia de 2.",
+        },
+        {
+          en: "Predict day 10 and day 20 WITHOUT listing every day. How big do the numbers get?",
+          es: "Predigan el día 10 y el día 20 SIN escribir todos los días. ¿Qué tan grandes se ponen los números?",
+        },
+      ],
+      talkEn:
+        "Would you rather have $100 today or 1¢ doubled every day for 3 weeks? Prove your choice!",
+      talkEs: "¿Prefieren $100 hoy o 1¢ duplicado cada día por 3 semanas? ¡Demuestren su elección!",
+    },
+    {
+      icon: "📣",
+      titleEn: "How a Rumor Grows",
+      titleEs: "Cómo crece un rumor",
+      materialsEn: "Paper and pencil",
+      materialsEs: "Papel y lápiz",
+      minutes: 10,
+      steps: [
+        {
+          en: "Imagine one person tells a rumor to 3 friends. Each friend tells 3 more.",
+          es: "Imaginen que una persona cuenta un rumor a 3 amigos. Cada amigo se lo cuenta a 3 más.",
+        },
+        {
+          en: "Draw the tree for 3 rounds. Count the people told in each round: 3, 9, 27.",
+          es: "Dibujen el árbol de 3 rondas. Cuenten las personas de cada ronda: 3, 9, 27.",
+        },
+        {
+          en: "Write each round as a power of 3. Predict round 5 without drawing it.",
+          es: "Escriban cada ronda como potencia de 3. Predigan la ronda 5 sin dibujarla.",
+        },
+      ],
+      talkEn: "3⁴ means 3 × 3 × 3 × 3 — not 3 × 4. How does the rumor tree SHOW that?",
+      talkEs: "3⁴ significa 3 × 3 × 3 × 3, no 3 × 4. ¿Cómo lo DEMUESTRA el árbol del rumor?",
+    },
+  ],
+  expressions: [
+    {
+      icon: "🍔",
+      titleEn: "Menu Math Machine",
+      titleEs: "La máquina del menú",
+      materialsEn: "A takeout menu or grocery flyer, paper",
+      materialsEs: "Un menú de comida o folleto del súper, papel",
+      minutes: 10,
+      steps: [
+        {
+          en: "Plan a pretend family order: for example, 3 tacos and 2 drinks.",
+          es: "Planeen un pedido imaginario: por ejemplo, 3 tacos y 2 bebidas.",
+        },
+        {
+          en: "Write it as an expression with variables: 3t + 2d, where t and d are the prices.",
+          es: "Escríbanlo como expresión con variables: 3t + 2d, donde t y d son los precios.",
+        },
+        {
+          en: "Look up the real prices and evaluate the expression. Change the order and re-evaluate.",
+          es: "Busquen los precios reales y evalúen la expresión. Cambien el pedido y evalúen de nuevo.",
+        },
+      ],
+      talkEn:
+        "What do the variables stand for? Why is writing 3t faster than writing the price 3 times?",
+      talkEs:
+        "¿Qué representan las variables? ¿Por qué escribir 3t es más rápido que escribir el precio 3 veces?",
+    },
+    {
+      icon: "🎂",
+      titleEn: "Age Expressions",
+      titleEs: "Expresiones de edades",
+      materialsEn: "Paper and pencil",
+      materialsEs: "Papel y lápiz",
+      minutes: 5,
+      steps: [
+        {
+          en: "Let x stand for the student's age. Write every family member's age using x.",
+          es: "Que x sea la edad del estudiante. Escriban la edad de cada familiar usando x.",
+        },
+        {
+          en: "For example, a parent might be x + 27, a little cousin x − 5.",
+          es: "Por ejemplo, un padre podría ser x + 27, y un primito x − 5.",
+        },
+        {
+          en: "Substitute the student's real age for x and check every expression.",
+          es: "Sustituyan la edad real del estudiante por x y comprueben cada expresión.",
+        },
+      ],
+      talkEn: "What will each expression equal in 10 years? Does the '+ 27' part ever change?",
+      talkEs: "¿Cuánto valdrá cada expresión en 10 años? ¿La parte '+ 27' cambia alguna vez?",
+    },
+    {
+      icon: "🧺",
+      titleEn: "Laundry Variables",
+      titleEs: "Variables en la ropa",
+      materialsEn: "A laundry basket (or a drawer of clothes)",
+      materialsEs: "Un cesto de ropa (o un cajón)",
+      minutes: 10,
+      steps: [
+        {
+          en: "Say each shirt has 4 buttons. Write an expression for the buttons on s shirts: 4s.",
+          es: "Digamos que cada camisa tiene 4 botones. Escriban una expresión para los botones de s camisas: 4s.",
+        },
+        {
+          en: "Count the real shirts and evaluate your expression.",
+          es: "Cuenten las camisas reales y evalúen su expresión.",
+        },
+        {
+          en: "Invent a two-part expression, like 4s + 2p for shirts and pants pockets, and evaluate it.",
+          es: "Inventen una expresión de dos partes, como 4s + 2p para camisas y bolsillos de pantalones, y evalúenla.",
+        },
+      ],
+      talkEn:
+        "In 4s + 2p, which numbers are coefficients? What happens if s changes but p doesn't?",
+      talkEs: "En 4s + 2p, ¿cuáles números son coeficientes? ¿Qué pasa si s cambia pero p no?",
+    },
+  ],
+  equations: [
+    {
+      icon: "🧥",
+      titleEn: "Hanger Balance",
+      titleEs: "La percha en equilibrio",
+      materialsEn: "A clothes hanger, 2 plastic bags, small identical objects",
+      materialsEs: "Una percha, 2 bolsas plásticas, objetos pequeños iguales",
+      minutes: 15,
+      steps: [
+        {
+          en: "Hang a bag on each end of the hanger and hold it up like a balance scale.",
+          es: "Cuelguen una bolsa en cada extremo de la percha y sosténganla como balanza.",
+        },
+        {
+          en: "Put 7 coins on one side, and 3 coins plus a 'mystery clip' of coins on the other until it balances.",
+          es: "Pongan 7 monedas de un lado, y del otro 3 monedas más un 'clip misterioso' de monedas hasta equilibrar.",
+        },
+        {
+          en: "Write the equation (3 + m = 7) and solve. Check by opening the mystery clip!",
+          es: "Escriban la ecuación (3 + m = 7) y resuélvanla. ¡Comprueben abriendo el clip misterioso!",
+        },
+      ],
+      talkEn: "If we add 2 coins to one side only, what happens? What must we do to keep it fair?",
+      talkEs:
+        "Si agregamos 2 monedas a un solo lado, ¿qué pasa? ¿Qué debemos hacer para que siga justo?",
+    },
+    {
+      icon: "🎒",
+      titleEn: "Mystery Bag",
+      titleEs: "La bolsa misteriosa",
+      materialsEn: "A small bag, dry beans or coins",
+      materialsEs: "Una bolsa pequeña, frijoles secos o monedas",
+      minutes: 10,
+      steps: [
+        {
+          en: "Secretly put some beans in the bag. Place the bag plus 4 loose beans on the table.",
+          es: "Pongan en secreto algunos frijoles en la bolsa. Coloquen la bolsa más 4 frijoles sueltos en la mesa.",
+        },
+        {
+          en: "Give the clue: 'The bag plus these 4 makes 10 in all.' The student writes b + 4 = 10.",
+          es: "Den la pista: 'La bolsa más estos 4 hacen 10 en total.' El estudiante escribe b + 4 = 10.",
+        },
+        {
+          en: "Solve, then open the bag to check. Switch roles and make a harder clue.",
+          es: "Resuelvan y abran la bolsa para comprobar. Cambien de papel e inventen una pista más difícil.",
+        },
+      ],
+      talkEn: "How did you 'undo' the + 4? What operation undoes adding?",
+      talkEs: "¿Cómo 'deshicieron' el + 4? ¿Qué operación deshace la suma?",
+    },
+    {
+      icon: "🏦",
+      titleEn: "Savings-Goal Solver",
+      titleEs: "Meta de ahorro",
+      materialsEn: "Paper and pencil",
+      materialsEs: "Papel y lápiz",
+      minutes: 10,
+      steps: [
+        {
+          en: "Pick something the student wants that costs real money — say $24.",
+          es: "Escojan algo que el estudiante quiera y que cueste dinero real; digamos $24.",
+        },
+        {
+          en: "Count what they have saved — say $9. Write the equation: 9 + n = 24.",
+          es: "Cuenten lo que ya tienen ahorrado; digamos $9. Escriban la ecuación: 9 + n = 24.",
+        },
+        {
+          en: "Solve for n together, then plan how to earn it: if a chore pays $3, how many chores?",
+          es: "Resuelvan n juntos y planeen cómo ganarlo: si un quehacer paga $3, ¿cuántos quehaceres?",
+        },
+      ],
+      talkEn:
+        "The chore question is a NEW equation — 3c = 15. How are the two equations different?",
+      talkEs:
+        "La pregunta de los quehaceres es una ecuación NUEVA: 3c = 15. ¿En qué se diferencian las dos?",
+    },
+  ],
+  inequalities: [
+    {
+      icon: "🎢",
+      titleEn: "Limit Hunt",
+      titleEs: "Cacería de límites",
+      materialsEn: "Labels and signs around the house",
+      materialsEs: "Etiquetas y letreros de la casa",
+      minutes: 10,
+      steps: [
+        {
+          en: "Hunt for real limits: an age rating on a game, a weight limit on a chair, a 'max 10 items' sign.",
+          es: "Busquen límites reales: la edad de un videojuego, el peso máximo de una silla, un letrero de 'máximo 10'.",
+        },
+        {
+          en: "Write each one as an inequality, like a ≥ 13 or w ≤ 250.",
+          es: "Escriban cada uno como desigualdad, por ejemplo a ≥ 13 o w ≤ 250.",
+        },
+        {
+          en: "For each, name 2 numbers that are allowed and 2 that are not.",
+          es: "Para cada una, digan 2 números permitidos y 2 que no.",
+        },
+      ],
+      talkEn: "Is the boundary number itself allowed? How does the symbol tell you?",
+      talkEs: "¿El número del límite está permitido? ¿Cómo lo indica el símbolo?",
+    },
+    {
+      icon: "🌡️",
+      titleEn: "Weather Watch",
+      titleEs: "Vigilando el clima",
+      materialsEn: "A weather app or window",
+      materialsEs: "Una app del clima o la ventana",
+      minutes: 5,
+      steps: [
+        {
+          en: "Look up today's high temperature and this week's forecast.",
+          es: "Busquen la temperatura máxima de hoy y el pronóstico de la semana.",
+        },
+        {
+          en: "Write true inequalities about it: 'Every day this week, t > 60.'",
+          es: "Escriban desigualdades verdaderas: 'Todos los días de esta semana, t > 60.'",
+        },
+        {
+          en: "Each person writes one true and one FALSE inequality; the others catch the false one.",
+          es: "Cada persona escribe una desigualdad verdadera y una FALSA; los demás descubren la falsa.",
+        },
+      ],
+      talkEn: "How many numbers make t > 60 true? Can you list them all?",
+      talkEs: "¿Cuántos números hacen verdadera t > 60? ¿Pueden escribirlos todos?",
+    },
+    {
+      icon: "🛍️",
+      titleEn: "Budget Boundaries",
+      titleEs: "Presupuesto con límites",
+      materialsEn: "A store flyer or pantry prices, paper",
+      materialsEs: "Un folleto de la tienda o precios de la despensa, papel",
+      minutes: 10,
+      steps: [
+        {
+          en: "Set a pretend budget: you may spend AT MOST $15 on snacks (c ≤ 15).",
+          es: "Fijen un presupuesto imaginario: pueden gastar MÁXIMO $15 en meriendas (c ≤ 15).",
+        },
+        {
+          en: "Build 3 different snack combos and check each against the inequality.",
+          es: "Armen 3 combinaciones distintas de meriendas y compárenlas con la desigualdad.",
+        },
+        {
+          en: "Find a combo that costs EXACTLY $15. Is it allowed? Why?",
+          es: "Encuentren una combinación que cueste EXACTAMENTE $15. ¿Está permitida? ¿Por qué?",
+        },
+      ],
+      talkEn: "How would the game change if the rule were c < 15 instead of c ≤ 15?",
+      talkEs: "¿Cómo cambiaría el juego si la regla fuera c < 15 en vez de c ≤ 15?",
+    },
+  ],
+  properties: [
+    {
+      icon: "🍱",
+      titleEn: "Snack-Pack Split",
+      titleEs: "Reparto de paquetes",
+      materialsEn: "Crackers and cheese (or any two small snacks)",
+      materialsEs: "Galletas y queso (o dos meriendas pequeñas)",
+      minutes: 10,
+      steps: [
+        {
+          en: "Make 4 snack packs, each with 3 crackers and 2 cheese cubes.",
+          es: "Armen 4 paquetes, cada uno con 3 galletas y 2 cubos de queso.",
+        },
+        {
+          en: "Count the total two ways: 4 × (3 + 2), or 4 × 3 plus 4 × 2.",
+          es: "Cuenten el total de dos maneras: 4 × (3 + 2), o 4 × 3 más 4 × 2.",
+        },
+        {
+          en: "Show that both ways give 20. That is the distributive property on a plate!",
+          es: "Demuestren que las dos formas dan 20. ¡Esa es la propiedad distributiva en un plato!",
+        },
+      ],
+      talkEn: "Which way of counting felt easier? When might the other way be easier?",
+      talkEs: "¿Qué forma de contar fue más fácil? ¿Cuándo convendría la otra?",
+    },
+    {
+      icon: "🁡",
+      titleEn: "Array Flip",
+      titleEs: "Voltea el arreglo",
+      materialsEn: "About 24 coins, beans, or cereal pieces",
+      materialsEs: "Unas 24 monedas, frijoles o piezas de cereal",
+      minutes: 5,
+      steps: [
+        {
+          en: "Build a rectangle of 6 rows with 4 objects each. Count: 6 × 4.",
+          es: "Armen un rectángulo de 6 filas con 4 objetos cada una. Cuenten: 6 × 4.",
+        },
+        {
+          en: "Turn the whole rectangle sideways. Now it is 4 rows of 6: 4 × 6.",
+          es: "Giren todo el rectángulo. Ahora son 4 filas de 6: 4 × 6.",
+        },
+        {
+          en: "Did the total change? Name the property that says it can't.",
+          es: "¿Cambió el total? Digan cómo se llama la propiedad que dice que no puede cambiar.",
+        },
+      ],
+      talkEn: "Does turning work for division too? Is 24 ÷ 6 the same as 6 ÷ 24?",
+      talkEs: "¿Girar funciona también con la división? ¿24 ÷ 6 es igual que 6 ÷ 24?",
+    },
+    {
+      icon: "🛒",
+      titleEn: "Mental-Math Shortcut",
+      titleEs: "Atajo de cálculo mental",
+      materialsEn: "Paper (a calculator to check)",
+      materialsEs: "Papel (una calculadora para comprobar)",
+      minutes: 10,
+      steps: [
+        {
+          en: "Pose a store problem: 3 shirts at $4.98 each. No calculator yet!",
+          es: "Planteen un problema: 3 camisas a $4.98 cada una. ¡Todavía sin calculadora!",
+        },
+        {
+          en: "Use the shortcut: 3 × 5.00 = 15.00, then take away 3 × 0.02.",
+          es: "Usen el atajo: 3 × 5.00 = 15.00, y luego quiten 3 × 0.02.",
+        },
+        {
+          en: "Check on the calculator. Invent another 'almost round' price and do it again.",
+          es: "Comprueben con la calculadora. Inventen otro precio 'casi redondo' y repitan.",
+        },
+      ],
+      talkEn: "How did we use 3 × (5 − 0.02)? Why is that allowed?",
+      talkEs: "¿Cómo usamos 3 × (5 − 0.02)? ¿Por qué se vale hacerlo?",
+    },
+  ],
+  area: [
+    {
+      icon: "📐",
+      titleEn: "Room Footprint",
+      titleEs: "El plano de tu espacio",
+      materialsEn: "A ruler or tape measure, paper",
+      materialsEs: "Una regla o cinta métrica, papel",
+      minutes: 15,
+      steps: [
+        {
+          en: "Measure the length and width of a table, rug, or bed.",
+          es: "Midan el largo y el ancho de una mesa, un tapete o una cama.",
+        },
+        {
+          en: "Compute the area together. Draw and label a quick sketch.",
+          es: "Calculen el área juntos. Hagan un dibujo rápido con etiquetas.",
+        },
+        {
+          en: "Measure a second surface and compare: which has more area, and by how much?",
+          es: "Midan otra superficie y comparen: ¿cuál tiene más área y por cuánto?",
+        },
+      ],
+      talkEn: "Why is area measured in SQUARE units instead of plain inches?",
+      talkEs: "¿Por qué el área se mide en unidades CUADRADAS y no en pulgadas simples?",
+    },
+    {
+      icon: "✂️",
+      titleEn: "Parallelogram Slide",
+      titleEs: "El paralelogramo que se transforma",
+      materialsEn: "Paper, scissors, ruler",
+      materialsEs: "Papel, tijeras, regla",
+      minutes: 10,
+      steps: [
+        {
+          en: "Draw a slanted parallelogram on paper and cut it out.",
+          es: "Dibujen un paralelogramo inclinado en papel y recórtenlo.",
+        },
+        {
+          en: "Cut a straight triangle off one end and slide it to the other end.",
+          es: "Corten un triángulo recto de un extremo y deslícenlo al otro extremo.",
+        },
+        {
+          en: "Look: it is now a rectangle! Same paper, same area. So area = base × height.",
+          es: "Miren: ¡ahora es un rectángulo! Mismo papel, misma área. Por eso área = base × altura.",
+        },
+      ],
+      talkEn: "Why do we use the straight-up height instead of the slanted side?",
+      talkEs: "¿Por qué usamos la altura vertical y no el lado inclinado?",
+    },
+    {
+      icon: "🍫",
+      titleEn: "Cracker Triangles",
+      titleEs: "Triángulos de galleta",
+      materialsEn: "Square or rectangular crackers (or sticky notes)",
+      materialsEs: "Galletas cuadradas o rectangulares (o notas adhesivas)",
+      minutes: 5,
+      steps: [
+        {
+          en: "Take a rectangular cracker. Its area is length × width.",
+          es: "Tomen una galleta rectangular. Su área es largo × ancho.",
+        },
+        {
+          en: "Break (or cut) it corner to corner into two triangles.",
+          es: "Pártanla (o córtenla) de esquina a esquina en dos triángulos.",
+        },
+        {
+          en: "Each triangle is HALF the rectangle. So triangle area = ½ × base × height. Eat the evidence!",
+          es: "Cada triángulo es la MITAD del rectángulo. Por eso el área del triángulo = ½ × base × altura. ¡Cómanse la evidencia!",
+        },
+      ],
+      talkEn: "If a triangle's area is 6 square units, what could its rectangle have been?",
+      talkEs: "Si el área de un triángulo es 6 unidades cuadradas, ¿cómo pudo ser su rectángulo?",
+    },
+  ],
+  volume: [
+    {
+      icon: "🥣",
+      titleEn: "Box Hunt",
+      titleEs: "Cacería de cajas",
+      materialsEn: "Two food boxes (cereal, pasta), ruler",
+      materialsEs: "Dos cajas de comida (cereal, pasta), regla",
+      minutes: 15,
+      steps: [
+        {
+          en: "Measure the length, width, and height of each box, to the nearest half inch.",
+          es: "Midan el largo, el ancho y la altura de cada caja, a la media pulgada más cercana.",
+        },
+        {
+          en: "Compute each volume: V = l × w × h. Fractions are welcome!",
+          es: "Calculen cada volumen: V = l × a × h. ¡Las fracciones son bienvenidas!",
+        },
+        {
+          en: "Predict first which box holds more, then let the numbers decide. Were your eyes right?",
+          es: "Primero predigan cuál caja cabe más, y luego dejen que los números decidan. ¿Acertaron sus ojos?",
+        },
+      ],
+      talkEn: "Could a taller box have LESS volume than a shorter one? How?",
+      talkEs: "¿Podría una caja más alta tener MENOS volumen que una más baja? ¿Cómo?",
+    },
+    {
+      icon: "🧊",
+      titleEn: "Ice-Cube Estimate",
+      titleEs: "Estimar con cubitos",
+      materialsEn: "Ice cubes (or sugar cubes, dice), a small container",
+      materialsEs: "Cubitos de hielo (o de azúcar, o dados), un recipiente pequeño",
+      minutes: 10,
+      steps: [
+        {
+          en: "Predict: how many cubes will fill the container in neat layers?",
+          es: "Predigan: ¿cuántos cubitos llenarán el recipiente en capas ordenadas?",
+        },
+        {
+          en: "Fill the bottom layer and count it. Count how many layers fit.",
+          es: "Llenen la primera capa y cuéntenla. Cuenten cuántas capas caben.",
+        },
+        {
+          en: "Multiply layer × layers and compare with your prediction. That is what l × w × h counts!",
+          es: "Multipliquen capa × capas y comparen con su predicción. ¡Eso es lo que cuenta l × a × h!",
+        },
+      ],
+      talkEn: "Why does multiplying the bottom layer by the height give the whole volume?",
+      talkEs: "¿Por qué multiplicar la primera capa por la altura da todo el volumen?",
+    },
+    {
+      icon: "🎁",
+      titleEn: "Build the Half-Inch Box",
+      titleEs: "La caja de media pulgada",
+      materialsEn: "Paper, ruler, tape, scissors",
+      materialsEs: "Papel, regla, cinta adhesiva, tijeras",
+      minutes: 15,
+      steps: [
+        {
+          en: "Together, draw a box pattern 3 in long, 2 in wide, 1½ in tall.",
+          es: "Juntos, dibujen el patrón de una caja de 3 pulg de largo, 2 de ancho y 1½ de alto.",
+        },
+        {
+          en: "Cut, fold, and tape it into a real box.",
+          es: "Corten, doblen y péguenla hasta formar una caja de verdad.",
+        },
+        {
+          en: "Compute its volume with the fraction: 3 × 2 × 1½. What tiny thing fits inside?",
+          es: "Calculen su volumen con la fracción: 3 × 2 × 1½. ¿Qué cosita cabe adentro?",
+        },
+      ],
+      talkEn:
+        "How is multiplying by 1½ different from multiplying by 2? What did it do to the volume?",
+      talkEs: "¿En qué se diferencia multiplicar por 1½ y por 2? ¿Qué le hizo al volumen?",
+    },
+  ],
+  "surface-area": [
+    {
+      icon: "📦",
+      titleEn: "Unfold a Box",
+      titleEs: "Desarma una caja",
+      materialsEn: "An empty cereal or snack box, scissors",
+      materialsEs: "Una caja vacía de cereal o galletas, tijeras",
+      minutes: 15,
+      steps: [
+        {
+          en: "Carefully open the box along its seams and flatten it out. That flat shape is a NET.",
+          es: "Abran la caja con cuidado por las uniones y aplánenla. Esa figura plana es una PLANTILLA (red).",
+        },
+        {
+          en: "Count the faces and label each one: top, bottom, front, back, sides.",
+          es: "Cuenten las caras y márquenlas: arriba, abajo, frente, atrás, lados.",
+        },
+        {
+          en: "Measure and add the area of every face. That total is the surface area!",
+          es: "Midan y sumen el área de cada cara. ¡Ese total es el área de superficie!",
+        },
+      ],
+      talkEn: "Which faces are twins (same size)? How can twins make the adding faster?",
+      talkEs:
+        "¿Qué caras son gemelas (del mismo tamaño)? ¿Cómo ayudan las gemelas a sumar más rápido?",
+    },
+    {
+      icon: "🎁",
+      titleEn: "Gift-Wrap Estimator",
+      titleEs: "Estimando papel de regalo",
+      materialsEn: "A small box, newspaper or wrapping paper, ruler",
+      materialsEs: "Una caja pequeña, periódico o papel de regalo, regla",
+      minutes: 15,
+      steps: [
+        {
+          en: "Before wrapping, compute the box's surface area: the sum of all 6 face areas.",
+          es: "Antes de envolver, calculen el área de superficie de la caja: la suma de las 6 caras.",
+        },
+        {
+          en: "Cut a piece of paper you think will just barely cover it.",
+          es: "Corten un pedazo de papel que apenas alcance para cubrirla.",
+        },
+        {
+          en: "Wrap it! Too much overlap or a bald spot? Compare with your computed answer.",
+          es: "¡Envuélvanla! ¿Sobró mucho o faltó? Comparen con el resultado calculado.",
+        },
+      ],
+      talkEn: "Why do wrappers need surface area but the box's CONTENTS need volume?",
+      talkEs: "¿Por qué envolver usa el área de superficie pero el CONTENIDO usa el volumen?",
+    },
+    {
+      icon: "🎨",
+      titleEn: "Paint-Job Planner",
+      titleEs: "Plan de pintura",
+      materialsEn: "A shoebox (or any box), ruler, paper",
+      materialsEs: "Una caja de zapatos (o cualquier caja), regla, papel",
+      minutes: 10,
+      steps: [
+        {
+          en: "Pretend you will paint the shoebox. Measure its faces.",
+          es: "Imaginen que van a pintar la caja. Midan sus caras.",
+        },
+        {
+          en: "Find the total area to paint — but wait: does the BOTTOM get painted? Decide together.",
+          es: "Calculen el área total por pintar. Un momento: ¿se pinta la parte de ABAJO? Decidan juntos.",
+        },
+        {
+          en: "If one jar of paint covers 100 square inches, how many jars do you need?",
+          es: "Si un frasco de pintura cubre 100 pulgadas cuadradas, ¿cuántos frascos necesitan?",
+        },
+      ],
+      talkEn: "Painters, wrappers, and box-makers all use surface area. Who else might?",
+      talkEs:
+        "Pintores, envolvedores y fabricantes de cajas usan el área de superficie. ¿Quién más la usará?",
+    },
+  ],
+  statistics: [
+    {
+      icon: "📊",
+      titleEn: "Family Data Night",
+      titleEs: "Noche de datos en familia",
+      materialsEn: "Paper and pencil, the whole family",
+      materialsEs: "Papel y lápiz, toda la familia",
+      minutes: 15,
+      steps: [
+        {
+          en: "Pick a question with NUMBER answers: hours of sleep, shoe size, minutes to get to school.",
+          es: "Escojan una pregunta con respuestas NUMÉRICAS: horas de sueño, talla de zapato, minutos a la escuela.",
+        },
+        {
+          en: "Collect an answer from everyone (call a relative to grow the data set!).",
+          es: "Reúnan la respuesta de todos (¡llamen a un pariente para tener más datos!).",
+        },
+        {
+          en: "Draw a quick dot plot and find the median together.",
+          es: "Hagan un diagrama de puntos rápido y encuentren la mediana juntos.",
+        },
+      ],
+      talkEn: "Is there an outlier in our family data? What is its story?",
+      talkEs: "¿Hay un valor atípico en los datos de la familia? ¿Cuál es su historia?",
+    },
+    {
+      icon: "🎲",
+      titleEn: "Roll & Record",
+      titleEs: "Lanza y registra",
+      materialsEn: "One die (or number cards 1-6), paper",
+      materialsEs: "Un dado (o tarjetas del 1 al 6), papel",
+      minutes: 10,
+      steps: [
+        {
+          en: "Take turns rolling the die 20 times total, tallying each result.",
+          es: "Túrnense para lanzar el dado 20 veces en total, anotando cada resultado.",
+        },
+        {
+          en: "Turn the tallies into a dot plot. Describe its shape: flat, bumpy, lopsided?",
+          es: "Conviertan el conteo en un diagrama de puntos. Describan su forma: ¿plana, con picos, cargada a un lado?",
+        },
+        {
+          en: "Find the mode and the median of your 20 rolls.",
+          es: "Encuentren la moda y la mediana de sus 20 lanzamientos.",
+        },
+      ],
+      talkEn: "If we rolled 100 more times, what do you think the plot would look like? Why?",
+      talkEs: "Si lanzáramos 100 veces más, ¿cómo creen que se vería el diagrama? ¿Por qué?",
+    },
+    {
+      icon: "❓",
+      titleEn: "Statistical or Not?",
+      titleEs: "¿Estadística o no?",
+      materialsEn: "Just conversation",
+      materialsEs: "Solo conversación",
+      minutes: 5,
+      steps: [
+        {
+          en: "Take turns asking questions: 'How old am I?' vs 'How old are the people in our building?'",
+          es: "Túrnense haciendo preguntas: '¿Cuántos años tengo?' contra '¿Cuántos años tienen los vecinos del edificio?'",
+        },
+        {
+          en: "For each, decide: statistical (answers VARY) or not (one fixed answer)?",
+          es: "Para cada una decidan: ¿es estadística (las respuestas VARÍAN) o no (una sola respuesta)?",
+        },
+        {
+          en: "Keep score together: 5 statistical questions invented = you win as a team.",
+          es: "Lleven la cuenta juntos: 5 preguntas estadísticas inventadas = ganan como equipo.",
+        },
+      ],
+      talkEn: "What one word turns a fixed question into a statistical one?",
+      talkEs: "¿Qué palabra convierte una pregunta fija en una estadística?",
+    },
+  ],
+  "number-line": [
+    {
+      icon: "🌍",
+      titleEn: "World Temperature Tour",
+      titleEs: "Gira de temperaturas del mundo",
+      materialsEn: "A weather app, paper",
+      materialsEs: "Una app del clima, papel",
+      minutes: 10,
+      steps: [
+        {
+          en: "Look up today's temperature in 4 cities — include somewhere freezing (try Reykjavik or Anchorage).",
+          es: "Busquen la temperatura de hoy en 4 ciudades; incluyan un lugar helado (prueben Reikiavik o Anchorage).",
+        },
+        {
+          en: "Draw a vertical number line and plot all 4 temperatures, including negatives.",
+          es: "Dibujen una recta numérica vertical y ubiquen las 4 temperaturas, incluidas las negativas.",
+        },
+        {
+          en: "Order them from coldest to warmest. Which is closest to zero?",
+          es: "Ordénenlas de la más fría a la más cálida. ¿Cuál está más cerca de cero?",
+        },
+      ],
+      talkEn: "Which city's temperature has the greatest absolute value? Is it the warmest?",
+      talkEs: "¿Qué ciudad tiene la temperatura con mayor valor absoluto? ¿Es la más cálida?",
+    },
+    {
+      icon: "🏦",
+      titleEn: "Money In, Money Out",
+      titleEs: "Dinero que entra y sale",
+      materialsEn: "Paper and pencil",
+      materialsEs: "Papel y lápiz",
+      minutes: 10,
+      steps: [
+        {
+          en: "Start a pretend account at $0. Take turns narrating: 'earned $5' (+5), 'bought a snack' (−3).",
+          es: "Abran una cuenta imaginaria en $0. Túrnense narrando: 'gané $5' (+5), 'compré una merienda' (−3).",
+        },
+        {
+          en: "Track each move on a number line, one hop at a time.",
+          es: "Sigan cada movimiento en una recta numérica, salto por salto.",
+        },
+        {
+          en: "After 6 moves, where did you land? Can the account go BELOW zero? What does that mean?",
+          es: "Después de 6 movimientos, ¿dónde quedaron? ¿Puede la cuenta bajar de cero? ¿Qué significa eso?",
+        },
+      ],
+      talkEn: "What real situations use numbers below zero besides money and temperature?",
+      talkEs: "¿Qué situaciones reales usan números bajo cero además del dinero y la temperatura?",
+    },
+    {
+      icon: "🪜",
+      titleEn: "Hallway Number Line",
+      titleEs: "Recta numérica en el pasillo",
+      materialsEn: "Painter's tape or paper squares, a marker",
+      materialsEs: "Cinta de pintor o cuadros de papel, un marcador",
+      minutes: 15,
+      steps: [
+        {
+          en: "Lay a number line on the floor from −5 to 5, with 0 in the middle.",
+          es: "Armen una recta numérica en el piso de −5 a 5, con el 0 en el centro.",
+        },
+        {
+          en: "Call out numbers to stand on: '−4!' Then: 'its opposite!' Then: 'a number with absolute value 2!'",
+          es: "Digan números para pararse encima: '¡−4!' Luego: '¡su opuesto!' Luego: '¡un número con valor absoluto 2!'",
+        },
+        {
+          en: "Switch callers. Add half steps (−2½) for a challenge.",
+          es: "Cambien de locutor. Agreguen medios pasos (−2½) como reto.",
+        },
+      ],
+      talkEn: "Why do −4 and 4 both have the same absolute value? Show it with your feet!",
+      talkEs: "¿Por qué −4 y 4 tienen el mismo valor absoluto? ¡Demuéstrenlo con los pies!",
+    },
+  ],
+  "coordinate-plane": [
+    {
+      icon: "🗺️",
+      titleEn: "Treasure-Map Grid",
+      titleEs: "Mapa del tesoro",
+      materialsEn: "Graph paper (or draw a grid), a small 'treasure'",
+      materialsEs: "Papel cuadriculado (o dibujen la cuadrícula), un 'tesoro' pequeño",
+      minutes: 15,
+      steps: [
+        {
+          en: "Draw a map of a room as a four-quadrant grid — the room's center is (0, 0).",
+          es: "Dibujen el mapa de un cuarto como cuadrícula de cuatro cuadrantes; el centro del cuarto es (0, 0).",
+        },
+        {
+          en: "One person hides the treasure and writes its ordered pair, like (−3, 2).",
+          es: "Una persona esconde el tesoro y escribe su par ordenado, por ejemplo (−3, 2).",
+        },
+        {
+          en: "The finder walks it out: 3 left, 2 forward. Swap roles!",
+          es: "El buscador lo camina: 3 a la izquierda, 2 hacia adelante. ¡Cambien de papel!",
+        },
+      ],
+      talkEn: "Why does (−3, 2) land somewhere different from (2, −3)? Does order matter?",
+      talkEs: "¿Por qué (−3, 2) queda en un lugar distinto que (2, −3)? ¿Importa el orden?",
+    },
+    {
+      icon: "🚢",
+      titleEn: "Four-Quadrant Battleship",
+      titleEs: "Batalla naval en cuatro cuadrantes",
+      materialsEn: "Two pieces of graph paper, pencils, a book to block views",
+      materialsEs: "Dos hojas cuadriculadas, lápices, un libro para tapar la vista",
+      minutes: 15,
+      steps: [
+        {
+          en: "Each player draws axes from −5 to 5 and secretly marks 3 'ships' (each 2 points long) on grid corners.",
+          es: "Cada jugador dibuja ejes de −5 a 5 y marca en secreto 3 'barcos' (de 2 puntos cada uno) en esquinas de la cuadrícula.",
+        },
+        {
+          en: "Take turns calling ordered pairs — '(−2, 4)!' — and answer 'splash' or 'hit'.",
+          es: "Túrnense diciendo pares ordenados — '¡(−2, 4)!' — y respondan 'agua' o 'impacto'.",
+        },
+        {
+          en: "Track every guess on your own grid. Play until every ship is found.",
+          es: "Anoten cada intento en su propia cuadrícula. Jueguen hasta encontrar todos los barcos.",
+        },
+      ],
+      talkEn:
+        "Which quadrant did you avoid guessing in? What sign pattern does each quadrant have?",
+      talkEs: "¿En qué cuadrante casi no intentaron? ¿Qué patrón de signos tiene cada cuadrante?",
+    },
+    {
+      icon: "🖼️",
+      titleEn: "Secret-Picture Points",
+      titleEs: "El dibujo secreto de puntos",
+      materialsEn: "Graph paper, pencil",
+      materialsEs: "Papel cuadriculado, lápiz",
+      minutes: 15,
+      steps: [
+        {
+          en: "One person secretly plans a simple shape (a star, a boat, a letter) and lists its ordered pairs in order.",
+          es: "Una persona planea en secreto una figura simple (una estrella, un barco, una letra) y anota sus pares ordenados en orden.",
+        },
+        {
+          en: "Read the pairs aloud one at a time while the other plots and connects them.",
+          es: "Lean los pares en voz alta uno por uno mientras la otra persona los ubica y los une.",
+        },
+        {
+          en: "Reveal: did the picture come out right? Swap roles and use all four quadrants.",
+          es: "Revelen: ¿salió bien el dibujo? Cambien de papel y usen los cuatro cuadrantes.",
+        },
+      ],
+      talkEn:
+        "Where did a wrong point send the drawing? How do coordinates make instructions exact?",
+      talkEs:
+        "¿A dónde mandó el dibujo un punto equivocado? ¿Cómo hacen exactas las instrucciones las coordenadas?",
+    },
+  ],
+  fallback: [
+    {
+      icon: "🫙",
+      titleEn: "Estimation Jar",
+      titleEs: "El frasco de estimar",
+      materialsEn: "A clear jar, small objects (pasta, buttons, cereal)",
+      materialsEs: "Un frasco transparente, objetos pequeños (pasta, botones, cereal)",
+      minutes: 10,
+      steps: [
+        {
+          en: "Fill the jar partway with small objects. Everyone writes a secret estimate.",
+          es: "Llenen parte del frasco con objetos pequeños. Cada quien escribe una estimación secreta.",
+        },
+        {
+          en: "Count the objects together in groups of 10 — grouping makes big counts easy.",
+          es: "Cuenten los objetos juntos en grupos de 10; agrupar facilita contar cantidades grandes.",
+        },
+        {
+          en: "Compare every estimate to the real count. Whose strategy was strongest? Ask them to teach it.",
+          es: "Comparen cada estimación con el conteo real. ¿Qué estrategia fue mejor? Pidan que la expliquen.",
+        },
+      ],
+      talkEn:
+        "What information did you use to estimate? What would make your next estimate better?",
+      talkEs: "¿Qué información usaron para estimar? ¿Qué mejoraría su próxima estimación?",
+    },
+    {
+      icon: "🃏",
+      titleEn: "Target 100",
+      titleEs: "Meta 100",
+      materialsEn: "A deck of cards (face cards removed) or slips numbered 1-9",
+      materialsEs: "Una baraja (sin figuras) o papelitos del 1 al 9",
+      minutes: 10,
+      steps: [
+        {
+          en: "Deal 4 cards face up where everyone can see them.",
+          es: "Pongan 4 cartas boca arriba donde todos las vean.",
+        },
+        {
+          en: "As a team, combine them with +, −, ×, ÷ to land as close to 100 as you can.",
+          es: "En equipo, combínenlas con +, −, ×, ÷ para acercarse lo más posible a 100.",
+        },
+        {
+          en: "Write the expression you built and check it respects order of operations. Deal again!",
+          es: "Escriban la expresión que armaron y revisen que respete el orden de las operaciones. ¡Repartan otra vez!",
+        },
+      ],
+      talkEn: "Which operation moved you the most? When did parentheses change everything?",
+      talkEs: "¿Qué operación los acercó más? ¿Cuándo lo cambiaron todo los paréntesis?",
+    },
+    {
+      icon: "🍽️",
+      titleEn: "Math Around the Table",
+      titleEs: "Matemáticas en la mesa",
+      materialsEn: "Just conversation at a meal",
+      materialsEs: "Solo conversación durante una comida",
+      minutes: 5,
+      steps: [
+        {
+          en: "At dinner, each person shares one place they used math today — cooking, shopping, work, games.",
+          es: "En la cena, cada persona cuenta dónde usó matemáticas hoy: cocinando, comprando, en el trabajo, en juegos.",
+        },
+        {
+          en: "The student explains what tonight's lesson is about in their own words.",
+          es: "El estudiante explica de qué trata la lección de hoy con sus propias palabras.",
+        },
+        {
+          en: "Together, hunt for one place THIS lesson's math shows up in your home.",
+          es: "Juntos, busquen un lugar de la casa donde aparezcan las matemáticas de ESTA lección.",
+        },
+      ],
+      talkEn: "Who in our family uses the most math at work? Ask them how!",
+      talkEs: "¿Quién de la familia usa más matemáticas en su trabajo? ¡Pregúntenle cómo!",
+    },
+  ],
+};
+
+export function getFamilyActivities(topic) {
+  return FAMILY_ACTIVITIES[topic] || FAMILY_ACTIVITIES.fallback;
+}
+
+/** One activity card: a friendly accordion with steps and a talk prompt. */
+function renderFamilyActivityCard(act, idx) {
+  const stepsHtml = act.steps
+    .map(
+      (s, i) => `
+        <li class="fam-act-step">
+          <span class="fam-act-step-num" aria-hidden="true">${i + 1}</span>
+          <div>
+            <p class="lang-en">${esc(s.en)}</p>
+            <p class="lang-es" lang="es">${esc(s.es)}</p>
+          </div>
+        </li>`,
+    )
+    .join("");
+
+  return `
+    <details class="fam-act-card"${idx === 0 ? " open" : ""}>
+      <summary class="fam-act-summary">
+        <span class="fam-act-icon" aria-hidden="true">${act.icon}</span>
+        <span class="fam-act-titles">
+          <strong><span class="lang-en">${esc(act.titleEn)}</span><span class="lang-es" lang="es">${esc(act.titleEs)}</span></strong>
+          <small class="fam-act-meta">
+            <span class="fam-act-time">⏱️ ~${act.minutes} min</span>
+            <span class="fam-act-materials"><span class="lang-en">🧰 ${esc(act.materialsEn)}</span><span class="lang-es" lang="es">🧰 ${esc(act.materialsEs)}</span></span>
+          </small>
+        </span>
+        <span class="fam-act-chevron" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fam-act-body">
+        <ol class="fam-act-steps">${stepsHtml}</ol>
+        <div class="fam-act-talk">
+          <strong>💬 <span class="lang-en">Talk about it:</span><span class="lang-es" lang="es">Para conversar:</span></strong>
+          <span class="lang-en">${esc(act.talkEn)}</span>
+          <span class="lang-es" lang="es">${esc(act.talkEs)}</span>
+        </div>
+      </div>
+    </details>`;
+}
+
+/**
+ * The Family Activity Corner: three hands-on, no-device activities matched to
+ * tonight's topic. Lives on the Together tab, after the guided practice.
+ */
+export function renderFamilyActivityCorner(topic) {
+  const acts = getFamilyActivities(topic);
+  return `
+    <div class="fam-act-corner card-ish" aria-label="Family activity corner">
+      <div class="fam-act-head">
+        <span class="fam-act-badge">🏡 FAMILY ACTIVITY CORNER / RINCÓN DE ACTIVIDADES</span>
+        <p class="fam-act-lead">
+          <span class="lang-en">No screens needed — three quick activities with things already in your home. Pick ONE tonight!</span>
+          <span class="lang-es" lang="es">Sin pantallas: tres actividades rápidas con cosas que ya tienen en casa. ¡Escojan UNA hoy!</span>
+        </p>
+      </div>
+      ${acts.map((a, i) => renderFamilyActivityCard(a, i)).join("")}
+    </div>`;
+}
+
 export const MATH_TALK_QUESTIONS = [
   {
     qEn: "Can you show me how you see that in the picture above?",
@@ -2417,6 +3825,7 @@ export function renderTogetherTab(config, lessonId = "") {
     <div ${tabPanelAttrs("together", true)}>
       ${inner}
       ${mathTalkHtml}
+      ${renderFamilyActivityCorner(detectVisualTopic(config))}
       <div class="scratchpad-inline-toggle">
         <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
           ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
@@ -2951,6 +4360,28 @@ export function renderHelpModal() {
 }
 
 export const HOMEWORK_TABS_JS = `
+function journeyStorageKey() {
+  return 'hw_journey_' + (window.LESSON_ID || location.pathname);
+}
+
+/* Tonight's Path roadmap: light up the current stop, keep a persistent check
+   on every stop the family has visited for THIS lesson. */
+function updateJourneyMap(tabId) {
+  const stops = document.querySelectorAll('[data-journey-stop]');
+  if (!stops.length) return;
+  let visited = {};
+  try { visited = JSON.parse(localStorage.getItem(journeyStorageKey()) || '{}') || {}; } catch (e) {}
+  if (tabId && !visited[tabId]) {
+    visited[tabId] = true;
+    try { localStorage.setItem(journeyStorageKey(), JSON.stringify(visited)); } catch (e) {}
+  }
+  stops.forEach(function (s) {
+    const id = s.dataset.journeyStop;
+    s.classList.toggle('is-current', id === tabId);
+    s.classList.toggle('is-done', !!visited[id]);
+  });
+}
+
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
   const tabBar = document.querySelector('.homework-tab-bar');
@@ -2980,6 +4411,7 @@ function switchHomeworkTab(tabId) {
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   const fill = document.getElementById('tab_progress_fill');
   if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+  if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
   if (tabId === 'arcade') {
@@ -5510,5 +6942,251 @@ body.lang-mode-es .tab-es {
   font-weight: 600 !important;
   color: #475569 !important;
   line-height: 1.4 !important;
+}
+
+/* ============================================================
+   Tonight's Path journey map — the family's roadmap through the page.
+   New class names only (hw-journey*, hw-quickplan*, fam-act*): the polish
+   layer re-declares shared selectors, so these never collide with it.
+   ============================================================ */
+.hw-journey { margin-bottom: 18px; padding: 20px 22px; }
+.hw-journey-head { margin-bottom: 14px; }
+.hw-journey-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--teal-ink);
+  background: var(--teal-light);
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+.hw-journey-sub { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
+.hw-journey-track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hw-journey-item { flex: 1 1 120px; display: flex; position: relative; }
+/* Connector line between stops */
+.hw-journey-item + .hw-journey-item::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 26px;
+  width: 8px;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+}
+.hw-journey-stop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 8px 12px;
+  min-height: 44px;
+  background: #fbfdff;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.hw-journey-stop:hover { border-color: var(--teal); transform: translateY(-1px); }
+.hw-journey-stop:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.hw-journey-bubble {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 2px solid var(--line);
+  font-size: 19px;
+}
+.hw-journey-check {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}
+.hw-journey-stop.is-done .hw-journey-check { display: block; }
+.hw-journey-stop.is-done .hw-journey-bubble { border-color: var(--success); background: var(--success-bg); }
+.hw-journey-stop.is-current {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  box-shadow: 0 6px 16px -10px rgba(31,166,162,.8);
+}
+.hw-journey-stop.is-current .hw-journey-bubble { border-color: var(--teal); background: #fff; }
+.hw-journey-label { font-size: 13px; font-weight: 700; color: var(--ink); text-align: center; }
+.hw-journey-label .lang-es { display: block; font-weight: 600; }
+/* The roadmap's own bilingual labels stay compact: no teal rule inside buttons */
+.hw-journey-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 1px; }
+.hw-journey-num { color: var(--teal-ink); }
+.hw-journey-min { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+
+/* "Only have 10 minutes?" quick plan */
+.hw-quickplan {
+  margin-top: 14px;
+  border: 1px dashed var(--amber);
+  border-radius: var(--radius-md);
+  background: var(--amber-light);
+}
+.hw-quickplan-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 14.5px;
+  color: var(--ink);
+}
+.hw-quickplan-summary::-webkit-details-marker { display: none; }
+.hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: var(--muted); }
+.hw-quickplan[open] .hw-quickplan-chevron { transform: rotate(180deg); }
+.hw-quickplan-steps { margin: 0; padding: 0 16px 4px 34px; font-size: 14px; }
+.hw-quickplan-steps li { margin-bottom: 8px; }
+.hw-quickplan-note {
+  margin: 0;
+  padding: 10px 16px 14px;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+/* ============================================================
+   Family Activity Corner — hands-on activity cards on the Together tab.
+   ============================================================ */
+.fam-act-corner {
+  margin-top: 22px;
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 14px 34px -22px rgba(18,53,91,.5);
+}
+.fam-act-head { margin-bottom: 14px; }
+.fam-act-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--coral-ink);
+  background: var(--coral-light);
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+.fam-act-lead { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
+.fam-act-card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.fam-act-card[open] { border-color: var(--teal); }
+.fam-act-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+}
+.fam-act-summary::-webkit-details-marker { display: none; }
+.fam-act-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--teal-light);
+  font-size: 19px;
+}
+.fam-act-titles { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.fam-act-titles strong { font-size: 15px; color: var(--ink); }
+.fam-act-titles strong .lang-es { font-weight: 600; }
+/* Compact header rows: suppress the global stacked-Spanish rule inside */
+.fam-act-summary .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 1px; }
+.fam-act-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.fam-act-chevron { margin-left: auto; color: var(--muted); transition: transform .2s ease; }
+.fam-act-card[open] .fam-act-chevron { transform: rotate(180deg); }
+.fam-act-body { padding: 2px 16px 14px; }
+.fam-act-steps {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+.fam-act-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.fam-act-step:last-child { border-bottom: 0; }
+.fam-act-step p { margin: 0; font-size: 14px; }
+.fam-act-step-num {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+.fam-act-talk {
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--ink);
+}
+.fam-act-talk strong { display: block; margin-bottom: 4px; color: var(--teal-ink); }
+
+@media (max-width: 700px) {
+  .hw-journey-track { gap: 6px; }
+  .hw-journey-item { flex: 1 1 30%; }
+  .hw-journey-item + .hw-journey-item::before { display: none; }
+  .hw-journey-min { display: none; }
+}
+
+@media print {
+  .hw-journey, .hw-quickplan { display: none; }
+  .fam-act-card { break-inside: avoid; }
 }
 `;
