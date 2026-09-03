@@ -2350,13 +2350,30 @@ export function renderLearnTab(config, visualLabHtml = "") {
       </div>
     </div>`;
 
+  const parentDrawerHtml = `
+    <details class="parent-coaching-drawer">
+      <summary class="parent-coaching-summary">
+        <span class="summary-left">
+          <span class="summary-icon">💡</span>
+          <span class="summary-text">
+            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
+            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
+          </span>
+        </span>
+        <span class="summary-chevron" aria-hidden="true">▾</span>
+      </summary>
+      <div class="parent-coaching-content">
+        ${spotlightHtml}
+        ${misconceptionHtml}
+      </div>
+    </details>`;
+
   return `
     <div ${tabPanelAttrs("learn")}>
       ${learning}
       ${concept}
-      ${spotlightHtml}
       ${visualLabHtml}
-      ${misconceptionHtml}
+      ${parentDrawerHtml}
       ${powerUpHtml}
       <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
       <div class="tab-flow-nav">
@@ -2902,22 +2919,11 @@ export function renderHomeworkTabs(panelsHtml) {
             <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
               aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
               data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
-              <span class="tab-step-badge">${i + 1}</span>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
-              <span class="tab-badge-star" id="tab_badge_${t.id}" aria-hidden="true"></span>
             </button>`,
           ).join("")}
         </nav>
-        <div class="homework-tab-progress" aria-live="polite">
-          <div class="tab-progress-wrap">
-            <span id="hw_tab_progress">1 of ${tabCount}</span>
-            <div class="tab-progress-track">
-              <div class="tab-progress-fill" id="tab_progress_fill" style="width: 10%;"></div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
-        </div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         ${scratchpad}
@@ -4947,4 +4953,364 @@ body.lang-mode-es .bilingual-grid {
 .achieve-icon { font-size: 22px; line-height: 1; }
 .achieve-name { font-family: var(--font-display); font-size: 11px; font-weight: 800; color: var(--navy); }
 
+
+/* ==========================================================================
+   CLEAN, CALM, PARENT-FRIENDLY AESTHETIC SYSTEM
+   ========================================================================== */
+
+/* Tranquil, modern color scheme & typography */
+:root {
+  --navy: #0f172a;
+  --navy-light: #1e293b;
+  --teal: #0f766e;
+  --teal-ink: #0d5c75;
+  --teal-light: #f0fdfa;
+  --amber: #f59e0b;
+  --amber-light: #fffbeb;
+  --cream: #fbfbfa;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.04), 0 4px 10px -2px rgba(15, 23, 42, 0.02);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* Elegant, welcoming header */
+header.homework-header,
+.family-welcome {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 32px !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.12) !important;
+  margin-bottom: 24px !important;
+}
+.welcome-tag {
+  color: #94a3b8 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+}
+.welcome-title-en {
+  font-size: clamp(24px, 4.5vw, 32px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
+}
+.welcome-title-es {
+  color: #cbd5e1 !important;
+  font-weight: 600 !important;
+  font-size: clamp(18px, 3.5vw, 22px) !important;
+}
+.welcome-lesson {
+  color: #38bdf8 !important;
+  font-weight: 600 !important;
+  font-size: 14.5px !important;
+  margin-top: 6px !important;
+}
+
+/* Apple-Grade Floating Pill Tab Bar */
+.homework-tab-chrome {
+  position: sticky;
+  top: 12px;
+  z-index: 100;
+  margin-bottom: 24px;
+}
+.homework-tab-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 99px !important;
+  padding: 6px 8px !important;
+  box-shadow: 0 6px 24px -2px rgba(15, 23, 42, 0.06) !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  scroll-snap-type: x mandatory !important;
+}
+.homework-tab-bar::-webkit-scrollbar { display: none; }
+
+.homework-tab-btn {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 7px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 99px !important;
+  padding: 8px 16px !important;
+  min-height: auto !important;
+  min-width: auto !important;
+  font-family: var(--font-display) !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  scroll-snap-align: start !important;
+}
+.homework-tab-btn:hover {
+  color: #0f172a !important;
+  background: rgba(241, 245, 249, 0.9) !important;
+}
+.homework-tab-btn.is-active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18) !important;
+}
+.homework-tab-btn.is-active .tab-icon {
+  transform: scale(1.1);
+}
+.tab-icon {
+  font-size: 15px !important;
+  line-height: 1 !important;
+  transition: transform 0.2s ease;
+}
+.tab-label {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+}
+.tab-es {
+  display: none !important;
+}
+body.lang-mode-es .tab-en {
+  display: none !important;
+}
+body.lang-mode-es .tab-es {
+  display: inline !important;
+  color: inherit !important;
+  font-size: inherit !important;
+}
+
+/* Cards & Content Shells */
+.guided-section.card,
+.card-ish {
+  background: #ffffff !important;
+  border: 1px solid #e8edf2 !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow) !important;
+  padding: 28px 32px !important;
+  margin-bottom: 24px !important;
+}
+@media (max-width: 600px) {
+  .guided-section.card, .card-ish { padding: 20px !important; }
+}
+
+.section-title {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  margin-top: 0 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Big Idea & Listen Pill */
+.btn-listen-concept {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 99px !important;
+  padding: 5px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+  transition: all 0.15s ease !important;
+}
+.btn-listen-concept:hover {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+}
+
+/* Parent Coaching Accordion Drawer */
+.parent-coaching-drawer {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: var(--radius-md) !important;
+  margin: 20px 0 !important;
+  overflow: hidden !important;
+  transition: all 0.2s ease !important;
+}
+.parent-coaching-drawer[open] {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 6px 24px -2px rgba(15, 23, 42, 0.05) !important;
+}
+.parent-coaching-summary {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 20px !important;
+  cursor: pointer !important;
+  list-style: none !important;
+  user-select: none !important;
+}
+.parent-coaching-summary::-webkit-details-marker { display: none !important; }
+.summary-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.summary-icon { font-size: 22px !important; }
+.summary-text {
+  display: flex !important;
+  flex-direction: column !important;
+  text-align: left !important;
+}
+.summary-text strong {
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+}
+.summary-text small {
+  font-size: 12.5px !important;
+  color: #64748b !important;
+  margin-top: 2px !important;
+}
+.summary-chevron {
+  font-size: 16px !important;
+  color: #94a3b8 !important;
+  transition: transform 0.25s ease !important;
+}
+.parent-coaching-drawer[open] .summary-chevron {
+  transform: rotate(180deg) !important;
+}
+.parent-coaching-content {
+  padding: 0 20px 20px !important;
+  border-top: 1px solid #f1f5f9 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+/* Calmer Real-World & Misconception Styling */
+.real-world-spotlight {
+  background: #f0fdf4 !important;
+  border: 1px solid #dcfce7 !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  box-shadow: none !important;
+  margin: 12px 0 0 !important;
+}
+.spotlight-badge {
+  color: #15803d !important;
+  background: #dcfce7 !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+.spotlight-title {
+  color: #0f172a !important;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+}
+.spotlight-text {
+  color: #334155 !important;
+  font-size: 13.5px !important;
+}
+.misconception-card {
+  background: #fffbeb !important;
+  border: 1px solid #fef3c7 !important;
+  border-left: 4px solid #f59e0b !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  margin: 0 !important;
+}
+.mis-trap { color: #92400e !important; }
+.parent-coach-tip {
+  border-top: 1px dashed #fde68a !important;
+  color: #78350f !important;
+}
+
+/* Math Talk Generator Calm Styling */
+.math-talk-hub {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: var(--radius-md) !important;
+  padding: 20px 24px !important;
+  margin: 20px 0 !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.math-talk-badge {
+  color: #0f766e !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+}
+.math-talk-q {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+}
+.math-talk-follow {
+  color: #64748b !important;
+}
+
+/* Flow Next Button */
+.flow-next-btn {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+  border-radius: 99px !important;
+  padding: 10px 24px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15) !important;
+  transition: all 0.15s ease !important;
+}
+.flow-next-btn:hover {
+  background: #1e293b !important;
+  transform: translateY(-1px);
+}
+
+/* Clean Practice Problem Cards */
+.problem-card {
+  background: #ffffff !important;
+  border: 1px solid #e8edf2 !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow) !important;
+  padding: 24px 28px !important;
+  margin-bottom: 24px !important;
+}
+.problem-check-btn {
+  background: #0f172a !important;
+  border: none !important;
+  color: #ffffff !important;
+  border-radius: 99px !important;
+  padding: 8px 20px !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+}
+.problem-check-btn:hover {
+  background: #1e293b !important;
+}
+
+/* Bottom status bar clean & hidden on non-practice tabs */
+.bottom-status-bar {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.05) !important;
+}
 `;

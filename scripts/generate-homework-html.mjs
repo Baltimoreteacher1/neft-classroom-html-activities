@@ -1138,33 +1138,6 @@ function generateHtml(lessonId, config) {
   const tabsHtml = renderHomeworkTabs(tabPanels);
   const helpModalHtml = renderHelpModal();
 
-  const roadmapHtml = `
-  <nav class="hw-three-beats-roadmap" aria-label="Nightly 3-beat routine">
-    <div class="beat-pill" onclick="switchHomeworkTab('learn')" role="button" tabindex="0" aria-label="Step 1: Family Huddle">
-      <span class="beat-num">1</span>
-      <span class="beat-text">
-        <strong><span class="lang-en">Family Huddle</span><span class="lang-es" lang="es">Reunión Familiar</span></strong>
-        <small><span class="lang-en">Learn &amp; Talk (2-3 min)</span><span class="lang-es" lang="es">Aprender y hablar (2-3 min)</span></small>
-      </span>
-    </div>
-    <div class="beat-arrow" aria-hidden="true">➔</div>
-    <div class="beat-pill" onclick="switchHomeworkTab('check')" role="button" tabindex="0" aria-label="Step 2: Practice">
-      <span class="beat-num">2</span>
-      <span class="beat-text">
-        <strong><span class="lang-en">Practice</span><span class="lang-es" lang="es">Práctica</span></strong>
-        <small><span class="lang-en">3 Stars to Win (7-8 min)</span><span class="lang-es" lang="es">3 Estrellas para ganar</span></small>
-      </span>
-    </div>
-    <div class="beat-arrow" aria-hidden="true">➔</div>
-    <div class="beat-pill" onclick="switchHomeworkTab('done')" role="button" tabindex="0" aria-label="Step 3: Victory Lap">
-      <span class="beat-num">3</span>
-      <span class="beat-text">
-        <strong><span class="lang-en">Victory Lap</span><span class="lang-es" lang="es">Vuelta de Victoria</span></strong>
-        <small><span class="lang-en">Badge &amp; Play (2-3 min)</span><span class="lang-es" lang="es">Insignia y juego (2-3 min)</span></small>
-      </span>
-    </div>
-  </nav>`;
-
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -2795,8 +2768,7 @@ ${EDITORIAL_OVERRIDES}
 
   ${welcomeHtml}
 
-  ${roadmapHtml}
-
+  
   ${tabsHtml}
 
 </div>
