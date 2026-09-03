@@ -122,9 +122,10 @@ export function buildVocabMatcher(vocab) {
     .sort((a, b) => b.surface.length - a.surface.length)
     .map((s) => surfacePattern(s.surface))
     .join("|");
+  const regexSource = `\\b(?:${alt})\\b`;
   // Each consumer gets its own RegExp: they are stateful (`g` + lastIndex) and
   // the body underliner runs one across many text nodes.
-  const createRegex = () => new RegExp(`\\b(?:${alt})\\b`, "gi");
+  const createRegex = () => new RegExp(regexSource, "gi");
 
   const termFor = (idx) => entries.find((e) => e.i === idx)?.term || "";
 
@@ -137,7 +138,21 @@ export function buildVocabMatcher(vocab) {
     return surfaceMatchesEntry(surface, list[idx]) ? idx : -1;
   };
 
-  return { entries, createRegex, resolveIndex, termFor };
+  // `regexSource` + `lookup` are the same index in serializable form, for the
+  // one consumer that cannot call back into this module: the family homework
+  // page, which is standalone HTML with its matching precomputed in Node and
+  // shipped as JSON. It walks text nodes against `regexSource` and resolves a
+  // matched surface through `lookup` exactly as `resolveIndex` does here, so it
+  // must apply the same plural normalization and the same `caseSensitive`
+  // check on the entry it lands on.
+  return {
+    entries,
+    createRegex,
+    resolveIndex,
+    termFor,
+    regexSource,
+    lookup: Object.fromEntries(lookup),
+  };
 }
 
 // ── Concept entries vs. words a student can say ─────────────────────────────

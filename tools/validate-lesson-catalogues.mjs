@@ -53,6 +53,13 @@ const LESSONS = join(ROOT, "lessons");
 
 const CORE_RE = /^\d+-\d+$/;
 const VARIANT_RE = /^(\d+-\d+)-(?:group[12]|flagship|catchup)$/;
+// A BRIDGE lesson (`6-1-6-2-practice`) is lesson-shaped but is not a variant of
+// anything: it is its own hand-authored lesson covering two numbered ones, off
+// the numbered spine on purpose. It therefore keys the family catalogue
+// directly — resolving it through a parent would hand a family the wrong
+// night's practice — while the twins (group1/group2/flagship) keep the strict
+// parent-only rule, because those ARE the same lesson at another level.
+const BRIDGE_RE = /^\d+-\d+-\d+-\d+-practice$/;
 
 /* --- Detectors -------------------------------------------------------------- */
 
@@ -124,6 +131,15 @@ const selfFails = [];
   if (!variantKeys(v).includes("5-1-group1"))
     selfFails.push("the variant-key detector did not fire");
 
+  // A bridge lesson is not a twin: it must never be read as a variant key, and
+  // widening for it must not widen for a group twin.
+  if (VARIANT_RE.test("6-1-6-2-practice"))
+    selfFails.push("a bridge lesson was read as a variant of another lesson");
+  if (!BRIDGE_RE.test("6-1-6-2-practice"))
+    selfFails.push("the bridge-lesson detector did not recognise 6-1-6-2-practice");
+  if (BRIDGE_RE.test("6-1-group1") || BRIDGE_RE.test("6-1") || BRIDGE_RE.test("6-2-catchup"))
+    selfFails.push("the bridge-lesson detector matched a lesson that is not a bridge");
+
   // A key with no /lessons/ link at all is not evidence of mislabelling.
   const linkless = '  var M = {\n    "5-1": [{ href: "/math/games/u5-area-attack/" }],\n  };';
   if (mislabelledKeys(catalogueEntries(linkless, "  var M = {")).length)
@@ -141,6 +157,7 @@ const dirs = readdirSync(LESSONS, { withFileTypes: true })
   .map((d) => d.name);
 const core = dirs.filter((d) => CORE_RE.test(d)).sort();
 const variants = dirs.map((d) => d.match(VARIANT_RE)).filter(Boolean);
+const bridges = dirs.filter((d) => BRIDGE_RE.test(d)).sort();
 
 const findings = [];
 
@@ -201,7 +218,9 @@ const SURFACES = [
     label: "the hub family-homework catalogue",
     file: "curriculum/lesson-family-homework.js",
     anchor: "window.LESSON_FAMILY_HOMEWORK = {",
-    truth: () => lessonsWith(hasHomework),
+    // Core lessons plus any bridge lesson that opted in. A page on disk is the
+    // evidence in both directions, so this cannot drift from the generator.
+    truth: () => [...lessonsWith(hasHomework), ...bridges.filter(hasHomework)],
     truthName: "lessons with a homework.html",
     missing: "a family is offered no take-home practice for that lesson",
     phantom: "the hub links family homework that does not exist",
@@ -269,5 +288,5 @@ if (findings.length) {
 }
 
 console.log(
-  `✓ lesson-catalogues: ${SURFACES.length} hub catalogues, ${keysChecked} keys — each names the lesson it links to, matches disk in both directions, and keys parents only (${core.length} lessons, ${variants.length} variants).`,
+  `✓ lesson-catalogues: ${SURFACES.length} hub catalogues, ${keysChecked} keys — each names the lesson it links to, matches disk in both directions, and keys parents only (${core.length} lessons, ${variants.length} variants, ${bridges.length} bridge).`,
 );

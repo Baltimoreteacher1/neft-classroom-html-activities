@@ -221,6 +221,11 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/6-1/homework.html",
     "isFamilyHomework": true
   },
+  "6-1-6-2-practice": {
+    "text": "🏠 Family Review Practice (optional)",
+    "href": "/lessons/6-1-6-2-practice/homework.html",
+    "isFamilyHomework": true
+  },
   "6-2": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/6-2/homework.html",
