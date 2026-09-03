@@ -1037,40 +1037,57 @@ export function renderWelcomeBanner(config, lessonId) {
   const standard = config.standard || "";
 
   return `
-    <header class="family-welcome card" aria-label="Family Math Night welcome">
-      <div class="unit-world-badge">
-        <span class="unit-world-icon" aria-hidden="true">${theme.emoji}</span>
-        <span class="lang-en">Unit ${unit} World: ${esc(theme.nameEn)}</span>
-        <span class="lang-es" lang="es">Unidad ${unit}: ${esc(theme.nameEs)}</span>
-      </div>
-      <div class="welcome-hero">
-        <span class="welcome-emoji" aria-hidden="true">${esc(themeEmoji)}</span>
-        <div class="welcome-titles">
-          <p class="welcome-tag">Unit ${unit} · ${esc(standard)}</p>
-          <h1 class="welcome-title-en">Family Math Night</h1>
-          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
-          <p class="welcome-lesson">${esc(title)} · ${esc(homeworkPageLabel(lessonId))}</p>
+    <header class="hw-hero" aria-label="Family Math Night welcome">
+      <div class="hw-hero-glow" aria-hidden="true"></div>
+      <div class="hw-hero-body">
+        <p class="hw-hero-kicker">
+          <span class="hw-hero-kicker-icon" aria-hidden="true">${theme.emoji}</span>
+          <span class="lang-en">Unit ${unit} · ${esc(theme.nameEn)}</span>
+          <span class="lang-es" lang="es">Unidad ${unit} · ${esc(theme.nameEs)}</span>
+        </p>
+
+        <div class="hw-hero-head">
+          <span class="hw-hero-emoji" aria-hidden="true">${esc(themeEmoji)}</span>
+          <div class="hw-hero-titles">
+            <h1 class="welcome-title-en">Family Math Night</h1>
+            <p class="welcome-title-es" lang="es">Ayuda a tu estudiante</p>
+          </div>
         </div>
-      </div>
-      <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
-      </p>
-      
-      <!-- Modern language mode selector -->
-      <div class="lang-selector-card">
-        <span class="lang-selector-title">Language / Idioma:</span>
-        <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
-          <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
-            🇺🇸🇪🇸 Bilingual / Bilingüe
-          </button>
-          <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
-            🇺🇸 English Only
-          </button>
-          <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')">
-            🇪🇸 Solo Español
-          </button>
+
+        <p class="hw-hero-lesson">
+          <span class="hw-hero-lesson-title">${esc(title)}</span>
+          <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}${standard ? ` · ${esc(standard)}` : ""}</span>
+        </p>
+
+        <p class="hw-hero-lead">
+          <span class="lang-en">Use the pictures and the short steps. Ask questions — let your student do the thinking.</span>
+          <span class="lang-es" lang="es">Usen los dibujos y los pasos cortos. Hagan preguntas: dejen que su estudiante piense.</span>
+        </p>
+
+        <ul class="hw-hero-stats" aria-label="What tonight looks like">
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">5 stops</span><span class="lang-es" lang="es">5 paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About 25 minutes</span><span class="lang-es" lang="es">Unos 25 minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
+        </ul>
+
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
         </div>
+
+        ${renderQuickPlan()}
       </div>
     </header>`;
 }
@@ -1091,29 +1108,11 @@ const JOURNEY_STOPS = [
   { id: "done", icon: "🎉", en: "Done", es: "Listo", min: 1 },
 ];
 
-export function renderJourneyMap() {
-  const stopsHtml = JOURNEY_STOPS.map(
-    (s, i) => `
-      <li class="hw-journey-item">
-        <button type="button" class="hw-journey-stop" data-journey-stop="${s.id}" onclick="switchHomeworkTab('${s.id}')"
-          aria-label="Go to ${s.en} (about ${s.min} minutes)">
-          <span class="hw-journey-bubble"><span class="hw-journey-icon" aria-hidden="true">${s.icon}</span><span class="hw-journey-check" aria-hidden="true">✓</span></span>
-          <span class="hw-journey-label"><span class="hw-journey-num">${i + 1}.</span> <span class="lang-en">${s.en}</span><span class="lang-es" lang="es">${s.es}</span></span>
-          <span class="hw-journey-min">~${s.min} min</span>
-        </button>
-      </li>`,
-  ).join("");
-
+/* The 10-minute plan. Lives INSIDE the hero: a family who is short on time
+   needs to see it before they scroll, and it used to sit in a second nav card
+   that competed with the tab bar for the same job. */
+export function renderQuickPlan() {
   return `
-    <nav class="hw-journey card" aria-label="Tonight's homework path">
-      <div class="hw-journey-head">
-        <span class="hw-journey-kicker">🗺️ <span class="lang-en">TONIGHT'S PATH</span><span class="lang-es" lang="es">LA RUTA DE HOY</span></span>
-        <p class="hw-journey-sub">
-          <span class="lang-en">Five stops, about 25 minutes together. Tap a stop to jump there — everything else (Workbench, Arcade, Play) is bonus.</span>
-          <span class="lang-es" lang="es">Cinco paradas, unos 25 minutos juntos. Toquen una parada para ir allí; lo demás (Pizarra, Sala de juegos, Jugar) es extra.</span>
-        </p>
-      </div>
-      <ol class="hw-journey-track">${stopsHtml}</ol>
       <details class="hw-quickplan">
         <summary class="hw-quickplan-summary">
           <span class="hw-quickplan-icon" aria-hidden="true">⏰</span>
@@ -1121,15 +1120,45 @@ export function renderJourneyMap() {
           <span class="hw-quickplan-chevron" aria-hidden="true">▾</span>
         </summary>
         <ol class="hw-quickplan-steps">
-          <li><span class="lang-en"><strong>2 min:</strong> Read the Big Idea out loud on the Learn stop.</span><span class="lang-es" lang="es"><strong>2 min:</strong> Lean en voz alta la idea principal en la parada Aprender.</span></li>
-          <li><span class="lang-en"><strong>3 min:</strong> Do just the FIRST Try Together step on the Together stop.</span><span class="lang-es" lang="es"><strong>3 min:</strong> Hagan solo el PRIMER paso de Intentar Juntos en la parada Juntos.</span></li>
-          <li><span class="lang-en"><strong>5 min:</strong> Answer the 3 Warm-up problems on the Check stop. That's a real study session — great job!</span><span class="lang-es" lang="es"><strong>5 min:</strong> Contesten los 3 problemas de calentamiento en la parada Repaso. Eso ya es una buena sesión de estudio. ¡Bien hecho!</span></li>
+          <li><span class="lang-en"><strong>2 min</strong> — Read the Big Idea out loud on the Learn stop.</span><span class="lang-es" lang="es"><strong>2 min</strong> — Lean en voz alta la idea principal en la parada Aprender.</span></li>
+          <li><span class="lang-en"><strong>3 min</strong> — Do just the FIRST Try Together step.</span><span class="lang-es" lang="es"><strong>3 min</strong> — Hagan solo el PRIMER paso de Intentar Juntos.</span></li>
+          <li><span class="lang-en"><strong>5 min</strong> — Answer the 3 Warm-up problems on the Check stop.</span><span class="lang-es" lang="es"><strong>5 min</strong> — Contesten los 3 problemas de calentamiento en la parada Repaso.</span></li>
         </ol>
         <p class="hw-quickplan-note">
           <span class="lang-en">💛 Short and calm beats long and stressful. Ten focused minutes tonight is a win.</span>
           <span class="lang-es" lang="es">💛 Corto y tranquilo vale más que largo y estresante. Diez minutos concentrados hoy ya son un logro.</span>
         </p>
-      </details>
+      </details>`;
+}
+
+/**
+ * The progress rail — five stops on one line, directly under the sticky tab
+ * bar. It replaced a full-width "Tonight's Path" card that duplicated the tab
+ * bar's job: the page opened with a dark hero, then a second nav, then a third
+ * (the tabs) before any mathematics appeared. The rail keeps the roadmap
+ * (order, position, what is done) at a glance and costs one line.
+ */
+export function renderJourneyMap() {
+  const stopsHtml = JOURNEY_STOPS.map(
+    (s, i) => `
+      <li class="hw-rail-item">
+        <button type="button" class="hw-rail-stop" data-journey-stop="${s.id}" onclick="switchHomeworkTab('${s.id}')"
+          aria-label="Go to ${s.en}, stop ${i + 1} of 5, about ${s.min} minutes">
+          <span class="hw-rail-dot"><span class="hw-rail-icon" aria-hidden="true">${s.icon}</span><span class="hw-rail-check" aria-hidden="true">✓</span></span>
+          <span class="hw-rail-label"><span class="lang-en">${s.en}</span><span class="lang-es" lang="es">${s.es}</span></span>
+        </button>
+      </li>`,
+  ).join("");
+
+  return `
+    <nav class="hw-rail" aria-label="Tonight's path">
+      <span class="hw-rail-title">
+        <span class="lang-en">Tonight's path</span><span class="lang-es" lang="es">La ruta de hoy</span>
+      </span>
+      <ol class="hw-rail-track">
+        <span class="hw-rail-line" aria-hidden="true"><span class="hw-rail-line-fill" id="hw_rail_fill"></span></span>
+        ${stopsHtml}
+      </ol>
     </nav>`;
 }
 
@@ -4589,9 +4618,12 @@ export function renderLearnTab(config, visualLabHtml = "") {
 
   // Add Listen button to the Big Idea title
   const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
+  // Inside the heading, not after it: as a sibling it landed in a band of dead
+  // space under the title, and the Learn tab strips the <section> wrapper, so
+  // there is no container left to position it against.
   concept = concept.replace(
-    /(<h2[^>]*class="section-title"[^>]*>[\s\S]*?<\/h2>)/i,
-    `$1${listenBtn}`,
+    /(<h2[^>]*class="section-title"[^>]*>[\s\S]*?)(<\/h2>)/i,
+    `$1${listenBtn}$2`,
   );
 
   const spotlightHtml = `
@@ -5185,23 +5217,36 @@ export function renderScratchpadHtml() {
     </div>`;
 }
 
+/* The five stops a family is asked to walk are the primary row; the five extra
+   surfaces are real but optional, so they sit behind a divider and read as
+   lighter. Ten equal tabs told a family that ten things were required, which
+   is the single biggest reason this page felt like a chore. */
+const CORE_TAB_IDS = new Set(["learn", "words", "together", "check", "done"]);
+
 export function renderHomeworkTabs(panelsHtml) {
   const tabCount = HOMEWORK_TABS.length;
   const scratchpad = renderScratchpadHtml();
-  return `
-    <div class="homework-tabs-shell" data-tab-count="${tabCount}">
-      <div class="homework-tab-chrome">
-        <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
-          ${HOMEWORK_TABS.map(
-            (t, i) => `
-            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
+  const tabBtn = (t, i) => `
+            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${CORE_TAB_IDS.has(t.id) ? " is-core" : " is-bonus"}${i === 0 ? " is-active" : ""}"
               aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
               data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
-            </button>`,
-          ).join("")}
+            </button>`;
+
+  const core = HOMEWORK_TABS.filter((t) => CORE_TAB_IDS.has(t.id));
+  const bonus = HOMEWORK_TABS.filter((t) => !CORE_TAB_IDS.has(t.id));
+
+  return `
+    <div class="homework-tabs-shell" data-tab-count="${tabCount}">
+      <div class="homework-tab-chrome">
+        <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
+          ${core.map((t) => tabBtn(t, HOMEWORK_TABS.indexOf(t))).join("")}
+          <span class="homework-tab-divider" aria-hidden="true"></span>
+          <span class="homework-tab-bonus-label" aria-hidden="true"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Extra</span></span>
+          ${bonus.map((t) => tabBtn(t, HOMEWORK_TABS.indexOf(t))).join("")}
         </nav>
+        ${renderJourneyMap()}
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         ${scratchpad}
@@ -5444,11 +5489,23 @@ function updateJourneyMap(tabId) {
     visited[tabId] = true;
     try { localStorage.setItem(journeyStorageKey(), JSON.stringify(visited)); } catch (e) {}
   }
+  const order = ['learn', 'words', 'together', 'check', 'done'];
   stops.forEach(function (s) {
     const id = s.dataset.journeyStop;
     s.classList.toggle('is-current', id === tabId);
     s.classList.toggle('is-done', !!visited[id]);
   });
+  // Fill the connecting line up to the furthest stop reached, so the rail
+  // reads as progress and not just as five buttons.
+  const fill = document.getElementById('hw_rail_fill');
+  if (fill) {
+    let furthest = -1;
+    order.forEach(function (id, i) { if (visited[id]) furthest = i; });
+    const cur = order.indexOf(tabId);
+    if (cur > furthest) furthest = cur;
+    const pct = furthest <= 0 ? 0 : (furthest / (order.length - 1)) * 100;
+    fill.style.width = pct + '%';
+  }
 }
 
 function syncHomeworkChromeHeights() {
@@ -5721,6 +5778,10 @@ function initHomeworkPage() {
   initDrawCanvases();
   initHomeworkVocabPopups();
   initFamilyGames();
+  // Entrance motion is opt-in and only after boot: its start state is
+  // opacity:0, so gating it on this class means a page whose script failed
+  // still shows every word instead of an empty cream rectangle.
+  document.body.classList.add('hw-motion-ready');
 }
 
 if (document.readyState === 'loading') {
@@ -8015,132 +8076,336 @@ body.lang-mode-es .tab-es {
 }
 
 /* ============================================================
-   Tonight's Path journey map — the family's roadmap through the page.
-   New class names only (hw-journey*, hw-quickplan*, fam-act*): the polish
-   layer re-declares shared selectors, so these never collide with it.
+   FAMILY MISSION SHELL — hero, progress rail, tab grouping.
+   One warm identity for the whole page. Replaced three stacked navs
+   (dark hero → "Tonight's Path" card → 10 equal tabs, ~700px before any
+   mathematics) with hero → tabs+rail. New class names only (hw-hero*,
+   hw-rail*, hw-quickplan*, fam-*): the generator's polish layer re-declares
+   shared selectors and loads later, so these never collide with it.
    ============================================================ */
-.hw-journey { margin-bottom: 18px; padding: 20px 22px; }
-.hw-journey-head { margin-bottom: 14px; }
-.hw-journey-kicker {
+.hw-hero {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 20px;
+  padding: 30px 32px 26px;
+  border-radius: 26px;
+  background:
+    radial-gradient(120% 140% at 88% -10%, rgba(31,166,162,.30) 0%, rgba(18,53,91,0) 58%),
+    linear-gradient(155deg, #143a63 0%, #10294a 62%, #0d2039 100%);
+  color: #f4f8fc;
+  box-shadow: 0 24px 60px -34px rgba(9,25,46,.9);
+  isolation: isolate;
+}
+/* Soft warm glow, second light source. Purely decorative. */
+.hw-hero-glow {
+  position: absolute;
+  inset: auto -12% -55% 46%;
+  height: 300px;
+  background: radial-gradient(closest-side, rgba(242,193,91,.30), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: -1;
+}
+.hw-hero-body { position: relative; }
+.hw-hero-kicker {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 6px 14px 6px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.16);
   font-family: var(--font-display);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .08em;
-  color: var(--teal-ink);
-  background: var(--teal-light);
-  border-radius: 999px;
-  padding: 5px 12px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: #d7e8f6;
 }
-.hw-journey-sub { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
-.hw-journey-track {
-  list-style: none;
+.hw-hero-kicker-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  font-size: 13px;
+}
+.hw-hero-kicker .lang-es { color: #bcd6ea; }
+.hw-hero-kicker .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-hero-head { display: flex; align-items: center; gap: 18px; }
+.hw-hero-emoji {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  font-size: 34px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+}
+.hw-hero-titles { min-width: 0; }
+.hw-hero .welcome-title-en {
   margin: 0;
-  padding: 0;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.02;
+  color: #fff;
+}
+.hw-hero .welcome-title-es {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: #f2c15b;
+}
+.hw-hero-lesson {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.14);
+}
+.hw-hero-lesson-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.hw-hero-lesson-meta { font-size: 13px; font-weight: 600; color: #9fc0da; letter-spacing: .02em; }
+.hw-hero-lead { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: #dce9f4; max-width: 62ch; }
+.hw-hero-lead .lang-es { color: #dce9f4; }
+.hw-hero-lead .lang-en + .lang-es {
+  border-left: 2px solid rgba(242,193,91,.55);
+  padding-left: 10px;
+  margin-top: 6px;
+}
+.hw-hero-stats {
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
 }
-.hw-journey-item { flex: 1 1 120px; display: flex; position: relative; }
-/* Connector line between stops */
-.hw-journey-item + .hw-journey-item::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: 26px;
-  width: 8px;
-  height: 3px;
-  background: var(--line);
-  border-radius: 2px;
-}
-.hw-journey-stop {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.hw-stat {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 10px 8px 12px;
-  min-height: 44px;
-  background: #fbfdff;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-family: var(--font-body);
-  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.14);
+  font-size: 13px;
+  font-weight: 700;
+  color: #e7f1fa;
 }
-.hw-journey-stop:hover { border-color: var(--teal); transform: translateY(-1px); }
-.hw-journey-stop:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.hw-journey-bubble {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--cream);
-  border: 2px solid var(--line);
-  font-size: 19px;
+.hw-stat .lang-es { color: #e7f1fa; }
+.hw-stat .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-hero-controls { margin-top: 20px; }
+.hw-hero .lang-selector-card {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 0;
+  background: none;
+  border: 0;
 }
-.hw-journey-check {
-  position: absolute;
-  right: -4px;
-  bottom: -4px;
-  display: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--success);
-  color: #fff;
-  font-size: 11px;
+.hw-hero .lang-selector-title {
+  font-size: 11.5px;
   font-weight: 800;
-  line-height: 18px;
-  text-align: center;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #9fc0da;
 }
-.hw-journey-stop.is-done .hw-journey-check { display: block; }
-.hw-journey-stop.is-done .hw-journey-bubble { border-color: var(--success); background: var(--success-bg); }
-.hw-journey-stop.is-current {
-  border-color: var(--teal);
-  background: var(--teal-light);
-  box-shadow: 0 6px 16px -10px rgba(31,166,162,.8);
+.hw-hero .lang-selector-buttons {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.26);
+  border: 1px solid rgba(255,255,255,.12);
 }
-.hw-journey-stop.is-current .hw-journey-bubble { border-color: var(--teal); background: #fff; }
-.hw-journey-label { font-size: 13px; font-weight: 700; color: var(--ink); text-align: center; }
-.hw-journey-label .lang-es { display: block; font-weight: 600; }
-/* The roadmap's own bilingual labels stay compact: no teal rule inside buttons */
-.hw-journey-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 1px; }
-.hw-journey-num { color: var(--teal-ink); }
-.hw-journey-min { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.hw-hero .lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #cfe1f1;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.hw-hero .lang-toggle-btn:hover { background: rgba(255,255,255,.10); color: #fff; }
+.hw-hero .lang-toggle-btn.active {
+  background: #f2c15b;
+  color: #123055;
+  box-shadow: 0 6px 16px -8px rgba(242,193,91,.9);
+}
+.hw-hero .lang-toggle-btn:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
 
-/* "Only have 10 minutes?" quick plan */
-.hw-quickplan {
-  margin-top: 14px;
-  border: 1px dashed var(--amber);
-  border-radius: var(--radius-md);
-  background: var(--amber-light);
+/* 10-minute plan, inside the hero */
+.hw-hero .hw-quickplan {
+  margin-top: 18px;
+  border: 1px dashed rgba(242,193,91,.5);
+  border-radius: 16px;
+  background: rgba(242,193,91,.09);
 }
 .hw-quickplan-summary {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 14px;
+  padding: 13px 16px;
   min-height: 44px;
   cursor: pointer;
   list-style: none;
   font-size: 14.5px;
-  color: var(--ink);
+  color: #f6e6c4;
 }
 .hw-quickplan-summary::-webkit-details-marker { display: none; }
-.hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: var(--muted); }
+.hw-quickplan-summary .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: #f2c15b; }
 .hw-quickplan[open] .hw-quickplan-chevron { transform: rotate(180deg); }
-.hw-quickplan-steps { margin: 0; padding: 0 16px 4px 34px; font-size: 14px; }
+.hw-quickplan-steps { margin: 0; padding: 0 18px 4px 36px; font-size: 14px; color: #e4eef7; }
 .hw-quickplan-steps li { margin-bottom: 8px; }
-.hw-quickplan-note {
+.hw-quickplan-steps .lang-es, .hw-quickplan-note .lang-es { color: #e4eef7; }
+.hw-quickplan-note { margin: 0; padding: 8px 18px 15px; font-size: 13.5px; color: #cfe1f1; }
+
+@media (max-width: 700px) {
+  .hw-hero { padding: 24px 20px 22px; border-radius: 20px; }
+  .hw-hero-emoji { width: 52px; height: 52px; font-size: 27px; border-radius: 16px; }
+  .hw-hero-head { gap: 13px; }
+  .hw-hero .lang-selector-buttons { width: 100%; }
+  .hw-hero .lang-toggle-btn { flex: 1; justify-content: center; padding: 8px 10px; }
+}
+
+/* ── Progress rail — five stops on one line under the tab bar ────────────── */
+.hw-rail {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px 12px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+.hw-rail-title,
+.hw-rail-bonus {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hw-rail-title { color: var(--teal-ink); }
+.hw-rail-title .lang-en + .lang-es,
+.hw-rail-bonus .lang-en + .lang-es,
+.hw-rail-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-rail-track {
+  position: relative;
+  flex: 1 1 auto;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin: 0;
-  padding: 10px 16px 14px;
-  font-size: 13.5px;
-  color: var(--ink);
+  padding: 0;
+  min-width: 0;
+}
+.hw-rail-line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 13px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.hw-rail-line-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--amber));
+  transition: width .45s cubic-bezier(.4, 0, .2, 1);
+}
+.hw-rail-item { position: relative; z-index: 1; }
+.hw-rail-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 0 6px;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.hw-rail-dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--line);
+  font-size: 14px;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.hw-rail-stop:hover .hw-rail-dot { transform: translateY(-2px) scale(1.06); border-color: var(--teal); }
+.hw-rail-stop:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; border-radius: 10px; }
+.hw-rail-check {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 15px;
+  text-align: center;
+}
+.hw-rail-stop.is-done .hw-rail-dot { border-color: var(--success); background: var(--success-bg); }
+.hw-rail-stop.is-done .hw-rail-check { display: block; }
+.hw-rail-stop.is-current .hw-rail-dot {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  box-shadow: 0 0 0 4px rgba(31,166,162,.16);
+}
+.hw-rail-label { font-size: 11.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.hw-rail-stop.is-current .hw-rail-label { color: var(--teal-ink); }
+.hw-rail-stop.is-done .hw-rail-label { color: var(--ink); }
+
+@media (max-width: 900px) {
+  .hw-rail-title, .hw-rail-bonus { display: none; }
+  .hw-rail { padding: 8px 10px 10px; gap: 0; }
+}
+@media (max-width: 460px) {
+  .hw-rail-label { display: none; }
+  .hw-rail-line { top: 14px; }
 }
 
 /* ============================================================

@@ -3827,132 +3827,336 @@ body.lang-mode-es .tab-es {
 }
 
 /* ============================================================
-   Tonight's Path journey map — the family's roadmap through the page.
-   New class names only (hw-journey*, hw-quickplan*, fam-act*): the polish
-   layer re-declares shared selectors, so these never collide with it.
+   FAMILY MISSION SHELL — hero, progress rail, tab grouping.
+   One warm identity for the whole page. Replaced three stacked navs
+   (dark hero → "Tonight's Path" card → 10 equal tabs, ~700px before any
+   mathematics) with hero → tabs+rail. New class names only (hw-hero*,
+   hw-rail*, hw-quickplan*, fam-*): the generator's polish layer re-declares
+   shared selectors and loads later, so these never collide with it.
    ============================================================ */
-.hw-journey { margin-bottom: 18px; padding: 20px 22px; }
-.hw-journey-head { margin-bottom: 14px; }
-.hw-journey-kicker {
+.hw-hero {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 20px;
+  padding: 30px 32px 26px;
+  border-radius: 26px;
+  background:
+    radial-gradient(120% 140% at 88% -10%, rgba(31,166,162,.30) 0%, rgba(18,53,91,0) 58%),
+    linear-gradient(155deg, #143a63 0%, #10294a 62%, #0d2039 100%);
+  color: #f4f8fc;
+  box-shadow: 0 24px 60px -34px rgba(9,25,46,.9);
+  isolation: isolate;
+}
+/* Soft warm glow, second light source. Purely decorative. */
+.hw-hero-glow {
+  position: absolute;
+  inset: auto -12% -55% 46%;
+  height: 300px;
+  background: radial-gradient(closest-side, rgba(242,193,91,.30), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: -1;
+}
+.hw-hero-body { position: relative; }
+.hw-hero-kicker {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 6px 14px 6px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.16);
   font-family: var(--font-display);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .08em;
-  color: var(--teal-ink);
-  background: var(--teal-light);
-  border-radius: 999px;
-  padding: 5px 12px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: #d7e8f6;
 }
-.hw-journey-sub { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
-.hw-journey-track {
-  list-style: none;
+.hw-hero-kicker-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  font-size: 13px;
+}
+.hw-hero-kicker .lang-es { color: #bcd6ea; }
+.hw-hero-kicker .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-hero-head { display: flex; align-items: center; gap: 18px; }
+.hw-hero-emoji {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  font-size: 34px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+}
+.hw-hero-titles { min-width: 0; }
+.hw-hero .welcome-title-en {
   margin: 0;
-  padding: 0;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.02;
+  color: #fff;
+}
+.hw-hero .welcome-title-es {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: #f2c15b;
+}
+.hw-hero-lesson {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.14);
+}
+.hw-hero-lesson-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.hw-hero-lesson-meta { font-size: 13px; font-weight: 600; color: #9fc0da; letter-spacing: .02em; }
+.hw-hero-lead { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: #dce9f4; max-width: 62ch; }
+.hw-hero-lead .lang-es { color: #dce9f4; }
+.hw-hero-lead .lang-en + .lang-es {
+  border-left: 2px solid rgba(242,193,91,.55);
+  padding-left: 10px;
+  margin-top: 6px;
+}
+.hw-hero-stats {
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
 }
-.hw-journey-item { flex: 1 1 120px; display: flex; position: relative; }
-/* Connector line between stops */
-.hw-journey-item + .hw-journey-item::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: 26px;
-  width: 8px;
-  height: 3px;
-  background: var(--line);
-  border-radius: 2px;
-}
-.hw-journey-stop {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.hw-stat {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 10px 8px 12px;
-  min-height: 44px;
-  background: #fbfdff;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-family: var(--font-body);
-  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.14);
+  font-size: 13px;
+  font-weight: 700;
+  color: #e7f1fa;
 }
-.hw-journey-stop:hover { border-color: var(--teal); transform: translateY(-1px); }
-.hw-journey-stop:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.hw-journey-bubble {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--cream);
-  border: 2px solid var(--line);
-  font-size: 19px;
+.hw-stat .lang-es { color: #e7f1fa; }
+.hw-stat .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-hero-controls { margin-top: 20px; }
+.hw-hero .lang-selector-card {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 0;
+  background: none;
+  border: 0;
 }
-.hw-journey-check {
-  position: absolute;
-  right: -4px;
-  bottom: -4px;
-  display: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--success);
-  color: #fff;
-  font-size: 11px;
+.hw-hero .lang-selector-title {
+  font-size: 11.5px;
   font-weight: 800;
-  line-height: 18px;
-  text-align: center;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #9fc0da;
 }
-.hw-journey-stop.is-done .hw-journey-check { display: block; }
-.hw-journey-stop.is-done .hw-journey-bubble { border-color: var(--success); background: var(--success-bg); }
-.hw-journey-stop.is-current {
-  border-color: var(--teal);
-  background: var(--teal-light);
-  box-shadow: 0 6px 16px -10px rgba(31,166,162,.8);
+.hw-hero .lang-selector-buttons {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.26);
+  border: 1px solid rgba(255,255,255,.12);
 }
-.hw-journey-stop.is-current .hw-journey-bubble { border-color: var(--teal); background: #fff; }
-.hw-journey-label { font-size: 13px; font-weight: 700; color: var(--ink); text-align: center; }
-.hw-journey-label .lang-es { display: block; font-weight: 600; }
-/* The roadmap's own bilingual labels stay compact: no teal rule inside buttons */
-.hw-journey-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 1px; }
-.hw-journey-num { color: var(--teal-ink); }
-.hw-journey-min { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.hw-hero .lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #cfe1f1;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.hw-hero .lang-toggle-btn:hover { background: rgba(255,255,255,.10); color: #fff; }
+.hw-hero .lang-toggle-btn.active {
+  background: #f2c15b;
+  color: #123055;
+  box-shadow: 0 6px 16px -8px rgba(242,193,91,.9);
+}
+.hw-hero .lang-toggle-btn:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
 
-/* "Only have 10 minutes?" quick plan */
-.hw-quickplan {
-  margin-top: 14px;
-  border: 1px dashed var(--amber);
-  border-radius: var(--radius-md);
-  background: var(--amber-light);
+/* 10-minute plan, inside the hero */
+.hw-hero .hw-quickplan {
+  margin-top: 18px;
+  border: 1px dashed rgba(242,193,91,.5);
+  border-radius: 16px;
+  background: rgba(242,193,91,.09);
 }
 .hw-quickplan-summary {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 14px;
+  padding: 13px 16px;
   min-height: 44px;
   cursor: pointer;
   list-style: none;
   font-size: 14.5px;
-  color: var(--ink);
+  color: #f6e6c4;
 }
 .hw-quickplan-summary::-webkit-details-marker { display: none; }
-.hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: var(--muted); }
+.hw-quickplan-summary .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: #f2c15b; }
 .hw-quickplan[open] .hw-quickplan-chevron { transform: rotate(180deg); }
-.hw-quickplan-steps { margin: 0; padding: 0 16px 4px 34px; font-size: 14px; }
+.hw-quickplan-steps { margin: 0; padding: 0 18px 4px 36px; font-size: 14px; color: #e4eef7; }
 .hw-quickplan-steps li { margin-bottom: 8px; }
-.hw-quickplan-note {
+.hw-quickplan-steps .lang-es, .hw-quickplan-note .lang-es { color: #e4eef7; }
+.hw-quickplan-note { margin: 0; padding: 8px 18px 15px; font-size: 13.5px; color: #cfe1f1; }
+
+@media (max-width: 700px) {
+  .hw-hero { padding: 24px 20px 22px; border-radius: 20px; }
+  .hw-hero-emoji { width: 52px; height: 52px; font-size: 27px; border-radius: 16px; }
+  .hw-hero-head { gap: 13px; }
+  .hw-hero .lang-selector-buttons { width: 100%; }
+  .hw-hero .lang-toggle-btn { flex: 1; justify-content: center; padding: 8px 10px; }
+}
+
+/* ── Progress rail — five stops on one line under the tab bar ────────────── */
+.hw-rail {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px 12px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+.hw-rail-title,
+.hw-rail-bonus {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hw-rail-title { color: var(--teal-ink); }
+.hw-rail-title .lang-en + .lang-es,
+.hw-rail-bonus .lang-en + .lang-es,
+.hw-rail-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-rail-track {
+  position: relative;
+  flex: 1 1 auto;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin: 0;
-  padding: 10px 16px 14px;
-  font-size: 13.5px;
-  color: var(--ink);
+  padding: 0;
+  min-width: 0;
+}
+.hw-rail-line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 13px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.hw-rail-line-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--amber));
+  transition: width .45s cubic-bezier(.4, 0, .2, 1);
+}
+.hw-rail-item { position: relative; z-index: 1; }
+.hw-rail-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 0 6px;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.hw-rail-dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--line);
+  font-size: 14px;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.hw-rail-stop:hover .hw-rail-dot { transform: translateY(-2px) scale(1.06); border-color: var(--teal); }
+.hw-rail-stop:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; border-radius: 10px; }
+.hw-rail-check {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 15px;
+  text-align: center;
+}
+.hw-rail-stop.is-done .hw-rail-dot { border-color: var(--success); background: var(--success-bg); }
+.hw-rail-stop.is-done .hw-rail-check { display: block; }
+.hw-rail-stop.is-current .hw-rail-dot {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  box-shadow: 0 0 0 4px rgba(31,166,162,.16);
+}
+.hw-rail-label { font-size: 11.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.hw-rail-stop.is-current .hw-rail-label { color: var(--teal-ink); }
+.hw-rail-stop.is-done .hw-rail-label { color: var(--ink); }
+
+@media (max-width: 900px) {
+  .hw-rail-title, .hw-rail-bonus { display: none; }
+  .hw-rail { padding: 8px 10px 10px; gap: 0; }
+}
+@media (max-width: 460px) {
+  .hw-rail-label { display: none; }
+  .hw-rail-line { top: 14px; }
 }
 
 /* ============================================================
@@ -4360,6 +4564,323 @@ body { font-size: 15px; line-height: 1.58; }
   .card { box-shadow: none; }
 }
 
+/* ============================================================
+   FAMILY MISSION DESIGN SYSTEM — the last layer, and the one that
+   decides how the page FEELS. Everything above grew one wave at a
+   time: each addition brought its own badge colour, its own card
+   weight and its own heading size, so a family met a pile of parts
+   rather than one designed page. This layer states the shared rules
+   once — surface, rhythm, type scale, accent, motion — and the
+   sections inherit them.
+
+   It uses !important only where the "Apple-Grade Pill" block above
+   already does; specificity cannot win against a bare !important, and
+   splitting that block apart is a bigger, riskier edit than owning
+   the handful of properties this layer overrides.
+   ============================================================ */
+
+/* --- Paper: warm, with a whisper of the classroom's graph texture --- */
+body {
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(rgba(18,53,91,.030) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18,53,91,.030) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-attachment: fixed;
+}
+
+/* --- Control deck: the tab row and the progress rail are ONE object,
+       not two floating bars stacked on each other. --- */
+.homework-tab-chrome {
+  background: rgba(255,255,255,.96) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: 0 10px 30px -14px rgba(15,23,42,.22);
+  overflow: hidden;
+  margin-bottom: 26px !important;
+}
+.homework-tab-bar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 9px 12px !important;
+}
+/* The five stops a family is asked to walk read as primary; the five
+   optional surfaces read as what they are. */
+.homework-tab-btn.is-bonus { opacity: .72; font-weight: 600 !important; }
+.homework-tab-btn.is-bonus:hover { opacity: 1; }
+.homework-tab-btn.is-bonus.is-active { opacity: 1; }
+.homework-tab-btn.is-core.is-active {
+  background: linear-gradient(135deg, #14406e, #0f2b50) !important;
+}
+.homework-tab-divider {
+  flex: 0 0 auto;
+  width: 1px;
+  align-self: stretch;
+  margin: 4px 6px;
+  background: var(--line);
+}
+.homework-tab-bonus-label {
+  flex: 0 0 auto;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-right: 2px;
+}
+.homework-tab-bonus-label .lang-es { color: var(--muted); }
+.homework-tab-bonus-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
+.hw-rail { background: linear-gradient(180deg, rgba(247,244,236,.5), rgba(255,255,255,0)); }
+
+/* --- Section headings: one confident scale, an accent dot instead of
+       five different coloured pills, Spanish as a full-ink partner line. --- */
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.5vw, 25px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  color: var(--navy);
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.section-title::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(242,193,91,.22);
+  align-self: center;
+}
+
+/* --- Cards: one surface, one radius, one shadow. --- */
+.guided-section.card,
+.card-ish,
+.card {
+  border-radius: 20px !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 1px 2px rgba(18,53,91,.04), 0 18px 40px -30px rgba(18,53,91,.55) !important;
+}
+
+/* --- One badge shape. Waves added a teal pill, a coral pill, a purple
+       pill and an amber pill for the same job; the shape now carries the
+       meaning and colour is reserved for the accent. --- */
+.fam-act-badge,
+.fam-game-badge,
+.math-talk-badge,
+.spotlight-badge {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display) !important;
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: .09em !important;
+  text-transform: uppercase;
+  color: var(--navy) !important;
+  background: linear-gradient(135deg, #fdf3dc, #f7f4ec) !important;
+  border: 1px solid rgba(242,193,91,.55) !important;
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+}
+
+/* --- Bilingual, two ways.
+   Spanish keeps FULL ink everywhere — the separation is structural, never a
+   fade (a faded Spanish read as "English written twice"). But the structure
+   has to fit the container: in prose the two languages stack with a teal rule,
+   while inside a chip, a tab or a rail label they must sit on ONE line with a
+   visible separator, or "5 stops" and "5 paradas" run together into nonsense. */
+.hw-stat .lang-es,
+.hw-hero-kicker .lang-es,
+.hw-rail-title .lang-es,
+.hw-rail-bonus .lang-es,
+.homework-tab-bonus-label .lang-es,
+.fam-act-meta .lang-es,
+.hw-quickplan-summary .lang-es {
+  display: inline !important;
+}
+.hw-stat .lang-en + .lang-es::before,
+.hw-hero-kicker .lang-en + .lang-es::before,
+.hw-rail-title .lang-en + .lang-es::before,
+.hw-rail-bonus .lang-en + .lang-es::before,
+.homework-tab-bonus-label .lang-en + .lang-es::before,
+.hw-quickplan-summary .lang-en + .lang-es::before {
+  content: "·";
+  margin: 0 7px;
+  opacity: .6;
+}
+/* The same rule, stated once for every control: inside a button or a summary,
+   the two languages share one line with a separator. Stacking them there
+   doubled the height of every chip and filter and read as one garbled string
+   ("All Todos", "Needs Review Por repasar"). Prose is unaffected — it keeps
+   the stacked treatment with the teal rule. */
+button .lang-en + .lang-es,
+summary .lang-en + .lang-es {
+  display: inline;
+  border-left: 0;
+  padding-left: 0;
+  margin-top: 0;
+}
+button .lang-en + .lang-es::before,
+summary .lang-en + .lang-es::before {
+  content: "·";
+  margin: 0 6px;
+  opacity: .6;
+}
+/* Two controls read better stacked and keep it: the rail's five stops (a map,
+   where the label sits under its dot) and the tab bar (which shows one
+   language at a time already). */
+.hw-rail-label .lang-en + .lang-es,
+.tab-label .lang-en + .lang-es { display: block; }
+.hw-rail-label .lang-en + .lang-es::before,
+.tab-label .lang-en + .lang-es::before { content: none; }
+
+/* On the dark hero, every Spanish line inherits the hero's light ink rather
+   than the global dark --ink, which was rendering it near-invisible. */
+.hw-hero .lang-es { color: inherit; }
+.hw-hero .lang-en + .lang-es { border-left-color: rgba(242,193,91,.5); }
+
+/* Section headings: English line, Spanish line beneath at full ink — a
+   partner line, not a second competing title on the same row. */
+.section-title { flex-wrap: wrap; row-gap: 2px; }
+.section-title .lang-es {
+  /* The heading is a flex row, so the partner line needs a full-width basis to
+     drop beneath the English rather than sit beside it as a second title. */
+  flex: 0 0 100%;
+  margin-top: 1px;
+  padding-left: 18px;
+  border-left: 0;
+  font-size: .66em;
+  font-weight: 600;
+  color: var(--teal-ink);
+  letter-spacing: 0;
+}
+
+/* The Listen button now renders INSIDE the heading (see renderLearnTab), so it
+   sits on the heading row instead of alone in a band of dead space. */
+.btn-listen-concept {
+  margin-left: auto;
+  align-self: center;
+  flex: 0 0 auto;
+  font-size: 12.5px;
+}
+/* The concept figure is the point of that section — frame it instead of
+   letting it drift in the middle of an empty card. */
+.concept-visual-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 20px;
+  padding: 22px 18px;
+  background: linear-gradient(180deg, #fbfdff, var(--cream));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+/* The figure is the point of that card — let it use the width it has instead
+   of sitting small in the middle of it. */
+.concept-visual-wrap > svg { width: 100%; max-width: 560px; height: auto; }
+
+/* --- Motion: one orchestrated reveal when a family lands on a stop.
+       Respects reduced-motion via the global rule already in this file. --- */
+@keyframes hwRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+/* Gated on a class JS adds after boot. An entrance animation whose start
+   state is opacity:0 hides the page's content until it runs — if the script
+   never runs, a family gets a blank page, which is the one failure this site
+   spends a whole gate on. No class, no animation, everything visible. */
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > * {
+  animation: hwRise .5s cubic-bezier(.22,.9,.3,1) both;
+}
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(1) { animation-delay: .02s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(2) { animation-delay: .08s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(3) { animation-delay: .14s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(4) { animation-delay: .20s; }
+body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(n+5) { animation-delay: .26s; }
+body.hw-motion-ready .hw-hero { animation: hwRise .6s cubic-bezier(.22,.9,.3,1) both; }
+
+/* --- Interactive surfaces lift on hover, so a family can tell what is
+       tappable from what is text. --- */
+.fam-act-card, .fam-game-card, .vocab-card, .problem-card {
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.fam-act-card:hover, .fam-game-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--teal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.hw-motion-ready [data-tab-panel]:not([hidden]) > *,
+  body.hw-motion-ready .hw-hero { animation: none !important; }
+}
+
+/* --- Phone: the briefing has to fit the screen a family actually holds.
+   At 390px the hero ran 797px — a screen and a half of chrome before any
+   mathematics — because the stat chips wrapped to three rows, the language
+   control to two, and the kicker to two. Same content, tighter frame. --- */
+@media (max-width: 700px) {
+  .hw-hero-kicker { font-size: 10.5px; padding: 5px 11px 5px 6px; margin-bottom: 12px; gap: 6px; }
+  .hw-hero-kicker-icon { width: 20px; height: 20px; font-size: 11px; }
+  .hw-hero-lesson { margin-top: 14px; padding-top: 12px; }
+  .hw-hero-lead { margin-top: 10px; font-size: 14px; }
+  .hw-hero-stats {
+    margin-top: 14px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .hw-hero-stats::-webkit-scrollbar { display: none; }
+  .hw-stat { flex: 0 0 auto; padding: 6px 12px; font-size: 12px; }
+  .hw-hero-controls { margin-top: 14px; }
+  .hw-hero .lang-selector-card { gap: 8px; }
+  .hw-hero .lang-selector-title { flex: 0 0 100%; font-size: 10.5px; }
+  /* One row of three, never a stacked column: the three modes are a choice
+     between peers and reading them as a vertical list says otherwise. */
+  /* flex-direction is set to column by an older mobile rule for the standalone
+     selector; inside the hero the three modes stay a row. */
+  .hw-hero .lang-selector-buttons {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  .hw-hero .lang-toggle-btn {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  /* The full "Bilingual / Bilingüe" cannot fit a third of a phone; the flag
+     pair already carries it, and the label returns above 700px. */
+  .hw-hero .lang-toggle-btn[data-lang-mode="bilingual"] span { display: none; }
+  .hw-hero .hw-quickplan { margin-top: 14px; }
+  /* The opacity difference already says which tabs are optional; the divider
+     and its label cost a whole extra row at this width. */
+  .homework-tab-divider, .homework-tab-bonus-label { display: none; }
+}
+
+@media print {
+  body { background-image: none; }
+  .homework-tab-chrome, .hw-rail { display: none; }
+  .hw-hero { background: #fff !important; color: #000 !important; box-shadow: none; }
+  .hw-hero .welcome-title-en, .hw-hero-lesson-title { color: #000 !important; }
+}
+
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
    serif headings + paper ground + AA-safe ink. No layout/size changes. */
@@ -4426,93 +4947,57 @@ header.packet h1::after{
 <div class="container" role="main">
 
   
-    <header class="family-welcome card" aria-label="Family Math Night welcome">
-      <div class="unit-world-badge">
-        <span class="unit-world-icon" aria-hidden="true">⚙️</span>
-        <span class="lang-en">Unit 3 World: Speed &amp; Scale Workshop</span>
-        <span class="lang-es" lang="es">Unidad 3: Taller de Escala y Proporciones</span>
-      </div>
-      <div class="welcome-hero">
-        <span class="welcome-emoji" aria-hidden="true">🕹️</span>
-        <div class="welcome-titles">
-          <p class="welcome-tag">Unit 3 · 6.AT.2</p>
-          <h1 class="welcome-title-en">Family Math Night</h1>
-          <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
-          <p class="welcome-lesson">Solve Problems with Unit Rates · Lesson 3-8</p>
-        </div>
-      </div>
-      <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
-      </p>
-      
-      <!-- Modern language mode selector -->
-      <div class="lang-selector-card">
-        <span class="lang-selector-title">Language / Idioma:</span>
-        <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
-          <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
-            🇺🇸🇪🇸 Bilingual / Bilingüe
-          </button>
-          <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
-            🇺🇸 English Only
-          </button>
-          <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')">
-            🇪🇸 Solo Español
-          </button>
-        </div>
-      </div>
-    </header>
-
-  
-    <nav class="hw-journey card" aria-label="Tonight's homework path">
-      <div class="hw-journey-head">
-        <span class="hw-journey-kicker">🗺️ <span class="lang-en">TONIGHT'S PATH</span><span class="lang-es" lang="es">LA RUTA DE HOY</span></span>
-        <p class="hw-journey-sub">
-          <span class="lang-en">Five stops, about 25 minutes together. Tap a stop to jump there — everything else (Workbench, Arcade, Play) is bonus.</span>
-          <span class="lang-es" lang="es">Cinco paradas, unos 25 minutos juntos. Toquen una parada para ir allí; lo demás (Pizarra, Sala de juegos, Jugar) es extra.</span>
+    <header class="hw-hero" aria-label="Family Math Night welcome">
+      <div class="hw-hero-glow" aria-hidden="true"></div>
+      <div class="hw-hero-body">
+        <p class="hw-hero-kicker">
+          <span class="hw-hero-kicker-icon" aria-hidden="true">⚙️</span>
+          <span class="lang-en">Unit 3 · Speed &amp; Scale Workshop</span>
+          <span class="lang-es" lang="es">Unidad 3 · Taller de Escala y Proporciones</span>
         </p>
-      </div>
-      <ol class="hw-journey-track">
-      <li class="hw-journey-item">
-        <button type="button" class="hw-journey-stop" data-journey-stop="learn" onclick="switchHomeworkTab('learn')"
-          aria-label="Go to Learn (about 5 minutes)">
-          <span class="hw-journey-bubble"><span class="hw-journey-icon" aria-hidden="true">📖</span><span class="hw-journey-check" aria-hidden="true">✓</span></span>
-          <span class="hw-journey-label"><span class="hw-journey-num">1.</span> <span class="lang-en">Learn</span><span class="lang-es" lang="es">Aprender</span></span>
-          <span class="hw-journey-min">~5 min</span>
-        </button>
-      </li>
-      <li class="hw-journey-item">
-        <button type="button" class="hw-journey-stop" data-journey-stop="words" onclick="switchHomeworkTab('words')"
-          aria-label="Go to Words (about 3 minutes)">
-          <span class="hw-journey-bubble"><span class="hw-journey-icon" aria-hidden="true">📚</span><span class="hw-journey-check" aria-hidden="true">✓</span></span>
-          <span class="hw-journey-label"><span class="hw-journey-num">2.</span> <span class="lang-en">Words</span><span class="lang-es" lang="es">Palabras</span></span>
-          <span class="hw-journey-min">~3 min</span>
-        </button>
-      </li>
-      <li class="hw-journey-item">
-        <button type="button" class="hw-journey-stop" data-journey-stop="together" onclick="switchHomeworkTab('together')"
-          aria-label="Go to Together (about 7 minutes)">
-          <span class="hw-journey-bubble"><span class="hw-journey-icon" aria-hidden="true">🤝</span><span class="hw-journey-check" aria-hidden="true">✓</span></span>
-          <span class="hw-journey-label"><span class="hw-journey-num">3.</span> <span class="lang-en">Together</span><span class="lang-es" lang="es">Juntos</span></span>
-          <span class="hw-journey-min">~7 min</span>
-        </button>
-      </li>
-      <li class="hw-journey-item">
-        <button type="button" class="hw-journey-stop" data-journey-stop="check" onclick="switchHomeworkTab('check')"
-          aria-label="Go to Check (about 10 minutes)">
-          <span class="hw-journey-bubble"><span class="hw-journey-icon" aria-hidden="true">✅</span><span class="hw-journey-check" aria-hidden="true">✓</span></span>
-          <span class="hw-journey-label"><span class="hw-journey-num">4.</span> <span class="lang-en">Check</span><span class="lang-es" lang="es">Repaso</span></span>
-          <span class="hw-journey-min">~10 min</span>
-        </button>
-      </li>
-      <li class="hw-journey-item">
-        <button type="button" class="hw-journey-stop" data-journey-stop="done" onclick="switchHomeworkTab('done')"
-          aria-label="Go to Done (about 1 minutes)">
-          <span class="hw-journey-bubble"><span class="hw-journey-icon" aria-hidden="true">🎉</span><span class="hw-journey-check" aria-hidden="true">✓</span></span>
-          <span class="hw-journey-label"><span class="hw-journey-num">5.</span> <span class="lang-en">Done</span><span class="lang-es" lang="es">Listo</span></span>
-          <span class="hw-journey-min">~1 min</span>
-        </button>
-      </li></ol>
+
+        <div class="hw-hero-head">
+          <span class="hw-hero-emoji" aria-hidden="true">🕹️</span>
+          <div class="hw-hero-titles">
+            <h1 class="welcome-title-en">Family Math Night</h1>
+            <p class="welcome-title-es" lang="es">Ayuda a tu estudiante</p>
+          </div>
+        </div>
+
+        <p class="hw-hero-lesson">
+          <span class="hw-hero-lesson-title">Solve Problems with Unit Rates</span>
+          <span class="hw-hero-lesson-meta">Lesson 3-8 · 6.AT.2</span>
+        </p>
+
+        <p class="hw-hero-lead">
+          <span class="lang-en">Use the pictures and the short steps. Ask questions — let your student do the thinking.</span>
+          <span class="lang-es" lang="es">Usen los dibujos y los pasos cortos. Hagan preguntas: dejen que su estudiante piense.</span>
+        </p>
+
+        <ul class="hw-hero-stats" aria-label="What tonight looks like">
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">5 stops</span><span class="lang-es" lang="es">5 paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About 25 minutes</span><span class="lang-es" lang="es">Unos 25 minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
+        </ul>
+
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        
       <details class="hw-quickplan">
         <summary class="hw-quickplan-summary">
           <span class="hw-quickplan-icon" aria-hidden="true">⏰</span>
@@ -4520,83 +5005,132 @@ header.packet h1::after{
           <span class="hw-quickplan-chevron" aria-hidden="true">▾</span>
         </summary>
         <ol class="hw-quickplan-steps">
-          <li><span class="lang-en"><strong>2 min:</strong> Read the Big Idea out loud on the Learn stop.</span><span class="lang-es" lang="es"><strong>2 min:</strong> Lean en voz alta la idea principal en la parada Aprender.</span></li>
-          <li><span class="lang-en"><strong>3 min:</strong> Do just the FIRST Try Together step on the Together stop.</span><span class="lang-es" lang="es"><strong>3 min:</strong> Hagan solo el PRIMER paso de Intentar Juntos en la parada Juntos.</span></li>
-          <li><span class="lang-en"><strong>5 min:</strong> Answer the 3 Warm-up problems on the Check stop. That's a real study session — great job!</span><span class="lang-es" lang="es"><strong>5 min:</strong> Contesten los 3 problemas de calentamiento en la parada Repaso. Eso ya es una buena sesión de estudio. ¡Bien hecho!</span></li>
+          <li><span class="lang-en"><strong>2 min</strong> — Read the Big Idea out loud on the Learn stop.</span><span class="lang-es" lang="es"><strong>2 min</strong> — Lean en voz alta la idea principal en la parada Aprender.</span></li>
+          <li><span class="lang-en"><strong>3 min</strong> — Do just the FIRST Try Together step.</span><span class="lang-es" lang="es"><strong>3 min</strong> — Hagan solo el PRIMER paso de Intentar Juntos.</span></li>
+          <li><span class="lang-en"><strong>5 min</strong> — Answer the 3 Warm-up problems on the Check stop.</span><span class="lang-es" lang="es"><strong>5 min</strong> — Contesten los 3 problemas de calentamiento en la parada Repaso.</span></li>
         </ol>
         <p class="hw-quickplan-note">
           <span class="lang-en">💛 Short and calm beats long and stressful. Ten focused minutes tonight is a win.</span>
           <span class="lang-es" lang="es">💛 Corto y tranquilo vale más que largo y estresante. Diez minutos concentrados hoy ya son un logro.</span>
         </p>
       </details>
-    </nav>
+      </div>
+    </header>
 
   
     <div class="homework-tabs-shell" data-tab-count="10">
       <div class="homework-tab-chrome">
         <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
           
-            <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
+            <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-core is-active"
               aria-selected="true" aria-controls="hw_panel_learn"
               data-tab="learn" onclick="switchHomeworkTab('learn')">
               <span class="tab-icon" aria-hidden="true">📖</span>
               <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
             </button>
-            <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
+            <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn is-core"
               aria-selected="false" aria-controls="hw_panel_words"
               data-tab="words" onclick="switchHomeworkTab('words')">
               <span class="tab-icon" aria-hidden="true">📚</span>
               <span class="tab-label"><span class="tab-en">Words</span><span class="tab-es" lang="es">Palabras</span></span>
             </button>
-            <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
+            <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn is-core"
               aria-selected="false" aria-controls="hw_panel_together"
               data-tab="together" onclick="switchHomeworkTab('together')">
               <span class="tab-icon" aria-hidden="true">🤝</span>
               <span class="tab-label"><span class="tab-en">Together</span><span class="tab-es" lang="es">Juntos</span></span>
             </button>
-            <button type="button" role="tab" id="hw_tab_workbench" class="homework-tab-btn"
-              aria-selected="false" aria-controls="hw_panel_workbench"
-              data-tab="workbench" onclick="switchHomeworkTab('workbench')">
-              <span class="tab-icon" aria-hidden="true">🧮</span>
-              <span class="tab-label"><span class="tab-en">Workbench</span><span class="tab-es" lang="es">Pizarra</span></span>
-            </button>
-            <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
+            <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn is-core"
               aria-selected="false" aria-controls="hw_panel_check"
               data-tab="check" onclick="switchHomeworkTab('check')">
               <span class="tab-icon" aria-hidden="true">✅</span>
               <span class="tab-label"><span class="tab-en">Check</span><span class="tab-es" lang="es">Repaso</span></span>
             </button>
-            <button type="button" role="tab" id="hw_tab_arcade" class="homework-tab-btn"
-              aria-selected="false" aria-controls="hw_panel_arcade"
-              data-tab="arcade" onclick="switchHomeworkTab('arcade')">
-              <span class="tab-icon" aria-hidden="true">🕹️</span>
-              <span class="tab-label"><span class="tab-en">Arcade</span><span class="tab-es" lang="es">Sala de juegos</span></span>
-            </button>
-            <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
-              aria-selected="false" aria-controls="hw_panel_play"
-              data-tab="play" onclick="switchHomeworkTab('play')">
-              <span class="tab-icon" aria-hidden="true">🎮</span>
-              <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
-            </button>
-            <button type="button" role="tab" id="hw_tab_help" class="homework-tab-btn"
-              aria-selected="false" aria-controls="hw_panel_help"
-              data-tab="help" onclick="switchHomeworkTab('help')">
-              <span class="tab-icon" aria-hidden="true">💬</span>
-              <span class="tab-label"><span class="tab-en">Help</span><span class="tab-es" lang="es">Ayuda</span></span>
-            </button>
-            <button type="button" role="tab" id="hw_tab_more" class="homework-tab-btn"
-              aria-selected="false" aria-controls="hw_panel_more"
-              data-tab="more" onclick="switchHomeworkTab('more')">
-              <span class="tab-icon" aria-hidden="true">🌐</span>
-              <span class="tab-label"><span class="tab-en">More</span><span class="tab-es" lang="es">Más</span></span>
-            </button>
-            <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
+            <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn is-core"
               aria-selected="false" aria-controls="hw_panel_done"
               data-tab="done" onclick="switchHomeworkTab('done')">
               <span class="tab-icon" aria-hidden="true">🎉</span>
               <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
             </button>
+          <span class="homework-tab-divider" aria-hidden="true"></span>
+          <span class="homework-tab-bonus-label" aria-hidden="true"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Extra</span></span>
+          
+            <button type="button" role="tab" id="hw_tab_workbench" class="homework-tab-btn is-bonus"
+              aria-selected="false" aria-controls="hw_panel_workbench"
+              data-tab="workbench" onclick="switchHomeworkTab('workbench')">
+              <span class="tab-icon" aria-hidden="true">🧮</span>
+              <span class="tab-label"><span class="tab-en">Workbench</span><span class="tab-es" lang="es">Pizarra</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_arcade" class="homework-tab-btn is-bonus"
+              aria-selected="false" aria-controls="hw_panel_arcade"
+              data-tab="arcade" onclick="switchHomeworkTab('arcade')">
+              <span class="tab-icon" aria-hidden="true">🕹️</span>
+              <span class="tab-label"><span class="tab-en">Arcade</span><span class="tab-es" lang="es">Sala de juegos</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn is-bonus"
+              aria-selected="false" aria-controls="hw_panel_play"
+              data-tab="play" onclick="switchHomeworkTab('play')">
+              <span class="tab-icon" aria-hidden="true">🎮</span>
+              <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_help" class="homework-tab-btn is-bonus"
+              aria-selected="false" aria-controls="hw_panel_help"
+              data-tab="help" onclick="switchHomeworkTab('help')">
+              <span class="tab-icon" aria-hidden="true">💬</span>
+              <span class="tab-label"><span class="tab-en">Help</span><span class="tab-es" lang="es">Ayuda</span></span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_more" class="homework-tab-btn is-bonus"
+              aria-selected="false" aria-controls="hw_panel_more"
+              data-tab="more" onclick="switchHomeworkTab('more')">
+              <span class="tab-icon" aria-hidden="true">🌐</span>
+              <span class="tab-label"><span class="tab-en">More</span><span class="tab-es" lang="es">Más</span></span>
+            </button>
         </nav>
+        
+    <nav class="hw-rail" aria-label="Tonight's path">
+      <span class="hw-rail-title">
+        <span class="lang-en">Tonight's path</span><span class="lang-es" lang="es">La ruta de hoy</span>
+      </span>
+      <ol class="hw-rail-track">
+        <span class="hw-rail-line" aria-hidden="true"><span class="hw-rail-line-fill" id="hw_rail_fill"></span></span>
+        
+      <li class="hw-rail-item">
+        <button type="button" class="hw-rail-stop" data-journey-stop="learn" onclick="switchHomeworkTab('learn')"
+          aria-label="Go to Learn, stop 1 of 5, about 5 minutes">
+          <span class="hw-rail-dot"><span class="hw-rail-icon" aria-hidden="true">📖</span><span class="hw-rail-check" aria-hidden="true">✓</span></span>
+          <span class="hw-rail-label"><span class="lang-en">Learn</span><span class="lang-es" lang="es">Aprender</span></span>
+        </button>
+      </li>
+      <li class="hw-rail-item">
+        <button type="button" class="hw-rail-stop" data-journey-stop="words" onclick="switchHomeworkTab('words')"
+          aria-label="Go to Words, stop 2 of 5, about 3 minutes">
+          <span class="hw-rail-dot"><span class="hw-rail-icon" aria-hidden="true">📚</span><span class="hw-rail-check" aria-hidden="true">✓</span></span>
+          <span class="hw-rail-label"><span class="lang-en">Words</span><span class="lang-es" lang="es">Palabras</span></span>
+        </button>
+      </li>
+      <li class="hw-rail-item">
+        <button type="button" class="hw-rail-stop" data-journey-stop="together" onclick="switchHomeworkTab('together')"
+          aria-label="Go to Together, stop 3 of 5, about 7 minutes">
+          <span class="hw-rail-dot"><span class="hw-rail-icon" aria-hidden="true">🤝</span><span class="hw-rail-check" aria-hidden="true">✓</span></span>
+          <span class="hw-rail-label"><span class="lang-en">Together</span><span class="lang-es" lang="es">Juntos</span></span>
+        </button>
+      </li>
+      <li class="hw-rail-item">
+        <button type="button" class="hw-rail-stop" data-journey-stop="check" onclick="switchHomeworkTab('check')"
+          aria-label="Go to Check, stop 4 of 5, about 10 minutes">
+          <span class="hw-rail-dot"><span class="hw-rail-icon" aria-hidden="true">✅</span><span class="hw-rail-check" aria-hidden="true">✓</span></span>
+          <span class="hw-rail-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Repaso</span></span>
+        </button>
+      </li>
+      <li class="hw-rail-item">
+        <button type="button" class="hw-rail-stop" data-journey-stop="done" onclick="switchHomeworkTab('done')"
+          aria-label="Go to Done, stop 5 of 5, about 1 minutes">
+          <span class="hw-rail-dot"><span class="hw-rail-icon" aria-hidden="true">🎉</span><span class="hw-rail-check" aria-hidden="true">✓</span></span>
+          <span class="hw-rail-label"><span class="lang-en">Done</span><span class="lang-es" lang="es">Listo</span></span>
+        </button>
+      </li>
+      </ol>
+    </nav>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         
@@ -4648,7 +5182,7 @@ header.packet h1::after{
     
       
     
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2> <button type="button" class="btn-listen-concept" onclick="speakBigIdea('Find the unit rate by dividing, then multiply it to find the amount you need.', 'Encuentra la tasa unitaria dividiendo, luego multiplícala para hallar la cantidad que necesitas.')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+      <h2 class="section-title">🎯 The big idea / La idea principal <button type="button" class="btn-listen-concept" onclick="speakBigIdea('Find the unit rate by dividing, then multiply it to find the amount you need.', 'Encuentra la tasa unitaria dividiendo, luego multiplícala para hallar la cantidad que necesitas.')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
       <div class="concept-visual-wrap">
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Ratio table example">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
@@ -7614,11 +8148,23 @@ function updateJourneyMap(tabId) {
     visited[tabId] = true;
     try { localStorage.setItem(journeyStorageKey(), JSON.stringify(visited)); } catch (e) {}
   }
+  const order = ['learn', 'words', 'together', 'check', 'done'];
   stops.forEach(function (s) {
     const id = s.dataset.journeyStop;
     s.classList.toggle('is-current', id === tabId);
     s.classList.toggle('is-done', !!visited[id]);
   });
+  // Fill the connecting line up to the furthest stop reached, so the rail
+  // reads as progress and not just as five buttons.
+  const fill = document.getElementById('hw_rail_fill');
+  if (fill) {
+    let furthest = -1;
+    order.forEach(function (id, i) { if (visited[id]) furthest = i; });
+    const cur = order.indexOf(tabId);
+    if (cur > furthest) furthest = cur;
+    const pct = furthest <= 0 ? 0 : (furthest / (order.length - 1)) * 100;
+    fill.style.width = pct + '%';
+  }
 }
 
 function syncHomeworkChromeHeights() {
@@ -7891,6 +8437,10 @@ function initHomeworkPage() {
   initDrawCanvases();
   initHomeworkVocabPopups();
   initFamilyGames();
+  // Entrance motion is opt-in and only after boot: its start state is
+  // opacity:0, so gating it on this class means a page whose script failed
+  // still shows every word instead of an empty cream rectangle.
+  document.body.classList.add('hw-motion-ready');
 }
 
 if (document.readyState === 'loading') {
