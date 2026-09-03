@@ -378,6 +378,7 @@ const DECLARED_NON_PATHWAYS = new Set([
   "_incoming-decks",
   "1-1-flagship",
   "6-1-6-2-practice",
+  "6-1-6-2-practice-part2",
 ]);
 
 // Reconcile disk against the manifest, both directions. 289 lesson.js files on
