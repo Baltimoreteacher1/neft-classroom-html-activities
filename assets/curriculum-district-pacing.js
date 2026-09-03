@@ -370,6 +370,22 @@
       optG2.value = `sg2_${l.id}`;
       optG2.textContent = `    ↳ 🚀 Lesson ${l.id} Group 2 (Level 2 Enrichment Pathway)`;
       groupLessons.appendChild(optG2);
+
+      // The bridge practice set, under the later of the two lessons it bridges.
+      if (l.bridge) {
+        const optBridge = document.createElement("option");
+        optBridge.value = `bridge_${l.bridge.id}`;
+        optBridge.textContent = `    ↳ 🧮 ${l.bridge.title} (Combined Practice)`;
+        groupLessons.appendChild(optBridge);
+      }
+
+      // The band review, under the lesson it reviews up to.
+      if (l.catchUp) {
+        const optCatchUp = document.createElement("option");
+        optCatchUp.value = `catchup_${l.catchUp.id}`;
+        optCatchUp.textContent = `    ↳ 🔁 ${l.catchUp.title} (Review & Catch-Up)`;
+        groupLessons.appendChild(optCatchUp);
+      }
     });
 
     /* The culminating project closes the unit, so it renders last — after the
@@ -473,6 +489,11 @@
     } else if (val.startsWith("sg2_")) {
       const lid = val.replace("sg2_", "");
       window.open("/lessons/" + lid + "-group2/", "_blank");
+    } else if (val.startsWith("bridge_")) {
+      window.open("/lessons/" + val.replace("bridge_", "") + "/", "_blank");
+    } else if (val.startsWith("catchup_")) {
+      // The manifest id IS the folder name (6-2-catchup → /lessons/6-2-catchup/).
+      window.open("/lessons/" + val.replace("catchup_", "") + "/", "_blank");
     } else {
       window.executeQuickAction(val);
     }
@@ -553,8 +574,29 @@
       });
 
       const byId = new Map((manifest.lessons || []).map((l) => [l.id, l]));
+      /* Catch-up stations, keyed by the lesson they hang under. The manifest
+       * already names that lesson (`parent`), so 6-2-catchup — "6.1 · 6.2 · 6.9
+       * Catch-Up" — belongs directly beneath 6.2 and nowhere else. They were
+       * absent from this picker entirely: a teacher could reach every lesson
+       * and both small-group pathways from it, but the review station for the
+       * band had no door here at all. */
+      /* Bridge practice pages — a combined set that sits BETWEEN two lessons
+       * (/lessons/6-1-6-2-practice/, "6.1–6.2 · Extra Practice"). They are not
+       * catch-up stations and not lesson variants, so nothing in the launch
+       * manifest enumerates them: the hub lists this one by hand in
+       * curriculum/units/index.html, and the picker listed it nowhere at all.
+       * Listed here by the lesson they follow. Add a row to add a page. */
+      const bridgePractice = {
+        "6-2": { id: "6-1-6-2-practice", title: "6.1–6.2 · Extra Practice" },
+      };
+      const catchUpByParent = new Map(
+        (manifest.catchUps || []).filter((c) => c && c.parent && c.id).map((c) => [c.parent, c]),
+      );
       crosswalk.forEach(function (item) {
         (item.lessons || []).forEach(function (lesson) {
+          const station = catchUpByParent.get(lesson.id);
+          if (station) lesson.catchUp = { id: station.id, title: station.title };
+          if (bridgePractice[lesson.id]) lesson.bridge = bridgePractice[lesson.id];
           const canonical = byId.get(lesson.id);
           if (!canonical) return; // MSTAR and anything retired keep what they have.
           lesson.title = canonical.title;

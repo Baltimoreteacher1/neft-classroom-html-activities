@@ -489,6 +489,34 @@ export const MATH_GLOSSARY = [
     definition: "The line where two flat sides of a solid meet.",
     definitionEs: "La línea donde se juntan dos caras planas de un sólido.",
   },
+  {
+    // Grade 6 uses "segment" in two places and means the same thing in both:
+    // the piece of a line between two endpoints (coordinate-plane distance,
+    // the sides of a polygon) and the equal piece a length is cut into ("a
+    // 3½-mile route divided into ¼-mile segments" — Unit 6 fraction division).
+    // The word shows up in lesson prose, stems and sample answers far more
+    // often than any lesson lists it as vocabulary, which is exactly what the
+    // shared glossary is for. The plural is handled by the matcher, so
+    // "segments" underlines and opens this popup too. Its picture is
+    // assets/vocab-images/segment.svg (registered in vocab-images.js).
+    term: "segment",
+    termEs: "segmento",
+    definition:
+      "A piece of a line, a number line, or a length that has a beginning and an end. Equal segments are the same-size pieces a whole is cut into — a 3 1/2-mile route split into 1/4-mile segments has 14 of them.",
+    definitionEs:
+      "Un pedazo de una recta, de una recta numérica o de una longitud, con un principio y un final. Los segmentos iguales son las partes del mismo tamaño en que se divide un entero: una ruta de 3 1/2 millas dividida en segmentos de 1/4 de milla tiene 14.",
+  },
+  {
+    // The geometry-class phrase, kept as its own entry so "line segment" opens
+    // one popup instead of underlining only its second word. Longest-surface-
+    // first matching makes this win over "segment" wherever both could match.
+    term: "line segment",
+    termEs: "segmento de recta",
+    definition:
+      "The straight path between two endpoints. It does not keep going the way a line does — it stops at both ends.",
+    definitionEs:
+      "El camino recto entre dos extremos. No sigue sin fin como una recta: termina en los dos extremos.",
+  },
   // — statistics —
   {
     term: "median",

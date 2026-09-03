@@ -202,6 +202,11 @@ const SYNONYMS = {
   "compatible-numbers": "estimate",
   "bilateral-symmetry": "symmetric",
   "line-of-symmetry": "symmetric",
+  // The geometry phrase and the bare word draw the same picture — segment.svg
+  // marks one piece off between its two endpoints, which is exactly what a line
+  // segment is. Without this mapping "line segment" falls through to the
+  // generic "#" number tile and hasRealVocabImage() suppresses it entirely.
+  "line-segment": "segment",
   "mirror-image": "reflection",
   coordinates: "ordered-pair",
   "distance-between-vertices": "distance",
@@ -538,6 +543,15 @@ const EXTRA_DEDICATED = new Set([
   "height-triangle",
   "height-trapezoid",
   "slant-height-pyramid",
+  // "segment" is a math word in both of the senses grade 6 uses it — the piece
+  // of a line between two endpoints on the coordinate plane, and the equal
+  // piece a length or a tape is cut into ("a 3½-mile route divided into ¼-mile
+  // segments"). It appears in lesson prose far more often than it appears in a
+  // lesson vocabulary list, so it lives in the shared glossary and needs a real
+  // picture: without one, hasRealVocabImage() suppresses the tile and the popup
+  // is definition-only. segment.svg draws four equal segments with one of them
+  // marked off between its two endpoints.
+  "segment",
 ]);
 
 export function resolveVocabImage(term, override) {
