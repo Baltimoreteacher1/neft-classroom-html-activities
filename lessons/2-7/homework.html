@@ -2797,6 +2797,520 @@ body.lang-mode-es .bilingual-grid {
   }
 }
 
+/* Gamified Tab Bar & Flow Navigation */
+.tab-step-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 99px;
+  background: rgba(18, 53, 91, 0.08);
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.homework-tab-btn.is-active .tab-step-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--white);
+}
+.tab-badge-star {
+  font-size: 11px;
+  color: var(--amber);
+  min-height: 12px;
+  line-height: 1;
+}
+.tab-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tab-progress-track {
+  width: 80px;
+  height: 6px;
+  background: var(--line);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.tab-progress-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+.tab-flow-nav {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+.flow-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  background: var(--teal-ink);
+  color: var(--white);
+  box-shadow: 0 3px 12px rgba(12, 111, 107, 0.22);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: none;
+}
+.flow-next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(12, 111, 107, 0.35);
+}
+
+/* Vocab Match & Master Challenge */
+.vocab-game-shell {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+  border: 2px solid #38bdf8;
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.12);
+}
+.vocab-game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.vocab-game-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vocab-game-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+.vocab-game-h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.vocab-game-sub {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.vocab-game-counter {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  background: var(--white);
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  color: var(--navy);
+}
+.vocab-match-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .vocab-match-board {
+    grid-template-columns: 1fr;
+  }
+}
+.vocab-match-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vocab-match-chip {
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vocab-match-chip:hover:not(:disabled) {
+  border-color: var(--teal);
+  transform: translateY(-1px);
+}
+.vocab-match-chip.is-selected {
+  border-color: var(--amber);
+  background: var(--amber-light);
+  box-shadow: 0 0 0 3px rgba(242, 193, 91, 0.4);
+}
+.vocab-match-chip.is-matched {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+  opacity: 0.85;
+  cursor: default;
+}
+.vocab-match-chip.is-mismatch {
+  border-color: var(--error);
+  background: var(--error-bg);
+  animation: chipShake 0.4s ease;
+}
+@keyframes chipShake {
+  0%, 100% { transform: translateX(0); }
+  25%, 75% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
+.vocab-game-win {
+  margin-top: 14px;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  border: 1.5px solid var(--success);
+}
+.win-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.win-emoji { font-size: 28px; }
+.win-text strong { color: var(--success); font-size: 14.5px; display: block; }
+.win-text p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+
+/* Vocab Card Controls */
+.vocab-card-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 6px;
+}
+.vocab-speak-btn, .vocab-master-toggle {
+  background: rgba(18, 53, 91, 0.06);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.vocab-speak-btn:hover { background: var(--teal-light); transform: scale(1.1); }
+.vocab-master-toggle:hover { transform: scale(1.1); }
+.vocab-master-toggle.is-mastered {
+  color: #f59e0b;
+  background: #fef3c7;
+}
+.vocab-card-back-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.vocab-card-back-actions .btn {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+/* Skill Power-Up Challenge */
+.section-powerup {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid #cbd5e1;
+  margin-top: 20px;
+}
+.powerup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.powerup-tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #7c3aed;
+  background: #ede9fe;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.powerup-question {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.35;
+}
+.powerup-badge-star {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--amber-light);
+  color: #b45309;
+  border: 1px solid var(--amber);
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.powerup-choices-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.powerup-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  transition: all 0.15s ease;
+}
+.powerup-choice-btn:hover:not(:disabled) {
+  border-color: #7c3aed;
+  background: #faf5ff;
+}
+.powerup-letter {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.powerup-choice-btn.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+.powerup-choice-btn.is-correct .powerup-letter {
+  background: var(--success);
+  color: var(--white);
+}
+.powerup-choice-btn.is-wrong {
+  border-color: var(--error);
+  background: var(--error-bg);
+  animation: chipShake 0.4s ease;
+}
+.powerup-feedback-box {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+.powerup-feedback-box.is-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+.powerup-feedback-box.is-hint {
+  background: var(--hint-bg);
+  color: var(--hint);
+  border: 1px solid var(--amber);
+}
+
+/* Interactive Scratchpad */
+.interactive-scratchpad {
+  background: var(--white);
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin: 16px 0;
+  box-shadow: 0 4px 16px rgba(31, 166, 162, 0.15);
+}
+.scratchpad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.scratchpad-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  color: var(--navy);
+}
+.scratchpad-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.color-palette {
+  display: flex;
+  gap: 6px;
+}
+.color-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.color-dot.is-active {
+  transform: scale(1.25);
+  border-color: #000;
+}
+.tool-btn.is-active {
+  background: var(--teal);
+  color: var(--white);
+}
+.scratchpad-close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0 4px;
+}
+.scratchpad-canvas-wrap {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #ffffff;
+}
+.scratchpad-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.scratchpad-inline-toggle {
+  margin: 14px 0;
+}
+.scratchpad-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Live Streak & Goal Reached Banners */
+.live-streak-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1.5px solid #fb923c;
+  border-radius: 99px;
+  padding: 6px 14px;
+  margin: 10px 0 14px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: #9a3412;
+  animation: bannerPop 0.3s ease;
+}
+@keyframes bannerPop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.goal-reached-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
+  border: 2px solid #eab308;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin: 12px 0 16px;
+  box-shadow: 0 4px 16px rgba(234, 179, 8, 0.18);
+  flex-wrap: wrap;
+}
+.goal-icon { font-size: 30px; }
+.goal-text strong { color: #854d0e; font-size: 15.5px; display: block; }
+.goal-text p { margin: 2px 0 0; font-size: 12.5px; color: #713f12; }
+
+/* Celebration & Achievements */
+.high-five-banner {
+  text-align: center;
+  margin: 18px 0;
+}
+.btn-high-five {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: var(--white);
+  border: none;
+  border-radius: 99px;
+  padding: 10px 24px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-high-five:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.45);
+}
+.high-five-emoji { font-size: 24px; }
+.high-five-labels { display: flex; flex-direction: column; text-align: left; }
+.high-five-labels strong { font-size: 15px; line-height: 1.1; }
+.high-five-labels small { font-size: 11px; opacity: 0.9; font-weight: 500; }
+.achievement-shelf {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+@media (max-width: 600px) {
+  .achievement-shelf { grid-template-columns: repeat(2, 1fr); }
+}
+.achievement-badge {
+  background: var(--bg);
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.55;
+  transition: all 0.3s ease;
+}
+.achievement-badge.is-unlocked {
+  opacity: 1;
+  border-style: solid;
+  border-color: var(--amber);
+  background: #fffbeb;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+.achieve-icon { font-size: 22px; line-height: 1; }
+.achieve-name { font-family: var(--font-display); font-size: 11px; font-weight: 800; color: var(--navy); }
+
+
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
 .visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
@@ -3055,70 +3569,124 @@ header.packet h1::after{
             <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
               aria-selected="true" aria-controls="hw_panel_learn"
               data-tab="learn" onclick="switchHomeworkTab('learn')">
+              <span class="tab-step-badge">1</span>
               <span class="tab-icon" aria-hidden="true">📖</span>
               <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
+              <span class="tab-badge-star" id="tab_badge_learn" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_words"
               data-tab="words" onclick="switchHomeworkTab('words')">
+              <span class="tab-step-badge">2</span>
               <span class="tab-icon" aria-hidden="true">📚</span>
               <span class="tab-label"><span class="tab-en">Words</span><span class="tab-es" lang="es">Palabras</span></span>
+              <span class="tab-badge-star" id="tab_badge_words" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_together"
               data-tab="together" onclick="switchHomeworkTab('together')">
+              <span class="tab-step-badge">3</span>
               <span class="tab-icon" aria-hidden="true">🤝</span>
               <span class="tab-label"><span class="tab-en">Together</span><span class="tab-es" lang="es">Juntos</span></span>
+              <span class="tab-badge-star" id="tab_badge_together" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_workbench" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_workbench"
               data-tab="workbench" onclick="switchHomeworkTab('workbench')">
+              <span class="tab-step-badge">4</span>
               <span class="tab-icon" aria-hidden="true">🧮</span>
               <span class="tab-label"><span class="tab-en">Workbench</span><span class="tab-es" lang="es">Pizarra</span></span>
+              <span class="tab-badge-star" id="tab_badge_workbench" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_check"
               data-tab="check" onclick="switchHomeworkTab('check')">
+              <span class="tab-step-badge">5</span>
               <span class="tab-icon" aria-hidden="true">✅</span>
               <span class="tab-label"><span class="tab-en">Check</span><span class="tab-es" lang="es">Repaso</span></span>
+              <span class="tab-badge-star" id="tab_badge_check" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_arcade" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_arcade"
               data-tab="arcade" onclick="switchHomeworkTab('arcade')">
+              <span class="tab-step-badge">6</span>
               <span class="tab-icon" aria-hidden="true">🕹️</span>
               <span class="tab-label"><span class="tab-en">Arcade</span><span class="tab-es" lang="es">Sala de juegos</span></span>
+              <span class="tab-badge-star" id="tab_badge_arcade" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_play"
               data-tab="play" onclick="switchHomeworkTab('play')">
+              <span class="tab-step-badge">7</span>
               <span class="tab-icon" aria-hidden="true">🎮</span>
               <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
+              <span class="tab-badge-star" id="tab_badge_play" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_help" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_help"
               data-tab="help" onclick="switchHomeworkTab('help')">
+              <span class="tab-step-badge">8</span>
               <span class="tab-icon" aria-hidden="true">💬</span>
               <span class="tab-label"><span class="tab-en">Help</span><span class="tab-es" lang="es">Ayuda</span></span>
+              <span class="tab-badge-star" id="tab_badge_help" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_more" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_more"
               data-tab="more" onclick="switchHomeworkTab('more')">
+              <span class="tab-step-badge">9</span>
               <span class="tab-icon" aria-hidden="true">🌐</span>
               <span class="tab-label"><span class="tab-en">More</span><span class="tab-es" lang="es">Más</span></span>
+              <span class="tab-badge-star" id="tab_badge_more" aria-hidden="true"></span>
             </button>
             <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_done"
               data-tab="done" onclick="switchHomeworkTab('done')">
+              <span class="tab-step-badge">10</span>
               <span class="tab-icon" aria-hidden="true">🎉</span>
               <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
+              <span class="tab-badge-star" id="tab_badge_done" aria-hidden="true"></span>
             </button>
         </nav>
         <div class="homework-tab-progress" aria-live="polite">
-          <span id="hw_tab_progress">1 of 10</span>
+          <div class="tab-progress-wrap">
+            <span id="hw_tab_progress">1 of 10</span>
+            <div class="tab-progress-track">
+              <div class="tab-progress-fill" id="tab_progress_fill" style="width: 10%;"></div>
+            </div>
+          </div>
           <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ <span class="lang-en">Print all</span><span class="lang-es" lang="es">Imprimir todo</span></button>
         </div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
+        
+    <div class="interactive-scratchpad card-ish" id="hw_scratchpad_wrapper" hidden>
+      <div class="scratchpad-header">
+        <div class="scratchpad-title">
+          <span class="scratchpad-icon" aria-hidden="true">✏️</span>
+          <strong><span class="lang-en">Family Math Scratchpad</span><span class="lang-es" lang="es">Pizarra Familiar de Matemáticas</span></strong>
+        </div>
+        <div class="scratchpad-tools">
+          <div class="color-palette" role="radiogroup" aria-label="Drawing color">
+            <button type="button" class="color-dot is-active" data-color="#12355b" style="background:#12355b;" onclick="setScratchpadColor('#12355b', this)" aria-label="Navy pen"></button>
+            <button type="button" class="color-dot" data-color="#1fa6a2" style="background:#1fa6a2;" onclick="setScratchpadColor('#1fa6a2', this)" aria-label="Teal pen"></button>
+            <button type="button" class="color-dot" data-color="#d97706" style="background:#d97706;" onclick="setScratchpadColor('#d97706', this)" aria-label="Amber pen"></button>
+            <button type="button" class="color-dot" data-color="#d9795d" style="background:#d9795d;" onclick="setScratchpadColor('#d9795d', this)" aria-label="Coral pen"></button>
+          </div>
+          <div class="grid-mode-group">
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn is-active" onclick="setScratchpadGrid('blank', this)">📄 <span class="lang-en">Blank</span><span class="lang-es" lang="es">Blanco</span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('graph', this)">📐 <span class="lang-en">Grid</span><span class="lang-es" lang="es">Cuadrícula</span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('dots', this)">⚬ <span class="lang-en">Dots</span><span class="lang-es" lang="es">Puntos</span></button>
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary tool-btn" id="scratchpad_eraser_btn" onclick="toggleScratchpadEraser()">🧹 <span class="lang-en">Eraser</span><span class="lang-es" lang="es">Borrador</span></button>
+          <button type="button" class="btn btn-sm btn-secondary tool-btn" onclick="clearScratchpad()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+          <button type="button" class="scratchpad-close-btn" onclick="toggleScratchpad()" aria-label="Close scratchpad">✕</button>
+        </div>
+      </div>
+      <div class="scratchpad-canvas-wrap">
+        <canvas class="scratchpad-canvas" id="hw_scratchpad_canvas" width="760" height="220" style="background:white; width:100%; height:220px; touch-action:none;"></canvas>
+      </div>
+      <p class="scratchpad-hint"><span class="lang-en">💡 Draw fraction bars, tape diagrams, equations, or line up decimals together!</span><span class="lang-es" lang="es">💡 ¡Dibujen barras de fracciones, modelos o alineen decimales juntos!</span></p>
+    </div>
         
     <div class="tab-panel-inner" data-tab-panel="learn" id="hw_panel_learn" role="tabpanel">
       
@@ -3139,7 +3707,7 @@ header.packet h1::after{
     
       
     
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2> <button type="button" class="btn-listen-concept" onclick="speakBigIdea('If you move the decimal point the same number of places in BOTH numbers, the answer stays the same. We move just enough to make the divisor a whole number.', 'Si mueves el punto decimal el mismo número de lugares en LOS DOS números, la respuesta no cambia. Movemos lo suficiente para que el divisor sea un número entero.')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
       <div class="concept-visual-wrap">
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Long division: 14.4 divided by 1.2 becomes 144 divided by 12, quotient 12">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
@@ -3224,6 +3792,18 @@ header.packet h1::after{
           </li>
       </ul>
     
+      
+    <div class="real-world-spotlight card-ish">
+      <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">💳</span> <span>WHY THIS MATTERS / ¿POR QUÉ IMPORTA?</span></div>
+      <h3 class="spotlight-title">
+        <span class="lang-en">Global Currency Exchange &amp; Digital Banking</span>
+        <span class="lang-es" lang="es">Tipo de cambio mundial y banca digital</span>
+      </h3>
+      <p class="spotlight-text bilingual-block">
+        <span class="lang-en">Banks process trillions of dollars every second using exact decimal arithmetic. Aligning tenths and hundredths ensures every penny and centavo is tracked accurately!</span>
+        <span class="lang-es" lang="es">Los bancos procesan billones de dólares cada segundo con aritmética decimal exacta. ¡Alinear décimos y centésimos asegura que cada centavo quede registrado!</span>
+      </p>
+    </div>
       <section class="family-visual-lab" data-visual-lab="decimals" data-lesson-model="long-division-builder" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
       <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
@@ -3237,39 +3817,196 @@ header.packet h1::after{
       <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Decimal Division Algorithm. 1. Make the divisor a whole number: slide its decimal point to the right. 2. Slide the dividend&#039;s decimal point to the right the same number of places. 3. Write the answer&#039;s decimal point in the column directly above the dividend&#039;s point, then divide as whole numbers using Divide → Multiply → Subtract → Bring Down.</p></details></article>
     </div>
   </section>
-      <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"If you move the decimal point the same number of places in BOTH numbers, the answer stays the same. We move just enough to make the divisor a whole number.","es":"Si mueves el punto decimal el mismo número de lugares en LOS DOS números, la respuesta no cambia. Movemos lo suficiente para que el divisor sea un número entero."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
-    </div>
-
-    <div class="tab-panel-inner" data-tab-panel="arcade" id="hw_panel_arcade" role="tabpanel" hidden>
-      <section class="guided-section card section-arcade" aria-label="Practice Arcade">
-        <h2 class="section-title">🕹️ <span class="lang-en">Practice Arcade</span><span class="lang-es" lang="es">Sala de juegos</span></h2>
-        <p class="bilingual-block">
-          <span class="lang-en">A quick, no-timer review game for tonight's lesson — sort, match, and choose. A wrong answer just gives a hint and lets your student try again.</span>
-          <span class="lang-es" lang="es">Un juego de repaso sin reloj para la lección de hoy — clasificar, emparejar y elegir. Si se equivocan, reciben una pista y pueden intentar de nuevo.</span>
-        </p>
-        <p class="workbench-openrow">
-          <a class="btn btn-secondary" href="/math/games/practice-arcade/?lesson=2-7" target="_blank" rel="noopener">
-            <span class="lang-en">↗ Play full screen</span>
-            <span class="lang-es" lang="es">↗ Jugar en pantalla completa</span>
-          </a>
-        </p>
-        <div class="workbench-frame-wrap">
-          <iframe class="arcade-frame" data-src="/math/games/practice-arcade/?lesson=2-7" title="Practice Arcade" loading="lazy"></iframe>
+      
+    <div class="misconception-card card-ish">
+      <div class="misconception-head">
+        <span class="mis-icon" aria-hidden="true">⚠️</span>
+        <div>
+          <strong><span class="lang-en">Watch Out / Ojo con esto:</span><span class="lang-es" lang="es">Cuidado con este error común:</span></strong>
+          <p class="mis-trap">
+            <span class="lang-en">Lining up digits at the right edge like whole numbers instead of lining up decimal points.</span>
+            <span class="lang-es" lang="es">Alinear los dígitos a la derecha como números enteros en vez de alinear los puntos decimales.</span>
+          </p>
         </div>
-      </section>
+      </div>
+      <div class="parent-coach-tip">
+        <strong>💬 <span class="lang-en">Parent Coach Question:</span><span class="lang-es" lang="es">Pregunta de guía:</span></strong>
+        <span class="lang-en">Ask: &#039;Are the decimal points standing in a straight vertical line so tenths match tenths?&#039;</span>
+        <span class="lang-es" lang="es">Pregunta: &#039;¿Están los puntos decimales en una línea vertical recta para que décimos coincidan con décimos?&#039;</span>
+      </div>
+    </div>
+      
+    <section class="guided-section card section-powerup" aria-label="Skill Power-Up Challenge">
+      <div class="powerup-header">
+        <div class="powerup-title-wrap">
+          <span class="powerup-tag">⚡ SKILL POWER-UP / RETO DE PODER</span>
+          <h3 class="powerup-question">
+            <span class="lang-en">When adding 14.8 + 2.35, what is the crucial alignment rule?</span>
+            <span class="lang-es" lang="es">Al sumar 14.8 + 2.35, ¿cuál es la regla fundamental de alineación?</span>
+          </h3>
+        </div>
+        <div class="powerup-badge-star" id="powerup_star_badge">★ 1 Star / 1 Estrella</div>
+      </div>
+      <div class="powerup-choices-grid" id="powerup_choices">
+        
+          <button type="button" class="powerup-choice-btn" data-choice-idx="0" data-is-correct="true"
+            data-hint-en="Line up the decimal points vertically, and annex a placeholder zero if helpful!" data-hint-es="¡Alinea los puntos decimales en columna vertical y añade ceros si te ayuda!"
+            onclick="checkSkillPowerUp(this, 0, 0)">
+            <span class="powerup-letter">A</span>
+            <span class="powerup-choice-text">
+              <span class="lang-en">Line up the decimal points so tenths match tenths (14.80 + 2.35 = 17.15)</span>
+              <span class="lang-es" lang="es">Alinear los puntos decimales para que décimos coincidan con décimos (14.80 + 2.35 = 17.15)</span>
+            </span>
+          </button>
+          <button type="button" class="powerup-choice-btn" data-choice-idx="1" data-is-correct="false"
+            data-hint-en="Line up the decimal points vertically, and annex a placeholder zero if helpful!" data-hint-es="¡Alinea los puntos decimales en columna vertical y añade ceros si te ayuda!"
+            onclick="checkSkillPowerUp(this, 1, 0)">
+            <span class="powerup-letter">B</span>
+            <span class="powerup-choice-text">
+              <span class="lang-en">Line up digits to the right like whole numbers (giving 14.8 + 2.35 = 38.3)</span>
+              <span class="lang-es" lang="es">Alinear los dígitos a la derecha como números enteros</span>
+            </span>
+          </button>
+          <button type="button" class="powerup-choice-btn" data-choice-idx="2" data-is-correct="false"
+            data-hint-en="Line up the decimal points vertically, and annex a placeholder zero if helpful!" data-hint-es="¡Alinea los puntos decimales en columna vertical y añade ceros si te ayuda!"
+            onclick="checkSkillPowerUp(this, 2, 0)">
+            <span class="powerup-letter">C</span>
+            <span class="powerup-choice-text">
+              <span class="lang-en">Drop all decimal points before adding</span>
+              <span class="lang-es" lang="es">Eliminar los puntos decimales antes de sumar</span>
+            </span>
+          </button>
+      </div>
+      <div class="powerup-feedback-box" id="powerup_feedback_box" hidden>
+        <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
+      </div>
+    </section>
+      <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"If you move the decimal point the same number of places in BOTH numbers, the answer stays the same. We move just enough to make the divisor a whole number.","es":"Si mueves el punto decimal el mismo número de lugares en LOS DOS números, la respuesta no cambia. Movemos lo suficiente para que el divisor sea un número entero."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
+      <div class="tab-flow-nav">
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('words')">
+          <span class="lang-en">Next: Review Words ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Repasar Palabras ➔</span>
+        </button>
+      </div>
     </div>
 <div class="tab-panel-inner" data-tab-panel="words" id="hw_panel_words" role="tabpanel" hidden>
     
       <h2 class="section-title">📚 <span class="lang-en">Words to know</span><span class="lang-es" lang="es">Palabras clave</span></h2>
+      
+    <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="6">
+      <div class="vocab-game-header">
+        <div class="vocab-game-title">
+          <span class="vocab-game-icon" aria-hidden="true">⚡</span>
+          <div>
+            <h3 class="vocab-game-h3">
+              <span class="lang-en">Match &amp; Master Challenge</span>
+              <span class="lang-es" lang="es">Desafío: Empareja y Domina</span>
+            </h3>
+            <p class="vocab-game-sub bilingual-block">
+              <span class="lang-en">Tap a word on the left, then tap its matching definition on the right!</span>
+              <span class="lang-es" lang="es">¡Toca una palabra a la izquierda y su significado a la derecha!</span>
+            </p>
+          </div>
+        </div>
+        <div class="vocab-game-status">
+          <span class="vocab-game-counter">
+            <span class="lang-en">Matched: </span><span class="lang-es" lang="es">Emparejadas: </span>
+            <strong id="vocab_match_count">0</strong> / 6
+          </span>
+        </div>
+      </div>
+      <div class="vocab-match-board">
+        <div class="vocab-match-col col-terms" aria-label="Vocabulary terms">
+          
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="0" data-side="term" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Divide Decimals</span>
+              <span class="chip-label-es" lang="es">Dividir decimales</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="1" data-side="term" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Dividend</span>
+              <span class="chip-label-es" lang="es">Dividendo</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="2" data-side="term" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Divisor</span>
+              <span class="chip-label-es" lang="es">Divisor</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="3" data-side="term" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Quotient</span>
+              <span class="chip-label-es" lang="es">Cociente</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="4" data-side="term" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Decimal Division Algorithm</span>
+              <span class="chip-label-es" lang="es">Algoritmo de división decimal</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="5" data-side="term" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Equivalent division</span>
+              <span class="chip-label-es" lang="es">División equivalente</span>
+            </button>
+        </div>
+        <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
+          
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Multiplying both numbers by 10 or 100 gives the same answer.</span>
+              <span class="chip-label-es" lang="es">Multiplicar ambos números por 10 o 100 da la misma respuesta.</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</span>
+              <span class="chip-label-es" lang="es">Hallar un cociente con decimales deslizando ambos puntos decimales a la derecha hasta que el divisor sea un número entero.</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">The total number being divided into equal groups (the number inside the division bracket).</span>
+              <span class="chip-label-es" lang="es">El número total que se divide en grupos iguales (el número dentro de la galera de división).</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">The number of equal groups you are dividing into (the number outside the division bracket).</span>
+              <span class="chip-label-es" lang="es">El número de grupos iguales en que divides (el número fuera de la galera de división).</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">The answer when you divide.</span>
+              <span class="chip-label-es" lang="es">La respuesta cuando divides.</span>
+            </button>
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">The steps for dividing decimals: slide the divisor&#039;s decimal point right until the divisor is a whole number, slide the dividend&#039;s point right the same number of places, then divide.</span>
+              <span class="chip-label-es" lang="es">Los pasos para dividir decimales: desliza el punto decimal del divisor a la derecha hasta que sea un número entero, desliza el punto del dividendo a la derecha el mismo número de lugares y luego divide.</span>
+            </button>
+        </div>
+      </div>
+      <div class="vocab-game-win" id="vocab_match_win" hidden>
+        <div class="win-banner">
+          <span class="win-emoji" aria-hidden="true">🎉</span>
+          <div class="win-text">
+            <strong><span class="lang-en">Vocab Master! All 6 words matched!</span><span class="lang-es" lang="es">¡Maestro del Vocabulario! ¡Todas las palabras emparejadas!</span></strong>
+            <p><span class="lang-en">Great job connecting the math vocabulary. Explore the flashcards below!</span><span class="lang-es" lang="es">Excelente conectando el vocabulario. ¡Exploren las tarjetas abajo!</span></p>
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetVocabMatchGame()">
+            <span class="lang-en">Play Again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span>
+          </button>
+        </div>
+      </div>
+    </div>
+      <div class="vocab-toolbar">
+        <div class="vocab-filter-group" role="radiogroup" aria-label="Filter vocabulary cards">
+          <button type="button" class="btn btn-sm btn-filter is-active" data-filter="all" onclick="filterVocabCards('all', this)"><span class="lang-en">All</span><span class="lang-es" lang="es">Todos</span></button>
+          <button type="button" class="btn btn-sm btn-filter" data-filter="review" onclick="filterVocabCards('review', this)"><span class="lang-en">Needs Review</span><span class="lang-es" lang="es">Por repasar</span></button>
+          <button type="button" class="btn btn-sm btn-filter" data-filter="mastered" onclick="filterVocabCards('mastered', this)">⭐ <span class="lang-en">Mastered</span><span class="lang-es" lang="es">Dominadas</span></button>
+        </div>
+        <div class="vocab-speed-toggle">
+          <button type="button" class="btn btn-sm btn-secondary" id="vocab_speed_btn" onclick="toggleVocabSpeed()" title="Toggle voice speed / Cambiar velocidad">🐢 <span id="vocab_speed_label">Normal</span></button>
+        </div>
+      </div>
       <p class="vocab-family-note bilingual-block">
         <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
         <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
       </p>
       <div class="vocab-container">
         
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_0" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-card-top-bar">
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('Divide Decimals', 'Dividir decimales')" title="Listen / Escuchar" aria-label="Pronounce Divide Decimals">🔊</button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="0" onclick="event.stopPropagation(); toggleVocabCardMastery(0)" title="Mark Mastered / Marcar Dominado" aria-label="Mark Divide Decimals mastered">★</button>
+                  </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/concept-divide-decimals.svg" alt="Illustration of Divide Decimals: Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number." loading="lazy" width="72" height="72" />
                   </div>
@@ -3282,12 +4019,20 @@ header.packet h1::after{
                   <p class="vocab-def">Find a quotient with decimals by sliding both decimal points right until the divisor is a whole number.</p>
                   <p class="vocab-def-es" lang="es">Hallar un cociente con decimales deslizando ambos puntos decimales a la derecha hasta que el divisor sea un número entero.</p>
                   <p class="vocab-back-visual">📌 8.4 ÷ 2.1 = 84 ÷ 21 = 4</p>
+                  <div class="vocab-card-back-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(0, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(0, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_1" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-card-top-bar">
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('Dividend', 'Dividendo')" title="Listen / Escuchar" aria-label="Pronounce Dividend">🔊</button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="1" onclick="event.stopPropagation(); toggleVocabCardMastery(1)" title="Mark Mastered / Marcar Dominado" aria-label="Mark Dividend mastered">★</button>
+                  </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/dividend.svg" alt="Illustration of Dividend: The total number being divided into equal groups (the number inside the division bracket)." loading="lazy" width="72" height="72" />
                   </div>
@@ -3300,12 +4045,20 @@ header.packet h1::after{
                   <p class="vocab-def">The total number being divided into equal groups (the number inside the division bracket).</p>
                   <p class="vocab-def-es" lang="es">El número total que se divide en grupos iguales (el número dentro de la galera de división).</p>
                   <p class="vocab-back-visual">📌 In 8.4 ÷ 2.1 = 4, the dividend is 8.4 — the total amount being divided</p>
+                  <div class="vocab-card-back-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(1, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(1, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_2" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-card-top-bar">
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('Divisor', 'Divisor')" title="Listen / Escuchar" aria-label="Pronounce Divisor">🔊</button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="2" onclick="event.stopPropagation(); toggleVocabCardMastery(2)" title="Mark Mastered / Marcar Dominado" aria-label="Mark Divisor mastered">★</button>
+                  </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/divisor.svg" alt="Illustration of Divisor: The number of equal groups you are dividing into (the number outside the division bracket)." loading="lazy" width="72" height="72" />
                   </div>
@@ -3318,12 +4071,20 @@ header.packet h1::after{
                   <p class="vocab-def">The number of equal groups you are dividing into (the number outside the division bracket).</p>
                   <p class="vocab-def-es" lang="es">El número de grupos iguales en que divides (el número fuera de la galera de división).</p>
                   <p class="vocab-back-visual">📌 In 8.4 ÷ 2.1 = 4, the divisor is 2.1 — the number of equal groups</p>
+                  <div class="vocab-card-back-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(2, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(2, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_3" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-card-top-bar">
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('Quotient', 'Cociente')" title="Listen / Escuchar" aria-label="Pronounce Quotient">🔊</button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="3" onclick="event.stopPropagation(); toggleVocabCardMastery(3)" title="Mark Mastered / Marcar Dominado" aria-label="Mark Quotient mastered">★</button>
+                  </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/quotient.svg" alt="Illustration of Quotient: The answer when you divide." loading="lazy" width="72" height="72" />
                   </div>
@@ -3336,12 +4097,20 @@ header.packet h1::after{
                   <p class="vocab-def">The answer when you divide.</p>
                   <p class="vocab-def-es" lang="es">La respuesta cuando divides.</p>
                   <p class="vocab-back-visual">📌 In 8.4 ÷ 2.1 = 4, the quotient is 4 — there are 4 groups</p>
+                  <div class="vocab-card-back-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(3, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(3, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_4" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-card-top-bar">
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('Decimal Division Algorithm', 'Algoritmo de división decimal')" title="Listen / Escuchar" aria-label="Pronounce Decimal Division Algorithm">🔊</button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="4" onclick="event.stopPropagation(); toggleVocabCardMastery(4)" title="Mark Mastered / Marcar Dominado" aria-label="Mark Decimal Division Algorithm mastered">★</button>
+                  </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/decimal-division-algorithm.svg" alt="Illustration of Decimal Division Algorithm: The steps for dividing decimals: slide the divisor&#039;s decimal point right until the divisor is a whole number, slide the dividend&#039;s point right the same number of places, then divide." loading="lazy" width="72" height="72" />
                   </div>
@@ -3354,12 +4123,20 @@ header.packet h1::after{
                   <p class="vocab-def">The steps for dividing decimals: slide the divisor&#039;s decimal point right until the divisor is a whole number, slide the dividend&#039;s point right the same number of places, then divide.</p>
                   <p class="vocab-def-es" lang="es">Los pasos para dividir decimales: desliza el punto decimal del divisor a la derecha hasta que sea un número entero, desliza el punto del dividendo a la derecha el mismo número de lugares y luego divide.</p>
                   <p class="vocab-back-visual">📌 8.4 ÷ 2.1 → move the point in both → 84 ÷ 21 → divide, multiply, subtract, bring down → 4</p>
+                  <div class="vocab-card-back-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(4, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(4, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_5" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-card-top-bar">
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('Equivalent division', 'División equivalente')" title="Listen / Escuchar" aria-label="Pronounce Equivalent division">🔊</button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="5" onclick="event.stopPropagation(); toggleVocabCardMastery(5)" title="Mark Mastered / Marcar Dominado" aria-label="Mark Equivalent division mastered">★</button>
+                  </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/divide.svg" alt="Illustration of Equivalent division: Multiplying both numbers by 10 or 100 gives the same answer." loading="lazy" width="72" height="72" />
                   </div>
@@ -3372,12 +4149,24 @@ header.packet h1::after{
                   <p class="vocab-def">Multiplying both numbers by 10 or 100 gives the same answer.</p>
                   <p class="vocab-def-es" lang="es">Multiplicar ambos números por 10 o 100 da la misma respuesta.</p>
                   <p class="vocab-back-visual">📌 7.56 ÷ 0.12 = 756 ÷ 12 = 63 (both multiplied by 100)</p>
+                  <div class="vocab-card-back-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(5, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(5, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
                 </div>
               </div>
             </div>
       </div>
+      <div class="tab-flow-nav">
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('together')">
+          <span class="lang-en">Next: Try Together ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Intentar Juntos ➔</span>
+        </button>
+      </div>
     </div>
-<div class="tab-panel-inner" data-tab-panel="together" id="hw_panel_together" role="tabpanel" hidden>
+
+    <div class="tab-panel-inner" data-tab-panel="together" id="hw_panel_together" role="tabpanel" hidden>
+      
     
       <h2 class="section-title">🤝 <span class="lang-en">Try this together</span><span class="lang-es" lang="es">Inténtenlo juntos</span></h2>
       
@@ -3518,6 +4307,188 @@ header.packet h1::after{
           
         </li></ol>
     </div>
+    
+      
+    <div class="math-talk-hub card-ish" id="math_talk_card">
+      <div class="math-talk-header">
+        <div class="math-talk-badge">💬 MATH TALK GENERATOR / PREGUNTAS DE DIÁLOGO</div>
+        <button type="button" class="btn btn-sm btn-secondary spin-btn" onclick="spinMathTalkPrompt()">🎲 <span class="lang-en">Spin New Question</span><span class="lang-es" lang="es">Girar otra pregunta</span></button>
+      </div>
+      <div class="math-talk-body" id="math_talk_body">
+        <p class="math-talk-q">
+          <span class="lang-en" id="math_talk_en">"Can you show me how you see that in the picture above?"</span>
+          <span class="lang-es" lang="es" id="math_talk_es">"¿Puedes mostrarme cómo ves eso en el dibujo de arriba?"</span>
+        </p>
+        <p class="math-talk-follow">
+          <span class="lang-en" id="math_talk_follow_en">Follow-up: Point to where the numbers match the visual model.</span>
+          <span class="lang-es" lang="es" id="math_talk_follow_es">Seguimiento: Señala dónde los números coinciden con el modelo visual.</span>
+        </p>
+      </div>
+    </div>
+      <div class="scratchpad-inline-toggle">
+        <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
+          ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
+        </button>
+      </div>
+      <div class="tab-flow-nav">
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('workbench')">
+          <span class="lang-en">Next: Explore Math Workbench ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Explorar Pizarra de Matemáticas ➔</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-panel-inner" data-tab-panel="workbench" id="hw_panel_workbench" role="tabpanel" hidden>
+      <section class="guided-section card section-workbench" aria-label="Math Workbench">
+        <div class="workbench-hero-header">
+          <div class="workbench-title-group">
+            <span class="workbench-badge">🧮 VIRTUAL MANIPULATIVE STUDIO / ESTUDIO DIGITAL</span>
+            <h2 class="section-title"><span class="lang-en">Math Workbench</span><span class="lang-es" lang="es">Pizarra de matemáticas</span></h2>
+            <p class="bilingual-block workbench-lead">
+              <span class="lang-en">Explore interactive math tools right here, or open the full workspace in a new tab. Select a tool to model tonight's ideas!</span>
+              <span class="lang-es" lang="es">Exploren herramientas interactivas aquí mismo, o abran la pizarra completa en otra pestaña. ¡Elijan una herramienta para modelar ideas!</span>
+            </p>
+          </div>
+          <div class="workbench-actions-top">
+            <a class="btn btn-primary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
+              <span class="lang-en">Open Full Workbench ↗</span>
+              <span class="lang-es" lang="es">Abrir Pizarra Completa ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tool Selection Tabs -->
+        <div class="wb-tool-bar" role="tablist" aria-label="Workbench tools">
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_fractions" onclick="switchWorkbenchTool('fractions')">
+            <span class="tool-icon">📏</span>
+            <span class="tool-name"><span class="lang-en">Fraction Strips</span><span class="lang-es" lang="es">Fracciones</span></span>
+          </button>
+          <button type="button" class="wb-tool-tab" id="wb_tab_coords" onclick="switchWorkbenchTool('coords')">
+            <span class="tool-icon">🧭</span>
+            <span class="tool-name"><span class="lang-en">Coordinate Grid</span><span class="lang-es" lang="es">Coordenadas</span></span>
+          </button>
+          <button type="button" class="wb-tool-tab" id="wb_tab_tapes" onclick="switchWorkbenchTool('tapes')">
+            <span class="tool-icon">📊</span>
+            <span class="tool-name"><span class="lang-en">Ratio Tape</span><span class="lang-es" lang="es">Cintas de razón</span></span>
+          </button>
+          <button type="button" class="wb-tool-tab" id="wb_tab_decimals" onclick="switchWorkbenchTool('decimals')">
+            <span class="tool-icon">🔢</span>
+            <span class="tool-name"><span class="lang-en">Decimal Columns</span><span class="lang-es" lang="es">Columnas decimales</span></span>
+          </button>
+        </div>
+
+        <!-- Tool Stage -->
+        <div class="wb-tool-stage card-ish">
+          <!-- 1. Fraction Strips Tool -->
+          <div class="wb-panel" id="wb_panel_fractions">
+            <div class="tool-controls-row">
+              <span class="tool-hint"><span class="lang-en">Tap fraction tiles to add bars and compare lengths:</span><span class="lang-es" lang="es">Toca fichas para añadir barras y comparar longitudes:</span></span>
+              <div class="fraction-button-group">
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(1)">1</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(2)">1/2</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(3)">1/3</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(4)">1/4</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(6)">1/6</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(8)">1/8</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(12)">1/12</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="clearFractionBars()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+              </div>
+            </div>
+            <div class="fraction-stage-canvas" id="fraction_stage_canvas">
+              <div class="fraction-row ref-row"><div class="frac-tile tile-1">1 Whole / Entero (1.0)</div></div>
+            </div>
+          </div>
+
+          <!-- 2. Coordinate Grid Tool -->
+          <div class="wb-panel" id="wb_panel_coords" hidden>
+            <div class="tool-controls-row">
+              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid to plot an (x, y) point and see its quadrant:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula para marcar un punto (x, y) y ver su cuadrante:</span></span>
+              <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — Origin / Origen</span>
+            </div>
+            <div class="coord-canvas-wrap">
+              <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
+            </div>
+          </div>
+
+          <!-- 3. Ratio Tape Diagram Tool -->
+          <div class="wb-panel" id="wb_panel_tapes" hidden>
+            <div class="tool-controls-row">
+              <label class="tape-slider-label">
+                <span class="lang-en">Part A (Blue):</span><span class="lang-es" lang="es">Parte A (Azul):</span>
+                <input type="range" min="1" max="8" value="3" id="tape_slider_a" oninput="updateTapeDiagram()" />
+                <strong id="tape_val_a">3</strong>
+              </label>
+              <label class="tape-slider-label">
+                <span class="lang-en">Part B (Coral):</span><span class="lang-es" lang="es">Parte B (Coral):</span>
+                <input type="range" min="1" max="8" value="4" id="tape_slider_b" oninput="updateTapeDiagram()" />
+                <strong id="tape_val_b">4</strong>
+              </label>
+              <label class="tape-slider-label">
+                <span class="lang-en">Scaling Factor:</span><span class="lang-es" lang="es">Factor de escala:</span>
+                <input type="range" min="1" max="5" value="2" id="tape_slider_factor" oninput="updateTapeDiagram()" />
+                <strong id="tape_val_factor">×2</strong>
+              </label>
+            </div>
+            <div class="tape-diagram-render" id="tape_diagram_render"></div>
+          </div>
+
+          <!-- 4. Decimal Place Value Tool -->
+          <div class="wb-panel" id="wb_panel_decimals" hidden>
+            <div class="tool-controls-row">
+              <span class="tool-hint"><span class="lang-en">Type numbers to align decimal points vertically:</span><span class="lang-es" lang="es">Escribe números para alinear puntos decimales:</span></span>
+            </div>
+            <div class="decimal-place-grid">
+              <table class="dec-grid-table">
+                <thead>
+                  <tr><th>Hundreds<br><small>Centenas</small></th><th>Tens<br><small>Decenas</small></th><th>Ones<br><small>Unidades</small></th><th class="dec-pt">.</th><th>Tenths<br><small>Décimos</small></th><th>Hundredths<br><small>Centésimos</small></th><th>Thousandths<br><small>Milésimos</small></th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="2" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="5" /></td>
+                    <td class="dec-pt">.</td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="4" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="0" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                  </tr>
+                  <tr class="op-row">
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="8" /></td>
+                    <td class="dec-pt">.</td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="7" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="5" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Family Investigation Prompt -->
+        <div class="family-workbench-investigation card-ish">
+          <span class="investigation-icon" aria-hidden="true">💡</span>
+          <div class="investigation-content">
+            <strong><span class="lang-en">Family Investigation Challenge:</span><span class="lang-es" lang="es">Desafío de investigación familiar:</span></strong>
+            <p><span class="lang-en">Choose one tool above that matches tonight's homework. Try creating an example together before solving the practice problems!</span><span class="lang-es" lang="es">Elijan una herramienta arriba que coincida con la tarea de hoy. ¡Intenten crear un ejemplo juntos antes de resolver los problemas de práctica!</span></p>
+          </div>
+        </div>
+
+        <p class="workbench-openrow">
+          <a class="btn btn-secondary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
+            <span class="lang-en">🧮 Open the Math Workbench ↗</span>
+            <span class="lang-es" lang="es">🧮 Abrir la Pizarra de matemáticas ↗</span>
+          </a>
+        </p>
+        <div class="tab-flow-nav">
+          <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('check')">
+            <span class="lang-en">Next: Check Problems &amp; Earn Stars ➔</span>
+            <span class="lang-es" lang="es">Siguiente: Resolver Problemas y Ganar Estrellas ➔</span>
+          </button>
+        </div>
+      </section>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -3533,6 +4504,46 @@ header.packet h1::after{
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
       </p>
     
+      
+    <div class="stars-to-win-bar">
+      <div class="stars-to-win-title">
+        <span>⭐</span>
+        <div>
+          <span class="lang-en"><strong>3 Stars to Win:</strong> Complete 3 problems to finish tonight's goal!</span>
+          <span class="lang-es" lang="es"><strong>3 Estrellas para Ganar:</strong> ¡Completen 3 problemas para terminar la meta de hoy!</span>
+        </div>
+      </div>
+      <div class="stars-milestone-chips" aria-hidden="true">
+        <span class="star-chip">🌱 Warm-Up ★</span>
+        <span class="star-chip">🚀 Level-Up ★★</span>
+        <span class="star-chip">🏆 Victory ★★★</span>
+      </div>
+    </div>
+      
+    <div class="live-streak-banner" id="hw_streak_banner" hidden>
+      <span class="streak-flame" aria-hidden="true">🔥</span>
+      <span class="streak-text">
+        <span class="lang-en">Streak: <strong id="hw_streak_count">1</strong> in a row! Keep going!</span>
+        <span class="lang-es" lang="es">¡Racha: <strong id="hw_streak_count_es">1</strong> seguidas! ¡Sigue así!</span>
+      </span>
+    </div>
+      
+    <div class="scratchpad-inline-toggle">
+      <button type="button" class="btn btn-sm btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
+        ✏️ <span class="lang-en">Open Scratchpad / Draw work</span><span class="lang-es" lang="es">Abrir Pizarra / Dibujar trabajo</span>
+      </button>
+    </div>
+      
+    <div class="goal-reached-banner" id="goal_reached_banner" hidden>
+      <span class="goal-icon" aria-hidden="true">🌟</span>
+      <div class="goal-text">
+        <strong><span class="lang-en">Goal Reached! 3 Stars Earned!</span><span class="lang-es" lang="es">¡Meta Cumplida! ¡3 Estrellas Ganadas!</span></strong>
+        <p><span class="lang-en">Awesome job! You can keep solving or head to the <strong>Victory Lap</strong> tab to claim your certificate!</span><span class="lang-es" lang="es">¡Excelente trabajo! Pueden seguir resolviendo o ir a la pestaña <strong>Listo</strong> para reclamar su certificado.</span></p>
+      </div>
+      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
+      </button>
+    </div>
       
       <section class="practice-tier practice-tier-warmup" aria-label="Warm-up practice">
         <div class="practice-tier-head">
@@ -4905,22 +5916,55 @@ header.packet h1::after{
     </section>
   </section>
       </details>
+      
+    <div class="tab-flow-nav">
+      <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('play')">
+        <span class="lang-en">Next: Play Tonight's Math Game ➔</span>
+        <span class="lang-es" lang="es">Siguiente: Jugar el Juego Matemático ➔</span>
+      </button>
+    </div>
     </div>
 
-    <div class="tab-panel-inner" data-tab-panel="workbench" id="hw_panel_workbench" role="tabpanel" hidden>
-      <section class="guided-section card section-workbench" aria-label="Math Workbench">
-        <h2 class="section-title">🧮 <span class="lang-en">Math Workbench</span><span class="lang-es" lang="es">Pizarra de matemáticas</span></h2>
+    <div class="tab-panel-inner" data-tab-panel="arcade" id="hw_panel_arcade" role="tabpanel" hidden>
+      <section class="guided-section card section-arcade" aria-label="Practice Arcade">
+        <h2 class="section-title">🕹️ <span class="lang-en">Practice Arcade</span><span class="lang-es" lang="es">Sala de juegos</span></h2>
         <p class="bilingual-block">
-          <span class="lang-en">A digital scratch pad to draw models, line up decimals, and show your work. It opens in a new tab so you keep your place on this homework.</span>
-          <span class="lang-es" lang="es">Una pizarra digital para dibujar modelos, alinear decimales y mostrar el trabajo. Se abre en una pestaña nueva para no perder tu lugar en esta tarea.</span>
+          <span class="lang-en">A quick, no-timer review game for tonight's lesson — sort, match, and choose. A wrong answer just gives a hint and lets your student try again.</span>
+          <span class="lang-es" lang="es">Un juego de repaso sin reloj para la lección de hoy — clasificar, emparejar y elegir. Si se equivocan, reciben una pista y pueden intentar de nuevo.</span>
         </p>
         <p class="workbench-openrow">
-          <a class="btn btn-secondary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
-            <span class="lang-en">🧮 Open the Math Workbench ↗</span>
-            <span class="lang-es" lang="es">🧮 Abrir la Pizarra de matemáticas ↗</span>
+          <a class="btn btn-secondary" href="/math/games/practice-arcade/?lesson=2-7" target="_blank" rel="noopener">
+            <span class="lang-en">↗ Play full screen</span>
+            <span class="lang-es" lang="es">↗ Jugar en pantalla completa</span>
           </a>
         </p>
+        <div class="workbench-frame-wrap">
+          <iframe class="arcade-frame" data-src="/math/games/practice-arcade/?lesson=2-7" title="Practice Arcade" loading="lazy"></iframe>
+        </div>
       </section>
+    </div>
+<div class="tab-panel-inner" data-tab-panel="play" id="hw_panel_play" role="tabpanel" hidden>
+    
+      <h2 class="section-title">🎮 <span class="lang-en">Play together</span><span class="lang-es" lang="es">Juguemos juntos</span></h2>
+      <p class="bilingual-block play-intro">
+        <span class="lang-en">Reinforce tonight's topic with a quick family game. You ask; your student decides!</span>
+        <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
+      </p>
+      
+      <div class="hw-game hw-game-mc" id="hw_game_decimal" data-game-type="mc-speed" data-rounds='[{"q":"9.6 ÷ 0.8 = ?","choices":[{"text":"1.2","isCorrect":false},{"text":"0.12","isCorrect":false},{"text":"120","isCorrect":false},{"text":"12","isCorrect":true}],"hint":""},{"q":"To divide by 0.4, first make the divisor…","choices":[{"text":"Smaller","isCorrect":false},{"text":"A fraction","isCorrect":false},{"text":"Zero","isCorrect":false},{"text":"A whole number: 4","isCorrect":true}],"hint":""},{"q":"6.3 ÷ 0.9 becomes…","choices":[{"text":"63 ÷ 9","isCorrect":true},{"text":"6.3 ÷ 9","isCorrect":false},{"text":"63 ÷ 0.9","isCorrect":false},{"text":"0.63 ÷ 9","isCorrect":false}],"hint":""},{"q":"5.04 ÷ 0.12 = ?","choices":[{"text":"0.42","isCorrect":false},{"text":"420","isCorrect":false},{"text":"4.2","isCorrect":false},{"text":"42","isCorrect":true}],"hint":""}]'>
+        <div class="hw-game-header">
+          <h3 class="hw-game-title">Move the Point! <span lang="es">¡Mueve el punto!</span></h3>
+          <p class="hw-game-coach bilingual-block">
+            <span class="lang-en">🎮 Play together! Move the point in the divisor until it is whole — then move it the same in the dividend.</span>
+            <span class="lang-es" lang="es">🎮 ¡Jueguen juntos! Muevan el punto del divisor hasta que sea entero, y muévanlo igual en el dividendo.</span>
+          </p>
+        </div>
+        <div class="hw-game-score" id="hw_game_score">Round 1 / Ronda 1</div>
+        <p class="hw-game-question" id="hw_game_question"></p>
+        <div class="hw-game-choices" id="hw_game_choices" role="group"></div>
+        <p class="hw-game-feedback" id="hw_game_feedback" role="status" aria-live="polite"></p>
+        <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden><span class="lang-en">Play again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+      </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
@@ -5004,29 +6048,6 @@ header.packet h1::after{
         </ul>
       </section>
     </div>
-<div class="tab-panel-inner" data-tab-panel="play" id="hw_panel_play" role="tabpanel" hidden>
-    
-      <h2 class="section-title">🎮 <span class="lang-en">Play together</span><span class="lang-es" lang="es">Juguemos juntos</span></h2>
-      <p class="bilingual-block play-intro">
-        <span class="lang-en">Reinforce tonight's topic with a quick family game. You ask; your student decides!</span>
-        <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
-      </p>
-      
-      <div class="hw-game hw-game-mc" id="hw_game_decimal" data-game-type="mc-speed" data-rounds='[{"q":"9.6 ÷ 0.8 = ?","choices":[{"text":"1.2","isCorrect":false},{"text":"0.12","isCorrect":false},{"text":"120","isCorrect":false},{"text":"12","isCorrect":true}],"hint":""},{"q":"To divide by 0.4, first make the divisor…","choices":[{"text":"Smaller","isCorrect":false},{"text":"A fraction","isCorrect":false},{"text":"Zero","isCorrect":false},{"text":"A whole number: 4","isCorrect":true}],"hint":""},{"q":"6.3 ÷ 0.9 becomes…","choices":[{"text":"63 ÷ 9","isCorrect":true},{"text":"6.3 ÷ 9","isCorrect":false},{"text":"63 ÷ 0.9","isCorrect":false},{"text":"0.63 ÷ 9","isCorrect":false}],"hint":""},{"q":"5.04 ÷ 0.12 = ?","choices":[{"text":"0.42","isCorrect":false},{"text":"420","isCorrect":false},{"text":"4.2","isCorrect":false},{"text":"42","isCorrect":true}],"hint":""}]'>
-        <div class="hw-game-header">
-          <h3 class="hw-game-title">Move the Point! <span lang="es">¡Mueve el punto!</span></h3>
-          <p class="hw-game-coach bilingual-block">
-            <span class="lang-en">🎮 Play together! Move the point in the divisor until it is whole — then move it the same in the dividend.</span>
-            <span class="lang-es" lang="es">🎮 ¡Jueguen juntos! Muevan el punto del divisor hasta que sea entero, y muévanlo igual en el dividendo.</span>
-          </p>
-        </div>
-        <div class="hw-game-score" id="hw_game_score">Round 1 / Ronda 1</div>
-        <p class="hw-game-question" id="hw_game_question"></p>
-        <div class="hw-game-choices" id="hw_game_choices" role="group"></div>
-        <p class="hw-game-feedback" id="hw_game_feedback" role="status" aria-live="polite"></p>
-        <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden><span class="lang-en">Play again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
-      </div>
-    </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
     
       <h2 class="section-title">🎉 <span class="lang-en">You did it together!</span><span class="lang-es" lang="es">¡Lo lograron juntos!</span></h2>
@@ -5036,6 +6057,35 @@ header.packet h1::after{
         <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
+
+      <div class="high-five-banner">
+        <button type="button" class="btn-high-five" onclick="triggerHighFive()">
+          <span class="high-five-emoji" aria-hidden="true">✋</span>
+          <div class="high-five-labels">
+            <strong><span class="lang-en">Give a High Five!</span><span class="lang-es" lang="es">¡Dame esos cinco!</span></strong>
+            <small><span class="lang-en">Tap to celebrate tonight's math effort!</span><span class="lang-es" lang="es">¡Toca para celebrar el esfuerzo de hoy!</span></small>
+          </div>
+        </button>
+      </div>
+
+      <div class="achievement-shelf" id="achievement_shelf">
+        <div class="achievement-badge badge-learn is-unlocked" id="badge_achieve_learn">
+          <span class="achieve-icon" aria-hidden="true">📖</span>
+          <span class="achieve-name"><span class="lang-en">Concept Explorer</span><span class="lang-es" lang="es">Explorador</span></span>
+        </div>
+        <div class="achievement-badge badge-vocab" id="badge_achieve_vocab">
+          <span class="achieve-icon" aria-hidden="true">📚</span>
+          <span class="achieve-name"><span class="lang-en">Vocab Champ</span><span class="lang-es" lang="es">Camp. Vocabulario</span></span>
+        </div>
+        <div class="achievement-badge badge-practice" id="badge_achieve_practice">
+          <span class="achieve-icon" aria-hidden="true">⭐</span>
+          <span class="achieve-name"><span class="lang-en">3-Star Hero</span><span class="lang-es" lang="es">Héroe 3 Estrellas</span></span>
+        </div>
+        <div class="achievement-badge badge-arcade is-unlocked" id="badge_achieve_arcade">
+          <span class="achieve-icon" aria-hidden="true">🎮</span>
+          <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
+        </div>
+      </div>
 
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ Parent Sign-off & Feedback / Firma del padre y comentarios</h3>
@@ -5050,6 +6100,14 @@ header.packet h1::after{
             </label>
           </div>
           
+          <div class="signoff-field text-field">
+            <label for="student_name_input">
+              <span class="lang-en">Student Name (optional):</span>
+              <span class="lang-es" lang="es">Nombre del estudiante (opcional):</span>
+            </label>
+            <input type="text" id="student_name_input" placeholder="e.g. Alex" oninput="updateCertStudentName(this.value)" />
+          </div>
+
           <div class="signoff-field text-field">
             <label for="parent_name_input">
               <span class="lang-en">Parent/Guardian Name:</span>
@@ -5197,12 +6255,18 @@ function switchHomeworkTab(tabId) {
     p.hidden = p.dataset.tabPanel !== tabId;
   });
   const prog = document.getElementById('hw_tab_progress');
-  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '8';
+  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '10';
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
+  const fill = document.getElementById('tab_progress_fill');
+  if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+  if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
   if (tabId === 'arcade') {
     var af = document.querySelector('.arcade-frame');
     if (af && !af.getAttribute('src') && af.dataset.src) af.setAttribute('src', af.dataset.src);
+  }
+  if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
+    updateCelebrationTab();
   }
   const activeBtn = document.getElementById('hw_tab_' + tabId);
   if (activeBtn) {
@@ -5763,6 +6827,7 @@ function hwGameCheckSort() {
 // Sound engine
 let soundEnabled = true;
 let audioCtx = null;
+let currentStreak = 0;
 
 function initAudio() {
   if (!audioCtx) {
@@ -5773,8 +6838,437 @@ function initAudio() {
 function toggleSound() {
   soundEnabled = !soundEnabled;
   const btn = document.getElementById("sound_toggle");
-  btn.textContent = soundEnabled ? "🔊" : "🔇";
-  btn.title = soundEnabled ? "Mute Sound Effects" : "Unmute Sound Effects";
+  if (btn) {
+    btn.textContent = soundEnabled ? "🔊" : "🔇";
+    btn.title = soundEnabled ? "Mute Sound Effects" : "Unmute Sound Effects";
+  }
+}
+
+function playTabSwitchSound() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(540, now);
+    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+    gain.gain.setValueAtTime(0.035, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  } catch (e) {}
+}
+
+function playMatchSound() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    [440, 659.25].forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(f, now + i * 0.08);
+      gain.gain.setValueAtTime(0.08, now + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 0.22);
+    });
+  } catch (e) {}
+}
+
+function playFanfareSound() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+    notes.forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(f, now + i * 0.1);
+      gain.gain.setValueAtTime(0.09, now + i * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.35);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + i * 0.1);
+      osc.stop(now + i * 0.1 + 0.4);
+    });
+  } catch (e) {}
+}
+
+function speakMathWord(termEn, termEs) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const isEs = document.body.classList.contains("lang-mode-es");
+    const text = isEs && termEs ? termEs : termEn;
+    const lang = isEs && termEs ? "es-US" : "en-US";
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = 0.9;
+    window.speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
+// Confetti Particle Engine
+function triggerConfettiBurst(originX, originY, count = 50) {
+  try {
+    let canvas = document.getElementById("hw_confetti_canvas");
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      canvas.id = "hw_confetti_canvas";
+      canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;";
+      document.body.appendChild(canvas);
+    }
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext("2d");
+    const colors = ["#1fa6a2", "#f2c15b", "#d9795d", "#12355b", "#10b981", "#8b5cf6"];
+    const particles = [];
+    const startX = originX || window.innerWidth / 2;
+    const startY = originY || window.innerHeight / 3;
+
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 4 + Math.random() * 8;
+      particles.push({
+        x: startX,
+        y: startY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 3,
+        size: 6 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rSpeed: (Math.random() - 0.5) * 12,
+        life: 1,
+        decay: 0.016 + Math.random() * 0.016,
+      });
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let active = false;
+      for (let p of particles) {
+        if (p.life > 0) {
+          active = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.22;
+          p.rotation += p.rSpeed;
+          p.life -= p.decay;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        }
+      }
+      if (active) {
+        requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    requestAnimationFrame(frame);
+  } catch (e) {}
+}
+
+// Skill Power-Up Challenge Engine
+function checkSkillPowerUp(btn, choiceIdx, correctIdx) {
+  const container = document.getElementById("powerup_choices");
+  const feedbackBox = document.getElementById("powerup_feedback_box");
+  const contentEl = document.getElementById("powerup_feedback_content");
+  if (!container || !feedbackBox || !contentEl) return;
+
+  const buttons = container.querySelectorAll(".powerup-choice-btn");
+  const isCorrect = choiceIdx === correctIdx;
+
+  if (isCorrect) {
+    btn.classList.add("is-correct");
+    btn.classList.remove("is-wrong");
+    buttons.forEach((b) => {
+      if (b !== btn) b.disabled = true;
+    });
+    feedbackBox.className = "powerup-feedback-box is-success";
+    feedbackBox.hidden = false;
+    contentEl.innerHTML = '<span class="lang-en">🎉 <strong>Power-Up Unlocked!</strong> You earned +1 Star and mastered the key concept.</span><span class="lang-es" lang="es">🎉 <strong>¡Poder Desbloqueado!</strong> Ganaste +1 Estrella y dominaste el concepto clave.</span>';
+    const badge = document.getElementById("tab_badge_learn");
+    if (badge) badge.textContent = "★";
+    if (typeof playFanfareSound === "function") playFanfareSound();
+    if (typeof triggerConfettiBurst === "function") triggerConfettiBurst();
+    try {
+      localStorage.setItem(STORAGE_KEY + "_powerup_solved", "1");
+    } catch (e) {}
+  } else {
+    btn.classList.add("is-wrong");
+    feedbackBox.className = "powerup-feedback-box is-hint";
+    feedbackBox.hidden = false;
+    const hintEn = btn.dataset.hintEn || "Think carefully about the visual model!";
+    const hintEs = btn.dataset.hintEs || "¡Piensa cuidadosamente en el modelo visual!";
+    contentEl.innerHTML = '<span class="lang-en">💡 <strong>Almost!</strong> ' + hintEn + ' Give it another shot!</span><span class="lang-es" lang="es">💡 <strong>¡Casi!</strong> ' + hintEs + ' ¡Inténtalo de nuevo!</span>';
+    if (typeof playFailureSound === "function") playFailureSound();
+    setTimeout(() => btn.classList.remove("is-wrong"), 600);
+  }
+}
+
+// Vocab Match & Master Challenge Engine
+let selectedVocabChip = null;
+let matchedVocabCount = 0;
+
+function selectVocabMatchChip(chip) {
+  if (chip.classList.contains("is-matched")) return;
+
+  if (!selectedVocabChip) {
+    selectedVocabChip = chip;
+    chip.classList.add("is-selected");
+    if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+    return;
+  }
+
+  if (selectedVocabChip === chip) {
+    chip.classList.remove("is-selected");
+    selectedVocabChip = null;
+    return;
+  }
+
+  if (selectedVocabChip.dataset.side === chip.dataset.side) {
+    selectedVocabChip.classList.remove("is-selected");
+    selectedVocabChip = chip;
+    chip.classList.add("is-selected");
+    return;
+  }
+
+  const id1 = selectedVocabChip.dataset.vocabId;
+  const id2 = chip.dataset.vocabId;
+  const c1 = selectedVocabChip;
+  const c2 = chip;
+  selectedVocabChip = null;
+  c1.classList.remove("is-selected");
+
+  if (id1 === id2) {
+    c1.classList.add("is-matched");
+    c2.classList.add("is-matched");
+    c1.disabled = true;
+    c2.disabled = true;
+    matchedVocabCount++;
+    const countEl = document.getElementById("vocab_match_count");
+    if (countEl) countEl.textContent = matchedVocabCount;
+    if (typeof playMatchSound === "function") playMatchSound();
+
+    const shell = document.getElementById("vocab_match_shell");
+    const total = parseInt(shell?.dataset.vocabTotal || "0", 10);
+    if (matchedVocabCount >= total && total > 0) {
+      const winEl = document.getElementById("vocab_match_win");
+      if (winEl) winEl.hidden = false;
+      const badge = document.getElementById("tab_badge_words");
+      if (badge) badge.textContent = "★";
+      if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 70);
+      if (typeof playSuccessArpeggio === "function") playSuccessArpeggio();
+      try {
+        localStorage.setItem(STORAGE_KEY + "_vocab_won", "1");
+      } catch (e) {}
+    }
+  } else {
+    c1.classList.add("is-mismatch");
+    c2.classList.add("is-mismatch");
+    if (typeof playFailureSound === "function") playFailureSound();
+    setTimeout(() => {
+      c1.classList.remove("is-mismatch");
+      c2.classList.remove("is-mismatch");
+    }, 600);
+  }
+}
+
+function resetVocabMatchGame() {
+  matchedVocabCount = 0;
+  selectedVocabChip = null;
+  const countEl = document.getElementById("vocab_match_count");
+  if (countEl) countEl.textContent = "0";
+  const winEl = document.getElementById("vocab_match_win");
+  if (winEl) winEl.hidden = true;
+  document.querySelectorAll(".vocab-match-chip").forEach((c) => {
+    c.classList.remove("is-matched", "is-selected", "is-mismatch");
+    c.disabled = false;
+  });
+}
+
+function toggleVocabCardMastery(idx) {
+  const btn = document.querySelector(".vocab-master-toggle[data-term-idx="" + idx + ""]");
+  if (!btn) return;
+  const isMastered = btn.classList.toggle("is-mastered");
+  if (isMastered && typeof playTabSwitchSound === "function") playTabSwitchSound();
+  try {
+    localStorage.setItem(STORAGE_KEY + "_vocab_mastered_" + idx, isMastered ? "1" : "0");
+  } catch (e) {}
+}
+
+function markVocabCardKnown(idx, known) {
+  const card = document.getElementById("vocab_card_" + idx);
+  const toggle = document.querySelector(".vocab-master-toggle[data-term-idx="" + idx + ""]");
+  if (known) {
+    if (card) card.classList.add("is-known");
+    if (toggle) toggle.classList.add("is-mastered");
+    if (typeof playMatchSound === "function") playMatchSound();
+  } else {
+    if (card) card.classList.remove("is-known");
+    if (toggle) toggle.classList.remove("is-mastered");
+  }
+  try {
+    localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
+  } catch (e) {}
+}
+
+// Scratchpad Engine
+let scratchpadCanvas = null;
+let scratchpadCtx = null;
+let isDrawing = false;
+let scratchpadColor = "#12355b";
+let isEraser = false;
+
+function initScratchpad() {
+  scratchpadCanvas = document.getElementById("hw_scratchpad_canvas");
+  if (!scratchpadCanvas) return;
+  scratchpadCtx = scratchpadCanvas.getContext("2d");
+
+  function getPos(e) {
+    const rect = scratchpadCanvas.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: ((cx - rect.left) / rect.width) * scratchpadCanvas.width,
+      y: ((cy - rect.top) / rect.height) * scratchpadCanvas.height,
+    };
+  }
+
+  function startDraw(e) {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    scratchpadCtx.beginPath();
+    scratchpadCtx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    scratchpadCtx.lineCap = "round";
+    scratchpadCtx.lineJoin = "round";
+    if (isEraser) {
+      scratchpadCtx.strokeStyle = "#ffffff";
+      scratchpadCtx.lineWidth = 18;
+    } else {
+      scratchpadCtx.strokeStyle = scratchpadColor;
+      scratchpadCtx.lineWidth = 3.5;
+    }
+    scratchpadCtx.lineTo(pos.x, pos.y);
+    scratchpadCtx.stroke();
+  }
+
+  function stopDraw() {
+    if (isDrawing) {
+      isDrawing = false;
+      scratchpadCtx.closePath();
+    }
+  }
+
+  scratchpadCanvas.addEventListener("pointerdown", startDraw);
+  scratchpadCanvas.addEventListener("pointermove", draw);
+  scratchpadCanvas.addEventListener("pointerup", stopDraw);
+  scratchpadCanvas.addEventListener("pointercancel", stopDraw);
+  scratchpadCanvas.addEventListener("pointerleave", stopDraw);
+}
+
+function toggleScratchpad() {
+  const wrap = document.getElementById("hw_scratchpad_wrapper");
+  if (!wrap) return;
+  const isHidden = wrap.hidden;
+  wrap.hidden = !isHidden;
+  if (!wrap.hidden) {
+    if (!scratchpadCtx) initScratchpad();
+    wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+function setScratchpadColor(color, btn) {
+  scratchpadColor = color;
+  isEraser = false;
+  document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
+  if (eraserBtn) eraserBtn.classList.remove("is-active");
+}
+
+function toggleScratchpadEraser() {
+  isEraser = !isEraser;
+  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
+  if (eraserBtn) eraserBtn.classList.toggle("is-active", isEraser);
+  if (isEraser) {
+    document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
+  } else {
+    const defaultDot = document.querySelector(".color-dot[data-color="" + scratchpadColor + ""]");
+    if (defaultDot) defaultDot.classList.add("is-active");
+  }
+}
+
+function clearScratchpad() {
+  if (!scratchpadCanvas || !scratchpadCtx) return;
+  scratchpadCtx.clearRect(0, 0, scratchpadCanvas.width, scratchpadCanvas.height);
+}
+
+// Celebration & High-Five Engine
+function triggerHighFive() {
+  if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 90);
+  if (typeof playSuccessArpeggio === "function") playSuccessArpeggio();
+  const btn = document.querySelector(".btn-high-five");
+  if (btn) {
+    btn.classList.add("is-celebrating");
+    setTimeout(() => btn.classList.remove("is-celebrating"), 1000);
+  }
+}
+
+function updateCelebrationTab() {
+  const problems = Array.from(document.querySelectorAll(".problem-section")).filter(
+    (s) => !s.closest(".more-practice"),
+  );
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
+
+  const bLearn = document.getElementById("badge_achieve_learn");
+  const bVocab = document.getElementById("badge_achieve_vocab");
+  const bPractice = document.getElementById("badge_achieve_practice");
+  const bArcade = document.getElementById("badge_achieve_arcade");
+
+  if (bLearn) bLearn.classList.add("is-unlocked");
+  if (bArcade) bArcade.classList.add("is-unlocked");
+  if (bPractice && correctCount >= 3) bPractice.classList.add("is-unlocked");
+  try {
+    if (bVocab && localStorage.getItem(STORAGE_KEY + "_vocab_won")) {
+      bVocab.classList.add("is-unlocked");
+    }
+  } catch (e) {}
+
+  if (correctCount >= 3) {
+    if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 60);
+  }
+}
+
+function updateCertStudentName(val) {
+  try {
+    localStorage.setItem(STORAGE_KEY + "_student_name", val);
+  } catch (e) {}
 }
 
 function playSuccessArpeggio() {
@@ -6106,6 +7600,12 @@ function saveState() {
       state.inputs[input.name || input.id] = input.value;
     }
   });
+
+  const studentNameInput = document.getElementById("student_name_input");
+  if (studentNameInput && studentNameInput.value) {
+    state.studentName = studentNameInput.value;
+  }
+  state.currentStreak = currentStreak;
   
   // Save drag-sort item locations
   const dragCards = document.querySelectorAll(".drag-card");
@@ -6144,6 +7644,40 @@ function loadState() {
         }
       }
     }
+
+    if (state.studentName) {
+      const studentNameInput = document.getElementById("student_name_input");
+      if (studentNameInput) studentNameInput.value = state.studentName;
+    }
+    if (typeof state.currentStreak === "number") {
+      currentStreak = state.currentStreak;
+      const streakBanner = document.getElementById("hw_streak_banner");
+      const streakCount = document.getElementById("hw_streak_count");
+      const streakCountEs = document.getElementById("hw_streak_count_es");
+      if (streakBanner && streakCount && currentStreak >= 2) {
+        streakCount.textContent = currentStreak;
+        if (streakCountEs) streakCountEs.textContent = currentStreak;
+        streakBanner.hidden = false;
+      }
+    }
+    try {
+      if (localStorage.getItem(STORAGE_KEY + "_powerup_solved") === "1") {
+        const badge = document.getElementById("tab_badge_learn");
+        if (badge) badge.textContent = "★";
+        const btn = document.querySelector(".powerup-choice-btn[data-is-correct='true']");
+        if (btn) btn.classList.add("is-correct");
+      }
+      if (localStorage.getItem(STORAGE_KEY + "_vocab_won") === "1") {
+        const badge = document.getElementById("tab_badge_words");
+        if (badge) badge.textContent = "★";
+      }
+      document.querySelectorAll(".vocab-master-toggle").forEach((btn) => {
+        const idx = btn.dataset.termIdx;
+        if (localStorage.getItem(STORAGE_KEY + "_vocab_mastered_" + idx) === "1") {
+          btn.classList.add("is-mastered");
+        }
+      });
+    } catch(e) {}
     
     // Restore drag card positions
     if (state.dragPositions) {
@@ -6559,6 +8093,228 @@ function pickLangText(en, es) {
   return en || "";
 }
 
+
+// Speech Rate & Big Idea Narration
+let vocabSpeechRate = 0.9;
+function toggleVocabSpeed() {
+  const btn = document.getElementById("vocab_speed_btn");
+  const label = document.getElementById("vocab_speed_label");
+  if (vocabSpeechRate === 0.9) {
+    vocabSpeechRate = 0.65;
+    if (label) label.textContent = "Slow";
+  } else {
+    vocabSpeechRate = 0.9;
+    if (label) label.textContent = "Normal";
+  }
+}
+
+function speakBigIdea(textEn, textEs) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const isEs = document.body.classList.contains("lang-mode-es");
+    const text = isEs && textEs ? textEs : textEn;
+    const lang = isEs && textEs ? "es-US" : "en-US";
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = vocabSpeechRate;
+    window.speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
+// Math Talk Prompt Spinner
+const mathTalkList = [
+  {
+    qEn: ""Can you show me how you see that in the picture above?"",
+    qEs: ""¿Puedes mostrarme cómo ves eso en el dibujo de arriba?"",
+    fEn: "Follow-up: Point to where the numbers match the visual model.",
+    fEs: "Seguimiento: Señala dónde los números coinciden con el modelo visual.",
+  },
+  {
+    qEn: ""What would happen if we doubled the numbers in this problem?"",
+    qEs: ""¿Qué pasaría si duplicamos los números de este problema?"",
+    fEn: "Follow-up: Does the relationship stay the same or change?",
+    fEs: "Seguimiento: ¿La relación se mantiene igual o cambia?",
+  },
+  {
+    qEn: ""What is another way we could solve or explain this together?"",
+    qEs: ""¿De qué otra forma podríamos resolverlo o explicarlo juntos?"",
+    fEn: "Follow-up: Can we check it using another model or tool?",
+    fEs: "Seguimiento: ¿Podemos comprobarlo usando otra herramienta o modelo?",
+  },
+  {
+    qEn: ""How would you explain this step to a 5th grader?"",
+    qEs: ""¿Cómo le explicarías este paso a un estudiante de 5.º grado?"",
+    fEn: "Follow-up: What vocabulary word makes the explanation clearest?",
+    fEs: "Seguimiento: ¿Qué palabra de vocabulario hace más clara la explicación?",
+  },
+  {
+    qEn: ""Before we calculate, what is a reasonable estimate for the answer?"",
+    qEs: ""¿Antes de calcular, cuál es una estimación razonable para la respuesta?"",
+    fEn: "Follow-up: Should the answer be bigger or smaller than the starting numbers?",
+    fEs: "Seguimiento: ¿La respuesta debe ser mayor o menor que los números iniciales?",
+  }
+];
+let currentTalkIdx = 0;
+
+function spinMathTalkPrompt() {
+  currentTalkIdx = (currentTalkIdx + 1) % mathTalkList.length;
+  const item = mathTalkList[currentTalkIdx];
+  const qEn = document.getElementById("math_talk_en");
+  const qEs = document.getElementById("math_talk_es");
+  const fEn = document.getElementById("math_talk_follow_en");
+  const fEs = document.getElementById("math_talk_follow_es");
+  if (qEn) qEn.textContent = item.qEn;
+  if (qEs) qEs.textContent = item.qEs;
+  if (fEn) fEn.textContent = item.fEn;
+  if (fEs) fEs.textContent = item.fEs;
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+  const card = document.getElementById("math_talk_card");
+  if (card) {
+    card.classList.add("is-spinning");
+    setTimeout(() => card.classList.remove("is-spinning"), 300);
+  }
+}
+
+// Vocabulary Filter Engine
+function filterVocabCards(filter, btn) {
+  document.querySelectorAll(".btn-filter").forEach(b => b.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const cards = document.querySelectorAll(".vocab-card");
+  cards.forEach(card => {
+    const isMastered = card.querySelector(".vocab-master-toggle.is-mastered") !== null;
+    if (filter === "all") {
+      card.style.display = "";
+    } else if (filter === "mastered") {
+      card.style.display = isMastered ? "" : "none";
+    } else if (filter === "review") {
+      card.style.display = isMastered ? "none" : "";
+    }
+  });
+}
+
+// In-Page Workbench Tools
+function switchWorkbenchTool(tool) {
+  document.querySelectorAll(".wb-tool-tab").forEach(t => t.classList.remove("is-active"));
+  document.querySelectorAll(".wb-panel").forEach(p => p.hidden = true);
+  const activeTab = document.getElementById("wb_tab_" + tool);
+  const activePanel = document.getElementById("wb_panel_" + tool);
+  if (activeTab) activeTab.classList.add("is-active");
+  if (activePanel) activePanel.hidden = false;
+  if (tool === "coords") drawCoordGrid();
+  if (tool === "tapes") updateTapeDiagram();
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function addFractionBar(denom) {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  const row = document.createElement("div");
+  row.className = "fraction-row";
+  for (let i = 0; i < denom; i++) {
+    const tile = document.createElement("div");
+    tile.className = "frac-tile tile-" + denom;
+    tile.textContent = "1/" + denom;
+    row.appendChild(tile);
+  }
+  stage.appendChild(row);
+  if (typeof playMatchSound === "function") playMatchSound();
+}
+
+function clearFractionBars() {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1">1 Whole / Entero (1.0)</div></div>';
+}
+
+function drawCoordGrid() {
+  const svg = document.getElementById("interactive_coord_svg");
+  if (!svg || svg.dataset.drawn) return;
+  svg.dataset.drawn = "1";
+  let content = "";
+  for (let i = -5; i <= 5; i++) {
+    const pos = i * 20;
+    content += '<line x1="' + pos + '" y1="-100" x2="' + pos + '" y2="100" stroke="#e2e8f0" stroke-width="1" />';
+    content += '<line x1="-100" y1="' + pos + '" x2="100" y2="' + pos + '" stroke="#e2e8f0" stroke-width="1" />';
+  }
+  content += '<line x1="-105" y1="0" x2="105" y2="0" stroke="#1e293b" stroke-width="2" />';
+  content += '<line x1="0" y1="-105" x2="0" y2="105" stroke="#1e293b" stroke-width="2" />';
+  content += '<circle id="coord_plot_dot" cx="0" cy="0" r="5" fill="#e11d48" />';
+  svg.innerHTML = content;
+}
+
+function clickCoordGrid(e) {
+  const svg = document.getElementById("interactive_coord_svg");
+  if (!svg) return;
+  const rect = svg.getBoundingClientRect();
+  const rawX = e.clientX - rect.left;
+  const rawY = e.clientY - rect.top;
+  const gridX = Math.round(((rawX / rect.width) * 240 - 120) / 20);
+  const gridY = Math.round(-(((rawY / rect.height) * 240 - 120) / 20));
+  const clampedX = Math.max(-5, Math.min(5, gridX));
+  const clampedY = Math.max(-5, Math.min(5, gridY));
+  const dot = document.getElementById("coord_plot_dot");
+  if (dot) {
+    dot.setAttribute("cx", clampedX * 20);
+    dot.setAttribute("cy", -clampedY * 20);
+  }
+  let quad = "Axes / Ejes";
+  if (clampedX > 0 && clampedY > 0) quad = "Quadrant I (+, +)";
+  else if (clampedX < 0 && clampedY > 0) quad = "Quadrant II (−, +)";
+  else if (clampedX < 0 && clampedY < 0) quad = "Quadrant III (−, −)";
+  else if (clampedX > 0 && clampedY < 0) quad = "Quadrant IV (+, −)";
+  else if (clampedX === 0 && clampedY === 0) quad = "Origin (0, 0)";
+  const readout = document.getElementById("coord_readout");
+  if (readout) readout.textContent = "(x: " + clampedX + ", y: " + clampedY + ") — " + quad;
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function updateTapeDiagram() {
+  const a = parseInt(document.getElementById("tape_slider_a")?.value || "3", 10);
+  const b = parseInt(document.getElementById("tape_slider_b")?.value || "4", 10);
+  const f = parseInt(document.getElementById("tape_slider_factor")?.value || "2", 10);
+  const valA = document.getElementById("tape_val_a");
+  const valB = document.getElementById("tape_val_b");
+  const valF = document.getElementById("tape_val_factor");
+  if (valA) valA.textContent = a * f + " (" + a + "×" + f + ")";
+  if (valB) valB.textContent = b * f + " (" + b + "×" + f + ")";
+  if (valF) valF.textContent = "×" + f;
+
+  const render = document.getElementById("tape_diagram_render");
+  if (!render) return;
+  let html = '<div class="tape-bar-row"><span class="tape-label">Part A (' + (a*f) + '):</span><div class="tape-blocks">';
+  for (let i = 0; i < a; i++) html += '<div class="tape-block tape-block-a">' + f + '</div>';
+  html += '</div></div><div class="tape-bar-row"><span class="tape-label">Part B (' + (b*f) + '):</span><div class="tape-blocks">';
+  for (let j = 0; j < b; j++) html += '<div class="tape-block tape-block-b">' + f + '</div>';
+  html += '</div></div>';
+  render.innerHTML = html;
+}
+
+function setScratchpadGrid(gridType, btn) {
+  document.querySelectorAll(".grid-btn").forEach(b => b.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const canvas = document.getElementById("hw_scratchpad_canvas");
+  if (!canvas) return;
+  canvas.classList.remove("canvas-bg-graph", "canvas-bg-dots");
+  if (gridType === "graph") canvas.classList.add("canvas-bg-graph");
+  if (gridType === "dots") canvas.classList.add("canvas-bg-dots");
+}
+
+function setCertRibbon(theme, btn) {
+  document.querySelectorAll(".theme-btn").forEach(b => b.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const cert = document.querySelector(".print-cert-card");
+  if (!cert) return;
+  cert.classList.remove("theme-emerald", "theme-sapphire", "theme-ruby");
+  if (theme !== "gold") cert.classList.add("theme-" + theme);
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function updateCertParentName(val) {
+  const pName = document.getElementById("cert_parent_name");
+  if (pName) pName.textContent = val || "Family Coach";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -6870,14 +8626,33 @@ function checkProblem(idx, options) {
 
   if (isProblemCorrect) {
     section.classList.add("correct");
+    currentStreak++;
   } else {
     section.classList.add("incorrect");
+    currentStreak = 0;
+  }
+
+  // Update live streak banner
+  const streakBanner = document.getElementById("hw_streak_banner");
+  const streakCount = document.getElementById("hw_streak_count");
+  const streakCountEs = document.getElementById("hw_streak_count_es");
+  if (streakBanner && streakCount) {
+    if (currentStreak >= 2) {
+      streakCount.textContent = currentStreak;
+      if (streakCountEs) streakCountEs.textContent = currentStreak;
+      streakBanner.hidden = false;
+    } else {
+      streakBanner.hidden = true;
+    }
   }
 
   setProblemCheckResult(idx, isProblemCorrect, feedbackMessage);
 
   if (!silent) {
     playCheckSound(isProblemCorrect);
+    if (isProblemCorrect) {
+      triggerConfettiBurst(null, null, 40);
+    }
     updateScoreSummary();
   }
 
@@ -6895,6 +8670,18 @@ function updateScoreSummary() {
     document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
   } else {
     updateProgress();
+  }
+
+  // 3-Star Milestone Check
+  if (correctCount >= 3) {
+    const goalBanner = document.getElementById("goal_reached_banner");
+    if (goalBanner && goalBanner.hidden) {
+      goalBanner.hidden = false;
+      if (typeof playFanfareSound === "function") playFanfareSound();
+      if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 100);
+      const checkBadge = document.getElementById("tab_badge_check");
+      if (checkBadge) checkBadge.textContent = "★★★";
+    }
   }
 }
 
@@ -6914,7 +8701,16 @@ function checkWorksheet() {
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 
-  if (correctCount === total) {
+  if (correctCount >= 3) {
+    const goalBanner = document.getElementById("goal_reached_banner");
+    if (goalBanner && goalBanner.hidden) {
+      goalBanner.hidden = false;
+      const checkBadge = document.getElementById("tab_badge_check");
+      if (checkBadge) checkBadge.textContent = "★★★";
+    }
+    triggerConfettiBurst(null, null, 100);
+    playFanfareSound();
+  } else if (correctCount === total && total > 0) {
     playSuccessArpeggio();
   } else {
     playFailureSound();

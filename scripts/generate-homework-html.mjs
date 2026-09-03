@@ -1124,14 +1124,14 @@ function generateHtml(lessonId, config) {
 
   const tabPanels = [
     renderLearnTab(config, renderVisualMathLab(topic, config, lessonModel)),
-    renderArcadeTabPanel(lessonId),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderTogetherTab(config, lessonId),
-    renderCheckTab(quickCheckIntroHtml, warmupHtml, challengeHtml, morePracticeHtml),
     renderWorkbenchTab(),
+    renderCheckTab(quickCheckIntroHtml, warmupHtml, challengeHtml, morePracticeHtml),
+    renderArcadeTabPanel(lessonId),
+    renderPlayTabPanel(config),
     renderHelpTab(config),
     renderMoreTab(config, lessonId),
-    renderPlayTabPanel(config),
     renderDoneTab(),
   ].join("\n");
 
@@ -2835,6 +2835,7 @@ ${VISUAL_LABS_JS}
 // Sound engine
 let soundEnabled = true;
 let audioCtx = null;
+let currentStreak = 0;
 
 function initAudio() {
   if (!audioCtx) {
@@ -2845,8 +2846,437 @@ function initAudio() {
 function toggleSound() {
   soundEnabled = !soundEnabled;
   const btn = document.getElementById("sound_toggle");
-  btn.textContent = soundEnabled ? "🔊" : "🔇";
-  btn.title = soundEnabled ? "Mute Sound Effects" : "Unmute Sound Effects";
+  if (btn) {
+    btn.textContent = soundEnabled ? "🔊" : "🔇";
+    btn.title = soundEnabled ? "Mute Sound Effects" : "Unmute Sound Effects";
+  }
+}
+
+function playTabSwitchSound() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(540, now);
+    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+    gain.gain.setValueAtTime(0.035, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  } catch (e) {}
+}
+
+function playMatchSound() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    [440, 659.25].forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(f, now + i * 0.08);
+      gain.gain.setValueAtTime(0.08, now + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 0.22);
+    });
+  } catch (e) {}
+}
+
+function playFanfareSound() {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+    notes.forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(f, now + i * 0.1);
+      gain.gain.setValueAtTime(0.09, now + i * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.35);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + i * 0.1);
+      osc.stop(now + i * 0.1 + 0.4);
+    });
+  } catch (e) {}
+}
+
+function speakMathWord(termEn, termEs) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const isEs = document.body.classList.contains("lang-mode-es");
+    const text = isEs && termEs ? termEs : termEn;
+    const lang = isEs && termEs ? "es-US" : "en-US";
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = 0.9;
+    window.speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
+// Confetti Particle Engine
+function triggerConfettiBurst(originX, originY, count = 50) {
+  try {
+    let canvas = document.getElementById("hw_confetti_canvas");
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      canvas.id = "hw_confetti_canvas";
+      canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;";
+      document.body.appendChild(canvas);
+    }
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext("2d");
+    const colors = ["#1fa6a2", "#f2c15b", "#d9795d", "#12355b", "#10b981", "#8b5cf6"];
+    const particles = [];
+    const startX = originX || window.innerWidth / 2;
+    const startY = originY || window.innerHeight / 3;
+
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 4 + Math.random() * 8;
+      particles.push({
+        x: startX,
+        y: startY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 3,
+        size: 6 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rSpeed: (Math.random() - 0.5) * 12,
+        life: 1,
+        decay: 0.016 + Math.random() * 0.016,
+      });
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let active = false;
+      for (let p of particles) {
+        if (p.life > 0) {
+          active = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.22;
+          p.rotation += p.rSpeed;
+          p.life -= p.decay;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        }
+      }
+      if (active) {
+        requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    requestAnimationFrame(frame);
+  } catch (e) {}
+}
+
+// Skill Power-Up Challenge Engine
+function checkSkillPowerUp(btn, choiceIdx, correctIdx) {
+  const container = document.getElementById("powerup_choices");
+  const feedbackBox = document.getElementById("powerup_feedback_box");
+  const contentEl = document.getElementById("powerup_feedback_content");
+  if (!container || !feedbackBox || !contentEl) return;
+
+  const buttons = container.querySelectorAll(".powerup-choice-btn");
+  const isCorrect = choiceIdx === correctIdx;
+
+  if (isCorrect) {
+    btn.classList.add("is-correct");
+    btn.classList.remove("is-wrong");
+    buttons.forEach((b) => {
+      if (b !== btn) b.disabled = true;
+    });
+    feedbackBox.className = "powerup-feedback-box is-success";
+    feedbackBox.hidden = false;
+    contentEl.innerHTML = '<span class="lang-en">🎉 <strong>Power-Up Unlocked!</strong> You earned +1 Star and mastered the key concept.</span><span class="lang-es" lang="es">🎉 <strong>¡Poder Desbloqueado!</strong> Ganaste +1 Estrella y dominaste el concepto clave.</span>';
+    const badge = document.getElementById("tab_badge_learn");
+    if (badge) badge.textContent = "★";
+    if (typeof playFanfareSound === "function") playFanfareSound();
+    if (typeof triggerConfettiBurst === "function") triggerConfettiBurst();
+    try {
+      localStorage.setItem(STORAGE_KEY + "_powerup_solved", "1");
+    } catch (e) {}
+  } else {
+    btn.classList.add("is-wrong");
+    feedbackBox.className = "powerup-feedback-box is-hint";
+    feedbackBox.hidden = false;
+    const hintEn = btn.dataset.hintEn || "Think carefully about the visual model!";
+    const hintEs = btn.dataset.hintEs || "¡Piensa cuidadosamente en el modelo visual!";
+    contentEl.innerHTML = '<span class="lang-en">💡 <strong>Almost!</strong> ' + hintEn + ' Give it another shot!</span><span class="lang-es" lang="es">💡 <strong>¡Casi!</strong> ' + hintEs + ' ¡Inténtalo de nuevo!</span>';
+    if (typeof playFailureSound === "function") playFailureSound();
+    setTimeout(() => btn.classList.remove("is-wrong"), 600);
+  }
+}
+
+// Vocab Match & Master Challenge Engine
+let selectedVocabChip = null;
+let matchedVocabCount = 0;
+
+function selectVocabMatchChip(chip) {
+  if (chip.classList.contains("is-matched")) return;
+
+  if (!selectedVocabChip) {
+    selectedVocabChip = chip;
+    chip.classList.add("is-selected");
+    if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+    return;
+  }
+
+  if (selectedVocabChip === chip) {
+    chip.classList.remove("is-selected");
+    selectedVocabChip = null;
+    return;
+  }
+
+  if (selectedVocabChip.dataset.side === chip.dataset.side) {
+    selectedVocabChip.classList.remove("is-selected");
+    selectedVocabChip = chip;
+    chip.classList.add("is-selected");
+    return;
+  }
+
+  const id1 = selectedVocabChip.dataset.vocabId;
+  const id2 = chip.dataset.vocabId;
+  const c1 = selectedVocabChip;
+  const c2 = chip;
+  selectedVocabChip = null;
+  c1.classList.remove("is-selected");
+
+  if (id1 === id2) {
+    c1.classList.add("is-matched");
+    c2.classList.add("is-matched");
+    c1.disabled = true;
+    c2.disabled = true;
+    matchedVocabCount++;
+    const countEl = document.getElementById("vocab_match_count");
+    if (countEl) countEl.textContent = matchedVocabCount;
+    if (typeof playMatchSound === "function") playMatchSound();
+
+    const shell = document.getElementById("vocab_match_shell");
+    const total = parseInt(shell?.dataset.vocabTotal || "0", 10);
+    if (matchedVocabCount >= total && total > 0) {
+      const winEl = document.getElementById("vocab_match_win");
+      if (winEl) winEl.hidden = false;
+      const badge = document.getElementById("tab_badge_words");
+      if (badge) badge.textContent = "★";
+      if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 70);
+      if (typeof playSuccessArpeggio === "function") playSuccessArpeggio();
+      try {
+        localStorage.setItem(STORAGE_KEY + "_vocab_won", "1");
+      } catch (e) {}
+    }
+  } else {
+    c1.classList.add("is-mismatch");
+    c2.classList.add("is-mismatch");
+    if (typeof playFailureSound === "function") playFailureSound();
+    setTimeout(() => {
+      c1.classList.remove("is-mismatch");
+      c2.classList.remove("is-mismatch");
+    }, 600);
+  }
+}
+
+function resetVocabMatchGame() {
+  matchedVocabCount = 0;
+  selectedVocabChip = null;
+  const countEl = document.getElementById("vocab_match_count");
+  if (countEl) countEl.textContent = "0";
+  const winEl = document.getElementById("vocab_match_win");
+  if (winEl) winEl.hidden = true;
+  document.querySelectorAll(".vocab-match-chip").forEach((c) => {
+    c.classList.remove("is-matched", "is-selected", "is-mismatch");
+    c.disabled = false;
+  });
+}
+
+function toggleVocabCardMastery(idx) {
+  const btn = document.querySelector(".vocab-master-toggle[data-term-idx="" + idx + ""]");
+  if (!btn) return;
+  const isMastered = btn.classList.toggle("is-mastered");
+  if (isMastered && typeof playTabSwitchSound === "function") playTabSwitchSound();
+  try {
+    localStorage.setItem(STORAGE_KEY + "_vocab_mastered_" + idx, isMastered ? "1" : "0");
+  } catch (e) {}
+}
+
+function markVocabCardKnown(idx, known) {
+  const card = document.getElementById("vocab_card_" + idx);
+  const toggle = document.querySelector(".vocab-master-toggle[data-term-idx="" + idx + ""]");
+  if (known) {
+    if (card) card.classList.add("is-known");
+    if (toggle) toggle.classList.add("is-mastered");
+    if (typeof playMatchSound === "function") playMatchSound();
+  } else {
+    if (card) card.classList.remove("is-known");
+    if (toggle) toggle.classList.remove("is-mastered");
+  }
+  try {
+    localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
+  } catch (e) {}
+}
+
+// Scratchpad Engine
+let scratchpadCanvas = null;
+let scratchpadCtx = null;
+let isDrawing = false;
+let scratchpadColor = "#12355b";
+let isEraser = false;
+
+function initScratchpad() {
+  scratchpadCanvas = document.getElementById("hw_scratchpad_canvas");
+  if (!scratchpadCanvas) return;
+  scratchpadCtx = scratchpadCanvas.getContext("2d");
+
+  function getPos(e) {
+    const rect = scratchpadCanvas.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: ((cx - rect.left) / rect.width) * scratchpadCanvas.width,
+      y: ((cy - rect.top) / rect.height) * scratchpadCanvas.height,
+    };
+  }
+
+  function startDraw(e) {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    scratchpadCtx.beginPath();
+    scratchpadCtx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    scratchpadCtx.lineCap = "round";
+    scratchpadCtx.lineJoin = "round";
+    if (isEraser) {
+      scratchpadCtx.strokeStyle = "#ffffff";
+      scratchpadCtx.lineWidth = 18;
+    } else {
+      scratchpadCtx.strokeStyle = scratchpadColor;
+      scratchpadCtx.lineWidth = 3.5;
+    }
+    scratchpadCtx.lineTo(pos.x, pos.y);
+    scratchpadCtx.stroke();
+  }
+
+  function stopDraw() {
+    if (isDrawing) {
+      isDrawing = false;
+      scratchpadCtx.closePath();
+    }
+  }
+
+  scratchpadCanvas.addEventListener("pointerdown", startDraw);
+  scratchpadCanvas.addEventListener("pointermove", draw);
+  scratchpadCanvas.addEventListener("pointerup", stopDraw);
+  scratchpadCanvas.addEventListener("pointercancel", stopDraw);
+  scratchpadCanvas.addEventListener("pointerleave", stopDraw);
+}
+
+function toggleScratchpad() {
+  const wrap = document.getElementById("hw_scratchpad_wrapper");
+  if (!wrap) return;
+  const isHidden = wrap.hidden;
+  wrap.hidden = !isHidden;
+  if (!wrap.hidden) {
+    if (!scratchpadCtx) initScratchpad();
+    wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+function setScratchpadColor(color, btn) {
+  scratchpadColor = color;
+  isEraser = false;
+  document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
+  if (eraserBtn) eraserBtn.classList.remove("is-active");
+}
+
+function toggleScratchpadEraser() {
+  isEraser = !isEraser;
+  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
+  if (eraserBtn) eraserBtn.classList.toggle("is-active", isEraser);
+  if (isEraser) {
+    document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
+  } else {
+    const defaultDot = document.querySelector(".color-dot[data-color="" + scratchpadColor + ""]");
+    if (defaultDot) defaultDot.classList.add("is-active");
+  }
+}
+
+function clearScratchpad() {
+  if (!scratchpadCanvas || !scratchpadCtx) return;
+  scratchpadCtx.clearRect(0, 0, scratchpadCanvas.width, scratchpadCanvas.height);
+}
+
+// Celebration & High-Five Engine
+function triggerHighFive() {
+  if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 90);
+  if (typeof playSuccessArpeggio === "function") playSuccessArpeggio();
+  const btn = document.querySelector(".btn-high-five");
+  if (btn) {
+    btn.classList.add("is-celebrating");
+    setTimeout(() => btn.classList.remove("is-celebrating"), 1000);
+  }
+}
+
+function updateCelebrationTab() {
+  const problems = Array.from(document.querySelectorAll(".problem-section")).filter(
+    (s) => !s.closest(".more-practice"),
+  );
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
+
+  const bLearn = document.getElementById("badge_achieve_learn");
+  const bVocab = document.getElementById("badge_achieve_vocab");
+  const bPractice = document.getElementById("badge_achieve_practice");
+  const bArcade = document.getElementById("badge_achieve_arcade");
+
+  if (bLearn) bLearn.classList.add("is-unlocked");
+  if (bArcade) bArcade.classList.add("is-unlocked");
+  if (bPractice && correctCount >= 3) bPractice.classList.add("is-unlocked");
+  try {
+    if (bVocab && localStorage.getItem(STORAGE_KEY + "_vocab_won")) {
+      bVocab.classList.add("is-unlocked");
+    }
+  } catch (e) {}
+
+  if (correctCount >= 3) {
+    if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 60);
+  }
+}
+
+function updateCertStudentName(val) {
+  try {
+    localStorage.setItem(STORAGE_KEY + "_student_name", val);
+  } catch (e) {}
 }
 
 function playSuccessArpeggio() {
@@ -3178,6 +3608,12 @@ function saveState() {
       state.inputs[input.name || input.id] = input.value;
     }
   });
+
+  const studentNameInput = document.getElementById("student_name_input");
+  if (studentNameInput && studentNameInput.value) {
+    state.studentName = studentNameInput.value;
+  }
+  state.currentStreak = currentStreak;
   
   // Save drag-sort item locations
   const dragCards = document.querySelectorAll(".drag-card");
@@ -3216,6 +3652,40 @@ function loadState() {
         }
       }
     }
+
+    if (state.studentName) {
+      const studentNameInput = document.getElementById("student_name_input");
+      if (studentNameInput) studentNameInput.value = state.studentName;
+    }
+    if (typeof state.currentStreak === "number") {
+      currentStreak = state.currentStreak;
+      const streakBanner = document.getElementById("hw_streak_banner");
+      const streakCount = document.getElementById("hw_streak_count");
+      const streakCountEs = document.getElementById("hw_streak_count_es");
+      if (streakBanner && streakCount && currentStreak >= 2) {
+        streakCount.textContent = currentStreak;
+        if (streakCountEs) streakCountEs.textContent = currentStreak;
+        streakBanner.hidden = false;
+      }
+    }
+    try {
+      if (localStorage.getItem(STORAGE_KEY + "_powerup_solved") === "1") {
+        const badge = document.getElementById("tab_badge_learn");
+        if (badge) badge.textContent = "★";
+        const btn = document.querySelector(".powerup-choice-btn[data-is-correct='true']");
+        if (btn) btn.classList.add("is-correct");
+      }
+      if (localStorage.getItem(STORAGE_KEY + "_vocab_won") === "1") {
+        const badge = document.getElementById("tab_badge_words");
+        if (badge) badge.textContent = "★";
+      }
+      document.querySelectorAll(".vocab-master-toggle").forEach((btn) => {
+        const idx = btn.dataset.termIdx;
+        if (localStorage.getItem(STORAGE_KEY + "_vocab_mastered_" + idx) === "1") {
+          btn.classList.add("is-mastered");
+        }
+      });
+    } catch(e) {}
     
     // Restore drag card positions
     if (state.dragPositions) {
@@ -3346,6 +3816,228 @@ function pickLangText(en, es) {
   const esText = (es || "").trim();
   if (esText && document.body.classList.contains("lang-mode-es")) return esText;
   return en || "";
+}
+
+
+// Speech Rate & Big Idea Narration
+let vocabSpeechRate = 0.9;
+function toggleVocabSpeed() {
+  const btn = document.getElementById("vocab_speed_btn");
+  const label = document.getElementById("vocab_speed_label");
+  if (vocabSpeechRate === 0.9) {
+    vocabSpeechRate = 0.65;
+    if (label) label.textContent = "Slow";
+  } else {
+    vocabSpeechRate = 0.9;
+    if (label) label.textContent = "Normal";
+  }
+}
+
+function speakBigIdea(textEn, textEs) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const isEs = document.body.classList.contains("lang-mode-es");
+    const text = isEs && textEs ? textEs : textEn;
+    const lang = isEs && textEs ? "es-US" : "en-US";
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = vocabSpeechRate;
+    window.speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
+// Math Talk Prompt Spinner
+const mathTalkList = [
+  {
+    qEn: "\"Can you show me how you see that in the picture above?\"",
+    qEs: "\"¿Puedes mostrarme cómo ves eso en el dibujo de arriba?\"",
+    fEn: "Follow-up: Point to where the numbers match the visual model.",
+    fEs: "Seguimiento: Señala dónde los números coinciden con el modelo visual.",
+  },
+  {
+    qEn: "\"What would happen if we doubled the numbers in this problem?\"",
+    qEs: "\"¿Qué pasaría si duplicamos los números de este problema?\"",
+    fEn: "Follow-up: Does the relationship stay the same or change?",
+    fEs: "Seguimiento: ¿La relación se mantiene igual o cambia?",
+  },
+  {
+    qEn: "\"What is another way we could solve or explain this together?\"",
+    qEs: "\"¿De qué otra forma podríamos resolverlo o explicarlo juntos?\"",
+    fEn: "Follow-up: Can we check it using another model or tool?",
+    fEs: "Seguimiento: ¿Podemos comprobarlo usando otra herramienta o modelo?",
+  },
+  {
+    qEn: "\"How would you explain this step to a 5th grader?\"",
+    qEs: "\"¿Cómo le explicarías este paso a un estudiante de 5.º grado?\"",
+    fEn: "Follow-up: What vocabulary word makes the explanation clearest?",
+    fEs: "Seguimiento: ¿Qué palabra de vocabulario hace más clara la explicación?",
+  },
+  {
+    qEn: "\"Before we calculate, what is a reasonable estimate for the answer?\"",
+    qEs: "\"¿Antes de calcular, cuál es una estimación razonable para la respuesta?\"",
+    fEn: "Follow-up: Should the answer be bigger or smaller than the starting numbers?",
+    fEs: "Seguimiento: ¿La respuesta debe ser mayor o menor que los números iniciales?",
+  }
+];
+let currentTalkIdx = 0;
+
+function spinMathTalkPrompt() {
+  currentTalkIdx = (currentTalkIdx + 1) % mathTalkList.length;
+  const item = mathTalkList[currentTalkIdx];
+  const qEn = document.getElementById("math_talk_en");
+  const qEs = document.getElementById("math_talk_es");
+  const fEn = document.getElementById("math_talk_follow_en");
+  const fEs = document.getElementById("math_talk_follow_es");
+  if (qEn) qEn.textContent = item.qEn;
+  if (qEs) qEs.textContent = item.qEs;
+  if (fEn) fEn.textContent = item.fEn;
+  if (fEs) fEs.textContent = item.fEs;
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+  const card = document.getElementById("math_talk_card");
+  if (card) {
+    card.classList.add("is-spinning");
+    setTimeout(() => card.classList.remove("is-spinning"), 300);
+  }
+}
+
+// Vocabulary Filter Engine
+function filterVocabCards(filter, btn) {
+  document.querySelectorAll(".btn-filter").forEach(b => b.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const cards = document.querySelectorAll(".vocab-card");
+  cards.forEach(card => {
+    const isMastered = card.querySelector(".vocab-master-toggle.is-mastered") !== null;
+    if (filter === "all") {
+      card.style.display = "";
+    } else if (filter === "mastered") {
+      card.style.display = isMastered ? "" : "none";
+    } else if (filter === "review") {
+      card.style.display = isMastered ? "none" : "";
+    }
+  });
+}
+
+// In-Page Workbench Tools
+function switchWorkbenchTool(tool) {
+  document.querySelectorAll(".wb-tool-tab").forEach(t => t.classList.remove("is-active"));
+  document.querySelectorAll(".wb-panel").forEach(p => p.hidden = true);
+  const activeTab = document.getElementById("wb_tab_" + tool);
+  const activePanel = document.getElementById("wb_panel_" + tool);
+  if (activeTab) activeTab.classList.add("is-active");
+  if (activePanel) activePanel.hidden = false;
+  if (tool === "coords") drawCoordGrid();
+  if (tool === "tapes") updateTapeDiagram();
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function addFractionBar(denom) {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  const row = document.createElement("div");
+  row.className = "fraction-row";
+  for (let i = 0; i < denom; i++) {
+    const tile = document.createElement("div");
+    tile.className = "frac-tile tile-" + denom;
+    tile.textContent = "1/" + denom;
+    row.appendChild(tile);
+  }
+  stage.appendChild(row);
+  if (typeof playMatchSound === "function") playMatchSound();
+}
+
+function clearFractionBars() {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1">1 Whole / Entero (1.0)</div></div>';
+}
+
+function drawCoordGrid() {
+  const svg = document.getElementById("interactive_coord_svg");
+  if (!svg || svg.dataset.drawn) return;
+  svg.dataset.drawn = "1";
+  let content = "";
+  for (let i = -5; i <= 5; i++) {
+    const pos = i * 20;
+    content += '<line x1="' + pos + '" y1="-100" x2="' + pos + '" y2="100" stroke="#e2e8f0" stroke-width="1" />';
+    content += '<line x1="-100" y1="' + pos + '" x2="100" y2="' + pos + '" stroke="#e2e8f0" stroke-width="1" />';
+  }
+  content += '<line x1="-105" y1="0" x2="105" y2="0" stroke="#1e293b" stroke-width="2" />';
+  content += '<line x1="0" y1="-105" x2="0" y2="105" stroke="#1e293b" stroke-width="2" />';
+  content += '<circle id="coord_plot_dot" cx="0" cy="0" r="5" fill="#e11d48" />';
+  svg.innerHTML = content;
+}
+
+function clickCoordGrid(e) {
+  const svg = document.getElementById("interactive_coord_svg");
+  if (!svg) return;
+  const rect = svg.getBoundingClientRect();
+  const rawX = e.clientX - rect.left;
+  const rawY = e.clientY - rect.top;
+  const gridX = Math.round(((rawX / rect.width) * 240 - 120) / 20);
+  const gridY = Math.round(-(((rawY / rect.height) * 240 - 120) / 20));
+  const clampedX = Math.max(-5, Math.min(5, gridX));
+  const clampedY = Math.max(-5, Math.min(5, gridY));
+  const dot = document.getElementById("coord_plot_dot");
+  if (dot) {
+    dot.setAttribute("cx", clampedX * 20);
+    dot.setAttribute("cy", -clampedY * 20);
+  }
+  let quad = "Axes / Ejes";
+  if (clampedX > 0 && clampedY > 0) quad = "Quadrant I (+, +)";
+  else if (clampedX < 0 && clampedY > 0) quad = "Quadrant II (−, +)";
+  else if (clampedX < 0 && clampedY < 0) quad = "Quadrant III (−, −)";
+  else if (clampedX > 0 && clampedY < 0) quad = "Quadrant IV (+, −)";
+  else if (clampedX === 0 && clampedY === 0) quad = "Origin (0, 0)";
+  const readout = document.getElementById("coord_readout");
+  if (readout) readout.textContent = "(x: " + clampedX + ", y: " + clampedY + ") — " + quad;
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function updateTapeDiagram() {
+  const a = parseInt(document.getElementById("tape_slider_a")?.value || "3", 10);
+  const b = parseInt(document.getElementById("tape_slider_b")?.value || "4", 10);
+  const f = parseInt(document.getElementById("tape_slider_factor")?.value || "2", 10);
+  const valA = document.getElementById("tape_val_a");
+  const valB = document.getElementById("tape_val_b");
+  const valF = document.getElementById("tape_val_factor");
+  if (valA) valA.textContent = a * f + " (" + a + "×" + f + ")";
+  if (valB) valB.textContent = b * f + " (" + b + "×" + f + ")";
+  if (valF) valF.textContent = "×" + f;
+
+  const render = document.getElementById("tape_diagram_render");
+  if (!render) return;
+  let html = '<div class="tape-bar-row"><span class="tape-label">Part A (' + (a*f) + '):</span><div class="tape-blocks">';
+  for (let i = 0; i < a; i++) html += '<div class="tape-block tape-block-a">' + f + '</div>';
+  html += '</div></div><div class="tape-bar-row"><span class="tape-label">Part B (' + (b*f) + '):</span><div class="tape-blocks">';
+  for (let j = 0; j < b; j++) html += '<div class="tape-block tape-block-b">' + f + '</div>';
+  html += '</div></div>';
+  render.innerHTML = html;
+}
+
+function setScratchpadGrid(gridType, btn) {
+  document.querySelectorAll(".grid-btn").forEach(b => b.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const canvas = document.getElementById("hw_scratchpad_canvas");
+  if (!canvas) return;
+  canvas.classList.remove("canvas-bg-graph", "canvas-bg-dots");
+  if (gridType === "graph") canvas.classList.add("canvas-bg-graph");
+  if (gridType === "dots") canvas.classList.add("canvas-bg-dots");
+}
+
+function setCertRibbon(theme, btn) {
+  document.querySelectorAll(".theme-btn").forEach(b => b.classList.remove("is-active"));
+  if (btn) btn.classList.add("is-active");
+  const cert = document.querySelector(".print-cert-card");
+  if (!cert) return;
+  cert.classList.remove("theme-emerald", "theme-sapphire", "theme-ruby");
+  if (theme !== "gold") cert.classList.add("theme-" + theme);
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function updateCertParentName(val) {
+  const pName = document.getElementById("cert_parent_name");
+  if (pName) pName.textContent = val || "Family Coach";
 }
 
 function checkProblem(idx, options) {
@@ -3659,14 +4351,33 @@ function checkProblem(idx, options) {
 
   if (isProblemCorrect) {
     section.classList.add("correct");
+    currentStreak++;
   } else {
     section.classList.add("incorrect");
+    currentStreak = 0;
+  }
+
+  // Update live streak banner
+  const streakBanner = document.getElementById("hw_streak_banner");
+  const streakCount = document.getElementById("hw_streak_count");
+  const streakCountEs = document.getElementById("hw_streak_count_es");
+  if (streakBanner && streakCount) {
+    if (currentStreak >= 2) {
+      streakCount.textContent = currentStreak;
+      if (streakCountEs) streakCountEs.textContent = currentStreak;
+      streakBanner.hidden = false;
+    } else {
+      streakBanner.hidden = true;
+    }
   }
 
   setProblemCheckResult(idx, isProblemCorrect, feedbackMessage);
 
   if (!silent) {
     playCheckSound(isProblemCorrect);
+    if (isProblemCorrect) {
+      triggerConfettiBurst(null, null, 40);
+    }
     updateScoreSummary();
   }
 
@@ -3684,6 +4395,18 @@ function updateScoreSummary() {
     document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
   } else {
     updateProgress();
+  }
+
+  // 3-Star Milestone Check
+  if (correctCount >= 3) {
+    const goalBanner = document.getElementById("goal_reached_banner");
+    if (goalBanner && goalBanner.hidden) {
+      goalBanner.hidden = false;
+      if (typeof playFanfareSound === "function") playFanfareSound();
+      if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 100);
+      const checkBadge = document.getElementById("tab_badge_check");
+      if (checkBadge) checkBadge.textContent = "★★★";
+    }
   }
 }
 
@@ -3703,7 +4426,16 @@ function checkWorksheet() {
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 
-  if (correctCount === total) {
+  if (correctCount >= 3) {
+    const goalBanner = document.getElementById("goal_reached_banner");
+    if (goalBanner && goalBanner.hidden) {
+      goalBanner.hidden = false;
+      const checkBadge = document.getElementById("tab_badge_check");
+      if (checkBadge) checkBadge.textContent = "★★★";
+    }
+    triggerConfettiBurst(null, null, 100);
+    playFanfareSound();
+  } else if (correctCount === total && total > 0) {
     playSuccessArpeggio();
   } else {
     playFailureSound();

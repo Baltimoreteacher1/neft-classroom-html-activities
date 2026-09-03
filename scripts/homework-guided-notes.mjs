@@ -35,6 +35,7 @@ export function esc(s) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+export const escAttr = esc;
 
 // Lesson folder slugs carry internal variant suffixes ("2-1-flagship",
 // "2-1-group1", "2-1-catchup"). Those are build/routing details — families
@@ -1378,6 +1379,35 @@ export function renderCelebration() {
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+      <div class="high-five-banner">
+        <button type="button" class="btn-high-five" onclick="triggerHighFive()">
+          <span class="high-five-emoji" aria-hidden="true">✋</span>
+          <div class="high-five-labels">
+            <strong><span class="lang-en">Give a High Five!</span><span class="lang-es" lang="es">¡Dame esos cinco!</span></strong>
+            <small><span class="lang-en">Tap to celebrate tonight's math effort!</span><span class="lang-es" lang="es">¡Toca para celebrar el esfuerzo de hoy!</span></small>
+          </div>
+        </button>
+      </div>
+
+      <div class="achievement-shelf" id="achievement_shelf">
+        <div class="achievement-badge badge-learn is-unlocked" id="badge_achieve_learn">
+          <span class="achieve-icon" aria-hidden="true">📖</span>
+          <span class="achieve-name"><span class="lang-en">Concept Explorer</span><span class="lang-es" lang="es">Explorador</span></span>
+        </div>
+        <div class="achievement-badge badge-vocab" id="badge_achieve_vocab">
+          <span class="achieve-icon" aria-hidden="true">📚</span>
+          <span class="achieve-name"><span class="lang-en">Vocab Champ</span><span class="lang-es" lang="es">Camp. Vocabulario</span></span>
+        </div>
+        <div class="achievement-badge badge-practice" id="badge_achieve_practice">
+          <span class="achieve-icon" aria-hidden="true">⭐</span>
+          <span class="achieve-name"><span class="lang-en">3-Star Hero</span><span class="lang-es" lang="es">Héroe 3 Estrellas</span></span>
+        </div>
+        <div class="achievement-badge badge-arcade is-unlocked" id="badge_achieve_arcade">
+          <span class="achieve-icon" aria-hidden="true">🎮</span>
+          <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
+        </div>
+      </div>
+
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ Parent Sign-off & Feedback / Firma del padre y comentarios</h3>
         
@@ -1391,6 +1421,14 @@ export function renderCelebration() {
             </label>
           </div>
           
+          <div class="signoff-field text-field">
+            <label for="student_name_input">
+              <span class="lang-en">Student Name (optional):</span>
+              <span class="lang-es" lang="es">Nombre del estudiante (opcional):</span>
+            </label>
+            <input type="text" id="student_name_input" placeholder="e.g. Alex" oninput="updateCertStudentName(this.value)" />
+          </div>
+
           <div class="signoff-field text-field">
             <label for="parent_name_input">
               <span class="lang-en">Parent/Guardian Name:</span>
@@ -1485,19 +1523,586 @@ export function renderQuickCheckIntro(coreCount = 6) {
     </section>`;
 }
 
+export function getRealWorldSpotlight(topic) {
+  const spotlights = {
+    exponents: {
+      titleEn: "Computer Memory & Data Storage",
+      titleEs: "Memoria de computadoras y almacenamiento",
+      factEn: "Computers use binary exponents (powers of 2) to store everything! 2¹⁰ = 1,024 bytes (1 KB), and 2³⁰ is over 1 billion bytes (1 GB). When you download a 4 GB game, exponents made it possible!",
+      factEs: "¡Las computadoras usan potencias de 2 para guardar todo! 2¹⁰ = 1,024 bytes (1 KB) y 2³⁰ es más de mil millones de bytes (1 GB). ¡Cuando descargas un juego de 4 GB, los exponentes lo hacen posible!",
+      icon: "💾",
+    },
+    ratios: {
+      titleEn: "Pixar Animation & Video Game Scaling",
+      titleEs: "Animación de Pixar y gráficos de videojuegos",
+      factEn: "Animators at Pixar use equivalent ratios to scale characters across 4K movie screens, tablets, and phones without distorting their proportions. If Woody's hat is 1:4 of his height, it stays 1:4 on any screen size!",
+      factEs: "Los animadores de Pixar usan razones equivalentes para cambiar de escala los personajes en pantallas de cine 4K, tabletas y teléfonos sin deformarlos. Si el sombrero de Woody mide 1:4 de su estatura, ¡se mantiene 1:4 en cualquier pantalla!",
+      icon: "🎬",
+    },
+    equations: {
+      titleEn: "NASA Spacecraft Trajectory & Fuel",
+      titleEs: "Trayectoria y combustible de naves de la NASA",
+      factEn: "Aerospace engineers use one-step and multi-step equations to balance spacecraft weight and fuel. Every kilogram of fuel added requires an exact balance of thrust to reach orbit!",
+      factEs: "Los ingenieros aeroespaciales usan ecuaciones para equilibrar el peso y el combustible de la nave. ¡Cada kilogramo de combustible requiere un empuje exacto para alcanzar la órbita!",
+      icon: "🚀",
+    },
+    inequalities: {
+      titleEn: "Roller Coaster Height & Speed Limits",
+      titleEs: "Límites de estatura y velocidad en montañas rusas",
+      factEn: "Engineers design theme park rides with inequalities! 'Height h ≥ 48 inches' means exactly 48 inches or taller can ride. Speed governors use 'speed s ≤ 65 mph' to keep every turn thrilling yet safe.",
+      factEs: "¡Los ingenieros diseñan las atracciones con desigualdades! 'Estatura h ≥ 48 pulgadas' significa 48 pulgadas o más. Los reguladores usan 'velocidad s ≤ 65 mph' para que cada curva sea emocionante y segura.",
+      icon: "🎢",
+    },
+    expressions: {
+      titleEn: "App Development & In-Game Economies",
+      titleEs: "Desarrollo de apps y economías de videojuegos",
+      factEn: "Game developers write algebraic expressions like '50x + 100' to calculate player score or coin rewards for completing x quests plus a 100-coin daily login bonus!",
+      factEs: "Los desarrolladores escriben expresiones como '50x + 100' para calcular monedas o puntajes al completar x misiones más un bono diario de 100 monedas.",
+      icon: "🕹️",
+    },
+    statistics: {
+      titleEn: "Sports Analytics & Weather Forecasting",
+      titleEs: "Analítica deportiva y pronóstico del clima",
+      factEn: "Meteorologists calculate the median and mean temperature over 30 years to detect climate trends. Baseball scouts use batting averages and median pitch speeds to draft future champions!",
+      factEs: "Los meteorólogos calculan la mediana y la media de temperatura de 30 años para detectar tendencias del clima. ¡Los entrenadores usan medias de bateo para descubrir futuros campeones!",
+      icon: "⚾",
+    },
+    "coordinate-plane": {
+      titleEn: "GPS Navigation & Drone Delivery",
+      titleEs: "Navegación GPS y entrega con drones",
+      factEn: "Every GPS in smartphones and delivery drones uses coordinate geometry (latitude and longitude) just like the (x, y) grid to pinpoint your doorstep within inches!",
+      factEs: "¡Los teléfonos y drones de reparto usan geometría de coordenadas (latitud y longitud) igual que la cuadrícula (x, y) para llegar a tu puerta con exactitud!",
+      icon: "📍",
+    },
+    "number-line": {
+      titleEn: "Deep Sea Oceanography & Elevation",
+      titleEs: "Oceanografía marina y elevación",
+      factEn: "Submarines diving in the Mariana Trench use negative numbers on vertical number lines: −11,000 meters means 11,000 meters below sea level (0)! Mount Everest sits at +8,848 meters.",
+      factEs: "Los submarinos que bajan a la Fosa de las Marianas usan números negativos: −11,000 metros significa 11,000 metros bajo el nivel del mar (0). ¡El Monte Everest está a +8,848 metros!",
+      icon: "🌊",
+    },
+    fractions: {
+      titleEn: "Master Chefs & Medicine Dosages",
+      titleEs: "Chefs profesionales y dosis médicas",
+      factEn: "Pastry chefs divide fractions every day when tripling or halving delicate macaroon recipes (e.g. 3/4 ÷ 2 = 3/8 cup). Pharmacists use fraction division to calculate liquid medicine doses safely!",
+      factEs: "Los chefs pasteleros dividen fracciones a diario al triplicar o reducir recetas delicadas (ej. 3/4 ÷ 2 = 3/8 taza). ¡Los farmacéuticos las usan para calcular dosis médicas seguras!",
+      icon: "🧁",
+    },
+    area: {
+      titleEn: "Solar Panel Fields & Urban Architecture",
+      titleEs: "Parques solares y arquitectura urbana",
+      factEn: "Architects calculate roof area in square meters to determine how many solar panels can fit, maximizing clean energy for hospitals, schools, and homes!",
+      factEs: "Los arquitectos calculan el área del techo en metros cuadrados para saber cuántos paneles solares caben, ¡maximizando la energía limpia para escuelas y hogares!",
+      icon: "☀️",
+    },
+    volume: {
+      titleEn: "Eco-Friendly Packaging & Container Ships",
+      titleEs: "Empaque ecológico y barcos de carga",
+      factEn: "Global shipping companies calculate cubic meters of volume to fit thousands of cargo containers onto mega-ships without wasting a single cubic inch of space or fuel!",
+      factEs: "Las empresas de transporte calculan metros cúbicos de volumen para acomodar contenedores en barcos gigantes sin desperdiciar ni un centímetro de espacio o combustible.",
+      icon: "📦",
+    },
+    "surface-area": {
+      titleEn: "Heat Shield Engineering & Product Packaging",
+      titleEs: "Escudos térmicos espaciales y empaques",
+      factEn: "When space capsules re-enter Earth's atmosphere, engineers calculate the total surface area requiring ceramic heat tiles. Cereal companies design boxes with minimal surface area to save cardboard!",
+      factEs: "Al regresar a la atmósfera, los ingenieros calculan el área de superficie que necesita baldosas térmicas. ¡Las empresas diseñan cajas con menor superficie para ahorrar cartón!",
+      icon: "🛰️",
+    },
+    decimals: {
+      titleEn: "Global Currency Exchange & Digital Banking",
+      titleEs: "Tipo de cambio mundial y banca digital",
+      factEn: "Banks process trillions of dollars every second using exact decimal arithmetic. Aligning tenths and hundredths ensures every penny and centavo is tracked accurately!",
+      factEs: "Los bancos procesan billones de dólares cada segundo con aritmética decimal exacta. ¡Alinear décimos y centésimos asegura que cada centavo quede registrado!",
+      icon: "💳",
+    },
+    factors: {
+      titleEn: "Cybersecurity & RSA Password Encryption",
+      titleEs: "Ciberseguridad y encriptación de contraseñas",
+      factEn: "Every secure website you visit uses prime numbers! Cryptography algorithms multiply two gigantic prime numbers together. Breaking the encryption requires finding the prime factors, which would take supercomputers thousands of years!",
+      factEs: "¡Cada sitio web seguro usa números primos! Los algoritmos multiplican dos números primos gigantescos. Romper la encriptación requeriría factorizar, ¡lo que tardaría miles de años!",
+      icon: "🔐",
+    },
+  };
+
+  return (
+    spotlights[topic] || {
+      titleEn: "STEM Careers & Everyday Life",
+      titleEs: "Carreras STEM y vida cotidiana",
+      factEn: "Mathematicians, scientists, and software designers use this exact mathematical model to solve real-world problems every single day!",
+      factEs: "¡Matemáticos, científicos y desarrolladores usan este mismo modelo para resolver problemas en la vida real todos los días!",
+      icon: "💡",
+    }
+  );
+}
+
+export function getTopicMisconception(topic) {
+  const misconceptions = {
+    exponents: {
+      trapEn: "Multiplying base × exponent (thinking 3⁴ = 12 instead of 3 × 3 × 3 × 3 = 81).",
+      trapEs: "Multiplicar base × exponente (pensar que 3⁴ = 12 en vez de 3 × 3 × 3 × 3 = 81).",
+      coachEn: "Ask: 'What does the little exponent number tell us to do? How many copies are multiplying?'",
+      coachEs: "Pregunta: '¿Qué nos dice el número exponente pequeño? ¿Cuántas copias se multiplican?'",
+    },
+    ratios: {
+      trapEn: "Adding the same amount to both parts instead of multiplying by the same factor.",
+      trapEs: "Sumar la misma cantidad a ambas partes en lugar de multiplicar por el mismo factor.",
+      coachEn: "Ask: 'In a recipe, if we double the juice, do we add 2 cups or multiply by 2?'",
+      coachEs: "Pregunta: 'En una receta, si duplicamos el jugo, ¿sumamos 2 o multiplicamos por 2?'",
+    },
+    equations: {
+      trapEn: "Doing an operation to only one side of the equal sign, unbalancing the equation.",
+      trapEs: "Hacer una operación en un solo lado del signo igual, desequilibrando la ecuación.",
+      coachEn: "Ask: 'If this were a real balance scale, what happens if we only remove blocks from one side?'",
+      coachEs: "Pregunta: 'Si fuera una balanza real, ¿qué pasa si solo quitamos bloques de un lado?'",
+    },
+    inequalities: {
+      trapEn: "Forgetting whether the boundary number itself is included (> vs ≥).",
+      trapEs: "Olvidar si el número límite está incluido o no (> frente a ≥).",
+      coachEn: "Ask: 'Is there a line underneath the symbol? Does it say greater than, or greater than or equal to?'",
+      coachEs: "Pregunta: '¿Tiene una línea abajo el símbolo? ¿Dice mayor que, o mayor o igual que?'",
+    },
+    expressions: {
+      trapEn: "Combining unlike terms (like adding 3x + 5 to get 8x).",
+      trapEs: "Combinar términos no semejantes (como sumar 3x + 5 y obtener 8x).",
+      coachEn: "Ask: 'Think of x as apples and numbers as oranges. Can 3 apples and 5 oranges become 8 apples?'",
+      coachEs: "Pregunta: 'Imagina x como manzanas y números como naranjas. ¿3 manzanas y 5 naranjas pueden ser 8 manzanas?'",
+    },
+    statistics: {
+      trapEn: "Finding the middle number without putting data in order from least to greatest first.",
+      trapEs: "Buscar el número central sin ordenar primero los datos de menor a mayor.",
+      coachEn: "Ask: 'Are our numbers in order from smallest to biggest before we find the median?'",
+      coachEs: "Pregunta: '¿Están los números ordenados de menor a mayor antes de buscar la mediana?'",
+    },
+    "coordinate-plane": {
+      trapEn: "Reversing the x and y coordinates (moving vertical first instead of horizontal).",
+      trapEs: "Invertir las coordenadas x e y (moverse en vertical primero en vez de horizontal).",
+      coachEn: "Ask: 'Remember: Run before you jump! Which letter comes first in the alphabet: x or y?'",
+      coachEs: "Pregunta: '¡Corre antes de saltar! ¿Qué letra va primero en el abecedario: x o y?'",
+    },
+    "number-line": {
+      trapEn: "Thinking −8 is greater than −2 because 8 is bigger than 2.",
+      trapEs: "Pensar que −8 es mayor que −2 porque 8 es más grande que 2.",
+      coachEn: "Ask: 'Which temperature is colder: −8° or −2°? Which number sits farther left on the number line?'",
+      coachEs: "Pregunta: '¿Qué temperatura es más fría: −8° o −2°? ¿Cuál número está más a la izquierda?'",
+    },
+    fractions: {
+      trapEn: "Dividing without taking the reciprocal of the second fraction (Keep-Change-Flip).",
+      trapEs: "Dividir sin invertir la segunda fracción (Mantener-Cambiar-Invertir).",
+      coachEn: "Ask: 'What is the three-word rule for fraction division? Keep the first, Change the sign, Flip the second!'",
+      coachEs: "Pregunta: '¿Cuál es la regla de 3 pasos? ¡Mantener la primera, Cambiar a multiplicación, Invertir la segunda!'",
+    },
+    area: {
+      trapEn: "Confusing area (square units covering the inside) with perimeter (distance around the outside).",
+      trapEs: "Confundir el área (unidades cuadradas interiores) con el perímetro (distancia alrededor).",
+      coachEn: "Ask: 'Are we putting a fence around the yard (perimeter) or laying carpet on the floor (area)?'",
+      coachEs: "Pregunta: '¿Estamos poniendo una cerca (perímetro) o alfombrando el piso (área)?'",
+    },
+    volume: {
+      trapEn: "Adding the three dimensions instead of multiplying length × width × height.",
+      trapEs: "Sumar las tres dimensiones en vez de multiplicar largo × ancho × alto.",
+      coachEn: "Ask: 'How many cubes are on the bottom layer? How many equal layers are stacked on top?'",
+      coachEs: "Pregunta: '¿Cuántos cubos hay en la base? ¿Cuántas capas iguales hay apiladas?'",
+    },
+    "surface-area": {
+      trapEn: "Missing one or more of the 6 rectangular faces when adding them together.",
+      trapEs: "Olvidar una o más de las 6 caras rectangulares al sumarlas.",
+      coachEn: "Ask: 'A cardboard box has 6 faces: top and bottom, front and back, left and right. Did we add all 6?'",
+      coachEs: "Pregunta: 'Una caja tiene 6 caras: arriba y abajo, frente y atrás, lados. ¿Sumamos las 6?'",
+    },
+    decimals: {
+      trapEn: "Lining up digits at the right edge like whole numbers instead of lining up decimal points.",
+      trapEs: "Alinear los dígitos a la derecha como números enteros en vez de alinear los puntos decimales.",
+      coachEn: "Ask: 'Are the decimal points standing in a straight vertical line so tenths match tenths?'",
+      coachEs: "Pregunta: '¿Están los puntos decimales en una línea vertical recta para que décimos coincidan con décimos?'",
+    },
+    factors: {
+      trapEn: "Thinking 1 is a prime number (1 only has one factor, but prime numbers need exactly two: 1 and itself).",
+      trapEs: "Pensar que el 1 es un número primo (el 1 solo tiene un factor, pero los primos necesitan exactamente dos).",
+      coachEn: "Ask: 'Does the number have exactly two different factors? What are they?'",
+      coachEs: "Pregunta: '¿Tiene el número exactamente dos factores diferentes? ¿Cuáles son?'",
+    },
+  };
+
+  return (
+    misconceptions[topic] || {
+      trapEn: "Rushing to compute an answer without drawing or visualizing the problem first.",
+      trapEs: "Apurarse a calcular sin dibujar o visualizar el problema primero.",
+      coachEn: "Ask: 'Can we draw a picture or diagram of what is happening before we write equations?'",
+      coachEs: "Pregunta: '¿Podemos hacer un dibujo o diagrama de lo que pasa antes de escribir ecuaciones?'",
+    }
+  );
+}
+
+export const MATH_TALK_QUESTIONS = [
+  {
+    qEn: "Can you show me how you see that in the picture above?",
+    qEs: "¿Puedes mostrarme cómo ves eso en el dibujo de arriba?",
+    followEn: "Follow-up: Point to where the numbers match the visual model.",
+    followEs: "Seguimiento: Señala dónde los números coinciden con el modelo visual.",
+  },
+  {
+    qEn: "What would happen if we doubled the numbers in this problem?",
+    qEs: "¿Qué pasaría si duplicamos los números de este problema?",
+    followEn: "Follow-up: Does the relationship stay the same or change?",
+    followEs: "Seguimiento: ¿La relación se mantiene igual o cambia?",
+  },
+  {
+    qEn: "What is another way we could solve or explain this together?",
+    qEs: "¿De qué otra forma podríamos resolverlo o explicarlo juntos?",
+    followEn: "Follow-up: Can we check it using multiplication, a tape diagram, or a number line?",
+    followEs: "Seguimiento: ¿Podemos comprobarlo usando otra herramienta o modelo?",
+  },
+  {
+    qEn: "How would you explain this step to a 5th grader who hasn't seen it yet?",
+    qEs: "¿Cómo le explicarías este paso a un estudiante de 5.º grado?",
+    followEn: "Follow-up: What vocabulary word makes the explanation clearest?",
+    followEs: "Seguimiento: ¿Qué palabra de vocabulario hace más clara la explicación?",
+  },
+  {
+    qEn: "What part of this problem feels familiar, and what part feels new?",
+    qEs: "¿Qué parte de este problema se siente conocida y qué parte parece nueva?",
+    followEn: "Follow-up: What skill from earlier this year helps us here?",
+    followEs: "Seguimiento: ¿Qué habilidad aprendida antes nos ayuda aquí?",
+  },
+  {
+    qEn: "Before we calculate, what is a reasonable estimate for the answer?",
+    qEs: "¿Antes de calcular, cuál es una estimación razonable para la respuesta?",
+    followEn: "Follow-up: Should the answer be bigger or smaller than the starting numbers?",
+    followEs: "Seguimiento: ¿La respuesta debe ser mayor o menor que los números iniciales?",
+  },
+];
+
+export function getTopicPowerUp(topic, config) {
+  const title = config?.title || "Tonight's Math";
+  const powerUps = {
+    exponents: {
+      qEn: "Which statement shows the true meaning of 4³?",
+      qEs: "¿Cuál enunciado muestra el significado real de 4³?",
+      choices: [
+        { en: "4 × 4 × 4 = 64 (multiply 3 copies of 4)", es: "4 × 4 × 4 = 64 (multiplica 3 copias de 4)" },
+        { en: "4 × 3 = 12 (multiply base by exponent)", es: "4 × 3 = 12 (multiplica base por exponente)" },
+        { en: "4 + 4 + 4 = 12 (add 4 three times)", es: "4 + 4 + 4 = 12 (suma 4 tres veces)" },
+      ],
+      correctIndex: 0,
+      hintEn: "The exponent tells how many copies of the base multiply together!",
+      hintEs: "¡El exponente dice cuántas copias de la base se multiplican juntas!",
+    },
+    ratios: {
+      qEn: "If a recipe uses 2 cups of lemonade for every 3 cups of seltzer, which mixture tastes identical?",
+      qEs: "Si una receta usa 2 tazas de limonada por cada 3 de agua con gas, ¿cuál mezcla sabe idéntica?",
+      choices: [
+        { en: "4 cups lemonade and 6 cups seltzer (scaled by ×2)", es: "4 de limonada y 6 de agua con gas (escalado ×2)" },
+        { en: "4 cups lemonade and 5 cups seltzer (+2 to each)", es: "4 de limonada y 5 de agua con gas (+2 a cada una)" },
+        { en: "3 cups lemonade and 2 cups seltzer (flipped ratio)", es: "3 de limonada y 2 de agua con gas (razón invertida)" },
+      ],
+      correctIndex: 0,
+      hintEn: "Equivalent ratios multiply or divide BOTH parts by the exact same factor!",
+      hintEs: "¡Las razones equivalentes multiplican o dividen AMBAS partes por el mismo factor!",
+    },
+    equations: {
+      qEn: "To solve x + 7 = 15 while keeping the balance scale level, what must you do?",
+      qEs: "Para resolver x + 7 = 15 manteniendo la balanza en equilibrio, ¿qué debes hacer?",
+      choices: [
+        { en: "Subtract 7 from both sides to get x = 8", es: "Restar 7 de ambos lados para obtener x = 8" },
+        { en: "Add 7 to both sides to get x = 22", es: "Sumar 7 a ambos lados para obtener x = 22" },
+        { en: "Multiply both sides by 7", es: "Multiplicar ambos lados por 7" },
+      ],
+      correctIndex: 0,
+      hintEn: "Use the inverse operation on both sides to isolate the variable!",
+      hintEs: "¡Usa la operación inversa en ambos lados para despejar la incógnita!",
+    },
+    inequalities: {
+      qEn: "Which set of values makes the inequality m ≥ 6 true?",
+      qEs: "¿Qué conjunto de valores hace verdadera la desigualdad m ≥ 6?",
+      choices: [
+        { en: "6, 7, 8, 12 (includes 6 because of 'greater than or equal to')", es: "6, 7, 8, 12 (incluye el 6 por ser 'mayor o igual que')" },
+        { en: "7, 8, 9 only (6 is not allowed)", es: "Solo 7, 8, 9 (el 6 no se permite)" },
+        { en: "1, 2, 3, 4, 5 (strictly less than 6)", es: "1, 2, 3, 4, 5 (estrictamente menores que 6)" },
+      ],
+      correctIndex: 0,
+      hintEn: "The symbol ≥ has a solid bar underneath, meaning equal to 6 is included!",
+      hintEs: "¡El símbolo ≥ tiene una línea abajo, lo que incluye el 6!",
+    },
+    expressions: {
+      qEn: "Which expression is equivalent to 5(y + 3) using the distributive property?",
+      qEs: "¿Qué expresión es equivalente a 5(y + 3) usando la propiedad distributiva?",
+      choices: [
+        { en: "5y + 15 (multiply 5 by y and 5 by 3)", es: "5y + 15 (multiplica 5 por y y 5 por 3)" },
+        { en: "5y + 3 (multiply only the first term)", es: "5y + 3 (multiplica solo el primer término)" },
+        { en: "y + 15 (forget the 5 on y)", es: "y + 15 (olvida el 5 en la y)" },
+      ],
+      correctIndex: 0,
+      hintEn: "Distribute the outside number to EVERY term inside the parentheses!",
+      hintEs: "¡Distribuye el número de afuera a CADA término dentro del paréntesis!",
+    },
+    statistics: {
+      qEn: "What is the best way to describe the median of a data set?",
+      qEs: "¿Cuál es la mejor manera de describir la mediana de un conjunto de datos?",
+      choices: [
+        { en: "The exact middle value when all numbers are ordered least to greatest", es: "El valor central exacto cuando los números están ordenados de menor a mayor" },
+        { en: "The sum of all numbers divided by the count", es: "La suma de todos los números dividida entre el conteo" },
+        { en: "The difference between maximum and minimum values", es: "La diferencia entre el valor máximo y el mínimo" },
+      ],
+      correctIndex: 0,
+      hintEn: "Order the numbers first! The median splits the data into two equal halves.",
+      hintEs: "¡Ordena los números primero! La mediana divide los datos en dos mitades iguales.",
+    },
+    "coordinate-plane": {
+      qEn: "Starting at the origin (0, 0), where is the point (−3, 4) located?",
+      qEs: "Empezando en el origen (0, 0), ¿dónde se ubica el punto (−3, 4)?",
+      choices: [
+        { en: "Left 3 units on the x-axis, then Up 4 units on the y-axis (Quadrant II)", es: "3 unidades a la izquierda en el eje x, luego 4 arriba en el eje y (Cuadrante II)" },
+        { en: "Right 3 units on the x-axis, then Down 4 units on the y-axis", es: "3 unidades a la derecha en el eje x, luego 4 abajo en el eje y" },
+        { en: "Up 3 units on the y-axis, then Left 4 units on the x-axis", es: "3 unidades arriba en el eje y, luego 4 a la izquierda en el eje x" },
+      ],
+      correctIndex: 0,
+      hintEn: "(x, y): First move horizontally (x), then move vertically (y)!",
+      hintEs: "(x, y): ¡Primero muévete en horizontal (x), luego en vertical (y)!",
+    },
+    "number-line": {
+      qEn: "On a horizontal number line, which integer is farthest to the left?",
+      qEs: "En una recta numérica horizontal, ¿qué entero está más a la izquierda?",
+      choices: [
+        { en: "−9 (farthest left, so smallest value)", es: "−9 (más a la izquierda, por tanto menor valor)" },
+        { en: "−2 (closer to zero)", es: "−2 (más cerca de cero)" },
+        { en: "0 (the center)", es: "0 (el centro)" },
+      ],
+      correctIndex: 0,
+      hintEn: "The farther left a number sits on the number line, the smaller its value!",
+      hintEs: "¡Cuanto más a la izquierda esté un número, menor es su valor!",
+    },
+    fractions: {
+      qEn: "How many 1/4-cup scoops fit into 3/2 (1 1/2) cups of rice? (3/2 ÷ 1/4)",
+      qEs: "¿Cuántas medidas de 1/4 caben en 3/2 (1 1/2) tazas de arroz? (3/2 ÷ 1/4)",
+      choices: [
+        { en: "6 scoops (3/2 × 4/1 = 12/2 = 6)", es: "6 medidas (3/2 × 4/1 = 12/2 = 6)" },
+        { en: "3/8 scoop (multiplied without flipping)", es: "3/8 de medida (multiplicado sin invertir)" },
+        { en: "2 scoops (subtracted denominators)", es: "2 medidas (restando denominadores)" },
+      ],
+      correctIndex: 0,
+      hintEn: "Keep the first fraction, Change division to multiplication, Flip the second fraction!",
+      hintEs: "¡Mantén la primera fracción, Cambia a multiplicación, Invierte la segunda!",
+    },
+    area: {
+      qEn: "A rectangle has a base of 8 units and a height of 5 units. What is its area?",
+      qEs: "Un rectángulo tiene base de 8 unidades y altura de 5 unidades. ¿Cuál es su área?",
+      choices: [
+        { en: "40 square units (base × height)", es: "40 unidades cuadradas (base × altura)" },
+        { en: "26 units (perimeter: 8 + 5 + 8 + 5)", es: "26 unidades (perímetro: 8 + 5 + 8 + 5)" },
+        { en: "20 square units (divided by 2 by mistake)", es: "20 unidades cuadradas (dividido entre 2 por error)" },
+      ],
+      correctIndex: 0,
+      hintEn: "Area measures the flat square tiles that cover the surface: Base × Height!",
+      hintEs: "¡El área mide las baldosas cuadradas que cubren la superficie: Base × Altura!",
+    },
+    volume: {
+      qEn: "A box measures 4 cm by 3 cm by 5 cm. How many 1-cm unit cubes fill it completely?",
+      qEs: "Una caja mide 4 cm por 3 cm por 5 cm. ¿Cuántos cubos de 1 cm la llenan por completo?",
+      choices: [
+        { en: "60 cubic cm (4 × 3 × 5)", es: "60 cm cúbicos (4 × 3 × 5)" },
+        { en: "24 cubic cm (4 + 3 + 5 doubled)", es: "24 cm cúbicos (4 + 3 + 5 duplicado)" },
+        { en: "12 cubic cm (bottom layer only)", es: "12 cm cúbicos (solo la capa del fondo)" },
+      ],
+      correctIndex: 0,
+      hintEn: "Volume is the product of 3 dimensions: Length × Width × Height!",
+      hintEs: "¡El volumen es el producto de 3 dimensiones: Largo × Ancho × Alto!",
+    },
+    "surface-area": {
+      qEn: "When calculating the total surface area of a rectangular prism, what are you finding?",
+      qEs: "Al calcular el área total de la superficie de un prisma rectangular, ¿qué estás hallando?",
+      choices: [
+        { en: "The sum of the areas of all 6 flat faces", es: "La suma de las áreas de las 6 caras planas" },
+        { en: "The cubes packing the interior space", es: "Los cubos que llenan el espacio interior" },
+        { en: "The length of the 12 edges", es: "La longitud de las 12 aristas" },
+      ],
+      correctIndex: 0,
+      hintEn: "Think of unfolding the 3D cardboard box flat into a 2D net and finding each face's area!",
+      hintEs: "¡Imagina desdoblar la caja de cartón 3D en una plantilla plana y hallar el área de cada cara!",
+    },
+    decimals: {
+      qEn: "When adding 14.8 + 2.35, what is the crucial alignment rule?",
+      qEs: "Al sumar 14.8 + 2.35, ¿cuál es la regla fundamental de alineación?",
+      choices: [
+        { en: "Line up the decimal points so tenths match tenths (14.80 + 2.35 = 17.15)", es: "Alinear los puntos decimales para que décimos coincidan con décimos (14.80 + 2.35 = 17.15)" },
+        { en: "Line up digits to the right like whole numbers (giving 14.8 + 2.35 = 38.3)", es: "Alinear los dígitos a la derecha como números enteros" },
+        { en: "Drop all decimal points before adding", es: "Eliminar los puntos decimales antes de sumar" },
+      ],
+      correctIndex: 0,
+      hintEn: "Line up the decimal points vertically, and annex a placeholder zero if helpful!",
+      hintEs: "¡Alinea los puntos decimales en columna vertical y añade ceros si te ayuda!",
+    },
+    factors: {
+      qEn: "Which number is prime (having exactly two factors: 1 and itself)?",
+      qEs: "¿Qué número es primo (tiene exactamente dos factores: el 1 y sí mismo)?",
+      choices: [
+        { en: "17 (only 1 × 17 = 17)", es: "17 (solo 1 × 17 = 17)" },
+        { en: "9 (composite: 1, 3, 9)", es: "9 (compuesto: 1, 3, 9)" },
+        { en: "15 (composite: 1, 3, 5, 15)", es: "15 (compuesto: 1, 3, 5, 15)" },
+      ],
+      correctIndex: 0,
+      hintEn: "A prime number cannot be divided into equal groups other than 1 and itself!",
+      hintEs: "¡Un número primo no se puede dividir en grupos iguales excepto entre 1 y sí mismo!",
+    },
+  };
+
+  return (
+    powerUps[topic] || {
+      qEn: `What is the key mathematical focus of ${title}?`,
+      qEs: `¿Cuál es el enfoque matemático clave de ${title}?`,
+      choices: [
+        { en: "Understand the visual model and reason step by step", es: "Comprender el modelo visual y razonar paso a paso" },
+        { en: "Rush to guess the final answer without steps", es: "Adivinar la respuesta final sin pasos" },
+        { en: "Ignore units and labels in the problem", es: "Ignorar las unidades y etiquetas del problema" },
+      ],
+      correctIndex: 0,
+      hintEn: "Take your time to understand the big idea and visual model first!",
+      hintEs: "¡Tómense su tiempo para entender la idea principal y el modelo visual primero!",
+    }
+  );
+}
+
+export function renderSkillPowerUp(config, topic = "expressions") {
+  const powerUp = getTopicPowerUp(topic, config);
+  const correctIdx = powerUp.correctIndex;
+  return `
+    <section class="guided-section card section-powerup" aria-label="Skill Power-Up Challenge">
+      <div class="powerup-header">
+        <div class="powerup-title-wrap">
+          <span class="powerup-tag">⚡ SKILL POWER-UP / RETO DE PODER</span>
+          <h3 class="powerup-question">
+            <span class="lang-en">${esc(powerUp.qEn)}</span>
+            <span class="lang-es" lang="es">${esc(powerUp.qEs)}</span>
+          </h3>
+        </div>
+        <div class="powerup-badge-star" id="powerup_star_badge">★ 1 Star / 1 Estrella</div>
+      </div>
+      <div class="powerup-choices-grid" id="powerup_choices">
+        ${powerUp.choices
+          .map(
+            (c, i) => `
+          <button type="button" class="powerup-choice-btn" data-choice-idx="${i}" data-is-correct="${i === correctIdx ? "true" : "false"}"
+            data-hint-en="${escAttr(powerUp.hintEn)}" data-hint-es="${escAttr(powerUp.hintEs)}"
+            onclick="checkSkillPowerUp(this, ${i}, ${correctIdx})">
+            <span class="powerup-letter">${String.fromCharCode(65 + i)}</span>
+            <span class="powerup-choice-text">
+              <span class="lang-en">${esc(c.en)}</span>
+              <span class="lang-es" lang="es">${esc(c.es)}</span>
+            </span>
+          </button>`,
+          )
+          .join("")}
+      </div>
+      <div class="powerup-feedback-box" id="powerup_feedback_box" hidden>
+        <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
+      </div>
+    </section>`;
+}
+
+export function renderVocabMatchChallenge(vocabList) {
+  if (!Array.isArray(vocabList) || vocabList.length < 2) return "";
+  const count = vocabList.length;
+  const shuffledDefs = vocabList.map((v, idx) => ({
+    term: v.term,
+    termEs: v.termEs,
+    definition: v.definition,
+    definitionEs: v.definitionEs,
+    origIdx: idx,
+  }));
+  if (shuffledDefs.length > 1) {
+    const last = shuffledDefs.pop();
+    shuffledDefs.unshift(last);
+  }
+
+  return `
+    <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="${count}">
+      <div class="vocab-game-header">
+        <div class="vocab-game-title">
+          <span class="vocab-game-icon" aria-hidden="true">⚡</span>
+          <div>
+            <h3 class="vocab-game-h3">
+              <span class="lang-en">Match &amp; Master Challenge</span>
+              <span class="lang-es" lang="es">Desafío: Empareja y Domina</span>
+            </h3>
+            <p class="vocab-game-sub bilingual-block">
+              <span class="lang-en">Tap a word on the left, then tap its matching definition on the right!</span>
+              <span class="lang-es" lang="es">¡Toca una palabra a la izquierda y su significado a la derecha!</span>
+            </p>
+          </div>
+        </div>
+        <div class="vocab-game-status">
+          <span class="vocab-game-counter">
+            <span class="lang-en">Matched: </span><span class="lang-es" lang="es">Emparejadas: </span>
+            <strong id="vocab_match_count">0</strong> / ${count}
+          </span>
+        </div>
+      </div>
+      <div class="vocab-match-board">
+        <div class="vocab-match-col col-terms" aria-label="Vocabulary terms">
+          ${vocabList
+            .map(
+              (v, i) => `
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="${i}" data-side="term" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">${esc(v.term)}</span>
+              ${v.termEs ? `<span class="chip-label-es" lang="es">${esc(v.termEs)}</span>` : ""}
+            </button>`,
+            )
+            .join("")}
+        </div>
+        <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
+          ${shuffledDefs
+            .map(
+              (v) => `
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="${v.origIdx}" data-side="def" onclick="selectVocabMatchChip(this)">
+              <span class="chip-label-en">${esc(v.definition)}</span>
+              ${v.definitionEs ? `<span class="chip-label-es" lang="es">${esc(v.definitionEs)}</span>` : ""}
+            </button>`,
+            )
+            .join("")}
+        </div>
+      </div>
+      <div class="vocab-game-win" id="vocab_match_win" hidden>
+        <div class="win-banner">
+          <span class="win-emoji" aria-hidden="true">🎉</span>
+          <div class="win-text">
+            <strong><span class="lang-en">Vocab Master! All ${count} words matched!</span><span class="lang-es" lang="es">¡Maestro del Vocabulario! ¡Todas las palabras emparejadas!</span></strong>
+            <p><span class="lang-en">Great job connecting the math vocabulary. Explore the flashcards below!</span><span class="lang-es" lang="es">Excelente conectando el vocabulario. ¡Exploren las tarjetas abajo!</span></p>
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetVocabMatchGame()">
+            <span class="lang-en">Play Again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span>
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
 export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
   if (!Array.isArray(vocabList) || vocabList.length === 0) return "";
+
+  const hasVocabGame = vocabList.length >= 2;
+  const gameHtml = hasVocabGame ? renderVocabMatchChallenge(vocabList) : "";
 
   return `
     <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
       <h2 class="section-title">📚 Words to know / Palabras clave</h2>
+      ${gameHtml}
+      <div class="vocab-toolbar">
+        <div class="vocab-filter-group" role="radiogroup" aria-label="Filter vocabulary cards">
+          <button type="button" class="btn btn-sm btn-filter is-active" data-filter="all" onclick="filterVocabCards('all', this)"><span class="lang-en">All</span><span class="lang-es" lang="es">Todos</span></button>
+          <button type="button" class="btn btn-sm btn-filter" data-filter="review" onclick="filterVocabCards('review', this)"><span class="lang-en">Needs Review</span><span class="lang-es" lang="es">Por repasar</span></button>
+          <button type="button" class="btn btn-sm btn-filter" data-filter="mastered" onclick="filterVocabCards('mastered', this)">⭐ <span class="lang-en">Mastered</span><span class="lang-es" lang="es">Dominadas</span></button>
+        </div>
+        <div class="vocab-speed-toggle">
+          <button type="button" class="btn btn-sm btn-secondary" id="vocab_speed_btn" onclick="toggleVocabSpeed()" title="Toggle voice speed / Cambiar velocidad">🐢 <span id="vocab_speed_label">Normal</span></button>
+        </div>
+      </div>
       <p class="vocab-family-note bilingual-block">
         <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
         <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
       </p>
       <div class="vocab-container">
         ${vocabList
-          .map((v) => {
+          .map((v, vIdx) => {
             const term = v.term || "";
             const termEs = v.termEs || "";
             const definition = v.definition || "";
@@ -1506,9 +2111,13 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
             const imgSrc = resolveVocabImage(term, v.image);
             const imgAlt = vocabImageAlt(term, definition);
             return `
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_${vIdx}" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
+                  <div class="vocab-card-top-bar">
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('${escAttr(term)}', '${escAttr(termEs)}')" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊</button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="${vIdx}" onclick="event.stopPropagation(); toggleVocabCardMastery(${vIdx})" title="Mark Mastered / Marcar Dominado" aria-label="Mark ${esc(term)} mastered">★</button>
+                  </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="72" height="72" />
                   </div>
@@ -1521,11 +2130,21 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
                   <p class="vocab-def">${esc(definition)}</p>
                   ${definitionEs ? `<p class="vocab-def-es" lang="es">${esc(definitionEs)}</p>` : ""}
                   ${visual ? `<p class="vocab-back-visual">📌 ${esc(visual)}</p>` : ""}
+                  <div class="vocab-card-back-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
                 </div>
               </div>
             </div>`;
           })
           .join("")}
+      </div>
+      <div class="tab-flow-nav">
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('together')">
+          <span class="lang-en">Next: Try Together ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Intentar Juntos ➔</span>
+        </button>
       </div>
     </section>`;
 }
@@ -1536,15 +2155,65 @@ function tabPanelAttrs(id, hidden = false) {
 
 export function renderLearnTab(config, visualLabHtml = "") {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
-  const concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
+  let concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
+  const topic = detectVisualTopic(config);
+  const powerUpHtml = renderSkillPowerUp(config, topic);
+  const spotlight = getRealWorldSpotlight(topic);
+  const mis = getTopicMisconception(topic);
+
+  // Add Listen button to the Big Idea title
+  const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
+  concept = concept.replace(/(<h2[^>]*class="section-title"[^>]*>[\s\S]*?<\/h2>)/i, `$1${listenBtn}`);
+
+  const spotlightHtml = `
+    <div class="real-world-spotlight card-ish">
+      <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">${spotlight.icon}</span> <span>WHY THIS MATTERS / ¿POR QUÉ IMPORTA?</span></div>
+      <h3 class="spotlight-title">
+        <span class="lang-en">${esc(spotlight.titleEn)}</span>
+        <span class="lang-es" lang="es">${esc(spotlight.titleEs)}</span>
+      </h3>
+      <p class="spotlight-text bilingual-block">
+        <span class="lang-en">${esc(spotlight.factEn)}</span>
+        <span class="lang-es" lang="es">${esc(spotlight.factEs)}</span>
+      </p>
+    </div>`;
+
+  const misconceptionHtml = `
+    <div class="misconception-card card-ish">
+      <div class="misconception-head">
+        <span class="mis-icon" aria-hidden="true">⚠️</span>
+        <div>
+          <strong><span class="lang-en">Watch Out / Ojo con esto:</span><span class="lang-es" lang="es">Cuidado con este error común:</span></strong>
+          <p class="mis-trap">
+            <span class="lang-en">${esc(mis.trapEn)}</span>
+            <span class="lang-es" lang="es">${esc(mis.trapEs)}</span>
+          </p>
+        </div>
+      </div>
+      <div class="parent-coach-tip">
+        <strong>💬 <span class="lang-en">Parent Coach Question:</span><span class="lang-es" lang="es">Pregunta de guía:</span></strong>
+        <span class="lang-en">${esc(mis.coachEn)}</span>
+        <span class="lang-es" lang="es">${esc(mis.coachEs)}</span>
+      </div>
+    </div>`;
+
   return `
     <div ${tabPanelAttrs("learn")}>
       ${learning}
       ${concept}
+      ${spotlightHtml}
       ${visualLabHtml}
+      ${misconceptionHtml}
+      ${powerUpHtml}
       <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
+      <div class="tab-flow-nav">
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('words')">
+          <span class="lang-en">Next: Review Words ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Repasar Palabras ➔</span>
+        </button>
+      </div>
     </div>`;
 }
 
@@ -1558,7 +2227,40 @@ export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
 
 export function renderTogetherTab(config, lessonId = "") {
   const inner = renderTryTogether(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
-  return `<div ${tabPanelAttrs("together", true)}>${inner}</div>`;
+  const mathTalkHtml = `
+    <div class="math-talk-hub card-ish" id="math_talk_card">
+      <div class="math-talk-header">
+        <div class="math-talk-badge">💬 MATH TALK GENERATOR / PREGUNTAS DE DIÁLOGO</div>
+        <button type="button" class="btn btn-sm btn-secondary spin-btn" onclick="spinMathTalkPrompt()">🎲 <span class="lang-en">Spin New Question</span><span class="lang-es" lang="es">Girar otra pregunta</span></button>
+      </div>
+      <div class="math-talk-body" id="math_talk_body">
+        <p class="math-talk-q">
+          <span class="lang-en" id="math_talk_en">"Can you show me how you see that in the picture above?"</span>
+          <span class="lang-es" lang="es" id="math_talk_es">"¿Puedes mostrarme cómo ves eso en el dibujo de arriba?"</span>
+        </p>
+        <p class="math-talk-follow">
+          <span class="lang-en" id="math_talk_follow_en">Follow-up: Point to where the numbers match the visual model.</span>
+          <span class="lang-es" lang="es" id="math_talk_follow_es">Seguimiento: Señala dónde los números coinciden con el modelo visual.</span>
+        </p>
+      </div>
+    </div>`;
+
+  return `
+    <div ${tabPanelAttrs("together", true)}>
+      ${inner}
+      ${mathTalkHtml}
+      <div class="scratchpad-inline-toggle">
+        <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
+          ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
+        </button>
+      </div>
+      <div class="tab-flow-nav">
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('workbench')">
+          <span class="lang-en">Next: Explore Math Workbench ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Explorar Pizarra de Matemáticas ➔</span>
+        </button>
+      </div>
+    </div>`;
 }
 
 export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", moreHtml = "") {
@@ -1578,6 +2280,34 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
         <span class="star-chip">🚀 Level-Up ★★</span>
         <span class="star-chip">🏆 Victory ★★★</span>
       </div>
+    </div>`;
+
+  const streakBanner = `
+    <div class="live-streak-banner" id="hw_streak_banner" hidden>
+      <span class="streak-flame" aria-hidden="true">🔥</span>
+      <span class="streak-text">
+        <span class="lang-en">Streak: <strong id="hw_streak_count">1</strong> in a row! Keep going!</span>
+        <span class="lang-es" lang="es">¡Racha: <strong id="hw_streak_count_es">1</strong> seguidas! ¡Sigue así!</span>
+      </span>
+    </div>`;
+
+  const scratchpadToggle = `
+    <div class="scratchpad-inline-toggle">
+      <button type="button" class="btn btn-sm btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
+        ✏️ <span class="lang-en">Open Scratchpad / Draw work</span><span class="lang-es" lang="es">Abrir Pizarra / Dibujar trabajo</span>
+      </button>
+    </div>`;
+
+  const goalReachedBanner = `
+    <div class="goal-reached-banner" id="goal_reached_banner" hidden>
+      <span class="goal-icon" aria-hidden="true">🌟</span>
+      <div class="goal-text">
+        <strong><span class="lang-en">Goal Reached! 3 Stars Earned!</span><span class="lang-es" lang="es">¡Meta Cumplida! ¡3 Estrellas Ganadas!</span></strong>
+        <p><span class="lang-en">Awesome job! You can keep solving or head to the <strong>Victory Lap</strong> tab to claim your certificate!</span><span class="lang-es" lang="es">¡Excelente trabajo! Pueden seguir resolviendo o ir a la pestaña <strong>Listo</strong> para reclamar su certificado.</span></p>
+      </div>
+      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
+      </button>
     </div>`;
 
   const warmupBlock = warmupHtml
@@ -1640,12 +2370,25 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
       </details>`
     : "";
 
+  const flowNext = `
+    <div class="tab-flow-nav">
+      <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('play')">
+        <span class="lang-en">Next: Play Tonight's Math Game ➔</span>
+        <span class="lang-es" lang="es">Siguiente: Jugar el Juego Matemático ➔</span>
+      </button>
+    </div>`;
+
   return `
     <div ${tabPanelAttrs("check", true)}>
       ${intro}
+      ${starsBar}
+      ${streakBanner}
+      ${scratchpadToggle}
+      ${goalReachedBanner}
       ${warmupBlock}
       ${challengeBlock}
       ${more}
+      ${flowNext}
     </div>`;
 }
 
@@ -1682,17 +2425,154 @@ export function renderWorkbenchTab() {
   return `
     <div ${tabPanelAttrs("workbench", true)}>
       <section class="guided-section card section-workbench" aria-label="Math Workbench">
-        <h2 class="section-title">🧮 Math Workbench / Pizarra de matemáticas</h2>
-        <p class="bilingual-block">
-          <span class="lang-en">A digital scratch pad to draw models, line up decimals, and show your work. It opens in a new tab so you keep your place on this homework.</span>
-          <span class="lang-es" lang="es">Una pizarra digital para dibujar modelos, alinear decimales y mostrar el trabajo. Se abre en una pestaña nueva para no perder tu lugar en esta tarea.</span>
-        </p>
+        <div class="workbench-hero-header">
+          <div class="workbench-title-group">
+            <span class="workbench-badge">🧮 VIRTUAL MANIPULATIVE STUDIO / ESTUDIO DIGITAL</span>
+            <h2 class="section-title">Math Workbench / Pizarra de matemáticas</h2>
+            <p class="bilingual-block workbench-lead">
+              <span class="lang-en">Explore interactive math tools right here, or open the full workspace in a new tab. Select a tool to model tonight's ideas!</span>
+              <span class="lang-es" lang="es">Exploren herramientas interactivas aquí mismo, o abran la pizarra completa en otra pestaña. ¡Elijan una herramienta para modelar ideas!</span>
+            </p>
+          </div>
+          <div class="workbench-actions-top">
+            <a class="btn btn-primary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
+              <span class="lang-en">Open Full Workbench ↗</span>
+              <span class="lang-es" lang="es">Abrir Pizarra Completa ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tool Selection Tabs -->
+        <div class="wb-tool-bar" role="tablist" aria-label="Workbench tools">
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_fractions" onclick="switchWorkbenchTool('fractions')">
+            <span class="tool-icon">📏</span>
+            <span class="tool-name"><span class="lang-en">Fraction Strips</span><span class="lang-es" lang="es">Fracciones</span></span>
+          </button>
+          <button type="button" class="wb-tool-tab" id="wb_tab_coords" onclick="switchWorkbenchTool('coords')">
+            <span class="tool-icon">🧭</span>
+            <span class="tool-name"><span class="lang-en">Coordinate Grid</span><span class="lang-es" lang="es">Coordenadas</span></span>
+          </button>
+          <button type="button" class="wb-tool-tab" id="wb_tab_tapes" onclick="switchWorkbenchTool('tapes')">
+            <span class="tool-icon">📊</span>
+            <span class="tool-name"><span class="lang-en">Ratio Tape</span><span class="lang-es" lang="es">Cintas de razón</span></span>
+          </button>
+          <button type="button" class="wb-tool-tab" id="wb_tab_decimals" onclick="switchWorkbenchTool('decimals')">
+            <span class="tool-icon">🔢</span>
+            <span class="tool-name"><span class="lang-en">Decimal Columns</span><span class="lang-es" lang="es">Columnas decimales</span></span>
+          </button>
+        </div>
+
+        <!-- Tool Stage -->
+        <div class="wb-tool-stage card-ish">
+          <!-- 1. Fraction Strips Tool -->
+          <div class="wb-panel" id="wb_panel_fractions">
+            <div class="tool-controls-row">
+              <span class="tool-hint"><span class="lang-en">Tap fraction tiles to add bars and compare lengths:</span><span class="lang-es" lang="es">Toca fichas para añadir barras y comparar longitudes:</span></span>
+              <div class="fraction-button-group">
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(1)">1</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(2)">1/2</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(3)">1/3</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(4)">1/4</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(6)">1/6</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(8)">1/8</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(12)">1/12</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="clearFractionBars()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+              </div>
+            </div>
+            <div class="fraction-stage-canvas" id="fraction_stage_canvas">
+              <div class="fraction-row ref-row"><div class="frac-tile tile-1">1 Whole / Entero (1.0)</div></div>
+            </div>
+          </div>
+
+          <!-- 2. Coordinate Grid Tool -->
+          <div class="wb-panel" id="wb_panel_coords" hidden>
+            <div class="tool-controls-row">
+              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid to plot an (x, y) point and see its quadrant:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula para marcar un punto (x, y) y ver su cuadrante:</span></span>
+              <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — Origin / Origen</span>
+            </div>
+            <div class="coord-canvas-wrap">
+              <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
+            </div>
+          </div>
+
+          <!-- 3. Ratio Tape Diagram Tool -->
+          <div class="wb-panel" id="wb_panel_tapes" hidden>
+            <div class="tool-controls-row">
+              <label class="tape-slider-label">
+                <span class="lang-en">Part A (Blue):</span><span class="lang-es" lang="es">Parte A (Azul):</span>
+                <input type="range" min="1" max="8" value="3" id="tape_slider_a" oninput="updateTapeDiagram()" />
+                <strong id="tape_val_a">3</strong>
+              </label>
+              <label class="tape-slider-label">
+                <span class="lang-en">Part B (Coral):</span><span class="lang-es" lang="es">Parte B (Coral):</span>
+                <input type="range" min="1" max="8" value="4" id="tape_slider_b" oninput="updateTapeDiagram()" />
+                <strong id="tape_val_b">4</strong>
+              </label>
+              <label class="tape-slider-label">
+                <span class="lang-en">Scaling Factor:</span><span class="lang-es" lang="es">Factor de escala:</span>
+                <input type="range" min="1" max="5" value="2" id="tape_slider_factor" oninput="updateTapeDiagram()" />
+                <strong id="tape_val_factor">×2</strong>
+              </label>
+            </div>
+            <div class="tape-diagram-render" id="tape_diagram_render"></div>
+          </div>
+
+          <!-- 4. Decimal Place Value Tool -->
+          <div class="wb-panel" id="wb_panel_decimals" hidden>
+            <div class="tool-controls-row">
+              <span class="tool-hint"><span class="lang-en">Type numbers to align decimal points vertically:</span><span class="lang-es" lang="es">Escribe números para alinear puntos decimales:</span></span>
+            </div>
+            <div class="decimal-place-grid">
+              <table class="dec-grid-table">
+                <thead>
+                  <tr><th>Hundreds<br><small>Centenas</small></th><th>Tens<br><small>Decenas</small></th><th>Ones<br><small>Unidades</small></th><th class="dec-pt">.</th><th>Tenths<br><small>Décimos</small></th><th>Hundredths<br><small>Centésimos</small></th><th>Thousandths<br><small>Milésimos</small></th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="2" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="5" /></td>
+                    <td class="dec-pt">.</td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="4" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="0" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                  </tr>
+                  <tr class="op-row">
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="8" /></td>
+                    <td class="dec-pt">.</td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="7" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" value="5" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Family Investigation Prompt -->
+        <div class="family-workbench-investigation card-ish">
+          <span class="investigation-icon" aria-hidden="true">💡</span>
+          <div class="investigation-content">
+            <strong><span class="lang-en">Family Investigation Challenge:</span><span class="lang-es" lang="es">Desafío de investigación familiar:</span></strong>
+            <p><span class="lang-en">Choose one tool above that matches tonight's homework. Try creating an example together before solving the practice problems!</span><span class="lang-es" lang="es">Elijan una herramienta arriba que coincida con la tarea de hoy. ¡Intenten crear un ejemplo juntos antes de resolver los problemas de práctica!</span></p>
+          </div>
+        </div>
+
         <p class="workbench-openrow">
           <a class="btn btn-secondary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
             <span class="lang-en">🧮 Open the Math Workbench ↗</span>
             <span class="lang-es" lang="es">🧮 Abrir la Pizarra de matemáticas ↗</span>
           </a>
         </p>
+        <div class="tab-flow-nav">
+          <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('check')">
+            <span class="lang-en">Next: Check Problems &amp; Earn Stars ➔</span>
+            <span class="lang-es" lang="es">Siguiente: Resolver Problemas y Ganar Estrellas ➔</span>
+          </button>
+        </div>
       </section>
     </div>`;
 }
@@ -1827,8 +2707,41 @@ const HOMEWORK_TABS = [
   { id: "done", icon: "🎉", en: "Done", es: "Listo" },
 ];
 
+export function renderScratchpadHtml() {
+  return `
+    <div class="interactive-scratchpad card-ish" id="hw_scratchpad_wrapper" hidden>
+      <div class="scratchpad-header">
+        <div class="scratchpad-title">
+          <span class="scratchpad-icon" aria-hidden="true">✏️</span>
+          <strong><span class="lang-en">Family Math Scratchpad</span><span class="lang-es" lang="es">Pizarra Familiar de Matemáticas</span></strong>
+        </div>
+        <div class="scratchpad-tools">
+          <div class="color-palette" role="radiogroup" aria-label="Drawing color">
+            <button type="button" class="color-dot is-active" data-color="#12355b" style="background:#12355b;" onclick="setScratchpadColor('#12355b', this)" aria-label="Navy pen"></button>
+            <button type="button" class="color-dot" data-color="#1fa6a2" style="background:#1fa6a2;" onclick="setScratchpadColor('#1fa6a2', this)" aria-label="Teal pen"></button>
+            <button type="button" class="color-dot" data-color="#d97706" style="background:#d97706;" onclick="setScratchpadColor('#d97706', this)" aria-label="Amber pen"></button>
+            <button type="button" class="color-dot" data-color="#d9795d" style="background:#d9795d;" onclick="setScratchpadColor('#d9795d', this)" aria-label="Coral pen"></button>
+          </div>
+          <div class="grid-mode-group">
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn is-active" onclick="setScratchpadGrid('blank', this)">📄 <span class="lang-en">Blank</span><span class="lang-es" lang="es">Blanco</span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('graph', this)">📐 <span class="lang-en">Grid</span><span class="lang-es" lang="es">Cuadrícula</span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('dots', this)">⚬ <span class="lang-en">Dots</span><span class="lang-es" lang="es">Puntos</span></button>
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary tool-btn" id="scratchpad_eraser_btn" onclick="toggleScratchpadEraser()">🧹 <span class="lang-en">Eraser</span><span class="lang-es" lang="es">Borrador</span></button>
+          <button type="button" class="btn btn-sm btn-secondary tool-btn" onclick="clearScratchpad()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+          <button type="button" class="scratchpad-close-btn" onclick="toggleScratchpad()" aria-label="Close scratchpad">✕</button>
+        </div>
+      </div>
+      <div class="scratchpad-canvas-wrap">
+        <canvas class="scratchpad-canvas" id="hw_scratchpad_canvas" width="760" height="220" style="background:white; width:100%; height:220px; touch-action:none;"></canvas>
+      </div>
+      <p class="scratchpad-hint"><span class="lang-en">💡 Draw fraction bars, tape diagrams, equations, or line up decimals together!</span><span class="lang-es" lang="es">💡 ¡Dibujen barras de fracciones, modelos o alineen decimales juntos!</span></p>
+    </div>`;
+}
+
 export function renderHomeworkTabs(panelsHtml) {
   const tabCount = HOMEWORK_TABS.length;
+  const scratchpad = renderScratchpadHtml();
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
@@ -1838,17 +2751,25 @@ export function renderHomeworkTabs(panelsHtml) {
             <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
               aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
               data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
+              <span class="tab-step-badge">${i + 1}</span>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
+              <span class="tab-badge-star" id="tab_badge_${t.id}" aria-hidden="true"></span>
             </button>`,
           ).join("")}
         </nav>
         <div class="homework-tab-progress" aria-live="polite">
-          <span id="hw_tab_progress">1 of ${tabCount}</span>
+          <div class="tab-progress-wrap">
+            <span id="hw_tab_progress">1 of ${tabCount}</span>
+            <div class="tab-progress-track">
+              <div class="tab-progress-fill" id="tab_progress_fill" style="width: 10%;"></div>
+            </div>
+          </div>
           <button type="button" class="btn btn-sm btn-secondary print-all-btn" onclick="window.print()">🖨️ Print all / Imprimir todo</button>
         </div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
+        ${scratchpad}
         ${panelsHtml}
       </div>
     </div>`;
@@ -1898,12 +2819,18 @@ function switchHomeworkTab(tabId) {
     p.hidden = p.dataset.tabPanel !== tabId;
   });
   const prog = document.getElementById('hw_tab_progress');
-  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '8';
+  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '10';
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
+  const fill = document.getElementById('tab_progress_fill');
+  if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+  if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
   if (tabId === 'arcade') {
     var af = document.querySelector('.arcade-frame');
     if (af && !af.getAttribute('src') && af.dataset.src) af.setAttribute('src', af.dataset.src);
+  }
+  if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
+    updateCelebrationTab();
   }
   const activeBtn = document.getElementById('hw_tab_' + tabId);
   if (activeBtn) {
@@ -3355,4 +4282,518 @@ body.lang-mode-es .bilingual-grid {
     margin: 0;
   }
 }
+
+/* Gamified Tab Bar & Flow Navigation */
+.tab-step-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 99px;
+  background: rgba(18, 53, 91, 0.08);
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.homework-tab-btn.is-active .tab-step-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--white);
+}
+.tab-badge-star {
+  font-size: 11px;
+  color: var(--amber);
+  min-height: 12px;
+  line-height: 1;
+}
+.tab-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tab-progress-track {
+  width: 80px;
+  height: 6px;
+  background: var(--line);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.tab-progress-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+.tab-flow-nav {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+.flow-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  background: var(--teal-ink);
+  color: var(--white);
+  box-shadow: 0 3px 12px rgba(12, 111, 107, 0.22);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: none;
+}
+.flow-next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(12, 111, 107, 0.35);
+}
+
+/* Vocab Match & Master Challenge */
+.vocab-game-shell {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+  border: 2px solid #38bdf8;
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.12);
+}
+.vocab-game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.vocab-game-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vocab-game-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+.vocab-game-h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.vocab-game-sub {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.vocab-game-counter {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  background: var(--white);
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  color: var(--navy);
+}
+.vocab-match-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .vocab-match-board {
+    grid-template-columns: 1fr;
+  }
+}
+.vocab-match-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vocab-match-chip {
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vocab-match-chip:hover:not(:disabled) {
+  border-color: var(--teal);
+  transform: translateY(-1px);
+}
+.vocab-match-chip.is-selected {
+  border-color: var(--amber);
+  background: var(--amber-light);
+  box-shadow: 0 0 0 3px rgba(242, 193, 91, 0.4);
+}
+.vocab-match-chip.is-matched {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+  opacity: 0.85;
+  cursor: default;
+}
+.vocab-match-chip.is-mismatch {
+  border-color: var(--error);
+  background: var(--error-bg);
+  animation: chipShake 0.4s ease;
+}
+@keyframes chipShake {
+  0%, 100% { transform: translateX(0); }
+  25%, 75% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
+.vocab-game-win {
+  margin-top: 14px;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  border: 1.5px solid var(--success);
+}
+.win-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.win-emoji { font-size: 28px; }
+.win-text strong { color: var(--success); font-size: 14.5px; display: block; }
+.win-text p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+
+/* Vocab Card Controls */
+.vocab-card-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 6px;
+}
+.vocab-speak-btn, .vocab-master-toggle {
+  background: rgba(18, 53, 91, 0.06);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.vocab-speak-btn:hover { background: var(--teal-light); transform: scale(1.1); }
+.vocab-master-toggle:hover { transform: scale(1.1); }
+.vocab-master-toggle.is-mastered {
+  color: #f59e0b;
+  background: #fef3c7;
+}
+.vocab-card-back-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.vocab-card-back-actions .btn {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+/* Skill Power-Up Challenge */
+.section-powerup {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid #cbd5e1;
+  margin-top: 20px;
+}
+.powerup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.powerup-tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #7c3aed;
+  background: #ede9fe;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.powerup-question {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.35;
+}
+.powerup-badge-star {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--amber-light);
+  color: #b45309;
+  border: 1px solid var(--amber);
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.powerup-choices-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.powerup-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  transition: all 0.15s ease;
+}
+.powerup-choice-btn:hover:not(:disabled) {
+  border-color: #7c3aed;
+  background: #faf5ff;
+}
+.powerup-letter {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.powerup-choice-btn.is-correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+.powerup-choice-btn.is-correct .powerup-letter {
+  background: var(--success);
+  color: var(--white);
+}
+.powerup-choice-btn.is-wrong {
+  border-color: var(--error);
+  background: var(--error-bg);
+  animation: chipShake 0.4s ease;
+}
+.powerup-feedback-box {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+.powerup-feedback-box.is-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+.powerup-feedback-box.is-hint {
+  background: var(--hint-bg);
+  color: var(--hint);
+  border: 1px solid var(--amber);
+}
+
+/* Interactive Scratchpad */
+.interactive-scratchpad {
+  background: var(--white);
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin: 16px 0;
+  box-shadow: 0 4px 16px rgba(31, 166, 162, 0.15);
+}
+.scratchpad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.scratchpad-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  color: var(--navy);
+}
+.scratchpad-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.color-palette {
+  display: flex;
+  gap: 6px;
+}
+.color-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.color-dot.is-active {
+  transform: scale(1.25);
+  border-color: #000;
+}
+.tool-btn.is-active {
+  background: var(--teal);
+  color: var(--white);
+}
+.scratchpad-close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0 4px;
+}
+.scratchpad-canvas-wrap {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #ffffff;
+}
+.scratchpad-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.scratchpad-inline-toggle {
+  margin: 14px 0;
+}
+.scratchpad-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Live Streak & Goal Reached Banners */
+.live-streak-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1.5px solid #fb923c;
+  border-radius: 99px;
+  padding: 6px 14px;
+  margin: 10px 0 14px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: #9a3412;
+  animation: bannerPop 0.3s ease;
+}
+@keyframes bannerPop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.goal-reached-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
+  border: 2px solid #eab308;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin: 12px 0 16px;
+  box-shadow: 0 4px 16px rgba(234, 179, 8, 0.18);
+  flex-wrap: wrap;
+}
+.goal-icon { font-size: 30px; }
+.goal-text strong { color: #854d0e; font-size: 15.5px; display: block; }
+.goal-text p { margin: 2px 0 0; font-size: 12.5px; color: #713f12; }
+
+/* Celebration & Achievements */
+.high-five-banner {
+  text-align: center;
+  margin: 18px 0;
+}
+.btn-high-five {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: var(--white);
+  border: none;
+  border-radius: 99px;
+  padding: 10px 24px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-high-five:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.45);
+}
+.high-five-emoji { font-size: 24px; }
+.high-five-labels { display: flex; flex-direction: column; text-align: left; }
+.high-five-labels strong { font-size: 15px; line-height: 1.1; }
+.high-five-labels small { font-size: 11px; opacity: 0.9; font-weight: 500; }
+.achievement-shelf {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+@media (max-width: 600px) {
+  .achievement-shelf { grid-template-columns: repeat(2, 1fr); }
+}
+.achievement-badge {
+  background: var(--bg);
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.55;
+  transition: all 0.3s ease;
+}
+.achievement-badge.is-unlocked {
+  opacity: 1;
+  border-style: solid;
+  border-color: var(--amber);
+  background: #fffbeb;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+.achieve-icon { font-size: 22px; line-height: 1; }
+.achieve-name { font-family: var(--font-display); font-size: 11px; font-weight: 800; color: var(--navy); }
+
 `;
