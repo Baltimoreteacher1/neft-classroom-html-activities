@@ -1386,9 +1386,23 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         onSubmit: (_text, ok) => wrappedOnAnswer(ok),
       });
       break;
+    case "guided-fill":
+      renderGuidedFill(body, problemDef, (ok) => wrappedOnAnswer(ok));
+      break;
     default:
-      renderUnknownComponentFallback(body, problemDef);
-      {
+      // A type this switch does not know may still carry an authored answer or
+      // a step chain, and an answer that exists can be checked. Only a type
+      // with NOTHING to grade falls through to the read-and-continue card —
+      // otherwise "Continue" scores the item correct without reading a
+      // character the student typed.
+      if (
+        problemDef.answer != null ||
+        (problemDef.steps || []).some((s) => s && s.answer != null)
+      ) {
+        renderUnknownComponentFallback(body, problemDef);
+        renderGuidedFill(body, problemDef, (ok) => wrappedOnAnswer(ok));
+      } else {
+        renderUnknownComponentFallback(body, problemDef);
         const continueBtn = document.createElement("button");
         continueBtn.type = "button";
         continueBtn.className = "btn btn-secondary mt-4";
@@ -1415,6 +1429,149 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
 
 // Readable, non-blank fallback for component types the renderer does not know.
 // Shows instructions and any items/rows as text instead of rendering nothing.
+/**
+ * `guided-fill` — a typed-answer problem walked one step at a time.
+ *
+ * WHY IT IS HERE. 2,405 items in the fleet are guided-fill. The small-group
+ * renderer has drawn them with a Check button per step since they were
+ * authored; renderComponent never had a case for the type, so the 29 that ride
+ * the INTERACTIVE-lesson path — Part 2's leveled table practice — fell to the
+ * unknown-type fallback: the stem, the steps listed as plain text, and a
+ * "Continue" button that marked the item correct without reading anything the
+ * student typed (Joel, 2026-09-03: "all of the problems, all of the levels,
+ * even if it is a manual input answer, should be able to be checked").
+ *
+ * Each step is graded by isRight() — the site-wide matcher, the same one the
+ * small-group steps, the practice inputs and the warm-ups use — so "8/3",
+ * "8 / 3" and "2 2/3" are judged by one set of rules rather than by whichever
+ * comparison this file happened to invent. A correct step unlocks the next; the
+ * item reports correct once the last one is in.
+ */
+function renderGuidedFill(container, def, onAnswer) {
+  const steps = Array.isArray(def.steps) ? def.steps.filter((s) => s && s.answer != null) : [];
+  const wrap = document.createElement("div");
+  wrap.className = "guided-fill";
+
+  // An item with no authored steps still has a final answer, and a final answer
+  // is checkable. One box beats a Continue button that grades nothing.
+  const rows = steps.length
+    ? steps
+    : def.answer != null
+      ? [{ prompt: "Your answer: ___", answer: def.answer }]
+      : [];
+  if (!rows.length) {
+    renderUnknownComponentFallback(container, def);
+    return;
+  }
+
+  if (rows.length > 1) {
+    const intro = document.createElement("p");
+    intro.className = "guided-fill-intro";
+    intro.style.cssText = "margin:0 0 var(--sp-3); font-size:.95rem; color:var(--muted);";
+    intro.textContent = "Complete one small step. A correct step unlocks the next one.";
+    wrap.append(intro);
+  }
+
+  let solved = 0;
+  const rowNodes = [];
+
+  rows.forEach((step, index) => {
+    const row = document.createElement("div");
+    row.className = "guided-fill-step";
+    row.style.cssText =
+      "display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:0 0 10px; padding:12px 14px; border:1.5px solid var(--line, #e2e8f0); border-radius:12px; background:#ffffff;";
+    // Steps after the first stay out of the way until the one before is right,
+    // so the sequence reads as a path and not as a worksheet of blanks.
+    row.hidden = index > 0;
+
+    const num = document.createElement("span");
+    num.setAttribute("aria-hidden", "true");
+    num.style.cssText =
+      "display:grid; width:30px; height:30px; place-items:center; border-radius:9px; background:var(--teal-ink, #0f766e); color:#ffffff; font-weight:800; flex:0 0 auto;";
+    num.textContent = String(index + 1);
+    row.append(num);
+
+    const label = document.createElement("label");
+    label.style.cssText =
+      "display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:1 1 220px; font-size:1.05rem; font-weight:700; color:#0f172a;";
+    // The blank is where the author put it: `___` inside the prompt sentence.
+    const [before, ...after] = String(step.prompt || "Your answer: ___").split("___");
+    label.append(document.createTextNode(before));
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "text-input guided-fill-input";
+    input.style.cssText =
+      "width:min(170px,100%); padding:6px 10px; border:0; border-bottom:3px solid var(--teal-ink, #0f766e); font-size:1.1rem; font-weight:800; text-align:center; background:transparent;";
+    input.setAttribute("aria-label", `Step ${index + 1} answer`);
+    label.append(input);
+    const tail = after.join("___");
+    if (tail) label.append(document.createTextNode(tail));
+    if (step.promptEs) {
+      const es = document.createElement("span");
+      es.lang = "es";
+      es.style.cssText = "flex:1 1 100%; font-size:.92rem; font-weight:600; color:var(--muted);";
+      es.textContent = String(step.promptEs).replace("___", "____");
+      label.append(es);
+    }
+    row.append(label);
+    // Fractions, exponents and the rest of the characters a keyboard hides —
+    // the same pad every other typed answer in the engine gets.
+    if (needsSymbolPad(step.answer)) mountSymbolPad(input, { force: true });
+
+    const check = document.createElement("button");
+    check.type = "button";
+    check.className = "btn btn-secondary btn-sm";
+    check.textContent = "Check step";
+
+    const status = document.createElement("span");
+    status.setAttribute("aria-live", "polite");
+    status.style.cssText = "flex:1 1 100%; font-weight:700; font-size:.95rem;";
+
+    check.addEventListener("click", () => {
+      if (!input.value.trim()) {
+        status.style.color = "var(--muted)";
+        status.textContent = "Type your answer first, then check it.";
+        return;
+      }
+      if (!isRight(input.value, step.answer)) {
+        status.style.color = "#b91c1c";
+        // fullerFormHint names the near-miss ("you wrote 2, the answer wants
+        // 2/1") instead of repeating "not yet" at a student who is close.
+        status.textContent =
+          fullerFormHint(input.value, step.answer) ||
+          "Not yet — check the step above, then try again.";
+        row.style.borderColor = "#f59e0b";
+        return;
+      }
+      input.disabled = true;
+      check.disabled = true;
+      row.style.borderColor = "#0f766e";
+      row.style.background = "#f0fdfa";
+      status.style.color = "#0f766e";
+      solved += 1;
+      const next = rowNodes[index + 1];
+      status.textContent = next ? "Correct. Next step unlocked." : "Correct.";
+      if (next) next.hidden = false;
+      // Only the LAST step completes the item: a guided-fill is right when the
+      // whole chain is right, which is the same rule the small-group renderer
+      // applies to the identical bank.
+      if (solved === rows.length) onAnswer?.(true);
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        check.click();
+      }
+    });
+
+    row.append(check, status);
+    wrap.append(row);
+    rowNodes.push(row);
+  });
+
+  container.append(wrap);
+}
+
 function renderUnknownComponentFallback(container, def = {}) {
   const card = document.createElement("div");
   card.className = "card";
@@ -2313,34 +2470,13 @@ function visualCaptionHtml(bullets, caption) {
     .join("")}</ul>`;
 }
 
-function renderObjectives(el, config, state, opts = {}) {
-  const review = !!opts.review;
-  const name = review ? studentFirstName(state) : "";
-  const phrase = (text) => (review ? toThirdPersonObjective(text, name) : text);
-
-  const vocab = augmentVocabWithGlossary(config.vocabulary);
-  // Re-phrase BEFORE linkifying: the third-person rewrite matches on the leading
-  // pronoun, and linkifyObjectiveTerms would otherwise be free to wrap part of
-  // that opener in an <button class="obj-term"> and break the match.
-  const contentHtml = linkifyObjectiveTerms(phrase(resolveContentObjective(config)), vocab);
-  const languageHtml = linkifyObjectiveTerms(phrase(resolveLanguageObjective(config)), vocab);
-
-  const visuals = resolveObjectiveVisuals(config);
-
-  const card = (o) => `
-    <div class="card ${o.cardClass} launch-objective">
-      <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:700; letter-spacing:-0.01em;">${o.label}</h4>
-        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:700; color:${o.ink}; cursor:pointer; white-space:nowrap;">
-          <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
-                 style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
-          ${o.checkLabel}
-        </label>
-      </div>
-      <p style="margin:0; font-size:1.22rem; font-weight:700; color:#0f172a; line-height:1.5; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
-
-      <details class="objective-more" style="margin-top:12px;">
-      <summary style="cursor:pointer; font-size:.92rem; font-weight:700; color:${o.ink}; padding:6px 0; list-style-position:inside;">${o.icon} See the visual model &amp; talk prompts</summary>
+// The picture under a goal card: the objective visual model, its caption
+// bullets and the Student Talk Targets. Exported because Part 2 restates the
+// SAME two goals on day 2 (renderObjectivesStep in part-two-renderer.js), and a
+// goal shown there as two bare sentences is a thinner thing than the goal
+// students met yesterday. One markup source so the two surfaces cannot drift.
+export function objectiveVisualHtml(o) {
+  return `
       <div class="visual-model-wrapper" style="margin-top:10px; margin-bottom:4px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 1px 2px rgba(18,53,91,0.05); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" loading="lazy" decoding="async" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:700; line-height:1.5; -webkit-font-smoothing:antialiased;">
@@ -2374,7 +2510,68 @@ function renderObjectives(el, config, state, opts = {}) {
         `
             : ""
         }
+      </div>`;
+}
+
+// Wires the 🇲🇽 ES / 🇺🇸 EN switch on every talk card inside `container`. Both
+// language variants ride along as JSON lists on the card, so switching rebuilds
+// the bullets instead of swapping one sentence. Exported alongside
+// objectiveVisualHtml: markup without this wiring is a dead button.
+export function wireObjectiveTalkToggles(container) {
+  container.querySelectorAll(".talk-lang-toggle").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const cardEl = btn.closest(".language-talk-card");
+      if (!cardEl) return;
+      const isEs = cardEl.getAttribute("data-lang") === "es";
+      cardEl.setAttribute("data-lang", isEs ? "en" : "es");
+      const sayEl = cardEl.querySelector(".talk-say-text");
+      const listenEl = cardEl.querySelector(".talk-listen-text");
+      const readList = (attr) => {
+        try {
+          return talkList(JSON.parse(decodeURIComponent(cardEl.getAttribute(attr) || "%5B%5D")));
+        } catch (_e) {
+          return [];
+        }
+      };
+      const sayText = readList(isEs ? "data-say-en" : "data-say-es");
+      const listenText = readList(isEs ? "data-listen-en" : "data-listen-es");
+      if (sayEl) sayEl.innerHTML = talkBulletsHtml(sayText);
+      if (listenEl) listenEl.innerHTML = talkBulletsHtml(listenText);
+      btn.textContent = isEs ? "🇲🇽 ES" : "🇺🇸 EN";
+    });
+  });
+}
+
+function renderObjectives(el, config, state, opts = {}) {
+  const review = !!opts.review;
+  const name = review ? studentFirstName(state) : "";
+  const phrase = (text) => (review ? toThirdPersonObjective(text, name) : text);
+
+  const vocab = augmentVocabWithGlossary(config.vocabulary);
+  // Re-phrase BEFORE linkifying: the third-person rewrite matches on the leading
+  // pronoun, and linkifyObjectiveTerms would otherwise be free to wrap part of
+  // that opener in an <button class="obj-term"> and break the match.
+  const contentHtml = linkifyObjectiveTerms(phrase(resolveContentObjective(config)), vocab);
+  const languageHtml = linkifyObjectiveTerms(phrase(resolveLanguageObjective(config)), vocab);
+
+  const visuals = resolveObjectiveVisuals(config);
+
+  const card = (o) => `
+    <div class="card ${o.cardClass} launch-objective">
+      <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
+        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:700; letter-spacing:-0.01em;">${o.label}</h4>
+        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:700; color:${o.ink}; cursor:pointer; white-space:nowrap;">
+          <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
+                 style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
+          ${o.checkLabel}
+        </label>
       </div>
+      <p style="margin:0; font-size:1.22rem; font-weight:700; color:#0f172a; line-height:1.5; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
+
+      <details class="objective-more" style="margin-top:12px;">
+      <summary style="cursor:pointer; font-size:.92rem; font-weight:700; color:${o.ink}; padding:6px 0; list-style-position:inside;">${o.icon} See the visual model &amp; talk prompts</summary>
+      ${objectiveVisualHtml(o)}
 
       </details>
 
@@ -2448,31 +2645,7 @@ function renderObjectives(el, config, state, opts = {}) {
     attachImageZoom(img);
   });
 
-  block.querySelectorAll(".talk-lang-toggle").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const cardEl = btn.closest(".language-talk-card");
-      if (!cardEl) return;
-      const isEs = cardEl.getAttribute("data-lang") === "es";
-      cardEl.setAttribute("data-lang", isEs ? "en" : "es");
-      const sayEl = cardEl.querySelector(".talk-say-text");
-      const listenEl = cardEl.querySelector(".talk-listen-text");
-      // Both language variants ride along as JSON lists, so switching language
-      // rebuilds the bullets instead of swapping one sentence.
-      const readList = (attr) => {
-        try {
-          return talkList(JSON.parse(decodeURIComponent(cardEl.getAttribute(attr) || "%5B%5D")));
-        } catch (_e) {
-          return [];
-        }
-      };
-      const sayText = readList(isEs ? "data-say-en" : "data-say-es");
-      const listenText = readList(isEs ? "data-listen-en" : "data-listen-es");
-      if (sayEl) sayEl.innerHTML = talkBulletsHtml(sayText);
-      if (listenEl) listenEl.innerHTML = talkBulletsHtml(listenText);
-      btn.textContent = isEs ? "🇲🇽 ES" : "🇺🇸 EN";
-    });
-  });
+  wireObjectiveTalkToggles(block);
 
   // Persist each self-check on Launch (phase 0) so it survives reload, exactly
   // like every other lesson input. The review block uses its own key prefix so

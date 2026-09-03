@@ -22,7 +22,15 @@ import {
   mergeAuthoredOverlay,
 } from "./lib/authored-overlay.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
+import { derive } from "./lib/es-concept-compose.mjs";
+import { derive as deriveReflect } from "./lib/es-reflect-compose.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
+import {
+  assertWriteSetContained,
+  recordWrite,
+  setWriteSetRoot,
+  writtenPaths,
+} from "./lib/write-set.mjs";
 
 // Order items so the compact renderer's rich interactions come first.
 const RICH = new Set(["multiple-choice", "error-analysis", "open-response"]);
@@ -31,8 +39,15 @@ const preferRich = (arr) =>
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
+setWriteSetRoot(ROOT);
 const DRY = process.argv.includes("--dry") || process.argv.includes("--dry-run");
 const REPLACE = process.argv.includes("--replace");
+// Write ONE station instead of all of them: `--only 6-2-catchup`. Every station
+// is regenerated from its band lessons, and those lessons drift between runs, so
+// a full pass rewrites dozens of files with content changes that have nothing to
+// do with the change being made. A targeted fix ships as a targeted diff.
+const onlyAt = process.argv.indexOf("--only");
+const ONLY = onlyAt > -1 ? process.argv[onlyAt + 1] : "";
 
 const BASE_RE = /^(\d+)-(\d+)$/;
 const byUnit = new Map();
@@ -75,7 +90,11 @@ const LEGACY_STRAND_BANDS = [
   { id: "5-4-catchup", ids: ["5-4", "5-9"] }, // old 5.4–5.5 (polygon & applied area)
   { id: "5-6-catchup", ids: ["5-5", "5-6", "5-10"] }, // old 10.1–10.3 (volume & 3-D representation)
   { id: "5-8-catchup", ids: ["5-7", "5-8"] }, // old 10.4–10.5 (surface area)
-  { id: "6-2-catchup", ids: ["6-1", "6-2", "6-9"] }, // old 2.1–2.3 (fraction division)
+  // 6.1 and 6.2 ONLY. This station carried 6.9 as well, inherited from the old
+  // 2.1–2.3 strand. Joel, 2026-09-03: "Stop including 6.9" — the review a
+  // teacher reaches from 6.2 is a review of 6.1 and 6.2, and 6.9 has its own
+  // place in the sequence.
+  { id: "6-2-catchup", ids: ["6-1", "6-2"] }, // old 2.1–2.2 (fraction division)
   { id: "6-5-catchup", ids: ["6-3", "6-4", "6-5"] }, // old 6.1–6.3 (exponents & expressions)
   { id: "6-11-catchup", ids: ["6-10", "6-11"] }, // old 2.4–2.5 (mixed-number division & problem solving)
   { id: "6-12-catchup", ids: ["6-7", "6-12", "6-13"] }, // old 1.1–1.3 (factors, multiples, prime factorization)
@@ -90,6 +109,146 @@ bands.push(
 );
 
 const cfg = (id) => JSON.parse(readFileSync(join(LESSONS, id, "config.json"), "utf8"));
+
+/* The atoms a Spanish roll-up is composed FROM.
+ *
+ * Two stores hold them and both are needed. data/es-translations is what
+ * validate:es-concept-intro composes with, so anything it knows must win —
+ * generator and gate then agree byte for byte. But the dictionary lags the
+ * lessons: Unit 6's key ideas were rewritten to the single Keep-Change-Flip
+ * method and their new English has no dictionary entry yet, while the lesson
+ * configs already carry the matching `keyIdeaEs`. Seeding from every config's
+ * OWN atoms — its title, its key idea, its stage lines — is not a second
+ * translation; it is the principle es-concept-compose.mjs states, read from the
+ * file the student actually reads. The dictionary loads last so it wins on any
+ * disagreement.
+ *
+ * CATCHUP_FRAME_ES is this generator's own connective tissue: sentences it
+ * writes itself, whose Spanish belongs beside the English that produced it,
+ * exactly like FRAME in the composer. */
+const CATCHUP_FRAME_ES = {
+  "Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.":
+    "Aquí está lo único que hay que recordar de cada lección, más un ejemplo guiado rápido. Si alguna te parece insegura, esa lección está justo encima de esta en el menú — puedes abrirla cuando quieras.",
+  "Stuck on one lesson's problems? Open that lesson from the curriculum menu for the full re-teach.":
+    "¿Te atoraste con los problemas de una lección? Abre esa lección desde el menú del currículo para el repaso completo.",
+};
+
+const ES_MEMORY = new Map();
+{
+  /* ATOMS ONLY — core lessons, never a station.
+   *
+   * A catch-up's own strings are COMPOSED: its exit ticket is "(Catch-up check,
+   * from Lesson 6.1) <a lesson's stem>". Seeding from one would teach this map
+   * that a wrapped English maps to an UNWRAPPED Spanish, and derive()'s first
+   * move is a direct lookup — so the station would compose from its own previous
+   * mistake and keep it forever. `\d+-\d+` is the core-lesson id shape, which is
+   * exactly the set that authors atoms. */
+  for (const dir of readdirSync(LESSONS)) {
+    if (!BASE_RE.test(dir)) continue;
+    const file = join(LESSONS, dir, "config.json");
+    if (!existsSync(file)) continue;
+    let c;
+    try {
+      c = JSON.parse(readFileSync(file, "utf8"));
+    } catch {
+      continue;
+    }
+    if (c.title && c.titleEs) ES_MEMORY.set(`__title__${c.title}`, c.titleEs);
+    const exit = c.reflect?.exitTicket;
+    if (exit?.stem && exit.stemEs) ES_MEMORY.set(exit.stem, exit.stemEs);
+    const ci = c.launch?.conceptIntro;
+    if (!ci) continue;
+    if (ci.keyIdea && ci.keyIdeaEs) ES_MEMORY.set(ci.keyIdea, ci.keyIdeaEs);
+    if (ci.heading && ci.headingEs) ES_MEMORY.set(ci.heading, ci.headingEs);
+    if (ci.intro && ci.introEs) ES_MEMORY.set(ci.intro, ci.introEs);
+    for (const stage of ["iDo", "weDo", "youDo"]) {
+      const s = ci[stage];
+      if (!s?.lines || !Array.isArray(s.linesEs) || s.linesEs.length !== s.lines.length) continue;
+      s.lines.forEach((en, i) => ES_MEMORY.set(en, s.linesEs[i]));
+    }
+  }
+  for (const [en, es] of Object.entries(CATCHUP_FRAME_ES)) ES_MEMORY.set(en, es);
+  /* The dictionary loads LAST so it wins on any disagreement: it is what
+   * validate:es-concept-intro composes with, and generator and gate must agree
+   * byte for byte. */
+  /* Resolved from THIS FILE, never from ROOT. `REPO` points the generator at a
+   * fixture tree in tools/small-group-generator-idempotent.test.mjs, and that
+   * tree holds a handful of lessons and no translations — so a ROOT-relative
+   * dictionary would silently vanish there and the fixture run would compose
+   * different Spanish than the committed file. The translation memory is repo
+   * content, not tree-under-test content. */
+  const esDir = fileURLToPath(new URL("../data/es-translations", import.meta.url));
+  if (existsSync(esDir)) {
+    for (const file of readdirSync(esDir).filter((f) => f.startsWith("concept-intro-"))) {
+      for (const [en, es] of Object.entries(JSON.parse(readFileSync(join(esDir, file), "utf8")))) {
+        ES_MEMORY.set(en, es);
+      }
+    }
+  }
+}
+
+/* THE SPANISH IS COMPOSED FROM WHATEVER ENGLISH IS WRITTEN.
+ *
+ * Every conceptIntro string on a catch-up is BUILT — a lesson line is that
+ * lesson's title plus its key idea, the roll-up is those joined, the heading and
+ * the mixes line are the range in a frame. Change the band and the English
+ * changes; leave the Spanish alone and a Spanish-reading student is shown a
+ * paragraph about different mathematics, which is exactly what
+ * validate:es-concept-intro calls "the Spanish no longer matches what it is
+ * quoted FROM".
+ *
+ * It runs on the MERGED config, not the freshly generated one, because the
+ * default merge is additive: the committed English is canonical and only
+ * `--replace` lets this run rewrite it. Composing from whatever English
+ * survives keeps the pair consistent either way, and keeps the generator
+ * idempotent — a clean-tree run rebuilds the same Spanish it already wrote.
+ *
+ * derive() answers for strings BUILT from atoms; a line that IS an atom — this
+ * generator's own fixed sentences, or a line quoted whole — has no derived shape
+ * and its translation is simply the one on record. A stage whose lines do not
+ * all resolve gets NO linesEs: a partial parallel array makes both renderers
+ * fall back to English silently, which is worse than an honest absence. */
+/* The exit ticket is wrapped, not written: the generator prefixes the source
+ * lesson's stem with "(Catch-up check, from Lesson N) ". Change the band and the
+ * tag changes, so the Spanish has to be rebuilt around the same wrapper — which
+ * is what tools/lib/es-reflect-compose.mjs does, and what validate:es-reflect
+ * checks with. Same function, same memory, no drift. */
+function composeReflectEs(config) {
+  const ticket = config?.reflect?.exitTicket;
+  if (!ticket?.stem) return;
+  const built = deriveReflect(String(ticket.stem), ES_MEMORY);
+  if (built) ticket.stemEs = built;
+  else delete ticket.stemEs;
+}
+
+function composeConceptIntroEs(config) {
+  const ci = config?.launch?.conceptIntro;
+  if (!ci) return;
+  const composed = (en) => (en ? derive(en, ES_MEMORY) || ES_MEMORY.get(en) || null : null);
+  for (const [field, esField] of [
+    ["intro", "introEs"],
+    ["heading", "headingEs"],
+    ["keyIdea", "keyIdeaEs"],
+  ]) {
+    const built = composed(ci[field]);
+    if (built) ci[esField] = built;
+    else delete ci[esField];
+  }
+  for (const stage of ["iDo", "weDo", "youDo"]) {
+    if (!Array.isArray(ci[stage]?.lines)) continue;
+    const built = ci[stage].lines.map(composed);
+    if (built.length && built.every(Boolean)) ci[stage].linesEs = built;
+    else delete ci[stage].linesEs;
+  }
+  const dir = join(ROOT, "data/es-translations");
+  if (existsSync(dir)) {
+    for (const file of readdirSync(dir).filter((f) => f.startsWith("concept-intro-"))) {
+      for (const [en, es] of Object.entries(JSON.parse(readFileSync(join(dir, file), "utf8")))) {
+        ES_MEMORY.set(en, es);
+      }
+    }
+  }
+}
 
 // Prefix a practice item's student-facing lead field with its source lesson tag.
 function tagItem(item, tag) {
@@ -113,6 +272,7 @@ const added = [];
 const replacements = [];
 for (const band of bands) {
   if (!band.ids.length) continue;
+  if (ONLY && (band.id || `${band.ids[band.ids.length - 1]}-catchup`) !== ONLY) continue;
   // Each source carries its own current id and dotted display number, so a
   // band may cross units (the legacy strands do) without mislabeling anything.
   const srcs = band.ids.map((lid) => ({ id: lid, dot: lid.replace("-", "."), c: cfg(lid) }));
@@ -266,6 +426,55 @@ for (const band of bands) {
       }
     }
   }
+  // ── Representation floor: the band's PICTURES, not only its arithmetic ────
+  // preferRich pulls multiple-choice / error-analysis to the front of every
+  // tier, so on the fraction-division band the sample came out as multiple-
+  // choice quotients with no tape diagram anywhere — the very model those
+  // lessons teach the division WITH (Joel, 2026-09-03: the 6.1–6.2 review
+  // "should be a mix of tape diagram, whole number divided by fraction, and
+  // fraction divided by a fraction"). The hands-on floor above cannot catch it:
+  // a drag-sort satisfies "constructive" and leaves every model unsampled.
+  //
+  // ── Form floor: some problems in context, some bare computation ───────────
+  // A review that is all word problems tests reading; one that is all naked
+  // quotients never asks what the quotient MEANS. Both forms sit in the band
+  // banks, so a sample that drops one is the sampler's accident, not a decision
+  // about the mathematics.
+  //
+  // Both floors land in onLevel, not optional: the optional tier is the tail of
+  // the set, and a tape diagram added there is one most tables never reach.
+  {
+    const TIERS = ["approaching", "onLevel", "extending", "optional"];
+    const MODEL = new Set([
+      "bar-model",
+      "fraction-bars",
+      "number-line",
+      "area-model",
+      "double-number-line",
+    ]);
+    const sampledItems = () => TIERS.flatMap((tier) => out.practice[tier] || []);
+    const bandItems = () =>
+      srcs.flatMap((s) =>
+        TIERS.flatMap((tier) => s.c.practice?.[tier] || []).map((it) => ({ it, dot: s.dot })),
+      );
+    const addToFloor = (found) => out.practice.onLevel.push(tagItem(found.it, found.dot));
+
+    if (!sampledItems().some((it) => MODEL.has(it.type))) {
+      const found = bandItems().find((x) => MODEL.has(x.it.type));
+      if (found) addToFloor(found);
+    }
+
+    const stemOf = (it) => String(it.stem || it.question || it.prompt || "");
+    const words = (it) => stemOf(it).trim().split(/\s+/).filter(Boolean).length;
+    const isWord = (it) => words(it) >= 12;
+    const isBare = (it) => words(it) > 0 && words(it) < 12 && /[÷/]|divided by/i.test(stemOf(it));
+    for (const test of [isWord, isBare]) {
+      if (sampledItems().some(test)) continue;
+      const found = bandItems().find((x) => test(x.it));
+      if (found) addToFloor(found);
+    }
+  }
+
   out.practice.optionalActivity = {
     name: "Catch-Up Challenge",
     emoji: "\u{1F9ED}",
@@ -352,7 +561,24 @@ for (const band of bands) {
   }
   if (!DRY) {
     mkdirSync(join(LESSONS, id), { recursive: true });
+    /* THE WARM-UP IS NOT THIS GENERATOR'S TO WRITE. `base` is a clone of the
+     * band's LAST lesson, so a cloned "Previous Lesson Check" reviews whatever
+     * came before THAT lesson — which for a station spanning a band is a lesson
+     * outside it. Warm-ups belong to scripts/generate-warmups.mjs, which states
+     * the rule outright: on-disk warm-ups are the source of truth, and a variant
+     * INHERITS its parent lesson's warm-up. Carry the on-disk one forward so
+     * regenerating a station never puts the wrong subject on its page.
+     *
+     * The composed Spanish is the opposite case — generator-owned, rebuilt from
+     * atoms every run, and it must not be overlay-merged: mergeAuthoredOverlay
+     * pairs array elements by identity, so a prior linesEs of three strings
+     * survives beside a freshly composed two ("linesEs has 3 entries for 2
+     * lines"), and the stage then renders in English entirely. */
+    if (prior?.warmup) merged.warmup = prior.warmup;
+    composeConceptIntroEs(merged);
+    composeReflectEs(merged);
     writeFileSync(file, JSON.stringify(merged, null, 2) + "\n");
+    recordWrite(file);
     // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
     // These catch-up shells carry injected sentinel blocks; a plain overwrite
     // strips them. No-op on a brand-new lesson, which has nothing to preserve.
@@ -360,7 +586,9 @@ for (const band of bands) {
       join(LESSONS, id, "index.html"),
       shellHtml(id, `${range} Catch-Up`, `Grade 6 Reveal Math catch-up review — Lessons ${range}`),
     );
+    recordWrite(join(LESSONS, id, "index.html"));
     writeFileSync(join(LESSONS, id, "lesson.js"), LESSON_JS);
+    recordWrite(join(LESSONS, id, "lesson.js"));
   }
 
   rows.push({
@@ -384,10 +612,30 @@ for (const band of bands) {
 }
 
 if (!DRY) {
-  writeFileSync(
-    new URL("./catchup-rows.json", import.meta.url),
-    JSON.stringify(rows, null, 2) + "\n",
-  );
+  // --only regenerates ONE station, so `rows` holds one entry — writing that
+  // whole-file would delete the other stations from the index the hub, the
+  // catalog and the search all read. Merge into the file instead, in place.
+  const rowsFile = new URL("./catchup-rows.json", import.meta.url);
+  let outRows = rows;
+  if (ONLY) {
+    const priorRows = JSON.parse(readFileSync(rowsFile, "utf8"));
+    outRows = priorRows.map((r) => rows.find((n) => n.id === r.id) || r);
+    for (const r of rows) if (!outRows.some((x) => x.id === r.id)) outRows.push(r);
+  }
+  writeFileSync(rowsFile, JSON.stringify(outRows, null, 2) + "\n");
+  recordWrite(fileURLToPath(rowsFile));
+  /* `--only` is a promise about the write set, so the run asserts it rather
+   * than leaving it for a reviewer to notice in a diff. The station's own
+   * folder is the scope; tools/catchup-rows.json is a declared dependency —
+   * the index every station is listed in has to change when one of them does,
+   * and it is merged in place above rather than rewritten wholesale. */
+  if (ONLY) {
+    assertWriteSetContained({
+      scope: `--only ${ONLY}`,
+      allow: (p) => p.startsWith(`lessons/${ONLY}/`) || p === "tools/catchup-rows.json",
+    });
+  }
+  console.log(`wrote ${writtenPaths().length} file(s)${ONLY ? ` (scope: --only ${ONLY})` : ""}`);
 }
 console.log(`${DRY ? "[dry] " : ""}bands: ${rows.length}`);
 if (preserved.length) {

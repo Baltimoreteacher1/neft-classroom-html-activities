@@ -31,13 +31,19 @@ import { createApp } from "./app.js";
 import { attachImageZoom, observeContentImageZoom } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import {
+  objectiveVisualHtml,
   renderActSteps,
   renderComponent,
   renderWarmupPhase,
   resolveContentObjective,
   resolveLanguageObjective,
+  underlineVocabTerms,
+  wireObjectiveTalkToggles,
+  wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
+import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { renderMathNotesStep } from "./notebook-checkpoint.js";
+import { resolveObjectiveVisuals } from "./objective-visuals.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { visualMarkup } from "./small-group-visual-practice.js";
 import { mountStuckSupport } from "./stuck-support.js";
@@ -193,6 +199,11 @@ function renderMathNotesReviewStep(host, config) {
              : ""
 }
          ${
+           h.example
+             ? `<p style="margin:14px 0 0; padding:12px 16px; background:#f8fafc; border:1px dashed #94a3b8; border-radius:10px; font-size:1.02rem; color:#0f172a; line-height:1.55;"><strong style="color:#12355b;">Example:</strong> ${esc(h.example)}</p>`
+             : ""
+}
+         ${
            h.watchOut
              ? `<p style="margin:14px 0 0; padding:12px 16px; background:#fff7ed; border-left:4px solid #ea580c; border-radius:10px; font-size:1rem; color:#0f172a; line-height:1.55;"><strong>⚠️ Watch out:</strong> ${esc(h.watchOut)}</p>`
              : ""
@@ -211,21 +222,92 @@ function renderMathNotesReviewStep(host, config) {
  * the objectives a student reads at the end are the same strings, from the same
  * source, as the ones they read at the start.
  *
+ * IT CARRIES THE PICTURE AND THE TALK. The card used to be two bare sentences.
+ * Part 1 shows each goal with its visual model, its caption bullets and the
+ * Student Talk Targets, and a goal stripped of those on day 2 is a thinner
+ * thing than the goal students met yesterday — exactly the day they need the
+ * picture most, because Part 2 asks them to defend the goal out loud in a
+ * group. Both the markup and the ES/EN wiring come from lesson-renderer.js
+ * (objectiveVisualHtml / wireObjectiveTalkToggles) so the two surfaces cannot
+ * drift. The "Talk about it" prompts are Part-2 specific: day 2 is group work,
+ * so they ask students to talk to their partner or group, not to themselves.
+ *
  * resolveContentObjective / resolveLanguageObjective return text that is
  * ALREADY HTML-escaped, so running esc() over them again would print "&amp;".
  */
 function objectivesCard(config, heading, lede) {
+  const visuals = resolveObjectiveVisuals(config);
+  const vocab = augmentVocabWithGlossary(config.vocabulary);
+
   const goals = el("section", "card card-teal");
   goals.append(
     el(
       "div",
       null,
       `<h3 style="margin:0 0 ${lede ? "4px" : "10px"}; font-size:1.3rem; color:#0f172a;">${heading}</h3>
-       ${lede ? `<p style="margin:0 0 12px; font-size:1rem; color:#475569;">${lede}</p>` : ""}
-       <p style="margin:0 0 6px; font-size:1.1rem; font-weight:700; color:#0f172a; line-height:1.5;">🎯 ${resolveContentObjective(config)}</p>
-       <p style="margin:0; font-size:1.05rem; font-weight:600; color:#334155; line-height:1.5;">🗣️ ${resolveLanguageObjective(config)}</p>`,
+       ${lede ? `<p style="margin:0 0 12px; font-size:1rem; color:#475569;">${lede}</p>` : ""}`,
     ),
   );
+
+  const goalHtml = (o) => `
+    <div class="p2-objective launch-objective" style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(15,23,42,0.10);">
+      <h4 style="margin:0 0 6px; font-size:1.02rem; font-weight:800; letter-spacing:.02em; text-transform:uppercase; color:${o.ink};">${o.label}</h4>
+      <p style="margin:0; font-size:${o.textSize}; font-weight:700; color:#0f172a; line-height:1.5;">${o.icon} ${o.text}</p>
+
+      <details class="objective-more" style="margin-top:10px;">
+        <summary style="cursor:pointer; font-size:.92rem; font-weight:700; color:${o.ink}; padding:6px 0; list-style-position:inside;">${o.icon} See the visual model &amp; talk prompts</summary>
+        ${objectiveVisualHtml(o)}
+      </details>
+
+      <div class="objective-discuss" style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(0,0,0,0.12);">
+        <span style="display:block; font-size:.95rem; font-weight:700; letter-spacing:.02em; color:${o.ink}; margin-bottom:4px;">💬 Talk about it with your partner or group</span>
+        <span style="display:block; font-size:1.05rem; font-weight:600; color:#1e293b; line-height:1.55;">${esc(o.discuss)}</span>
+      </div>
+    </div>`;
+
+  const block = el("div");
+  block.innerHTML =
+    goalHtml({
+      label: "Content Objective",
+      ink: "var(--teal-ink)",
+      icon: "🎯",
+      textSize: "1.1rem",
+      text: resolveContentObjective(config),
+      img: visuals.content.src,
+      alt: visuals.content.alt,
+      caption: visuals.content.caption,
+      captionBullets: visuals.content.captionBullets,
+      talkPrompts: visuals.content.talkPrompts,
+      discuss:
+        "Take turns: tell your partner or group ONE thing this goal asks you to do in today's problem. Point to the part of the picture that shows it.",
+    }) +
+    goalHtml({
+      label: "Language Objective",
+      ink: "var(--coral)",
+      icon: "🗣️",
+      textSize: "1.05rem",
+      text: resolveLanguageObjective(config),
+      img: visuals.language.src,
+      alt: visuals.language.alt,
+      caption: visuals.language.caption,
+      captionBullets: visuals.language.captionBullets,
+      talkPrompts: visuals.language.talkPrompts,
+      discuss:
+        "Decide as a group: which math words from this goal will you need when you explain your answer today? Each person says one sentence using one of them.",
+    });
+
+  // The caption promises "Click to enlarge", so the zoom is wired here too —
+  // Part 1 wires it on its own block and this one is not inside it.
+  block.querySelectorAll(".visual-model-wrapper img").forEach((img) => attachImageZoom(img));
+  wireObjectiveTalkToggles(block);
+  // The same treatment the goals get in Part 1: math words in the objectives,
+  // the captions and the discussion prompts are underlined and open their
+  // definition popup, so a word half-remembered from yesterday is one tap from
+  // its meaning and its picture.
+  underlineVocabTerms(block, vocab);
+  wireObjectiveTermPopups(block, vocab);
+
+  goals.append(block);
   return goals;
 }
 
@@ -361,15 +443,19 @@ function splitProblem(text) {
   };
 }
 
-function renderProblem(host, state, ctx, config) {
-  phaseHeading(
-    host,
-    2,
-    "📋",
-    "Today's Problem",
-    "Read it twice. Then write what you know and what the problem is asking — before any arithmetic.",
-  );
-
+/**
+ * The Apply problem itself — badge, title, scenario, its one figure, and the
+ * question.
+ *
+ * WHY IT IS A FUNCTION. A problem has to be ON the page wherever that problem is
+ * being discussed. Phase 2 asks a table to bring the Apply problem back and
+ * agree on one answer, and it used to do that with the problem one phase behind
+ * them: a group arguing about a problem they must scroll back to re-read is
+ * arguing from memory, and the figure — which for many of these lessons carries
+ * the numbers — was not on the screen where the numbers were needed. Same card,
+ * both phases, one source, so the wording and the figure cannot drift apart.
+ */
+function problemCard(config, opts = {}) {
   const wp = config.revealWordProblem || {};
   const { scenario, question } = splitProblem(wp.text);
 
@@ -378,10 +464,20 @@ function renderProblem(host, state, ctx, config) {
     el(
       "div",
       "wp-head",
-      `<span class="wp-badge" aria-hidden="true">📋 Today</span>
+      `<span class="wp-badge" aria-hidden="true">${esc(opts.badge || "📋 Today")}</span>
        <h3 class="wp-title">${esc(wp.title || "Apply")}</h3>`,
     ),
   );
+
+  if (opts.lede) {
+    card.append(
+      el(
+        "p",
+        null,
+        `<span style="display:block; margin:0 0 4px; font-size:1rem; color:#475569;">${esc(opts.lede)}</span>`,
+      ),
+    );
+  }
 
   if (scenario) {
     const p = el("p", "wp-text");
@@ -412,7 +508,19 @@ function renderProblem(host, state, ctx, config) {
       ),
     );
   }
-  host.append(card);
+  return card;
+}
+
+function renderProblem(host, state, ctx, config) {
+  phaseHeading(
+    host,
+    2,
+    "📋",
+    "Today's Problem",
+    "Read it twice. Then write what you know and what the problem is asking — before any arithmetic.",
+  );
+
+  host.append(problemCard(config));
 
   // AND IT HAS TO BE SOLVABLE WITH SOMETHING. Every interaction on this page
   // used to be answer entry, which is why the interaction-quality audit graded
@@ -500,6 +608,17 @@ function renderGroups(host, state, _ctx, config) {
     "👥",
     "Group Work",
     "Work your table's problem set together, then bring today's problem back and agree on one answer.",
+  );
+
+  // The problem, again, on the page where the group argues about it. Phase 1
+  // read it and solved it alone; this phase is the discussion, and a discussion
+  // of a problem needs the problem — its wording and its figure — in front of
+  // the table, not one phase back in the strip.
+  host.append(
+    problemCard(config, {
+      badge: "📋 The problem",
+      lede: "Read it again as a group before you compare answers.",
+    }),
   );
 
   const solve = el("section", "card");
