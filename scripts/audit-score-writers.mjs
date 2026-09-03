@@ -198,14 +198,53 @@ const uninstrumented = games.filter((g) => !g.wired);
  * zero-row game stays SILENT: a false alarm is recoverable, a masked dead
  * integration is the failure mode this whole script exists to prevent.
  */
-const viewRows = d1("SELECT path, SUM(views) AS v FROM usage_signal GROUP BY path");
-const viewsByPath = new Map(
-  (viewRows ?? []).map((r) => [String(r.path).replace(/\/+$/, ""), Number(r.v) || 0]),
+const viewRows = d1(
+  "SELECT path, SUM(views) AS v, SUM(dwell_ms_sum) AS dms, SUM(dwell_n) AS dn FROM usage_signal GROUP BY path",
 );
-const wasViewed = (g) => viewRows === null || (viewsByPath.get(`/${g.path}`) ?? 0) > 0;
+const viewsByPath = new Map(
+  (viewRows ?? []).map((r) => [
+    String(r.path).replace(/\/+$/, ""),
+    {
+      views: Number(r.v) || 0,
+      meanDwellSec: Number(r.dn) > 0 ? Number(r.dms) / Number(r.dn) / 1000 : 0,
+    },
+  ]),
+);
+const usageFor = (g) => viewsByPath.get(`/${g.path}`) ?? { views: 0, meanDwellSec: 0 };
+const wasViewed = (g) => viewRows === null || usageFor(g).views > 0;
+
+/**
+ * A page open is not a play. Reporting requires a JUDGED ANSWER — report()
+ * deliberately writes nothing when attempts === 0, because a row there would
+ * assert the student scored 0% when they never answered anything. So a visit
+ * too short to reach one judged answer is not evidence of a dead score path;
+ * it is no evidence at all.
+ *
+ * This mattered. On 2026-09-02 this audit reported six "broken integrations".
+ * Five of them were correctly wired and verified working in a browser: their
+ * whole evidence base was 1-2 summer pageviews lasting 6-30 seconds, and three
+ * of those landed on 2026-07-29, the day the wiring commit shipped -- the
+ * developer opening the page to check it. Only one game (u10-volume-blast) was
+ * genuinely defective. Calling the other five broken sent real work to the
+ * backlog and cost trust in every number this script prints.
+ *
+ * The fix is NOT to relabel them IDLE -- they were viewed, and quietly burying
+ * a dead integration is the failure mode this whole script exists to prevent.
+ * They get their own bucket, reported with the evidence, so a human can see
+ * exactly how thin it is. Only a game with enough engagement to have plausibly
+ * produced a judged answer is called SILENT, and only SILENT fails --strict.
+ */
+const PLAY_MIN_VIEWS = 3;
+const PLAY_MIN_DWELL_SEC = 60;
+const plausiblyPlayed = (g) => {
+  if (viewRows === null) return true; // can't tell: hold as SILENT, never mask
+  const u = usageFor(g);
+  return u.views >= PLAY_MIN_VIEWS && u.meanDwellSec >= PLAY_MIN_DWELL_SEC;
+};
 
 const zeroRow = wired.filter((g) => !wrote.has(g.id));
-const silent = zeroRow.filter(wasViewed);
+const silent = zeroRow.filter((g) => wasViewed(g) && plausiblyPlayed(g));
+const unproven = zeroRow.filter((g) => wasViewed(g) && !plausiblyPlayed(g));
 const idle = zeroRow.filter((g) => !wasViewed(g));
 
 /**
@@ -297,6 +336,11 @@ const report = {
   wired: wired.length,
   reporting: wired.length - zeroRow.length,
   silent: silent.map((g) => g.path),
+  unproven: unproven.map((g) => ({
+    path: g.path,
+    views: usageFor(g).views,
+    meanDwellSec: Math.round(usageFor(g).meanDwellSec),
+  })),
   idle: idle.map((g) => g.path),
   viewsAvailable: viewRows !== null,
   uninstrumented: uninstrumented.map((g) => g.path),
@@ -320,6 +364,18 @@ if (AS_JSON) {
   console.log(`  SILENT (viewed, 0 rows):  ${silent.length}   <- broken integrations`);
   for (const p of report.silent.slice(0, 30)) console.log(`      ${p}`);
   if (report.silent.length > 30) console.log(`      … and ${report.silent.length - 30} more`);
+  console.log(
+    `  UNPROVEN (viewed too briefly to judge): ${unproven.length}   <- not evidence of a bug`,
+  );
+  for (const u of report.unproven.slice(0, 30)) {
+    console.log(`      ${u.path}  (${u.views} view(s), ~${u.meanDwellSec}s each)`);
+  }
+  if (unproven.length) {
+    console.log(
+      `      ^ needs >=${PLAY_MIN_VIEWS} views averaging >=${PLAY_MIN_DWELL_SEC}s before a\n` +
+        "        missing row means anything. Verify in a browser, not from this count.",
+    );
+  }
   console.log(
     `  IDLE (wired, never viewed since instrumentation): ${idle.length}   <- silence is expected`,
   );
