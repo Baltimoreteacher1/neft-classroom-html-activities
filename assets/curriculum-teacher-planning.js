@@ -904,6 +904,7 @@
         ["handout", "Student handout"],
         ["worksheet", "Worksheet"],
         ["worksheet2", "Worksheet B"],
+        ["mstarWorksheet", "MSTAR practice"],
         ["exitTicket", "Exit ticket"],
       ];
       var HOME_PARTS = [

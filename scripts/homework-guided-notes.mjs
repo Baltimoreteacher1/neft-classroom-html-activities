@@ -3203,6 +3203,874 @@ export function renderFamilyActivityCorner(topic) {
     </div>`;
 }
 
+/**
+ * Family Game Break — two built-in interactive games on the Together tab,
+ * distinct from the Words tab's term↔definition matcher:
+ *   1. Memory Flip: concentration pairs of "math twins" (expression ↔ value).
+ *   2. True or False? Family Face-Off: turn-taking statements whose false
+ *      halves come from the topic's real misconceptions, each with a why.
+ * Collaborative and NEVER timed (site rule). Content is authored per topic
+ * below; every pair and statement is checked arithmetic, not generated.
+ */
+const FAMILY_GAME_PAIRS = {
+  ratios: [
+    { a: "2 : 3 doubled", b: "4 : 6" },
+    { a: "$6 for 3 lb", b: "$2 per lb" },
+    { a: "1/2 as a percent", b: "50%" },
+    { a: "3 to 4", b: "3 : 4" },
+  ],
+  fractions: [
+    { a: "2 ÷ 1/4", b: "8" },
+    { a: "1/2 of 12", b: "6" },
+    { a: "3/6 simplified", b: "1/2" },
+    { a: "1 ÷ 1/3", b: "3" },
+  ],
+  decimals: [
+    { a: "0.5 + 0.25", b: "0.75" },
+    { a: "1.2 × 10", b: "12" },
+    { a: "$5.00 − $3.25", b: "$1.75" },
+    { a: "0.30", b: "0.3" },
+  ],
+  division: [
+    { a: "84 ÷ 4", b: "21" },
+    { a: "75 ÷ 10", b: "7 R5" },
+    { a: "600 ÷ 5", b: "120" },
+    { a: "63 ÷ 7", b: "9" },
+  ],
+  factors: [
+    { a: "GCF of 12 and 18", b: "6" },
+    { a: "LCM of 4 and 6", b: "12" },
+    { a: "A prime number", b: "13" },
+    { a: "Factors of 10", b: "1, 2, 5, 10" },
+  ],
+  exponents: [
+    { a: "2³", b: "8" },
+    { a: "5²", b: "25" },
+    { a: "10⁴", b: "10,000" },
+    { a: "3 × 3 × 3", b: "3³" },
+  ],
+  expressions: [
+    { a: "2x when x = 4", b: "8" },
+    { a: "Coefficient of 5y", b: "5" },
+    { a: "n + n + n", b: "3n" },
+    { a: "Constant in 4x + 7", b: "7" },
+  ],
+  equations: [
+    { a: "m + 4 = 10", b: "m = 6" },
+    { a: "3k = 21", b: "k = 7" },
+    { a: "y − 5 = 2", b: "y = 7" },
+    { a: "n ÷ 2 = 8", b: "n = 16" },
+  ],
+  inequalities: [
+    { a: "h ≥ 48: is 48 allowed?", b: "Yes" },
+    { a: "t > 60: is 60 allowed?", b: "No" },
+    { a: "x < 10: biggest whole number", b: "9" },
+    { a: "c ≤ 15: the limit itself", b: "Allowed" },
+  ],
+  properties: [
+    { a: "4 × (3 + 2)", b: "4 × 3 + 4 × 2" },
+    { a: "6 × 4", b: "4 × 6" },
+    { a: "9 + 0", b: "9" },
+    { a: "7 × 1", b: "7" },
+  ],
+  area: [
+    { a: "Rectangle 6 by 4", b: "24 square units" },
+    { a: "Triangle b = 6, h = 4", b: "12 square units" },
+    { a: "Parallelogram b = 5, h = 3", b: "15 square units" },
+    { a: "Square with side 5", b: "25 square units" },
+  ],
+  volume: [
+    { a: "Box 2 × 3 × 4", b: "24 cubic units" },
+    { a: "Cube with edge 3", b: "27 cubic units" },
+    { a: "Box 5 × 2 × 2", b: "20 cubic units" },
+    { a: "Unit cube 1 × 1 × 1", b: "1 cubic unit" },
+  ],
+  "surface-area": [
+    { a: "One face of a cube, edge 2", b: "4 square units" },
+    { a: "ALL faces of a cube, edge 2", b: "24 square units" },
+    { a: "Faces on a rectangular box", b: "6" },
+    { a: "Flattened-out box shape", b: "A net" },
+  ],
+  statistics: [
+    { a: "Median of 3, 5, 7", b: "5" },
+    { a: "Mode of 2, 2, 9", b: "2" },
+    { a: "Mean of 1, 2, 3, 4", b: "2.5" },
+    { a: "Range from 3 to 11", b: "8" },
+  ],
+  "number-line": [
+    { a: "Opposite of −4", b: "4" },
+    { a: "|−6|", b: "6" },
+    { a: "Greater: −2 or −7", b: "−2" },
+    { a: "Distance from −3 to 0", b: "3" },
+  ],
+  "coordinate-plane": [
+    { a: "(3, 2) from the origin", b: "Right 3, up 2" },
+    { a: "(−1, 4) lives in…", b: "Quadrant II" },
+    { a: "(0, 0) is called…", b: "The origin" },
+    { a: "(2, −5) lives in…", b: "Quadrant IV" },
+  ],
+  fallback: [
+    { a: "Half of 50", b: "25" },
+    { a: "Double 35", b: "70" },
+    { a: "10% of 200", b: "20" },
+    { a: "24 ÷ 6", b: "4" },
+  ],
+};
+
+const FAMILY_TF_QUESTIONS = {
+  ratios: [
+    {
+      en: "The ratio 2:3 is the same as the ratio 3:2.",
+      es: "La razón 2:3 es igual a la razón 3:2.",
+      answer: false,
+      whyEn: "Order matters in a ratio — 2 cups juice to 3 cups water is not 3 juice to 2 water.",
+      whyEs:
+        "El orden importa en una razón: 2 tazas de jugo por 3 de agua no es lo mismo que 3 de jugo por 2 de agua.",
+    },
+    {
+      en: "To double a recipe, you multiply every ingredient by 2.",
+      es: "Para duplicar una receta, se multiplica cada ingrediente por 2.",
+      answer: true,
+      whyEn: "Equivalent ratios come from multiplying BOTH parts by the same number.",
+      whyEs: "Las razones equivalentes salen de multiplicar LAS DOS partes por el mismo número.",
+    },
+    {
+      en: "3:4 and 6:8 describe the same relationship.",
+      es: "3:4 y 6:8 describen la misma relación.",
+      answer: true,
+      whyEn: "Multiply both parts of 3:4 by 2 and you get 6:8 — equivalent ratios.",
+      whyEs: "Multiplica las dos partes de 3:4 por 2 y obtienes 6:8: razones equivalentes.",
+    },
+    {
+      en: "To make equivalent ratios you can ADD the same number to both parts.",
+      es: "Para hacer razones equivalentes se puede SUMAR el mismo número a las dos partes.",
+      answer: false,
+      whyEn:
+        "That's the classic trap! 2:3 plus 1 each gives 3:4, which is a different relationship. You must MULTIPLY.",
+      whyEs:
+        "¡Esa es la trampa clásica! 2:3 más 1 en cada parte da 3:4, otra relación. Hay que MULTIPLICAR.",
+    },
+    {
+      en: "A unit rate compares a quantity to exactly 1 of something.",
+      es: "Una tasa unitaria compara una cantidad con exactamente 1 de algo.",
+      answer: true,
+      whyEn: "Miles per 1 hour, dollars per 1 pound — the 1 is what makes it a UNIT rate.",
+      whyEs: "Millas por 1 hora, dólares por 1 libra: el 1 es lo que la hace tasa UNITARIA.",
+    },
+  ],
+  fractions: [
+    {
+      en: "Dividing by a fraction less than 1 gives an answer BIGGER than what you started with.",
+      es: "Dividir entre una fracción menor que 1 da un resultado MAYOR que el número original.",
+      answer: true,
+      whyEn: "2 ÷ 1/4 asks how many quarter-pieces fit in 2 wholes: 8 of them!",
+      whyEs: "2 ÷ 1/4 pregunta cuántos cuartos caben en 2 enteros: ¡8!",
+    },
+    {
+      en: "Dividing always makes numbers smaller.",
+      es: "Dividir siempre hace los números más pequeños.",
+      answer: false,
+      whyEn: "Only when dividing by a number bigger than 1. Dividing by 1/2 doubles!",
+      whyEs: "Solo al dividir entre un número mayor que 1. ¡Dividir entre 1/2 duplica!",
+    },
+    {
+      en: "There are exactly 6 pieces of size 1/3 in 2 wholes.",
+      es: "Hay exactamente 6 pedazos de 1/3 en 2 enteros.",
+      answer: true,
+      whyEn: "Each whole holds 3 thirds, so 2 wholes hold 6: 2 ÷ 1/3 = 6.",
+      whyEs: "Cada entero tiene 3 tercios, así que 2 enteros tienen 6: 2 ÷ 1/3 = 6.",
+    },
+    {
+      en: "To divide by a fraction, you can multiply by its reciprocal (its flip).",
+      es: "Para dividir entre una fracción, se puede multiplicar por su recíproco (volteada).",
+      answer: true,
+      whyEn: "2 ÷ 1/4 = 2 × 4/1 = 8. Keep–Change–Flip works because of what division means.",
+      whyEs:
+        "2 ÷ 1/4 = 2 × 4/1 = 8. Mantener–Cambiar–Voltear funciona por lo que significa dividir.",
+    },
+    {
+      en: "1/2 and 3/6 are different amounts.",
+      es: "1/2 y 3/6 son cantidades diferentes.",
+      answer: false,
+      whyEn:
+        "Fold a paper in half, or in sixths and shade 3 — same amount of paper. They're equivalent.",
+      whyEs:
+        "Dobla un papel a la mitad, o en sextos y colorea 3: la misma cantidad. Son equivalentes.",
+    },
+  ],
+  decimals: [
+    {
+      en: "When adding money, you line up the decimal points.",
+      es: "Al sumar dinero, se alinean los puntos decimales.",
+      answer: true,
+      whyEn:
+        "Lining up the points lines up the place values — dollars with dollars, cents with cents.",
+      whyEs:
+        "Alinear los puntos alinea los valores posicionales: dólares con dólares, centavos con centavos.",
+    },
+    {
+      en: "0.5 is smaller than 0.35 because 5 is smaller than 35.",
+      es: "0.5 es menor que 0.35 porque 5 es menor que 35.",
+      answer: false,
+      whyEn: "Classic trap! 0.5 = 0.50, and 50 hundredths beats 35 hundredths.",
+      whyEs: "¡Trampa clásica! 0.5 = 0.50, y 50 centésimas es más que 35 centésimas.",
+    },
+    {
+      en: "0.3 and 0.30 are the same number.",
+      es: "0.3 y 0.30 son el mismo número.",
+      answer: true,
+      whyEn:
+        "Three tenths equals thirty hundredths — a zero at the END after the decimal changes nothing.",
+      whyEs:
+        "Tres décimas son treinta centésimas: un cero AL FINAL después del punto no cambia nada.",
+    },
+    {
+      en: "Multiplying a decimal by 10 moves the decimal point one place to the right.",
+      es: "Multiplicar un decimal por 10 mueve el punto una posición a la derecha.",
+      answer: true,
+      whyEn: "1.2 × 10 = 12 — every digit's place value gets ten times bigger.",
+      whyEs: "1.2 × 10 = 12: el valor de cada dígito se hace diez veces mayor.",
+    },
+    {
+      en: "$5.00 minus $3.25 is $2.25.",
+      es: "$5.00 menos $3.25 son $2.25.",
+      answer: false,
+      whyEn: "Count up: $3.25 + 75¢ = $4.00, + $1.00 = $5.00. The change is $1.75.",
+      whyEs: "Cuenten hacia arriba: $3.25 + 75¢ = $4.00, + $1.00 = $5.00. El cambio es $1.75.",
+    },
+  ],
+  division: [
+    {
+      en: "In 74 ÷ 12, the remainder tells you how many are left over after equal groups.",
+      es: "En 74 ÷ 12, el residuo dice cuántos sobran después de formar grupos iguales.",
+      answer: true,
+      whyEn: "12 groups of 6 use 72; the remainder 2 is what's left in your hand.",
+      whyEs: "12 grupos de 6 usan 72; el residuo 2 es lo que queda en la mano.",
+    },
+    {
+      en: "When a digit is too small to divide, you just skip it.",
+      es: "Cuando un dígito es muy pequeño para dividir, simplemente se salta.",
+      answer: false,
+      whyEn:
+        "The trap that breaks long division! The quotient gets a 0 in that place and the digit joins the next one.",
+      whyEs:
+        "¡La trampa que rompe la división! El cociente lleva un 0 en ese lugar y el dígito se junta con el siguiente.",
+    },
+    {
+      en: "618 ÷ 3 = 206.",
+      es: "618 ÷ 3 = 206.",
+      answer: true,
+      whyEn:
+        "6÷3=2, 1 doesn't go so the quotient gets 0 and 1 carries: 18÷3=6. Check: 206 × 3 = 618.",
+      whyEs: "6÷3=2, el 1 no alcanza así que va 0 y el 1 pasa: 18÷3=6. Comprueba: 206 × 3 = 618.",
+    },
+    {
+      en: "You can check any division with multiplication.",
+      es: "Cualquier división se puede comprobar con una multiplicación.",
+      answer: true,
+      whyEn: "Quotient × divisor (+ remainder) must rebuild the number you started with.",
+      whyEs: "Cociente × divisor (+ residuo) debe reconstruir el número original.",
+    },
+    {
+      en: "If 58 guests sit at tables of 8, you need exactly 7 tables.",
+      es: "Si 58 invitados se sientan en mesas de 8, se necesitan exactamente 7 mesas.",
+      answer: false,
+      whyEn: "7 tables seat 56 — two guests are standing! Round UP to 8 tables.",
+      whyEs:
+        "7 mesas sientan a 56: ¡dos invitados quedan de pie! Se redondea HACIA ARRIBA a 8 mesas.",
+    },
+  ],
+  factors: [
+    {
+      en: "1 is a prime number.",
+      es: "El 1 es un número primo.",
+      answer: false,
+      whyEn: "A prime needs exactly TWO different factors. 1 has only one factor: itself.",
+      whyEs:
+        "Un primo necesita exactamente DOS factores diferentes. El 1 solo tiene uno: él mismo.",
+    },
+    {
+      en: "The greatest common factor of 12 and 18 is 6.",
+      es: "El máximo común divisor de 12 y 18 es 6.",
+      answer: true,
+      whyEn: "Factors of 12: 1,2,3,4,6,12. Of 18: 1,2,3,6,9,18. Biggest shared: 6.",
+      whyEs: "Factores de 12: 1,2,3,4,6,12. De 18: 1,2,3,6,9,18. El mayor compartido: 6.",
+    },
+    {
+      en: "The least common multiple of 4 and 6 is 24.",
+      es: "El mínimo común múltiplo de 4 y 6 es 24.",
+      answer: false,
+      whyEn: "24 IS a common multiple, but 12 comes first: 4, 8, 12… and 6, 12… They meet at 12.",
+      whyEs:
+        "24 SÍ es múltiplo común, pero el 12 llega antes: 4, 8, 12… y 6, 12… Se encuentran en 12.",
+    },
+    {
+      en: "Every whole number bigger than 1 is either prime or can be built from primes.",
+      es: "Todo número entero mayor que 1 es primo o se puede construir con primos.",
+      answer: true,
+      whyEn: "That's prime factorization: 12 = 2 × 2 × 3. Primes are the building blocks.",
+      whyEs:
+        "Eso es la factorización prima: 12 = 2 × 2 × 3. Los primos son los bloques de construcción.",
+    },
+    {
+      en: "2 is the only even prime number.",
+      es: "El 2 es el único número primo par.",
+      answer: true,
+      whyEn: "Every other even number has 2 as an extra factor, so it can't be prime.",
+      whyEs: "Cualquier otro número par tiene al 2 como factor extra, así que no puede ser primo.",
+    },
+  ],
+  exponents: [
+    {
+      en: "3⁴ means 3 × 4.",
+      es: "3⁴ significa 3 × 4.",
+      answer: false,
+      whyEn: "The #1 exponent trap! 3⁴ = 3 × 3 × 3 × 3 = 81, not 12.",
+      whyEs: "¡La trampa #1 de los exponentes! 3⁴ = 3 × 3 × 3 × 3 = 81, no 12.",
+    },
+    {
+      en: "2⁵ = 32.",
+      es: "2⁵ = 32.",
+      answer: true,
+      whyEn: "2, 4, 8, 16, 32 — five doublings.",
+      whyEs: "2, 4, 8, 16, 32: cinco duplicaciones.",
+    },
+    {
+      en: "Folding a paper in half 3 times gives 6 layers.",
+      es: "Doblar un papel a la mitad 3 veces da 6 capas.",
+      answer: false,
+      whyEn: "Each fold DOUBLES: 2, 4, 8 layers. That's 2³, not 2 × 3.",
+      whyEs: "Cada doblez DUPLICA: 2, 4, 8 capas. Eso es 2³, no 2 × 3.",
+    },
+    {
+      en: "Any number to the power of 1 is itself.",
+      es: "Cualquier número elevado a 1 es él mismo.",
+      answer: true,
+      whyEn: "7¹ means one copy of 7 in the product — just 7.",
+      whyEs: "7¹ significa una sola copia del 7 en el producto: solo 7.",
+    },
+    {
+      en: "10³ = 1,000.",
+      es: "10³ = 1,000.",
+      answer: true,
+      whyEn: "10 × 10 × 10 — the exponent counts the zeros for powers of ten.",
+      whyEs: "10 × 10 × 10: el exponente cuenta los ceros en las potencias de diez.",
+    },
+  ],
+  expressions: [
+    {
+      en: "In the expression 3t + 2, the 3 is called a coefficient.",
+      es: "En la expresión 3t + 2, el 3 se llama coeficiente.",
+      answer: true,
+      whyEn: "A coefficient is the number multiplying the variable.",
+      whyEs: "El coeficiente es el número que multiplica a la variable.",
+    },
+    {
+      en: "n + n + n is the same as n³.",
+      es: "n + n + n es lo mismo que n³.",
+      answer: false,
+      whyEn: "Adding three copies gives 3n. n³ means n × n × n — multiplying.",
+      whyEs: "Sumar tres copias da 3n. n³ significa n × n × n: multiplicar.",
+    },
+    {
+      en: "If x = 4, then 2x + 1 = 9.",
+      es: "Si x = 4, entonces 2x + 1 = 9.",
+      answer: true,
+      whyEn: "Substitute: 2 × 4 = 8, plus 1 is 9.",
+      whyEs: "Sustituyan: 2 × 4 = 8, más 1 son 9.",
+    },
+    {
+      en: "2x means 2 + x.",
+      es: "2x significa 2 + x.",
+      answer: false,
+      whyEn: "A number touching a variable means MULTIPLY: 2x is 2 times x.",
+      whyEs: "Un número pegado a una variable significa MULTIPLICAR: 2x es 2 por x.",
+    },
+    {
+      en: "An expression like 4s + 2p can have two different variables.",
+      es: "Una expresión como 4s + 2p puede tener dos variables diferentes.",
+      answer: true,
+      whyEn: "Each variable stands for its own quantity — shirts and pants can vary separately.",
+      whyEs:
+        "Cada variable representa su propia cantidad: camisas y pantalones varían por separado.",
+    },
+  ],
+  equations: [
+    {
+      en: "An equation stays balanced if you do the same thing to BOTH sides.",
+      es: "Una ecuación sigue equilibrada si haces lo mismo en LOS DOS lados.",
+      answer: true,
+      whyEn: "It works exactly like a balance scale — equal changes keep it level.",
+      whyEs: "Funciona igual que una balanza: cambios iguales la mantienen nivelada.",
+    },
+    {
+      en: "To solve m + 4 = 10, you add 4 to both sides.",
+      es: "Para resolver m + 4 = 10, se suma 4 a los dos lados.",
+      answer: false,
+      whyEn: "You UNDO the +4 by subtracting 4: m = 6. Adding would give m + 8 = 14.",
+      whyEs: "Se DESHACE el +4 restando 4: m = 6. Sumar daría m + 8 = 14.",
+    },
+    {
+      en: "The solution of 3k = 21 is k = 7.",
+      es: "La solución de 3k = 21 es k = 7.",
+      answer: true,
+      whyEn: "Divide both sides by 3. Check: 3 × 7 = 21. ✓",
+      whyEs: "Dividan los dos lados entre 3. Comprueben: 3 × 7 = 21. ✓",
+    },
+    {
+      en: "You can always check a solution by substituting it back into the equation.",
+      es: "Siempre se puede comprobar una solución sustituyéndola en la ecuación.",
+      answer: true,
+      whyEn:
+        "If both sides come out equal, the solution is right — the equation's own lie detector.",
+      whyEs:
+        "Si los dos lados salen iguales, la solución es correcta: el detector de mentiras de la ecuación.",
+    },
+    {
+      en: "An equals sign means 'the answer comes next.'",
+      es: "El signo igual significa 'aquí viene la respuesta'.",
+      answer: false,
+      whyEn: "It means both sides have the SAME VALUE — that's why balancing works.",
+      whyEs: "Significa que los dos lados tienen el MISMO VALOR: por eso funciona el equilibrio.",
+    },
+  ],
+  inequalities: [
+    {
+      en: "x ≥ 48 means 48 itself is allowed.",
+      es: "x ≥ 48 significa que el mismo 48 está permitido.",
+      answer: true,
+      whyEn: "The little line under the symbol means 'or equal to' — exactly 48 works.",
+      whyEs: "La rayita bajo el símbolo significa 'o igual a': exactamente 48 sirve.",
+    },
+    {
+      en: "x > 5 and x ≥ 5 mean the same thing.",
+      es: "x > 5 y x ≥ 5 significan lo mismo.",
+      answer: false,
+      whyEn: "They differ at exactly one number: 5 itself. > excludes it, ≥ includes it.",
+      whyEs: "Difieren en exactamente un número: el propio 5. > lo excluye, ≥ lo incluye.",
+    },
+    {
+      en: "An inequality like t > 60 has infinitely many solutions.",
+      es: "Una desigualdad como t > 60 tiene infinitas soluciones.",
+      answer: true,
+      whyEn:
+        "61, 62, 60.5, 1,000… every number above 60 works. That's why we graph a ray, not a dot.",
+      whyEs:
+        "61, 62, 60.5, 1,000… todo número mayor que 60 sirve. Por eso se grafica un rayo, no un punto.",
+    },
+    {
+      en: "If you may spend at most $15, then c ≤ 15 describes your budget.",
+      es: "Si puedes gastar máximo $15, entonces c ≤ 15 describe tu presupuesto.",
+      answer: true,
+      whyEn: "'At most' includes the limit — spending exactly $15 is still allowed.",
+      whyEs: "'Máximo' incluye el límite: gastar exactamente $15 sigue permitido.",
+    },
+    {
+      en: "On a number line, x > 3 is drawn with a filled-in dot at 3.",
+      es: "En la recta numérica, x > 3 se dibuja con un punto relleno en el 3.",
+      answer: false,
+      whyEn: "An OPEN circle at 3 — because 3 itself is not included in x > 3.",
+      whyEs: "Un círculo ABIERTO en el 3, porque el propio 3 no está incluido en x > 3.",
+    },
+  ],
+  properties: [
+    {
+      en: "4 × (3 + 2) gives the same total as 4 × 3 + 4 × 2.",
+      es: "4 × (3 + 2) da el mismo total que 4 × 3 + 4 × 2.",
+      answer: true,
+      whyEn: "Both count 4 snack packs of 5 items: 20. That's the distributive property.",
+      whyEs: "Los dos cuentan 4 paquetes de 5: 20. Esa es la propiedad distributiva.",
+    },
+    {
+      en: "Switching the order changes the answer in multiplication.",
+      es: "Cambiar el orden cambia el resultado en la multiplicación.",
+      answer: false,
+      whyEn:
+        "6 × 4 = 4 × 6 — turn the rectangle of beans sideways, same beans. Commutative property.",
+      whyEs:
+        "6 × 4 = 4 × 6: giren el rectángulo de frijoles, son los mismos frijoles. Propiedad conmutativa.",
+    },
+    {
+      en: "Switching the order changes the answer in subtraction.",
+      es: "Cambiar el orden cambia el resultado en la resta.",
+      answer: true,
+      whyEn:
+        "10 − 3 = 7 but 3 − 10 = −7. Subtraction is NOT commutative — that's why the trap matters.",
+      whyEs: "10 − 3 = 7 pero 3 − 10 = −7. La resta NO es conmutativa: por eso importa la trampa.",
+    },
+    {
+      en: "Multiplying any number by 1 leaves it unchanged.",
+      es: "Multiplicar cualquier número por 1 lo deja igual.",
+      answer: true,
+      whyEn: "The identity property of multiplication — one copy of the number.",
+      whyEs: "La propiedad de identidad de la multiplicación: una sola copia del número.",
+    },
+    {
+      en: "3 × 4.98 can be computed as 3 × 5 minus 3 × 0.02.",
+      es: "3 × 4.98 se puede calcular como 3 × 5 menos 3 × 0.02.",
+      answer: true,
+      whyEn: "Distribute over (5 − 0.02): $15.00 − $0.06 = $14.94. A mental-math superpower!",
+      whyEs:
+        "Distribuyan sobre (5 − 0.02): $15.00 − $0.06 = $14.94. ¡Un superpoder de cálculo mental!",
+    },
+  ],
+  area: [
+    {
+      en: "Area is measured in square units.",
+      es: "El área se mide en unidades cuadradas.",
+      answer: true,
+      whyEn: "Area counts the unit squares that cover a surface.",
+      whyEs: "El área cuenta los cuadrados unitarios que cubren una superficie.",
+    },
+    {
+      en: "The area of a parallelogram uses the slanted side times the base.",
+      es: "El área de un paralelogramo usa el lado inclinado por la base.",
+      answer: false,
+      whyEn:
+        "It uses the straight-up HEIGHT. Cut the triangle off one end, slide it over — it's a rectangle of base × height.",
+      whyEs:
+        "Usa la ALTURA vertical. Corten el triángulo de un extremo y deslícenlo: queda un rectángulo de base × altura.",
+    },
+    {
+      en: "A triangle's area is half the area of its matching rectangle.",
+      es: "El área de un triángulo es la mitad del área de su rectángulo correspondiente.",
+      answer: true,
+      whyEn:
+        "Break a rectangular cracker corner to corner: two equal triangles. Area = ½ × base × height.",
+      whyEs:
+        "Partan una galleta rectangular de esquina a esquina: dos triángulos iguales. Área = ½ × base × altura.",
+    },
+    {
+      en: "A rectangle 6 by 4 has area 10.",
+      es: "Un rectángulo de 6 por 4 tiene área 10.",
+      answer: false,
+      whyEn: "10 is the half-perimeter trap! Area multiplies: 6 × 4 = 24 square units.",
+      whyEs:
+        "¡10 es la trampa del semiperímetro! El área multiplica: 6 × 4 = 24 unidades cuadradas.",
+    },
+    {
+      en: "Two rooms can have different shapes but the same area.",
+      es: "Dos cuartos pueden tener formas diferentes y la misma área.",
+      answer: true,
+      whyEn: "A 6 × 4 room and an 8 × 3 room both cover 24 square units.",
+      whyEs: "Un cuarto de 6 × 4 y uno de 8 × 3 cubren 24 unidades cuadradas cada uno.",
+    },
+  ],
+  volume: [
+    {
+      en: "Volume is measured in cubic units.",
+      es: "El volumen se mide en unidades cúbicas.",
+      answer: true,
+      whyEn: "Volume counts the unit cubes that FILL a box — three dimensions.",
+      whyEs: "El volumen cuenta los cubos unitarios que LLENAN una caja: tres dimensiones.",
+    },
+    {
+      en: "A taller box always holds more than a shorter box.",
+      es: "Una caja más alta siempre cabe más que una más baja.",
+      answer: false,
+      whyEn:
+        "A tall skinny box can lose to a short wide one — multiply all three dimensions and let the numbers decide.",
+      whyEs:
+        "Una caja alta y flaca puede perder contra una baja y ancha: multipliquen las tres dimensiones y que decidan los números.",
+    },
+    {
+      en: "A box 2 × 3 × 4 holds 24 unit cubes.",
+      es: "Una caja de 2 × 3 × 4 contiene 24 cubos unitarios.",
+      answer: true,
+      whyEn: "Bottom layer: 2 × 3 = 6 cubes. Four layers: 6 × 4 = 24.",
+      whyEs: "Primera capa: 2 × 3 = 6 cubos. Cuatro capas: 6 × 4 = 24.",
+    },
+    {
+      en: "Volume = length × width × height works even when an edge is a fraction like 1½.",
+      es: "Volumen = largo × ancho × alto funciona aunque una arista sea una fracción como 1½.",
+      answer: true,
+      whyEn: "3 × 2 × 1½ = 9 cubic units — half-layers count as half.",
+      whyEs: "3 × 2 × 1½ = 9 unidades cúbicas: las medias capas cuentan como mitad.",
+    },
+    {
+      en: "Doubling every edge of a box doubles its volume.",
+      es: "Duplicar cada arista de una caja duplica su volumen.",
+      answer: false,
+      whyEn: "It multiplies volume by 2 × 2 × 2 = 8! Try it: 1×1×1 = 1 but 2×2×2 = 8.",
+      whyEs: "¡Multiplica el volumen por 2 × 2 × 2 = 8! Pruébenlo: 1×1×1 = 1 pero 2×2×2 = 8.",
+    },
+  ],
+  "surface-area": [
+    {
+      en: "Surface area is the total area of ALL the faces of a solid.",
+      es: "El área de superficie es el área total de TODAS las caras de un sólido.",
+      answer: true,
+      whyEn: "Unfold the box into its net and add up every face.",
+      whyEs: "Desarmen la caja en su plantilla y sumen todas las caras.",
+    },
+    {
+      en: "Surface area and volume measure the same thing.",
+      es: "El área de superficie y el volumen miden lo mismo.",
+      answer: false,
+      whyEn:
+        "Surface area is the wrapping paper (square units); volume is what fits inside (cubic units).",
+      whyEs:
+        "El área de superficie es el papel de regalo (unidades cuadradas); el volumen es lo que cabe adentro (unidades cúbicas).",
+    },
+    {
+      en: "A rectangular box has 6 faces.",
+      es: "Una caja rectangular tiene 6 caras.",
+      answer: true,
+      whyEn: "Top, bottom, front, back, and two sides — and they come in matching pairs.",
+      whyEs: "Arriba, abajo, frente, atrás y dos lados: y vienen en pares gemelos.",
+    },
+    {
+      en: "On a cube with edge 2, the total surface area is 24 square units.",
+      es: "En un cubo de arista 2, el área de superficie total es 24 unidades cuadradas.",
+      answer: true,
+      whyEn: "Each face is 2 × 2 = 4, and there are 6 faces: 6 × 4 = 24.",
+      whyEs: "Cada cara es 2 × 2 = 4, y hay 6 caras: 6 × 4 = 24.",
+    },
+    {
+      en: "To wrap a gift you need to know its volume.",
+      es: "Para envolver un regalo necesitas saber su volumen.",
+      answer: false,
+      whyEn:
+        "Wrapping covers the OUTSIDE — that's surface area. Volume tells you what fits inside.",
+      whyEs:
+        "Envolver cubre el EXTERIOR: eso es área de superficie. El volumen dice qué cabe adentro.",
+    },
+  ],
+  statistics: [
+    {
+      en: "A statistical question is one whose answers can vary.",
+      es: "Una pregunta estadística es una cuyas respuestas pueden variar.",
+      answer: true,
+      whyEn: "'How old are the people in our building?' varies. 'How old am I?' has one answer.",
+      whyEs:
+        "'¿Cuántos años tienen los vecinos?' varía. '¿Cuántos años tengo?' tiene una sola respuesta.",
+    },
+    {
+      en: "The median of 3, 5, 7 is 5.",
+      es: "La mediana de 3, 5, 7 es 5.",
+      answer: true,
+      whyEn: "Line the data up in order; the median is the middle value.",
+      whyEs: "Ordenen los datos; la mediana es el valor del medio.",
+    },
+    {
+      en: "The mean and the median are always the same number.",
+      es: "La media y la mediana siempre son el mismo número.",
+      answer: false,
+      whyEn: "For 1, 2, 9: median is 2, mean is 4. One big value drags the mean, not the median.",
+      whyEs:
+        "Para 1, 2, 9: la mediana es 2, la media es 4. Un valor grande arrastra la media, no la mediana.",
+    },
+    {
+      en: "An outlier is a data value that sits far from the rest.",
+      es: "Un valor atípico es un dato que queda lejos de los demás.",
+      answer: true,
+      whyEn: "Like one cousin who sleeps 12 hours in a family of 8-hour sleepers — it has a story!",
+      whyEs: "Como un primo que duerme 12 horas en una familia que duerme 8: ¡tiene su historia!",
+    },
+    {
+      en: "To find the median you must first put the data in order.",
+      es: "Para hallar la mediana primero hay que ordenar los datos.",
+      answer: true,
+      whyEn: "The middle of an unordered list is meaningless — order first, then find the center.",
+      whyEs:
+        "El medio de una lista desordenada no significa nada: primero ordenar, luego buscar el centro.",
+    },
+  ],
+  "number-line": [
+    {
+      en: "−7 is less than −2.",
+      es: "−7 es menor que −2.",
+      answer: true,
+      whyEn: "On the number line −7 sits farther LEFT. Owing $7 is worse than owing $2!",
+      whyEs: "En la recta, −7 está más a la IZQUIERDA. ¡Deber $7 es peor que deber $2!",
+    },
+    {
+      en: "The absolute value of −6 is −6.",
+      es: "El valor absoluto de −6 es −6.",
+      answer: false,
+      whyEn: "Absolute value is DISTANCE from zero, and distance is never negative: |−6| = 6.",
+      whyEs:
+        "El valor absoluto es la DISTANCIA a cero, y la distancia nunca es negativa: |−6| = 6.",
+    },
+    {
+      en: "−4 and 4 are opposites.",
+      es: "−4 y 4 son opuestos.",
+      answer: true,
+      whyEn: "Same distance from zero, opposite sides. Stand on the hallway number line and check!",
+      whyEs:
+        "Misma distancia del cero, lados opuestos. ¡Párense en la recta del pasillo y compruébenlo!",
+    },
+    {
+      en: "Zero is a negative number.",
+      es: "El cero es un número negativo.",
+      answer: false,
+      whyEn: "Zero is neither positive nor negative — it's the boundary between them.",
+      whyEs: "El cero no es positivo ni negativo: es la frontera entre los dos.",
+    },
+    {
+      en: "A bank account can hold a number below zero.",
+      es: "Una cuenta bancaria puede tener un número bajo cero.",
+      answer: true,
+      whyEn: "Overdrawn by $3 is −3 — negative numbers describe owing, cold, and below sea level.",
+      whyEs:
+        "Un sobregiro de $3 es −3: los negativos describen deudas, frío y bajo el nivel del mar.",
+    },
+  ],
+  "coordinate-plane": [
+    {
+      en: "(3, 2) and (2, 3) are the same point.",
+      es: "(3, 2) y (2, 3) son el mismo punto.",
+      answer: false,
+      whyEn: "Order matters: (3, 2) is right 3 up 2; (2, 3) is right 2 up 3. Two different spots!",
+      whyEs:
+        "El orden importa: (3, 2) es 3 a la derecha y 2 arriba; (2, 3) es 2 a la derecha y 3 arriba. ¡Dos lugares distintos!",
+    },
+    {
+      en: "The first number in an ordered pair tells you how far to move left or right.",
+      es: "El primer número de un par ordenado dice cuánto moverse a la izquierda o derecha.",
+      answer: true,
+      whyEn: "x first (across), y second (up/down) — 'you crawl before you climb.'",
+      whyEs: "Primero x (horizontal), luego y (vertical): 'primero caminas, luego subes'.",
+    },
+    {
+      en: "(0, 0) is called the origin.",
+      es: "(0, 0) se llama el origen.",
+      answer: true,
+      whyEn: "It's where the two axes cross — every trip starts there.",
+      whyEs: "Es donde se cruzan los dos ejes: todo viaje empieza allí.",
+    },
+    {
+      en: "(−1, 4) is in Quadrant IV.",
+      es: "(−1, 4) está en el cuadrante IV.",
+      answer: false,
+      whyEn: "Negative x, positive y → Quadrant II (upper left). Quadrant IV is +x, −y.",
+      whyEs: "x negativa, y positiva → cuadrante II (arriba a la izquierda). El IV es +x, −y.",
+    },
+    {
+      en: "The four quadrants are numbered going counterclockwise.",
+      es: "Los cuatro cuadrantes se numeran en sentido contrario a las manecillas.",
+      answer: true,
+      whyEn: "I (top right) → II (top left) → III (bottom left) → IV (bottom right).",
+      whyEs:
+        "I (arriba derecha) → II (arriba izquierda) → III (abajo izquierda) → IV (abajo derecha).",
+    },
+  ],
+  fallback: [
+    {
+      en: "Estimating before you solve helps you catch mistakes.",
+      es: "Estimar antes de resolver ayuda a detectar errores.",
+      answer: true,
+      whyEn: "If your estimate says 'about 20' and you get 200, something slipped.",
+      whyEs: "Si la estimación dice 'como 20' y sale 200, algo falló.",
+    },
+    {
+      en: "There is only one correct way to solve a math problem.",
+      es: "Solo hay una forma correcta de resolver un problema de matemáticas.",
+      answer: false,
+      whyEn:
+        "Draw it, build it, count up, use a rule — different roads to the same answer are the point of math talk!",
+      whyEs:
+        "Dibujar, construir, contar, usar una regla: distintos caminos a la misma respuesta. ¡De eso se trata hablar de matemáticas!",
+    },
+    {
+      en: "10% of 200 is 20.",
+      es: "El 10% de 200 es 20.",
+      answer: true,
+      whyEn: "10% means one tenth: 200 ÷ 10 = 20.",
+      whyEs: "10% significa una décima parte: 200 ÷ 10 = 20.",
+    },
+    {
+      en: "Making a mistake in math means you're bad at math.",
+      es: "Equivocarse en matemáticas significa ser malo para las matemáticas.",
+      answer: false,
+      whyEn: "Mistakes are data! Finding and fixing them is how mathematicians actually work.",
+      whyEs:
+        "¡Los errores son información! Encontrarlos y corregirlos es como trabajan los matemáticos de verdad.",
+    },
+    {
+      en: "Explaining your thinking out loud helps you understand it better.",
+      es: "Explicar tu razonamiento en voz alta ayuda a entenderlo mejor.",
+      answer: true,
+      whyEn:
+        "Teaching someone else is the strongest form of studying — that's why this homework asks families to talk.",
+      whyEs:
+        "Enseñar a otra persona es la forma más fuerte de estudiar: por eso esta tarea invita a conversar en familia.",
+    },
+  ],
+};
+
+function familyGamePairs(topic) {
+  return FAMILY_GAME_PAIRS[topic] || FAMILY_GAME_PAIRS.fallback;
+}
+
+function familyTfQuestions(topic) {
+  return FAMILY_TF_QUESTIONS[topic] || FAMILY_TF_QUESTIONS.fallback;
+}
+
+/**
+ * The Family Game Break: Memory Flip (pairs) + True/False Face-Off, rendered on
+ * the Together tab. Data ships as a JSON island (window.__HW_FAMGAMES__, `<`
+ * escaped) so the game logic in HOMEWORK_TABS_JS stays free of content.
+ */
+export function renderFamilyGameBreak(topic) {
+  const pairs = familyGamePairs(topic);
+  const tf = familyTfQuestions(topic);
+  const payload = JSON.stringify({ pairs, tf }).replace(/</g, "\\u003c");
+
+  return `
+    <div class="fam-game-break card-ish" id="fam_game_break">
+      <script>window.__HW_FAMGAMES__ = ${payload};</script>
+      <div class="fam-game-head">
+        <span class="fam-game-badge">🎲 FAMILY GAME BREAK / JUEGOS EN FAMILIA</span>
+        <p class="fam-game-lead">
+          <span class="lang-en">Two quick games about tonight's math — play as a team, no timer, replay as often as you like!</span>
+          <span class="lang-es" lang="es">Dos juegos rápidos sobre las matemáticas de hoy. Jueguen en equipo, sin cronómetro, ¡repitan las veces que quieran!</span>
+        </p>
+      </div>
+
+      <div class="fam-game-card" id="fam_memory_game">
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🃏 <span class="lang-en">Memory Flip: Math Twins</span><span class="lang-es" lang="es">Memoria: Gemelos Matemáticos</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetMemoryGame()">🔄 <span class="lang-en">Shuffle &amp; Restart</span><span class="lang-es" lang="es">Mezclar y reiniciar</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Flip two cards to find each problem's twin answer. Fewer flips = sharper memory!</span>
+          <span class="lang-es" lang="es">Volteen dos tarjetas para encontrar la pareja de cada problema. ¡Menos vueltas = mejor memoria!</span>
+        </p>
+        <div class="fam-memory-grid" id="fam_memory_grid" role="group" aria-label="Memory matching game"></div>
+        <p class="fam-memory-status" id="fam_memory_status" aria-live="polite">
+          <span class="lang-en">Matches: <strong id="fam_mem_matches">0</strong> / 4 · Flips: <strong id="fam_mem_flips">0</strong></span>
+          <span class="lang-es" lang="es">Parejas: <strong id="fam_mem_matches_es">0</strong> / 4 · Vueltas: <strong id="fam_mem_flips_es">0</strong></span>
+        </p>
+        <p class="fam-memory-win" id="fam_memory_win" hidden>🎉 <span class="lang-en">All twins found! Can you beat your flip count on a rematch?</span><span class="lang-es" lang="es">¡Encontraron todas las parejas! ¿Pueden lograrlo con menos vueltas en la revancha?</span></p>
+      </div>
+
+      <div class="fam-game-card" id="fam_tf_game">
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🎯 <span class="lang-en">True or False? Family Face-Off</span><span class="lang-es" lang="es">¿Verdadero o falso? Duelo Familiar</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetTfGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Take turns — student answers one, then a family member answers the next. Watch for the trick statements!</span>
+          <span class="lang-es" lang="es">Por turnos: el estudiante responde una y luego un familiar responde la siguiente. ¡Cuidado con las trampas!</span>
+        </p>
+        <div class="fam-tf-turn" id="fam_tf_turn" aria-live="polite"></div>
+        <p class="fam-tf-statement" id="fam_tf_statement"></p>
+        <div class="fam-tf-buttons">
+          <button type="button" class="btn fam-tf-btn fam-tf-true" id="fam_tf_true_btn" onclick="answerTf(true)">✓ <span class="lang-en">TRUE</span><span class="lang-es" lang="es">VERDADERO</span></button>
+          <button type="button" class="btn fam-tf-btn fam-tf-false" id="fam_tf_false_btn" onclick="answerTf(false)">✗ <span class="lang-en">FALSE</span><span class="lang-es" lang="es">FALSO</span></button>
+        </div>
+        <div class="fam-tf-feedback" id="fam_tf_feedback" hidden aria-live="polite">
+          <p class="fam-tf-verdict" id="fam_tf_verdict"></p>
+          <p class="fam-tf-why" id="fam_tf_why"></p>
+          <button type="button" class="btn btn-primary btn-sm" id="fam_tf_next_btn" onclick="nextTf()">➔ <span class="lang-en">Next statement</span><span class="lang-es" lang="es">Siguiente</span></button>
+        </div>
+        <p class="fam-tf-score" id="fam_tf_score" aria-live="polite"></p>
+        <div class="fam-tf-done" id="fam_tf_done" hidden></div>
+      </div>
+    </div>`;
+}
+
 export const MATH_TALK_QUESTIONS = [
   {
     qEn: "Can you show me how you see that in the picture above?",
@@ -3825,6 +4693,7 @@ export function renderTogetherTab(config, lessonId = "") {
     <div ${tabPanelAttrs("together", true)}>
       ${inner}
       ${mathTalkHtml}
+      ${renderFamilyGameBreak(detectVisualTopic(config))}
       ${renderFamilyActivityCorner(detectVisualTopic(config))}
       <div class="scratchpad-inline-toggle">
         <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
@@ -4364,6 +5233,206 @@ function journeyStorageKey() {
   return 'hw_journey_' + (window.LESSON_ID || location.pathname);
 }
 
+/* ── Family Game Break (Together tab) ─────────────────────────────────────
+   Two content-free game engines; the content ships as the JSON island
+   window.__HW_FAMGAMES__ rendered by renderFamilyGameBreak(). No timers. */
+var famMem = { first: null, lock: false, matches: 0, flips: 0 };
+var famTf = { idx: 0, score: 0, answered: 0 };
+
+function famGamesData() {
+  var d = window.__HW_FAMGAMES__;
+  return d && Array.isArray(d.pairs) && Array.isArray(d.tf) ? d : null;
+}
+
+function resetMemoryGame() {
+  var data = famGamesData();
+  var grid = document.getElementById('fam_memory_grid');
+  if (!data || !grid) return;
+  famMem = { first: null, lock: false, matches: 0, flips: 0 };
+  var win = document.getElementById('fam_memory_win');
+  if (win) win.hidden = true;
+  updateMemoryStatus();
+  var faces = [];
+  data.pairs.forEach(function (p, i) {
+    faces.push({ pair: i, text: p.a });
+    faces.push({ pair: i, text: p.b });
+  });
+  // Runtime shuffle on purpose — each rematch deals a fresh layout.
+  for (var i = faces.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = faces[i]; faces[i] = faces[j]; faces[j] = t;
+  }
+  grid.innerHTML = '';
+  faces.forEach(function (f) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'fam-mem-card';
+    btn.dataset.pair = String(f.pair);
+    btn.setAttribute('aria-label', 'Face-down card');
+    var inner = document.createElement('span');
+    inner.className = 'fam-mem-face';
+    inner.textContent = f.text;
+    btn.appendChild(inner);
+    btn.addEventListener('click', function () { flipMemoryCard(btn); });
+    grid.appendChild(btn);
+  });
+}
+
+function updateMemoryStatus() {
+  ['fam_mem_matches', 'fam_mem_matches_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(famMem.matches);
+  });
+  ['fam_mem_flips', 'fam_mem_flips_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(famMem.flips);
+  });
+}
+
+function flipMemoryCard(btn) {
+  if (famMem.lock || btn.classList.contains('is-up') || btn.classList.contains('is-matched')) return;
+  btn.classList.add('is-up');
+  btn.setAttribute('aria-label', btn.querySelector('.fam-mem-face').textContent);
+  famMem.flips++;
+  updateMemoryStatus();
+  if (!famMem.first) { famMem.first = btn; return; }
+  var a = famMem.first;
+  famMem.first = null;
+  if (a.dataset.pair === btn.dataset.pair) {
+    a.classList.add('is-matched');
+    btn.classList.add('is-matched');
+    famMem.matches++;
+    updateMemoryStatus();
+    if (typeof playCorrectSound === 'function') playCorrectSound();
+    if (famMem.matches >= 4) {
+      var win = document.getElementById('fam_memory_win');
+      if (win) win.hidden = false;
+      if (typeof triggerCelebration === 'function') triggerCelebration();
+    }
+  } else {
+    famMem.lock = true;
+    setTimeout(function () {
+      a.classList.remove('is-up');
+      btn.classList.remove('is-up');
+      a.setAttribute('aria-label', 'Face-down card');
+      btn.setAttribute('aria-label', 'Face-down card');
+      famMem.lock = false;
+    }, 950);
+  }
+}
+
+/* The page has three language modes (bilingual default / en / es), carried by
+   CSS on .lang-en/.lang-es spans — so JS-written text uses the SAME span pair
+   and inherits whichever mode the family picked, live. */
+function setBiText(el, en, es) {
+  if (!el) return;
+  el.textContent = '';
+  var a = document.createElement('span');
+  a.className = 'lang-en';
+  a.textContent = en;
+  var b = document.createElement('span');
+  b.className = 'lang-es';
+  b.setAttribute('lang', 'es');
+  b.textContent = es;
+  el.appendChild(a);
+  el.appendChild(b);
+}
+
+function renderTfQuestion() {
+  var data = famGamesData();
+  if (!data) return;
+  var q = data.tf[famTf.idx];
+  var turnEl = document.getElementById('fam_tf_turn');
+  var stEl = document.getElementById('fam_tf_statement');
+  var fb = document.getElementById('fam_tf_feedback');
+  var doneEl = document.getElementById('fam_tf_done');
+  var btnT = document.getElementById('fam_tf_true_btn');
+  var btnF = document.getElementById('fam_tf_false_btn');
+  if (!q) {
+    if (stEl) stEl.textContent = '';
+    if (turnEl) turnEl.textContent = '';
+    if (btnT) btnT.hidden = true;
+    if (btnF) btnF.hidden = true;
+    if (fb) fb.hidden = true;
+    if (doneEl) {
+      doneEl.hidden = false;
+      var perfect = famTf.score === data.tf.length;
+      var lead = perfect ? '🏆 ' : '🎉 ';
+      setBiText(
+        doneEl,
+        lead + 'Team score: ' + famTf.score + ' out of ' + data.tf.length + (perfect ? ' — perfect game!' : '. Read the whys together and rematch!'),
+        lead + 'Resultado del equipo: ' + famTf.score + ' de ' + data.tf.length + (perfect ? ' — ¡puntuación perfecta!' : '. Revisen los porqués y jueguen otra vez.'),
+      );
+      if (typeof triggerCelebration === 'function' && perfect) triggerCelebration();
+    }
+    return;
+  }
+  if (doneEl) doneEl.hidden = true;
+  if (btnT) { btnT.hidden = false; btnT.disabled = false; }
+  if (btnF) { btnF.hidden = false; btnF.disabled = false; }
+  if (fb) fb.hidden = true;
+  var who = famTf.idx % 2 === 0;
+  var pos = ' · ' + (famTf.idx + 1) + ' / ' + data.tf.length;
+  setBiText(
+    turnEl,
+    (who ? "🧑‍🎓 Student's turn" : "👪 Family member's turn") + pos,
+    (who ? '🧑‍🎓 Turno del estudiante' : '👪 Turno de la familia') + pos,
+  );
+  setBiText(stEl, q.en, q.es);
+  updateTfScore();
+}
+
+function updateTfScore() {
+  var el = document.getElementById('fam_tf_score');
+  if (!el) return;
+  var tail = famTf.score + ' / ' + famTf.answered;
+  setBiText(el, 'Team score: ' + tail, 'Puntos del equipo: ' + tail);
+}
+
+function answerTf(saidTrue) {
+  var data = famGamesData();
+  var q = data && data.tf[famTf.idx];
+  if (!q) return;
+  var btnT = document.getElementById('fam_tf_true_btn');
+  var btnF = document.getElementById('fam_tf_false_btn');
+  if (btnT) btnT.disabled = true;
+  if (btnF) btnF.disabled = true;
+  var right = saidTrue === q.answer;
+  famTf.answered++;
+  if (right) famTf.score++;
+  var verdict = document.getElementById('fam_tf_verdict');
+  var why = document.getElementById('fam_tf_why');
+  var fb = document.getElementById('fam_tf_feedback');
+  if (verdict) {
+    setBiText(
+      verdict,
+      right ? '✅ Correct!' : '❌ Not quite — it was ' + (q.answer ? 'TRUE.' : 'FALSE.'),
+      right ? '✅ ¡Correcto!' : '❌ No exactamente — era ' + (q.answer ? 'VERDADERO.' : 'FALSO.'),
+    );
+    verdict.className = 'fam-tf-verdict ' + (right ? 'is-right' : 'is-wrong');
+  }
+  setBiText(why, q.whyEn, q.whyEs);
+  if (fb) fb.hidden = false;
+  if (right && typeof playCorrectSound === 'function') playCorrectSound();
+  updateTfScore();
+}
+
+function nextTf() {
+  famTf.idx++;
+  renderTfQuestion();
+}
+
+function resetTfGame() {
+  famTf = { idx: 0, score: 0, answered: 0 };
+  renderTfQuestion();
+}
+
+function initFamilyGames() {
+  if (!famGamesData() || !document.getElementById('fam_game_break')) return;
+  resetMemoryGame();
+  resetTfGame();
+}
+
 /* Tonight's Path roadmap: light up the current stop, keep a persistent check
    on every stop the family has visited for THIS lesson. */
 function updateJourneyMap(tabId) {
@@ -4651,6 +5720,7 @@ function initHomeworkPage() {
   restoreParentSignoff();
   initDrawCanvases();
   initHomeworkVocabPopups();
+  initFamilyGames();
 }
 
 if (document.readyState === 'loading') {
@@ -7185,8 +8255,176 @@ body.lang-mode-es .tab-es {
   .hw-journey-min { display: none; }
 }
 
+/* ============================================================
+   Family Game Break — Memory Flip + True/False Face-Off.
+   ============================================================ */
+.fam-game-break {
+  margin-top: 22px;
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 14px 34px -22px rgba(18,53,91,.5);
+}
+.fam-game-head { margin-bottom: 14px; }
+.fam-game-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: #6b21a8;
+  background: #f3e8ff;
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+.fam-game-lead { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
+.fam-game-card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.fam-game-card:last-child { margin-bottom: 0; }
+.fam-game-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fam-game-h3 { margin: 0; font-size: 16.5px; color: var(--navy); }
+.fam-game-h3 .lang-es { font-weight: 600; }
+.fam-game-card .lang-en + .lang-es { border-left: 0; padding-left: 0; }
+.fam-game-sub { margin: 8px 0 12px; font-size: 13.5px; color: var(--muted); }
+
+/* Memory Flip */
+.fam-memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.fam-mem-card {
+  position: relative;
+  min-height: 76px;
+  border: 2px solid var(--navy-light);
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  cursor: pointer;
+  padding: 6px;
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+.fam-mem-card::before {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,.85);
+  font-size: 26px;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+.fam-mem-card:hover { transform: translateY(-2px); }
+.fam-mem-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-mem-face {
+  display: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+.fam-mem-card.is-up, .fam-mem-card.is-matched {
+  background: #fff;
+  border-color: var(--teal);
+}
+.fam-mem-card.is-up::before, .fam-mem-card.is-matched::before { content: none; }
+.fam-mem-card.is-up .fam-mem-face, .fam-mem-card.is-matched .fam-mem-face {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  text-align: center;
+}
+.fam-mem-card.is-matched {
+  background: var(--success-bg);
+  border-color: var(--success);
+  cursor: default;
+}
+.fam-memory-status { margin: 10px 0 0; font-size: 13.5px; color: var(--muted); }
+.fam-memory-win {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* True/False Face-Off */
+.fam-tf-turn { font-size: 13px; font-weight: 800; color: var(--teal-ink); margin-bottom: 6px; }
+.fam-tf-statement {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.fam-tf-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.fam-tf-btn {
+  flex: 1 1 140px;
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.fam-tf-true { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+.fam-tf-true:hover:not(:disabled) { background: var(--success); color: #fff; }
+.fam-tf-false { background: var(--error-bg); border-color: var(--error); color: var(--error); }
+.fam-tf-false:hover:not(:disabled) { background: var(--error); color: #fff; }
+.fam-tf-btn:disabled { opacity: .55; cursor: default; }
+.fam-tf-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-tf-feedback {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--amber-light);
+  border: 1px solid #f0d9a0;
+  border-radius: 12px;
+}
+.fam-tf-verdict { margin: 0 0 6px; font-weight: 800; font-size: 14.5px; }
+.fam-tf-verdict.is-right { color: var(--success); }
+.fam-tf-verdict.is-wrong { color: var(--error); }
+.fam-tf-why { margin: 0 0 10px; font-size: 14px; color: var(--ink); }
+.fam-tf-score { margin: 10px 0 0; font-size: 13px; font-weight: 700; color: var(--muted); }
+.fam-tf-done {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .fam-memory-grid { grid-template-columns: repeat(2, 1fr); }
+  .fam-mem-card { min-height: 64px; }
+}
+
 @media print {
   .hw-journey, .hw-quickplan { display: none; }
   .fam-act-card { break-inside: avoid; }
+  /* The interactive games are screen-only; paper families have the Activity
+     Corner and the printable practice instead. */
+  .fam-game-break { display: none; }
 }
 `;
