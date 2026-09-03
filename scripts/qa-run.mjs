@@ -685,6 +685,44 @@ async function main() {
           if (!ok) {
             const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
             for (const l of tail) console.log(`      | ${l}`);
+            // EXCLUSIVE serialises the browser checks against each other and
+            // against the other ~100 checks in THIS run. It cannot see a
+            // browser outside the run -- an editor preview, a Playwright/MCP
+            // session, a Chrome window with a heavy tab -- and those cost the
+            // same races. The signatures below are the ones that lie: each
+            // names a real-looking page defect (an unresolvable module, a 404,
+            // a dead socket) for a file that was on disk and correct the whole
+            // time. On 2026-09-02 validate:visibility failed with the
+            // web-vitals one while an agent's Playwright Chromium was open,
+            // then passed 5/5 alone against the same dist/.
+            //
+            // Say so. An unexplained browser failure on a healthy tree is the
+            // reason people reach for --no-verify.
+            if (EXCLUSIVE.has(name)) {
+              const CONTENTION = [
+                /Failed to resolve module specifier/i,
+                /ERR_HTTP_RESPONSE_CODE_FAILURE/i,
+                /ERR_CONNECTION_(REFUSED|RESET)/i,
+                /Timeout .* exceeded/i,
+                /net::ERR_/i,
+                /http404/i,
+              ];
+              const blob = `${stdout}\n${stderr}`;
+              if (CONTENTION.some((re) => re.test(blob))) {
+                console.log(
+                  `      ^ ${name} is a browser check, and this failure matches a known ` +
+                    "CONTENTION signature, not a known page defect.",
+                );
+                console.log(
+                  "        Close other browsers (including any agent/MCP session) and re-run " +
+                    `alone:  npm run qa:fast -- --only ${name}`,
+                );
+                console.log(
+                  "        If it passes alone against the same dist/, the tree is fine and this " +
+                    "was the machine. If it fails alone, it is real.",
+                );
+              }
+            }
           }
           resolve();
         },
