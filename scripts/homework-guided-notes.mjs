@@ -45,6 +45,21 @@ export function displayLessonId(lessonId) {
   return String(lessonId ?? "").replace(/-(flagship|group\d+|catchup)$/, "");
 }
 
+/**
+ * How the page names itself in its title, description and welcome line.
+ *
+ * A numbered lesson is "Lesson 6-2". A bridge or review lesson is not: it has
+ * no place in the numbered spine, and `6-1-6-2-practice` is a folder slug, not
+ * something to show a family — "Lesson 6-1-6-2-practice" is worse than saying
+ * nothing. Those pages lead with "Review" and let their own title do the
+ * naming ("6.1–6.2 · Extra Practice"), which already says which lessons it
+ * covers.
+ */
+export function homeworkPageLabel(lessonId) {
+  const id = String(lessonId ?? "");
+  return /-(practice|catchup)$/.test(id) ? "Review" : `Lesson ${displayLessonId(id)}`;
+}
+
 function firstTurnAndTalk(config) {
   const talks = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
   return talks[0] || null;
@@ -1033,7 +1048,7 @@ export function renderWelcomeBanner(config, lessonId) {
           <p class="welcome-tag">Unit ${unit} · ${esc(standard)}</p>
           <h1 class="welcome-title-en">Family Math Night</h1>
           <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
-          <p class="welcome-lesson">${esc(title)} · Lesson ${esc(displayLessonId(lessonId))}</p>
+          <p class="welcome-lesson">${esc(title)} · ${esc(homeworkPageLabel(lessonId))}</p>
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
@@ -2130,7 +2145,20 @@ function initHomeworkVocabPopups() {
   var container = document.getElementById('hw_tab_panels');
   if (!container || !list.length || !match || !match.regexSource) return;
   var lookup = match.lookup || {};
-  function norm(s) { return String(s).toLowerCase().replace(/s$/, '').trim(); }
+  // Mirrors normalizeVocabSurface in engine/core/vocab-match.js, which built the
+  // lookup keys: lowercase, collapse spaces, and undo the plural — including the
+  // "-y" head that takes "-ies" ("identity properties" -> "identity property").
+  function norm(s) {
+    var t = String(s || '').toLowerCase().trim().replace(/\s+/g, ' ');
+    if (/[^aeiou]ies$/.test(t)) return t.replace(/ies$/, 'y');
+    return t.replace(/s$/, '');
+  }
+  // Mirrors surfaceMatchesEntry: an acronym entry answers only to its exact
+  // written form, so "MAD" opens the popup and "mad" in a sentence never does.
+  function surfaceFits(surface, entry) {
+    if (!entry || !entry.cs) return true;
+    return String(surface || '').replace(/(?:es|s)$/, '') === String(entry.term);
+  }
   var re = new RegExp(match.regexSource, 'gi');
   // Never rewrite inside controls, inputs, the vocab flashcards (already defined
   // there), an already-wrapped term, or the popup itself.
@@ -2154,7 +2182,7 @@ function initHomeworkVocabPopups() {
     while ((m = re.exec(text)) !== null) {
       var key = norm(m[0]);
       var idx = Object.prototype.hasOwnProperty.call(lookup, key) ? lookup[key] : -1;
-      if (idx < 0) continue;
+      if (idx < 0 || !surfaceFits(m[0], list[idx])) continue;
       frag.appendChild(document.createTextNode(text.slice(cursor, m.index)));
       var btn = document.createElement('button');
       btn.type = 'button';

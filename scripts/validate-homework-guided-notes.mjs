@@ -8,7 +8,11 @@ import vm from "node:vm";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
+// Every page the homework generator writes, not every core lesson: a bridge or
+// review lesson that opted in ships a homework.html too, and a page nobody
+// sweeps is a page that can rot silently. Presence of the FILE is the evidence,
+// so this stays in step with the generator without duplicating its predicate.
+const HOMEWORK_DIR_RE = /^[0-9][0-9a-z-]*$/;
 
 // Cases a grade-6 student really types, run against each page's own inlined
 // copy of the shared answer matcher. Accepted forms must all be credited;
@@ -145,8 +149,18 @@ const BAD_SPANISH = [
 ];
 
 const lessonIds = readdirSync(lessonsDir)
-  .filter((d) => LESSON_DIR_RE.test(d) && existsSync(join(lessonsDir, d, "config.json")))
+  .filter(
+    (d) =>
+      HOMEWORK_DIR_RE.test(d) &&
+      existsSync(join(lessonsDir, d, "config.json")) &&
+      existsSync(join(lessonsDir, d, "homework.html")),
+  )
   .sort();
+
+if (!lessonIds.length) {
+  console.error("validate-homework-guided-notes FAILED: found zero homework pages to check");
+  process.exit(1);
+}
 
 let issues = [];
 

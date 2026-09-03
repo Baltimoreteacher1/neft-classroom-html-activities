@@ -4,13 +4,14 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const lessonsDir = join(root, "lessons");
 const outFile = join(root, "curriculum", "lesson-family-homework.js");
 
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
+const LESSON_DIR_RE = /^[0-9][0-9a-z-]*$/;
 
 function familyHomeworkEntry(id, cfg) {
   const custom = cfg.familyHomework || cfg.family?.homework;
@@ -51,19 +52,12 @@ const entries = readdirSync(lessonsDir)
   .filter((d) => existsSync(join(lessonsDir, d, "config.json")))
   .map((id) => {
     const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
+    if (!generatesFamilyHomework(id, cfg)) return null;
     const entry = familyHomeworkEntry(id, cfg);
     return entry ? [id, entry] : null;
   })
   .filter(Boolean)
-  .sort((a, b) => {
-    const ma = a[0].match(LESSON_DIR_RE);
-    const mb = b[0].match(LESSON_DIR_RE);
-    return (
-      Number(ma[1]) - Number(mb[1]) ||
-      Number(ma[2]) - Number(mb[2]) ||
-      (a[0].endsWith("-flagship") ? 1 : 0) - (b[0].endsWith("-flagship") ? 1 : 0)
-    );
-  });
+  .sort((a, b) => compareFamilyHomeworkIds(a[0], b[0]));
 
 const map = Object.fromEntries(entries);
 const mapLiteral = JSON.stringify(map, null, 2);

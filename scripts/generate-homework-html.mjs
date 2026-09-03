@@ -2,11 +2,13 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
+import { augmentVocabWithGlossary } from "../engine/core/math-glossary.js";
 import {
   hasRealVocabImage,
   resolveVocabImage,
   vocabImageAlt,
 } from "../engine/core/vocab-images.js";
+import { buildVocabMatcher } from "../engine/core/vocab-match.js";
 import {
   detectVisualTopic,
   selectMorePracticeProblems,
@@ -18,6 +20,7 @@ import {
   displayLessonId,
   GUIDED_NOTES_CSS,
   HOMEWORK_TABS_JS,
+  homeworkPageLabel,
   renderArcadeTabPanel,
   renderCheckTab,
   renderDoneTab,
@@ -38,7 +41,9 @@ import {
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
+import { toHomeworkShape } from "./lib/review-lesson-shape.mjs";
 
 /** --check writes nothing and exits non-zero if any committed page has drifted. */
 const CHECK = process.argv.includes("--check");
@@ -49,6 +54,9 @@ const lessonsDir = join(root, "lessons");
 
 // Match core/flagship lessons like "3-2" or "3-2-flagship"
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
+// Folders this generator will consider at all. `generatesFamilyHomework` then
+// decides: core lessons always, anything else only when its config opts in.
+const HOMEWORK_DIR_RE = /^[0-9][0-9a-z-]*$/;
 
 function esc(s) {
   return String(s ?? "")
@@ -65,61 +73,29 @@ function escAttr(s) {
     .replace(/'/g, "\\'");
 }
 
-function escapeRegExp(s) {
-  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 // Precompute the tap-to-define vocab glossary the family homework page ships as
-// data. Mirrors the lesson engine's underlineVocabTerms matching (longest term
-// first, single trailing-plural tolerance, explicit `aliases`, and the curated
-// "<modifier> number" short forms like prime/composite) so the browser side only
-// needs to walk text nodes against `regexSource` and look terms up by index.
-// Returns null when no vocab term has any popup content. `entries` is indexed to
-// the ORIGINAL vocab list so the lookup's stored indices resolve directly.
+// data. The page is standalone HTML, so it cannot import the engine: the match
+// index is built here in Node with the SAME shared code the lesson pages use —
+// `augmentVocabWithGlossary` (lesson words plus the grade-6 glossary and its
+// acronyms) fed to `buildVocabMatcher` (longest-surface-first, plural-tolerant,
+// alias-aware) — and handed to the browser as `regexSource` + `lookup`.
+//
+// This used to be a hand-copied subset of that matcher over `config.vocabulary`
+// ALONE, which is why a family opening the homework never got a popup for
+// "fraction": the word is in the shared glossary, not in any lesson's own list,
+// so the homework page underlined it nowhere while the lesson page underlined it
+// everywhere. The copy had also drifted — no "-ies" plural (so "identity
+// properties" matched nothing), no property aliases, no case-sensitivity rule.
+// Building from the shared index is what keeps the two in step.
+//
+// Returns null when nothing is matchable. `entries` is indexed to the AUGMENTED
+// list so the lookup's stored indices resolve directly; the Word Wall tab keeps
+// rendering the lesson's own vocabulary only, so family flashcards do not
+// suddenly grow 96 glossary cards.
 function buildVocabGlossary(vocab) {
-  const list = Array.isArray(vocab) ? vocab : [];
-  const hasContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual));
-  const raw = list
-    .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
-    .filter((e) => e.term.length > 2 && hasContent(list[e.i]));
-  if (!raw.length) return null;
-
-  const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
-  const lookup = {};
-  for (const e of raw) {
-    const k = norm(e.term);
-    if (!(k in lookup)) lookup[k] = e.i;
-  }
-
-  const surfaces = raw.map((e) => ({ surface: e.term, i: e.i }));
-  const SAFE_TERM_MODIFIERS = new Set(["prime", "composite", "rational", "irrational"]);
-  const addAlias = (surface, i) => {
-    const s = String(surface || "").trim();
-    if (s.length <= 2) return;
-    const k = norm(s);
-    if (k in lookup) return; // never override a real term sharing this key
-    lookup[k] = i;
-    surfaces.push({ surface: s, i });
-  };
-  for (const e of raw) {
-    const v = list[e.i] || {};
-    if (Array.isArray(v.aliases)) for (const a of v.aliases) addAlias(a, e.i);
-    const words = e.term.split(/\s+/);
-    if (
-      words.length === 2 &&
-      /^numbers?$/i.test(words[1]) &&
-      SAFE_TERM_MODIFIERS.has(words[0].toLowerCase())
-    ) {
-      addAlias(words[0], e.i);
-    }
-  }
-
-  const alt = surfaces
-    .slice()
-    .sort((a, b) => b.surface.length - a.surface.length)
-    .map((s) => escapeRegExp(s.surface))
-    .join("|");
-  const regexSource = `\\b(?:${alt})(?:es|s)?\\b`;
+  const list = augmentVocabWithGlossary(Array.isArray(vocab) ? vocab : []);
+  const matcher = buildVocabMatcher(list);
+  if (!matcher) return null;
 
   const entries = list.map((v) => {
     const term = String((v && v.term) || "").trim();
@@ -132,10 +108,13 @@ function buildVocabGlossary(vocab) {
       example: v && v.visual ? String(v.visual) : "",
       img,
       imgAlt: img ? vocabImageAlt(term, v && v.definition) : "",
+      // Acronym entries ("MAD", "SA") answer only to their exact written form,
+      // so the browser can tell them apart from the ordinary English word.
+      cs: !!(v && v.caseSensitive),
     };
   });
 
-  return { entries, match: { regexSource, lookup } };
+  return { entries, match: { regexSource: matcher.regexSource, lookup: matcher.lookup } };
 }
 
 function slugId(label, idx) {
@@ -393,36 +372,32 @@ function headerKeysFor(columns, sampleRow) {
 function lessonConfigs() {
   const out = [];
   for (const dir of readdirSync(lessonsDir, { withFileTypes: true })) {
-    if (!dir.isDirectory() || !LESSON_DIR_RE.test(dir.name)) continue;
+    if (!dir.isDirectory() || !HOMEWORK_DIR_RE.test(dir.name)) continue;
     const cfgPath = join(lessonsDir, dir.name, "config.json");
     if (!existsSync(cfgPath)) continue;
     try {
       const config = JSON.parse(readFileSync(cfgPath, "utf8"));
+      if (!generatesFamilyHomework(dir.name, config)) continue;
+      // A bridge/Apply-Day lesson states its practice as `groupLevels`; restate
+      // it in the numbered-lesson shape every consumer below was written for.
+      const shaped = toHomeworkShape(config);
       // Merge curated bilingual family-homework notes from sidecar data file.
       // Sidecar keeps lesson configs lean; inline config.familyNotes wins on conflict.
       const notesPath = join(root, "data", "family-homework-notes", `${dir.name}.json`);
       if (existsSync(notesPath)) {
         try {
           const notes = JSON.parse(readFileSync(notesPath, "utf8"));
-          config.familyNotes = { ...notes, ...(config.familyNotes || {}) };
+          shaped.familyNotes = { ...notes, ...(shaped.familyNotes || {}) };
         } catch (e) {
           console.error(`Bad family-homework sidecar for ${dir.name}: ${e.message}`);
         }
       }
-      out.push({ id: dir.name, config });
+      out.push({ id: dir.name, config: shaped });
     } catch (err) {
       console.error(`Skipping ${dir.name}: ${err.message}`);
     }
   }
-  out.sort((a, b) => {
-    const ma = a.id.match(LESSON_DIR_RE);
-    const mb = b.id.match(LESSON_DIR_RE);
-    return (
-      Number(ma[1]) - Number(mb[1]) ||
-      Number(ma[2]) - Number(mb[2]) ||
-      (a.id.endsWith("-flagship") ? 1 : 0) - (b.id.endsWith("-flagship") ? 1 : 0)
-    );
-  });
+  out.sort((a, b) => compareFamilyHomeworkIds(a.id, b.id));
   return out;
 }
 
@@ -1195,7 +1170,7 @@ function generateHtml(lessonId, config) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}</title>
+<title>Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <style>
 ${EDITORIAL_FONT_IMPORT}
@@ -2785,11 +2760,11 @@ ${EDITORIAL_OVERRIDES}
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}.">
+  <meta property="og:title" content="Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
