@@ -92,22 +92,68 @@ function escAttr(s) {
 // list so the lookup's stored indices resolve directly; the Word Wall tab keeps
 // rendering the lesson's own vocabulary only, so family flashcards do not
 // suddenly grow 96 glossary cards.
+let _cachedBankItems = null;
+function loadFullVocabBank() {
+  if (_cachedBankItems) return _cachedBankItems;
+  try {
+    const bankPath = join(root, "vocab-hub/vocab-bank.json");
+    if (existsSync(bankPath)) {
+      const data = JSON.parse(readFileSync(bankPath, "utf8"));
+      _cachedBankItems = Array.isArray(data.items) ? data.items : [];
+      return _cachedBankItems;
+    }
+  } catch (_e) {}
+  return [];
+}
+
 function buildVocabGlossary(vocab) {
-  const list = augmentVocabWithGlossary(Array.isArray(vocab) ? vocab : []);
+  const lessonList = Array.isArray(vocab) ? vocab : [];
+  let list = augmentVocabWithGlossary(lessonList);
+  const fullBank = loadFullVocabBank();
+  const seen = new Set(
+    list.map((v) =>
+      String((v && v.term) || "")
+        .toLowerCase()
+        .replace(/s$/, "")
+        .trim(),
+    ),
+  );
+  for (const item of fullBank) {
+    if (!item || !item.term) continue;
+    const key = String(item.term).toLowerCase().replace(/s$/, "").trim();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    list.push({
+      term: item.term,
+      termEs: item.termEs || "",
+      definition: item.definition || "",
+      definitionEs: item.definitionEs || "",
+      visual: item.visual || "",
+      image: item.image || "",
+      caseSensitive: !!item.caseSensitive,
+    });
+  }
   const matcher = buildVocabMatcher(list);
   if (!matcher) return null;
 
   const entries = list.map((v) => {
     const term = String((v && v.term) || "").trim();
-    const img = hasRealVocabImage(term, v && v.image) ? resolveVocabImage(term, v && v.image) : "";
+    const img = hasRealVocabImage(term, v && v.image)
+      ? resolveVocabImage(term, v && v.image)
+      : v && v.image
+        ? String(v.image)
+        : "";
+    const def = String((v && v.definition) || "").replace(/2³/g, "2^3");
+    const defEs = String((v && v.definitionEs) || "").replace(/2³/g, "2^3");
+    const example = String((v && v.visual) || "").replace(/2³/g, "2^3");
     return {
       term,
       termEs: v && v.termEs ? String(v.termEs) : "",
-      def: v && v.definition ? String(v.definition) : "",
-      defEs: v && v.definitionEs ? String(v.definitionEs) : "",
-      example: v && v.visual ? String(v.visual) : "",
+      def,
+      defEs,
+      example,
       img,
-      imgAlt: img ? vocabImageAlt(term, v && v.definition) : "",
+      imgAlt: img ? vocabImageAlt(term, def) : "",
       // Acronym entries ("MAD", "SA") answer only to their exact written form,
       // so the browser can tell them apart from the ordinary English word.
       cs: !!(v && v.caseSensitive),

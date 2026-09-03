@@ -2995,6 +2995,9 @@ function switchHomeworkTab(tabId) {
     activeBtn.focus();
   }
   try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
+  if (typeof initHomeworkVocabPopups === 'function') {
+    initHomeworkVocabPopups();
+  }
 }
 
 function openHelpModalFromBtn(btn) {
@@ -3202,7 +3205,7 @@ function restoreParentSignoff() {
   } catch(e) {}
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function initHomeworkPage() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
@@ -3216,7 +3219,13 @@ document.addEventListener('DOMContentLoaded', function() {
   restoreParentSignoff();
   initDrawCanvases();
   initHomeworkVocabPopups();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHomeworkPage);
+} else {
+  initHomeworkPage();
+}
 
 // Tap-to-define vocab glossary. Mirrors the lesson engine's underlineVocabTerms +
 // objective-term popup so math words in the family notes/practice get the SAME
@@ -5312,5 +5321,155 @@ body.lang-mode-es .tab-es {
   -webkit-backdrop-filter: blur(16px) !important;
   border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
   box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* ==========================================================================
+   VOCABULARY UNDERLINE & POPUP DEFINITION SYSTEM — CLEAN & TACTILE
+   ========================================================================== */
+.obj-term {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 1px 5px !important;
+  border: none !important;
+  background: rgba(15, 118, 110, 0.08) !important;
+  color: #0f766e !important;
+  font-weight: 600 !important;
+  border-bottom: 2px dotted #0f766e !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+  vertical-align: baseline !important;
+}
+.obj-term:hover, .obj-term:focus-visible {
+  background: #0f766e !important;
+  color: #ffffff !important;
+  border-bottom-style: solid !important;
+  outline: none !important;
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25) !important;
+}
+.obj-term:active {
+  transform: scale(0.97) !important;
+}
+
+.obj-popup-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1200 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  animation: objFadeIn 0.2s ease !important;
+}
+.obj-popup {
+  position: relative !important;
+  width: min(460px, 100%) !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  background: #ffffff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.3) !important;
+  padding: 32px 24px 24px !important;
+  text-align: center !important;
+  animation: objFadeIn 0.2s ease !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+.obj-popup-close {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  width: 36px !important;
+  height: 36px !important;
+  border: none !important;
+  border-radius: 50% !important;
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
+}
+.obj-popup-close:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  transform: scale(1.05) !important;
+}
+.obj-popup-term {
+  margin: 0 0 10px !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  text-transform: capitalize !important;
+  letter-spacing: -0.01em !important;
+}
+.obj-popup-translation {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 auto 16px !important;
+  padding: 6px 14px !important;
+  background: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+  border-radius: 99px !important;
+}
+.obj-popup-tr-label {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #166534 !important;
+}
+.obj-popup-tr-es {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #14532d !important;
+}
+.obj-popup-def {
+  margin: 0 0 10px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #334155 !important;
+  text-align: left !important;
+}
+.obj-popup-def-es {
+  margin: 0 0 16px !important;
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  color: #64748b !important;
+  font-style: italic !important;
+  text-align: left !important;
+  padding-top: 8px !important;
+  border-top: 1px dashed #e2e8f0 !important;
+}
+.obj-popup-visual {
+  margin: 16px 0 0 !important;
+  padding: 14px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+}
+.obj-popup-img {
+  display: block !important;
+  max-width: 220px !important;
+  max-height: 160px !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 auto 10px !important;
+  border-radius: 8px !important;
+}
+.obj-popup-example {
+  margin: 0 !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  line-height: 1.4 !important;
 }
 `;
