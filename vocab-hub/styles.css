@@ -656,6 +656,16 @@ main {
 }
 
 /* ---------- Celebration ---------- */
+/* `.celebrate` is a full-viewport scrim (position:fixed; inset:0; z-index:200)
+   with pointer-events left at auto, and its `display: flex` outranks the UA
+   `[hidden] { display: none }`. #celebrate ships hidden in the markup, so the
+   overlay was on screen from first paint: document.elementFromPoint(640, 450)
+   returned #celebrate-title, meaning every click on the hub hit the celebration
+   card instead of the page behind it. */
+.celebrate[hidden] {
+  display: none !important;
+}
+
 .celebrate {
   position: fixed;
   inset: 0;

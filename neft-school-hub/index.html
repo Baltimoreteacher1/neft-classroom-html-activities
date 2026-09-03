@@ -1777,7 +1777,15 @@
         color: var(--muted-2);
         font-size: 11.5px;
       }
-    </style>
+    
+    /* The HTML `hidden` attribute is only a UA rule, so any author rule with a
+       `display:` outranks it and `el.hidden = true` silently stops hiding
+       anything -- which is why #signOutBtn and #identityChip stayed on screen
+       for a visitor who was not signed in. */
+    [hidden] {
+      display: none !important;
+    }
+  </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->

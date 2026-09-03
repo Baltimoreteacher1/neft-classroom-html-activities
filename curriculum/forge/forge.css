@@ -251,6 +251,15 @@ body.forge-page {
   color: var(--teal);
 }
 
+/* `.forge-btn { display: inline-block }` above is an author rule, so it outranks
+   the UA's `[hidden] { display: none }` and `el.hidden = true` silently stops
+   hiding anything. Without this, #forge-forget-key — markup-hidden and never
+   un-hidden by script — offers to forget a key the visitor has not set. Same
+   guard the lesson runtime and the family/teacher consoles already carry. */
+[hidden] {
+  display: none !important;
+}
+
 /* ── Progress (never a frozen spinner) ────────────────────────────────────── */
 
 .forge-progress {

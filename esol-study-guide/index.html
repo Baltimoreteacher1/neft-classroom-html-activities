@@ -2531,7 +2531,11 @@
       }
 
       function getBadgeSvg(topicId, isDone) {
-        const strokeColor = isDone ? "var(--primary)" : "var(--outline)";
+        // `--outline` was never defined on this page, so `stroke: var(--outline)` was
+        // invalid at computed-value time and fell back to the SVG initial `none` --
+        // every not-yet-earned topic badge drew nothing at all. --gray-400 is this
+        // page's muted-on-dark token, which is what the faint fill below assumes.
+        const strokeColor = isDone ? "var(--primary)" : "var(--gray-400)";
         const fillColor = isDone
           ? "rgba(20, 184, 166, 0.2)"
           : "rgba(255, 255, 255, 0.05)";

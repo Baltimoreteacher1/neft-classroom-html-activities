@@ -291,6 +291,15 @@
    Each student only ever sees the tools assigned to them (see learning-supports.js
    applyAssignedItems). Anchored mid-right so it clears the Save/Resume launcher
    (#nsr-root, bottom-right) and the mode-toggle pill (bottom-left). */
+/* `.ewl-supports-tools-dock` sets `display: flex`, which outranks the UA's
+   `[hidden] { display: none }` -- so the `toolsDock.hidden = true` in the
+   "no supports active" branch of applyActiveSupports() never hid anything, and
+   a fixed z-index:9998 dock stayed pinned over the lesson on 288 pages where a
+   student had no supports turned on at all. */
+.ewl-supports-tools-dock[hidden] {
+  display: none !important;
+}
+
 .ewl-supports-tools-dock {
   position: fixed;
   top: 50%;

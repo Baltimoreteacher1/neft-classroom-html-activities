@@ -354,6 +354,16 @@ html[data-motion="off"] * {
 }
 
 /* ---- Buttons ---- */
+/* `.btn { display: inline-flex }` below is an author rule and outranks the UA's
+   `[hidden] { display: none }`, so every `el.hidden = true` against a .btn was a
+   no-op: #installBtn showed its "⬇️ Install" prompt even where the app is
+   already installed or the browser never fired beforeinstallprompt. Declared
+   before .btn so the intent reads in source order; !important is what actually
+   decides it. */
+[hidden] {
+  display: none !important;
+}
+
 .btn {
   border: 1.5px solid var(--line);
   background: var(--paper);

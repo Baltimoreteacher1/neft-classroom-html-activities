@@ -614,7 +614,7 @@
                     <div class="control-channel">
                         <div class="channel-header">
                             <span class="channel-label" id="width"><span class="vocab-word" data-vocab="base" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('base')">Base</span> <span class="vocab-word" data-vocab="width" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('width')">Width</span> (A)</span>
-                            <span class="channel-value-display" id="width">3</span>
+                            <span class="channel-value-display" id="val-width">3</span>
                         </div>
                         <input type="range" class="range-slider" id="slider-width" min="2" max="5" value="3" step="0.5" oninput="handleSlider('width', this.value)">
                     </div>
@@ -622,7 +622,7 @@
                     <div class="control-channel">
                         <div class="channel-header">
                             <span class="channel-label" id="height"><span class="vocab-word" data-vocab="base" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('base')">Base</span> <span class="vocab-word" data-vocab="length" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('length')">Length</span> (B)</span>
-                            <span class="channel-value-display" id="length">4</span>
+                            <span class="channel-value-display" id="val-length">4</span>
                         </div>
                         <input type="range" class="range-slider" id="slider-length" min="2" max="5" value="4" step="0.5" oninput="handleSlider('length', this.value)">
                     </div>
@@ -1014,14 +1014,26 @@
             renderDOM(state) {
                 const t = CONFIG.translations[state.lang];
 
-                document.getElementById('lbl-mission-control').innerText = t['mission-control'];
-                document.getElementById('lbl-viewport-title').innerText = t['viewport-title'];
-                document.getElementById('lbl-esol-title').innerText = t['esol-title'];
-                document.getElementById('lbl-fold').innerText = t['fold'];
-                document.getElementById('lbl-width').innerText = t['width'];
-                document.getElementById('lbl-height').innerText = t['height'];
-                document.getElementById('lbl-depth').innerText = t['depth'];
-                document.getElementById('lbl-match-state').innerText = t['match-state'];
+                // A channel label may wrap interactive .vocab-word spans that open
+                // the vocabulary modal, and `innerText =` would delete them. So a
+                // label carrying element children keeps its markup, and a label the
+                // page does not have is skipped rather than throwing -- this render
+                // runs on every slider move, and the missing #lbl-width used to abort
+                // it before a single value display, the score or the flag updated.
+                const setLabel = (id, text) => {
+                    const el = document.getElementById(id);
+                    if (!el || el.firstElementChild) return;
+                    el.innerText = text;
+                };
+
+                setLabel('lbl-mission-control', t['mission-control']);
+                setLabel('lbl-viewport-title', t['viewport-title']);
+                setLabel('lbl-esol-title', t['esol-title']);
+                setLabel('lbl-fold', t['fold']);
+                setLabel('lbl-width', t['width']);
+                setLabel('lbl-height', t['height']);
+                setLabel('lbl-depth', t['depth']);
+                setLabel('lbl-match-state', t['match-state']);
                 
                 document.getElementById('val-fold').innerText = Math.round(state.foldVal) + '%';
                 document.getElementById('val-width').innerText = state.dimA;

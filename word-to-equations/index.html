@@ -1212,25 +1212,29 @@
 
       function renderStaticLabels() {
         const t = TRANSLATIONS[STATE.language];
-        document.getElementById("lbl-quest-log").innerText = t["quest-log"];
-        document.getElementById("lbl-variable-control").innerText =
-          t["variable-control"];
-        document.getElementById("lbl-val-x").innerText = t["val-x"];
-        document.getElementById("lbl-card-workbench").innerText =
-          t["card-workbench"];
-        document.getElementById("lbl-esol-title").innerText = t["esol-title"];
-        document.getElementById("lbl-journal-title").innerText =
-          t["journal-title"];
-        document.getElementById("lbl-journal-prompt").innerText =
-          t["journal-prompt"];
+        // #lbl-variable-control does not exist -- its heading is <h2 id="variable">,
+        // which wraps a clickable .vocab-word span, so `innerText =` would delete the
+        // vocabulary term (and Spanish reorders the phrase, so a text swap would be
+        // wrong anyway). Skip a label that is absent or carries markup instead of
+        // throwing: the missing id used to abort this function on its second line,
+        // leaving every later label untranslated in Spanish.
+        const setLabel = (id, text) => {
+          const el = document.getElementById(id);
+          if (!el || el.firstElementChild) return;
+          el.innerText = text;
+        };
+        setLabel("lbl-quest-log", t["quest-log"]);
+        setLabel("lbl-variable-control", t["variable-control"]);
+        setLabel("lbl-val-x", t["val-x"]);
+        setLabel("lbl-card-workbench", t["card-workbench"]);
+        setLabel("lbl-esol-title", t["esol-title"]);
+        setLabel("lbl-journal-title", t["journal-title"]);
+        setLabel("lbl-journal-prompt", t["journal-prompt"]);
         document.getElementById("journal-input").placeholder =
           t["journal-placeholder"];
-        document.getElementById("lbl-click-target").innerText =
-          t["click-target"];
-        document.getElementById("lbl-left-pan-opt").innerText =
-          t["left-pan-opt"];
-        document.getElementById("lbl-right-pan-opt").innerText =
-          t["right-pan-opt"];
+        setLabel("lbl-click-target", t["click-target"]);
+        setLabel("lbl-left-pan-opt", t["left-pan-opt"]);
+        setLabel("lbl-right-pan-opt", t["right-pan-opt"]);
       }
 
       function renderQuestList() {

@@ -653,6 +653,17 @@ legend {
   display: none;
 }
 
+/* `.name-fields { display: flex }` is an author rule and so outranks the UA's
+   `[hidden] { display: none }`. Both `hidden = true` writes in showcase.js
+   (the initial reset, and the one guarding the firstNameInitial choice) were
+   therefore silently doing nothing, leaving the student name inputs on screen
+   for display modes that are supposed to collect no names at all. Scoped per
+   element the same way `.status[hidden]` above already is, but stated once so
+   the next `display:`-carrying class cannot reopen the same hole. */
+[hidden] {
+  display: none !important;
+}
+
 /* ----------------------------------------------------------- moderation */
 
 .moderation {

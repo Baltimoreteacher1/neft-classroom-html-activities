@@ -4,6 +4,23 @@
 
 /* ── Reveal Math Activities — Design System ── */
 
+/* The HTML `hidden` attribute is only a UA rule, so ANY author rule carrying a
+   `display:` outranks it and `el.hidden = true` silently stops hiding anything.
+   This file is where that keeps happening: `.btn { display: inline-flex }` made
+   the small-group "Keep mine anyway →" escape hatch visible on 336 pages from
+   first render, before a student had attempted the sentence, and
+   `.identity-teacher-unlock { display: flex }` left the teacher username + PIN
+   form on screen for students across 131 lesson pages. Both are markup-hidden
+   and revealed by script, so neither ever looked wrong in source.
+
+   The per-component patches further down (`.mode-toggle-unlock[hidden]` and
+   eight others) each fixed one sighting of this; stating it once here is what
+   stops the next `display:`-carrying class from reopening the same hole. No
+   rule in this repo deliberately renders a `[hidden]` element visible. */
+[hidden] {
+  display: none !important;
+}
+
 :root {
   /* Shadows */
   /* SEPARATION COMES FROM THE CANVAS, NOT FROM SHADOWS.
