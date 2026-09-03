@@ -1528,99 +1528,127 @@ export function getRealWorldSpotlight(topic) {
     exponents: {
       titleEn: "Computer Memory & Data Storage",
       titleEs: "Memoria de computadoras y almacenamiento",
-      factEn: "Computers use binary exponents (powers of 2) to store everything! 2¹⁰ = 1,024 bytes (1 KB), and 2³⁰ is over 1 billion bytes (1 GB). When you download a 4 GB game, exponents made it possible!",
-      factEs: "¡Las computadoras usan potencias de 2 para guardar todo! 2¹⁰ = 1,024 bytes (1 KB) y 2³⁰ es más de mil millones de bytes (1 GB). ¡Cuando descargas un juego de 4 GB, los exponentes lo hacen posible!",
+      factEn:
+        "Computers use binary exponents (powers of 2) to store everything! 2¹⁰ = 1,024 bytes (1 KB), and 2³⁰ is over 1 billion bytes (1 GB). When you download a 4 GB game, exponents made it possible!",
+      factEs:
+        "¡Las computadoras usan potencias de 2 para guardar todo! 2¹⁰ = 1,024 bytes (1 KB) y 2³⁰ es más de mil millones de bytes (1 GB). ¡Cuando descargas un juego de 4 GB, los exponentes lo hacen posible!",
       icon: "💾",
     },
     ratios: {
       titleEn: "Pixar Animation & Video Game Scaling",
       titleEs: "Animación de Pixar y gráficos de videojuegos",
-      factEn: "Animators at Pixar use equivalent ratios to scale characters across 4K movie screens, tablets, and phones without distorting their proportions. If Woody's hat is 1:4 of his height, it stays 1:4 on any screen size!",
-      factEs: "Los animadores de Pixar usan razones equivalentes para cambiar de escala los personajes en pantallas de cine 4K, tabletas y teléfonos sin deformarlos. Si el sombrero de Woody mide 1:4 de su estatura, ¡se mantiene 1:4 en cualquier pantalla!",
+      factEn:
+        "Animators at Pixar use equivalent ratios to scale characters across 4K movie screens, tablets, and phones without distorting their proportions. If Woody's hat is 1:4 of his height, it stays 1:4 on any screen size!",
+      factEs:
+        "Los animadores de Pixar usan razones equivalentes para cambiar de escala los personajes en pantallas de cine 4K, tabletas y teléfonos sin deformarlos. Si el sombrero de Woody mide 1:4 de su estatura, ¡se mantiene 1:4 en cualquier pantalla!",
       icon: "🎬",
     },
     equations: {
       titleEn: "NASA Spacecraft Trajectory & Fuel",
       titleEs: "Trayectoria y combustible de naves de la NASA",
-      factEn: "Aerospace engineers use one-step and multi-step equations to balance spacecraft weight and fuel. Every kilogram of fuel added requires an exact balance of thrust to reach orbit!",
-      factEs: "Los ingenieros aeroespaciales usan ecuaciones para equilibrar el peso y el combustible de la nave. ¡Cada kilogramo de combustible requiere un empuje exacto para alcanzar la órbita!",
+      factEn:
+        "Aerospace engineers use one-step and multi-step equations to balance spacecraft weight and fuel. Every kilogram of fuel added requires an exact balance of thrust to reach orbit!",
+      factEs:
+        "Los ingenieros aeroespaciales usan ecuaciones para equilibrar el peso y el combustible de la nave. ¡Cada kilogramo de combustible requiere un empuje exacto para alcanzar la órbita!",
       icon: "🚀",
     },
     inequalities: {
       titleEn: "Roller Coaster Height & Speed Limits",
       titleEs: "Límites de estatura y velocidad en montañas rusas",
-      factEn: "Engineers design theme park rides with inequalities! 'Height h ≥ 48 inches' means exactly 48 inches or taller can ride. Speed governors use 'speed s ≤ 65 mph' to keep every turn thrilling yet safe.",
-      factEs: "¡Los ingenieros diseñan las atracciones con desigualdades! 'Estatura h ≥ 48 pulgadas' significa 48 pulgadas o más. Los reguladores usan 'velocidad s ≤ 65 mph' para que cada curva sea emocionante y segura.",
+      factEn:
+        "Engineers design theme park rides with inequalities! 'Height h ≥ 48 inches' means exactly 48 inches or taller can ride. Speed governors use 'speed s ≤ 65 mph' to keep every turn thrilling yet safe.",
+      factEs:
+        "¡Los ingenieros diseñan las atracciones con desigualdades! 'Estatura h ≥ 48 pulgadas' significa 48 pulgadas o más. Los reguladores usan 'velocidad s ≤ 65 mph' para que cada curva sea emocionante y segura.",
       icon: "🎢",
     },
     expressions: {
       titleEn: "App Development & In-Game Economies",
       titleEs: "Desarrollo de apps y economías de videojuegos",
-      factEn: "Game developers write algebraic expressions like '50x + 100' to calculate player score or coin rewards for completing x quests plus a 100-coin daily login bonus!",
-      factEs: "Los desarrolladores escriben expresiones como '50x + 100' para calcular monedas o puntajes al completar x misiones más un bono diario de 100 monedas.",
+      factEn:
+        "Game developers write algebraic expressions like '50x + 100' to calculate player score or coin rewards for completing x quests plus a 100-coin daily login bonus!",
+      factEs:
+        "Los desarrolladores escriben expresiones como '50x + 100' para calcular monedas o puntajes al completar x misiones más un bono diario de 100 monedas.",
       icon: "🕹️",
     },
     statistics: {
       titleEn: "Sports Analytics & Weather Forecasting",
       titleEs: "Analítica deportiva y pronóstico del clima",
-      factEn: "Meteorologists calculate the median and mean temperature over 30 years to detect climate trends. Baseball scouts use batting averages and median pitch speeds to draft future champions!",
-      factEs: "Los meteorólogos calculan la mediana y la media de temperatura de 30 años para detectar tendencias del clima. ¡Los entrenadores usan medias de bateo para descubrir futuros campeones!",
+      factEn:
+        "Meteorologists calculate the median and mean temperature over 30 years to detect climate trends. Baseball scouts use batting averages and median pitch speeds to draft future champions!",
+      factEs:
+        "Los meteorólogos calculan la mediana y la media de temperatura de 30 años para detectar tendencias del clima. ¡Los entrenadores usan medias de bateo para descubrir futuros campeones!",
       icon: "⚾",
     },
     "coordinate-plane": {
       titleEn: "GPS Navigation & Drone Delivery",
       titleEs: "Navegación GPS y entrega con drones",
-      factEn: "Every GPS in smartphones and delivery drones uses coordinate geometry (latitude and longitude) just like the (x, y) grid to pinpoint your doorstep within inches!",
-      factEs: "¡Los teléfonos y drones de reparto usan geometría de coordenadas (latitud y longitud) igual que la cuadrícula (x, y) para llegar a tu puerta con exactitud!",
+      factEn:
+        "Every GPS in smartphones and delivery drones uses coordinate geometry (latitude and longitude) just like the (x, y) grid to pinpoint your doorstep within inches!",
+      factEs:
+        "¡Los teléfonos y drones de reparto usan geometría de coordenadas (latitud y longitud) igual que la cuadrícula (x, y) para llegar a tu puerta con exactitud!",
       icon: "📍",
     },
     "number-line": {
       titleEn: "Deep Sea Oceanography & Elevation",
       titleEs: "Oceanografía marina y elevación",
-      factEn: "Submarines diving in the Mariana Trench use negative numbers on vertical number lines: −11,000 meters means 11,000 meters below sea level (0)! Mount Everest sits at +8,848 meters.",
-      factEs: "Los submarinos que bajan a la Fosa de las Marianas usan números negativos: −11,000 metros significa 11,000 metros bajo el nivel del mar (0). ¡El Monte Everest está a +8,848 metros!",
+      factEn:
+        "Submarines diving in the Mariana Trench use negative numbers on vertical number lines: −11,000 meters means 11,000 meters below sea level (0)! Mount Everest sits at +8,848 meters.",
+      factEs:
+        "Los submarinos que bajan a la Fosa de las Marianas usan números negativos: −11,000 metros significa 11,000 metros bajo el nivel del mar (0). ¡El Monte Everest está a +8,848 metros!",
       icon: "🌊",
     },
     fractions: {
       titleEn: "Master Chefs & Medicine Dosages",
       titleEs: "Chefs profesionales y dosis médicas",
-      factEn: "Pastry chefs divide fractions every day when tripling or halving delicate macaroon recipes (e.g. 3/4 ÷ 2 = 3/8 cup). Pharmacists use fraction division to calculate liquid medicine doses safely!",
-      factEs: "Los chefs pasteleros dividen fracciones a diario al triplicar o reducir recetas delicadas (ej. 3/4 ÷ 2 = 3/8 taza). ¡Los farmacéuticos las usan para calcular dosis médicas seguras!",
+      factEn:
+        "Pastry chefs divide fractions every day when tripling or halving delicate macaroon recipes (e.g. 3/4 ÷ 2 = 3/8 cup). Pharmacists use fraction division to calculate liquid medicine doses safely!",
+      factEs:
+        "Los chefs pasteleros dividen fracciones a diario al triplicar o reducir recetas delicadas (ej. 3/4 ÷ 2 = 3/8 taza). ¡Los farmacéuticos las usan para calcular dosis médicas seguras!",
       icon: "🧁",
     },
     area: {
       titleEn: "Solar Panel Fields & Urban Architecture",
       titleEs: "Parques solares y arquitectura urbana",
-      factEn: "Architects calculate roof area in square meters to determine how many solar panels can fit, maximizing clean energy for hospitals, schools, and homes!",
-      factEs: "Los arquitectos calculan el área del techo en metros cuadrados para saber cuántos paneles solares caben, ¡maximizando la energía limpia para escuelas y hogares!",
+      factEn:
+        "Architects calculate roof area in square meters to determine how many solar panels can fit, maximizing clean energy for hospitals, schools, and homes!",
+      factEs:
+        "Los arquitectos calculan el área del techo en metros cuadrados para saber cuántos paneles solares caben, ¡maximizando la energía limpia para escuelas y hogares!",
       icon: "☀️",
     },
     volume: {
       titleEn: "Eco-Friendly Packaging & Container Ships",
       titleEs: "Empaque ecológico y barcos de carga",
-      factEn: "Global shipping companies calculate cubic meters of volume to fit thousands of cargo containers onto mega-ships without wasting a single cubic inch of space or fuel!",
-      factEs: "Las empresas de transporte calculan metros cúbicos de volumen para acomodar contenedores en barcos gigantes sin desperdiciar ni un centímetro de espacio o combustible.",
+      factEn:
+        "Global shipping companies calculate cubic meters of volume to fit thousands of cargo containers onto mega-ships without wasting a single cubic inch of space or fuel!",
+      factEs:
+        "Las empresas de transporte calculan metros cúbicos de volumen para acomodar contenedores en barcos gigantes sin desperdiciar ni un centímetro de espacio o combustible.",
       icon: "📦",
     },
     "surface-area": {
       titleEn: "Heat Shield Engineering & Product Packaging",
       titleEs: "Escudos térmicos espaciales y empaques",
-      factEn: "When space capsules re-enter Earth's atmosphere, engineers calculate the total surface area requiring ceramic heat tiles. Cereal companies design boxes with minimal surface area to save cardboard!",
-      factEs: "Al regresar a la atmósfera, los ingenieros calculan el área de superficie que necesita baldosas térmicas. ¡Las empresas diseñan cajas con menor superficie para ahorrar cartón!",
+      factEn:
+        "When space capsules re-enter Earth's atmosphere, engineers calculate the total surface area requiring ceramic heat tiles. Cereal companies design boxes with minimal surface area to save cardboard!",
+      factEs:
+        "Al regresar a la atmósfera, los ingenieros calculan el área de superficie que necesita baldosas térmicas. ¡Las empresas diseñan cajas con menor superficie para ahorrar cartón!",
       icon: "🛰️",
     },
     decimals: {
       titleEn: "Global Currency Exchange & Digital Banking",
       titleEs: "Tipo de cambio mundial y banca digital",
-      factEn: "Banks process trillions of dollars every second using exact decimal arithmetic. Aligning tenths and hundredths ensures every penny and centavo is tracked accurately!",
-      factEs: "Los bancos procesan billones de dólares cada segundo con aritmética decimal exacta. ¡Alinear décimos y centésimos asegura que cada centavo quede registrado!",
+      factEn:
+        "Banks process trillions of dollars every second using exact decimal arithmetic. Aligning tenths and hundredths ensures every penny and centavo is tracked accurately!",
+      factEs:
+        "Los bancos procesan billones de dólares cada segundo con aritmética decimal exacta. ¡Alinear décimos y centésimos asegura que cada centavo quede registrado!",
       icon: "💳",
     },
     factors: {
       titleEn: "Cybersecurity & RSA Password Encryption",
       titleEs: "Ciberseguridad y encriptación de contraseñas",
-      factEn: "Every secure website you visit uses prime numbers! Cryptography algorithms multiply two gigantic prime numbers together. Breaking the encryption requires finding the prime factors, which would take supercomputers thousands of years!",
-      factEs: "¡Cada sitio web seguro usa números primos! Los algoritmos multiplican dos números primos gigantescos. Romper la encriptación requeriría factorizar, ¡lo que tardaría miles de años!",
+      factEn:
+        "Every secure website you visit uses prime numbers! Cryptography algorithms multiply two gigantic prime numbers together. Breaking the encryption requires finding the prime factors, which would take supercomputers thousands of years!",
+      factEs:
+        "¡Cada sitio web seguro usa números primos! Los algoritmos multiplican dos números primos gigantescos. Romper la encriptación requeriría factorizar, ¡lo que tardaría miles de años!",
       icon: "🔐",
     },
   };
@@ -1629,8 +1657,10 @@ export function getRealWorldSpotlight(topic) {
     spotlights[topic] || {
       titleEn: "STEM Careers & Everyday Life",
       titleEs: "Carreras STEM y vida cotidiana",
-      factEn: "Mathematicians, scientists, and software designers use this exact mathematical model to solve real-world problems every single day!",
-      factEs: "¡Matemáticos, científicos y desarrolladores usan este mismo modelo para resolver problemas en la vida real todos los días!",
+      factEn:
+        "Mathematicians, scientists, and software designers use this exact mathematical model to solve real-world problems every single day!",
+      factEs:
+        "¡Matemáticos, científicos y desarrolladores usan este mismo modelo para resolver problemas en la vida real todos los días!",
       icon: "💡",
     }
   );
@@ -1641,84 +1671,113 @@ export function getTopicMisconception(topic) {
     exponents: {
       trapEn: "Multiplying base × exponent (thinking 3⁴ = 12 instead of 3 × 3 × 3 × 3 = 81).",
       trapEs: "Multiplicar base × exponente (pensar que 3⁴ = 12 en vez de 3 × 3 × 3 × 3 = 81).",
-      coachEn: "Ask: 'What does the little exponent number tell us to do? How many copies are multiplying?'",
-      coachEs: "Pregunta: '¿Qué nos dice el número exponente pequeño? ¿Cuántas copias se multiplican?'",
+      coachEn:
+        "Ask: 'What does the little exponent number tell us to do? How many copies are multiplying?'",
+      coachEs:
+        "Pregunta: '¿Qué nos dice el número exponente pequeño? ¿Cuántas copias se multiplican?'",
     },
     ratios: {
       trapEn: "Adding the same amount to both parts instead of multiplying by the same factor.",
       trapEs: "Sumar la misma cantidad a ambas partes en lugar de multiplicar por el mismo factor.",
       coachEn: "Ask: 'In a recipe, if we double the juice, do we add 2 cups or multiply by 2?'",
-      coachEs: "Pregunta: 'En una receta, si duplicamos el jugo, ¿sumamos 2 o multiplicamos por 2?'",
+      coachEs:
+        "Pregunta: 'En una receta, si duplicamos el jugo, ¿sumamos 2 o multiplicamos por 2?'",
     },
     equations: {
       trapEn: "Doing an operation to only one side of the equal sign, unbalancing the equation.",
       trapEs: "Hacer una operación en un solo lado del signo igual, desequilibrando la ecuación.",
-      coachEn: "Ask: 'If this were a real balance scale, what happens if we only remove blocks from one side?'",
-      coachEs: "Pregunta: 'Si fuera una balanza real, ¿qué pasa si solo quitamos bloques de un lado?'",
+      coachEn:
+        "Ask: 'If this were a real balance scale, what happens if we only remove blocks from one side?'",
+      coachEs:
+        "Pregunta: 'Si fuera una balanza real, ¿qué pasa si solo quitamos bloques de un lado?'",
     },
     inequalities: {
       trapEn: "Forgetting whether the boundary number itself is included (> vs ≥).",
       trapEs: "Olvidar si el número límite está incluido o no (> frente a ≥).",
-      coachEn: "Ask: 'Is there a line underneath the symbol? Does it say greater than, or greater than or equal to?'",
-      coachEs: "Pregunta: '¿Tiene una línea abajo el símbolo? ¿Dice mayor que, o mayor o igual que?'",
+      coachEn:
+        "Ask: 'Is there a line underneath the symbol? Does it say greater than, or greater than or equal to?'",
+      coachEs:
+        "Pregunta: '¿Tiene una línea abajo el símbolo? ¿Dice mayor que, o mayor o igual que?'",
     },
     expressions: {
       trapEn: "Combining unlike terms (like adding 3x + 5 to get 8x).",
       trapEs: "Combinar términos no semejantes (como sumar 3x + 5 y obtener 8x).",
-      coachEn: "Ask: 'Think of x as apples and numbers as oranges. Can 3 apples and 5 oranges become 8 apples?'",
-      coachEs: "Pregunta: 'Imagina x como manzanas y números como naranjas. ¿3 manzanas y 5 naranjas pueden ser 8 manzanas?'",
+      coachEn:
+        "Ask: 'Think of x as apples and numbers as oranges. Can 3 apples and 5 oranges become 8 apples?'",
+      coachEs:
+        "Pregunta: 'Imagina x como manzanas y números como naranjas. ¿3 manzanas y 5 naranjas pueden ser 8 manzanas?'",
     },
     statistics: {
-      trapEn: "Finding the middle number without putting data in order from least to greatest first.",
+      trapEn:
+        "Finding the middle number without putting data in order from least to greatest first.",
       trapEs: "Buscar el número central sin ordenar primero los datos de menor a mayor.",
-      coachEn: "Ask: 'Are our numbers in order from smallest to biggest before we find the median?'",
-      coachEs: "Pregunta: '¿Están los números ordenados de menor a mayor antes de buscar la mediana?'",
+      coachEn:
+        "Ask: 'Are our numbers in order from smallest to biggest before we find the median?'",
+      coachEs:
+        "Pregunta: '¿Están los números ordenados de menor a mayor antes de buscar la mediana?'",
     },
     "coordinate-plane": {
       trapEn: "Reversing the x and y coordinates (moving vertical first instead of horizontal).",
       trapEs: "Invertir las coordenadas x e y (moverse en vertical primero en vez de horizontal).",
-      coachEn: "Ask: 'Remember: Run before you jump! Which letter comes first in the alphabet: x or y?'",
+      coachEn:
+        "Ask: 'Remember: Run before you jump! Which letter comes first in the alphabet: x or y?'",
       coachEs: "Pregunta: '¡Corre antes de saltar! ¿Qué letra va primero en el abecedario: x o y?'",
     },
     "number-line": {
       trapEn: "Thinking −8 is greater than −2 because 8 is bigger than 2.",
       trapEs: "Pensar que −8 es mayor que −2 porque 8 es más grande que 2.",
-      coachEn: "Ask: 'Which temperature is colder: −8° or −2°? Which number sits farther left on the number line?'",
-      coachEs: "Pregunta: '¿Qué temperatura es más fría: −8° o −2°? ¿Cuál número está más a la izquierda?'",
+      coachEn:
+        "Ask: 'Which temperature is colder: −8° or −2°? Which number sits farther left on the number line?'",
+      coachEs:
+        "Pregunta: '¿Qué temperatura es más fría: −8° o −2°? ¿Cuál número está más a la izquierda?'",
     },
     fractions: {
       trapEn: "Dividing without taking the reciprocal of the second fraction (Keep-Change-Flip).",
       trapEs: "Dividir sin invertir la segunda fracción (Mantener-Cambiar-Invertir).",
-      coachEn: "Ask: 'What is the three-word rule for fraction division? Keep the first, Change the sign, Flip the second!'",
-      coachEs: "Pregunta: '¿Cuál es la regla de 3 pasos? ¡Mantener la primera, Cambiar a multiplicación, Invertir la segunda!'",
+      coachEn:
+        "Ask: 'What is the three-word rule for fraction division? Keep the first, Change the sign, Flip the second!'",
+      coachEs:
+        "Pregunta: '¿Cuál es la regla de 3 pasos? ¡Mantener la primera, Cambiar a multiplicación, Invertir la segunda!'",
     },
     area: {
-      trapEn: "Confusing area (square units covering the inside) with perimeter (distance around the outside).",
-      trapEs: "Confundir el área (unidades cuadradas interiores) con el perímetro (distancia alrededor).",
-      coachEn: "Ask: 'Are we putting a fence around the yard (perimeter) or laying carpet on the floor (area)?'",
+      trapEn:
+        "Confusing area (square units covering the inside) with perimeter (distance around the outside).",
+      trapEs:
+        "Confundir el área (unidades cuadradas interiores) con el perímetro (distancia alrededor).",
+      coachEn:
+        "Ask: 'Are we putting a fence around the yard (perimeter) or laying carpet on the floor (area)?'",
       coachEs: "Pregunta: '¿Estamos poniendo una cerca (perímetro) o alfombrando el piso (área)?'",
     },
     volume: {
       trapEn: "Adding the three dimensions instead of multiplying length × width × height.",
       trapEs: "Sumar las tres dimensiones en vez de multiplicar largo × ancho × alto.",
-      coachEn: "Ask: 'How many cubes are on the bottom layer? How many equal layers are stacked on top?'",
+      coachEn:
+        "Ask: 'How many cubes are on the bottom layer? How many equal layers are stacked on top?'",
       coachEs: "Pregunta: '¿Cuántos cubos hay en la base? ¿Cuántas capas iguales hay apiladas?'",
     },
     "surface-area": {
       trapEn: "Missing one or more of the 6 rectangular faces when adding them together.",
       trapEs: "Olvidar una o más de las 6 caras rectangulares al sumarlas.",
-      coachEn: "Ask: 'A cardboard box has 6 faces: top and bottom, front and back, left and right. Did we add all 6?'",
-      coachEs: "Pregunta: 'Una caja tiene 6 caras: arriba y abajo, frente y atrás, lados. ¿Sumamos las 6?'",
+      coachEn:
+        "Ask: 'A cardboard box has 6 faces: top and bottom, front and back, left and right. Did we add all 6?'",
+      coachEs:
+        "Pregunta: 'Una caja tiene 6 caras: arriba y abajo, frente y atrás, lados. ¿Sumamos las 6?'",
     },
     decimals: {
-      trapEn: "Lining up digits at the right edge like whole numbers instead of lining up decimal points.",
-      trapEs: "Alinear los dígitos a la derecha como números enteros en vez de alinear los puntos decimales.",
-      coachEn: "Ask: 'Are the decimal points standing in a straight vertical line so tenths match tenths?'",
-      coachEs: "Pregunta: '¿Están los puntos decimales en una línea vertical recta para que décimos coincidan con décimos?'",
+      trapEn:
+        "Lining up digits at the right edge like whole numbers instead of lining up decimal points.",
+      trapEs:
+        "Alinear los dígitos a la derecha como números enteros en vez de alinear los puntos decimales.",
+      coachEn:
+        "Ask: 'Are the decimal points standing in a straight vertical line so tenths match tenths?'",
+      coachEs:
+        "Pregunta: '¿Están los puntos decimales en una línea vertical recta para que décimos coincidan con décimos?'",
     },
     factors: {
-      trapEn: "Thinking 1 is a prime number (1 only has one factor, but prime numbers need exactly two: 1 and itself).",
-      trapEs: "Pensar que el 1 es un número primo (el 1 solo tiene un factor, pero los primos necesitan exactamente dos).",
+      trapEn:
+        "Thinking 1 is a prime number (1 only has one factor, but prime numbers need exactly two: 1 and itself).",
+      trapEs:
+        "Pensar que el 1 es un número primo (el 1 solo tiene un factor, pero los primos necesitan exactamente dos).",
       coachEn: "Ask: 'Does the number have exactly two different factors? What are they?'",
       coachEs: "Pregunta: '¿Tiene el número exactamente dos factores diferentes? ¿Cuáles son?'",
     },
@@ -1728,8 +1787,10 @@ export function getTopicMisconception(topic) {
     misconceptions[topic] || {
       trapEn: "Rushing to compute an answer without drawing or visualizing the problem first.",
       trapEs: "Apurarse a calcular sin dibujar o visualizar el problema primero.",
-      coachEn: "Ask: 'Can we draw a picture or diagram of what is happening before we write equations?'",
-      coachEs: "Pregunta: '¿Podemos hacer un dibujo o diagrama de lo que pasa antes de escribir ecuaciones?'",
+      coachEn:
+        "Ask: 'Can we draw a picture or diagram of what is happening before we write equations?'",
+      coachEs:
+        "Pregunta: '¿Podemos hacer un dibujo o diagrama de lo que pasa antes de escribir ecuaciones?'",
     }
   );
 }
@@ -1780,8 +1841,14 @@ export function getTopicPowerUp(topic, config) {
       qEn: "Which statement shows the true meaning of 4³?",
       qEs: "¿Cuál enunciado muestra el significado real de 4³?",
       choices: [
-        { en: "4 × 4 × 4 = 64 (multiply 3 copies of 4)", es: "4 × 4 × 4 = 64 (multiplica 3 copias de 4)" },
-        { en: "4 × 3 = 12 (multiply base by exponent)", es: "4 × 3 = 12 (multiplica base por exponente)" },
+        {
+          en: "4 × 4 × 4 = 64 (multiply 3 copies of 4)",
+          es: "4 × 4 × 4 = 64 (multiplica 3 copias de 4)",
+        },
+        {
+          en: "4 × 3 = 12 (multiply base by exponent)",
+          es: "4 × 3 = 12 (multiplica base por exponente)",
+        },
         { en: "4 + 4 + 4 = 12 (add 4 three times)", es: "4 + 4 + 4 = 12 (suma 4 tres veces)" },
       ],
       correctIndex: 0,
@@ -1792,9 +1859,18 @@ export function getTopicPowerUp(topic, config) {
       qEn: "If a recipe uses 2 cups of lemonade for every 3 cups of seltzer, which mixture tastes identical?",
       qEs: "Si una receta usa 2 tazas de limonada por cada 3 de agua con gas, ¿cuál mezcla sabe idéntica?",
       choices: [
-        { en: "4 cups lemonade and 6 cups seltzer (scaled by ×2)", es: "4 de limonada y 6 de agua con gas (escalado ×2)" },
-        { en: "4 cups lemonade and 5 cups seltzer (+2 to each)", es: "4 de limonada y 5 de agua con gas (+2 a cada una)" },
-        { en: "3 cups lemonade and 2 cups seltzer (flipped ratio)", es: "3 de limonada y 2 de agua con gas (razón invertida)" },
+        {
+          en: "4 cups lemonade and 6 cups seltzer (scaled by ×2)",
+          es: "4 de limonada y 6 de agua con gas (escalado ×2)",
+        },
+        {
+          en: "4 cups lemonade and 5 cups seltzer (+2 to each)",
+          es: "4 de limonada y 5 de agua con gas (+2 a cada una)",
+        },
+        {
+          en: "3 cups lemonade and 2 cups seltzer (flipped ratio)",
+          es: "3 de limonada y 2 de agua con gas (razón invertida)",
+        },
       ],
       correctIndex: 0,
       hintEn: "Equivalent ratios multiply or divide BOTH parts by the exact same factor!",
@@ -1804,8 +1880,14 @@ export function getTopicPowerUp(topic, config) {
       qEn: "To solve x + 7 = 15 while keeping the balance scale level, what must you do?",
       qEs: "Para resolver x + 7 = 15 manteniendo la balanza en equilibrio, ¿qué debes hacer?",
       choices: [
-        { en: "Subtract 7 from both sides to get x = 8", es: "Restar 7 de ambos lados para obtener x = 8" },
-        { en: "Add 7 to both sides to get x = 22", es: "Sumar 7 a ambos lados para obtener x = 22" },
+        {
+          en: "Subtract 7 from both sides to get x = 8",
+          es: "Restar 7 de ambos lados para obtener x = 8",
+        },
+        {
+          en: "Add 7 to both sides to get x = 22",
+          es: "Sumar 7 a ambos lados para obtener x = 22",
+        },
         { en: "Multiply both sides by 7", es: "Multiplicar ambos lados por 7" },
       ],
       correctIndex: 0,
@@ -1816,9 +1898,15 @@ export function getTopicPowerUp(topic, config) {
       qEn: "Which set of values makes the inequality m ≥ 6 true?",
       qEs: "¿Qué conjunto de valores hace verdadera la desigualdad m ≥ 6?",
       choices: [
-        { en: "6, 7, 8, 12 (includes 6 because of 'greater than or equal to')", es: "6, 7, 8, 12 (incluye el 6 por ser 'mayor o igual que')" },
+        {
+          en: "6, 7, 8, 12 (includes 6 because of 'greater than or equal to')",
+          es: "6, 7, 8, 12 (incluye el 6 por ser 'mayor o igual que')",
+        },
         { en: "7, 8, 9 only (6 is not allowed)", es: "Solo 7, 8, 9 (el 6 no se permite)" },
-        { en: "1, 2, 3, 4, 5 (strictly less than 6)", es: "1, 2, 3, 4, 5 (estrictamente menores que 6)" },
+        {
+          en: "1, 2, 3, 4, 5 (strictly less than 6)",
+          es: "1, 2, 3, 4, 5 (estrictamente menores que 6)",
+        },
       ],
       correctIndex: 0,
       hintEn: "The symbol ≥ has a solid bar underneath, meaning equal to 6 is included!",
@@ -1828,8 +1916,14 @@ export function getTopicPowerUp(topic, config) {
       qEn: "Which expression is equivalent to 5(y + 3) using the distributive property?",
       qEs: "¿Qué expresión es equivalente a 5(y + 3) usando la propiedad distributiva?",
       choices: [
-        { en: "5y + 15 (multiply 5 by y and 5 by 3)", es: "5y + 15 (multiplica 5 por y y 5 por 3)" },
-        { en: "5y + 3 (multiply only the first term)", es: "5y + 3 (multiplica solo el primer término)" },
+        {
+          en: "5y + 15 (multiply 5 by y and 5 by 3)",
+          es: "5y + 15 (multiplica 5 por y y 5 por 3)",
+        },
+        {
+          en: "5y + 3 (multiply only the first term)",
+          es: "5y + 3 (multiplica solo el primer término)",
+        },
         { en: "y + 15 (forget the 5 on y)", es: "y + 15 (olvida el 5 en la y)" },
       ],
       correctIndex: 0,
@@ -1840,9 +1934,18 @@ export function getTopicPowerUp(topic, config) {
       qEn: "What is the best way to describe the median of a data set?",
       qEs: "¿Cuál es la mejor manera de describir la mediana de un conjunto de datos?",
       choices: [
-        { en: "The exact middle value when all numbers are ordered least to greatest", es: "El valor central exacto cuando los números están ordenados de menor a mayor" },
-        { en: "The sum of all numbers divided by the count", es: "La suma de todos los números dividida entre el conteo" },
-        { en: "The difference between maximum and minimum values", es: "La diferencia entre el valor máximo y el mínimo" },
+        {
+          en: "The exact middle value when all numbers are ordered least to greatest",
+          es: "El valor central exacto cuando los números están ordenados de menor a mayor",
+        },
+        {
+          en: "The sum of all numbers divided by the count",
+          es: "La suma de todos los números dividida entre el conteo",
+        },
+        {
+          en: "The difference between maximum and minimum values",
+          es: "La diferencia entre el valor máximo y el mínimo",
+        },
       ],
       correctIndex: 0,
       hintEn: "Order the numbers first! The median splits the data into two equal halves.",
@@ -1852,9 +1955,18 @@ export function getTopicPowerUp(topic, config) {
       qEn: "Starting at the origin (0, 0), where is the point (−3, 4) located?",
       qEs: "Empezando en el origen (0, 0), ¿dónde se ubica el punto (−3, 4)?",
       choices: [
-        { en: "Left 3 units on the x-axis, then Up 4 units on the y-axis (Quadrant II)", es: "3 unidades a la izquierda en el eje x, luego 4 arriba en el eje y (Cuadrante II)" },
-        { en: "Right 3 units on the x-axis, then Down 4 units on the y-axis", es: "3 unidades a la derecha en el eje x, luego 4 abajo en el eje y" },
-        { en: "Up 3 units on the y-axis, then Left 4 units on the x-axis", es: "3 unidades arriba en el eje y, luego 4 a la izquierda en el eje x" },
+        {
+          en: "Left 3 units on the x-axis, then Up 4 units on the y-axis (Quadrant II)",
+          es: "3 unidades a la izquierda en el eje x, luego 4 arriba en el eje y (Cuadrante II)",
+        },
+        {
+          en: "Right 3 units on the x-axis, then Down 4 units on the y-axis",
+          es: "3 unidades a la derecha en el eje x, luego 4 abajo en el eje y",
+        },
+        {
+          en: "Up 3 units on the y-axis, then Left 4 units on the x-axis",
+          es: "3 unidades arriba en el eje y, luego 4 a la izquierda en el eje x",
+        },
       ],
       correctIndex: 0,
       hintEn: "(x, y): First move horizontally (x), then move vertically (y)!",
@@ -1864,7 +1976,10 @@ export function getTopicPowerUp(topic, config) {
       qEn: "On a horizontal number line, which integer is farthest to the left?",
       qEs: "En una recta numérica horizontal, ¿qué entero está más a la izquierda?",
       choices: [
-        { en: "−9 (farthest left, so smallest value)", es: "−9 (más a la izquierda, por tanto menor valor)" },
+        {
+          en: "−9 (farthest left, so smallest value)",
+          es: "−9 (más a la izquierda, por tanto menor valor)",
+        },
         { en: "−2 (closer to zero)", es: "−2 (más cerca de cero)" },
         { en: "0 (the center)", es: "0 (el centro)" },
       ],
@@ -1877,11 +1992,15 @@ export function getTopicPowerUp(topic, config) {
       qEs: "¿Cuántas medidas de 1/4 caben en 3/2 (1 1/2) tazas de arroz? (3/2 ÷ 1/4)",
       choices: [
         { en: "6 scoops (3/2 × 4/1 = 12/2 = 6)", es: "6 medidas (3/2 × 4/1 = 12/2 = 6)" },
-        { en: "3/8 scoop (multiplied without flipping)", es: "3/8 de medida (multiplicado sin invertir)" },
+        {
+          en: "3/8 scoop (multiplied without flipping)",
+          es: "3/8 de medida (multiplicado sin invertir)",
+        },
         { en: "2 scoops (subtracted denominators)", es: "2 medidas (restando denominadores)" },
       ],
       correctIndex: 0,
-      hintEn: "Keep the first fraction, Change division to multiplication, Flip the second fraction!",
+      hintEn:
+        "Keep the first fraction, Change division to multiplication, Flip the second fraction!",
       hintEs: "¡Mantén la primera fracción, Cambia a multiplicación, Invierte la segunda!",
     },
     area: {
@@ -1890,7 +2009,10 @@ export function getTopicPowerUp(topic, config) {
       choices: [
         { en: "40 square units (base × height)", es: "40 unidades cuadradas (base × altura)" },
         { en: "26 units (perimeter: 8 + 5 + 8 + 5)", es: "26 unidades (perímetro: 8 + 5 + 8 + 5)" },
-        { en: "20 square units (divided by 2 by mistake)", es: "20 unidades cuadradas (dividido entre 2 por error)" },
+        {
+          en: "20 square units (divided by 2 by mistake)",
+          es: "20 unidades cuadradas (dividido entre 2 por error)",
+        },
       ],
       correctIndex: 0,
       hintEn: "Area measures the flat square tiles that cover the surface: Base × Height!",
@@ -1912,21 +2034,38 @@ export function getTopicPowerUp(topic, config) {
       qEn: "When calculating the total surface area of a rectangular prism, what are you finding?",
       qEs: "Al calcular el área total de la superficie de un prisma rectangular, ¿qué estás hallando?",
       choices: [
-        { en: "The sum of the areas of all 6 flat faces", es: "La suma de las áreas de las 6 caras planas" },
-        { en: "The cubes packing the interior space", es: "Los cubos que llenan el espacio interior" },
+        {
+          en: "The sum of the areas of all 6 flat faces",
+          es: "La suma de las áreas de las 6 caras planas",
+        },
+        {
+          en: "The cubes packing the interior space",
+          es: "Los cubos que llenan el espacio interior",
+        },
         { en: "The length of the 12 edges", es: "La longitud de las 12 aristas" },
       ],
       correctIndex: 0,
-      hintEn: "Think of unfolding the 3D cardboard box flat into a 2D net and finding each face's area!",
-      hintEs: "¡Imagina desdoblar la caja de cartón 3D en una plantilla plana y hallar el área de cada cara!",
+      hintEn:
+        "Think of unfolding the 3D cardboard box flat into a 2D net and finding each face's area!",
+      hintEs:
+        "¡Imagina desdoblar la caja de cartón 3D en una plantilla plana y hallar el área de cada cara!",
     },
     decimals: {
       qEn: "When adding 14.8 + 2.35, what is the crucial alignment rule?",
       qEs: "Al sumar 14.8 + 2.35, ¿cuál es la regla fundamental de alineación?",
       choices: [
-        { en: "Line up the decimal points so tenths match tenths (14.80 + 2.35 = 17.15)", es: "Alinear los puntos decimales para que décimos coincidan con décimos (14.80 + 2.35 = 17.15)" },
-        { en: "Line up digits to the right like whole numbers (giving 14.8 + 2.35 = 38.3)", es: "Alinear los dígitos a la derecha como números enteros" },
-        { en: "Drop all decimal points before adding", es: "Eliminar los puntos decimales antes de sumar" },
+        {
+          en: "Line up the decimal points so tenths match tenths (14.80 + 2.35 = 17.15)",
+          es: "Alinear los puntos decimales para que décimos coincidan con décimos (14.80 + 2.35 = 17.15)",
+        },
+        {
+          en: "Line up digits to the right like whole numbers (giving 14.8 + 2.35 = 38.3)",
+          es: "Alinear los dígitos a la derecha como números enteros",
+        },
+        {
+          en: "Drop all decimal points before adding",
+          es: "Eliminar los puntos decimales antes de sumar",
+        },
       ],
       correctIndex: 0,
       hintEn: "Line up the decimal points vertically, and annex a placeholder zero if helpful!",
@@ -1951,9 +2090,18 @@ export function getTopicPowerUp(topic, config) {
       qEn: `What is the key mathematical focus of ${title}?`,
       qEs: `¿Cuál es el enfoque matemático clave de ${title}?`,
       choices: [
-        { en: "Understand the visual model and reason step by step", es: "Comprender el modelo visual y razonar paso a paso" },
-        { en: "Rush to guess the final answer without steps", es: "Adivinar la respuesta final sin pasos" },
-        { en: "Ignore units and labels in the problem", es: "Ignorar las unidades y etiquetas del problema" },
+        {
+          en: "Understand the visual model and reason step by step",
+          es: "Comprender el modelo visual y razonar paso a paso",
+        },
+        {
+          en: "Rush to guess the final answer without steps",
+          es: "Adivinar la respuesta final sin pasos",
+        },
+        {
+          en: "Ignore units and labels in the problem",
+          es: "Ignorar las unidades y etiquetas del problema",
+        },
       ],
       correctIndex: 0,
       hintEn: "Take your time to understand the big idea and visual model first!",
@@ -2165,7 +2313,10 @@ export function renderLearnTab(config, visualLabHtml = "") {
 
   // Add Listen button to the Big Idea title
   const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
-  concept = concept.replace(/(<h2[^>]*class="section-title"[^>]*>[\s\S]*?<\/h2>)/i, `$1${listenBtn}`);
+  concept = concept.replace(
+    /(<h2[^>]*class="section-title"[^>]*>[\s\S]*?<\/h2>)/i,
+    `$1${listenBtn}`,
+  );
 
   const spotlightHtml = `
     <div class="real-world-spotlight card-ish">
