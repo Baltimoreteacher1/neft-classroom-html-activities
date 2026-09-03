@@ -27,6 +27,7 @@ import {
   renderHelpModal,
   renderHelpTab,
   renderHomeworkTabs,
+  renderJourneyMap,
   renderLearnTab,
   renderMoreTab,
   renderPlayTabPanel,
@@ -1151,6 +1152,7 @@ function generateHtml(lessonId, config) {
   const themeCss = renderUnitThemeCss(theme);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
+  const journeyHtml = renderJourneyMap();
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length);
   const warmupHtml = warmup
     .map((p, idx) =>
@@ -2814,7 +2816,8 @@ ${EDITORIAL_OVERRIDES}
 
   ${welcomeHtml}
 
-  
+  ${journeyHtml}
+
   ${tabsHtml}
 
 </div>
