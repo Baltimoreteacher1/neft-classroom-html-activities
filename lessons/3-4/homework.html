@@ -4817,6 +4817,29 @@ body.hw-motion-ready .hw-hero { animation: hwRise .6s cubic-bezier(.22,.9,.3,1) 
   body.hw-motion-ready .hw-hero { animation: none !important; }
 }
 
+/* --- The floating launchers sit ABOVE the sticky status bar.
+   Save/Resume (#nsr-root) and the Math Workbench launcher (#mwb-launcher) are
+   shared, runtime-injected widgets pinned to the bottom-right of every page.
+   This page also has a fixed status bar there, so on a phone — where that bar
+   wraps to two rows — the Save/Resume pill landed on top of the progress
+   readout ("1 / 6 Completed"). They are lifted by the bar's own measured
+   height (--hw-status-height, set by syncHomeworkChromeHeights) rather than a
+   guessed constant, so the clearance stays right when the bar wraps.
+
+   The body prefix is deliberate: the shared stylesheet is linked AFTER this
+   block, so a bare id selector would lose the tie on source order. Scoped to
+   this page only — the widgets keep their position everywhere else. --- */
+body #nsr-root,
+body #mwb-launcher,
+body .mwb-launcher {
+  /* Clamped on purpose. --hw-status-height is measured by script and can be
+     read while the bar is mid-layout — it reported 381px for a bar that
+     renders 121px, which threw the launchers up into the tab deck. The clamp
+     keeps a wrong-high reading from moving them off the bottom of the page;
+     150px still clears the tallest real bar (two wrapped rows). */
+  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 14px) !important;
+}
+
 /* --- Phone: the briefing has to fit the screen a family actually holds.
    At 390px the hero ran 797px — a screen and a half of chrome before any
    mathematics — because the stat chips wrapped to three rows, the language
@@ -8205,6 +8228,10 @@ function restoreParentSignoff() {
 function initHomeworkPage() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  // Measure again once fonts and images have settled: a reading taken mid
+  // layout reported the status bar three times its rendered height, and the
+  // floating launchers are positioned off that number.
+  window.addEventListener('load', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
