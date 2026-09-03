@@ -152,10 +152,59 @@ export async function run(ctx) {
       }
 
       // Verify before proposing: validators must stay green.
-      const val = await sh("npm", ["run", "validate"], { cwd: wt, timeout: 8 * 60_000 });
+      //
+      // The suite ends in render validation, which reads dist/ and fails hard
+      // with "dist/ is missing or incomplete" when there isn't one. This runs
+      // in a fresh scratch worktree: lib/worktree.mjs shares node_modules so
+      // the tree can build, but it does NOT share dist/, and nothing here ever
+      // built one. So validate failed on EVERY regen task regardless of what
+      // that task produced -- the homework-HTML regen was reported for days as
+      // "work done but validators failed" while 02-build-qa passed the SAME
+      // full validate on the SAME commit those same nights, because it builds
+      // first and validates a checkout that already has a dist/.
+      //
+      // Build before validating, exactly as 02-build-qa does. A build failure
+      // is a real verdict on the work; a missing dist/ was never a verdict on
+      // anything.
+      const VALIDATE_BUDGET_MS = 25 * 60_000;
+      const built = await sh("npm", ["run", "build"], { cwd: wt, timeout: VALIDATE_BUDGET_MS });
+      if (built.timedOut) {
+        worst = "warn";
+        details.push(
+          `⚠️ "${task.title}" — build TIMED OUT after ${VALIDATE_BUDGET_MS / 60_000}m; ` +
+            "inconclusive, NOT committing.",
+        );
+        continue;
+      }
+      if (!built.ok) {
+        worst = "warn";
+        const btail = built.stdout.split("\n").filter(Boolean).slice(-4).join(" / ");
+        details.push(
+          `⚠️ "${task.title}" — build FAILED; NOT committing.` + (btail ? ` Tail: ${btail}` : ""),
+        );
+        continue;
+      }
+      const val = await sh("npm", ["run", "validate"], { cwd: wt, timeout: VALIDATE_BUDGET_MS });
+      if (val.timedOut) {
+        // Inconclusive, not a verdict. Refusing to commit is still right --
+        // nothing was verified -- but say why, so the task is not mistaken for
+        // one whose output is actually broken. util.mjs carries this same
+        // lesson ("reporting a timeout as a failure produced weeks of false ❌").
+        worst = "warn";
+        details.push(
+          `⚠️ "${task.title}" — validators TIMED OUT after ${VALIDATE_BUDGET_MS / 60_000}m; ` +
+            "inconclusive, NOT committing. Raise the budget or split the suite.",
+        );
+        actions.push(`Validate exceeded its budget on "${task.title}" — split the suite.`);
+        continue;
+      }
       if (!val.ok) {
         worst = "warn";
-        details.push(`⚠️ "${task.title}" — work done but validators failed; NOT committing.`);
+        const tail = val.stdout.split("\n").filter(Boolean).slice(-4).join(" / ");
+        details.push(
+          `⚠️ "${task.title}" — work done but validators FAILED; NOT committing.` +
+            (tail ? ` Tail: ${tail}` : ""),
+        );
         continue;
       }
 
