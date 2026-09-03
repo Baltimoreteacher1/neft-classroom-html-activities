@@ -183,6 +183,11 @@ function copyStandaloneHtml() {
             "worksheet-answer-key.html",
             "worksheet-2.html",
             "worksheet-2-answer-key.html",
+            // MSTAR practice worksheet + teacher key — the printable per-lesson
+            // rehearsal of the state test's formats, linked from the curriculum
+            // hub (scripts/generate-mstar-worksheets.mjs).
+            "mstar-worksheet.html",
+            "mstar-worksheet-answer-key.html",
           ]) {
             const src = resolve(lessonsDir, dir.name, page);
             if (!existsSync(src)) continue;

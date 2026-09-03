@@ -95,6 +95,11 @@ const GENERATORS = [
     "../scripts/generate-mstar-practice.mjs",
     [],
   ],
+  [
+    "mstar-worksheet.html, mstar-worksheet-answer-key.html",
+    "../scripts/generate-mstar-worksheets.mjs",
+    [],
+  ],
 ];
 
 const stale = [];
