@@ -93,6 +93,12 @@ const FAMILIES = [
   // key without retouching the five pinned auth files.
   { student: "worksheet-2.html", key: "worksheet-2-answer-key.html" },
   { student: "practice.html", key: "practice-answer-key.html" },
+  // Per-lesson MSTAR practice worksheet (scripts/generate-mstar-worksheets.mjs).
+  // Same seam again: the student sheet carries no key markup, and the key page's
+  // "answer-key" path substring is what Basic Auth already gates. The error-
+  // analysis rubric and model answer are teacher scoring tools and live only on
+  // the key page.
+  { student: "mstar-worksheet.html", key: "mstar-worksheet-answer-key.html" },
 ];
 
 const findings = [];

@@ -14,6 +14,9 @@
   // LESSON_FAMILY_HOMEWORK is generated — see curriculum/lesson-family-homework.js
   // (loaded via <script src="/curriculum/lesson-family-homework.js">; regenerate with `npm run generate-lesson-family-homework-map`)
   var LESSON_FAMILY_HOMEWORK = window.LESSON_FAMILY_HOMEWORK || {};
+  // LESSON_MSTAR_WORKSHEETS is generated — see curriculum/lesson-mstar-worksheets.js
+  // (loaded via <script src="/curriculum/lesson-mstar-worksheets.js">; regenerate with `npm run generate-lesson-mstar-worksheet-map`)
+  var LESSON_MSTAR_WORKSHEETS = window.LESSON_MSTAR_WORKSHEETS || {};
 
   // Culminating projects directory per unit
   var UNIT_CULMINATING_PROJECT = {
@@ -2604,6 +2607,13 @@
         });
       }
 
+      // MSTAR practice worksheet — printable per-lesson rehearsal of the state
+      // test's question formats (generated, see lesson-mstar-worksheets.js).
+      var mstarWs = LESSON_MSTAR_WORKSHEETS[lessonId] || LESSON_MSTAR_WORKSHEETS[baseLessonId];
+      if (mstarWs) {
+        activities.push(mstarWs);
+      }
+
       // Lesson-band game — the bespoke unit game whose band starts at
       // this lesson (see bandGamesByLesson scrape above). Flagship
       // twins inherit it like bonus/homework activities do.
@@ -2645,6 +2655,9 @@
         printables.forEach(function (p) {
           dataSearchLower += " " + p.text.toLowerCase();
         });
+      }
+      if (mstarWs) {
+        dataSearchLower += " " + mstarWs.text.toLowerCase() + " mstar";
       }
 
       lessonsData.push({

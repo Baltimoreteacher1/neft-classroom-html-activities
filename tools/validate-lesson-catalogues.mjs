@@ -215,6 +215,19 @@ const SURFACES = [
     remedy: "re-key LESSON_PRINTABLES to the lesson folder its own hrefs point at",
   },
   {
+    label: "the hub MSTAR-worksheet catalogue",
+    file: "curriculum/lesson-mstar-worksheets.js",
+    anchor: "window.LESSON_MSTAR_WORKSHEETS = {",
+    // A worksheet on disk is the evidence in both directions, same contract as
+    // the family-homework map: the map generator reads the filesystem, so a
+    // drift here means someone hand-edited the map or deleted a worksheet.
+    truth: () => lessonsWith((id) => existsSync(join(LESSONS, id, "mstar-worksheet.html"))),
+    truthName: "lessons with an mstar-worksheet.html",
+    missing: "a student is offered no MSTAR practice worksheet on a lesson that has one",
+    phantom: "the hub links an MSTAR worksheet that is not on disk",
+    remedy: "npm run generate-lesson-mstar-worksheet-map",
+  },
+  {
     label: "the hub family-homework catalogue",
     file: "curriculum/lesson-family-homework.js",
     anchor: "window.LESSON_FAMILY_HOMEWORK = {",
