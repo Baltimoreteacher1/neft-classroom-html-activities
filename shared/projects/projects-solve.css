@@ -73,6 +73,21 @@ body.pro-projects .sa-steps {
   display: grid;
   gap: 10px;
 }
+/* `display: grid` on .sa-step and .sa-solution below are author rules, so they
+   outrank the UA `[hidden] { display: none }` and every `li.hidden = true` in
+   buildSolveAlong() was a no-op. This is a PREDICT-THEN-REVEAL walkthrough: the
+   steps are created hidden and uncovered one at a time by "Reveal next step",
+   each carrying the instruction, the equation and the reasoning. With the
+   attribute inert they were all on screen at page load, so a student saw the
+   whole worked solution before being asked to predict anything -- the scaffold
+   was still drawn, it just no longer withheld. (.sa-answer and .sa-predict set
+   no `display:`, so those two were hiding correctly and the final answer never
+   leaked.) */
+body.pro-projects .sa-step[hidden],
+body.pro-projects .sa-solution[hidden] {
+  display: none !important;
+}
+
 body.pro-projects .sa-step {
   display: grid;
   grid-template-columns: 30px 1fr;

@@ -63,6 +63,16 @@ body.pro-projects .ntchk-summary.is-fail {
 
 /* ---- inline per-field message ---------------------------------------- */
 
+/* `display: block` below is an author rule and outranks the UA
+   `[hidden] { display: none }`, so the `el.hidden = true` in messageNode()
+   never hid anything: every per-field feedback slot rendered as an empty
+   bordered, padded box under its field before the student had checked
+   anything. Scoped to this element -- the hint ladder deliberately sets no
+   `display:`, so `[hidden]` already works there and the hints stay hidden. */
+body.pro-projects .ntchk-msg[hidden] {
+  display: none !important;
+}
+
 body.pro-projects .ntchk-msg {
   display: block;
   margin: 6px 0 2px;

@@ -226,7 +226,11 @@ const PROBE = `() => {
       const r = el.getBoundingClientRect();
       const sel = (el.tagName.toLowerCase()) + (el.id ? '#'+el.id : '') + (el.className && typeof el.className === 'string' ? '.'+el.className.trim().split(/\\s+/).slice(0,2).join('.') : '');
       out.hiddenButShown.push(sel + ' [' + Math.round(r.width) + 'x' + Math.round(r.height) + ', text ' + el.innerText.trim().length + ']');
-      if (out.hiddenButShown.length >= 8) break;
+      // Report generously: fixing one offending class on a page routinely
+      // uncovers a second one underneath it (guarding .ntchk-msg on the project
+      // pages revealed .sa-step, the far more serious of the two), and a low cap
+      // turns that into two audit rounds instead of one.
+      if (out.hiddenButShown.length >= 20) break;
     }
   }
 
@@ -249,7 +253,11 @@ const PROBE = `() => {
     const r = svg.getBoundingClientRect();
     if (r.width < 24 || r.height < 24) continue;
     const shapes = svg.querySelectorAll('path,rect,circle,ellipse,line,polyline,polygon,text,image,use');
-    if (shapes.length === 0) { out.inkless.push((svg.id||svg.getAttribute('class')||'svg') + ':empty'); continue; }
+    // An SVG with NO shapes at all is usually a render target waiting for the
+    // student to act -- the 6.SP.A.1 data lab's <svg id="chart"> is empty until
+    // "Analyze" is clicked, which is correct. Record it separately from the real
+    // defect: shapes that ARE there and paint nothing.
+    if (shapes.length === 0) { out.emptySvg = (out.emptySvg || 0) + 1; continue; }
     let painted = 0;
     for (const s of shapes) {
       const cs = getComputedStyle(s);
@@ -268,18 +276,32 @@ const PROBE = `() => {
   // --- template / data leaks into student-visible text ----------------------
   const txt = body ? body.innerText : '';
   out.leaks = [];
-  const patterns = [
+  // Unambiguous: an un-substituted template or a stringified object is never
+  // prose, so a page-wide match is safe.
+  const structural = [
     ['handlebars', /\\{\\{[^}]{1,60}\\}\\}/],
     ['js-template', /\\$\\{[^}]{1,60}\\}/],
     ['object-object', /\\[object Object\\]/],
-    ['undefined-word', /(^|\\s)undefined(\\s|$|[.,!?])/],
-    ['NaN', /(^|\\s)NaN(\\s|$|[.,!?])/],
-    ['null-word', /(^|\\s)null(\\s|$|[.,!?])/],
-    ['todo-marker', /\\b(TODO|FIXME|PLACEHOLDER|LOREM IPSUM)\\b/],
   ];
-  for (const [name, re] of patterns) {
+  for (const [name, re] of structural) {
     const m = txt.match(re);
     if (m) out.leaks.push(name + ': ' + m[0].trim().slice(0, 60));
+  }
+  // "undefined", "null", "NaN" and "TODO" are ordinary English in this repo --
+  // /evidence/ says "Keep null or negative findings visible" and card-builder's
+  // own checklist reads "No AI-slop phrases or stray TODO markers". Both were
+  // reported as leaks by a page-wide regex. A LEAKED VALUE is different: it is
+  // the entire text of the element rendering it. So compare element text for
+  // equality rather than searching prose for a word.
+  const bare = /^(undefined|null|NaN|TODO|FIXME|PLACEHOLDER)$/;
+  for (const el of document.querySelectorAll('td,th,span,p,li,dd,strong,em,b,h1,h2,h3,h4,output')) {
+    if (el.children.length) continue; // leaf nodes only
+    const t = (el.textContent || '').trim();
+    if (!bare.test(t)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    out.leaks.push('bare-value: <' + el.tagName.toLowerCase() + '> renders "' + t + '"');
+    if (out.leaks.length >= 6) break;
   }
 
   // --- dead controls --------------------------------------------------------
@@ -363,16 +385,39 @@ async function probePage(context, url, port) {
   const isBackend = (u) => /\/api\//.test(u) || /\/cdn-cgi\//.test(u);
   const rel = (u) => u.replace(`http://127.0.0.1:${port}`, "");
   const backendCalls = [];
+  const optionalFetches = [];
+  const abortedRequests = [];
 
   page.on("requestfailed", (r) => {
     const f = r.failure();
-    const entry = `${rel(r.url())} (${f ? f.errorText : "failed"})`;
+    const err = f ? f.errorText : "failed";
+    const entry = `${rel(r.url())} (${err})`;
+    // ERR_ABORTED is overwhelmingly teardown, not breakage: this probe closes
+    // the page a moment after load, cancelling any slow request still in
+    // flight -- a Torah-reading mp3 on music.tinr.org, a QR image from
+    // api.qrserver.com. tools/smoke-injection.mjs ignores the same class for
+    // the same reason. A genuinely missing local file still fails loudly, as a
+    // 404 on the response side; /small-group-level-3/ reports its dead
+    // answer-match.js that way and is unaffected by this.
+    if (/ERR_ABORTED/.test(err)) { abortedRequests.push(entry); return; }
     (isBackend(r.url()) ? backendCalls : failedRequests).push(entry);
   });
   page.on("response", (r) => {
     if (r.status() < 400) return;
-    const entry = `${r.status()} ${rel(r.url())}`;
-    (isBackend(r.url()) ? backendCalls : badStatus).push(entry);
+    const type = r.request().resourceType();
+    const entry = `${r.status()} ${rel(r.url())} [${type}]`;
+    if (isBackend(r.url())) {
+      backendCalls.push(entry);
+    } else if (type === "fetch" || type === "xhr") {
+      // A script CHOSE to request this and can handle the answer.
+      // shared/projects/projects-visuals.js documents exactly that: "404 /
+      // missing visuals.json -> silent no-op", and only unit-8 authors one. A
+      // declared <link>/<script>/<img> that 404s is broken; an optional probe
+      // is not, so grade them apart rather than reporting both as breakage.
+      optionalFetches.push(entry);
+    } else {
+      badStatus.push(entry);
+    }
   });
 
   const row = { url, kind: classify(url) };
@@ -399,12 +444,15 @@ async function probePage(context, url, port) {
   row.failedRequests = [...new Set(failedRequests)].slice(0, 10);
   row.badStatus = [...new Set(badStatus)].slice(0, 10);
   row.backendCalls = [...new Set(backendCalls)].slice(0, 10); // informational only
+  row.optionalFetches = [...new Set(optionalFetches)].slice(0, 10);
+  row.abortedRequests = [...new Set(abortedRequests)].slice(0, 10); // teardown noise
   row.counts = {
     pageErrors: pageErrors.length,
     consoleErrors: consoleErrors.length,
     failedRequests: new Set(failedRequests).size,
     badStatus: new Set(badStatus).size,
     backendCalls: new Set(backendCalls).size,
+    optionalFetches: new Set(optionalFetches).size,
   };
 
   await page.close().catch(() => {});
@@ -444,6 +492,8 @@ function findings(row) {
     add("critical", "nothing-painted", `${p.textLen} chars in the DOM, none rendered visibly`);
 
   if (row.counts?.badStatus) add("high", "missing-asset", row.badStatus.slice(0, 3).join("; "));
+  if (row.counts?.optionalFetches)
+    add("low", "optional-fetch-404", row.optionalFetches.slice(0, 3).join("; "));
   if (row.counts?.failedRequests) add("high", "request-failed", row.failedRequests.slice(0, 3).join("; "));
   if (p.brokenImgs?.length) add("high", "broken-image", p.brokenImgs.join("; "));
   if (p.leaks?.length) add("high", "template-leak", p.leaks.join("; "));
