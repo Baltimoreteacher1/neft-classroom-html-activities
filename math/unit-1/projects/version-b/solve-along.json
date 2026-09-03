@@ -1,186 +1,216 @@
 {
   "version": 1,
+  "_note": "Worked examples use DIFFERENT numbers from the project's own Level 0/1 presets on purpose — a solve-along that works the student's own problem hands over the answer.",
   "solves": [
     {
       "step": "step-2",
-      "strand": "GCF & LCM",
+      "strand": "Whole-number division · Lesson 2-6",
       "title": {
-        "en": "Matching Part Packs (LCM)",
-        "es": "Emparejar paquetes de piezas (mcm)"
+        "en": "The remainder decides the storage bins",
+        "es": "El residuo decide las cajas de almacenamiento"
       },
       "prompt": {
-        "en": "Bolts come in packs of 8 and nuts come in packs of 12. What is the fewest of each you can buy to have an equal number of bolts and nuts?",
-        "es": "Los tornillos vienen en paquetes de 8 y las tuercas en paquetes de 12. ¿Cuál es la menor cantidad de cada uno que puedes comprar para tener igual número?"
+        "en": "The robotics lab has 485 motor mounting screws. Each organizer bin holds 36 screws. How many bins must the team order?",
+        "es": "El laboratorio de robótica tiene 485 tornillos de motor. En cada caja caben 36 tornillos. ¿Cuántas cajas debe pedir el equipo?"
       },
       "steps": [
         {
           "do": {
-            "en": "Prime-factor each pack size.",
-            "es": "Factoriza cada tamaño de paquete."
+            "en": "Chunk your way up: how many bins hold 360 screws?",
+            "es": "Ve por partes: ¿cuántas cajas guardan 360 tornillos?"
           },
-          "math": "8 = 2×2×2   12 = 2×2×3",
+          "math": "36 × 10 = 360",
           "why": {
-            "en": "The LCM uses the most of each prime factor.",
-            "es": "El mcm usa la mayor cantidad de cada factor primo."
+            "en": "Partial quotients keep numbers manageable.",
+            "es": "Los cocientes parciales mantienen números manejables."
           }
         },
         {
           "do": {
-            "en": "Take the most of each factor.",
-            "es": "Toma la mayor cantidad de cada factor."
+            "en": "Continue dividing the remainder.",
+            "es": "Continúa dividiendo el sobrante."
           },
-          "math": "LCM = 2×2×2×3 = 24",
+          "math": "485 − 360 = 125;  36 × 3 = 108;  125 − 108 = 17",
           "why": {
-            "en": "24 is the smallest number both 8 and 12 divide into.",
-            "es": "24 es el menor número divisible entre 8 y 12."
+            "en": "13 bins are full and 17 screws are still on the table.",
+            "es": "13 cajas están llenas y 17 tornillos siguen en la mesa."
           }
         },
         {
           "do": {
-            "en": "Count the packs of each.",
-            "es": "Cuenta los paquetes de cada uno."
+            "en": "Interpret the remainder in an engineering context.",
+            "es": "Interpreta el residuo en el contexto de ingeniería."
           },
-          "math": "24 ÷ 8 = 3   24 ÷ 12 = 2",
+          "math": "485 ÷ 36 = 13 R 17 → 13 + 1 = 14",
           "why": {
-            "en": "Buy 3 bolt packs and 2 nut packs for 24 of each.",
-            "es": "Compra 3 paquetes de tornillos y 2 de tuercas para tener 24 de cada uno."
+            "en": "Screws cannot be left loose where they could get lost, so the remainder requires 1 more bin.",
+            "es": "Los tornillos no pueden dejarse sueltos, así que el residuo obliga a pedir 1 caja más."
           }
         }
       ],
       "answer": {
-        "en": "You need 24 of each — 3 bolt packs and 2 nut packs.",
-        "es": "Necesitas 24 de cada uno — 3 paquetes de tornillos y 2 de tuercas."
+        "en": "14 bins — 13 full, and 1 more for the 17 leftover screws.",
+        "es": "14 cajas: 13 llenas y 1 más para los 17 tornillos que sobran."
       },
       "yourTurn": {
         "items": [
           {
             "ask": {
-              "en": "Wheels come in packs of 6 and motors in packs of 9. Fewest to have an equal number?",
-              "es": "Las ruedas vienen en paquetes de 6 y los motores en paquetes de 9. ¿La menor cantidad para tener igual número?"
+              "en": "310 sensor brackets, 25 per bin. How many bins are needed?",
+              "es": "310 soportes de sensores, 25 por caja. ¿Cuántas cajas se necesitan?"
             },
             "unit": {
-              "en": "of each",
-              "es": "de cada uno"
+              "en": "bins",
+              "es": "cajas"
             },
-            "answer": 18,
-            "expr": "18",
+            "answer": 13,
+            "expr": "(310 - 10) / 25 + 1",
             "tolerance": 0.01,
             "solution": [
               {
                 "do": {
-                  "en": "Prime-factor each pack size.",
-                  "es": "Factoriza cada tamaño de paquete."
+                  "en": "Divide and add one bin for the remainder.",
+                  "es": "Divide y suma una caja por el residuo."
                 },
-                "math": "6 = 2×3   9 = 3×3",
+                "math": "310 ÷ 25 = 12 R 10 → 13 bins",
                 "why": {
-                  "en": "Take the most of each prime factor.",
-                  "es": "Toma la mayor cantidad de cada factor primo."
-                }
-              },
-              {
-                "do": {
-                  "en": "Multiply for the LCM.",
-                  "es": "Multiplica para el mcm."
-                },
-                "math": "LCM = 2×3×3 = 18",
-                "why": {
-                  "en": "18 is the least common multiple.",
-                  "es": "18 es el mínimo común múltiplo."
-                }
-              }
-            ]
-          },
-          {
-            "ask": {
-              "en": "Screws come in packs of 4, plates in packs of 6 — fewest for an equal number?",
-              "es": "Los tornillos vienen en paquetes de 4, las placas en paquetes de 6 — ¿el mínimo para igual número?"
-            },
-            "unit": {
-              "en": "of each",
-              "es": "de cada uno"
-            },
-            "answer": 12,
-            "expr": "12",
-            "tolerance": 0.01,
-            "solution": [
-              {
-                "do": {
-                  "en": "Find the LCM.",
-                  "es": "Halla el mcm."
-                },
-                "math": "4 = 2×2, 6 = 2×3 → LCM = 2×2×3 = 12",
-                "why": {
-                  "en": "Least common multiple of 4 and 6.",
-                  "es": "Mínimo común múltiplo de 4 y 6."
-                }
-              }
-            ]
-          },
-          {
-            "ask": {
-              "en": "Gears come in packs of 10, belts in packs of 15 — fewest for an equal number?",
-              "es": "Los engranajes vienen en paquetes de 10, las correas en paquetes de 15 — ¿el mínimo para igual número?"
-            },
-            "unit": {
-              "en": "of each",
-              "es": "de cada uno"
-            },
-            "answer": 30,
-            "expr": "30",
-            "tolerance": 0.01,
-            "solution": [
-              {
-                "do": {
-                  "en": "Find the LCM.",
-                  "es": "Halla el mcm."
-                },
-                "math": "10 = 2×5, 15 = 3×5 → LCM = 2×3×5 = 30",
-                "why": {
-                  "en": "Take the greatest power of each prime.",
-                  "es": "Toma la mayor potencia de cada primo."
+                  "en": "The 10 leftover brackets require an additional bin.",
+                  "es": "Los 10 soportes restantes requieren una caja adicional."
                 }
               }
             ]
           }
         ]
       }
-    }
-  ],
-  "errorChecks": [
+    },
     {
-      "step": "step-2",
+      "step": "step-3",
+      "strand": "Decimal division · Lesson 2-7",
       "title": {
-        "en": "Is this the LEAST multiple?",
-        "es": "¿Es este el MÍNIMO múltiplo?"
+        "en": "Divide decimal equipment grants",
+        "es": "Divide presupuestos decimales de equipo"
       },
       "prompt": {
-        "en": "Someone matched packs of 8 bolts and packs of 12 nuts:",
-        "es": "Alguien emparejó paquetes de 8 tornillos y de 12 tuercas:"
+        "en": "The lab has an $87.50 grant to buy microcontroller chips at $3.50 each. How many chips can they order?",
+        "es": "El laboratorio tiene $87.50 para comprar microcontroladores a $3.50 cada uno. ¿Cuántos pueden pedir?"
       },
-      "work": [
+      "steps": [
         {
-          "math": "8 = 2×2×2,  12 = 2×2×3"
+          "do": {
+            "en": "Multiply dividend and divisor by 10 to clear the decimal.",
+            "es": "Multiplica dividendo y divisor por 10 para eliminar el decimal."
+          },
+          "math": "$87.50 × 10 = 875;  $3.50 × 10 = 35",
+          "why": {
+            "en": "An equivalent division with whole numbers has the exact same quotient.",
+            "es": "Una división equivalente con números enteros tiene el mismo cociente exacto."
+          }
         },
         {
-          "math": "Multiply the pack sizes: 8 × 12 = 96"
-        },
-        {
-          "math": "So buy 96 of each"
+          "do": {
+            "en": "Divide 875 ÷ 35.",
+            "es": "Divide 875 ÷ 35."
+          },
+          "math": "875 ÷ 35 = 25",
+          "why": {
+            "en": "35 × 20 = 700; 35 × 5 = 175; 700 + 175 = 875.",
+            "es": "35 × 20 = 700; 35 × 5 = 175; 700 + 175 = 875."
+          }
         }
       ],
-      "flawIndex": 1,
-      "explanation": {
-        "en": "Multiplying the two sizes gives A common multiple, but not the LEAST one. Take the greatest power of each prime: 2×2×2×3 = 24.",
-        "es": "Multiplicar los dos tamaños da UN múltiplo común, no el MENOR. Toma la mayor potencia de cada primo: 2×2×2×3 = 24."
+      "answer": {
+        "en": "25 microcontroller chips.",
+        "es": "25 microcontroladores."
       },
-      "fix": {
-        "math": "LCM = 2 × 2 × 2 × 3 = 24",
-        "why": {
-          "en": "The LCM is usually smaller than the product.",
-          "es": "El mcm suele ser menor que el producto."
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "$94.50 grant, $4.50 per motor pack. How many packs?",
+              "es": "Subvención de $94.50, $4.50 por paquete de motores. ¿Cuántos paquetes?"
+            },
+            "unit": {
+              "en": "packs",
+              "es": "paquetes"
+            },
+            "answer": 21,
+            "expr": "945 / 45",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Shift decimals: 945 ÷ 45.",
+                  "es": "Mueve los decimales: 945 ÷ 45."
+                },
+                "math": "945 ÷ 45 = 21",
+                "why": {
+                  "en": "45 × 20 = 900; 45 × 1 = 45; 900 + 45 = 945.",
+                  "es": "45 × 20 = 900; 45 × 1 = 45; 900 + 45 = 945."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": "step-4",
+      "strand": "Fraction division · Lessons 6-1 & 6-2",
+      "title": {
+        "en": "Divide wire spools and 3D filament",
+        "es": "Divide rollos de cable y filamento 3D"
+      },
+      "prompt": {
+        "en": "The team has 16 meters of motor hookup wire. Each connection lead is 2/3 meter long. How many leads can be cut?",
+        "es": "El equipo tiene 16 metros de cable de motor. Cada conexión mide 2/3 de metro. ¿Cuántas conexiones pueden cortar?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Multiply by the reciprocal.",
+            "es": "Multiplica por el recíproco."
+          },
+          "math": "16 ÷ (2/3) = 16 × (3/2) = (16 × 3) / 2 = 48 / 2 = 24",
+          "why": {
+            "en": "Dividing by 2/3 means determining how many 2/3-meter sections fit into 16 meters.",
+            "es": "Dividir entre 2/3 significa determinar cuántos tramos de 2/3 de metro caben en 16 metros."
+          }
         }
+      ],
+      "answer": {
+        "en": "24 leads.",
+        "es": "24 conexiones."
       },
-      "strand": "GCF & LCM"
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "20 meters of wire, 5/8 meter per lead. How many leads?",
+              "es": "20 metros de cable, 5/8 de metro por conexión. ¿Cuántas conexiones?"
+            },
+            "unit": {
+              "en": "leads",
+              "es": "conexiones"
+            },
+            "answer": 32,
+            "expr": "20 * 8 / 5",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Multiply by reciprocal: 20 × (8/5).",
+                  "es": "Multiplica por el recíproco: 20 × (8/5)."
+                },
+                "math": "(20 / 5) × 8 = 4 × 8 = 32",
+                "why": {
+                  "en": "32 leads can be cut from 20 meters.",
+                  "es": "Se pueden cortar 32 conexiones de 20 metros."
+                }
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
