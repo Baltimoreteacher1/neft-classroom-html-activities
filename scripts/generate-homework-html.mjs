@@ -17,6 +17,7 @@ import {
 import { ANSWER_MATCH_JS } from "./homework-answer-match.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
 import {
+  ARENA_CSS,
   BIG_IDEA_CSS,
   displayLessonId,
   GUIDED_NOTES_CSS,
@@ -3256,6 +3257,7 @@ body .mwb-launcher {
 }
 ${EDITORIAL_OVERRIDES}
 ${BIG_IDEA_CSS}
+${ARENA_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">

@@ -432,6 +432,24 @@ items["distributive-property"] = svg(
 <path d="M60 56 q20 22 36 0" stroke="${C.teal}" stroke-width="2" fill="none"/>
 ${T(80, 92, 15, C.navy, "3x + 6")}`,
 );
+/* `predict` used to resolve to pattern.svg — four growing dot columns captioned
+   "+1 each step". That picture says what a PATTERN is; it stops at the last
+   column you can see, which is the exact half of the idea `predict` is not.
+   Both lessons that teach the word (9-4's graph, 10-3's disc tower) caption it
+   with a value reached BEYOND the data, and the tile showed no reaching at all.
+   Drawn here as three known bars, then a dashed reach past the last one to a
+   marked, un-measured value. */
+items["predict"] = svg(
+  "Predict: use what is known to reach a value not yet measured",
+  `${[0, 1, 2].map((i) => `<rect x="${22 + i * 22}" y="${74 - i * 14}" width="14" height="${14 + i * 14}" rx="3" fill="${C.teal}"/>`).join("")}
+<path d="M73 42 Q98 22 114 26" stroke="${C.coral}" stroke-width="2.4" stroke-dasharray="6 5" fill="none"/>
+<path d="M118 26 l-9 -3 l1 7 z" fill="${C.coral}"/>
+<rect x="112" y="32" width="16" height="56" rx="3" fill="none" stroke="${C.coral}" stroke-width="2" stroke-dasharray="5 4"/>
+${T(120, 66, 20, C.coral, "?")}
+<line x1="12" y1="88" x2="148" y2="88" stroke="${C.navy}" stroke-width="2"/>
+${T(50, 102, 9, C.navy, "what we measured")}
+${T(120, 102, 9, C.coral, "next")}`,
+);
 items["pattern"] = svg(
   "Pattern: a repeating or growing sequence",
   `${[1, 2, 3, 4].map((n, i) => `<g>${Array.from({ length: n }, (_, k) => `<circle cx="${24 + i * 32}" cy="${84 - k * 12}" r="5" fill="${C.teal}"/>`).join("")}</g>`).join("")}
