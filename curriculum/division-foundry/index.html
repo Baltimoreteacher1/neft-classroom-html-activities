@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>The Division Foundry | Neft Teacher</title>
+    <meta
+      name="description"
+      content="A calm, self-paced review game for Grade 6 lessons 2.6, 2.7, 6.1 and 6.2 — every kind of division the unit teaches. Work the long-division tower step by step, slide the decimal point, cut tape with a blade, and rebuild Keep-Change-Flip by hand. 25 levels, four workshops, no timers."
+    />
+    <link rel="stylesheet" href="/assets/fonts/engine-body.css" />
+    <style>
+      /* ==================================================================
+         THE DIVISION FOUNDRY
+         Review game for lessons 2.6, 2.7, 6.1, 6.2 — all four are division,
+         which is why they are one game and not four.
+
+           Workshop 1 (2.6)  Long-division tower — you run D-M-S-B yourself.
+           Workshop 2 (2.7)  Decimal slide — drag the point, then the tower.
+           Workshop 3 (6.1)  Tape cutter — predict, build the line, then cut.
+           Workshop 4 (6.2)  Keep-Change-Flip bench — flip the divisor by hand.
+           Final Run         All four, mixed.
+
+         Standing classroom rules this is built to:
+           · No timers, no reflex mechanics, no fail state. Unlimited time.
+           · The mathematics IS the mechanic. Nothing here is a multiple-choice
+             question wearing a costume.
+           · Help is earned, never given. Two hint tiers; the second costs stars.
+           · Self-contained: no link leaves this page.
+           · Grade 6, many ESOL/IEP, on Chromebooks — big type, high contrast,
+             full keyboard support, reduced motion honoured.
+
+         NOTE: the long-division bracket is DRAWN (SVG/border), never the
+         character U+27CC — that glyph is missing from the shipped fonts and
+         renders as a hairline hook or a tofu box.
+         ================================================================== */
+
+      :root {
+        --night: #0a1622;
+        --deep: #0f2437;
+        --steel: #1b3a55;
+        --brass: #edb54a;
+        --brass-lo: #b3801f;
+        --copper: #e0784f;
+        --mint: #37c8a6;
+        --mint-lo: #0f7a66;
+        --paper: #fbf7ef;
+        --ink: #16212c;
+        --muted: #6b7f91;
+        --line: #d8e2ea;
+        --good: #14835f;
+        --bad: #cf4152;
+        --r: 18px;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html { min-height: 100%; }
+      body {
+        min-height: 100vh; color: var(--ink);
+        font: 17px/1.55 Outfit, system-ui, -apple-system, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(1100px 620px at 12% -8%, #1d4a6b 0, transparent 60%),
+          radial-gradient(900px 520px at 92% 4%, rgba(55,200,166,.16) 0, transparent 58%),
+          linear-gradient(168deg, var(--night) 0%, var(--deep) 46%, #0b1c2b 100%);
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        -webkit-text-size-adjust: 100%;
+      }
+      button, input { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      :focus-visible { outline: 4px solid rgba(237,181,74,.95); outline-offset: 3px; }
+      .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      .shell { width: min(1100px, calc(100% - 22px)); margin: 0 auto; }
+
+      /* ── Masthead ─────────────────────────────────────────────────── */
+      header.top { padding: 20px 0 14px; color: #eaf3fa; }
+      header.top .shell { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+      .mark {
+        width: 52px; height: 52px; border-radius: 15px; display: grid; place-items: center;
+        background: linear-gradient(150deg, var(--brass), #c9922a);
+        box-shadow: 0 8px 20px rgba(237,181,74,.3), inset 0 1px 0 rgba(255,255,255,.5);
+        font-size: 27px; flex: 0 0 auto;
+      }
+      .titles { flex: 1 1 240px; min-width: 0; }
+      .kick { font-size: 11.5px; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; color: var(--brass); }
+      .titles h1 { font-size: clamp(24px, 4vw, 37px); line-height: 1.02; letter-spacing: -.033em; font-weight: 900; }
+      .gauges { display: flex; gap: 8px; }
+      .gauge {
+        min-width: 84px; text-align: center; padding: 8px 11px; border-radius: 13px;
+        background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15);
+      }
+      .gauge b { display: block; font-size: 21px; font-weight: 900; color: var(--brass); line-height: 1.15; font-variant-numeric: tabular-nums; }
+      .gauge span { font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: #a9c3d6; font-weight: 800; }
+
+      main { padding: 8px 0 64px; }
+      .screen { display: none; }
+      .screen.on { display: block; animation: rise .3s cubic-bezier(.2,.9,.3,1); }
+      @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+      /* ── Workshop map ─────────────────────────────────────────────── */
+      .lede { color: #b9d0e0; max-width: 70ch; margin: 4px 0 20px; }
+      .lede strong { color: #fff; }
+      .shops { display: grid; grid-template-columns: repeat(auto-fill, minmax(252px, 1fr)); gap: 14px; }
+      .shop {
+        position: relative; text-align: left; color: #eaf3fa; overflow: hidden;
+        display: flex; flex-direction: column; gap: 7px; padding: 18px;
+        border-radius: var(--r); border: 1px solid rgba(255,255,255,.14);
+        background: linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+        box-shadow: 0 14px 30px rgba(0,0,0,.28);
+        transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+      }
+      .shop::after {
+        content: ""; position: absolute; inset: auto -30% -60% 40%; height: 150px;
+        background: radial-gradient(closest-side, rgba(237,181,74,.22), transparent 70%);
+        pointer-events: none;
+      }
+      .shop:hover { transform: translateY(-4px); border-color: var(--brass); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
+      .shop .no { font-size: 11.5px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; color: var(--brass); }
+      .shop .em { font-size: 33px; line-height: 1; }
+      .shop h3 { font-size: 20px; letter-spacing: -.015em; }
+      .shop p { color: #b0c8d9; font-size: 14.5px; }
+      .shop .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.13); overflow: hidden; margin-top: 6px; }
+      .shop .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--brass), var(--copper)); transition: width .45s ease; }
+      .shop .cnt { font-size: 13px; font-weight: 800; color: var(--brass); margin-top: 4px; }
+    </style>
+    <style>
+      /* ── Bench (the play surface) ─────────────────────────────────── */
+      .bench {
+        background: var(--paper); border-radius: 22px; padding: 20px;
+        box-shadow: 0 24px 60px rgba(0,0,0,.4);
+        border: 1px solid rgba(255,255,255,.5);
+      }
+      .bench-head { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 14px; }
+      .bench-head .who { flex: 1 1 300px; min-width: 0; }
+      .bench-head .lv { font-size: 11.5px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; color: var(--mint-lo); }
+      .bench-head h2 { font-size: clamp(21px, 3vw, 27px); color: var(--steel); letter-spacing: -.025em; }
+      .pips { display: flex; gap: 5px; margin-top: 8px; }
+      .pips i { width: 30px; height: 7px; border-radius: 99px; background: #dbe5ec; display: block; }
+      .pips i.done { background: var(--good); }
+      .pips i.now { background: var(--brass); }
+
+      .brief {
+        border-radius: 15px; padding: 15px 17px; margin-bottom: 16px;
+        background: linear-gradient(150deg, #eef6f4, #e6f1f6);
+        border: 2px solid #cfe3e0;
+      }
+      .brief .goal { font-size: clamp(19px, 2.5vw, 23px); font-weight: 800; color: var(--steel); line-height: 1.34; }
+      .brief .sub { color: var(--muted); margin-top: 5px; font-size: 15px; }
+
+      .floor {
+        border-radius: 15px; background: #fff; border: 2px solid var(--line);
+        padding: 18px; min-height: 290px;
+      }
+      .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 15px; }
+      .grow { flex: 1 1 auto; }
+
+      /* ── Buttons ──────────────────────────────────────────────────── */
+      .b {
+        border: 0; border-radius: 12px; background: var(--steel); color: #fff; font-weight: 900;
+        padding: 12px 18px; box-shadow: 0 4px 0 #0b2233;
+        transition: transform .07s ease, box-shadow .07s ease, background .14s ease;
+      }
+      .b:hover { background: #24506f; }
+      .b:active { transform: translateY(2px); box-shadow: 0 2px 0 #0b2233; }
+      .b.brass { background: var(--brass); color: #3a2800; box-shadow: 0 4px 0 var(--brass-lo); }
+      .b.brass:hover { background: #f5c667; }
+      .b.mint { background: var(--mint-lo); box-shadow: 0 4px 0 #0a5346; }
+      .b.mint:hover { background: #13927a; }
+      .b.ghost { background: #e9eff4; color: var(--steel); box-shadow: 0 4px 0 #c3d0da; }
+      .b.ghost:hover { background: #dee7ee; }
+      .b:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+      .b.lg { font-size: 19px; padding: 15px 26px; }
+
+      .say { display: none; margin-top: 14px; border-radius: 13px; padding: 13px 15px; font-weight: 700; border: 2px solid transparent; line-height: 1.5; }
+      .say.on { display: block; animation: pop .22s ease-out; }
+      @keyframes pop { from { transform: scale(.97); opacity: .4 } to { transform: none; opacity: 1 } }
+      .say.good { background: #e4f6ee; border-color: var(--good); color: #0c5f45; }
+      .say.bad { background: #ffeef0; border-color: var(--bad); color: #8e2b38; }
+      .say.tip { background: #fff5df; border-color: var(--brass); color: #6a4b06; }
+
+      /* ── Long-division tower ──────────────────────────────────────── */
+      .tower { font-variant-numeric: tabular-nums; font-weight: 900; color: var(--steel); user-select: none; }
+      .tower .grid { display: inline-grid; gap: 0; font-size: clamp(26px, 4.6vw, 40px); line-height: 1.28; }
+      .cellrow { display: grid; grid-auto-flow: column; justify-content: start; }
+      .cell { width: 1.25em; text-align: center; position: relative; }
+      .cell.q { color: var(--mint-lo); }
+      .cell.dim { color: #b9c8d4; }
+      .cell.rule { border-bottom: 4px solid var(--steel); }
+      .cell.hot { background: #fff2cf; border-radius: 6px; box-shadow: 0 0 0 3px var(--brass) inset; }
+      .cell.fly { animation: dropin .3s cubic-bezier(.2,1.2,.4,1); }
+      @keyframes dropin { from { transform: translateY(-.5em); opacity: 0 } to { transform: none; opacity: 1 } }
+      .divisor-box { display: flex; align-items: flex-start; }
+      .divisor { font-size: clamp(26px, 4.6vw, 40px); line-height: 1.28; padding-right: .18em; }
+      /* The bracket is DRAWN, never the U+27CC character (missing from the
+         shipped fonts — it renders as a hairline hook or a tofu box). */
+      .bracket { position: relative; padding-left: .34em; }
+      .bracket::before {
+        content: ""; position: absolute; left: 0; top: .10em; bottom: .16em; width: .30em;
+        border-left: 4px solid var(--steel); border-top-left-radius: 100% 46%;
+        border-top: 4px solid var(--steel); transform: skewX(-4deg);
+      }
+      .padrow { display: grid; grid-auto-flow: column; justify-content: start; }
+
+      .keypad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: 400px; }
+      .keypad button {
+        border-radius: 12px; border: 3px solid var(--line); background: #fff; color: var(--steel);
+        font-weight: 900; font-size: 23px; padding: 13px 0; box-shadow: 0 3px 0 #d3dee6;
+      }
+      .keypad button:hover { border-color: var(--mint); background: #eefaf7; }
+      .keypad button:active { transform: translateY(2px); box-shadow: none; }
+
+      .steps { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+      .step {
+        border-radius: 99px; padding: 7px 14px; font-weight: 900; font-size: 14px;
+        background: #eef3f7; color: #93a6b5; border: 2px solid transparent;
+      }
+      .step.now { background: var(--brass); color: #3a2800; border-color: var(--brass-lo); }
+      .step.done { background: #dff3ec; color: var(--mint-lo); border-color: #a8ddce; }
+
+      /* ── Tape cutter ──────────────────────────────────────────────── */
+      .tape-wrap { background: #f3f7fa; border-radius: 14px; padding: 16px; border: 2px solid var(--line); }
+      .tape { position: relative; height: 74px; border-radius: 10px; overflow: hidden; background: linear-gradient(180deg, #f2a65a, #e0784f); box-shadow: inset 0 -6px 14px rgba(0,0,0,.16); }
+      .tape .nick { position: absolute; top: 0; bottom: 0; width: 3px; background: rgba(255,255,255,.9); }
+      .tape .piece { position: absolute; top: 0; bottom: 0; border-right: 3px dashed rgba(255,255,255,.75); }
+      .ruler { position: relative; height: 26px; margin-top: 5px; }
+      .ruler span { position: absolute; transform: translateX(-50%); font-size: 12.5px; font-weight: 800; color: var(--muted); }
+
+      /* ── KCF bench ────────────────────────────────────────────────── */
+      .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.08; font-weight: 900; }
+      .frac .t { padding: 0 .3em; }
+      .frac .b { border-top: 3px solid currentColor; padding: 0 .3em; }
+      .slot {
+        min-width: 104px; min-height: 104px; border-radius: 15px; display: grid; place-items: center;
+        border: 3px dashed #b9cad8; background: #f6fafc; font-size: 30px; color: var(--steel);
+        transition: transform .18s cubic-bezier(.2,1.3,.4,1), border-color .18s ease, background .18s ease;
+      }
+      .slot.filled { border-style: solid; border-color: var(--mint); background: #eafaf6; }
+      .slot.flipped { animation: spin .45s cubic-bezier(.3,1.1,.3,1); }
+      @keyframes spin { from { transform: rotateX(0) } to { transform: rotateX(360deg) } }
+      .op {
+        font-size: 34px; font-weight: 900; color: var(--copper); min-width: 52px; text-align: center;
+        border-radius: 12px; border: 3px solid transparent; padding: 6px;
+      }
+      .op.armed { border-color: var(--copper); background: #fdefe9; }
+
+      .chip {
+        border-radius: 99px; border: 3px solid var(--line); background: #fff; font-weight: 900;
+        padding: 10px 16px; box-shadow: 0 3px 0 #d9e2e9;
+      }
+      .chip.on { border-color: var(--mint-lo); background: #dff3ec; }
+      .chip:active { transform: translateY(2px); box-shadow: none; }
+
+      .spark { position: fixed; width: 9px; height: 14px; border-radius: 2px; top: -16px; z-index: 80; pointer-events: none; animation: fall 2.1s linear forwards; }
+      @keyframes fall { to { transform: translate(var(--dx), 106vh) rotate(720deg); opacity: 0 } }
+
+      .final { text-align: center; padding: 34px 22px; }
+      .final .cup { font-size: 62px; }
+      .final h2 { font-size: 30px; color: var(--steel); margin: 10px 0 4px; letter-spacing: -.02em; }
+      .rankline { font-size: 27px; letter-spacing: 5px; margin: 8px 0 14px; }
+
+      @media (max-width: 640px) {
+        .shops { grid-template-columns: 1fr; }
+        .bench { padding: 14px; border-radius: 16px; }
+        .floor { padding: 13px; }
+        .keypad { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+        .gauge { min-width: 72px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="sr" href="#main">Skip to the game</a>
+
+    <header class="top">
+      <div class="shell">
+        <div class="mark" aria-hidden="true">➗</div>
+        <div class="titles">
+          <p class="kick">Lessons 2.6 · 2.7 · 6.1 · 6.2</p>
+          <h1>The Division Foundry</h1>
+        </div>
+        <div class="gauges">
+          <div class="gauge"><b id="gStars">0</b><span>Stars</span></div>
+          <div class="gauge"><b id="gLv">0/25</b><span>Jobs</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="shell">
+        <section class="screen on" id="scMap" aria-labelledby="mapH">
+          <h2 id="mapH" class="sr">Workshops</h2>
+          <p class="lede">
+            Four workshops, one idea: <strong>division</strong>. Every job here is
+            the real procedure — you run the steps yourself, the machine only
+            checks your work. Nothing is timed and nothing can be lost.
+          </p>
+          <div class="shops" id="shopGrid"></div>
+          <p class="lede" id="mapNote" style="margin-top: 18px"></p>
+        </section>
+
+        <section class="screen" id="scPlay" aria-labelledby="playH">
+          <div class="bench">
+            <div class="bench-head">
+              <div class="who">
+                <p class="lv" id="playLv"></p>
+                <h2 id="playH"></h2>
+                <div class="pips" id="playPips" aria-hidden="true"></div>
+              </div>
+              <button class="b ghost" id="bMap">← Workshops</button>
+            </div>
+            <div class="brief">
+              <p class="goal" id="goal"></p>
+              <p class="sub" id="sub"></p>
+            </div>
+            <div class="floor" id="floor"></div>
+            <div class="row">
+              <button class="b brass lg" id="bLock">Lock it in</button>
+              <button class="b ghost" id="bReset">Start over</button>
+              <span class="grow"></span>
+              <button class="b ghost" id="bHint">Need a hint?</button>
+            </div>
+            <div class="say" id="say" role="status" aria-live="polite"></div>
+            <p class="row" style="margin-top: 8px"><span id="tries" style="color: var(--muted); font-weight: 700; font-size: 14px"></span></p>
+          </div>
+        </section>
+
+        <section class="screen" id="scDone" aria-labelledby="doneH">
+          <div class="bench final">
+            <div class="cup" id="doneEm">🏅</div>
+            <h2 id="doneH"></h2>
+            <p class="rankline" id="doneStars"></p>
+            <p id="doneMsg" style="color: var(--muted); max-width: 62ch; margin: 0 auto 18px"></p>
+            <button class="b brass lg" id="bBack">Back to the workshops</button>
+          </div>
+        </section>
+      </div>
+    </main>
+    <p class="sr" id="live" role="status" aria-live="polite"></p>
+    <script>
+(function () {
+  "use strict";
+  var KEY = "neft-division-foundry-v1";
+  var PER = 5;
+  var el = function (id) { return document.getElementById(id); };
+  var say = function (m) { el("live").textContent = m; };
+
+  var state = { stars: {} };
+  try { var r = localStorage.getItem(KEY); if (r) state = JSON.parse(r) || state; state.stars = state.stars || {}; } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function k(w, l) { return w + ":" + l; }
+  function starsOf(w, l) { return state.stars[k(w, l)] || 0; }
+  function cleared(w) { var n = 0; for (var i = 0; i < PER; i++) if (starsOf(w, i)) n++; return n; }
+  function allStars() { var t = 0; for (var q in state.stars) t += state.stars[q]; return t; }
+  function allCleared() { var t = 0; SHOPS.forEach(function (s) { t += cleared(s.id); }); return t; }
+
+  function sparks(n) {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var cols = ["#edb54a", "#e0784f", "#37c8a6", "#ffffff"];
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement("span");
+      s.className = "spark";
+      s.style.left = Math.random() * 100 + "vw";
+      s.style.background = cols[i % cols.length];
+      s.style.setProperty("--dx", (Math.random() - 0.5) * 240 + "px");
+      s.style.animationDelay = Math.random() * 0.45 + "s";
+      document.body.appendChild(s);
+      (function (x) { setTimeout(function () { x.remove(); }, 2700); })(s);
+    }
+  }
+  function show(id) {
+    ["scMap", "scPlay", "scDone"].forEach(function (s) { el(s).classList.toggle("on", s === id); });
+    window.scrollTo(0, 0);
+  }
+
+  /* ── Fraction helpers (exact, no floats) ─────────────────────────── */
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a || 1; }
+  function fr(n, d) { var g = gcd(n, d); return { n: n / g, d: d / g }; }
+  function frText(f) { return f.d === 1 ? String(f.n) : f.n + "/" + f.d; }
+  function mixedText(f) {
+    if (f.d === 1) return String(f.n);
+    if (f.n < f.d) return f.n + "/" + f.d;
+    var w = Math.floor(f.n / f.d), rem = f.n % f.d;
+    return rem ? w + " " + rem + "/" + f.d : String(w);
+  }
+  function fracHTML(f, big) {
+    if (f.d === 1) return '<span style="font-size:' + (big || 34) + 'px;font-weight:900">' + f.n + "</span>";
+    return '<span class="frac" style="font-size:' + (big || 34) + 'px"><span class="t">' + f.n + '</span><span class="b">' + f.d + "</span></span>";
+  }
+
+  var run = null;
+
+  function paintGauges() {
+    el("gStars").textContent = allStars();
+    el("gLv").textContent = allCleared() + "/" + SHOPS.length * PER;
+  }
+
+  function paintMap() {
+    var g = el("shopGrid");
+    g.innerHTML = "";
+    SHOPS.forEach(function (s, idx) {
+      var done = cleared(s.id);
+      // No gating. This is a REVIEW, and a student who needs 6.2 tonight should
+      // not have to clear 2.6 first to reach it. The workshops are ordered by
+      // lesson, not by permission.
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "shop";
+      b.setAttribute("aria-label", s.name + ", lesson " + s.lesson + ". " + s.blurb + " " + done + " of " + PER + " jobs done.");
+      b.innerHTML =
+        '<span class="no">Workshop ' + (idx + 1) + " · Lesson " + s.lesson + "</span>" +
+        '<span class="em" aria-hidden="true">' + s.emoji + "</span>" +
+        "<h3>" + s.name + "</h3><p>" + s.blurb + "</p>" +
+        '<span class="bar"><i style="width:' + (done / PER) * 100 + '%"></i></span>' +
+        '<span class="cnt">' + done + " / " + PER + " jobs</span>";
+      b.addEventListener("click", function () { begin(s.id, done >= PER ? 0 : done); });
+      g.appendChild(b);
+    });
+    var left = SHOPS.length * PER - allCleared();
+    el("mapNote").textContent = left ? left + " job" + (left === 1 ? "" : "s") + " left. Progress saves on this device." :
+      "Every workshop is complete. Play any of them again — the numbers are different each time.";
+    paintGauges();
+  }
+
+  function shopOf(id) { for (var i = 0; i < SHOPS.length; i++) if (SHOPS[i].id === id) return SHOPS[i]; }
+
+  function begin(id, lv) {
+    var s = shopOf(id);
+    run = { shop: s, lv: lv, tries: 0, tier: 0, mod: null };
+    el("playLv").textContent = "Lesson " + s.lesson + " · Job " + (lv + 1) + " of " + PER;
+    el("playH").textContent = s.name;
+    var p = el("playPips"); p.innerHTML = "";
+    for (var i = 0; i < PER; i++) {
+      var d = document.createElement("i");
+      if (starsOf(id, i)) d.className = "done";
+      if (i === lv) d.className = "now";
+      p.appendChild(d);
+    }
+    el("say").className = "say"; el("say").textContent = "";
+    el("tries").textContent = "";
+    el("bHint").disabled = false; el("bHint").textContent = "Need a hint?";
+    el("bLock").disabled = false;
+    var floor = el("floor"); floor.innerHTML = "";
+    run.mod = s.build(lv, {
+      floor: floor,
+      brief: function (goal, sub) { el("goal").textContent = goal; el("sub").textContent = sub || ""; },
+      say: say,
+      touched: function () { el("say").className = "say"; el("say").textContent = ""; },
+      fracHTML: fracHTML, frText: frText, mixedText: mixedText, fr: fr,
+      lock: function (on) { el("bLock").disabled = !on; },
+    });
+    show("scPlay");
+    say(s.name + ", job " + (lv + 1) + ". " + el("goal").textContent);
+  }
+
+  function lock() {
+    if (!run || !run.mod) return;
+    var res = run.mod.check();
+    var box = el("say");
+    if (res.soft) {
+      // The station moved itself to its next stage. That is progress, not a
+      // wrong answer, so it must not cost a try (and therefore a star) and it
+      // must never paint an empty red bar.
+      box.className = "say tip on";
+      box.innerHTML = res.why;
+      say(String(res.why).replace(/<[^>]+>/g, ""));
+      return;
+    }
+    if (!res.ok) {
+      run.tries++;
+      box.className = "say bad on";
+      box.innerHTML = res.why;
+      el("tries").textContent = run.tries === 1 ? "Nothing is lost — fix it and lock in again."
+        : "Attempt " + (run.tries + 1) + ". A hint is there if you want it.";
+      say("Not yet.");
+      return;
+    }
+    var st = run.tier >= 2 ? 1 : (run.tier === 1 || run.tries > 0) ? 2 : 3;
+    var key = k(run.shop.id, run.lv);
+    if ((state.stars[key] || 0) < st) state.stars[key] = st;
+    save(); paintGauges();
+    box.className = "say good on";
+    box.innerHTML = "<strong>" + "★".repeat(st) + "</strong> " + res.why;
+    el("bLock").disabled = true; el("bHint").disabled = true;
+    sparks(st * 9);
+    say("Correct.");
+    setTimeout(function () {
+      if (run.lv + 1 < PER) begin(run.shop.id, run.lv + 1);
+      else endShop(run.shop);
+    }, 1650);
+  }
+
+  function hint() {
+    if (!run || !run.mod) return;
+    run.tier = Math.min(2, run.tier + 1);
+    var t = run.mod.hint(run.tier);
+    el("say").className = "say tip on";
+    el("say").innerHTML = "<strong>Hint " + run.tier + " of 2:</strong> " + t;
+    el("bHint").textContent = run.tier >= 2 ? "No more hints" : "One more hint";
+    el("bHint").disabled = run.tier >= 2;
+    say("Hint. " + t.replace(/<[^>]+>/g, ""));
+  }
+
+  function endShop(s) {
+    var got = 0; for (var i = 0; i < PER; i++) got += starsOf(s.id, i);
+    var avg = Math.round(got / PER);
+    el("doneEm").textContent = s.emoji;
+    el("doneH").textContent = s.name + " — all jobs done";
+    el("doneStars").textContent = "★".repeat(avg) + "☆".repeat(3 - avg);
+    el("doneMsg").textContent = s.closing + " " + got + " of 15 stars in this workshop.";
+    show("scDone"); sparks(34); paintMap();
+  }
+
+  /* =======================================================================
+     Shared: the long-division tower.
+     The student runs the real algorithm one step at a time — Divide (pick the
+     quotient digit), Multiply (confirm the product), Subtract (enter the
+     difference), Bring down. The machine never does a step for them; it only
+     says whether the step they took is the right one. Used by Workshop 1 and,
+     after the decimal slide, by Workshop 2.
+     ======================================================================= */
+  function buildTower(host, dividend, divisor, api, opts) {
+    opts = opts || {};
+    var digits = String(dividend).split("");
+    var qDigits = new Array(digits.length).fill(null);
+    var rows = [];            // {indent, text, kind}
+    var phase = "D";          // D → M → S → B
+    var idx = -1;             // index of the digit just brought down
+    var working = 0;          // the current working number
+    var carryText = "";
+    var done = false;
+
+    // Advance to the first working number: pull digits until >= divisor.
+    var start = 0, w = 0;
+    while (start < digits.length) {
+      w = w * 10 + Number(digits[start]);
+      if (w >= divisor) break;
+      qDigits[start] = 0;     // leading zeros are not written
+      start++;
+    }
+    idx = start; working = w;
+
+    var wrap = document.createElement("div");
+    wrap.innerHTML =
+      '<div class="steps" id="twSteps">' +
+      '  <span class="step" data-s="D">1 · Divide</span>' +
+      '  <span class="step" data-s="M">2 · Multiply</span>' +
+      '  <span class="step" data-s="S">3 · Subtract</span>' +
+      '  <span class="step" data-s="B">4 · Bring down</span>' +
+      "</div>" +
+      '<div class="tower" id="twBody"></div>' +
+      '<p id="twAsk" style="margin-top:16px;font-weight:800;color:var(--steel);font-size:18px"></p>' +
+      '<div class="keypad" id="twPad" style="margin-top:10px"></div>';
+    host.appendChild(wrap);
+
+    function paintSteps() {
+      Array.prototype.forEach.call(wrap.querySelectorAll(".step"), function (n) {
+        var s = n.getAttribute("data-s");
+        n.className = "step" + (s === phase ? " now" : "");
+      });
+    }
+
+    function cells(text, cls, offset, width) {
+      var out = "";
+      var pad = offset || 0;
+      for (var i = 0; i < pad; i++) out += '<span class="cell"></span>';
+      String(text).split("").forEach(function (ch) {
+        out += '<span class="cell ' + (cls || "") + '">' + ch + "</span>";
+      });
+      return out;
+    }
+
+    function paint() {
+      var body = wrap.querySelector("#twBody");
+      var qrow = "";
+      for (var i = 0; i < digits.length; i++) {
+        var v = qDigits[i];
+        // A position the algorithm SKIPPED (the divisor did not fit yet) is
+        // written blank on paper, not as a leading zero — printing "0 0 3"
+        // above 189 is not what a student is taught to write.
+        if (i < start) { qrow += '<span class="cell"></span>'; continue; }
+        qrow += '<span class="cell q' + (v === null ? " dim" : "") + '">' + (v === null ? "·" : v) + "</span>";
+      }
+      var html =
+        '<div class="divisor-box">' +
+        '  <span class="divisor">' + divisor + "</span>" +
+        '  <span class="bracket">' +
+        '    <div class="grid">' +
+        '      <div class="cellrow" style="border-bottom:4px solid var(--steel)">' + qrow + "</div>" +
+        '      <div class="cellrow">' + cells(dividend) + "</div>";
+      rows.forEach(function (r) {
+        html += '<div class="cellrow' + (r.rule ? '" style="' : '" style="') + '">' +
+          cells(r.text, r.rule ? "rule" : "", r.indent) + "</div>";
+      });
+      html += "    </div></span></div>";
+      body.innerHTML = html;
+      paintSteps();
+      ask();
+    }
+
+    function pad(nums, onPick, label) {
+      var p = wrap.querySelector("#twPad");
+      p.innerHTML = "";
+      nums.forEach(function (n) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = n;
+        b.setAttribute("aria-label", label + " " + n);
+        b.addEventListener("click", function () { onPick(n); });
+        p.appendChild(b);
+      });
+    }
+
+    function ask() {
+      var a = wrap.querySelector("#twAsk");
+      if (done) {
+        a.textContent = "";
+        wrap.querySelector("#twPad").innerHTML = "";
+        return;
+      }
+      if (phase === "D") {
+        a.textContent = "DIVIDE — how many " + divisor + "s fit into " + working + "?";
+        pad([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], onDivide, "Quotient digit");
+      } else if (phase === "M") {
+        var right = qDigits[idx] * divisor;
+        var opts2 = shuffleNear(right, divisor);
+        a.textContent = "MULTIPLY — what is " + qDigits[idx] + " × " + divisor + "?";
+        pad(opts2, onMultiply, "Product");
+      } else if (phase === "S") {
+        var diff = working - qDigits[idx] * divisor;
+        a.textContent = "SUBTRACT — what is " + working + " − " + qDigits[idx] * divisor + "?";
+        pad(shuffleNear(diff, Math.max(2, Math.ceil(divisor / 3))), onSubtract, "Difference");
+      } else {
+        var nxt = digits[idx + 1];
+        a.textContent = "BRING DOWN — which digit comes down next?";
+        pad(uniqueDigits(nxt), onBring, "Digit");
+      }
+    }
+
+    function shuffleNear(v, spread) {
+      var set = [v];
+      var tries = 0;
+      while (set.length < 5 && tries < 60) {
+        tries++;
+        var cand = v + (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * spread * 2));
+        if (cand >= 0 && set.indexOf(cand) === -1) set.push(cand);
+      }
+      while (set.length < 5) set.push(set.length);
+      return set.sort(function (a, b) { return a - b; });
+    }
+    function uniqueDigits(correct) {
+      var set = [Number(correct)];
+      while (set.length < 5) {
+        var c = Math.floor(Math.random() * 10);
+        if (set.indexOf(c) === -1) set.push(c);
+      }
+      return set.sort(function (a, b) { return a - b; });
+    }
+
+    function wrong(msg) {
+      api.say(msg);
+      var box = document.getElementById("say");
+      box.className = "say bad on"; box.innerHTML = msg;
+    }
+    function clear() { api.touched(); }
+
+    function onDivide(n) {
+      var right = Math.floor(working / divisor);
+      if (n !== right) {
+        return wrong(n > right
+          ? "<strong>" + n + " × " + divisor + " = " + n * divisor + "</strong>, which is bigger than " + working + ". The quotient digit has to fit INSIDE " + working + "."
+          : "<strong>" + (n + 1) + " × " + divisor + " = " + (n + 1) * divisor + "</strong> still fits inside " + working + ", so " + n + " is too small.");
+      }
+      clear();
+      qDigits[idx] = n;
+      phase = "M"; paint();
+    }
+    function onMultiply(n) {
+      var right = qDigits[idx] * divisor;
+      if (n !== right) return wrong("Not quite — " + qDigits[idx] + " × " + divisor + " is not " + n + ".");
+      clear();
+      rows.push({ text: String(right), indent: idx + 1 - String(right).length, rule: true });
+      phase = "S"; paint();
+    }
+    function onSubtract(n) {
+      var right = working - qDigits[idx] * divisor;
+      if (n !== right) return wrong("Check the subtraction: " + working + " − " + qDigits[idx] * divisor + " is not " + n + ".");
+      clear();
+      rows.push({ text: String(right), indent: idx + 1 - String(right).length });
+      working = right;
+      if (idx + 1 >= digits.length) { done = true; phase = "✓"; paint(); api.lock(true); return; }
+      phase = "B"; paint();
+    }
+    function onBring(n) {
+      if (String(n) !== digits[idx + 1]) {
+        return wrong("The next digit of " + dividend + " is not " + n + ". Read the dividend left to right.");
+      }
+      clear();
+      idx++;
+      working = working * 10 + Number(digits[idx]);
+      rows[rows.length - 1] = { text: String(working), indent: idx + 1 - String(working).length };
+      phase = "D"; paint();
+    }
+
+    api.lock(false);
+    paint();
+
+    return {
+      isDone: function () { return done; },
+      quotient: function () { return qDigits.map(function (d) { return d === null ? 0 : d; }).join("").replace(/^0+(?=\d)/, ""); },
+      remainder: function () { return working; },
+      phase: function () { return phase; },
+      reset: function () { host.innerHTML = ""; },
+    };
+  }
+
+  /* ── Workshop 1 · Lesson 2.6 — the tower, whole numbers ─────────── */
+  var W1 = {
+    id: "tower", lesson: "2.6", emoji: "🏗️", name: "The Long-Division Tower",
+    blurb: "Run Divide · Multiply · Subtract · Bring down yourself, one step at a time.",
+    closing: "Four moves, in the same order, every single time.",
+    build: function (lv, api) {
+      var set = [
+        { a: 168, b: 12, story: "168 rivets, packed 12 to a box. How many boxes?" },
+        { a: 340, b: 5, story: "340 metres of cable cut into 5 equal reels." },
+        { a: 1344, b: 12, story: "1,344 bolts shared into 12 crates — the lesson's own problem." },
+        { a: 936, b: 4, story: "936 tiles laid in 4 equal rows." },
+        { a: 2565, b: 15, story: "2,565 washers packed 15 to a bag." },
+      ];
+      var j = set[lv];
+      api.brief(j.story, "Work the tower. Pick the quotient digit, then the product, then the difference, then bring the next digit down.");
+      var tw = buildTower(api.floor, j.a, j.b, api, {});
+      return {
+        check: function () {
+          if (!tw.isDone()) return { ok: false, why: "The tower is not finished — keep going until every digit has come down." };
+          var q = Math.floor(j.a / j.b), rem = j.a % j.b;
+          return { ok: true, why: j.a + " ÷ " + j.b + " = " + q + (rem ? " remainder " + rem : "") +
+            ". Every step was yours — the machine only checked them." };
+        },
+        hint: function (t) {
+          if (t === 1) return "Say the four moves out loud as you go: <strong>Divide, Multiply, Subtract, Bring down</strong>. You are always on exactly one of them, and the highlighted chip tells you which.";
+          return "For the DIVIDE step, count up: " + j.b + ", " + j.b * 2 + ", " + j.b * 3 + ", " + j.b * 4 + " … and stop at the last one that still fits inside the number you are working on.";
+        },
+        reset: function () { api.floor.innerHTML = ""; tw = buildTower(api.floor, j.a, j.b, api, {}); },
+      };
+    },
+  };
+
+  /* ── Workshop 2 · Lesson 2.7 — slide the point, then the tower ──── */
+  var W2 = {
+    id: "slide", lesson: "2.7", emoji: "🎚️", name: "The Decimal Slide",
+    blurb: "Make the divisor whole by sliding the point — then divide as usual.",
+    closing: "Slide BOTH points the same number of places and the answer does not change.",
+    build: function (lv, api) {
+      var set = [
+        { a: 18.9, b: 6.3, places: 1 },
+        { a: 7.5, b: 0.5, places: 1 },
+        { a: 9.36, b: 0.4, places: 1 },
+        { a: 12.5, b: 0.25, places: 2 },
+        { a: 40.32, b: 1.44, places: 2 },
+      ];
+      var j = set[lv];
+      var slid = 0;
+      var stage = "slide";
+      var tw = null;
+
+      api.brief(j.a + " ÷ " + j.b, "Long division needs a WHOLE-NUMBER divisor. Slide the point right until the divisor is whole — the dividend's point follows the same number of places.");
+
+      var wrap = document.createElement("div");
+      wrap.innerHTML =
+        '<div style="text-align:center;padding:10px 0 4px">' +
+        '  <p style="font-weight:900;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase">Divisor</p>' +
+        '  <p id="slDivisor" style="font-size:clamp(34px,7vw,56px);font-weight:900;color:var(--steel);font-variant-numeric:tabular-nums"></p>' +
+        '  <p style="font-weight:900;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-top:12px">Dividend</p>' +
+        '  <p id="slDividend" style="font-size:clamp(34px,7vw,56px);font-weight:900;color:var(--copper);font-variant-numeric:tabular-nums"></p>' +
+        '  <p id="slCount" style="margin-top:12px;font-weight:800;color:var(--mint-lo)"></p>' +
+        "</div>" +
+        '<div class="row" style="justify-content:center">' +
+        '  <button class="b ghost" id="slBack">← slide back</button>' +
+        '  <button class="b mint" id="slFwd">slide right →</button>' +
+        "</div>" +
+        '<div id="slTower" style="margin-top:18px"></div>';
+      api.floor.appendChild(wrap);
+
+      function shift(v, places) {
+        // Exact decimal shift via string surgery — never v * 10 ** places,
+        // which turns 9.36 into 936.0000000000001.
+        var s = String(v);
+        var neg = s[0] === "-"; if (neg) s = s.slice(1);
+        var dot = s.indexOf(".");
+        var whole = dot === -1 ? s : s.slice(0, dot);
+        var frac = dot === -1 ? "" : s.slice(dot + 1);
+        while (frac.length < places) frac += "0";
+        var out = whole + frac.slice(0, places);
+        var rest = frac.slice(places);
+        out = out.replace(/^0+(?=\d)/, "");
+        return (neg ? "-" : "") + (rest ? out + "." + rest : out);
+      }
+
+      function paint() {
+        el("slDivisor").textContent = shift(j.b, slid);
+        el("slDividend").textContent = shift(j.a, slid);
+        el("slCount").textContent = slid === 0
+          ? "No slide yet."
+          : "Both points slid " + slid + " place" + (slid === 1 ? "" : "s") + " to the right.";
+        api.say("Divisor " + shift(j.b, slid) + ", dividend " + shift(j.a, slid) + ".");
+      }
+      wrap.querySelector("#slFwd").addEventListener("click", function () {
+        if (stage !== "slide") return;
+        slid = Math.min(4, slid + 1); paint(); api.touched();
+      });
+      wrap.querySelector("#slBack").addEventListener("click", function () {
+        if (stage !== "slide") return;
+        slid = Math.max(0, slid - 1); paint(); api.touched();
+      });
+      paint();
+      api.lock(true);
+
+      return {
+        check: function () {
+          if (stage === "slide") {
+            if (slid !== j.places) {
+              return { ok: false, why: slid < j.places
+                ? "The divisor is still <strong>" + shift(j.b, slid) + "</strong> — not a whole number yet. Slide again."
+                : "You slid too far. Stop the moment the divisor becomes whole." };
+            }
+            stage = "divide";
+            var A = Number(shift(j.a, slid)), B = Number(shift(j.b, slid));
+            var host = wrap.querySelector("#slTower");
+            host.innerHTML = '<p style="font-weight:900;color:var(--mint-lo);margin-bottom:10px">✓ Divisor is whole. Now it is ' +
+              A + " ÷ " + B + " — same four moves as always.</p>";
+            tw = buildTower(host, A, B, api, {});
+            api.touched();
+            return { soft: true, why: "Good slide — the divisor is whole. Now work the tower below." };
+          }
+          if (!tw || !tw.isDone()) return { ok: false, why: "Finish the tower — keep going until every digit has come down." };
+          var A2 = Number(shift(j.a, j.places)), B2 = Number(shift(j.b, j.places));
+          return { ok: true, why: j.a + " ÷ " + j.b + " = " + A2 / B2 +
+            ", because sliding BOTH points " + j.places + " place" + (j.places === 1 ? "" : "s") + " gave the equivalent division " + A2 + " ÷ " + B2 + "." };
+        },
+        hint: function (t) {
+          if (t === 1) return "Look only at the DIVISOR. Count how many digits sit after its decimal point — that is how many places to slide, and the dividend slides the same amount.";
+          return "The divisor " + j.b + " needs <strong>" + j.places + "</strong> slide" + (j.places === 1 ? "" : "s") +
+            ", which makes it " + shift(j.b, j.places) + " and turns the dividend into " + shift(j.a, j.places) + ".";
+        },
+        reset: function () { slid = 0; stage = "slide"; tw = null; wrap.querySelector("#slTower").innerHTML = ""; paint(); api.lock(true); },
+      };
+    },
+  };
+
+  /* ── Workshop 3 · Lesson 6.1 — the tape cutter ──────────────────── */
+  var W3 = {
+    id: "tape", lesson: "6.1", emoji: "✂️", name: "The Tape Cutter",
+    blurb: "Predict, build the Keep-Change-Flip line, then cut and see.",
+    closing: "Put a 1 under the whole number, then Keep, Change, Flip.",
+    build: function (lv, api) {
+      // whole ÷ unit fraction, and fraction ÷ whole number.
+      var set = [
+        { kind: "whole", whole: 3, d: 4 },
+        { kind: "whole", whole: 5, d: 3 },
+        { kind: "whole", whole: 4, d: 6 },
+        { kind: "frac", n: 3, d: 5, whole: 5 },
+        { kind: "frac", n: 2, d: 3, whole: 4 },
+      ];
+      var j = set[lv];
+      var expr, answer, prompt;
+      if (j.kind === "whole") {
+        expr = j.whole + " ÷ 1/" + j.d;
+        answer = fr(j.whole * j.d, 1);
+        prompt = "A " + j.whole + "-foot strip of tape, cut into 1/" + j.d + "-foot pieces. How many pieces?";
+      } else {
+        expr = j.n + "/" + j.d + " ÷ " + j.whole;
+        answer = fr(j.n, j.d * j.whole);
+        prompt = j.n + "/" + j.d + " of a metre of tape shared equally between " + j.whole + " people. How much each?";
+      }
+
+      var stage = 1;  // 1 = put the 1 under / choose reciprocal, 2 = cut & confirm
+      var overOne = false, flipped = false;
+      var cutSpacing = 1;
+
+      api.brief(prompt, "Step 1: make BOTH numbers fractions, then flip the divisor. Step 2: cut the tape and check that the picture agrees.");
+
+      var wrap = document.createElement("div");
+      wrap.innerHTML =
+        '<div style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:6px">' +
+        '  <div style="text-align:center"><p style="font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Dividend</p><div class="slot" id="tpA"></div></div>' +
+        '  <div class="op" id="tpOp">÷</div>' +
+        '  <div style="text-align:center"><p style="font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Divisor</p><div class="slot" id="tpB"></div></div>' +
+        "</div>" +
+        '<div class="row" style="justify-content:center" id="tpTools"></div>' +
+        '<div id="tpCut" style="margin-top:18px"></div>';
+      api.floor.appendChild(wrap);
+
+      function paintExpr() {
+        var A = wrap.querySelector("#tpA"), B = wrap.querySelector("#tpB"), OP = wrap.querySelector("#tpOp");
+        if (j.kind === "whole") {
+          A.innerHTML = overOne ? fracHTML({ n: j.whole, d: 1 === 1 ? 1 : 1 }, 30).replace("</span>", "</span>") : "";
+          A.innerHTML = overOne ? fracHTML({ n: j.whole, d: 1 }, 30) : "";
+          A.innerHTML = overOne
+            ? '<span class="frac" style="font-size:30px"><span class="t">' + j.whole + '</span><span class="b">1</span></span>'
+            : '<span style="font-size:32px;font-weight:900">' + j.whole + "</span>";
+          B.innerHTML = flipped
+            ? '<span class="frac" style="font-size:30px"><span class="t">' + j.d + '</span><span class="b">1</span></span>'
+            : '<span class="frac" style="font-size:30px"><span class="t">1</span><span class="b">' + j.d + "</span></span>";
+        } else {
+          A.innerHTML = '<span class="frac" style="font-size:30px"><span class="t">' + j.n + '</span><span class="b">' + j.d + "</span></span>";
+          B.innerHTML = flipped
+            ? '<span class="frac" style="font-size:30px"><span class="t">1</span><span class="b">' + j.whole + "</span></span>"
+            : (overOne
+              ? '<span class="frac" style="font-size:30px"><span class="t">' + j.whole + '</span><span class="b">1</span></span>'
+              : '<span style="font-size:32px;font-weight:900">' + j.whole + "</span>");
+        }
+        A.className = "slot" + (j.kind === "whole" ? (overOne ? " filled" : "") : " filled");
+        B.className = "slot" + (flipped ? " filled flipped" : (j.kind === "frac" && overOne ? " filled" : ""));
+        OP.textContent = flipped ? "×" : "÷";
+        OP.className = "op" + (flipped ? " armed" : "");
+      }
+
+      function paintTools() {
+        var t = wrap.querySelector("#tpTools");
+        t.innerHTML = "";
+        var b1 = document.createElement("button");
+        b1.type = "button"; b1.className = "b ghost";
+        b1.textContent = "Put a 1 under the whole number";
+        b1.addEventListener("click", function () { overOne = !overOne; paintExpr(); api.touched(); api.say(overOne ? "Whole number written over 1." : "Undone."); });
+        var b2 = document.createElement("button");
+        b2.type = "button"; b2.className = "b mint";
+        b2.textContent = "Change ÷ to × and flip the divisor";
+        b2.addEventListener("click", function () {
+          if (!overOne) { var s = document.getElementById("say"); s.className = "say bad on"; s.innerHTML = "Both numbers have to be fractions first. Put a 1 under the whole number."; return; }
+          flipped = !flipped; paintExpr(); api.touched();
+          api.say(flipped ? "Divisor flipped, operation is now multiply." : "Flip undone.");
+        });
+        t.appendChild(b1); t.appendChild(b2);
+      }
+
+      function paintCut() {
+        var host = wrap.querySelector("#tpCut");
+        if (j.kind !== "whole") {
+          host.innerHTML = '<div class="tape-wrap"><p style="font-weight:800;color:var(--muted);margin-bottom:10px">' +
+            "The tape is " + j.n + "/" + j.d + " of a metre, shared between " + j.whole + " people. Each share is one of the " + j.whole + " equal bands.</p>" +
+            '<div class="tape" id="tpBar"></div><div class="ruler" id="tpRule"></div></div>';
+          var bar = host.querySelector("#tpBar");
+          for (var s = 1; s < j.whole; s++) {
+            var d = document.createElement("span");
+            d.className = "nick"; d.style.left = (s / j.whole) * 100 + "%";
+            bar.appendChild(d);
+          }
+          return;
+        }
+        host.innerHTML =
+          '<div class="tape-wrap">' +
+          '  <p style="font-weight:800;color:var(--muted);margin-bottom:10px">Blade spacing — set it to the size of one piece, then the tape shows the cuts.</p>' +
+          '  <div class="row" style="margin:0 0 12px">' +
+          '    <button class="b ghost" id="tpMinus">wider</button>' +
+          '    <span style="font-weight:900;font-size:22px;color:var(--steel)">1/<span id="tpSp">1</span> ft</span>' +
+          '    <button class="b ghost" id="tpPlus">narrower</button>' +
+          '    <span class="grow"></span>' +
+          '    <span style="font-weight:900;color:var(--mint-lo)" id="tpPieces"></span>' +
+          "  </div>" +
+          '  <div class="tape" id="tpBar"></div><div class="ruler" id="tpRule"></div>' +
+          "</div>";
+        function draw() {
+          var bar = host.querySelector("#tpBar");
+          bar.innerHTML = "";
+          var pieces = j.whole * cutSpacing;
+          for (var i2 = 1; i2 < pieces; i2++) {
+            var n = document.createElement("span");
+            n.className = "nick";
+            n.style.left = (i2 / pieces) * 100 + "%";
+            n.style.opacity = pieces > 40 ? ".5" : "1";
+            bar.appendChild(n);
+          }
+          host.querySelector("#tpSp").textContent = cutSpacing;
+          host.querySelector("#tpPieces").textContent = pieces + " pieces";
+          var rule = host.querySelector("#tpRule");
+          rule.innerHTML = "";
+          for (var f = 0; f <= j.whole; f++) {
+            var s2 = document.createElement("span");
+            s2.style.left = (f / j.whole) * 100 + "%";
+            s2.textContent = f + " ft";
+            rule.appendChild(s2);
+          }
+          api.say(pieces + " pieces at 1/" + cutSpacing + " foot each.");
+        }
+        host.querySelector("#tpPlus").addEventListener("click", function () { cutSpacing = Math.min(12, cutSpacing + 1); draw(); api.touched(); });
+        host.querySelector("#tpMinus").addEventListener("click", function () { cutSpacing = Math.max(1, cutSpacing - 1); draw(); api.touched(); });
+        draw();
+      }
+
+      paintExpr(); paintTools(); paintCut();
+
+      return {
+        check: function () {
+          if (!overOne) return { ok: false, why: "Keep-Change-Flip needs two fractions. Put a <strong>1</strong> under the whole number first." };
+          if (!flipped) return { ok: false, why: "You have two fractions now — change ÷ to × and flip the divisor to its reciprocal." };
+          if (j.kind === "whole" && cutSpacing !== j.d) {
+            return { ok: false, why: "The blade is set to 1/" + cutSpacing + " ft, but each piece should be <strong>1/" + j.d + " ft</strong>. Set the blade to match the problem, and the tape will show the answer." };
+          }
+          var shown = j.kind === "whole" ? j.whole * j.d : null;
+          return { ok: true, why: j.kind === "whole"
+            ? expr + " = " + j.whole + "/1 × " + j.d + "/1 = <strong>" + shown + "</strong> pieces — and the tape shows exactly " + shown + "."
+            : expr + " = " + j.n + "/" + j.d + " × 1/" + j.whole + " = <strong>" + frText(answer) + "</strong> of a metre each." };
+        },
+        hint: function (t) {
+          if (t === 1) return j.kind === "whole"
+            ? "Dividing BY a piece smaller than 1 asks “how many of these fit inside?”, so the answer is BIGGER than " + j.whole + ". Make both numbers fractions, then flip the divisor."
+            : "Sharing a fraction between " + j.whole + " people makes each share SMALLER. Write " + j.whole + " as " + j.whole + "/1, then flip it.";
+          return j.kind === "whole"
+            ? "Set the blade to <strong>1/" + j.d + "</strong>. The line is " + j.whole + "/1 × " + j.d + "/1 = " + j.whole * j.d + "."
+            : "The line is " + j.n + "/" + j.d + " × 1/" + j.whole + " = " + frText(answer) + ".";
+        },
+        reset: function () { overOne = false; flipped = false; cutSpacing = 1; paintExpr(); paintCut(); },
+      };
+    },
+  };
+
+  /* ── Workshop 4 · Lesson 6.2 — Keep · Change · Flip bench ────────── */
+  var W4 = {
+    id: "kcf", lesson: "6.2", emoji: "🔁", name: "The Keep-Change-Flip Bench",
+    blurb: "Convert mixed numbers, flip the divisor, multiply across, simplify.",
+    closing: "a/b ÷ c/d = a/b × d/c — and a mixed number becomes improper BEFORE anything else.",
+    build: function (lv, api) {
+      var set = [
+        { A: { n: 3, d: 4 }, B: { n: 1, d: 8 }, mixed: null },
+        { A: { n: 2, d: 3 }, B: { n: 1, d: 6 }, mixed: null },
+        { A: { n: 7, d: 2 }, B: { n: 1, d: 4 }, mixed: { w: 3, n: 1, d: 2 } },
+        { A: { n: 10, d: 3 }, B: { n: 2, d: 3 }, mixed: { w: 3, n: 1, d: 3 } },
+        { A: { n: 9, d: 4 }, B: { n: 3, d: 8 }, mixed: { w: 2, n: 1, d: 4 } },
+      ];
+      var j = set[lv];
+      var converted = !j.mixed, flipped = false, product = null, simplified = false;
+      var raw = { n: j.A.n * j.B.d, d: j.A.d * j.B.n };
+      var ans = fr(raw.n, raw.d);
+
+      var label = (j.mixed ? j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d : j.A.n + "/" + j.A.d) + " ÷ " + j.B.n + "/" + j.B.d;
+      api.brief(label, "Work the bench left to right. A mixed number becomes an improper fraction first — nothing else can start until it does.");
+
+      var wrap = document.createElement("div");
+      wrap.innerHTML =
+        '<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap">' +
+        '  <div class="slot" id="kA"></div><div class="op" id="kOp">÷</div><div class="slot" id="kB"></div>' +
+        '  <div style="font-size:30px;font-weight:900;color:var(--muted)">=</div>' +
+        '  <div class="slot" id="kR"></div>' +
+        "</div>" +
+        '<div class="row" style="justify-content:center;margin-top:18px" id="kTools"></div>' +
+        '<p id="kTrail" style="margin-top:16px;text-align:center;font-weight:800;color:var(--mint-lo);min-height:26px"></p>';
+      api.floor.appendChild(wrap);
+
+      function F(f, cls) {
+        return '<span class="frac" style="font-size:30px">' + (cls || "") +
+          '<span class="t">' + f.n + '</span><span class="b">' + f.d + "</span></span>";
+      }
+      function paint() {
+        var A = wrap.querySelector("#kA"), B = wrap.querySelector("#kB"), R = wrap.querySelector("#kR");
+        A.innerHTML = converted ? F(j.A) : '<span style="font-size:25px;font-weight:900">' + j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d + "</span>";
+        A.className = "slot" + (converted ? " filled" : "");
+        B.innerHTML = flipped ? F({ n: j.B.d, d: j.B.n }) : F(j.B);
+        B.className = "slot" + (flipped ? " filled flipped" : "");
+        wrap.querySelector("#kOp").textContent = flipped ? "×" : "÷";
+        wrap.querySelector("#kOp").className = "op" + (flipped ? " armed" : "");
+        R.innerHTML = product ? F(simplified ? ans : raw) : '<span style="color:#b9cad8;font-size:30px">?</span>';
+        R.className = "slot" + (product ? " filled" : "");
+        var trail = [];
+        if (converted && j.mixed) trail.push(j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d + " → " + j.A.n + "/" + j.A.d);
+        if (flipped) trail.push("Keep " + j.A.n + "/" + j.A.d + ", change ÷ to ×, flip " + j.B.n + "/" + j.B.d + " → " + j.B.d + "/" + j.B.n);
+        if (product) trail.push("Multiply across → " + raw.n + "/" + raw.d);
+        if (simplified) trail.push("Simplify → " + mixedText(ans));
+        wrap.querySelector("#kTrail").innerHTML = trail.join(" &nbsp;·&nbsp; ");
+      }
+      function tool(txt, cls, fn) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "b " + cls; b.textContent = txt;
+        b.addEventListener("click", fn);
+        return b;
+      }
+      function bad(m) { var s = document.getElementById("say"); s.className = "say bad on"; s.innerHTML = m; api.say(m.replace(/<[^>]+>/g, "")); }
+      function paintTools() {
+        var t = wrap.querySelector("#kTools"); t.innerHTML = "";
+        if (j.mixed) {
+          t.appendChild(tool(converted ? "✓ Converted to improper" : "Make it improper", converted ? "ghost" : "ghost", function () {
+            converted = true; paint(); paintTools(); api.touched();
+            api.say("Mixed number converted: (" + j.mixed.d + " × " + j.mixed.w + ") + " + j.mixed.n + " = " + j.A.n + " over " + j.A.d + ".");
+          }));
+        }
+        t.appendChild(tool(flipped ? "✓ Flipped" : "Keep · Change · Flip", "mint", function () {
+          if (!converted) return bad("A mixed number cannot be flipped. Convert it to an improper fraction first.");
+          flipped = !flipped; if (!flipped) { product = null; simplified = false; } paint(); paintTools(); api.touched();
+        }));
+        t.appendChild(tool("Multiply across", "ghost", function () {
+          if (!flipped) return bad("There is nothing to multiply yet — you are still dividing. Change ÷ to × first.");
+          product = raw; paint(); paintTools(); api.touched();
+        }));
+        t.appendChild(tool("Simplify", "brass", function () {
+          if (!product) return bad("Multiply across before simplifying.");
+          simplified = true; paint(); paintTools(); api.touched();
+        }));
+      }
+      paint(); paintTools();
+
+      return {
+        check: function () {
+          if (!converted) return { ok: false, why: "Convert the mixed number to an improper fraction first — Keep-Change-Flip cannot start until you do." };
+          if (!flipped) return { ok: false, why: "Keep the first fraction, change ÷ to ×, and flip the SECOND one to its reciprocal." };
+          if (!product) return { ok: false, why: "Now multiply across: tops together, bottoms together." };
+          var needsSimplify = raw.n !== ans.n || raw.d !== ans.d;
+          if (needsSimplify && !simplified) return { ok: false, why: raw.n + "/" + raw.d + " is not in lowest terms yet. Simplify it." };
+          return { ok: true, why: label + " = " + j.A.n + "/" + j.A.d + " × " + j.B.d + "/" + j.B.n + " = " + raw.n + "/" + raw.d +
+            " = <strong>" + mixedText(ans) + "</strong>." };
+        },
+        hint: function (t) {
+          if (t === 1) return j.mixed
+            ? "For the mixed number: multiply the bottom by the whole number, add the top, keep the same bottom. Then Keep, Change, Flip."
+            : "Keep the first fraction exactly as it is. Only the SECOND fraction turns over.";
+          return "The line is <strong>" + j.A.n + "/" + j.A.d + " × " + j.B.d + "/" + j.B.n + " = " + raw.n + "/" + raw.d +
+            " = " + mixedText(ans) + "</strong>. Press the tools in that order.";
+        },
+        reset: function () { converted = !j.mixed; flipped = false; product = null; simplified = false; paint(); paintTools(); },
+      };
+    },
+  };
+
+  /* ── Workshop 5 · The Final Run — all four, mixed ────────────────── */
+  var W5 = {
+    id: "final", lesson: "2.6 · 2.7 · 6.1 · 6.2", emoji: "🏁", name: "The Final Run",
+    blurb: "One job from each workshop, then a last one that could be any of them.",
+    closing: "Every kind of division this unit teaches, in one run.",
+    build: function (lv, api) {
+      var picks = [W1, W2, W3, W4, [W1, W2, W3, W4][lv % 4]];
+      var src = picks[lv];
+      var inner = src.build((lv * 2 + 1) % 5, api);
+      el("sub").textContent = "Final Run · this job is from Lesson " + src.lesson + ". " + el("sub").textContent;
+      return inner;
+    },
+  };
+
+  var SHOPS = [W1, W2, W3, W4, W5];
+
+  el("bLock").addEventListener("click", lock);
+  el("bHint").addEventListener("click", hint);
+  el("bReset").addEventListener("click", function () {
+    if (run && run.mod && run.mod.reset) { run.mod.reset(); el("say").className = "say"; el("say").textContent = ""; say("Reset."); }
+  });
+  el("bMap").addEventListener("click", function () { paintMap(); show("scMap"); });
+  el("bBack").addEventListener("click", function () { paintMap(); show("scMap"); });
+
+  paintMap();
+})();
+    </script>
+    <script src="/assets/game-score.js" defer></script>
+  </body>
+</html>
