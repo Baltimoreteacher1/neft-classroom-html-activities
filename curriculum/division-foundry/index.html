@@ -551,6 +551,12 @@
     wrap.appendChild(lab);
     var inputs = [];
     cfg.fields.forEach(function (f, i) {
+      if (f.sep) {
+        var sp = document.createElement("span");
+        sp.className = "fe-label"; sp.textContent = f.sep;
+        wrap.appendChild(sp);
+        return;
+      }
       if (f.frac) {
         var fb = document.createElement("span");
         fb.className = "fracbox";
@@ -768,40 +774,40 @@
       entryEl.innerHTML = "";
       if (done) { askEl.textContent = ""; return; }
       if (phase === "D") {
-        askEl.textContent = "DIVIDE — how many " + divisor + "s fit into " + working + "? Work it out, then type the digit.";
+        askEl.textContent = "DIVIDE — type the next quotient digit.";
         var right = Math.floor(working / divisor);
         advance = function () { qDigits[idx] = right; phase = "M"; paint(); };
-        stepEntry("Quotient digit", right, function (n) {
+        stepEntry("quotient digit", right, function (n) {
           return n > right
-            ? "<strong>" + n + " × " + divisor + " = " + n * divisor + "</strong> — bigger than " + working + ", so " + n + " does not fit."
-            : "<strong>" + (n + 1) + " × " + divisor + " = " + (n + 1) * divisor + "</strong> still fits inside " + working + ", so " + n + " is too small.";
+            ? "The working number is <strong>" + working + "</strong>, and " + n + " × " + divisor + " = " + n * divisor + " — too big to fit inside it."
+            : "The working number is <strong>" + working + "</strong>, and " + (n + 1) + " × " + divisor + " = " + (n + 1) * divisor + " still fits — so " + n + " is too small.";
         });
       } else if (phase === "M") {
         var prod = qDigits[idx] * divisor;
-        askEl.textContent = "MULTIPLY — compute " + qDigits[idx] + " × " + divisor + " and type it.";
+        askEl.textContent = "MULTIPLY — type the row that goes underneath.";
         advance = function () {
           rows.push({ text: String(prod), indent: idx + 1 - String(prod).length, rule: true });
           phase = "S"; paint();
         };
-        stepEntry("Product", prod, function () {
+        stepEntry("row underneath", prod, function () {
           return "Check the multiplication — " + qDigits[idx] + " × " + divisor + " is not that. Break it up: " +
             qDigits[idx] + " × " + divisor + " = " + qDigits[idx] + " × " + Math.floor(divisor / 10) * 10 +
             (divisor % 10 ? " + " + qDigits[idx] + " × " + (divisor % 10) : "") + ".";
         });
       } else if (phase === "S") {
         var diff = working - qDigits[idx] * divisor;
-        askEl.textContent = "SUBTRACT — compute " + working + " − " + qDigits[idx] * divisor + " and type it.";
+        askEl.textContent = "SUBTRACT — type what is left.";
         advance = function () {
           rows.push({ text: String(diff), indent: idx + 1 - String(diff).length });
           working = diff;
           if (idx + 1 >= digits.length) { done = true; phase = "✓"; paint(); gameApi.lock(true); return; }
           phase = "B"; paint();
         };
-        stepEntry("Difference", diff, function () {
+        stepEntry("what is left", diff, function () {
           return "Check the subtraction — " + working + " − " + qDigits[idx] * divisor + " is not that.";
         });
       } else {
-        askEl.textContent = "BRING DOWN — tap the next digit of the dividend to bring it down.";
+        askEl.textContent = "BRING DOWN — tap the digit that comes down next.";
       }
     }
 
@@ -867,118 +873,91 @@
   /* ── Workshop 2 · Lesson 2.7 ─────────────────────────────────────── */
   var W2 = {
     id: "slide", lesson: "2.7", emoji: "🎚️", name: "The Decimal Slide",
-    blurb: "Decide the slide yourself — how many places, and what both numbers become.",
+    blurb: "Rewrite the problem so long division can start — then work it.",
     closing: "Slide BOTH points the same number of places and the answer does not change.",
     build: function (lv, a) {
+      /* Every dividend here lands WHOLE after the minimal slide — the tower
+         renders whole numbers. (9.36 ÷ 0.4 used to sit in this list; its slide
+         gives 93.6 ÷ 4, which the tower cannot draw. It is 93.6 ÷ 0.4 now.) */
       var set = [
-        { a: 18.9, b: 6.3, places: 1 },
-        { a: 7.5, b: 0.5, places: 1 },
-        { a: 9.36, b: 0.4, places: 1 },
-        { a: 12.5, b: 0.25, places: 2 },
-        { a: 40.32, b: 1.44, places: 2 },
+        { a: 18.9, b: 6.3 },
+        { a: 7.5, b: 0.5 },
+        { a: 93.6, b: 0.4 },
+        { a: 12.5, b: 0.25 },
+        { a: 40.32, b: 1.44 },
       ];
       var j = set[lv];
-      var stage = "plan";   // plan → dividend → divide
-      var tw = null;
+      // Exact ratio comparison via scaled integers — the values have at most
+      // two decimal places, and float products of decimals are not reliable.
+      var A100 = Math.round(j.a * 100), B100 = Math.round(j.b * 100);
+      var stage = "rewrite";
+      var tw = null, theirA = 0, theirB = 0;
 
-      /* The brief deliberately does NOT say what to do. Deciding that the
-         divisor must become whole — and what that costs the dividend — is the
-         mathematics of Lesson 2.7. The old version had slide buttons a student
-         could press until the number happened to look whole. */
-      a.brief(j.a + " ÷ " + j.b, "Long division cannot start on this problem as it stands. Work out what has to change, and answer below — every number is yours to figure out.");
-
-      function shift(v, places) {
-        var s2 = String(v);
-        var dot = s2.indexOf(".");
-        var whole = dot === -1 ? s2 : s2.slice(0, dot);
-        var frac = dot === -1 ? "" : s2.slice(dot + 1);
-        while (frac.length < places) frac += "0";
-        var out = (whole + frac.slice(0, places)).replace(/^0+(?=\d)/, "");
-        var rest = frac.slice(places);
-        return rest ? out + "." + rest : out;
-      }
+      /* The brief does not say WHAT has to change — deciding that is the
+         mathematics of Lesson 2.7. An earlier version asked two scaffolded
+         questions ("how many places?", "what does the dividend become?"),
+         which walked the student through their own decision. Now the whole
+         rewrite is one open task, and only the feedback teaches. */
+      a.brief(j.a + " ÷ " + j.b, "Long division cannot start on this problem as it stands. Figure out what has to change, rewrite the problem, then work it — every number is yours.");
 
       var wrap = document.createElement("div");
       wrap.innerHTML =
-        '<div style="text-align:center;padding:8px 0 2px">' +
-        '  <p style="font-weight:900;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase">Divisor</p>' +
-        '  <p class="slDivisor" style="font-size:clamp(34px,7vw,56px);font-weight:900;color:var(--steel);font-variant-numeric:tabular-nums">' + j.b + "</p>" +
-        '  <p style="font-weight:900;color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-top:10px">Dividend</p>' +
-        '  <p class="slDividend" style="font-size:clamp(34px,7vw,56px);font-weight:900;color:var(--copper);font-variant-numeric:tabular-nums">' + j.a + "</p>" +
-        "</div>" +
+        '<p style="text-align:center;font-size:clamp(34px,7vw,54px);font-weight:900;color:var(--steel);font-variant-numeric:tabular-nums;padding:6px 0 2px">' +
+        j.a + ' <span style="color:var(--copper)">÷</span> ' + j.b + "</p>" +
         '<div class="slAsk" style="margin-top:8px"></div>' +
         '<div class="slTower" style="margin-top:18px"></div>';
       a.floor.appendChild(wrap);
       var askHost = wrap.querySelector(".slAsk");
 
-      function askPlan() {
-        askHost.innerHTML = '<p style="text-align:center;font-weight:800;color:var(--steel)">The divisor ' + j.b + " has to become a whole number before you can divide.</p>";
+      function askRewrite() {
+        askHost.innerHTML = "";
         mkEntry(askHost, {
-          label: "How many places must its point slide?",
-          fields: [{ label: "places" }],
+          label: "Rewrite it:",
+          fields: [{ label: "new dividend" }, { sep: "÷" }, { label: "new divisor" }],
           focus: false,
           onSubmit: function (nums) {
-            if (nums[0] === j.places) {
-              a.good("Right — " + j.places + " place" + (j.places === 1 ? "" : "s") + " makes " + j.b + " into " + shift(j.b, j.places) + ".");
-              wrap.querySelector(".slDivisor").textContent = shift(j.b, j.places);
-              stage = "dividend"; askDividend();
-              return true;
+            var tA = nums[0], tB = nums[1];
+            if (!Number.isInteger(tB) || tB <= 0) {
+              a.wrong("Your divisor is <strong>" + tB + "</strong> — long division cannot start until the divisor is a whole number.");
+              return false;
             }
-            if (nums[0] < j.places) {
-              a.wrong("After " + nums[0] + " slide" + (nums[0] === 1 ? "" : "s") + " the divisor would be <strong>" + shift(j.b, nums[0]) + "</strong> — still not a whole number.");
-            } else {
-              a.wrong("That slides past whole. The point only needs to clear the digits that sit after it.");
+            if (!Number.isInteger(tA) || tA <= 0) {
+              a.wrong("Your dividend is <strong>" + tA + "</strong>. When the divisor\u2019s point slides, the dividend\u2019s point slides the SAME distance — check where it lands.");
+              return false;
             }
-            return false;
+            if (A100 * tB !== B100 * tA) {
+              a.wrong(tA + " ÷ " + tB + " is a DIFFERENT problem — it has a different answer than " + j.a + " ÷ " + j.b + ". Both points must move together, the same distance each.");
+              return false;
+            }
+            theirA = tA; theirB = tB;
+            stage = "divide";
+            askHost.innerHTML = "";
+            var host = wrap.querySelector(".slTower");
+            host.innerHTML = '<p style="font-weight:900;color:var(--mint-lo);margin-bottom:10px">✓ ' + tA + " ÷ " + tB + " is the same problem — now work it, same four moves as always.</p>";
+            tw = buildTower(host, tA, tB, a);
+            a.good("Equivalent division: " + tA + " ÷ " + tB + ".");
+            return true;
           },
         });
       }
 
-      function askDividend() {
-        askHost.innerHTML = '<p style="text-align:center;font-weight:800;color:var(--steel)">Whatever the divisor\u2019s point does, the dividend\u2019s point does too — or the answer changes.</p>';
-        mkEntry(askHost, {
-          label: "So " + j.a + " becomes…",
-          fields: [{ label: "new dividend" }],
-          focus: false,
-          onSubmit: function (nums) {
-            var want = Number(shift(j.a, j.places));
-            if (nums[0] === want) {
-              a.good("Both points moved " + j.places + " — the problem is now " + want + " ÷ " + shift(j.b, j.places) + ".");
-              wrap.querySelector(".slDividend").textContent = String(want);
-              stage = "divide";
-              askHost.innerHTML = "";
-              var host = wrap.querySelector(".slTower");
-              host.innerHTML = '<p style="font-weight:900;color:var(--mint-lo);margin-bottom:10px">✓ Equivalent division: ' + want + " ÷ " + shift(j.b, j.places) + " — same four moves as always.</p>";
-              tw = buildTower(host, want, Number(shift(j.b, j.places)), a);
-              return true;
-            }
-            a.wrong("Slide the dividend\u2019s point the SAME " + j.places + " place" + (j.places === 1 ? "" : "s") + " — no more, no less. Sliding past the last digit appends a zero.");
-            return false;
-          },
-        });
-      }
-
-      askPlan();
+      askRewrite();
       a.lock(false);
 
       return {
         check: function () {
-          if (stage === "plan") return { ok: false, why: "Answer the question first: how many places must the divisor\u2019s point slide?" };
-          if (stage === "dividend") return { ok: false, why: "Now the dividend: what does " + j.a + " become when its point slides the same distance?" };
+          if (stage === "rewrite") return { ok: false, why: "Rewrite the problem first — long division cannot start on it as it stands." };
           if (!tw || !tw.isDone()) return { ok: false, why: "Finish the tower — keep going until every digit has come down." };
-          var A2 = Number(shift(j.a, j.places)), B2 = Number(shift(j.b, j.places));
-          return { ok: true, why: j.a + " ÷ " + j.b + " = " + A2 / B2 + ", because sliding BOTH points gave the equivalent division " + A2 + " ÷ " + B2 + "." };
+          return { ok: true, why: j.a + " ÷ " + j.b + " = " + theirA / theirB + ", because your rewrite " + theirA + " ÷ " + theirB + " is the same problem with a whole-number divisor." };
         },
         hint: function (t) {
-          if (t === 1) return "Long division needs a WHOLE-NUMBER divisor, and a decimal point moves one place per slide. Look at how many digits sit after the divisor\u2019s point.";
-          return "The divisor " + j.b + " has <strong>" + j.places + "</strong> digit" + (j.places === 1 ? "" : "s") + " after its point. The dividend slides the same distance — and the tower after that is still yours to compute.";
+          if (t === 1) return "Look at the DIVISOR. What kind of number does long division need it to be — and what one move turns it into that kind of number?";
+          return "A decimal point moves one place per slide, and BOTH numbers\u2019 points must slide the same distance. Count the digits after the divisor\u2019s point; the rewriting is yours.";
         },
         reset: function () {
-          stage = "plan"; tw = null;
-          wrap.querySelector(".slDivisor").textContent = String(j.b);
-          wrap.querySelector(".slDividend").textContent = String(j.a);
+          stage = "rewrite"; tw = null;
           wrap.querySelector(".slTower").innerHTML = "";
-          askPlan(); a.lock(false);
+          askRewrite(); a.lock(false);
         },
       };
     },
@@ -987,7 +966,7 @@
   /* ── Workshop 3 · Lesson 6.1 — the tape cutter ───────────────────── */
   var W3 = {
     id: "tape", lesson: "6.1", emoji: "✂️", name: "The Tape Cutter",
-    blurb: "Set up Keep-Change-Flip, compute the answer yourself, then the tape proves it.",
+    blurb: "Set it up by tapping the numbers, compute the answer — the tape only cuts when you are right.",
     closing: "Put a 1 under the whole number, then Keep, Change, Flip — and YOU did the multiplying.",
     build: function (lv, a) {
       var set = [
@@ -1015,12 +994,12 @@
 
       var wrap = document.createElement("div");
       wrap.innerHTML =
+        '<p style="text-align:center;font-weight:800;color:var(--steel);margin-bottom:8px">Set it up — tap the numbers.</p>' +
         '<div style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:6px">' +
         '  <div style="text-align:center"><p class="cardlab">Dividend</p><button type="button" class="slot cardA"></button></div>' +
         '  <div class="op tpOp">÷</div>' +
-        '  <div style="text-align:center"><p class="cardlab">Divisor · tap to flip</p><button type="button" class="slot cardB"></button></div>' +
+        '  <div style="text-align:center"><p class="cardlab">Divisor</p><button type="button" class="slot cardB"></button></div>' +
         "</div>" +
-        '<div class="row" style="justify-content:center"><button type="button" class="b ghost oneUnder">Put a 1 under the whole number</button></div>' +
         '<div class="tpAnswer" style="margin-top:14px"></div>' +
         '<div class="tpCut" style="margin-top:14px"></div>';
       a.floor.appendChild(wrap);
@@ -1043,16 +1022,25 @@
         OP.textContent = flipped ? "×" : "÷";
         OP.className = "op tpOp" + (flipped ? " armed" : "");
       }
-      wrap.querySelector(".oneUnder").addEventListener("click", function () {
-        overOne = true; paint(); a.good("Whole number written over 1.");
-        maybeEntry();
-      });
+      /* The taps ARE the decisions. On a whole-number card, the first tap
+         rewrites it over 1; on the divisor, the next tap flips it. Tapping the
+         dividend fraction is the classic mistake and says so — after the tap,
+         not before. */
       A.addEventListener("click", function () {
+        if (j.kind === "whole" && !overOne) {
+          overOne = true; paint(); a.good(j.whole + " rewritten as " + j.whole + "/1.");
+          maybeEntry();
+          return;
+        }
         a.wrong("Keep the FIRST number exactly as it is — only the divisor flips.");
       });
       B.addEventListener("click", function () {
-        if (!overOne) { a.wrong("Keep-Change-Flip needs two fractions first. Put a <strong>1</strong> under the whole number."); return; }
         if (flipped) return;
+        if (j.kind === "frac" && !overOne) {
+          overOne = true; paint(); a.good(j.whole + " rewritten as " + j.whole + "/1.");
+          return;
+        }
+        if (!overOne) { a.wrong("Not yet — this is not a fraction problem until BOTH numbers are fractions. Something else has to happen first."); return; }
         flipped = true; paint(); a.good("Divisor flipped — the operation is now multiply.");
         maybeEntry();
       });
@@ -1114,8 +1102,8 @@
 
       return {
         check: function () {
-          if (!overOne) return { ok: false, why: "Keep-Change-Flip needs two fractions. Put a <strong>1</strong> under the whole number first." };
-          if (!flipped) return { ok: false, why: "Tap the DIVISOR card to flip it — keep the first number, change ÷ to ×." };
+          if (!overOne) return { ok: false, why: "The setup is not finished — this cannot be multiplied while one of the numbers is not a fraction." };
+          if (!flipped) return { ok: false, why: "Still dividing. Something on the bench has to change before you can multiply." };
           if (!answered) return { ok: false, why: "Multiply it out and type your answer — the tape will confirm it." };
           return { ok: true, why: expr + " = " + (j.kind === "whole" ? ansN + " pieces" : frText({ n: ansN, d: ansD }) + " of a metre each") + "." };
         },
@@ -1139,7 +1127,7 @@
   /* ── Workshop 4 · Lesson 6.2 — Keep · Change · Flip bench ────────── */
   var W4 = {
     id: "kcf", lesson: "6.2", emoji: "🔁", name: "The Keep-Change-Flip Bench",
-    blurb: "Convert, flip, multiply and simplify — typing every number yourself.",
+    blurb: "Every number on the line — typed by you, in the order the method demands.",
     closing: "a/b ÷ c/d = a/b × d/c — and every value on that line was computed by you.",
     build: function (lv, a) {
       var set = [
@@ -1155,7 +1143,7 @@
       var stage = j.mixed ? "convert" : "flip";
       var label = (j.mixed ? j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d : j.A.n + "/" + j.A.d) + " ÷ " + j.B.n + "/" + j.B.d;
 
-      a.brief(label, "Work the bench in order. Every number — the improper fraction, the product, the final answer — is typed by you.");
+      a.brief(label, "Work it out on the bench — every number on the line is yours.");
 
       var wrap = document.createElement("div");
       wrap.innerHTML =
@@ -1193,11 +1181,8 @@
       function renderWork() {
         work.innerHTML = "";
         if (stage === "convert") {
-          var host = document.createElement("div");
-          host.innerHTML = '<p style="font-weight:800;color:var(--steel);margin-bottom:4px">First, rewrite ' + j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d + " as an improper fraction:</p>";
-          work.appendChild(host);
           mkEntry(work, {
-            label: "Improper fraction",
+            label: j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d + " =",
             fields: [{ label: "improper fraction", frac: true }],
             focus: false,
             onSubmit: function (nums) {
@@ -1212,11 +1197,8 @@
             },
           });
         } else if (stage === "flip") {
-          work.innerHTML = '<p style="text-align:center;font-weight:800;color:var(--steel)">Tap the card that flips.</p>';
+          work.innerHTML = '<p style="text-align:center;font-weight:800;color:var(--steel)">Your move — tap a card.</p>';
         } else if (stage === "multiply") {
-          var h2 = document.createElement("div");
-          h2.innerHTML = '<p style="font-weight:800;color:var(--steel);margin-bottom:4px">Multiply across — tops together, bottoms together:</p>';
-          work.appendChild(h2);
           mkEntry(work, {
             label: j.A.n + "/" + j.A.d + " × " + j.B.d + "/" + j.B.n + " =",
             fields: [{ label: "product", frac: true }],
@@ -1250,9 +1232,6 @@
             },
           });
         } else if (stage === "simplify") {
-          var h3 = document.createElement("div");
-          h3.innerHTML = '<p style="font-weight:800;color:var(--steel);margin-bottom:4px">Simplify ' + raw.n + "/" + raw.d + ":</p>";
-          work.appendChild(h3);
           mkEntry(work, {
             label: raw.n + "/" + raw.d + " =",
             fields: ans.d === 1 ? [{ label: "simplified value" }] : [{ label: "simplified fraction", frac: true }],
