@@ -59,7 +59,14 @@ const VARIANT_RE = /^(\d+-\d+)-(?:group[12]|flagship|catchup)$/;
 // directly — resolving it through a parent would hand a family the wrong
 // night's practice — while the twins (group1/group2/flagship) keep the strict
 // parent-only rule, because those ARE the same lesson at another level.
-const BRIDGE_RE = /^\d+-\d+-\d+-\d+-practice$/;
+// A unit REVIEW (`1-review`) is the same kind of thing: hand-authored, off the
+// numbered spine by id shape, covering several numbered lessons rather than
+// being a variant of one. The shape is "digits, then a word saying what it is",
+// which is what `generatesFamilyHomework` in scripts/lib/lesson-scope.mjs
+// already accepts — this regex is a second copy of that question and must not
+// answer it more narrowly, or the generator writes a hub key this gate then
+// calls a phantom.
+const BRIDGE_RE = /^\d+(?:-\d+)*-(?:practice|review)$/;
 
 /* --- Detectors -------------------------------------------------------------- */
 
