@@ -365,7 +365,12 @@ function mountFractionDivide(host, cfg = {}) {
   wrap.querySelector('[data-check="3"]').addEventListener("click", check3);
   wrap.querySelector("[data-reveal]").addEventListener("click", showMe);
 
-  setTimeout(() => wrap.querySelector(".fdiv-inp")?.focus(), 0);
+  // Focus ONLY when the caller says a person just asked for this widget (a
+  // preset chip click). The unconditional focus-on-mount this replaces ran on
+  // page load, and on any page where the widget sits below the fold the browser
+  // scroll-jumped to it: the family homework page opened ~3,600px down, on a
+  // blank stretch of the Learn panel, with no hero, no tabs and no explanation.
+  if (cfg.autofocus) setTimeout(() => wrap.querySelector(".fdiv-inp")?.focus(), 0);
   return { destroy: () => wrap.remove() };
 }
 
@@ -384,10 +389,18 @@ export function renderFractionDivide(host, cfg = {}) {
   bar.setAttribute("aria-label", "Pick a problem");
   const stage = document.createElement("div");
   let current = null;
-  const mount = (p) => {
+  // `viaChip` is false for the initial mount (page load) and true when a person
+  // picks a preset, which is the only time moving focus into the widget — and
+  // therefore scrolling the page to it — is what the user asked for.
+  const mount = (p, viaChip = false) => {
     if (current) current.destroy();
     stage.innerHTML = "";
-    current = mountFractionDivide(stage, { ...cfg, dividend: p.dividend, divisor: p.divisor });
+    current = mountFractionDivide(stage, {
+      ...cfg,
+      dividend: p.dividend,
+      divisor: p.divisor,
+      autofocus: viaChip,
+    });
   };
   presets.forEach((p, i) => {
     const chip = document.createElement("button");
@@ -399,7 +412,7 @@ export function renderFractionDivide(host, cfg = {}) {
       [...bar.children].forEach((c, j) =>
         c.setAttribute("aria-pressed", j === i ? "true" : "false"),
       );
-      mount(presets[i]);
+      mount(presets[i], true);
     });
     bar.appendChild(chip);
   });

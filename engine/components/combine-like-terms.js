@@ -263,7 +263,11 @@ function mountCombine(host, cfg = {}) {
   wrap.querySelector('[data-check="2"]').addEventListener("click", check2);
   wrap.querySelector('[data-check="3"]').addEventListener("click", check3);
   wrap.querySelector("[data-reveal]").addEventListener("click", showMe);
-  setTimeout(() => inp("x").focus(), 0);
+  // Focus ONLY when a person just asked for this widget (a preset chip click).
+  // Focusing on mount scroll-jumps the browser to the widget on page load; on
+  // the family homework page that opened the page ~3,600px down on a blank
+  // stretch of a panel, with no hero and no tabs visible.
+  if (cfg.autofocus) setTimeout(() => inp("x").focus(), 0);
   return { destroy: () => wrap.remove() };
 }
 
@@ -279,10 +283,10 @@ export function renderCombineLikeTerms(host, cfg = {}) {
   bar.setAttribute("aria-label", "Pick a problem");
   const stage = document.createElement("div");
   let current = null;
-  const mount = (p) => {
+  const mount = (p, viaChip = false) => {
     if (current) current.destroy();
     stage.innerHTML = "";
-    current = mountCombine(stage, { ...cfg, expr: p.expr });
+    current = mountCombine(stage, { ...cfg, expr: p.expr, autofocus: viaChip });
   };
   presets.forEach((p, i) => {
     const chip = document.createElement("button");
@@ -294,7 +298,7 @@ export function renderCombineLikeTerms(host, cfg = {}) {
       [...bar.children].forEach((c, j) =>
         c.setAttribute("aria-pressed", j === i ? "true" : "false"),
       );
-      mount(presets[i]);
+      mount(presets[i], true);
     });
     bar.appendChild(chip);
   });

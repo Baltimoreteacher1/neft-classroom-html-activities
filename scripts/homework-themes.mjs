@@ -262,6 +262,7 @@ header.homework-header,
 }
 .stars-milestone-chips {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 .star-chip {
@@ -272,6 +273,20 @@ header.homework-header,
   background: #ffffff;
   border: 1px solid var(--teal);
   color: var(--navy);
+  /* The row is a flex sibling of the goal sentence, so without this the chips
+     were compressed to ~48px and broke mid-word: "War m-Up", "Vict ory". */
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+/* On a phone the goal sentence and the three milestone chips do not fit on one
+   line, so they stack instead of fighting for the same 400px. */
+@media (max-width: 620px) {
+  .stars-to-win-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .stars-milestone-chips { width: 100%; }
 }
 
 /* Rotated Huddle Activity Card */

@@ -22,21 +22,21 @@ import {
   GUIDED_NOTES_CSS,
   HOMEWORK_TABS_JS,
   homeworkPageLabel,
-  renderArcadeTabPanel,
   renderCheckTab,
   renderDoneTab,
+  renderHelpContent,
+  renderHelpDrawer,
   renderHelpModal,
-  renderHelpTab,
   renderHomeworkTabs,
   renderLearnTab,
-  renderMoreTab,
+  renderMoreContent,
   renderPlayTabPanel,
   renderProblemHintButton,
   renderQuickCheckIntro,
   renderTogetherTab,
   renderWelcomeBanner,
   renderWordsTab,
-  renderWorkbenchTab,
+  renderWorkbenchTools,
   selectQuickCheckProblems,
 } from "./homework-guided-notes.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
@@ -107,22 +107,112 @@ function loadFullVocabBank() {
   return [];
 }
 
+/**
+ * Words a parent does not need a popup for.
+ *
+ * `buildVocabGlossary` loads the FULL 349-term Grade 6 bank into the matcher so
+ * a family can tap any math word on the page. That is right for the Tier-3
+ * vocabulary a lesson is actually teaching — reciprocal, quotient, dividend —
+ * and wrong for the everyday arithmetic words that carry the sentences around
+ * it. On lesson 6-1 the Learn panel opened with five buttons in its first
+ * sentence, on "divide", "whole number" and "fraction", which is what makes a
+ * family page read as technical: the page appears to think you might not know
+ * what a fraction is.
+ *
+ * These stay ordinary words HERE, on the family page. They keep their glossary
+ * entries everywhere else — the lesson, the slides, the Words stop's own
+ * flashcards — because a sixth grader learning "divide" is a different reader
+ * from the adult sitting next to them at 8pm.
+ */
+const FAMILY_VOCAB_STOPLIST = new Set([
+  // Everyday arithmetic words that carry the sentences around the real terms.
+  "add",
+  "addition",
+  "answer",
+  "difference",
+  "divide",
+  "division",
+  "double",
+  "equal",
+  "equation",
+  "fraction",
+  "half",
+  "height",
+  "length",
+  "less",
+  "measure",
+  "model",
+  "more",
+  "multiply",
+  "multiplication",
+  "number",
+  "pattern",
+  "picture",
+  "power",
+  "share",
+  "size",
+  "subtract",
+  "subtraction",
+  "sum",
+  "total",
+  "whole",
+  "whole number",
+  "width",
+  // Ordinary English that happens to be a glossary key. Each of these was
+  // observed linkified on lesson 6-1, in a sentence about something else:
+  // "What does 3 ÷ 1/4 MEAN?" (the statistical mean), "how many PER file?",
+  // "Say each TERM out loud", "Choose one TOOL above", "MULTIPLE CHOICE" (the
+  // problem-type badge, offering the definition of a multiple).
+  "combine",
+  "compare",
+  "count",
+  "graph",
+  "greater than",
+  "group",
+  "less than",
+  "line",
+  "mean",
+  "multiple",
+  "origin",
+  "part",
+  "per",
+  "piece",
+  "point",
+  "predict",
+  "quadrant",
+  // Bare "rate"; the real Grade-6 term is "unit rate", which is its own key and
+  // is NOT stoplisted.
+  "rate",
+  "side",
+  "term",
+  "tool",
+  "unit",
+  "value",
+]);
+
+const vocabKey = (term) =>
+  String(term || "")
+    .toLowerCase()
+    .replace(/s$/, "")
+    .trim();
+
 function buildVocabGlossary(vocab) {
   const lessonList = Array.isArray(vocab) ? vocab : [];
-  let list = augmentVocabWithGlossary(lessonList);
+  // Terms THIS lesson declares are never suppressed: if tonight is about
+  // fractions, the family page should still define "fraction". The stoplist
+  // only trims what the shared glossary and the 349-term bank add on top.
+  const lessonOwn = new Set(lessonList.map((v) => vocabKey(v && v.term)));
+  const keep = (term) => {
+    const key = vocabKey(term);
+    return lessonOwn.has(key) || !FAMILY_VOCAB_STOPLIST.has(key);
+  };
+  let list = augmentVocabWithGlossary(lessonList).filter((v) => keep(v && v.term));
   const fullBank = loadFullVocabBank();
-  const seen = new Set(
-    list.map((v) =>
-      String((v && v.term) || "")
-        .toLowerCase()
-        .replace(/s$/, "")
-        .trim(),
-    ),
-  );
+  const seen = new Set(list.map((v) => vocabKey(v && v.term)));
   for (const item of fullBank) {
     if (!item || !item.term) continue;
-    const key = String(item.term).toLowerCase().replace(/s$/, "").trim();
-    if (seen.has(key)) continue;
+    const key = vocabKey(item.term);
+    if (seen.has(key) || !keep(item.term)) continue;
     seen.add(key);
     list.push({
       term: item.term,
@@ -655,15 +745,15 @@ function renderStepGuide(topic) {
         <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
         <div class="guide-grid">
           <div class="guide-card">
-            <strong><span>💡 1. The Big Idea / La idea clave</span></strong>
+            <strong><span>💡 1. <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea clave</span></span></strong>
             <p><span class="lang-en">${esc(g.en)}</span><span class="lang-es" lang="es">${esc(g.es)}</span></p>
           </div>
           <div class="guide-card">
-            <strong><span>✏️ 2. Picture It / Dibújalo</span></strong>
+            <strong><span>✏️ 2. <span class="lang-en">Picture It</span><span class="lang-es" lang="es">Dibújalo</span></span></strong>
             <p><span class="lang-en">${esc(g.draw)}</span><span class="lang-es" lang="es">${esc(g.drawEs)}</span></p>
           </div>
           <div class="guide-card" style="grid-column: 1 / -1;">
-            <strong><span>💬 3. Ask Your Student / Pregúntale a tu estudiante</span></strong>
+            <strong><span>💬 3. <span class="lang-en">Ask Your Student</span><span class="lang-es" lang="es">Pregúntale a tu estudiante</span></span></strong>
             <p><span class="lang-en"><strong>Parent prompt:</strong> ${esc(g.coach || "Ask: What is happening in this problem?")}</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> ${esc(g.coachEs || "Pregunta: ¿Qué está pasando en este problema?")}</span></p>
           </div>
         </div>
@@ -1079,7 +1169,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
-        <div class="problem-number-badge">${esc(opts.badge || "Quick Check")} ${opts.num || pIdx + 1}</div>
+        <div class="problem-number-badge"><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span> ${opts.num || pIdx + 1}</div>
         ${typeChip}
       </div>
       <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID)}</div>
@@ -1155,34 +1245,52 @@ function generateHtml(lessonId, config) {
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length);
   const warmupHtml = warmup
     .map((p, idx) =>
-      renderProblem(p, idx, topic, { badge: "Warm-up / Calentamiento", num: idx + 1 }),
+      renderProblem(p, idx, topic, { badgeEn: "Warm-up", badgeEs: "Calentamiento", num: idx + 1 }),
     )
     .join("\n");
   const challengeHtml = challenge
     .map((p, idx) =>
-      renderProblem(p, warmup.length + idx, topic, { badge: "Level up / Reto", num: idx + 1 }),
+      renderProblem(p, warmup.length + idx, topic, {
+        badgeEn: "Level up",
+        badgeEs: "Reto",
+        num: idx + 1,
+      }),
     )
     .join("\n");
   const morePracticeHtml = moreSelected
     .map((p, idx) =>
-      renderProblem(p, coreSelected.length + idx, topic, { badge: "Bonus / Más", num: idx + 1 }),
+      renderProblem(p, coreSelected.length + idx, topic, {
+        badgeEn: "Bonus",
+        badgeEs: "Más",
+        num: idx + 1,
+      }),
     )
     .join("\n");
 
+  // Panel order IS tab order (HOMEWORK_TABS), and both are the order a family
+  // is asked to walk. Four panels that used to be tabs now sit where they get
+  // used: the manipulatives inside Together, the two orphan games inside the
+  // Play arcade, and help + the online links behind a button that floats over
+  // every stop.
   const tabPanels = [
     renderLearnTab(config, renderVisualMathLab(topic, config, lessonModel)),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
-    renderTogetherTab(config, lessonId),
-    renderWorkbenchTab(),
-    renderCheckTab(quickCheckIntroHtml, warmupHtml, challengeHtml, morePracticeHtml),
-    renderArcadeTabPanel(lessonId),
-    renderPlayTabPanel(config),
-    renderHelpTab(config),
-    renderMoreTab(config, lessonId),
+    renderTogetherTab(config, lessonId, renderWorkbenchTools()),
+    renderCheckTab(
+      quickCheckIntroHtml,
+      warmupHtml,
+      challengeHtml,
+      morePracticeHtml,
+      coreSelected.length,
+    ),
+    renderPlayTabPanel(config, lessonId),
     renderDoneTab(),
   ].join("\n");
 
-  const tabsHtml = renderHomeworkTabs(tabPanels);
+  const tabsHtml = renderHomeworkTabs(
+    tabPanels,
+    renderHelpDrawer(renderHelpContent(config), renderMoreContent(config, lessonId)),
+  );
   const helpModalHtml = renderHelpModal();
 
   return `<!doctype html>
@@ -2198,9 +2306,33 @@ header.homework-header h1 {
 }
 
 @media (max-width: 600px) {
+  /* On a phone the card is: handle, the problem, and a "Move to" picker. The
+     picker sizes itself to its longest option ("Asking: How Many Groups
+     (Pieces)?" = 222px), and on a flex row that squeezed the problem text into
+     a 59px column reading one word per line — the question a family is meant to
+     sort became unreadable. Stack them: the problem gets the full width, the
+     picker gets its own line under it. */
+  .drag-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    width: 100%;
+  }
+  .drag-card .card-text {
+    flex: 1 1 100%;
+    min-width: 0;
+    font-weight: 600;
+  }
+  .drag-card .drag-handle { flex: 0 0 auto; }
   .mobile-cat-select {
     display: block;
-    margin-left: 6px;
+    flex: 1 1 100%;
+    max-width: 100%;
+    margin: 8px 0 0;
+    /* A picker a finger can hit. It was 11px text in a 2px-padded box. */
+    min-height: 40px;
+    font-size: 13px;
+    padding: 6px 8px;
   }
 }
 
@@ -2905,18 +3037,12 @@ body {
    visible separator, or "5 stops" and "5 paradas" run together into nonsense. */
 .hw-stat .lang-es,
 .hw-hero-kicker .lang-es,
-.hw-rail-title .lang-es,
-.hw-rail-bonus .lang-es,
-.homework-tab-bonus-label .lang-es,
 .fam-act-meta .lang-es,
 .hw-quickplan-summary .lang-es {
   display: inline !important;
 }
 .hw-stat .lang-en + .lang-es::before,
 .hw-hero-kicker .lang-en + .lang-es::before,
-.hw-rail-title .lang-en + .lang-es::before,
-.hw-rail-bonus .lang-en + .lang-es::before,
-.homework-tab-bonus-label .lang-en + .lang-es::before,
 .hw-quickplan-summary .lang-en + .lang-es::before {
   content: "·";
   margin: 0 7px;
@@ -2939,6 +3065,16 @@ summary .lang-en + .lang-es::before {
   content: "·";
   margin: 0 6px;
   opacity: .6;
+}
+/* THE SEPARATOR SEPARATES NOTHING WHEN THERE IS ONLY ONE LANGUAGE.
+   .lang-en + .lang-es is an adjacent-sibling selector, and adjacency does not
+   care about display, so hiding the English span in Spanish mode left the
+   middot standing in front of Spanish text with nothing before it — a stray
+   orange dot ahead of every heading, chip and summary on the page ("· Qué
+   aprendemos hoy"). It is a separator, so it exists only in bilingual mode. */
+body.lang-mode-en .lang-en + .lang-es::before,
+body.lang-mode-es .lang-en + .lang-es::before {
+  content: none;
 }
 /* Two controls read better stacked and keep it: the rail's five stops (a map,
    where the label sits under its dot) and the tab bar (which shows one
@@ -3039,15 +3175,24 @@ body.hw-motion-ready .hw-hero { animation: hwRise .6s cubic-bezier(.22,.9,.3,1) 
    The body prefix is deliberate: the shared stylesheet is linked AFTER this
    block, so a bare id selector would lose the tie on source order. Scoped to
    this page only — the widgets keep their position everywhere else. --- */
-body #nsr-root,
-body #mwb-launcher,
-body .mwb-launcher {
+body #nsr-root {
   /* Clamped on purpose. --hw-status-height is measured by script and can be
      read while the bar is mid-layout — it reported 381px for a bar that
      renders 121px, which threw the launchers up into the tab deck. The clamp
      keeps a wrong-high reading from moving them off the bottom of the page;
      150px still clears the tallest real bar (two wrapped rows). */
   bottom: calc(min(var(--hw-status-height, 104px), 150px) + 14px) !important;
+}
+/* THREE floating controls in one corner is two too many. The shared Math
+   Workbench launcher was the third, and on a 414px phone it overlapped the
+   Save/Resume pill, which was itself clipped by the screen edge. The workbench
+   is no longer a stranger to this page — it opens as a drawer on the Together
+   stop, where the manipulatives are actually used, and the Stuck? drawer links
+   to the full version — so the floating duplicate is hidden HERE only and
+   keeps its place on every other page. */
+body #mwb-launcher,
+body .mwb-launcher {
+  display: none !important;
 }
 
 /* --- Phone: the briefing has to fit the screen a family actually holds.
@@ -3059,8 +3204,11 @@ body .mwb-launcher {
   .hw-hero-kicker-icon { width: 20px; height: 20px; font-size: 11px; }
   .hw-hero-lesson { margin-top: 14px; padding-top: 12px; }
   .hw-hero-lead { margin-top: 10px; font-size: 14px; }
-  .hw-hero-stats {
-    margin-top: 14px;
+  /* Bilingual doubles every chip, so THERE the row scrolls. In one language
+     the three chips fit, and a chip clipped at the screen edge with no scroll
+     affordance ("Bet…") is worse than a second row. */
+  .hw-hero-stats { margin-top: 14px; flex-wrap: wrap; }
+  body.lang-mode-bilingual .hw-hero-stats {
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
@@ -3133,6 +3281,30 @@ ${BIG_IDEA_CSS}
 <body>
 
 <script>
+/* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
+   on DOMContentLoaded, but by then the page has already painted every sentence
+   in both languages and then dropped half of them — a visible reflow of the
+   whole document. Same rule as the boot script below it: fail toward showing
+   something readable, which here is English. */
+(function () {
+  var mode = 'en';
+  try {
+    var saved = localStorage.getItem('hw_lang_mode');
+    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+      mode = saved;
+    } else {
+      var langs = (navigator.languages && navigator.languages.length)
+        ? navigator.languages : [navigator.language || ''];
+      for (var i = 0; i < langs.length; i++) {
+        if (String(langs[i]).toLowerCase().indexOf('es') === 0) { mode = 'es'; break; }
+      }
+    }
+  } catch (e) {}
+  document.body.classList.add('lang-mode-' + mode);
+})();
+</script>
+
+<script>
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
@@ -3162,23 +3334,29 @@ ${BIG_IDEA_CSS}
 
 ${helpModalHtml}
 
-<!-- Sticky bottom actions bar -->
-<div class="bottom-status-bar">
+<!-- Sticky bottom actions bar. It belongs to the Check stop and only appears
+     there: on Learn, Words, Play and Done it was 139px of "Progress: 0 / 6" and
+     a Check All button for problems that were not on screen, over a phone
+     viewport that had already given 80px to the tab bar. The labels are
+     language-switched spans rather than hardcoded "X / Y" strings, which is why
+     the bar used to read "Progress / Progreso:" on an all-English page. -->
+<div class="bottom-status-bar" data-status-for="check">
   <div class="status-bar-wrapper">
-    <button class="sound-toggle-btn" id="sound_toggle" onclick="toggleSound()" title="Toggle Sound Effects">🔊</button>
-    
+    <button class="sound-toggle-btn" id="sound_toggle" onclick="toggleSound()" title="Toggle Sound Effects" aria-label="Toggle sound effects">🔊</button>
+
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / ${coreSelected.length} Completed</span>
+        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
+        <span id="progress_text">0 / ${coreSelected.length}</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
       </div>
     </div>
-    
+
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()">Check All / Revisar todo</button>
+      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -3186,6 +3364,11 @@ ${helpModalHtml}
 <script>
 window.LESSON_ID = "${escAttr(lessonId)}";
 window.LESSON_TITLE = "${escAttr(title)}";
+/* The number of core problems, so the celebration fires on the goal the page
+   actually states. It was hardcoded to 3 while the page showed 6 and the status
+   bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
+   "0 / 6 Completed" in the same glance. */
+window.HW_CORE_COUNT = ${coreSelected.length};
 window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.entries) : "[]"};
 window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
 ${HOMEWORK_TABS_JS}
@@ -4132,7 +4315,10 @@ function updateProgress() {
   const total = problems.length;
   const pct = total > 0 ? (completedCount / total) * 100 : 0;
   document.getElementById("progress_bar").style.width = pct + "%";
-  document.getElementById("progress_text").textContent = completedCount + " / " + total + " Completed";
+  // Bare "3 / 6". The word beside it is the label span in the bar, which is
+  // language-switched; appending "Completed" here reintroduced English into a
+  // Spanish page and wrapped mid-word ("Complete/d") in the 139px bar.
+  document.getElementById("progress_text").textContent = completedCount + " / " + total;
 }
 
 function setProblemCheckResult(idx, isCorrect, message, tone) {
@@ -4308,7 +4494,7 @@ function addFractionBar(denom) {
 function clearFractionBars() {
   const stage = document.getElementById("fraction_stage_canvas");
   if (!stage) return;
-  stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1">1 Whole / Entero (1.0)</div></div>';
+  stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>';
 }
 
 function drawCoordGrid() {
@@ -4750,14 +4936,14 @@ function updateScoreSummary() {
   const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
-    document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
+    document.getElementById("progress_text").textContent = correctCount + " / " + total;
     document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
   } else {
     updateProgress();
   }
 
-  // 3-Star Milestone Check
-  if (correctCount >= 3) {
+  // Goal milestone — the number the page states, not a hardcoded 3.
+  if (correctCount >= (window.HW_CORE_COUNT || total)) {
     const goalBanner = document.getElementById("goal_reached_banner");
     if (goalBanner && goalBanner.hidden) {
       goalBanner.hidden = false;
@@ -4782,10 +4968,10 @@ function checkWorksheet() {
   });
 
   const total = problems.filter((s) => !s.closest(".more-practice")).length;
-  document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
+  document.getElementById("progress_text").textContent = correctCount + " / " + total;
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 
-  if (correctCount >= 3) {
+  if (correctCount >= (window.HW_CORE_COUNT || total)) {
     const goalBanner = document.getElementById("goal_reached_banner");
     if (goalBanner && goalBanner.hidden) {
       goalBanner.hidden = false;
@@ -5221,7 +5407,13 @@ function wrapBilingualLabel(raw) {
 // class/handler so only known UI labels (never per-lesson math text) are rewritten.
 function localizeBilingualLabels(html) {
   const rules = [
-    // Section headings (h2/h3.section-title) — plain text, no nested markup.
+    /* Section headings. This used to require the WHOLE heading to be plain text
+       (`>([^<]*)</h2>`), so any heading carrying a nested control kept both
+       languages forever — the Big Idea heading has a Listen button injected
+       into it, and read "🎯 The big idea / La idea principal" on a page the
+       family had set to English. Match the leading text run instead, and stop
+       at the first tag. */
+    /(<h[23] class="section-title">)([^<]*?)(?=<)/g,
     /(<h[23] class="section-title">)([^<]*)(<\/h[23]>)/g,
     // Guided-step badges, vocab flip prompt.
     /(<span class="step-badge">)([^<]*)(<\/span>)/g,
@@ -5232,12 +5424,28 @@ function localizeBilingualLabels(html) {
     /(<button[^>]*class="[^"]*hw-game-restart[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
     /(<button[^>]*class="[^"]*help-pop-btn[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
     /(<button[^>]*onclick="checkWorksheet\(\)"[^>]*>)([^<]*)(<\/button>)/g,
+    /* Badges and eyebrow labels. These carried a hardcoded "ENGLISH / ESPAÑOL"
+       string, so they printed BOTH languages even with a language chosen —
+       "🧮 VIRTUAL MANIPULATIVE STUDIO / ESTUDIO DIGITAL" over a page otherwise
+       entirely in English, which is most of what made the chrome feel noisy. */
+    /(<span class="spotlight-badge">)([^<]*)(<\/span>)/g,
+    /(<span class="workbench-badge">)([^<]*)(<\/span>)/g,
+    /(<div class="math-talk-badge">)([^<]*)(<\/div>)/g,
+    /(<span class="fam-game-badge">)([^<]*)(<\/span>)/g,
+    /(<span class="help-frame-tag">)([^<]*)(<\/span>)/g,
+    /(<span class="practice-tier-label">)([^<]*)(<\/span>)/g,
   ];
   let out = html;
   for (const re of rules) {
     out = out.replace(
       re,
-      (_m, open, inner, close) => `${open}${wrapBilingualLabel(inner)}${close}`,
+      // The heading rule ends in a LOOKAHEAD, so it has only two capture
+      // groups — and String.replace then passes the match OFFSET as the third
+      // argument. Appending it printed the offset into the page: the Play
+      // stop's heading rendered as "Play together 386225". Only treat the
+      // third argument as a captured closing tag when it is one.
+      (_m, open, inner, close) =>
+        `${open}${wrapBilingualLabel(inner)}${typeof close === "string" ? close : ""}`,
     );
   }
   return out;

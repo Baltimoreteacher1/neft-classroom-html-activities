@@ -661,7 +661,7 @@ function dragBucketGame(id, _title, nameEn, nameEs, items, buckets, coach) {
             )
             .join("")}
         </div>
-        <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()">Check sort / Verificar</button>
+        <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()"><span class="lang-en">Check sort</span><span class="lang-es" lang="es">Verificar</span></button>
         <p class="hw-game-feedback" id="hw_game_feedback" role="status" aria-live="polite"></p>
       </div>`,
     initScript: "",
