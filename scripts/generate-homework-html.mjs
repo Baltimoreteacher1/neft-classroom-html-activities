@@ -604,15 +604,22 @@ const TOPIC_GUIDE = {
     coach: "Ask: 'Which number is further to the right? That one is always greater!'",
     coachEs: "Pregunta: '¿Cuál número está más a la derecha? ¡Ese siempre es mayor!'",
   },
+  // Every lesson that resolves to this topic is a fraction DIVISION lesson
+  // (6-1, 6-2, 6-9, 6-10, 6-11). It used to carry common-denominator guidance —
+  // "make sure the pieces are cut to the exact same size" — which is the rule
+  // for ADDING fractions and is not how any of these five lessons divide. Unit 6
+  // teaches one method and only one: whole number over 1, then Keep, Change,
+  // Flip. Telling a family to cut equal pieces sent them to a different method
+  // than the one on their student's page.
   fractions: {
-    en: "To compare, add, or divide fractions, make sure the pieces are cut to the exact same size (common denominator).",
-    es: "Para comparar, sumar o dividir fracciones, asegúrate de que las partes tengan el mismo tamaño (denominador común).",
-    draw: "Divide bars or lines into equal pieces to see the sizes clearly.",
-    drawEs: "Divide barras o rectas en partes iguales para ver los tamaños con claridad.",
+    en: "To divide by a fraction, keep the first number, change ÷ to ×, and flip the second one. Dividing by a piece smaller than 1 gives an answer BIGGER than you started with.",
+    es: "Para dividir entre una fracción, conserva el primer número, cambia ÷ por × y voltea el segundo. Dividir entre una parte menor que 1 da una respuesta MAYOR que con la que empezaste.",
+    draw: "Draw the whole, mark off pieces the size of the divisor, and count how many fit.",
+    drawEs: "Dibuja el entero, marca partes del tamaño del divisor y cuenta cuántas caben.",
     coach:
-      "Ask: 'Can we combine slices from different sized pizzas, or do we need equal slices first?'",
+      "Ask: 'How many of these pieces fit inside? Should the answer be bigger or smaller than what we started with?'",
     coachEs:
-      "Pregunta: '¿Podemos combinar rebanadas de pizzas de distinto tamaño, o necesitamos rebanadas iguales primero?'",
+      "Pregunta: '¿Cuántas de estas partes caben adentro? ¿La respuesta debe ser mayor o menor que con lo que empezamos?'",
   },
   decimals: {
     en: "Line up the decimal points like buttons on a shirt so dollars stay with dollars and dimes stay with dimes.",
@@ -722,7 +729,12 @@ const TOPIC_VISUAL = {
 // no-JS / print fallback — progressive enhancement, nothing breaks without scripts.
 const INTERACTIVE_VISUAL = {
   "number-line": "number-line",
-  fractions: "number-line",
+  // `fractions` is deliberately absent. It mapped to the number-line
+  // tap-to-graph widget, so every problem on the five fraction-DIVISION lessons
+  // offered a plotting tool captioned "Tap to graph: divide bars or lines into
+  // equal pieces" — a tool for a different question, labelled with a different
+  // method. Those pages get the draw-your-model canvas instead, which is what a
+  // family actually needs to sketch "how many of these fit inside".
   decimals: "number-line",
   inequalities: "number-line",
   statistics: "number-line",
