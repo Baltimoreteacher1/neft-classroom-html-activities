@@ -54,11 +54,13 @@ export function displayLessonId(lessonId) {
  * something to show a family — "Lesson 6-1-6-2-practice" is worse than saying
  * nothing. Those pages lead with "Review" and let their own title do the
  * naming ("6.1–6.2 · Extra Practice"), which already says which lessons it
- * covers.
+ * covers. A unit review (`1-review`) is the same case: the folder slug is not a
+ * lesson number, and the page's own title ("Pre-Unit 1 · Review") already says
+ * what it covers.
  */
 export function homeworkPageLabel(lessonId) {
   const id = String(lessonId ?? "");
-  return /-(practice|catchup)$/.test(id) ? "Review" : `Lesson ${displayLessonId(id)}`;
+  return /-(practice|catchup|review)$/.test(id) ? "Review" : `Lesson ${displayLessonId(id)}`;
 }
 
 function firstTurnAndTalk(config) {
@@ -107,10 +109,17 @@ function completeSentence(value) {
 
 function splitExplanation(value) {
   const text = completeSentence(value);
-  const firstSentence = text.match(/^(.+?[.!?])(?:\s+|$)([\s\S]*)$/);
-  if (!firstSentence) return { lead: text, detail: "" };
+  // A leading enumeration ("1. Rewrite any whole number...") is not a sentence.
+  // Without this the lead is the string "1." — which is what the fallback
+  // concept card rendered for an authored step list, a card reading
+  // "We start with 1. / We end with 4." and nothing else.
+  const enumerated = text.match(/^(\d{1,2}[.)]\s+)([\s\S]*)$/);
+  const prefix = enumerated ? enumerated[1] : "";
+  const body = enumerated ? enumerated[2] : text;
+  const firstSentence = body.match(/^(.+?[.!?])(?:\s+|$)([\s\S]*)$/);
+  if (!firstSentence) return { lead: prefix + body, detail: "" };
   return {
-    lead: firstSentence[1].trim(),
+    lead: (prefix + firstSentence[1]).trim(),
     detail: firstSentence[2].trim(),
   };
 }

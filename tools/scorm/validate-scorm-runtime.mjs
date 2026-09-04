@@ -373,10 +373,15 @@ const orphans = [];
 // sequence. Its SCORM package is built directly against its live URL path
 // (`build-scorm.mjs /lessons/6-1-6-2-practice/`), the same "any activity"
 // pathway ratio-color-mixer uses, not through manifest membership.
+// `1-review` is the same case one unit over: a hand-authored review covering
+// the whole of Pre-Unit 1 (all six "Math Is..." lessons), booting through
+// bootPartTwo, deliberately outside the numbered spine by id shape so it does
+// not claim a unit-lesson slot, the pacing baseline or scope-and-sequence.
 const DECLARED_NON_PATHWAYS = new Set([
   "_template",
   "_incoming-decks",
   "1-1-flagship",
+  "1-review",
   "6-1-6-2-practice",
   "6-1-6-2-practice-part2",
 ]);
