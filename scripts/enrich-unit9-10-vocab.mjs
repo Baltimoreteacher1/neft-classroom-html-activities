@@ -307,7 +307,8 @@ const ENRICHMENT = {
     ],
   },
   "9|predict": {
-    visual: "The line says 5 minutes → 6,000 feet, so 6 minutes should be about 7,200.",
+    visual:
+      "We measured up to 5 minutes → 6,000 feet. Reach PAST what was measured: 6 minutes should be about 7,200.",
     cloze: "To use what you already know to say what a future amount will be is to ___.",
     examples: [
       {
@@ -545,7 +546,8 @@ const ENRICHMENT = {
     ],
   },
   "10|predict": {
-    visual: "The rule says a five-disc tower needs 31 steps — before moving a disc.",
+    visual:
+      "We counted towers of 1, 2 and 3 discs. Reach PAST them: the rule says 5 discs takes 31 steps — before moving one.",
     cloze: "To say what will happen before it happens, using a pattern, is to ___.",
     examples: [
       {

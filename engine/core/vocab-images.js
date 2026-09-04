@@ -47,6 +47,7 @@ const DEDICATED = new Set([
   "representation",
   "round-trip",
   "pattern-rule",
+  "predict",
   "generalization",
   "table-of-values",
   "reasonableness",
@@ -224,7 +225,12 @@ const SYNONYMS = {
   repetition: "pattern",
   rhythm: "pattern",
   predictability: "pattern",
-  predict: "pattern",
+  /* `predict` was here, aliased to pattern.svg. That tile draws four growing
+     dot columns captioned "+1 each step" — a picture of what a PATTERN is,
+     which stops at the last column you can see. Reaching PAST what you can see
+     is the whole of what `predict` means, and both lessons that teach the word
+     (9-4's graph, 10-3's disc tower) caption it with a value beyond the data.
+     It now has its own tile; see DEDICATED above. */
   // "rotation" and "gear" used to borrow reflection.svg and ratio.svg — a turn
   // drawn as a mirror image, and a toothed wheel drawn as a colon ratio. Each
   // now has its own diagram (Unit 10 bicycle-gear lesson depends on both).

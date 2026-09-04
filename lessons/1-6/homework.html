@@ -5354,6 +5354,197 @@ body.lang-mode-es .concept-title-es { display: inline; }
   .big-idea .guided-step, .big-idea .concept-visual-wrap { break-inside: avoid; }
 }
 
+
+/* ============================================================
+   ARENA LAYER — loads last, after the big-idea layer.
+
+   The page had the right structure (one hero, six stops, one big
+   picture) drawn at newsletter weight: thin type, quiet chips, flat
+   buttons, a status bar that looked like a footer. A family opens this
+   at 7pm on a phone, tired; it has to feel like an EVENT, not a memo.
+
+   Modelled on the vocabulary-lab treatment Joel asked for: stadium
+   lighting on the hero, one flat gold kicker instead of a pill, display
+   type a size class larger and tighter, the navigation lifted OUT of the
+   hero onto a white card that overlaps it, chunky pressable buttons with
+   a real bottom edge, and the progress bar re-cut as a scoreboard.
+
+   CSS only, on selectors that already exist — no markup moves, so every
+   pinned structure (tab ids, stop numbers, .big-idea, the injection
+   sentinels) is untouched. Site hues are kept; the reference's exact
+   palette would clash with the rest of the curriculum.
+   ============================================================ */
+
+/* ── Hero: stadium lighting ──────────────────────────────────────────── */
+.hw-hero {
+  padding: 34px 34px 46px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 18% -30%, rgba(36,93,132,.55) 0, transparent 42%),
+    radial-gradient(120% 140% at 88% -10%, rgba(31,166,162,.28) 0%, rgba(18,53,91,0) 58%),
+    linear-gradient(145deg, #071a2c 0%, #102f4f 58%, #0d2039 100%);
+  box-shadow: 0 26px 60px -32px rgba(7,26,44,.92);
+}
+/* The lit stands down each edge. Decorative, and the first thing that says
+   "this is a place", not "this is a document". */
+.hw-hero::before,
+.hw-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 118px;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, transparent 0 22px, rgba(255,255,255,.055) 23px 25px);
+  opacity: .75;
+  pointer-events: none;
+  z-index: 0;
+}
+.hw-hero::before { left: 0; }
+.hw-hero::after { right: 0; }
+.hw-hero-body { z-index: 1; }
+
+/* The kicker was a translucent pill competing with the title for weight.
+   Flat gold caps read as a label and give the title the stage. */
+.hw-hero-kicker {
+  padding: 0;
+  gap: 7px;
+  margin-bottom: 10px;
+  background: none;
+  border: 0;
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: .13em;
+  color: var(--amber, #f2c15b);
+}
+.hw-hero-kicker .lang-es { color: var(--amber, #f2c15b); opacity: .85; }
+.hw-hero-kicker-icon { background: rgba(242,193,91,.16); width: 22px; height: 22px; }
+
+/* The polish layer caps these with !important (`.welcome-title-en`, ~line 9204),
+   so a plain rule here loses on cascade order despite being more specific and
+   later. Matched, not removed: that cap still governs the OTHER pages that use
+   the welcome-title classes. */
+.hw-hero .welcome-title-en {
+  font-size: clamp(34px, 5.4vw, 56px) !important;
+  font-weight: 900 !important;
+  letter-spacing: -.035em !important;
+  line-height: 1.02 !important;
+}
+.hw-hero .welcome-title-es {
+  font-size: clamp(18px, 2.4vw, 24px) !important;
+  font-weight: 700 !important;
+}
+.hw-hero-emoji { width: 72px; height: 72px; font-size: 38px; border-radius: 22px; }
+.hw-hero-lesson-title { font-size: 21px; font-weight: 800; }
+.hw-hero-lead { font-size: 16px; }
+
+/* Stat chips: the number is the message, so it goes big and gold over a
+   small caps label — the scoreboard reading of the same three facts. */
+.hw-hero-stats { gap: 9px; }
+.hw-stat {
+  min-width: 112px;
+  padding: 9px 13px;
+  border-radius: 13px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.17);
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+/* ── Navigation: lifted onto its own card, overlapping the hero ──────── */
+.homework-tab-chrome {
+  margin-top: -26px;
+  padding: 9px 9px 7px;
+  border-radius: 19px;
+  background: var(--white, #fff);
+  border: 1px solid var(--line, #d9e3ea);
+  box-shadow: 0 16px 38px rgba(7,26,44,.16);
+  position: relative;
+  z-index: 5;
+}
+.homework-tab-btn { border-radius: 13px; font-weight: 800; }
+/* Navy, not teal: the active stop should echo the hero it hangs off. */
+.homework-tab-btn.is-active,
+.homework-tab-btn.is-core.is-active {
+  background: #102f4f;
+  border-color: #102f4f;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(16,47,79,.28);
+}
+.homework-tab-btn.is-active .tab-min { opacity: .82; }
+.homework-tab-btn:hover:not(.is-active) {
+  background: #eef4f8;
+  border-color: #cddbe8;
+}
+.homework-tab-track-fill { background: linear-gradient(90deg, var(--amber, #f2c15b), #ff8e43); }
+
+/* ── Buttons: a real bottom edge you can press ───────────────────────── */
+.btn,
+.flow-next-btn,
+.signoff-submit-btn {
+  border-radius: 12px;
+  font-weight: 900;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.btn-primary, .flow-next-btn {
+  background: #102f4f;
+  border-color: #102f4f;
+  color: #fff;
+  box-shadow: 0 4px 0 #061a2c;
+}
+.btn-primary:hover, .flow-next-btn:hover { background: #16406b; border-color: #16406b; }
+.btn-primary:active, .flow-next-btn:active,
+.btn-secondary:active, .btn-outline-primary:active,
+.btn-outline-secondary:active, .btn-outline-success:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #061a2c;
+}
+.btn-secondary { box-shadow: 0 4px 0 #c1ced7; }
+.btn-outline-primary, .btn-outline-secondary, .btn-outline-success { box-shadow: 0 3px 0 #d3dee6; }
+.btn:disabled { opacity: .45; transform: none; box-shadow: none; }
+/* A button that moves 2px on press must not also move on focus-visible, or
+   the outline chases it. */
+.btn:focus-visible { outline: 4px solid rgba(242,193,91,.85); outline-offset: 3px; }
+
+/* ── Cards: deeper corners, softer lift ─────────────────────────────── */
+.guide-card,
+.problem-section.card,
+.fam-game-card,
+.fam-act-card,
+.vocab-card-front,
+.vocab-card-back {
+  border-radius: 20px;
+  box-shadow: 0 9px 28px rgba(7,26,44,.08);
+}
+
+/* ── Status bar re-cut as a scoreboard ──────────────────────────────── */
+.bottom-status-bar {
+  background: #071a2c;
+  color: #fff;
+  border-top: 0;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.06), 0 -10px 30px rgba(7,26,44,.28);
+}
+.bottom-status-bar strong,
+.bottom-status-bar .status-count {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 900;
+  color: var(--amber, #f2c15b);
+}
+.bottom-status-bar .btn-primary { box-shadow: 0 4px 0 #04121f; }
+
+@media (max-width: 620px) {
+  .hw-hero { padding: 24px 20px 40px; border-radius: 20px; }
+  /* The stands would eat a third of a 375px hero. */
+  .hw-hero::before, .hw-hero::after { width: 46px; opacity: .5; }
+  .homework-tab-chrome { margin-top: -22px; padding: 7px 7px 6px; border-radius: 16px; }
+  .hw-stat { min-width: 0; padding: 7px 11px; }
+}
+
+@media print {
+  .hw-hero::before, .hw-hero::after { content: none; }
+  .btn, .btn-primary { box-shadow: none !important; }
+  .bottom-status-bar { display: none !important; }
+}
+
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
