@@ -5091,6 +5091,257 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+/* ============================================================
+   BIG IDEA LAYER — loads last, after the polish layer.
+   The concept explainer is the one part of this page a parent
+   reads to understand the mathematics itself, often on a phone
+   and often in a second language. It is deliberately sized well
+   above the rest of the page: full-bleed picture, oversized
+   sentence, numbered steps that can be followed without reading
+   closely. Namespaced to `.big-idea` (renderLearnTab strips the
+   <section> wrapper) so nothing else on the page inherits the scale.
+   ============================================================ */
+.big-idea { margin-top: 4px; }
+
+/* 1. One sentence, first, and big enough to read across a kitchen. */
+.big-idea .key-idea-banner {
+  padding: 20px 22px;
+  border: 2px solid #8fcfc8;
+  border-radius: var(--radius-md);
+  margin: 4px 0 20px;
+}
+.big-idea .key-idea-banner p {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.big-idea .key-idea-banner .lang-en + .lang-es {
+  margin-top: 12px;
+  padding-left: 14px;
+  border-left: 4px solid var(--teal);
+}
+
+/* 2. The picture. It used to cap at 420px (560px once the design system
+   framed it) on a 1000px column — barely half the available width, with 11px
+   labels inside it. Keep the frame; let the drawing use the column. The frame
+   is display:flex in the design system, which makes the <svg> a flex item that
+   shrinks to its intrinsic width and puts the caption beside it; block stacking
+   is what this section needs. */
+.big-idea .concept-visual-wrap {
+  display: block;
+  margin: 0 0 22px;
+  padding: 20px 18px;
+  overflow: visible;
+}
+.big-idea .concept-visual-wrap > svg,
+.big-idea .concept-svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md);
+}
+.concept-visual-caption {
+  margin: 12px 2px 0;
+  font-size: 20px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: center;
+}
+.concept-visual-caption .lang-es {
+  display: block;
+  margin-top: 8px;
+  padding-left: 14px;
+  border-left: 4px solid var(--teal);
+  text-align: left;
+}
+.concept-visual-caption .lang-en { display: block; }
+
+/* Fallback picture (a lesson with no topic drawing): the two ends of the
+   worked example, side by side, so the jump from setup to answer is visible
+   before a single sentence is read. */
+.big-idea .concept-fallback-visual {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 14px;
+}
+.big-idea .concept-fallback-step {
+  display: block;
+  padding: 20px 22px;
+  border-radius: var(--radius-md);
+  font-size: 21px;
+  line-height: 1.4;
+  font-weight: 600;
+  background: var(--white);
+  border: 2px solid var(--line);
+}
+.big-idea .concept-fallback-step.is-end {
+  background: var(--teal-light, #e9f7f4);
+  border-color: var(--teal);
+}
+.concept-fallback-label {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-ink);
+}
+.concept-fallback-label .lang-es { display: inline; margin: 0; padding: 0; border: 0; }
+.concept-fallback-label .lang-es::before { content: " · "; }
+.concept-fallback-text { display: block; }
+.concept-fallback-text.lang-es {
+  margin-top: 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--teal);
+}
+.concept-fallback-arrow {
+  align-self: center;
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--teal-ink);
+}
+@media (max-width: 620px) {
+  .big-idea .concept-fallback-visual { grid-template-columns: 1fr; }
+  .concept-fallback-arrow { transform: rotate(90deg); text-align: center; }
+}
+
+/* 3. The four-stop path. Bigger icons, a visible stop number, real tap size. */
+.big-idea .concept-quick-wrap { padding: 18px 16px; margin-bottom: 22px; }
+.big-idea .concept-quick-title { font-size: 18px; margin-bottom: 14px; }
+.big-idea .concept-quick-path { gap: 12px; }
+.big-idea .concept-quick-step {
+  min-height: 118px;
+  padding: 14px 8px;
+  border: 2px solid var(--line);
+  font-size: 16px;
+  line-height: 1.25;
+}
+.big-idea .concept-quick-icon { font-size: 38px; margin-bottom: 8px; }
+.concept-quick-num {
+  display: inline-block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--teal-ink);
+  letter-spacing: 0.08em;
+}
+.big-idea .concept-quick-step .lang-es { font-size: 14px; color: var(--muted); }
+
+/* 4. Guided steps. A large numeral carries the order so a parent can follow
+   the sequence without reading a word of it first. */
+.big-idea .guided-steps { gap: 16px; }
+.big-idea .guided-step {
+  padding: 22px 24px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.big-idea .guided-step-head { gap: 14px; margin-bottom: 14px; align-items: center; }
+.guided-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--white);
+  background: var(--navy);
+}
+.big-idea .step-cue-label { font-size: 21px; }
+.big-idea .guided-step-icon {
+  display: inline;
+  width: auto;
+  height: auto;
+  flex: none;
+  background: none;
+  border-radius: 0;
+  font-size: 24px;
+  margin-right: 8px;
+}
+/* The big numeral already states the order, so the "Step 1 / Paso 1" pill is
+   pure repetition here — it only competed with the cue label for attention. */
+.big-idea .step-badge { display: none; }
+
+/* Bilingual text inside a CHIP or a SUMMARY must stay on one line. The global
+   `.lang-en + .lang-es` rule (a deliberate anti-fading treatment for prose)
+   turns both languages into stacked, teal-ruled blocks, which rendered these
+   as "Start" / "Empieza" on two lines with a stray vertical bar. Prose keeps
+   the stacked treatment; chips get an inline separator instead. */
+.big-idea .step-cue-label .lang-es,
+.big-idea .step-detail summary .lang-es {
+  display: inline;
+  margin: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+.big-idea .step-detail summary .lang-es::before {
+  content: " · ";
+  color: var(--muted);
+}
+/* A path stop is a vertical column, so its two languages stack — but without
+   the teal rule, which reads as a stray bar inside a small centred card. */
+.big-idea .concept-quick-step .lang-es {
+  display: block;
+  margin: 2px 0 0;
+  padding-left: 0;
+  border-left: 0;
+}
+.big-idea .guided-step .step-lead {
+  font-size: 22px;
+  line-height: 1.5;
+  font-weight: 600;
+  margin: 0;
+}
+.big-idea .guided-step .step-lead.lang-es {
+  margin-top: 12px;
+  padding-left: 14px;
+  border-left: 4px solid var(--teal);
+}
+.big-idea .step-detail summary { font-size: 17px; }
+.big-idea .step-detail p { font-size: 19px; line-height: 1.5; }
+
+/* 5. Watch-for cues read at the same weight as the steps they support. */
+.big-idea .watch-for-list { padding: 18px 20px; margin-top: 20px; }
+.big-idea .watch-for-list li { gap: 14px; }
+.big-idea .watch-for-list p { font-size: 19px; line-height: 1.45; margin: 0; }
+.big-idea .watch-for-list .lang-en + .lang-es {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 4px solid var(--teal);
+}
+.big-idea .watch-icon { font-size: 26px; }
+
+/* Phones: the drawings are authored on a 640-unit canvas and scale down
+   cleanly, but the surrounding type needs a small step down so a step card
+   still fits a 375px viewport without a horizontal scroll. */
+@media (max-width: 620px) {
+  .big-idea .key-idea-banner p { font-size: 20px; }
+  .big-idea .guided-step { padding: 18px 16px; }
+  .big-idea .guided-step .step-lead { font-size: 20px; }
+  .big-idea .concept-visual-caption { font-size: 18px; }
+  /* Give the drawing back the frame's side padding — on a 375px phone that is
+     the difference between a 301px and a 341px picture. */
+  .big-idea .concept-visual-wrap { padding: 14px 8px; }
+  .big-idea .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .big-idea .concept-quick-step:not(:last-child)::after { content: none; }
+  .guided-step-num { width: 48px; height: 48px; flex: 0 0 48px; font-size: 26px; }
+}
+
+@media print {
+  .big-idea .concept-svg { max-width: 620px; margin: 0 auto; }
+  .big-idea .guided-step, .big-idea .concept-visual-wrap { break-inside: avoid; }
+}
+
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -5374,28 +5625,40 @@ header.packet h1::after{
       
     
       <h2 class="section-title">🎯 The big idea / La idea principal <button type="button" class="btn-listen-concept" onclick="speakBigIdea('Write each row as an ordered pair (independent variable, dependent variable), then plot it as one point.', 'Escribe cada fila como par ordenado (variable independiente, variable dependiente) y márcalo como un punto.')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
-      <div class="concept-visual-wrap">
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Algebraic expression">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Expression / Expresión</text>
-        <text x="50" y="95" font-size="32" font-weight="800" fill="#12355b">3x + 5</text>
-        <text x="50" y="125" font-size="13" fill="#21313f">3 = coefficient · x = variable · no equal sign</text>
-        <text x="50" y="148" font-size="13" fill="#21313f" lang="es">3 = coeficiente · x = variable · sin signo igual</text>
-      </svg></div>
-      <div class="concept-quick-wrap">
-        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
-        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
-      </div>
+      <!-- renderLearnTab() strips the  wrapper, so the oversized
+           "big idea" type scale hangs off this inner div, not off
+           .section-visual (which never reaches the page). -->
+      <div class="big-idea">
       <div class="key-idea-banner">
         <p class="lang-en"><strong>In one sentence:</strong> Write each row as an ordered pair (independent variable, dependent variable), then plot it as one point.</p>
         <p class="lang-es" lang="es"><strong>En una frase:</strong> Escribe cada fila como par ordenado (variable independiente, variable dependiente) y márcalo como un punto.</p>
+      </div>
+      <figure class="concept-visual-wrap">
+      <svg viewBox="0 0 640 416" class="concept-svg" role="img" aria-label="The expression 3x plus 5 with the coefficient, variable and constant labelled" preserveAspectRatio="xMidYMid meet">
+        <rect x="3" y="3" width="634" height="410" rx="22" fill="#fdf5e3" stroke="#dda63a" stroke-width="3"/>
+        <text x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Expression / Expresión</text>
+        
+        <rect x="150" y="78" width="340" height="106" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
+        <text x="320" y="154" text-anchor="middle" font-size="70" font-weight="800" fill="#12355b"><tspan fill="#2563eb">3</tspan><tspan fill="#0f766e">x</tspan> + <tspan fill="#d97706">5</tspan></text>
+        <rect x="60" y="216" width="38" height="38" rx="10" fill="#2563eb"/>
+        <text x="79" y="244" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">3</text>
+        <text x="112" y="243" font-size="24" font-weight="700" fill="#12355b">coefficient · coeficiente — how many x's</text><rect x="60" y="266" width="38" height="38" rx="10" fill="#0f766e"/>
+        <text x="79" y="294" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">x</text>
+        <text x="112" y="293" font-size="24" font-weight="700" fill="#12355b">variable · variable — the unknown</text><rect x="60" y="316" width="38" height="38" rx="10" fill="#d97706"/>
+        <text x="79" y="344" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">5</text>
+        <text x="112" y="343" font-size="24" font-weight="700" fill="#12355b">constant · constante — a plain number</text>
+        <text x="320" y="390" text-anchor="middle" font-size="24" font-weight="800" fill="#b02a24">No equal sign → it is an expression, not an equation</text>
+      </svg><figcaption class="concept-visual-caption"><span class="lang-en">An expression is a math phrase. It has no equal sign, so there is nothing to solve — you evaluate it.</span><span class="lang-es" lang="es">Una expresión es una frase matemática. No tiene signo igual, así que no se resuelve — se evalúa.</span></figcaption></figure>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="concept-quick-num">1</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="concept-quick-num">2</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="concept-quick-num">3</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="concept-quick-num">4</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
             <div class="guided-step-head">
-              <span class="guided-step-icon" aria-hidden="true">👀</span>
-              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+              <span class="guided-step-num step-color-1" aria-hidden="true">1</span>
+              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
             </div>
             <p class="step-lead lang-en">Real example: each concert ticket costs $45.</p>
             <p class="step-lead lang-es" lang="es">Ejemplo real: cada boleto de concierto cuesta $45.</p>
@@ -5403,8 +5666,8 @@ header.packet h1::after{
           </li>
           <li class="guided-step step-color-2">
             <div class="guided-step-head">
-              <span class="guided-step-icon" aria-hidden="true">🧩</span>
-              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+              <span class="guided-step-num step-color-2" aria-hidden="true">2</span>
+              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
             </div>
             <p class="step-lead lang-en">The number of tickets is the independent variable, so it goes FIRST in each pair.</p>
             <p class="step-lead lang-es" lang="es">La cantidad de boletos es la variable independiente, así que va PRIMERO en cada par.</p>
@@ -5412,8 +5675,8 @@ header.packet h1::after{
           </li>
           <li class="guided-step step-color-3">
             <div class="guided-step-head">
-              <span class="guided-step-icon" aria-hidden="true">✏️</span>
-              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+              <span class="guided-step-num step-color-3" aria-hidden="true">3</span>
+              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
             </div>
             <p class="step-lead lang-en">The ordered pairs are (1, 45), (2, 90), and (3, 135).</p>
             <p class="step-lead lang-es" lang="es">Los pares ordenados son (1, 45), (2, 90) y (3, 135).</p>
@@ -5421,8 +5684,8 @@ header.packet h1::after{
           </li>
           <li class="guided-step step-color-4">
             <div class="guided-step-head">
-              <span class="guided-step-icon" aria-hidden="true">✅</span>
-              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+              <span class="guided-step-num step-color-4" aria-hidden="true">4</span>
+              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
             </div>
             <p class="step-lead lang-en">Label one axis &quot;Number of tickets&quot; and the other &quot;Total cost ($),&quot; then plot each pair.</p>
             <p class="step-lead lang-es" lang="es">Etiqueten un eje &quot;Cantidad de boletos&quot; y el otro &quot;Costo total ($)&quot;, y marquen cada par.</p>
@@ -5453,6 +5716,7 @@ header.packet h1::after{
             </div>
           </li>
       </ul>
+      </div>
     
       <section class="family-visual-lab" data-visual-lab="expressions" data-lesson-model="ratio-table-builder" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">

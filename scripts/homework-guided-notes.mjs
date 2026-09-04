@@ -735,189 +735,479 @@ function stuckTips(config) {
   return pick;
 }
 
-function conceptVisualSvg(config) {
+/* ------------------------------------------------------------------
+   BIG IDEA VISUALS
+   Families read these on a phone, at night, often in a second
+   language. Every visual below is drawn on a wide 640-unit canvas with
+   oversized type (24-72 units) so the picture is legible when the SVG
+   is scaled to a 340px phone column. The bilingual caption is NOT
+   baked into the SVG — it is returned separately and rendered as HTML
+   so the page language toggle can act on it and so the text scales
+   with the reader's font settings.
+   ------------------------------------------------------------------ */
+
+const CONCEPT_TONES = {
+  teal: { bg: "#e9f7f4", stroke: "#1fa6a2" },
+  amber: { bg: "#fdf5e3", stroke: "#dda63a" },
+  coral: { bg: "#fdeee9", stroke: "#d9795d" },
+  navy: { bg: "#eef3fa", stroke: "#12355b" },
+};
+
+function conceptFrame({ label, tone = "teal", height, title, body }) {
+  const t = CONCEPT_TONES[tone] || CONCEPT_TONES.teal;
+  const heading = title
+    ? `<text x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">${title}</text>`
+    : "";
+  return `
+      <svg viewBox="0 0 640 ${height}" class="concept-svg" role="img" aria-label="${label}" preserveAspectRatio="xMidYMid meet">
+        <rect x="3" y="3" width="634" height="${height - 6}" rx="22" fill="${t.bg}" stroke="${t.stroke}" stroke-width="3"/>
+        ${heading}
+        ${body}
+      </svg>`;
+}
+
+/** A soft white card used to hold a worked line inside a visual. */
+function conceptCard(x, y, w, h, extra = "") {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" ${extra}/>`;
+}
+
+/** One numbered "do this" row inside a visual. */
+function conceptRow(y, n, text, color = "#12355b") {
+  return `${conceptCard(34, y, 572, 62)}
+        <circle cx="70" cy="${y + 31}" r="21" fill="${color}"/>
+        <text x="70" y="${y + 39}" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">${n}</text>
+        <text x="104" y="${y + 40}" font-size="27" font-weight="700" fill="#12355b">${text}</text>`;
+}
+
+function conceptVisual(config) {
   const topic = detectVisualTopic(config);
-  const themeEmoji = config.themeEmoji || "📚";
 
   if (topic === "ratios") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Ratio table example">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Ratio Table / Tabla de razones</text>
-        ${[
-          ["Batch", "A", "B"],
-          ["1", "2", "3"],
-          ["2", "4", "6"],
-          ["3", "6", "9"],
-        ]
-          .map((row, r) =>
-            row
-              .map((cell, c) => {
-                const x = 40 + c * 110;
-                const y = 70 + r * 28;
-                const fill = r === 0 ? "#12355b" : "#ffffff";
-                const color = r === 0 ? "#ffffff" : "#21313f";
-                return `<rect x="${x}" y="${y}" width="100" height="24" rx="4" fill="${fill}" stroke="#d7e2ed"/><text x="${x + 50}" y="${y + 16}" text-anchor="middle" font-size="12" font-weight="600" fill="${color}">${cell}</text>`;
-              })
-              .join(""),
-          )
-          .join("")}
-        <text x="210" y="188" text-anchor="middle" font-size="11" fill="#5f6f80">× same number on BOTH columns → equivalent ratio</text>
-      </svg>`;
+    const cols = ["Batches", "Cups A", "Cups B"];
+    const rows = [
+      ["1", "2", "3"],
+      ["2", "4", "6"],
+      ["3", "6", "9"],
+    ];
+    const colX = [118, 288, 458];
+    const head = cols
+      .map(
+        (c, i) =>
+          `<rect x="${colX[i]}" y="70" width="150" height="50" rx="10" fill="#12355b"/><text x="${colX[i] + 75}" y="103" text-anchor="middle" font-size="22" font-weight="800" fill="#ffffff">${c}</text>`,
+      )
+      .join("");
+    const body = rows
+      .map((row, r) =>
+        row
+          .map((cell, c) => {
+            const y = 128 + r * 56;
+            return `<rect x="${colX[c]}" y="${y}" width="150" height="50" rx="10" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/><text x="${colX[c] + 75}" y="${y + 36}" text-anchor="middle" font-size="30" font-weight="800" fill="#12355b">${cell}</text>`;
+          })
+          .join(""),
+      )
+      .join("");
+    const arrows = [
+      { y: 184, label: "× 2" },
+      { y: 240, label: "× 3" },
+    ]
+      .map(
+        (a) =>
+          `<text x="86" y="${a.y + 34}" text-anchor="end" font-size="26" font-weight="800" fill="#d9795d">${a.label}</text>`,
+      )
+      .join("");
+    return {
+      svg: conceptFrame({
+        label: "Ratio table: 1 batch needs 2 cups of A and 3 cups of B, doubled and tripled",
+        tone: "teal",
+        height: 400,
+        title: "Ratio Table / Tabla de razones",
+        body: `${head}${body}${arrows}
+        ${conceptCard(60, 306, 520, 62)}
+        <text x="320" y="347" text-anchor="middle" font-size="30" font-weight="800" fill="#0f766e">2 : 3  =  4 : 6  =  6 : 9</text>`,
+      }),
+      capEn: "Multiply BOTH columns by the same number. The ratio stays the same.",
+      capEs: "Multipliquen LAS DOS columnas por el mismo número. La razón no cambia.",
+    };
   }
 
   if (topic === "exponents") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Exponent example">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="60" y="70" font-size="42" font-weight="800" fill="#12355b">2</text>
-        <text x="86" y="55" font-size="22" font-weight="800" fill="#d9795d">3</text>
-        <text x="120" y="70" font-size="28" fill="#12355b">= 2 × 2 × 2 = 8</text>
-        <text x="40" y="110" font-size="13" fill="#21313f">Base = 2 · Exponent = 3 · Multiply 2 three times</text>
-        <text x="40" y="135" font-size="13" fill="#21313f" lang="es">Base = 2 · Exponente = 3 · Multiplica 2 tres veces</text>
-        <text x="40" y="165" font-size="12" fill="#5f6f80">${themeEmoji}&#160;&#160;NOT 2 + 2 + 2 — that's addition!</text>
-      </svg>`;
+    return {
+      svg: conceptFrame({
+        label: "Two to the third power equals two times two times two, which equals eight",
+        tone: "amber",
+        height: 380,
+        title: "Exponent / Exponente",
+        body: `
+        <text x="96" y="168" font-size="84" font-weight="800" fill="#12355b">2</text>
+        <text x="150" y="118" font-size="46" font-weight="800" fill="#d9795d">3</text>
+        <text x="196" y="168" font-size="46" font-weight="700" fill="#12355b">=</text>
+        <text x="246" y="168" font-size="46" font-weight="800" fill="#12355b">2 × 2 × 2</text>
+        <text x="478" y="168" font-size="46" font-weight="800" fill="#0f766e">= 8</text>
+        <path d="M120 184 L120 212" stroke="#12355b" stroke-width="2.5" fill="none"/>
+        <text x="120" y="238" text-anchor="middle" font-size="21" font-weight="700" fill="#12355b">base</text>
+        <path d="M164 108 L176 86" stroke="#d9795d" stroke-width="2.5" fill="none"/>
+        <text x="186" y="80" font-size="21" font-weight="700" fill="#d9795d">exponent</text>
+        <rect x="46" y="272" width="548" height="72" rx="16" fill="#fdeae7" stroke="#d9534f" stroke-width="3"/>
+        <text x="320" y="318" text-anchor="middle" font-size="28" font-weight="800" fill="#b02a24">✗  2 + 2 + 2 = 6  is NOT 2³</text>`,
+      }),
+      capEn:
+        "The exponent tells you how many times to MULTIPLY the base — never how many times to add it.",
+      capEs: "El exponente dice cuántas veces MULTIPLICAR la base — nunca cuántas veces sumarla.",
+    };
   }
 
   if (topic === "equations") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Equation example">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <text x="210" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Equation / Ecuación</text>
-        <text x="50" y="105" font-size="28" font-weight="800" fill="#12355b">n + 8 = 20</text>
-        <text x="28" y="158" font-size="12" fill="#21313f">n = unknown · + means add · = means both sides equal</text>
-        <text x="28" y="174" font-size="12" fill="#21313f" lang="es">n = incógnita · + suma · = ambos lados iguales</text>
-        <rect x="240" y="72" width="150" height="70" rx="8" fill="#fff" stroke="#d7e2ed"/>
-        <text x="315" y="98" text-anchor="middle" font-size="12" fill="#5f6f80">Words → symbols</text>
-        <text x="315" y="118" text-anchor="middle" font-size="11" fill="#21313f">"plus 8" → + 8</text>
-        <text x="315" y="134" text-anchor="middle" font-size="11" fill="#21313f">"equals 20" → = 20</text>
-      </svg>`;
+    return {
+      svg: conceptFrame({
+        label: "Solving n plus 8 equals 20 by subtracting 8 from both sides to get n equals 12",
+        tone: "teal",
+        height: 400,
+        title: "Equation / Ecuación",
+        body: `
+        ${conceptCard(120, 74, 400, 76)}
+        <text x="320" y="128" text-anchor="middle" font-size="48" font-weight="800" fill="#12355b">n + 8 = 20</text>
+        <path d="M320 156 L320 194" stroke="#1fa6a2" stroke-width="4"/>
+        <path d="M308 184 L320 200 L332 184" fill="#1fa6a2"/>
+        <text x="344" y="186" font-size="24" font-weight="800" fill="#0f766e">− 8 on both sides</text>
+        ${conceptCard(120, 208, 400, 76)}
+        <text x="320" y="260" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">n + 8 − 8 = 20 − 8</text>
+        <rect x="204" y="300" width="232" height="70" rx="35" fill="#ffffff" stroke="#1fa6a2" stroke-width="4"/>
+        <text x="320" y="350" text-anchor="middle" font-size="42" font-weight="800" fill="#0f766e">n = 12</text>`,
+      }),
+      capEn:
+        "Whatever you do to one side of the equal sign, do the exact same thing to the other side.",
+      capEs: "Lo que hagan a un lado del signo igual, háganlo igual al otro lado.",
+    };
   }
 
   if (topic === "inequalities") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Inequality number line">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
-        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Inequality / Desigualdad</text>
-        <text x="40" y="78" font-size="22" font-weight="800" fill="#12355b">x + 3 &gt; 10  →  x &gt; 7</text>
-        <line x1="40" y1="120" x2="380" y2="120" stroke="#12355b" stroke-width="2"/>
-        <circle cx="160" cy="120" r="8" fill="#fff" stroke="#d9795d" stroke-width="3"/>
-        <rect x="168" y="112" width="212" height="16" fill="#1fa6a2" opacity="0.35"/>
-        <text x="40" y="155" font-size="12" fill="#21313f">Open circle · shade the solution side</text>
-        <text x="40" y="172" font-size="12" fill="#21313f" lang="es">Círculo abierto · sombrea el lado de la solución</text>
-      </svg>`;
+    const tick = (v) => 74 + (v - 4) * 73;
+    const ticks = [4, 5, 6, 7, 8, 9, 10]
+      .map(
+        (v) =>
+          `<line x1="${tick(v)}" y1="212" x2="${tick(v)}" y2="234" stroke="#12355b" stroke-width="3"/><text x="${tick(v)}" y="268" text-anchor="middle" font-size="24" font-weight="700" fill="#12355b">${v}</text>`,
+      )
+      .join("");
+    return {
+      svg: conceptFrame({
+        label:
+          "x plus 3 is greater than 10 means x is greater than 7, shaded to the right of an open circle at 7",
+        tone: "coral",
+        height: 340,
+        title: "Inequality / Desigualdad",
+        body: `
+        <text x="320" y="128" text-anchor="middle" font-size="42" font-weight="800" fill="#12355b">x + 3 &gt; 10   →   x &gt; 7</text>
+        <rect x="${tick(7)}" y="209" width="${592 - tick(7)}" height="14" fill="#1fa6a2" opacity="0.45"/>
+        <line x1="46" y1="216" x2="586" y2="216" stroke="#12355b" stroke-width="4"/>
+        <path d="M578 202 L600 216 L578 230 Z" fill="#12355b"/>
+        ${ticks}
+        <circle cx="${tick(7)}" cy="216" r="15" fill="#ffffff" stroke="#d9795d" stroke-width="5"/>
+        <text x="${tick(7)}" y="178" text-anchor="middle" font-size="22" font-weight="800" fill="#d9795d">open · 7 not included</text>
+        <text x="320" y="312" text-anchor="middle" font-size="25" font-weight="800" fill="#0f766e">Greater than → shade to the RIGHT →</text>`,
+      }),
+      capEn: 'An open circle means "not equal to that number." Shade every number that works.',
+      capEs:
+        'El círculo abierto significa "no incluye ese número". Sombreen todos los números que sirven.',
+    };
   }
 
   if (topic === "properties") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Properties of operations">
-        <rect x="8" y="14" width="404" height="172" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="210" y="40" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Properties / Propiedades</text>
-        <text x="28" y="76" font-size="13" font-weight="700" fill="#1fa6a2">Commutative / Conmutativa</text>
-        <text x="28" y="98" font-size="18" font-weight="800" fill="#12355b">a + b = b + a</text>
-        <text x="28" y="128" font-size="13" font-weight="700" fill="#1fa6a2">Associative / Asociativa</text>
-        <text x="28" y="150" font-size="18" font-weight="800" fill="#12355b">(a + b) + c = a + (b + c)</text>
-        <text x="28" y="178" font-size="13" font-weight="700" fill="#1fa6a2">Distributive / Distributiva: a(b + c) = a·b + a·c</text>
-      </svg>`;
+    const rows = [
+      ["Commutative · Conmutativa", "a + b = b + a", "3 + 5 = 5 + 3"],
+      ["Associative · Asociativa", "(a + b) + c = a + (b + c)", "(2+3)+4 = 2+(3+4)"],
+      ["Distributive · Distributiva", "a(b + c) = a·b + a·c", "4(2 + 3) = 8 + 12"],
+    ];
+    const body = rows
+      .map((r, i) => {
+        const y = 68 + i * 108;
+        return `${conceptCard(30, y, 580, 96)}
+        <text x="50" y="${y + 28}" font-size="21" font-weight="800" fill="#0f766e">${r[0]}</text>
+        <text x="50" y="${y + 63}" font-size="30" font-weight="800" fill="#12355b">${r[1]}</text>
+        <text x="590" y="${y + 88}" text-anchor="end" font-size="21" font-weight="700" fill="#5f6f80">${r[2]}</text>`;
+      })
+      .join("");
+    return {
+      svg: conceptFrame({
+        label: "Commutative, associative and distributive properties with number examples",
+        tone: "amber",
+        height: 408,
+        title: "Properties of Operations / Propiedades",
+        body,
+      }),
+      capEn: "These properties let you rearrange or regroup numbers without changing the answer.",
+      capEs: "Estas propiedades permiten reacomodar o reagrupar sin cambiar la respuesta.",
+    };
   }
 
   if (topic === "expressions") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Algebraic expression">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Expression / Expresión</text>
-        <text x="50" y="95" font-size="32" font-weight="800" fill="#12355b">3x + 5</text>
-        <text x="50" y="125" font-size="13" fill="#21313f">3 = coefficient · x = variable · no equal sign</text>
-        <text x="50" y="148" font-size="13" fill="#21313f" lang="es">3 = coeficiente · x = variable · sin signo igual</text>
-      </svg>`;
+    const legend = [
+      ["#2563eb", "3", "coefficient · coeficiente — how many x's"],
+      ["#0f766e", "x", "variable · variable — the unknown"],
+      ["#d97706", "5", "constant · constante — a plain number"],
+    ]
+      .map(([color, sym, label], i) => {
+        const y = 216 + i * 50;
+        return `<rect x="60" y="${y}" width="38" height="38" rx="10" fill="${color}"/>
+        <text x="79" y="${y + 28}" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">${sym}</text>
+        <text x="112" y="${y + 27}" font-size="24" font-weight="700" fill="#12355b">${label}</text>`;
+      })
+      .join("");
+    return {
+      svg: conceptFrame({
+        label: "The expression 3x plus 5 with the coefficient, variable and constant labelled",
+        tone: "amber",
+        height: 416,
+        title: "Expression / Expresión",
+        body: `
+        ${conceptCard(150, 78, 340, 106)}
+        <text x="320" y="154" text-anchor="middle" font-size="70" font-weight="800" fill="#12355b"><tspan fill="#2563eb">3</tspan><tspan fill="#0f766e">x</tspan> + <tspan fill="#d97706">5</tspan></text>
+        ${legend}
+        <text x="320" y="390" text-anchor="middle" font-size="24" font-weight="800" fill="#b02a24">No equal sign → it is an expression, not an equation</text>`,
+      }),
+      capEn:
+        "An expression is a math phrase. It has no equal sign, so there is nothing to solve — you evaluate it.",
+      capEs:
+        "Una expresión es una frase matemática. No tiene signo igual, así que no se resuelve — se evalúa.",
+    };
   }
 
   if (topic === "area") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Area formula">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <polygon points="60,140 200,140 240,80 100,80" fill="#fff" stroke="#1fa6a2" stroke-width="2"/>
-        <line x1="100" y1="80" x2="100" y2="140" stroke="#d9795d" stroke-width="2" stroke-dasharray="5 4"/>
-        <path d="M100 131 L109 131 L109 140" fill="none" stroke="#d9795d" stroke-width="1.5"/>
-        <text x="130" y="158" font-size="11" fill="#12355b">base</text>
-        <text x="116" y="114" font-size="11" fill="#d9795d">height</text>
-        <text x="260" y="85" font-size="16" font-weight="700" fill="#12355b">Area = base × height</text>
-        <text x="260" y="110" font-size="13" fill="#21313f">Square units (in², cm²)</text>
-        <text x="260" y="130" font-size="13" fill="#21313f" lang="es">Unidades cuadradas</text>
-      </svg>`;
+    return {
+      svg: conceptFrame({
+        label:
+          "A parallelogram with base 9 inches and height 6 inches, area equals 54 square inches",
+        tone: "teal",
+        height: 340,
+        title: "Area / Área",
+        body: `
+        <polygon points="70,232 250,232 312,110 132,110" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/>
+        <line x1="132" y1="110" x2="132" y2="232" stroke="#d9795d" stroke-width="4" stroke-dasharray="9 6"/>
+        <path d="M132 218 L146 218 L146 232" fill="none" stroke="#d9795d" stroke-width="3"/>
+        <text x="160" y="268" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">base = 9 in</text>
+        <text x="146" y="176" font-size="24" font-weight="800" fill="#d9795d">6 in</text>
+        <text x="340" y="130" font-size="27" font-weight="800" fill="#12355b">Area = base × height</text>
+        <text x="340" y="190" font-size="34" font-weight="800" fill="#12355b">= 9 × 6</text>
+        <text x="340" y="248" font-size="36" font-weight="800" fill="#0f766e">= 54 in²</text>`,
+      }),
+      capEn:
+        "Height is the straight-up distance, not the slanted side. Area is always in square units.",
+      capEs:
+        "La altura es la distancia recta hacia arriba, no el lado inclinado. El área siempre va en unidades cuadradas.",
+    };
   }
 
   if (topic === "volume") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Volume prism">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
-        <polygon points="80,140 180,140 210,110 110,110" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <polygon points="180,140 210,110 210,60 180,90" fill="#b8ddd8" stroke="#1fa6a2" stroke-width="2"/>
-        <polygon points="80,140 110,110 110,60 80,90" fill="#1fa6a2" opacity="0.35" stroke="#1fa6a2" stroke-width="2"/>
-        <text x="240" y="80" font-size="16" font-weight="700" fill="#12355b">V = L × W × H</text>
-        <text x="240" y="105" font-size="13" fill="#21313f">Volume = cubic units (in³)</text>
-        <text x="240" y="125" font-size="13" fill="#21313f" lang="es">Volumen = unidades cúbicas (in³)</text>
-      </svg>`;
+    return {
+      svg: conceptFrame({
+        label: "A rectangular prism 5 by 3 by 4 with volume 60 cubic inches",
+        tone: "coral",
+        height: 330,
+        title: "Volume / Volumen",
+        body: `
+        <polygon points="70,240 230,240 288,186 128,186" fill="#bfe4de" stroke="#1fa6a2" stroke-width="3"/>
+        <polygon points="70,240 70,124 128,70 128,186" fill="#e6f6f3" stroke="#1fa6a2" stroke-width="3"/>
+        <polygon points="70,124 128,70 288,70 230,124" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/>
+        <polygon points="70,124 230,124 230,240 70,240" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/>
+        <text x="150" y="274" text-anchor="middle" font-size="23" font-weight="800" fill="#12355b">5 in</text>
+        <text x="56" y="190" text-anchor="end" font-size="23" font-weight="800" fill="#12355b">4 in</text>
+        <text x="300" y="102" font-size="23" font-weight="800" fill="#12355b">3 in</text>
+        <text x="350" y="150" font-size="27" font-weight="800" fill="#12355b">V = l × w × h</text>
+        <text x="350" y="206" font-size="32" font-weight="800" fill="#12355b">= 5 × 3 × 4</text>
+        <text x="350" y="262" font-size="34" font-weight="800" fill="#0f766e">= 60 in³</text>`,
+      }),
+      capEn: "Volume fills the inside of a solid, so the answer is in cubic units.",
+      capEs:
+        "El volumen llena el interior del sólido, por eso la respuesta va en unidades cúbicas.",
+    };
   }
 
   if (topic === "surface-area") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Surface area net">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Net → Surface Area / Red → Área de superficie</text>
-        <rect x="120" y="70" width="50" height="40" fill="#fff" stroke="#1fa6a2"/>
-        <rect x="170" y="70" width="50" height="40" fill="#dff2ee" stroke="#1fa6a2"/>
-        <rect x="220" y="70" width="50" height="40" fill="#fff" stroke="#1fa6a2"/>
-        <text x="40" y="140" font-size="13" fill="#21313f">Add the area of every face from the net.</text>
-        <text x="40" y="160" font-size="13" fill="#21313f" lang="es">Suma el área de cada cara de la red.</text>
-      </svg>`;
+    const faces = [
+      [176, 84, "12"],
+      [96, 156, "15"],
+      [176, 156, "20"],
+      [256, 156, "15"],
+      [336, 156, "20"],
+      [176, 228, "12"],
+    ]
+      .map(
+        ([x, y, v]) =>
+          `<rect x="${x}" y="${y}" width="72" height="72" rx="6" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/><text x="${x + 36}" y="${y + 47}" text-anchor="middle" font-size="26" font-weight="800" fill="#12355b">${v}</text>`,
+      )
+      .join("");
+    return {
+      svg: conceptFrame({
+        label:
+          "A net of six rectangles with areas 12, 15, 20, 15, 20 and 12 adding to a surface area of 94 square inches",
+        tone: "amber",
+        height: 360,
+        title: "Net → Surface Area / Red → Área de superficie",
+        body: `${faces}
+        <text x="440" y="150" font-size="24" font-weight="800" fill="#12355b">Add every face:</text>
+        <text x="440" y="196" font-size="23" font-weight="700" fill="#12355b">12+15+20+15+20+12</text>
+        <text x="440" y="252" font-size="34" font-weight="800" fill="#0f766e">= 94 in²</text>
+        <text x="320" y="336" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">A net is the box unfolded flat — 6 faces, 6 areas.</text>`,
+      }),
+      capEn: "Unfold the box, find the area of each face, then add them all together.",
+      capEs: "Desdoblen la caja, hallen el área de cada cara y súmenlas todas.",
+    };
   }
 
   if (topic === "statistics") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Data display">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Data / Datos</text>
-        <rect x="60" y="110" width="30" height="40" fill="#1fa6a2"/>
-        <rect x="100" y="90" width="30" height="60" fill="#1fa6a2"/>
-        <rect x="140" y="70" width="30" height="80" fill="#1fa6a2"/>
-        <rect x="180" y="100" width="30" height="50" fill="#1fa6a2"/>
-        <text x="260" y="90" font-size="13" fill="#21313f">Mean · Median · Mode</text>
-        <text x="260" y="115" font-size="13" fill="#21313f" lang="es">Media · Mediana · Moda</text>
-      </svg>`;
+    const dotX = (v) => 62 + (v - 1) * 38;
+    const data = [
+      [2, 1],
+      [3, 2],
+      [4, 1],
+      [8, 1],
+    ];
+    const dots = data
+      .map(([v, n]) =>
+        Array.from(
+          { length: n },
+          (_, i) =>
+            `<circle cx="${dotX(v)}" cy="${196 - i * 34}" r="14" fill="#1fa6a2" stroke="#0f766e" stroke-width="2"/>`,
+        ).join(""),
+      )
+      .join("");
+    const axis = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      .map(
+        (v) =>
+          `<line x1="${dotX(v)}" y1="216" x2="${dotX(v)}" y2="230" stroke="#12355b" stroke-width="3"/><text x="${dotX(v)}" y="260" text-anchor="middle" font-size="21" font-weight="700" fill="#12355b">${v}</text>`,
+      )
+      .join("");
+    const pills = [
+      ["Mean · Media", "4"],
+      ["Median · Mediana", "3"],
+      ["Mode · Moda", "3"],
+    ]
+      .map(([label, val], i) => {
+        const y = 84 + i * 78;
+        return `${conceptCard(414, y, 196, 62)}
+        <text x="432" y="${y + 27}" font-size="20" font-weight="800" fill="#0f766e">${label}</text>
+        <text x="432" y="${y + 54}" font-size="26" font-weight="800" fill="#12355b">= ${val}</text>`;
+      })
+      .join("");
+    return {
+      svg: conceptFrame({
+        label: "A dot plot of 2, 3, 3, 4 and 8 with mean 4, median 3 and mode 3",
+        tone: "teal",
+        height: 330,
+        title: "Data: 2, 3, 3, 4, 8",
+        body: `${dots}<line x1="40" y1="216" x2="394" y2="216" stroke="#12355b" stroke-width="4"/>${axis}${pills}
+        <text x="216" y="300" text-anchor="middle" font-size="22" font-weight="800" fill="#5f6f80">One dot = one value</text>`,
+      }),
+      capEn:
+        "Mean is the fair share, median is the middle value in order, mode is the one that repeats most.",
+      capEs:
+        "La media es el reparto justo, la mediana es el valor del medio en orden, la moda es la que más se repite.",
+    };
   }
 
   if (topic === "coordinate-plane") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Coordinate plane">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <line x1="120" y1="130" x2="300" y2="130" stroke="#12355b" stroke-width="2"/>
-        <line x1="210" y1="60" x2="210" y2="150" stroke="#12355b" stroke-width="2"/>
-        <circle cx="250" cy="95" r="6" fill="#d9795d"/>
-        <text x="258" y="88" font-size="12" fill="#12355b">(3, 4)</text>
-        <text x="260" y="165" font-size="12" fill="#21313f">(x, y) · quadrants · axes</text>
-      </svg>`;
+    const ox = 96;
+    const oy = 296;
+    const u = 34;
+    const grid = Array.from({ length: 7 }, (_, i) => {
+      const gx = ox + i * u;
+      const gy = oy - i * u;
+      return `<line x1="${gx}" y1="${oy - 6 * u}" x2="${gx}" y2="${oy}" stroke="#cddbe8" stroke-width="1.5"/><line x1="${ox}" y1="${gy}" x2="${ox + 6 * u}" y2="${gy}" stroke="#cddbe8" stroke-width="1.5"/>`;
+    }).join("");
+    const nums = [1, 2, 3, 4, 5, 6]
+      .map(
+        (v) =>
+          `<text x="${ox + v * u}" y="${oy + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="#5f6f80">${v}</text><text x="${ox - 12}" y="${oy - v * u + 7}" text-anchor="end" font-size="18" font-weight="700" fill="#5f6f80">${v}</text>`,
+      )
+      .join("");
+    return {
+      svg: conceptFrame({
+        label: "Plotting the point 3 comma 4 by moving right 3 then up 4 on a coordinate grid",
+        tone: "amber",
+        height: 340,
+        title: "Coordinate Plane / Plano de coordenadas",
+        body: `${grid}
+        <line x1="${ox}" y1="${oy}" x2="${ox + 6 * u + 14}" y2="${oy}" stroke="#12355b" stroke-width="4"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - 6 * u - 14}" stroke="#12355b" stroke-width="4"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox + 3 * u}" y2="${oy}" stroke="#d9795d" stroke-width="6"/>
+        <line x1="${ox + 3 * u}" y1="${oy}" x2="${ox + 3 * u}" y2="${oy - 4 * u}" stroke="#0f766e" stroke-width="6"/>
+        <circle cx="${ox + 3 * u}" cy="${oy - 4 * u}" r="13" fill="#d9795d" stroke="#12355b" stroke-width="3"/>
+        ${nums}
+        <text x="${ox + 3 * u + 22}" y="${oy - 4 * u - 12}" font-size="26" font-weight="800" fill="#12355b">(3, 4)</text>
+        <text x="376" y="132" font-size="26" font-weight="800" fill="#d9795d">1. Right 3  (x)</text>
+        <text x="376" y="182" font-size="26" font-weight="800" fill="#0f766e">2. Up 4  (y)</text>
+        <text x="376" y="240" font-size="24" font-weight="700" fill="#12355b">Always x first,</text>
+        <text x="376" y="272" font-size="24" font-weight="700" fill="#12355b">then y.</text>`,
+      }),
+      capEn: "Start at (0, 0). The first number moves across, the second number moves up or down.",
+      capEs:
+        "Empiecen en (0, 0). El primer número mueve a los lados, el segundo mueve arriba o abajo.",
+    };
   }
 
   if (topic === "number-line") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Number line">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <line x1="40" y1="100" x2="380" y2="100" stroke="#12355b" stroke-width="2"/>
-        <text x="80" y="115" font-size="12">-3</text><text x="160" y="115" font-size="12">0</text><text x="280" y="115" font-size="12">5</text>
-        <text x="40" y="140" font-size="13" fill="#21313f">Compare · order · absolute value</text>
-        <text x="40" y="160" font-size="13" fill="#21313f" lang="es">Comparar · ordenar · valor absoluto</text>
-      </svg>`;
+    const nx = (v) => 320 + v * 52;
+    const ticks = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+      .map(
+        (v) =>
+          `<line x1="${nx(v)}" y1="200" x2="${nx(v)}" y2="222" stroke="#12355b" stroke-width="3"/><text x="${nx(v)}" y="256" text-anchor="middle" font-size="22" font-weight="700" fill="#12355b">${v < 0 ? `−${Math.abs(v)}` : v}</text>`,
+      )
+      .join("");
+    return {
+      svg: conceptFrame({
+        label:
+          "A number line from negative 5 to 5 showing that negative 3 is 3 units from zero, so the absolute value of negative 3 is 3",
+        tone: "teal",
+        height: 330,
+        title: "Number Line / Recta numérica",
+        body: `
+        <text x="320" y="112" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">|−3| = 3</text>
+        <rect x="${nx(-3)}" y="204" width="${nx(0) - nx(-3)}" height="14" fill="#f2c15b" opacity="0.75"/>
+        <line x1="40" y1="211" x2="600" y2="211" stroke="#12355b" stroke-width="4"/>
+        <path d="M32 197 L14 211 L32 225 Z" fill="#12355b"/>
+        <path d="M608 197 L626 211 L608 225 Z" fill="#12355b"/>
+        ${ticks}
+        <circle cx="${nx(-3)}" cy="211" r="13" fill="#d9795d" stroke="#12355b" stroke-width="3"/>
+        <circle cx="${nx(0)}" cy="211" r="13" fill="#0f766e" stroke="#12355b" stroke-width="3"/>
+        <text x="${(nx(-3) + nx(0)) / 2}" y="176" text-anchor="middle" font-size="24" font-weight="800" fill="#b45309">3 units from 0</text>
+        <text x="320" y="304" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">Left of 0 = negative   ·   Right of 0 = positive</text>`,
+      }),
+      capEn: "Absolute value is only the DISTANCE from zero, so it is never negative.",
+      capEs: "El valor absoluto es solo la DISTANCIA desde cero, así que nunca es negativo.",
+    };
   }
 
   if (topic === "fractions") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Fraction division">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fce6de" stroke="#d9795d" stroke-width="2"/>
-        <text x="50" y="90" font-size="28" font-weight="800" fill="#12355b">3 ÷ ½ = 6</text>
-        <text x="50" y="120" font-size="13" fill="#21313f">How many halves fit in 3? Draw groups to check.</text>
-        <text x="50" y="145" font-size="13" fill="#21313f" lang="es">¿Cuántos medios caben en 3? Dibujen grupos.</text>
-      </svg>`;
+    const bars = [0, 1, 2]
+      .map((b) => {
+        const x0 = 46 + b * 186;
+        const cells = [0, 1, 2, 3]
+          .map((c) => {
+            const cx = x0 + c * 42;
+            const n = b * 4 + c + 1;
+            return `<rect x="${cx}" y="76" width="42" height="58" fill="${n % 2 ? "#ffffff" : "#d7f0ea"}" stroke="#1fa6a2" stroke-width="2.5"/><text x="${cx + 21}" y="113" text-anchor="middle" font-size="20" font-weight="800" fill="#0f766e">${n}</text>`;
+          })
+          .join("");
+        return `${cells}<text x="${x0 + 84}" y="160" text-anchor="middle" font-size="21" font-weight="800" fill="#12355b">1 foot</text>`;
+      })
+      .join("");
+    return {
+      svg: conceptFrame({
+        label:
+          "Three one-foot bars each cut into four quarter-foot pieces, giving twelve pieces, worked with keep change flip",
+        tone: "coral",
+        height: 420,
+        title: "3 ÷ ¼  —  How many ¼ fit inside 3?",
+        body: `${bars}
+        <text x="320" y="196" text-anchor="middle" font-size="30" font-weight="800" fill="#0f766e">12 pieces</text>
+        ${conceptRow(212, 1, "Whole over 1:  3  →  3/1", "#2563eb")}
+        ${conceptRow(280, 2, "Keep, Change, Flip:  3/1 × 4/1", "#0f766e")}
+        ${conceptRow(348, 3, "Multiply across:  12/1 = 12", "#d97706")}`,
+      }),
+      capEn:
+        "Dividing by a fraction asks how many of that small piece fit inside. The answer gets BIGGER.",
+      capEs:
+        "Dividir entre una fracción pregunta cuántas piezas pequeñas caben adentro. La respuesta se hace MÁS GRANDE.",
+    };
   }
 
   if (topic === "decimals") {
@@ -931,93 +1221,159 @@ function conceptVisualSvg(config) {
       // bracket is DRAWN (vinculum + hook paths with explicit stroke); the
       // U+27CC bracket glyph is banned — no shipped font renders it
       // (tools/unrenderable-glyphs.test.mjs).
-      return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Long division: 14.4 divided by 1.2 becomes 144 divided by 12, quotient 12">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="32" y="56" font-size="17" font-weight="800" fill="#12355b">14.4 ÷ 1.2  →  144 ÷ 12</text>
-        <text x="253" y="100" font-size="26" font-weight="800" fill="#0f766e" text-anchor="end">12</text>
-        <text x="196" y="138" font-size="26" font-weight="800" fill="#12355b" text-anchor="end">12</text>
-        <path d="M208 108 q-8 18 4 36" stroke="#12355b" stroke-width="3" fill="none"/>
-        <path d="M208 108 H 292" stroke="#12355b" stroke-width="3" fill="none"/>
-        <text x="222" y="138" font-size="26" font-weight="800" fill="#12355b">144</text>
-        <text x="32" y="163" font-size="13" fill="#21313f">Move both decimal points one place, then divide: 12 goes on top.</text>
-        <text x="32" y="177" font-size="13" fill="#21313f" lang="es">Muevan el punto en los dos números y dividan: el 12 va arriba.</text>
-      </svg>`;
+      return {
+        svg: conceptFrame({
+          label:
+            "14.4 divided by 1.2 becomes 144 divided by 12, worked as long division with quotient 12",
+          tone: "amber",
+          height: 380,
+          title: "Dividing Decimals / Dividir decimales",
+          body: `
+        <text x="320" y="112" text-anchor="middle" font-size="36" font-weight="800" fill="#12355b">14.4 ÷ 1.2   →   144 ÷ 12</text>
+        <text x="320" y="176" text-anchor="middle" font-size="24" font-weight="800" fill="#d9795d">Move BOTH decimal points 1 place</text>
+        ${conceptCard(180, 236, 280, 122)}
+        <text x="252" y="326" text-anchor="end" font-size="44" font-weight="800" fill="#12355b">12</text>
+        <path d="M262 272 q-16 30 6 62" stroke="#12355b" stroke-width="4" fill="none"/>
+        <path d="M262 272 H 420" stroke="#12355b" stroke-width="4" fill="none"/>
+        <text x="278" y="326" font-size="44" font-weight="800" fill="#12355b">144</text>
+        <text x="414" y="262" text-anchor="end" font-size="44" font-weight="800" fill="#0f766e">12</text>`,
+        }),
+        capEn:
+          "Move the decimal point the same number of places in BOTH numbers, then divide whole numbers.",
+        capEs:
+          "Muevan el punto decimal el mismo número de lugares en LOS DOS números y luego dividan enteros.",
+      };
     }
     if (op === "multiply") {
-      return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Multiplying decimals">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="50" y="85" font-size="24" font-weight="800" fill="#12355b">1.2 × 0.4 = 0.48</text>
-        <text x="50" y="118" font-size="13" fill="#21313f">Multiply as whole numbers: 12 × 4 = 48.</text>
-        <text x="50" y="138" font-size="13" fill="#21313f">Then count the decimal places in BOTH factors: 1 + 1 = 2.</text>
-        <text x="50" y="162" font-size="13" fill="#21313f" lang="es">Multipliquen como enteros y cuenten las cifras decimales de LOS DOS factores.</text>
-      </svg>`;
+      return {
+        svg: conceptFrame({
+          label:
+            "1.2 times 0.4 equals 0.48, found by multiplying 12 times 4 and counting two decimal places",
+          tone: "amber",
+          height: 360,
+          title: "Multiplying Decimals / Multiplicar decimales",
+          body: `
+        ${conceptCard(120, 70, 400, 82)}
+        <text x="320" y="126" text-anchor="middle" font-size="44" font-weight="800" fill="#12355b">1.2 × 0.4 = 0.48</text>
+        ${conceptRow(168, 1, "Multiply like whole numbers:  12 × 4 = 48", "#2563eb")}
+        ${conceptRow(236, 2, "Count decimal places:  1 + 1 = 2", "#0f766e")}
+        ${conceptRow(288, 3, "Put 2 places back in:  48 → 0.48", "#d97706")}`,
+        }),
+        capEn:
+          "Count the decimal places in BOTH factors — that is how many places the answer needs.",
+        capEs:
+          "Cuenten las cifras decimales de LOS DOS factores — esas son las que lleva la respuesta.",
+      };
     }
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Adding and subtracting decimals">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
-        <text x="50" y="90" font-size="28" font-weight="800" fill="#12355b">12.5 + 3.75</text>
-        <text x="50" y="120" font-size="13" fill="#21313f">Line up decimal points before you add or subtract.</text>
-        <text x="50" y="145" font-size="13" fill="#21313f" lang="es">Alineen los puntos decimales antes de sumar o restar.</text>
-      </svg>`;
+    return {
+      svg: conceptFrame({
+        label: "Adding 12.50 and 3.75 vertically with the decimal points lined up to get 16.25",
+        tone: "amber",
+        height: 360,
+        title: "Adding & Subtracting Decimals",
+        body: `
+        ${conceptCard(150, 70, 340, 218)}
+        <line x1="352" y1="86" x2="352" y2="272" stroke="#d9795d" stroke-width="3" stroke-dasharray="8 6"/>
+        <text x="348" y="136" text-anchor="end" font-size="42" font-weight="800" fill="#12355b">12</text>
+        <text x="356" y="136" font-size="42" font-weight="800" fill="#12355b">.50</text>
+        <text x="348" y="196" text-anchor="end" font-size="42" font-weight="800" fill="#12355b">+   3</text>
+        <text x="356" y="196" font-size="42" font-weight="800" fill="#12355b">.75</text>
+        <line x1="196" y1="214" x2="452" y2="214" stroke="#12355b" stroke-width="4"/>
+        <text x="348" y="266" text-anchor="end" font-size="42" font-weight="800" fill="#0f766e">16</text>
+        <text x="356" y="266" font-size="42" font-weight="800" fill="#0f766e">.25</text>
+        <text x="320" y="330" text-anchor="middle" font-size="25" font-weight="800" fill="#d9795d">Line up the decimal points first — always.</text>`,
+      }),
+      capEn:
+        "Stack the numbers so the decimal points sit in one straight line, then add or subtract as usual.",
+      capEs:
+        "Acomoden los números para que los puntos decimales queden en una línea recta, y luego sumen o resten.",
+    };
   }
 
   if (topic === "factors") {
-    return `
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Prime factorization">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <text x="50" y="85" font-size="22" font-weight="800" fill="#12355b">24 = 2 × 2 × 2 × 3</text>
-        <text x="50" y="115" font-size="13" fill="#21313f">Break apart with a factor tree until all factors are prime.</text>
-        <text x="50" y="140" font-size="13" fill="#21313f" lang="es">Descompongan con un árbol hasta que todos sean primos.</text>
-      </svg>`;
+    const prime = (x, y, v) =>
+      `<circle cx="${x}" cy="${y}" r="27" fill="#0f766e"/><text x="${x}" y="${y + 11}" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">${v}</text>`;
+    return {
+      svg: conceptFrame({
+        label: "A factor tree breaking 24 into 4 and 6, then into the primes 2, 2, 2 and 3",
+        tone: "teal",
+        height: 400,
+        title: "Factor Tree / Árbol de factores",
+        body: `
+        <text x="320" y="98" text-anchor="middle" font-size="46" font-weight="800" fill="#12355b">24</text>
+        <line x1="298" y1="112" x2="232" y2="158" stroke="#12355b" stroke-width="3"/>
+        <line x1="342" y1="112" x2="408" y2="158" stroke="#12355b" stroke-width="3"/>
+        <text x="222" y="192" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">4</text>
+        <text x="418" y="192" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">6</text>
+        <line x1="208" y1="206" x2="152" y2="248" stroke="#12355b" stroke-width="3"/>
+        <line x1="236" y1="206" x2="262" y2="248" stroke="#12355b" stroke-width="3"/>
+        <line x1="404" y1="206" x2="378" y2="248" stroke="#12355b" stroke-width="3"/>
+        <line x1="432" y1="206" x2="488" y2="248" stroke="#12355b" stroke-width="3"/>
+        ${prime(140, 282, "2")}${prime(272, 282, "2")}${prime(368, 282, "2")}${prime(500, 282, "3")}
+        <text x="320" y="366" text-anchor="middle" font-size="32" font-weight="800" fill="#0f766e">24 = 2 × 2 × 2 × 3</text>`,
+      }),
+      capEn:
+        "Keep splitting until every branch ends on a prime number (circled). Those primes are the answer.",
+      capEs:
+        "Sigan separando hasta que cada rama termine en un número primo (en círculo). Esos primos son la respuesta.",
+    };
   }
 
   if (topic === "division") {
-    return `
-      <svg viewBox="0 0 420 210" class="concept-svg" role="img" aria-label="Long Division Algorithm DMSB">
-        <rect x="8" y="10" width="404" height="190" rx="12" fill="#fffdf5" stroke="#12355b" stroke-width="2"/>
-        <text x="210" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b">Long Division Algorithm: D-M-S-B</text>
-        
-        <!-- Long division bracket: 12 ) 1344 = 112 -->
-        <text x="55" y="80" font-size="18" font-weight="800" fill="#12355b">12</text>
-        <line x1="68" y1="58" x2="68" y2="88" stroke="#12355b" stroke-width="2.5"/>
-        <line x1="68" y1="58" x2="165" y2="58" stroke="#12355b" stroke-width="2.5"/>
-        <text x="75" y="80" font-size="18" font-weight="800" fill="#12355b">1,344</text>
-        <text x="75" y="52" font-size="18" font-weight="800" fill="#0d7a76">112</text>
-        
-        <!-- 4 steps pills -->
-        <rect x="180" y="48" width="220" height="28" rx="6" fill="#fef2f2" stroke="#ef4444"/>
-        <text x="188" y="67" font-size="12" font-weight="800" fill="#dc2626">1. D (Divide)</text>
-        <text x="265" y="67" font-size="11" fill="#1e293b">13 ÷ 12 = 1</text>
-        
-        <rect x="180" y="82" width="220" height="28" rx="6" fill="#fef2f2" stroke="#ef4444"/>
-        <text x="188" y="101" font-size="12" font-weight="800" fill="#dc2626">2. M (Multiply)</text>
-        <text x="275" y="101" font-size="11" fill="#1e293b">1 × 12 = 12</text>
-        
-        <rect x="180" y="116" width="220" height="28" rx="6" fill="#fefce8" stroke="#eab308"/>
-        <text x="188" y="135" font-size="12" font-weight="800" fill="#854d0e">3. S (Subtract)</text>
-        <text x="272" y="135" font-size="11" fill="#1e293b">13 − 12 = 1</text>
-        
-        <rect x="180" y="150" width="220" height="28" rx="6" fill="#fffbeb" stroke="#d97706"/>
-        <text x="188" y="169" font-size="12" font-weight="800" fill="#b45309">4. B (Bring down)</text>
-        <text x="290" y="169" font-size="11" fill="#1e293b">Bring down 4</text>
-        
-        <text x="210" y="195" text-anchor="middle" font-size="11" font-weight="700" fill="#5f6f80">Repeat cycle until no digits remain · Quotient: 112</text>
-      </svg>`;
+    const pill = (y, n, label, work, bg, stroke, ink) =>
+      `<rect x="336" y="${y}" width="272" height="64" rx="14" fill="${bg}" stroke="${stroke}" stroke-width="2.5"/>
+        <text x="354" y="${y + 27}" font-size="22" font-weight="800" fill="${ink}">${n}. ${label}</text>
+        <text x="354" y="${y + 52}" font-size="21" font-weight="700" fill="#21313f">${work}</text>`;
+    return {
+      svg: conceptFrame({
+        label: "Long division of 1,344 by 12 using divide, multiply, subtract and bring down",
+        tone: "navy",
+        height: 400,
+        title: "Long Division:  D · M · S · B",
+        body: `
+        ${conceptCard(30, 82, 288, 152)}
+        <text x="118" y="182" text-anchor="end" font-size="42" font-weight="800" fill="#12355b">12</text>
+        <path d="M128 128 q-16 30 6 62" stroke="#12355b" stroke-width="4" fill="none"/>
+        <path d="M128 128 H 296" stroke="#12355b" stroke-width="4" fill="none"/>
+        <text x="144" y="182" font-size="42" font-weight="800" fill="#12355b">1,344</text>
+        <text x="290" y="118" text-anchor="end" font-size="42" font-weight="800" fill="#0f766e">112</text>
+        <text x="174" y="272" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">Repeat D-M-S-B until</text>
+        <text x="174" y="304" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">no digits are left.</text>
+        ${pill(76, 1, "Divide", "13 ÷ 12 = 1", "#eef3fa", "#2563eb", "#1d4ed8")}
+        ${pill(154, 2, "Multiply", "1 × 12 = 12", "#e9f7f4", "#1fa6a2", "#0f766e")}
+        ${pill(232, 3, "Subtract", "13 − 12 = 1", "#fdf5e3", "#dda63a", "#b45309")}
+        ${pill(310, 4, "Bring down", "bring down the 4", "#fdeee9", "#d9795d", "#b02a24")}`,
+      }),
+      capEn:
+        "Four moves, in the same order, every single time: Divide, Multiply, Subtract, Bring down.",
+      capEs: "Cuatro pasos, en el mismo orden, siempre: Dividir, Multiplicar, Restar, Bajar.",
+    };
   }
 
+  // Fallback. The twelve MPP "Math is ..." lessons in units 1 and 10 are habits
+  // of mind, not a single procedure, so there is no topic drawing to reach for.
+  // Repeating all four steps here (the old behaviour) only duplicated the
+  // guided-steps list directly below it. Show the two ends instead — where the
+  // example starts and where it lands — which is the one thing the step list
+  // does NOT show at a glance.
   const steps = buildConceptSteps(config);
-  return `
-    <div class="concept-fallback-visual" aria-hidden="true">
-      ${steps
-        .slice(0, 3)
-        .map(
-          (s, i) =>
-            `<div class="concept-fallback-step step-color-${i + 1}"><span class="step-dot">${i + 1}</span><span>${esc(s.en.split(".")[0])}</span></div>`,
-        )
-        .join("")}
-    </div>`;
+  const first = steps[0];
+  const last = steps.length > 1 ? steps[steps.length - 1] : null;
+  if (!first) return { svg: "", capEn: "", capEs: "" };
+  const end = (en, es, cls, labelEn, labelEs) => `
+      <div class="concept-fallback-step ${cls}">
+        <span class="concept-fallback-label"><span class="lang-en">${labelEn}</span><span class="lang-es" lang="es">${labelEs}</span></span>
+        <span class="concept-fallback-text lang-en">${esc(splitExplanation(en).lead)}</span>
+        <span class="concept-fallback-text lang-es" lang="es">${esc(splitExplanation(es).lead)}</span>
+      </div>`;
+  return {
+    svg: `<div class="concept-fallback-visual">
+      ${end(first.en, first.es, "is-start", "We start with", "Empezamos con")}
+      ${last ? `<div class="concept-fallback-arrow" aria-hidden="true">→</div>${end(last.en, last.es, "is-end", "We end with", "Terminamos con")}` : ""}
+    </div>`,
+    capEn: "",
+    capEs: "",
+  };
 }
 
 function helpButton(label, payload) {
@@ -1196,24 +1552,36 @@ export function renderConceptExplainer(config) {
   const steps = buildConceptSteps(config);
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
+  const visual = conceptVisual(config);
   const quickPath = steps
     .map((_, index) => {
       const cue = stepCue(index);
-      return `<li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">${cue.icon}</span><span class="lang-en">${cue.en}</span><span class="lang-es" lang="es">${cue.es}</span></li>`;
+      return `<li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">${cue.icon}</span><span class="concept-quick-num">${index + 1}</span><span class="lang-en">${cue.en}</span><span class="lang-es" lang="es">${cue.es}</span></li>`;
     })
     .join("");
+  // The caption lives in HTML, not inside the <svg>, so the page language
+  // toggle can hide one language and so it scales with the reader's own font
+  // size — SVG text does neither.
+  const caption =
+    visual.capEn || visual.capEs
+      ? `<figcaption class="concept-visual-caption">${visual.capEn ? `<span class="lang-en">${esc(visual.capEn)}</span>` : ""}${visual.capEs ? `<span class="lang-es" lang="es">${esc(visual.capEs)}</span>` : ""}</figcaption>`
+      : "";
 
   return `
     <section class="guided-section card section-visual" aria-label="Visual concept explainer">
       <h2 class="section-title">🎯 The big idea / La idea principal</h2>
-      <div class="concept-visual-wrap">${conceptVisualSvg(config)}</div>
-      <div class="concept-quick-wrap">
-        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
-        <ol class="concept-quick-path" aria-label="Four-step visual math path">${quickPath}</ol>
-      </div>
+      <!-- renderLearnTab() strips the <section> wrapper, so the oversized
+           "big idea" type scale hangs off this inner div, not off
+           .section-visual (which never reaches the page). -->
+      <div class="big-idea">
       <div class="key-idea-banner">
         <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
         <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+      </div>
+      <figure class="concept-visual-wrap">${visual.svg}${caption}</figure>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path">${quickPath}</ol>
       </div>
       <ol class="guided-steps">
         ${steps
@@ -1228,8 +1596,8 @@ export function renderConceptExplainer(config) {
             return `
           <li class="guided-step step-color-${s.stepNum}">
             <div class="guided-step-head">
-              <span class="guided-step-icon" aria-hidden="true">${cue.icon}</span>
-              <div><span class="step-cue-label"><span class="lang-en">${cue.en}</span><span class="lang-es" lang="es">${cue.es}</span></span><span class="step-badge">Step ${s.stepNum} / Paso ${s.stepNum}</span></div>
+              <span class="guided-step-num step-color-${s.stepNum}" aria-hidden="true">${s.stepNum}</span>
+              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">${cue.icon}</span><span class="lang-en">${cue.en}</span><span class="lang-es" lang="es">${cue.es}</span></span><span class="step-badge">Step ${s.stepNum} / Paso ${s.stepNum}</span></div>
             </div>
             <p class="step-lead lang-en">${esc(en.lead)}</p>
             <p class="step-lead lang-es" lang="es">${esc(es.lead)}</p>
@@ -1252,6 +1620,7 @@ export function renderConceptExplainer(config) {
           )
           .join("")}
       </ul>
+      </div>
     </section>`;
 }
 
@@ -9869,5 +10238,257 @@ body.lang-mode-es .tab-es {
   /* The interactive games are screen-only; paper families have the Activity
      Corner and the printable practice instead. */
   .fam-game-break { display: none; }
+}
+`;
+
+export const BIG_IDEA_CSS = `
+/* ============================================================
+   BIG IDEA LAYER — loads last, after the polish layer.
+   The concept explainer is the one part of this page a parent
+   reads to understand the mathematics itself, often on a phone
+   and often in a second language. It is deliberately sized well
+   above the rest of the page: full-bleed picture, oversized
+   sentence, numbered steps that can be followed without reading
+   closely. Namespaced to \`.big-idea\` (renderLearnTab strips the
+   <section> wrapper) so nothing else on the page inherits the scale.
+   ============================================================ */
+.big-idea { margin-top: 4px; }
+
+/* 1. One sentence, first, and big enough to read across a kitchen. */
+.big-idea .key-idea-banner {
+  padding: 20px 22px;
+  border: 2px solid #8fcfc8;
+  border-radius: var(--radius-md);
+  margin: 4px 0 20px;
+}
+.big-idea .key-idea-banner p {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.big-idea .key-idea-banner .lang-en + .lang-es {
+  margin-top: 12px;
+  padding-left: 14px;
+  border-left: 4px solid var(--teal);
+}
+
+/* 2. The picture. It used to cap at 420px (560px once the design system
+   framed it) on a 1000px column — barely half the available width, with 11px
+   labels inside it. Keep the frame; let the drawing use the column. The frame
+   is display:flex in the design system, which makes the <svg> a flex item that
+   shrinks to its intrinsic width and puts the caption beside it; block stacking
+   is what this section needs. */
+.big-idea .concept-visual-wrap {
+  display: block;
+  margin: 0 0 22px;
+  padding: 20px 18px;
+  overflow: visible;
+}
+.big-idea .concept-visual-wrap > svg,
+.big-idea .concept-svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md);
+}
+.concept-visual-caption {
+  margin: 12px 2px 0;
+  font-size: 20px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: center;
+}
+.concept-visual-caption .lang-es {
+  display: block;
+  margin-top: 8px;
+  padding-left: 14px;
+  border-left: 4px solid var(--teal);
+  text-align: left;
+}
+.concept-visual-caption .lang-en { display: block; }
+
+/* Fallback picture (a lesson with no topic drawing): the two ends of the
+   worked example, side by side, so the jump from setup to answer is visible
+   before a single sentence is read. */
+.big-idea .concept-fallback-visual {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 14px;
+}
+.big-idea .concept-fallback-step {
+  display: block;
+  padding: 20px 22px;
+  border-radius: var(--radius-md);
+  font-size: 21px;
+  line-height: 1.4;
+  font-weight: 600;
+  background: var(--white);
+  border: 2px solid var(--line);
+}
+.big-idea .concept-fallback-step.is-end {
+  background: var(--teal-light, #e9f7f4);
+  border-color: var(--teal);
+}
+.concept-fallback-label {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--teal-ink);
+}
+.concept-fallback-label .lang-es { display: inline; margin: 0; padding: 0; border: 0; }
+.concept-fallback-label .lang-es::before { content: " · "; }
+.concept-fallback-text { display: block; }
+.concept-fallback-text.lang-es {
+  margin-top: 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--teal);
+}
+.concept-fallback-arrow {
+  align-self: center;
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--teal-ink);
+}
+@media (max-width: 620px) {
+  .big-idea .concept-fallback-visual { grid-template-columns: 1fr; }
+  .concept-fallback-arrow { transform: rotate(90deg); text-align: center; }
+}
+
+/* 3. The four-stop path. Bigger icons, a visible stop number, real tap size. */
+.big-idea .concept-quick-wrap { padding: 18px 16px; margin-bottom: 22px; }
+.big-idea .concept-quick-title { font-size: 18px; margin-bottom: 14px; }
+.big-idea .concept-quick-path { gap: 12px; }
+.big-idea .concept-quick-step {
+  min-height: 118px;
+  padding: 14px 8px;
+  border: 2px solid var(--line);
+  font-size: 16px;
+  line-height: 1.25;
+}
+.big-idea .concept-quick-icon { font-size: 38px; margin-bottom: 8px; }
+.concept-quick-num {
+  display: inline-block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--teal-ink);
+  letter-spacing: 0.08em;
+}
+.big-idea .concept-quick-step .lang-es { font-size: 14px; color: var(--muted); }
+
+/* 4. Guided steps. A large numeral carries the order so a parent can follow
+   the sequence without reading a word of it first. */
+.big-idea .guided-steps { gap: 16px; }
+.big-idea .guided-step {
+  padding: 22px 24px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.big-idea .guided-step-head { gap: 14px; margin-bottom: 14px; align-items: center; }
+.guided-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--white);
+  background: var(--navy);
+}
+.big-idea .step-cue-label { font-size: 21px; }
+.big-idea .guided-step-icon {
+  display: inline;
+  width: auto;
+  height: auto;
+  flex: none;
+  background: none;
+  border-radius: 0;
+  font-size: 24px;
+  margin-right: 8px;
+}
+/* The big numeral already states the order, so the "Step 1 / Paso 1" pill is
+   pure repetition here — it only competed with the cue label for attention. */
+.big-idea .step-badge { display: none; }
+
+/* Bilingual text inside a CHIP or a SUMMARY must stay on one line. The global
+   \`.lang-en + .lang-es\` rule (a deliberate anti-fading treatment for prose)
+   turns both languages into stacked, teal-ruled blocks, which rendered these
+   as "Start" / "Empieza" on two lines with a stray vertical bar. Prose keeps
+   the stacked treatment; chips get an inline separator instead. */
+.big-idea .step-cue-label .lang-es,
+.big-idea .step-detail summary .lang-es {
+  display: inline;
+  margin: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+.big-idea .step-detail summary .lang-es::before {
+  content: " · ";
+  color: var(--muted);
+}
+/* A path stop is a vertical column, so its two languages stack — but without
+   the teal rule, which reads as a stray bar inside a small centred card. */
+.big-idea .concept-quick-step .lang-es {
+  display: block;
+  margin: 2px 0 0;
+  padding-left: 0;
+  border-left: 0;
+}
+.big-idea .guided-step .step-lead {
+  font-size: 22px;
+  line-height: 1.5;
+  font-weight: 600;
+  margin: 0;
+}
+.big-idea .guided-step .step-lead.lang-es {
+  margin-top: 12px;
+  padding-left: 14px;
+  border-left: 4px solid var(--teal);
+}
+.big-idea .step-detail summary { font-size: 17px; }
+.big-idea .step-detail p { font-size: 19px; line-height: 1.5; }
+
+/* 5. Watch-for cues read at the same weight as the steps they support. */
+.big-idea .watch-for-list { padding: 18px 20px; margin-top: 20px; }
+.big-idea .watch-for-list li { gap: 14px; }
+.big-idea .watch-for-list p { font-size: 19px; line-height: 1.45; margin: 0; }
+.big-idea .watch-for-list .lang-en + .lang-es {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 4px solid var(--teal);
+}
+.big-idea .watch-icon { font-size: 26px; }
+
+/* Phones: the drawings are authored on a 640-unit canvas and scale down
+   cleanly, but the surrounding type needs a small step down so a step card
+   still fits a 375px viewport without a horizontal scroll. */
+@media (max-width: 620px) {
+  .big-idea .key-idea-banner p { font-size: 20px; }
+  .big-idea .guided-step { padding: 18px 16px; }
+  .big-idea .guided-step .step-lead { font-size: 20px; }
+  .big-idea .concept-visual-caption { font-size: 18px; }
+  /* Give the drawing back the frame's side padding — on a 375px phone that is
+     the difference between a 301px and a 341px picture. */
+  .big-idea .concept-visual-wrap { padding: 14px 8px; }
+  .big-idea .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .big-idea .concept-quick-step:not(:last-child)::after { content: none; }
+  .guided-step-num { width: 48px; height: 48px; flex: 0 0 48px; font-size: 26px; }
+}
+
+@media print {
+  .big-idea .concept-svg { max-width: 620px; margin: 0 auto; }
+  .big-idea .guided-step, .big-idea .concept-visual-wrap { break-inside: avoid; }
 }
 `;
