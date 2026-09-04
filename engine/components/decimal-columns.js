@@ -185,9 +185,12 @@ export function renderDecimalColumns(host, cfg = {}) {
   let current = null; // { destroy } of the mounted problem
   let _activeIdx = 0;
 
-  function mount(problem) {
+  // `viaChip` is false for the initial mount (page load) and true when a person
+  // picks a preset — the only time moving focus, and so scrolling the page to
+  // this widget, is what the user asked for.
+  function mount(problem, viaChip = false) {
     if (current) current.destroy();
-    current = renderProblem(wrap, problem, { typeIn });
+    current = renderProblem(wrap, problem, { typeIn, autofocus: viaChip });
   }
 
   // Preset chip bar (only when there is more than one problem).
@@ -207,7 +210,7 @@ export function renderDecimalColumns(host, cfg = {}) {
         [...bar.children].forEach((c, j) =>
           c.setAttribute("aria-pressed", j === i ? "true" : "false"),
         );
-        mount(problems[i]);
+        mount(problems[i], true);
       });
       bar.appendChild(chip);
     });
@@ -226,7 +229,7 @@ export function renderDecimalColumns(host, cfg = {}) {
 
 // Render a single problem into `wrap` (appended after any preset bar). Returns
 // { destroy } that removes just this problem's nodes.
-function renderProblem(wrap, problem, { typeIn }) {
+function renderProblem(wrap, problem, { typeIn, autofocus }) {
   const { op } = problem;
   const opSym = op === "-" ? "−" : "+";
   const a = Number(problem.a);
@@ -577,8 +580,12 @@ function renderProblem(wrap, problem, { typeIn }) {
   revealBtn.addEventListener("click", reveal);
   clearBtn.addEventListener("click", clear);
 
+  // Focus ONLY when a person just asked for this problem (a preset chip click).
+  // Focusing on mount scroll-jumps the browser to the widget on page load; on
+  // the family homework page that opened the page ~3,600px down on a blank
+  // stretch of a panel, with no hero and no tabs visible.
   const firstCell = (typeIn ? operandCells[0] : ansCells[0])?.inp;
-  if (firstCell) setTimeout(() => firstCell.focus(), 0);
+  if (firstCell && autofocus) setTimeout(() => firstCell.focus(), 0);
 
   return {
     destroy() {

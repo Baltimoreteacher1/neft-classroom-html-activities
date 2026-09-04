@@ -228,9 +228,24 @@ const TOPIC_RESOURCES = {
   ],
 };
 
-/** Lesson-specific overrides (optional extra or replacement links). */
-const LESSON_OVERRIDES = {
-  "3-2": [
+/**
+ * Hand-picked extra links, keyed by STANDARD rather than by lesson number.
+ *
+ * They used to be keyed by lesson id, and the 2026-08-10 Reveal-TOC renumber
+ * moved the lessons out from under them without moving the links: lesson 6-1
+ * became "Division Expressions with Fractions and Whole Numbers" and kept an
+ * override pointing at Khan Academy's "Introduction to exponents", while 7-1
+ * became "Explore Integers and Their Opposites" and kept "Writing equations
+ * from word problems". Both shipped under a paragraph promising these links go
+ * to "SPECIFIC videos about tonight's topic — not general math pages", which is
+ * the sort of claim a stale key turns into a lie.
+ *
+ * A standard code describes the mathematics, so it survives a renumber, and
+ * `validate:ccss` already fails the build on a standard no lesson declares.
+ */
+const STANDARD_OVERRIDES = {
+  // 6.AT.2 — ratios and unit rates.
+  "6.AT.2": [
     {
       titleEn: "Ratio tables walkthrough",
       titleEs: "Tablas de razones paso a paso",
@@ -238,7 +253,8 @@ const LESSON_OVERRIDES = {
       source: "Khan Academy",
     },
   ],
-  "7-1": [
+  // 6.AT.5 — writing equations from a situation.
+  "6.AT.5": [
     {
       titleEn: "Writing equations from word problems",
       titleEs: "Escribir ecuaciones desde problemas",
@@ -246,11 +262,21 @@ const LESSON_OVERRIDES = {
       source: "Khan Academy",
     },
   ],
-  "6-1": [
+  // 6.NOS.1 — dividing fractions by fractions. Was "Introduction to exponents".
+  "6.NOS.1": [
     {
-      titleEn: "Introduction to exponents",
-      titleEs: "Introducción a exponentes",
-      url: `${KA}/math/cc-sixth-grade-math/x0267d782:cc-6th-exponents-and-order-of-operations/cc-6th-exponents/v/introduction-to-exponents`,
+      titleEn: "Dividing a whole number by a fraction",
+      titleEs: "Dividir un número entero entre una fracción",
+      url: `${KA}/math/arithmetic/fraction-arithmetic/arith-review-dividing-fractions/v/dividing-a-whole-number-by-a-fraction`,
+      source: "Khan Academy",
+    },
+  ],
+  // 6.NOS.6 — integers and opposites. Was "Writing equations from word problems".
+  "6.NOS.6": [
+    {
+      titleEn: "Negative numbers and opposites",
+      titleEs: "Números negativos y opuestos",
+      url: `${KA}/math/cc-sixth-grade-math/cc-6th-negative-number-topics/cc-6th-negative-numbers-intro/v/negative-numbers-introduction`,
       source: "Khan Academy",
     },
   ],
@@ -260,11 +286,10 @@ export function baseLessonId(lessonId) {
   return String(lessonId || "").replace(/-flagship$/, "");
 }
 
-export function getExternalResources(config, lessonId) {
-  const base = baseLessonId(lessonId);
+export function getExternalResources(config, _lessonId) {
   const topic = detectVisualTopic(config);
   const fromTopic = TOPIC_RESOURCES[topic] || TOPIC_RESOURCES.fallback;
-  const override = LESSON_OVERRIDES[base] || [];
+  const override = STANDARD_OVERRIDES[String(config?.standard || "").trim()] || [];
 
   const merged = [...override];
   for (const link of fromTopic) {

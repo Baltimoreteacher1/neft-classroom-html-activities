@@ -22,17 +22,43 @@ const REQUIRED_MARKERS = [
     test: (h) => h.includes('class="homework-tab-bar"') && h.includes("switchHomeworkTab"),
   },
   {
+    // SIX STOPS. This used to require eight tab panels including "help" and
+    // "more" — which pinned a decision (that help and the online links are
+    // DESTINATIONS) rather than a defect. They are not: help is needed while
+    // working the Check problems, and as tab 8 of 10 it was unreachable exactly
+    // then. What must hold is that nothing was LOST, so the checks below assert
+    // reachability instead of tab-ness.
     id: "all-tabs",
     test: (h) =>
-      ["learn", "words", "together", "check", "help", "more", "play", "done"].every((t) =>
+      ["learn", "words", "together", "check", "play", "done"].every((t) =>
         h.includes(`data-tab-panel="${t}"`),
-      ),
+      ) && !h.includes('data-tab-panel="help"'),
   },
   {
+    // Help still exists, still carries the say / do-not-say coaching, and now
+    // opens over whichever stop the family is standing on.
+    id: "help-reachable",
+    test: (h) =>
+      h.includes('id="hw_help_drawer"') &&
+      h.includes("toggleHelpDrawer") &&
+      h.includes("stuck-heading"),
+  },
+  {
+    // The manipulatives moved into Together rather than disappearing.
+    id: "workbench-reachable",
+    test: (h) => h.includes("workbench-drawer") && h.includes("switchWorkbenchTool"),
+  },
+  {
+    // Every game lives in one arcade on the Play stop: the four family games
+    // plus the two that used to be tabs of their own (the quiz and the full
+    // Practice Arcade iframe).
     id: "play-game",
     test: (h) =>
       h.includes('data-tab-panel="play"') &&
-      (h.includes("hw-game") || h.includes("initHomeworkGame")),
+      (h.includes("hw-game") || h.includes("initHomeworkGame")) &&
+      ["memory", "tf", "sort", "wyr", "quiz", "full"].every((g) =>
+        h.includes(`data-arcade-game="${g}"`),
+      ),
   },
   {
     id: "external-links",

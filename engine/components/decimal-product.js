@@ -293,7 +293,11 @@ function mountProduct(host, cfg) {
   bR.addEventListener("click", reveal);
 
   host.appendChild(wrap);
-  setTimeout(() => inputEl(1).focus(), 0);
+  // Focus ONLY when a person just asked for this widget (a preset chip click).
+  // Focusing on mount scroll-jumps the browser to the widget on page load; on
+  // the family homework page that opened the page ~3,600px down on a blank
+  // stretch of a panel, with no hero and no tabs visible.
+  if (cfg.autofocus) setTimeout(() => inputEl(1).focus(), 0);
 
   return {
     destroy() {
@@ -322,10 +326,10 @@ export function renderDecimalProduct(host, cfg = {}) {
   bar.setAttribute("aria-label", "Pick a problem");
   const stage = document.createElement("div");
   let current = null;
-  const mount = (p) => {
+  const mount = (p, viaChip = false) => {
     if (current) current.destroy();
     stage.innerHTML = "";
-    current = mountProduct(stage, { ...cfg, a: p.a, b: p.b });
+    current = mountProduct(stage, { ...cfg, a: p.a, b: p.b, autofocus: viaChip });
   };
   presets.forEach((p, i) => {
     const chip = document.createElement("button");
@@ -337,7 +341,7 @@ export function renderDecimalProduct(host, cfg = {}) {
       [...bar.children].forEach((c, j) =>
         c.setAttribute("aria-pressed", j === i ? "true" : "false"),
       );
-      mount(presets[i]);
+      mount(presets[i], true);
     });
     bar.appendChild(chip);
   });

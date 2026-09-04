@@ -753,11 +753,35 @@ const CONCEPT_TONES = {
   navy: { bg: "#eef3fa", stroke: "#12355b" },
 };
 
+/**
+ * The figure heading, in ONE language.
+ *
+ * These titles are authored as "English / Espanol". Rendered literally, every
+ * family reads the same idea twice inside the picture, which is the duplication
+ * the page-level language control exists to remove. A `<span>` does not render
+ * inside SVG `<text>`, so the split has to be two positioned `<text>` elements
+ * carrying the language classes the page already toggles by class.
+ *
+ * English shows in English AND bilingual mode; Spanish replaces it only in
+ * Spanish mode, because two `<text>` at the same y would otherwise overlap.
+ * A title with no " / " (a worked line such as "Data: 2, 3, 3, 4, 8") is
+ * language-neutral and renders once.
+ */
+function conceptHeading(title) {
+  if (!title) return "";
+  const at = String(title).indexOf(" / ");
+  const attrs =
+    'x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b"';
+  if (at === -1) return `<text ${attrs}>${title}</text>`;
+  const en = title.slice(0, at).trim();
+  const es = title.slice(at + 3).trim();
+  if (!en || !es) return `<text ${attrs}>${title}</text>`;
+  return `<text class="concept-title-en" ${attrs}>${en}</text><text class="concept-title-es" lang="es" ${attrs}>${es}</text>`;
+}
+
 function conceptFrame({ label, tone = "teal", height, title, body }) {
   const t = CONCEPT_TONES[tone] || CONCEPT_TONES.teal;
-  const heading = title
-    ? `<text x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">${title}</text>`
-    : "";
+  const heading = conceptHeading(title);
   return `
       <svg viewBox="0 0 640 ${height}" class="concept-svg" role="img" aria-label="${label}" preserveAspectRatio="xMidYMid meet">
         <rect x="3" y="3" width="634" height="${height - 6}" rx="22" fill="${t.bg}" stroke="${t.stroke}" stroke-width="3"/>
@@ -1376,9 +1400,29 @@ function conceptVisual(config) {
   };
 }
 
+/* The label arrives as "English / Español". Split it HERE: the build-time
+   localizer that handles the other bilingual controls matches
+   `<button ... class="help-pop-btn" ...>`, and `[^>]*` cannot cross the `>`
+   characters that appear inside this button's own data-help JSON, so some of
+   these buttons kept both languages and others did not. */
 function helpButton(label, payload) {
   const data = String(JSON.stringify(payload)).replace(/&/g, "&amp;").replace(/'/g, "&#39;");
-  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)">${label}</button>`;
+  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)">${splitBilingualLabel(label)}</button>`;
+}
+
+/** "🔎 English text / Texto español" -> language-switched spans, icon kept. */
+export function splitBilingualLabel(raw) {
+  const text = String(raw ?? "");
+  if (!text.includes(" / ")) return text;
+  const lead = text.match(/^([^\p{L}\p{N}]*)([\s\S]*)$/u);
+  const icon = lead ? lead[1] : "";
+  const rest = lead ? lead[2] : text;
+  const at = rest.indexOf(" / ");
+  if (at === -1) return text;
+  const en = rest.slice(0, at).trim();
+  const es = rest.slice(at + 3).trim();
+  if (!en || !es) return text;
+  return `${icon}<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span>`;
 }
 
 export function selectQuickCheckProblems(practice = {}, config = {}) {
@@ -1421,8 +1465,8 @@ export function renderWelcomeBanner(config, lessonId) {
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">5 stops</span><span class="lang-es" lang="es">5 paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About 25 minutes</span><span class="lang-es" lang="es">Unos 25 minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">${HOMEWORK_STOP_COUNT} stops</span><span class="lang-es" lang="es">${HOMEWORK_STOP_COUNT} paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About ${HOMEWORK_TOTAL_MINUTES} minutes</span><span class="lang-es" lang="es">Unos ${HOMEWORK_TOTAL_MINUTES} minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
 
@@ -1448,22 +1492,6 @@ export function renderWelcomeBanner(config, lessonId) {
     </header>`;
 }
 
-/**
- * Tonight's Path — a visual roadmap of the 5 core stops through the homework,
- * so a family opening a 10-tab page knows exactly where to go and how long it
- * takes. Stops light up as they are visited (see updateJourneyMap in
- * HOMEWORK_TABS_JS; visits persist per lesson in localStorage). The extra tabs
- * (Workbench, Arcade, Play, Help, More) stay available but are framed as
- * optional, which is what makes the page feel followable instead of endless.
- */
-const JOURNEY_STOPS = [
-  { id: "learn", icon: "📖", en: "Learn", es: "Aprender", min: 5 },
-  { id: "words", icon: "📚", en: "Words", es: "Palabras", min: 3 },
-  { id: "together", icon: "🤝", en: "Together", es: "Juntos", min: 7 },
-  { id: "check", icon: "✅", en: "Check", es: "Repaso", min: 10 },
-  { id: "done", icon: "🎉", en: "Done", es: "Listo", min: 1 },
-];
-
 /* The 10-minute plan. Lives INSIDE the hero: a family who is short on time
    needs to see it before they scroll, and it used to sit in a second nav card
    that competed with the tab bar for the same job. */
@@ -1485,37 +1513,6 @@ export function renderQuickPlan() {
           <span class="lang-es" lang="es">💛 Corto y tranquilo vale más que largo y estresante. Diez minutos concentrados hoy ya son un logro.</span>
         </p>
       </details>`;
-}
-
-/**
- * The progress rail — five stops on one line, directly under the sticky tab
- * bar. It replaced a full-width "Tonight's Path" card that duplicated the tab
- * bar's job: the page opened with a dark hero, then a second nav, then a third
- * (the tabs) before any mathematics appeared. The rail keeps the roadmap
- * (order, position, what is done) at a glance and costs one line.
- */
-export function renderJourneyMap() {
-  const stopsHtml = JOURNEY_STOPS.map(
-    (s, i) => `
-      <li class="hw-rail-item">
-        <button type="button" class="hw-rail-stop" data-journey-stop="${s.id}" onclick="switchHomeworkTab('${s.id}')"
-          aria-label="Go to ${s.en}, stop ${i + 1} of 5, about ${s.min} minutes">
-          <span class="hw-rail-dot"><span class="hw-rail-icon" aria-hidden="true">${s.icon}</span><span class="hw-rail-check" aria-hidden="true">✓</span></span>
-          <span class="hw-rail-label"><span class="lang-en">${s.en}</span><span class="lang-es" lang="es">${s.es}</span></span>
-        </button>
-      </li>`,
-  ).join("");
-
-  return `
-    <nav class="hw-rail" aria-label="Tonight's path">
-      <span class="hw-rail-title">
-        <span class="lang-en">Tonight's path</span><span class="lang-es" lang="es">La ruta de hoy</span>
-      </span>
-      <ol class="hw-rail-track">
-        <span class="hw-rail-line" aria-hidden="true"><span class="hw-rail-line-fill" id="hw_rail_fill"></span></span>
-        ${stopsHtml}
-      </ol>
-    </nav>`;
 }
 
 export function renderLearningTonight(config) {
@@ -1642,7 +1639,7 @@ export function renderTryTogether(config, lessonId = "") {
         </div>
       </div>
       <div class="parent-coach-prompt">
-        <strong>💬 Parent Coach / Guía para familias:</strong>
+        <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
         <span class="lang-en">Ask: "Which option makes more sense or is the better deal, and why? Show me with numbers or pictures."</span>
         <span class="lang-es" lang="es">Pregunta: "¿Qué opción tiene más sentido o es mejor opción, y por qué? Muéstramelo con números o dibujos."</span>
       </div>`;
@@ -1656,7 +1653,7 @@ export function renderTryTogether(config, lessonId = "") {
         </div>
       </div>
       <div class="parent-coach-prompt">
-        <strong>💬 Parent Coach / Guía para familias:</strong>
+        <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
         <span class="lang-en">Ask: "Look at the steps closely. What is the one thing they forgot to check?"</span>
         <span class="lang-es" lang="es">Pregunta: "Mira los pasos con atención. ¿Qué fue lo que olvidó revisar?"</span>
       </div>`;
@@ -1670,7 +1667,7 @@ export function renderTryTogether(config, lessonId = "") {
         </div>
       </div>
       <div class="parent-coach-prompt">
-        <strong>💬 Family role / Rol de la familia:</strong>
+        <strong>💬 <span class="lang-en">Family role:</span><span class="lang-es" lang="es">Rol de la familia:</span></strong>
         <span class="lang-en">Listen without interrupting for 1 minute, then ask: "Can you show me one quick example?"</span>
         <span class="lang-es" lang="es">Escuchen sin interrumpir por 1 minuto, luego pregunten: "¿Puedes mostrarme un ejemplo rápido?"</span>
       </div>`;
@@ -1795,7 +1792,7 @@ export function renderStuckSection(config) {
       <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
       <div class="stuck-grid">
         <div class="stuck-panel stuck-say">
-          <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
+          <h3 class="stuck-heading">✅ <span class="lang-en">What to say</span><span class="lang-es" lang="es">Qué decir</span></h3>
           <ul>
             ${tips.say
               .map(
@@ -1806,7 +1803,7 @@ export function renderStuckSection(config) {
           </ul>
         </div>
         <div class="stuck-panel stuck-dont">
-          <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
+          <h3 class="stuck-heading">🚫 <span class="lang-en">What NOT to say</span><span class="lang-es" lang="es">Qué evitar</span></h3>
           <ul>
             ${tips.dontSay
               .map(
@@ -1865,7 +1862,7 @@ export function renderCelebration() {
       </div>
 
       <div class="parent-signoff-container card-ish">
-        <h3 class="signoff-title">✍️ Parent Sign-off & Feedback / Firma del padre y comentarios</h3>
+        <h3 class="signoff-title">✍️ <span class="lang-en">Parent Sign-off &amp; Feedback</span><span class="lang-es" lang="es">Firma del padre y comentarios</span></h3>
         
         <!-- Active Form -->
         <div id="signoff_form_wrapper">
@@ -1902,7 +1899,7 @@ export function renderCelebration() {
           </div>
 
           <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
-            <span class="lang-en">Confirm & Save / Confirmar y Guardar</span>
+            <span class="lang-en">Confirm &amp; Save</span>
           </button>
         </div>
 
@@ -1918,17 +1915,17 @@ export function renderCelebration() {
               <p class="cert-detail"><strong id="display_parent_name"></strong></p>
               <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
-                <p class="cert-note-title"><strong>Note to teacher / Nota para el maestro:</strong></p>
+                <p class="cert-note-title"><strong><span class="lang-en">Note to teacher:</span><span class="lang-es" lang="es">Nota para el maestro:</span></strong></p>
                 <p id="display_parent_note" class="cert-note-content"></p>
               </div>
             </div>
           </div>
           <div class="cert-actions">
             <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
-              <span class="lang-en">🖨️ Print Certificate / Imprimir certificado</span>
+              <span class="lang-en">🖨️ Print Certificate</span>
             </button>
             <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
-              <span class="lang-en">Edit sign-off / Editar firma</span>
+              <span class="lang-en">Edit sign-off</span>
             </button>
           </div>
         </div>
@@ -1964,13 +1961,18 @@ export function renderCelebration() {
 // coreCount is the number of problems outside the collapsed "more practice"
 // block — 6 on every lesson today, but passed in so the copy can't drift if the
 // selection changes.
+/* Minutes come from the Check stop's own entry in HOMEWORK_TABS, so the tab
+   button, the hero total and this paragraph cannot disagree. They did: the hero
+   promised 25 minutes across 5 stops, the rail billed Check at 10, and this
+   paragraph asked for 15-20 — three numbers for one stop, on one screen. */
 export function renderQuickCheckIntro(coreCount = 6) {
+  const mins = HOMEWORK_TABS.find((t) => t.id === "check")?.min ?? 8;
   return `
     <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the ${coreCount} problems below. The extra practice at the bottom is optional.</span>
-        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los ${coreCount} problemas de abajo. La práctica extra al final es opcional.</span>
+        <span class="lang-en">⏱️ About <strong>${mins} minutes</strong> for the ${coreCount} problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Unos <strong>${mins} minutos</strong> para los ${coreCount} problemas de abajo. La práctica extra al final es opcional.</span>
       </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
@@ -3591,7 +3593,7 @@ export function renderFamilyActivityCorner(topic) {
   return `
     <div class="fam-act-corner card-ish" aria-label="Family activity corner">
       <div class="fam-act-head">
-        <span class="fam-act-badge">🏡 FAMILY ACTIVITY CORNER / RINCÓN DE ACTIVIDADES</span>
+        <span class="fam-act-badge">🏡 <span class="lang-en">FAMILY ACTIVITY CORNER</span><span class="lang-es" lang="es">RINCÓN DE ACTIVIDADES</span></span>
         <p class="fam-act-lead">
           <span class="lang-en">No screens needed — three quick activities with things already in your home. Pick ONE tonight!</span>
           <span class="lang-es" lang="es">Sin pantallas: tres actividades rápidas con cosas que ya tienen en casa. ¡Escojan UNA hoy!</span>
@@ -5196,23 +5198,34 @@ const ARCADE_GAMES = [
   { id: "tf", icon: "🎯", en: "True or False?", es: "¿Verdadero o falso?" },
   { id: "sort", icon: "🗂️", en: "Sort It!", es: "¡A clasificar!" },
   { id: "wyr", icon: "🤔", en: "Would You Rather?", es: "¿Qué prefieres?" },
+  // The last two used to be whole tabs of their own ("Play" and "Arcade"), each
+  // holding exactly one game. As tabs they read as two more required stops and
+  // measured 454 and 374 characters — a tab bar entry apiece for one game. They
+  // are games, so they belong in the arcade with the other four.
+  { id: "quiz", icon: "⚡", en: "Quick Quiz", es: "Reto rápido" },
+  { id: "full", icon: "🕹️", en: "Big Arcade", es: "Sala grande" },
 ];
 
-export function renderFamilyGameBreak(topic) {
+export function renderFamilyGameBreak(topic, extras = {}) {
   const pairs = familyGamePairs(topic);
   const tf = familyTfQuestions(topic);
   const sort = familySortGame(topic);
   const wyr = familyWyr(topic);
   const payload = JSON.stringify({ pairs, tf, sort, wyr }).replace(/</g, "\\u003c");
+  const games = ARCADE_GAMES.filter(
+    (g) => (g.id !== "quiz" || extras.quizHtml) && (g.id !== "full" || extras.arcadeUrl),
+  );
 
-  const picker = ARCADE_GAMES.map(
-    (g, i) => `
+  const picker = games
+    .map(
+      (g, i) => `
         <button type="button" class="fam-arcade-chip${i === 0 ? " is-active" : ""}" data-arcade-game="${g.id}"
           onclick="showArcadeGame('${g.id}')" aria-pressed="${i === 0 ? "true" : "false"}">
           <span class="fam-arcade-chip-icon" aria-hidden="true">${g.icon}</span>
           <span class="lang-en">${g.en}</span><span class="lang-es" lang="es">${g.es}</span>
         </button>`,
-  ).join("");
+    )
+    .join("");
 
   return `
     <div class="fam-game-break card-ish" id="fam_game_break">
@@ -5312,6 +5325,31 @@ export function renderFamilyGameBreak(topic) {
         </div>
         <p class="fam-wyr-progress" id="fam_wyr_progress" aria-live="polite"></p>
       </div>
+${
+  extras.quizHtml
+    ? `
+      <div class="fam-game-card" id="fam_quiz_game" data-arcade-panel="quiz" hidden>${extras.quizHtml}</div>`
+    : ""
+}${
+  extras.arcadeUrl
+    ? `
+      <div class="fam-game-card" id="fam_full_game" data-arcade-panel="full" hidden>
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">🕹️ <span class="lang-en">Big Arcade</span><span class="lang-es" lang="es">Sala grande</span></h3>
+          <a class="btn btn-sm btn-secondary" href="${esc(extras.arcadeUrl)}" target="_blank" rel="noopener">
+            <span class="lang-en">↗ Full screen</span><span class="lang-es" lang="es">↗ Pantalla completa</span>
+          </a>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">The bigger review game for tonight's lesson — sort, match and choose. A wrong answer gives a hint and lets your student try again. No timer.</span>
+          <span class="lang-es" lang="es">El juego de repaso más grande para la lección de hoy — clasificar, emparejar y elegir. Si se equivocan, reciben una pista y lo intentan otra vez. Sin cronómetro.</span>
+        </p>
+        <div class="workbench-frame-wrap">
+          <iframe class="arcade-frame" data-src="${esc(extras.arcadeUrl)}" title="Practice Arcade" loading="lazy"></iframe>
+        </div>
+      </div>`
+    : ""
+}
     </div>`;
 }
 
@@ -5637,7 +5675,7 @@ export function renderSkillPowerUp(config, topic = "expressions") {
     <section class="guided-section card section-powerup" aria-label="Skill Power-Up Challenge">
       <div class="powerup-header">
         <div class="powerup-title-wrap">
-          <span class="powerup-tag">⚡ SKILL POWER-UP / RETO DE PODER</span>
+          <span class="powerup-tag">⚡ <span class="lang-en">SKILL POWER-UP</span><span class="lang-es" lang="es">RETO DE PODER</span></span>
           <h3 class="powerup-question">
             <span class="lang-en">${esc(powerUp.qEn)}</span>
             <span class="lang-es" lang="es">${esc(powerUp.qEs)}</span>
@@ -5843,7 +5881,7 @@ export function renderLearnTab(config, visualLabHtml = "") {
 
   const spotlightHtml = `
     <div class="real-world-spotlight card-ish">
-      <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">${spotlight.icon}</span> <span>WHY THIS MATTERS / ¿POR QUÉ IMPORTA?</span></div>
+      <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">${spotlight.icon}</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
       <h3 class="spotlight-title">
         <span class="lang-en">${esc(spotlight.titleEn)}</span>
         <span class="lang-es" lang="es">${esc(spotlight.titleEs)}</span>
@@ -5859,7 +5897,7 @@ export function renderLearnTab(config, visualLabHtml = "") {
       <div class="misconception-head">
         <span class="mis-icon" aria-hidden="true">⚠️</span>
         <div>
-          <strong><span class="lang-en">Watch Out / Ojo con esto:</span><span class="lang-es" lang="es">Cuidado con este error común:</span></strong>
+          <strong><span class="lang-en">Watch out:</span><span class="lang-es" lang="es">Cuidado con este error común:</span></strong>
           <p class="mis-trap">
             <span class="lang-en">${esc(mis.trapEn)}</span>
             <span class="lang-es" lang="es">${esc(mis.trapEs)}</span>
@@ -5916,7 +5954,7 @@ export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
   return `<div ${tabPanelAttrs("words", true)}>${inner.replace(/<section[^>]*>|<\/section>/g, "")}</div>`;
 }
 
-export function renderTogetherTab(config, lessonId = "") {
+export function renderTogetherTab(config, lessonId = "", workbenchHtml = "") {
   const inner = renderTryTogether(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
   const mathTalkHtml = `
     <div class="math-talk-hub card-ish" id="math_talk_card">
@@ -5940,32 +5978,42 @@ export function renderTogetherTab(config, lessonId = "") {
     <div ${tabPanelAttrs("together", true)}>
       ${inner}
       ${mathTalkHtml}
-      ${renderFamilyGameBreak(detectVisualTopic(config))}
       ${renderFamilyActivityCorner(detectVisualTopic(config))}
       <div class="scratchpad-inline-toggle">
         <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
           ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
         </button>
       </div>
+      ${workbenchHtml}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('workbench')">
-          <span class="lang-en">Next: Explore Math Workbench ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Explorar Pizarra de Matemáticas ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('check')">
+          <span class="lang-en">Next: Try the problems ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Resolver los problemas ➔</span>
         </button>
       </div>
     </div>`;
 }
 
-export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", moreHtml = "") {
+export function renderCheckTab(
+  quickCheckIntro,
+  warmupHtml,
+  challengeHtml = "",
+  moreHtml = "",
+  coreCount = 6,
+) {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
 
+  /* The goal is the number of problems that are actually here. It used to read
+     "Complete 3 problems" beside six problems, under a status bar counting
+     "0 / 6" — so a family could finish the stated goal and still be told they
+     were half done. */
   const starsBar = `
     <div class="stars-to-win-bar">
       <div class="stars-to-win-title">
         <span>⭐</span>
         <div>
-          <span class="lang-en"><strong>3 Stars to Win:</strong> Complete 3 problems to finish tonight's goal!</span>
-          <span class="lang-es" lang="es"><strong>3 Estrellas para Ganar:</strong> ¡Completen 3 problemas para terminar la meta de hoy!</span>
+          <span class="lang-en"><strong>Tonight's goal:</strong> finish the ${coreCount} problems below. Stop any time — your work saves itself.</span>
+          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los ${coreCount} problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
         </div>
       </div>
       <div class="stars-milestone-chips" aria-hidden="true">
@@ -5987,7 +6035,7 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
   const scratchpadToggle = `
     <div class="scratchpad-inline-toggle">
       <button type="button" class="btn btn-sm btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
-        ✏️ <span class="lang-en">Open Scratchpad / Draw work</span><span class="lang-es" lang="es">Abrir Pizarra / Dibujar trabajo</span>
+        ✏️ <span class="lang-en">Open scratchpad</span><span class="lang-es" lang="es">Abrir pizarra</span>
       </button>
     </div>`;
 
@@ -5995,8 +6043,8 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
     <div class="goal-reached-banner" id="goal_reached_banner" hidden>
       <span class="goal-icon" aria-hidden="true">🌟</span>
       <div class="goal-text">
-        <strong><span class="lang-en">Goal Reached! 3 Stars Earned!</span><span class="lang-es" lang="es">¡Meta Cumplida! ¡3 Estrellas Ganadas!</span></strong>
-        <p><span class="lang-en">Awesome job! You can keep solving or head to the <strong>Victory Lap</strong> tab to claim your certificate!</span><span class="lang-es" lang="es">¡Excelente trabajo! Pueden seguir resolviendo o ir a la pestaña <strong>Listo</strong> para reclamar su certificado.</span></p>
+        <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
+        <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to celebrate and sign off.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para celebrar y firmar.</span></p>
       </div>
       <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
         <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
@@ -6018,7 +6066,7 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
               <span class="lang-es" lang="es">Problemas más fáciles para practicar la idea. Hagan estos primero juntos.</span>
             </p>
             <div class="parent-coach-prompt">
-              <strong>💬 Parent Coach / Guía para familias:</strong>
+              <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
               <span class="lang-en">Ask: "What do you notice first about this problem? Can you draw or write the first step?"</span>
               <span class="lang-es" lang="es">Pregunta: "¿Qué notas primero sobre este problema? ¿Puedes dibujar o escribir el primer paso?"</span>
             </div>
@@ -6086,54 +6134,25 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
 }
 
 // Math Workbench tab — embeds the shared whiteboard so families can show their
-// work without leaving the homework page. The iframe is lazy-loaded on first
-// open (see HOMEWORK_TABS_JS) so it never slows down the rest of the page.
-// Practice Arcade for tonight's lesson — links to the shared per-lesson game
-// engine (math/games/practice-arcade). Iframe is lazy-loaded on first open so
-// the Phaser game never slows down the rest of the homework page.
-export function renderArcadeTabPanel(lessonId) {
-  const url = `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`;
+/**
+ * The manipulatives, as a drawer inside Together rather than a tab of their
+ * own. They are a tool you reach for while working a problem, not a place you
+ * travel to — and as tab 4 of 10 they sat between "Together" and "Check",
+ * interrupting the one sequence the page is trying to get a family to walk.
+ * Closed by default: a family that needs fraction strips opens them.
+ */
+export function renderWorkbenchTools() {
   return `
-    <div ${tabPanelAttrs("arcade", true)}>
-      <section class="guided-section card section-arcade" aria-label="Practice Arcade">
-        <h2 class="section-title">🕹️ Practice Arcade / Sala de juegos</h2>
-        <p class="bilingual-block">
-          <span class="lang-en">A quick, no-timer review game for tonight's lesson — sort, match, and choose. A wrong answer just gives a hint and lets your student try again.</span>
-          <span class="lang-es" lang="es">Un juego de repaso sin reloj para la lección de hoy — clasificar, emparejar y elegir. Si se equivocan, reciben una pista y pueden intentar de nuevo.</span>
-        </p>
-        <p class="workbench-openrow">
-          <a class="btn btn-secondary" href="${url}" target="_blank" rel="noopener">
-            <span class="lang-en">↗ Play full screen</span>
-            <span class="lang-es" lang="es">↗ Jugar en pantalla completa</span>
-          </a>
-        </p>
-        <div class="workbench-frame-wrap">
-          <iframe class="arcade-frame" data-src="${url}" title="Practice Arcade" loading="lazy"></iframe>
-        </div>
-      </section>
-    </div>`;
-}
-
-export function renderWorkbenchTab() {
-  return `
-    <div ${tabPanelAttrs("workbench", true)}>
-      <section class="guided-section card section-workbench" aria-label="Math Workbench">
-        <div class="workbench-hero-header">
-          <div class="workbench-title-group">
-            <span class="workbench-badge">🧮 VIRTUAL MANIPULATIVE STUDIO / ESTUDIO DIGITAL</span>
-            <h2 class="section-title">Math Workbench / Pizarra de matemáticas</h2>
-            <p class="bilingual-block workbench-lead">
-              <span class="lang-en">Explore interactive math tools right here, or open the full workspace in a new tab. Select a tool to model tonight's ideas!</span>
-              <span class="lang-es" lang="es">Exploren herramientas interactivas aquí mismo, o abran la pizarra completa en otra pestaña. ¡Elijan una herramienta para modelar ideas!</span>
-            </p>
-          </div>
-          <div class="workbench-actions-top">
-            <a class="btn btn-primary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
-              <span class="lang-en">Open Full Workbench ↗</span>
-              <span class="lang-es" lang="es">Abrir Pizarra Completa ↗</span>
-            </a>
-          </div>
-        </div>
+    <details class="workbench-drawer">
+      <summary class="workbench-drawer-summary">
+        <span class="workbench-drawer-icon" aria-hidden="true">🧮</span>
+        <span class="workbench-drawer-text">
+          <strong><span class="lang-en">Need to build it? Open the math tools</span><span class="lang-es" lang="es">¿Necesitan construirlo? Abran las herramientas</span></strong>
+          <small><span class="lang-en">Fraction strips, a coordinate grid, ratio tape and decimal columns</span><span class="lang-es" lang="es">Fracciones, cuadrícula, cintas de razón y columnas decimales</span></small>
+        </span>
+        <span class="workbench-drawer-chevron" aria-hidden="true">▾</span>
+      </summary>
+      <div class="workbench-drawer-body">
 
         <!-- Tool Selection Tabs -->
         <div class="wb-tool-bar" role="tablist" aria-label="Workbench tools">
@@ -6173,7 +6192,7 @@ export function renderWorkbenchTab() {
               </div>
             </div>
             <div class="fraction-stage-canvas" id="fraction_stage_canvas">
-              <div class="fraction-row ref-row"><div class="frac-tile tile-1">1 Whole / Entero (1.0)</div></div>
+              <div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>
             </div>
           </div>
 
@@ -6181,7 +6200,7 @@ export function renderWorkbenchTab() {
           <div class="wb-panel" id="wb_panel_coords" hidden>
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Click anywhere on the grid to plot an (x, y) point and see its quadrant:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula para marcar un punto (x, y) y ver su cuadrante:</span></span>
-              <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — Origin / Origen</span>
+              <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — <span class="lang-en">Origin</span><span class="lang-es" lang="es">Origen</span></span>
             </div>
             <div class="coord-canvas-wrap">
               <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
@@ -6256,25 +6275,19 @@ export function renderWorkbenchTab() {
 
         <p class="workbench-openrow">
           <a class="btn btn-secondary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
-            <span class="lang-en">🧮 Open the Math Workbench ↗</span>
-            <span class="lang-es" lang="es">🧮 Abrir la Pizarra de matemáticas ↗</span>
+            <span class="lang-en">🧮 Open the full Math Workbench ↗</span>
+            <span class="lang-es" lang="es">🧮 Abrir la Pizarra completa ↗</span>
           </a>
         </p>
-        <div class="tab-flow-nav">
-          <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('check')">
-            <span class="lang-en">Next: Check Problems &amp; Earn Stars ➔</span>
-            <span class="lang-es" lang="es">Siguiente: Resolver Problemas y Ganar Estrellas ➔</span>
-          </button>
-        </div>
-      </section>
-    </div>`;
+      </div>
+    </details>`;
 }
 
-export function renderHelpTab(config) {
+/** The body of the "Stuck?" drawer. No longer a tab — see renderHelpDrawer. */
+export function renderHelpContent(config) {
   const stuck = renderStuckSection(config).replace(/<section[^>]*>|<\/section>/g, "");
   const tips = stuckTips(config);
   return `
-    <div ${tabPanelAttrs("help", true)}>
       ${stuck}
       <div class="help-hub card-ish">
         <h3 class="section-title">💡 Quick help topics / Temas de ayuda</h3>
@@ -6286,11 +6299,17 @@ export function renderHelpTab(config) {
             )
             .join("")}
         </ul>
-      </div>
-    </div>`;
+      </div>`;
 }
 
-export function renderMoreTab(config, lessonId) {
+/**
+ * The "learn more online" links, no longer a tab. They ride inside the Stuck?
+ * drawer, because a family hunting for a Khan Academy video is a family that is
+ * already stuck — and as tab 9 of 10 the paper-version download (the offline
+ * path for a family with no device) was the single least discoverable thing on
+ * the page.
+ */
+export function renderMoreContent(config, lessonId) {
   const links = getExternalResources(config, lessonId);
   // Every lesson with a homework page also ships a printable .docx, but nothing
   // linked to it — families without a device at home had no paper path.
@@ -6308,7 +6327,6 @@ export function renderMoreTab(config, lessonId) {
         </a>`
     : "";
   return `
-    <div ${tabPanelAttrs("more", true)}>
       <section class="guided-section card section-more" aria-label="Learn more online">
         <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
         <a href="/curriculum/ai-hub/#students" target="_blank" rel="noopener" class="ai-lab-cta">
@@ -6345,13 +6363,35 @@ export function renderMoreTab(config, lessonId) {
             )
             .join("")}
         </ul>
-      </section>
-    </div>`;
+      </section>`;
 }
 
-export function renderPlayTabPanel(config) {
-  const inner = renderPlayTab(config).replace(/<section[^>]*>|<\/section>/g, "");
-  return `<div ${tabPanelAttrs("play", true)}>${inner}</div>`;
+/**
+ * The Play stop: every game in one arcade. This used to be three separate
+ * tabs — a "Play" tab holding one quiz, an "Arcade" tab holding one iframe,
+ * and four more games buried at the bottom of Together, where the two that a
+ * family reached depended entirely on how far they had scrolled.
+ */
+export function renderPlayTabPanel(config, lessonId = "") {
+  const quizHtml = renderPlayTab(config).replace(/<section[^>]*>|<\/section>/g, "");
+  const arcadeUrl = lessonId
+    ? `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`
+    : "";
+  return `
+    <div ${tabPanelAttrs("play", true)}>
+      <h2 class="section-title">🎮 Play together / Juguemos juntos</h2>
+      <p class="bilingual-block play-intro">
+        <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
+        <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
+      </p>
+      ${renderFamilyGameBreak(detectVisualTopic(config), { quizHtml, arcadeUrl })}
+      <div class="tab-flow-nav">
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Next: Finish up ➔</span>
+          <span class="lang-es" lang="es">Siguiente: Terminar ➔</span>
+        </button>
+      </div>
+    </div>`;
 }
 
 export function renderProblemHintButton(problem, visual = "") {
@@ -6383,22 +6423,38 @@ export function renderDoneTab() {
   return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
 }
 
-// Order follows the real family-homework flow: understand the concept, learn the
-// vocab (vocab before any activity), do the guided activity together, work it on
-// the scratch pad, check understanding, then practice games, then reference
-// help/links, then finish. Tab nav + progress read this DOM order directly.
+/**
+ * SIX STOPS, ONE ROW, EVERY ONE OF THEM REAL.
+ *
+ * This was ten tabs, and four of them were not destinations:
+ *   Arcade  — 374 characters and an iframe: one game.
+ *   Play    — 454 characters: one game.
+ *   Workbench — a tool you reach for WHILE working, not a place you go.
+ *   Help    — the same, and needed most on the Check stop, which is precisely
+ *             where a family could not see it without abandoning their work.
+ * Ten tabs also needed a second navigation (a five-stop rail) underneath to
+ * explain which of the ten actually mattered — 208px of chrome on a phone
+ * before a word of mathematics, and two controls competing for one job.
+ *
+ * So: the two orphan games moved into the arcade on the Play stop, the
+ * workbench moved into Together (where the manipulatives get used), Help
+ * became a button that floats over every stop, and the "More" links moved to
+ * Done, where a family that wants to keep going is standing. Six stops now
+ * mean six things worth doing, the tab bar IS the rail, and `min` is the
+ * single source of truth for how long tonight takes.
+ */
 const HOMEWORK_TABS = [
-  { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
-  { id: "words", icon: "📚", en: "Words", es: "Palabras" },
-  { id: "together", icon: "🤝", en: "Together", es: "Juntos" },
-  { id: "workbench", icon: "🧮", en: "Workbench", es: "Pizarra" },
-  { id: "check", icon: "✅", en: "Check", es: "Repaso" },
-  { id: "arcade", icon: "🕹️", en: "Arcade", es: "Sala de juegos" },
-  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
-  { id: "help", icon: "💬", en: "Help", es: "Ayuda" },
-  { id: "more", icon: "🌐", en: "More", es: "Más" },
-  { id: "done", icon: "🎉", en: "Done", es: "Listo" },
+  { id: "learn", icon: "📖", en: "Learn", es: "Aprender", min: 5 },
+  { id: "words", icon: "📚", en: "Words", es: "Palabras", min: 3 },
+  { id: "together", icon: "🤝", en: "Together", es: "Juntos", min: 6 },
+  { id: "check", icon: "✅", en: "Check", es: "Repaso", min: 8 },
+  { id: "play", icon: "🎮", en: "Play", es: "Jugar", min: 5 },
+  { id: "done", icon: "🎉", en: "Done", es: "Listo", min: 3 },
 ];
+
+/** Minutes the hero advertises. Derived, so the two can never disagree. */
+export const HOMEWORK_TOTAL_MINUTES = HOMEWORK_TABS.reduce((n, t) => n + t.min, 0);
+export const HOMEWORK_STOP_COUNT = HOMEWORK_TABS.length;
 
 export function renderScratchpadHtml() {
   return `
@@ -6432,40 +6488,69 @@ export function renderScratchpadHtml() {
     </div>`;
 }
 
-/* The five stops a family is asked to walk are the primary row; the five extra
-   surfaces are real but optional, so they sit behind a divider and read as
-   lighter. Ten equal tabs told a family that ten things were required, which
-   is the single biggest reason this page felt like a chore. */
-const CORE_TAB_IDS = new Set(["learn", "words", "together", "check", "done"]);
-
-export function renderHomeworkTabs(panelsHtml) {
+/**
+ * One navigation, not two. Each tab carries its own stop number, its own
+ * minutes and its own "done" tick, so the bar answers the three questions the
+ * separate rail was added to answer — where am I, how long is this, what have
+ * we finished — without a second row competing with it for the same job.
+ */
+export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
   const tabCount = HOMEWORK_TABS.length;
   const scratchpad = renderScratchpadHtml();
   const tabBtn = (t, i) => `
-            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${CORE_TAB_IDS.has(t.id) ? " is-core" : " is-bonus"}${i === 0 ? " is-active" : ""}"
+            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
               aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
-              data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
+              aria-label="${esc(t.en)} — stop ${i + 1} of ${tabCount}, about ${t.min} minutes"
+              data-tab="${t.id}" data-stop="${i + 1}" onclick="switchHomeworkTab('${t.id}')">
+              <span class="tab-step" aria-hidden="true">${i + 1}</span>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
+              <span class="tab-min" aria-hidden="true">${t.min} min</span>
+              <span class="tab-done" aria-hidden="true">✓</span>
             </button>`;
-
-  const core = HOMEWORK_TABS.filter((t) => CORE_TAB_IDS.has(t.id));
-  const bonus = HOMEWORK_TABS.filter((t) => !CORE_TAB_IDS.has(t.id));
 
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
-        <nav class="homework-tab-bar" role="tablist" aria-label="Family homework sections">
-          ${core.map((t) => tabBtn(t, HOMEWORK_TABS.indexOf(t))).join("")}
-          <span class="homework-tab-divider" aria-hidden="true"></span>
-          <span class="homework-tab-bonus-label" aria-hidden="true"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Extra</span></span>
-          ${bonus.map((t) => tabBtn(t, HOMEWORK_TABS.indexOf(t))).join("")}
+        <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
+          ${HOMEWORK_TABS.map(tabBtn).join("")}
         </nav>
-        ${renderJourneyMap()}
+        <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
         ${scratchpad}
         ${panelsHtml}
+      </div>
+    </div>
+    ${helpDrawerHtml}`;
+}
+
+/**
+ * Help, as a button that floats over every stop instead of a tab you have to
+ * leave your work to visit. "What do I say when they're stuck" is needed
+ * DURING the Check problems; as tab 8 of 10 it was unreachable exactly when it
+ * mattered. The "learn more online" links ride along, because a family looking
+ * for a video is a family that is already stuck.
+ */
+export function renderHelpDrawer(stuckHtml, moreHtml) {
+  return `
+    <button type="button" class="hw-stuck-fab" id="hw_stuck_fab" onclick="toggleHelpDrawer()"
+      aria-expanded="false" aria-controls="hw_help_drawer">
+      <span class="hw-stuck-fab-icon" aria-hidden="true">💬</span>
+      <span class="hw-stuck-fab-label"><span class="lang-en">Stuck?</span><span class="lang-es" lang="es">¿Atorados?</span></span>
+    </button>
+    <div class="hw-help-drawer" id="hw_help_drawer" role="dialog" aria-modal="true"
+      aria-label="If your student gets stuck" hidden>
+      <div class="hw-help-drawer-scrim" onclick="toggleHelpDrawer()"></div>
+      <div class="hw-help-drawer-sheet">
+        <div class="hw-help-drawer-head">
+          <strong><span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atoran</span></strong>
+          <button type="button" class="hw-help-drawer-close" onclick="toggleHelpDrawer()" aria-label="Close help">✕</button>
+        </div>
+        <div class="hw-help-drawer-body">
+          ${stuckHtml}
+          ${moreHtml}
+        </div>
       </div>
     </div>`;
 }
@@ -6697,6 +6782,14 @@ function showArcadeGame(id) {
     c.classList.toggle('is-active', on);
     c.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
+  // The two games that used to be tabs boot the same way they did then: the
+  // quiz on first view, and the Phaser arcade iframe only once someone asks for
+  // it, so it never costs the rest of the page anything.
+  if (id === 'quiz' && typeof initHomeworkGame === 'function') initHomeworkGame();
+  if (id === 'full') {
+    var af = document.querySelector('.arcade-frame');
+    if (af && !af.getAttribute('src') && af.dataset.src) af.setAttribute('src', af.dataset.src);
+  }
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
 }
 
@@ -6855,33 +6948,54 @@ function initFamilyGames() {
 
 /* Tonight's Path roadmap: light up the current stop, keep a persistent check
    on every stop the family has visited for THIS lesson. */
+/* Progress lives ON the tab bar now, not on a second rail underneath it: each
+   tab gets a tick once it has been opened, and the hairline under the bar fills
+   to the furthest stop reached. One control, one answer to "where are we". */
 function updateJourneyMap(tabId) {
-  const stops = document.querySelectorAll('[data-journey-stop]');
-  if (!stops.length) return;
+  const tabs = document.querySelectorAll('.homework-tab-btn');
+  if (!tabs.length) return;
   let visited = {};
   try { visited = JSON.parse(localStorage.getItem(journeyStorageKey()) || '{}') || {}; } catch (e) {}
   if (tabId && !visited[tabId]) {
     visited[tabId] = true;
     try { localStorage.setItem(journeyStorageKey(), JSON.stringify(visited)); } catch (e) {}
   }
-  const order = ['learn', 'words', 'together', 'check', 'done'];
-  stops.forEach(function (s) {
-    const id = s.dataset.journeyStop;
-    s.classList.toggle('is-current', id === tabId);
-    s.classList.toggle('is-done', !!visited[id]);
+  let furthest = -1;
+  tabs.forEach(function (btn, i) {
+    const id = btn.dataset.tab;
+    const done = !!visited[id];
+    btn.classList.toggle('is-done', done);
+    if (done || id === tabId) furthest = i;
   });
-  // Fill the connecting line up to the furthest stop reached, so the rail
-  // reads as progress and not just as five buttons.
-  const fill = document.getElementById('hw_rail_fill');
+  const fill = document.getElementById('hw_tab_track_fill');
   if (fill) {
-    let furthest = -1;
-    order.forEach(function (id, i) { if (visited[id]) furthest = i; });
-    const cur = order.indexOf(tabId);
-    if (cur > furthest) furthest = cur;
-    const pct = furthest <= 0 ? 0 : (furthest / (order.length - 1)) * 100;
+    const pct = furthest <= 0 ? 0 : (furthest / (tabs.length - 1)) * 100;
     fill.style.width = pct + '%';
   }
 }
+
+/* Help is a drawer over the current stop, not a place you travel to. Opening it
+   never takes a family off the problem they are stuck on. */
+function toggleHelpDrawer() {
+  const drawer = document.getElementById('hw_help_drawer');
+  const fab = document.getElementById('hw_stuck_fab');
+  if (!drawer) return;
+  const open = drawer.hidden;
+  drawer.hidden = !open;
+  document.body.classList.toggle('hw-drawer-open', open);
+  if (fab) fab.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) {
+    drawer.querySelector('.hw-help-drawer-close')?.focus();
+  } else if (fab) {
+    fab.focus();
+  }
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape') return;
+  const drawer = document.getElementById('hw_help_drawer');
+  if (drawer && !drawer.hidden) toggleHelpDrawer();
+});
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -6890,8 +7004,18 @@ function syncHomeworkChromeHeights() {
   const tabH = tabBar ? Math.ceil(tabBar.getBoundingClientRect().height) : 72;
   document.documentElement.style.setProperty('--hw-status-height', statusH + 'px');
   document.documentElement.style.setProperty('--hw-tab-height', tabH + 'px');
-  // Tab bar is a sticky TOP bar, so only reserve space for the bottom status bar.
-  document.body.style.paddingBottom = (statusH + 16) + 'px';
+  // Tab bar is a sticky TOP bar, so only the BOTTOM chrome needs reserving —
+  // but that is the status bar AND the floating pills stacked above it. The
+  // status bar now shows only on the Check stop, so on every other stop the
+  // reservation was 16px and the two pills sat on top of the panel's own
+  // "Next" button: on Together the Stuck? pill covered "Next: Try the
+  // problems". Measure the tallest floating control's real top edge instead.
+  var floatTop = 0;
+  document.querySelectorAll('.hw-stuck-fab, #nsr-root').forEach(function (el) {
+    var r = el.getBoundingClientRect();
+    if (r.height) floatTop = Math.max(floatTop, Math.ceil(window.innerHeight - r.top));
+  });
+  document.body.style.paddingBottom = (Math.max(statusH, floatTop) + 24) + 'px';
 }
 
 function switchHomeworkTab(tabId) {
@@ -6907,18 +7031,18 @@ function switchHomeworkTab(tabId) {
   panels.forEach(function(p) {
     p.hidden = p.dataset.tabPanel !== tabId;
   });
+  document.body.dataset.activeTab = tabId;
+  // The bottom bar exists on one stop, so its height changes as you move
+  // between them, and the floating controls are positioned off that height.
+  if (typeof syncHomeworkChromeHeights === 'function') syncHomeworkChromeHeights();
   const prog = document.getElementById('hw_tab_progress');
-  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '10';
+  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount
+    || String(tabs.length);
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   const fill = document.getElementById('tab_progress_fill');
   if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
-  if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
-  if (tabId === 'arcade') {
-    var af = document.querySelector('.arcade-frame');
-    if (af && !af.getAttribute('src') && af.dataset.src) af.setAttribute('src', af.dataset.src);
-  }
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
   }
@@ -7112,13 +7236,33 @@ function editParentSignoff() {
   if (printCert) printCert.classList.remove('is-signed');
 }
 
-function restoreParentSignoff() {
+/* THE DEFAULT IS ONE LANGUAGE, NOT TWO.
+   Bilingual was the default, so every family read every sentence twice — the
+   single largest reason this page felt long and technical. It is not a
+   translation cost: on lesson 6-1 the six panels hold ~9,240 words, and roughly
+   half of them are the other language's copy of the half you can read. A
+   Spanish-speaking family loses nothing, because a browser set to Spanish now
+   OPENS in Spanish instead of having to find a toggle; bilingual survives as a
+   choice for families who want to read both, which is a real audience and a
+   minority of it. Whatever a family last chose still wins over both. */
+function preferredLanguageMode() {
   try {
-    const langMode = localStorage.getItem('hw_lang_mode') || 'bilingual';
-    setLanguageMode(langMode);
-  } catch(e) {
-    setLanguageMode('bilingual');
-  }
+    const saved = localStorage.getItem('hw_lang_mode');
+    if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
+  } catch (e) {}
+  try {
+    const langs = navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || ''];
+    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) {
+      return 'es';
+    }
+  } catch (e) {}
+  return 'en';
+}
+
+function restoreParentSignoff() {
+  setLanguageMode(preferredLanguageMode());
 
   const lessonId = window.LESSON_ID || 'general';
   try {
@@ -7197,7 +7341,15 @@ function initHomeworkVocabPopups() {
   var re = new RegExp(match.regexSource, 'gi');
   // Never rewrite inside controls, inputs, the vocab flashcards (already defined
   // there), an already-wrapped term, or the popup itself.
-  var EXCL = 'button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, .vocab-card, .vocab-container, [data-no-vocab]';
+  var EXCL = 'button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, .vocab-card, .vocab-container, [data-no-vocab]'
+    // Headings, badges and chips are LABELS. A dotted underline inside
+    // "⚡ SKILL POWER-UP" or "📖 What we're learning tonight" is not an offer of
+    // help, it is a heading that has been vandalised — and "POWER" genuinely
+    // became a tappable definition button on lesson 6-1 because the bank
+    // defines "power" as an exponent.
+    + ', h1, h2, h3, h4, .section-title, .fam-game-badge, .fam-game-h3, .step-badge'
+    + ', .tier-badge, .spotlight-badge, .workbench-badge, .hw-hero, .hw-hero *'
+    + ', .learning-word-chips, .homework-tab-bar, .powerup-badge, .achieve-name';
   var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
     acceptNode: function(node) {
       var parent = node.parentElement;
@@ -7209,7 +7361,18 @@ function initHomeworkVocabPopups() {
   });
   var nodes = [];
   for (var n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n);
+  // ONCE PER TERM, PER PANEL. The matcher is fed the whole 349-term Grade 6
+  // vocabulary bank and used to wrap EVERY occurrence of every hit, which on
+  // lesson 6-1 produced 236 dotted-underline buttons — five of them inside one
+  // sentence: "we use models to [divide] BOTH ways: a [whole number] divided by
+  // a [fraction], and a [fraction] divided by a [whole number]". A page where
+  // every other word is a control does not read as helpful, it reads as
+  // technical, and the second offer of the same definition helps nobody. The
+  // first sighting in each panel keeps the link; the rest stay plain text.
+  var seenInPanel = Object.create(null);
   nodes.forEach(function(textNode) {
+    var panel = textNode.parentElement && textNode.parentElement.closest('[data-tab-panel]');
+    var panelId = (panel && panel.dataset.tabPanel) || '_';
     var text = textNode.textContent;
     var frag = document.createDocumentFragment();
     var cursor = 0, changed = false, m;
@@ -7218,6 +7381,19 @@ function initHomeworkVocabPopups() {
       var key = norm(m[0]);
       var idx = Object.prototype.hasOwnProperty.call(lookup, key) ? lookup[key] : -1;
       if (idx < 0 || !surfaceFits(m[0], list[idx])) continue;
+      // The matcher's word boundaries are ASCII: JS \\b treats an accented
+      // letter as a non-word character, so "rate" matched INSIDE the Spanish
+      // "asegurate" (written with an accent) and turned the middle of a Spanish
+      // sentence into a definition button. Re-check both edges against Unicode
+      // letters before wrapping anything.
+      var before = m.index > 0 ? text.charAt(m.index - 1) : '';
+      var after = text.charAt(m.index + m[0].length);
+      // Escaped twice on purpose: this file is the CSS/JS source, emitted through
+      // a template literal, so a single backslash here reaches the page as none.
+      if ((before && /\\p{L}/u.test(before)) || (after && /\\p{L}/u.test(after))) continue;
+      var seenKey = panelId + '|' + key;
+      if (seenInPanel[seenKey]) continue;
+      seenInPanel[seenKey] = true;
       frag.appendChild(document.createTextNode(text.slice(cursor, m.index)));
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -7488,6 +7664,10 @@ body.obj-popup-open { overflow: hidden; }
   color: var(--teal-ink);
   margin-bottom: 6px;
 }
+/* The "ENGLISH" / "ESPAÑOL" column header only means something when both
+   columns are on screen. In single-language mode it labelled the one column
+   there is, which reads as a form field rather than a paragraph. */
+body:not(.lang-mode-bilingual) .lang-label { display: none; }
 .lang-en { margin: 0 0 6px; }
 /* Spanish is a primary language for our families: keep it fully legible, not a faded subtitle. */
 .lang-es { margin: 0; color: var(--ink); font-style: normal; }
@@ -7750,19 +7930,22 @@ body.obj-popup-open { overflow: hidden; }
   gap: 16px;
 }
 /* Sticky TOP chrome: tab bar + progress row */
+/* ONE TAB-BAR STYLESHEET.
+   There were two, ~1,200 lines apart, describing incompatible bars — the first
+   a wrapping grid of five-per-row cards, the second an "Apple-grade floating
+   pill" scroller that overrode ~20 properties with !important and left the
+   first one's non-important flex-basis and flex-wrap:wrap standing. What a phone rendered was neither: three ragged rows, 125px tall,
+   half the tabs in the muted grey the first sheet used for INACTIVE and the
+   second for nothing, so five real destinations read as disabled. */
 .homework-tab-chrome {
   position: sticky;
   top: 0;
   z-index: 1001;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 0 12px;
-  background: rgba(255,255,255,0.97);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  padding: 10px 0 0;
+  background: rgba(255, 255, 255, 0.97);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
-  box-shadow: 0 4px 16px rgba(18,53,91,0.06);
 }
 .homework-tab-progress {
   display: flex;
@@ -7777,72 +7960,92 @@ body.obj-popup-open { overflow: hidden; }
 .homework-tab-panels { min-height: 200px; }
 .tab-panel-inner[hidden] { display: none !important; }
 .tab-panel-inner:not([hidden]) { display: block; }
+
+/* Six stops fit one row at every width this page is read at, so the bar is a
+   grid and never scrolls, wraps or hides a stop behind a fade. */
 .homework-tab-bar {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 2px;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x proximity;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+  padding: 0 0 8px;
 }
-/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
-   (Help, More, Done) sat off-screen. A trailing fade was the first attempt, but a
-   28px fade is a weak hint for 2x overflow and five tabs stayed undiscoverable.
-   Wrap into two rows of five instead: every tab is visible, and the compact row
-   height keeps the whole strip under ~104px of a phone viewport. */
 .homework-tab-btn {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  min-width: 66px;
-  min-height: 56px;
-  padding: 8px 10px;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  cursor: pointer;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
+  justify-content: flex-start;
+  gap: 2px;
+  min-height: 62px;
+  padding: 7px 2px 6px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
   font-family: var(--font-display);
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--muted);
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  line-height: 1.15;
+  /* --ink, not --muted: an inactive stop is somewhere you have not been yet,
+     not somewhere you are barred from. The old grey read as disabled. */
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
-.homework-tab-btn:hover { border-color: var(--teal); color: var(--navy); }
+.homework-tab-btn:hover { background: var(--teal-light); border-color: var(--teal); }
 .homework-tab-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .homework-tab-btn.is-active {
   background: var(--teal-ink);
   border-color: var(--teal-ink);
   color: var(--white);
-  box-shadow: 0 2px 8px rgba(31,166,162,0.30);
+  box-shadow: 0 2px 8px rgba(31, 166, 162, .30);
 }
-.tab-icon { font-size: 20px; line-height: 1; }
-.tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
-.tab-es { font-size: 11.5px; color: var(--muted); font-weight: 600; }
-.homework-tab-btn.is-active .tab-es { color: var(--white); }
+.tab-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--navy);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+.homework-tab-btn.is-active .tab-step { background: rgba(255, 255, 255, .28); color: var(--white); }
+/* The tick replaces the step number once a stop has been opened, in place, so
+   "what have we done" costs no extra row. */
+.homework-tab-btn.is-done .tab-step { background: var(--teal); color: var(--white); font-size: 0; }
+.homework-tab-btn.is-done .tab-step::after { content: "✓"; font-size: 11px; }
+.tab-icon { font-size: 17px; line-height: 1; }
+.tab-label { display: block; text-align: center; }
+.tab-es { font-size: 11px; font-weight: 600; }
+.tab-min { font-size: 10px; font-weight: 600; opacity: .72; }
+.tab-done { display: none; }
+body.lang-mode-es .tab-en { display: none; }
+body:not(.lang-mode-es) .tab-es { display: none; }
 
-@media (max-width: 700px) {
-  .homework-tab-bar {
-    flex-wrap: wrap;
-    overflow-x: visible;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-  .homework-tab-btn {
-    flex: 0 0 calc(20% - 5px);
-    min-width: 0;
-    min-height: 48px;
-    padding: 5px 2px;
-    font-size: 11.5px;
-  }
-  .tab-icon { font-size: 17px; }
-  /* The stacked EN + ES gloss is what makes each button two lines tall — three
-     rows of tabs would eat 28% of a phone screen. In bilingual/English mode the
-     English label carries it; ES-only mode already hides .tab-en and shows this. */
-  body:not(.lang-mode-es) .tab-es { display: none; }
+/* The hairline that used to be a whole second navigation. */
+.homework-tab-track {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.homework-tab-track-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--teal);
+  transition: width .35s ease;
+}
+
+@media (max-width: 560px) {
+  .homework-tab-btn { min-height: 56px; padding: 6px 1px 5px; font-size: 11px; }
+  .tab-icon { font-size: 15px; }
+  /* Minutes are the first thing to go: the stop number, the name and the tick
+     all still fit, and the hero states the total. */
+  .tab-min { display: none; }
 }
 
 .help-pop-btn {
@@ -8335,12 +8538,16 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
-  /* Printing un-hides every panel, but these three are screen-only: an embedded
-     arcade iframe, a live game, and a link-out. On paper they were blank or
-     meaningless pages in the middle of the packet. */
-  [data-tab-panel="arcade"],
+  /* Printing un-hides every panel, but the games are screen-only: an embedded
+     arcade iframe, a memory grid, a live quiz. On paper they were blank or
+     meaningless pages in the middle of the packet. The workbench is screen-only
+     for the same reason and now lives inside Together, so it is hidden by its
+     own class rather than by a panel id that no longer exists — "arcade" and
+     "workbench" were tabs, and their selectors outlived them here. */
   [data-tab-panel="play"],
-  [data-tab-panel="workbench"] { display: none !important; }
+  .workbench-drawer,
+  .hw-stuck-fab,
+  .hw-help-drawer { display: none !important; }
   body { padding-bottom: 0; }
   /* Browsers drop background colours when printing. Several distinctions on this
      sheet are carried by fill alone — the EN/ES columns, the highlighted worked
@@ -9011,84 +9218,6 @@ header.homework-header,
   margin-top: 6px !important;
 }
 
-/* Apple-Grade Floating Pill Tab Bar */
-.homework-tab-chrome {
-  position: sticky;
-  top: 12px;
-  z-index: 100;
-  margin-bottom: 24px;
-}
-.homework-tab-bar {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  background: rgba(255, 255, 255, 0.94) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(226, 232, 240, 0.9) !important;
-  border-radius: 99px !important;
-  padding: 6px 8px !important;
-  box-shadow: 0 6px 24px -2px rgba(15, 23, 42, 0.06) !important;
-  overflow-x: auto !important;
-  scrollbar-width: none !important;
-  scroll-snap-type: x mandatory !important;
-}
-.homework-tab-bar::-webkit-scrollbar { display: none; }
-
-.homework-tab-btn {
-  display: inline-flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 7px !important;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 99px !important;
-  padding: 8px 16px !important;
-  min-height: auto !important;
-  min-width: auto !important;
-  font-family: var(--font-display) !important;
-  font-size: 13.5px !important;
-  font-weight: 700 !important;
-  color: #64748b !important;
-  cursor: pointer !important;
-  white-space: nowrap !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  scroll-snap-align: start !important;
-}
-.homework-tab-btn:hover {
-  color: #0f172a !important;
-  background: rgba(241, 245, 249, 0.9) !important;
-}
-.homework-tab-btn.is-active {
-  background: #0f172a !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18) !important;
-}
-.homework-tab-btn.is-active .tab-icon {
-  transform: scale(1.1);
-}
-.tab-icon {
-  font-size: 15px !important;
-  line-height: 1 !important;
-  transition: transform 0.2s ease;
-}
-.tab-label {
-  display: inline-flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-}
-.tab-es {
-  display: none !important;
-}
-body.lang-mode-es .tab-en {
-  display: none !important;
-}
-body.lang-mode-es .tab-es {
-  display: inline !important;
-  color: inherit !important;
-  font-size: inherit !important;
-}
-
 /* Cards & Content Shells */
 .guided-section.card,
 .card-ish {
@@ -9290,13 +9419,19 @@ body.lang-mode-es .tab-es {
   background: #1e293b !important;
 }
 
-/* Bottom status bar clean & hidden on non-practice tabs */
+/* The bottom bar belongs to the Check stop. Its comment already SAID "hidden on
+   non-practice tabs" and nothing hid it: it sat on all six stops, reporting
+   "Progress: 0 / 6" and offering "Check All" beside a vocabulary flashcard or a
+   memory game. body[data-active-tab] is stamped by switchHomeworkTab. */
 .bottom-status-bar {
   background: rgba(255, 255, 255, 0.94) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
   box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
+  display: none !important;
 }
 
 /* ==========================================================================
@@ -9674,118 +9809,109 @@ body.lang-mode-es .tab-es {
   .hw-hero .lang-toggle-btn { flex: 1; justify-content: center; padding: 8px 10px; }
 }
 
-/* ── Progress rail — five stops on one line under the tab bar ────────────── */
-.hw-rail {
-  display: flex;
+/* ── "Stuck?" — help that floats over the stop you are on ───────────────── */
+.hw-stuck-fab {
+  position: fixed;
+  right: 14px;
+  /* Clear of the sticky status bar, whose real height the runtime measures into
+     --hw-status-height. The Save/Resume launcher parks above this one. */
+  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 70px);
+  z-index: 1200;
+  display: inline-flex;
   align-items: center;
-  gap: 16px;
-  padding: 10px 16px 12px;
-  border-top: 1px solid var(--line);
-  background: #fff;
-}
-.hw-rail-title,
-.hw-rail-bonus {
-  flex: 0 0 auto;
-  font-size: 11px;
+  gap: 7px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 13.5px;
   font-weight: 800;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  color: var(--muted);
+  box-shadow: 0 6px 20px rgba(18, 53, 91, .28);
+  cursor: pointer;
 }
-.hw-rail-title { color: var(--teal-ink); }
-.hw-rail-title .lang-en + .lang-es,
-.hw-rail-bonus .lang-en + .lang-es,
-.hw-rail-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
-.hw-rail-track {
-  position: relative;
-  flex: 1 1 auto;
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 0;
-  padding: 0;
-  min-width: 0;
-}
-.hw-rail-line {
+.hw-stuck-fab:hover { background: var(--navy-light); }
+.hw-stuck-fab:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.hw-stuck-fab-icon { font-size: 16px; line-height: 1; }
+
+.hw-help-drawer { position: fixed; inset: 0; z-index: 1300; }
+.hw-help-drawer[hidden] { display: none; }
+.hw-help-drawer-scrim { position: absolute; inset: 0; background: rgba(18, 53, 91, .42); }
+.hw-help-drawer-sheet {
   position: absolute;
-  left: 6%;
-  right: 6%;
-  top: 13px;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--line);
-  overflow: hidden;
-}
-.hw-rail-line-fill {
-  display: block;
-  height: 100%;
-  width: 0;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--teal), var(--amber));
-  transition: width .45s cubic-bezier(.4, 0, .2, 1);
-}
-.hw-rail-item { position: relative; z-index: 1; }
-.hw-rail-stop {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: 86vh;
   display: flex;
   flex-direction: column;
+  background: var(--cream);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 40px rgba(18, 53, 91, .26);
+}
+.hw-help-drawer-head {
+  display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 0 6px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--navy);
+}
+.hw-help-drawer-close {
+  min-width: 44px;
   min-height: 44px;
-  background: none;
   border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
   cursor: pointer;
-  font-family: var(--font-body);
 }
-.hw-rail-dot {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 29px;
-  height: 29px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid var(--line);
-  font-size: 14px;
-  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+.hw-help-drawer-close:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.hw-help-drawer-body { overflow-y: auto; padding: 14px 16px 28px; -webkit-overflow-scrolling: touch; }
+.hw-help-drawer-body .guided-section.card { margin-bottom: 16px !important; }
+body.hw-drawer-open { overflow: hidden; }
+@media (min-width: 760px) {
+  .hw-help-drawer-sheet {
+    top: 0;
+    left: auto;
+    width: min(460px, 92vw);
+    max-height: none;
+    border-radius: 20px 0 0 20px;
+  }
 }
-.hw-rail-stop:hover .hw-rail-dot { transform: translateY(-2px) scale(1.06); border-color: var(--teal); }
-.hw-rail-stop:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; border-radius: 10px; }
-.hw-rail-check {
-  position: absolute;
-  right: -3px;
-  bottom: -3px;
-  display: none;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: var(--success);
-  color: #fff;
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 15px;
-  text-align: center;
-}
-.hw-rail-stop.is-done .hw-rail-dot { border-color: var(--success); background: var(--success-bg); }
-.hw-rail-stop.is-done .hw-rail-check { display: block; }
-.hw-rail-stop.is-current .hw-rail-dot {
-  border-color: var(--teal);
-  background: var(--teal-light);
-  box-shadow: 0 0 0 4px rgba(31,166,162,.16);
-}
-.hw-rail-label { font-size: 11.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
-.hw-rail-stop.is-current .hw-rail-label { color: var(--teal-ink); }
-.hw-rail-stop.is-done .hw-rail-label { color: var(--ink); }
 
-@media (max-width: 900px) {
-  .hw-rail-title, .hw-rail-bonus { display: none; }
-  .hw-rail { padding: 8px 10px 10px; gap: 0; }
+/* ── Math tools, as a drawer inside Together ─────────────────────────────── */
+.workbench-drawer {
+  margin-top: 18px;
+  border: 1.5px solid var(--teal);
+  border-radius: var(--radius-md);
+  background: var(--teal-light);
+  overflow: hidden;
 }
-@media (max-width: 460px) {
-  .hw-rail-label { display: none; }
-  .hw-rail-line { top: 14px; }
+.workbench-drawer-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
 }
+.workbench-drawer-summary::-webkit-details-marker { display: none; }
+.workbench-drawer-summary:focus-visible { outline: 3px solid var(--teal); outline-offset: -3px; }
+.workbench-drawer-icon { font-size: 22px; line-height: 1; }
+.workbench-drawer-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.workbench-drawer-text strong { color: var(--navy); font-family: var(--font-display); font-size: 15px; }
+.workbench-drawer-text small { color: var(--muted); font-size: 12.5px; }
+.workbench-drawer-chevron { color: var(--teal-ink); transition: transform .2s ease; }
+.workbench-drawer[open] .workbench-drawer-chevron { transform: rotate(180deg); }
+.workbench-drawer-body { padding: 4px 16px 18px; background: #fff; }
 
 /* ============================================================
    Family Activity Corner — hands-on activity cards on the Together tab.
@@ -10253,6 +10379,13 @@ export const BIG_IDEA_CSS = `
    <section> wrapper) so nothing else on the page inherits the scale.
    ============================================================ */
 .big-idea { margin-top: 4px; }
+
+/* The figure heading is language-switched, not bilingual (see conceptHeading).
+   Both <text> sit at the same y, so exactly one may ever be displayed: English
+   carries English AND bilingual mode; Spanish mode swaps them. */
+.concept-title-es { display: none; }
+body.lang-mode-es .concept-title-en { display: none; }
+body.lang-mode-es .concept-title-es { display: inline; }
 
 /* 1. One sentence, first, and big enough to read across a kitchen. */
 .big-idea .key-idea-banner {
