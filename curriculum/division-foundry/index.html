@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Pre-Unit 1 Review — The Division Foundry | Neft Teacher</title>
+    <title>Pre-Unit 1 Review — Order Up! | Neft Teacher</title>
     <meta
       name="description"
-      content="The Pre-Unit 1 review game — a calm, self-paced review of Grade 6 lessons 2.6, 2.7, 6.1 and 6.2 — every kind of division the unit teaches. Work the long-division tower step by step, slide the decimal point, cut tape with a blade, and rebuild Keep-Change-Flip by hand. 25 levels, four workshops, no timers."
+      content="The Pre-Unit 1 review game — you run a food truck, and every order is division from Grade 6 lessons 2.6, 2.7, 6.1 and 6.2, worked in your notebook. Perfect orders pay double, and the money upgrades your truck. Calm, self-paced, no timers."
     />
     <link rel="stylesheet" href="/assets/fonts/engine-body.css" />
     <style>
@@ -298,6 +298,54 @@
       .shelf.onpaper i.st3 { border-color: var(--brass); box-shadow: 0 0 10px rgba(237,181,74,.45); }
 
       .say .forged { display: block; margin-top: 8px; font-weight: 800; }
+      .nbcard {
+        display: flex; gap: 12px; align-items: flex-start;
+        background: repeating-linear-gradient(180deg, #fdf9ec 0 26px, #f5eed6 26px 27px);
+        border: 2px solid #e3d5a4; border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
+      }
+      .nb-em { font-size: 30px; line-height: 1; }
+      .nb-lead { font-weight: 900; color: var(--steel); }
+      .nb-sub { color: #8a7c53; font-size: 14px; font-weight: 600; margin-top: 2px; }
+      .nb-ok { font-weight: 900; color: var(--mint-lo); text-align: center; font-size: 19px; padding: 8px 0; }
+      .nb-open { font-weight: 900; color: var(--copper); margin-bottom: 10px; text-align: center; }
+
+      /* ── The foundry floor and build shop ─────────────────────────── */
+      .floor-scene {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 9px;
+        padding: 14px; border-radius: 16px; margin-bottom: 20px;
+        background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.18));
+        border: 1px solid rgba(255,255,255,.12);
+      }
+      .mach {
+        display: flex; flex-direction: column; align-items: center; gap: 5px;
+        padding: 12px 6px 9px; border-radius: 12px; text-align: center;
+        border: 2px dashed rgba(255,255,255,.16); color: #8fa9bd;
+      }
+      .mach .m-em { font-size: 30px; line-height: 1; }
+      .mach .m-name { font-size: 11px; font-weight: 800; }
+      .mach.up {
+        border: 2px solid var(--brass); color: #ffe9b8;
+        background: rgba(237,181,74,.12); box-shadow: 0 0 14px rgba(237,181,74,.28);
+        animation: machUp .4s cubic-bezier(.2,1.4,.4,1);
+      }
+      @keyframes machUp { from { transform: scale(.7); opacity: 0 } to { transform: none; opacity: 1 } }
+      .board-h { color: var(--brass); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; margin: 4px 0 10px; }
+      .shops { margin-bottom: 20px; }
+      .shop.contract p { font-size: 15px; }
+      .shop-panel {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 9px;
+      }
+      .buy-row {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.13);
+        border-radius: 13px; padding: 10px 13px; color: #eaf3fa;
+      }
+      .buy-row .m-em { font-size: 23px; }
+      .buy-row .buy-name { flex: 1 1 auto; font-weight: 800; font-size: 15px; }
+      .buy-row .buy-cost { font-weight: 900; color: var(--brass); white-space: nowrap; }
+      .buy-row .buy-done { font-weight: 900; color: var(--mint); }
+      .buy-row.owned { opacity: .75; }
+      .buy-row .b { padding: 8px 14px; font-size: 14px; }
       .cardlab { font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
       .slot { cursor: pointer; font: inherit; color: var(--steel); }
       .cell.dvd.hot { cursor: pointer; animation: hotPulse 1.1s infinite; }
@@ -310,15 +358,15 @@
 
     <header class="top">
       <div class="shell">
-        <div class="mark" aria-hidden="true">➗</div>
+        <div class="mark" aria-hidden="true">🚚</div>
         <div class="titles">
           <p class="kick">Pre-Unit 1 Review · Lessons 2.6 · 2.7 · 6.1 · 6.2</p>
-          <h1>The Division Foundry</h1>
+          <h1>Order Up!</h1>
         </div>
         <div class="gauges">
-          <div class="gauge"><b id="gStars">0</b><span>Stars</span></div>
-          <div class="gauge"><b id="gLv">0/25</b><span>Jobs</span></div>
-          <div class="gauge rankg"><b id="gRank">Apprentice 🔧</b><span>Rank</span></div>
+          <div class="gauge"><b id="gStars">$0</b><span>Earnings</span></div>
+          <div class="gauge"><b id="gLv">0/7</b><span>Upgrades</span></div>
+          <div class="gauge rankg"><b id="gRank">New Cook 🍳</b><span>Rank</span></div>
         </div>
       </div>
     </header>
@@ -326,13 +374,18 @@
     <main id="main">
       <div class="shell">
         <section class="screen on" id="scMap" aria-labelledby="mapH">
-          <h2 id="mapH" class="sr">Workshops</h2>
+          <h2 id="mapH" class="sr">Your food truck</h2>
           <p class="lede">
-            Four workshops, one idea: <strong>division</strong>. Every job here is
-            the real procedure — you run the steps yourself, the machine only
-            checks your work. Nothing is timed and nothing can be lost.
+            You run this food truck. Customers post <strong>orders</strong> —
+            division problems you work in your <strong>notebook</strong>. A
+            perfect order pays <strong>double</strong>, and the money upgrades
+            your truck, piece by piece. Nothing is timed and nothing can be lost.
           </p>
-          <div class="shops" id="shopGrid"></div>
+          <div class="floor-scene" id="floorScene" aria-label="Your food truck"></div>
+          <h3 class="board-h">🧾 Orders on the board</h3>
+          <div class="shops" id="contractRow"></div>
+          <h3 class="board-h">🚚 Upgrade your truck</h3>
+          <div class="shop-panel" id="shopPanel"></div>
           <p class="lede" id="mapNote" style="margin-top: 18px"></p>
         </section>
 
@@ -345,7 +398,7 @@
                 <div class="pips" id="playPips" aria-hidden="true"></div>
               </div>
               <span class="flame" id="flame" aria-hidden="true">🔥 ×0</span>
-              <button class="b ghost" id="bMap">← Workshops</button>
+              <button class="b ghost" id="bMap">← Back to the truck</button>
             </div>
             <div class="brief">
               <p class="goal" id="goal"></p>
@@ -353,7 +406,7 @@
             </div>
             <div class="floor" id="floor"></div>
             <div class="row">
-              <button class="b brass lg" id="bLock">Lock it in</button>
+              <button class="b brass lg" id="bLock">Serve it up</button>
               <button class="b ghost" id="bReset">Start over</button>
               <span class="grow"></span>
               <button class="b ghost" id="bHint">Need a hint?</button>
@@ -370,7 +423,7 @@
             <p class="rankline" id="doneStars"></p>
             <div id="doneShelf"></div>
             <p id="doneMsg" style="color: var(--muted); max-width: 62ch; margin: 0 auto 18px"></p>
-            <button class="b brass lg" id="bBack">Back to the workshops</button>
+            <button class="b brass lg" id="bBack">Back to the truck</button>
           </div>
         </section>
       </div>
@@ -379,35 +432,60 @@
     <script>
 (function () {
   "use strict";
-  var KEY = "neft-division-foundry-v2";
+  var KEY = "neft-division-foundry-v3";
   var PER = 5;
   var el = function (id) { return document.getElementById(id); };
   var say = function (m) { el("live").textContent = m; };
 
-  var state = { stars: {} };
-  try { var r = localStorage.getItem(KEY); if (r) state = JSON.parse(r) || state; state.stars = state.stars || {}; } catch (e) {}
+  /* THE GAME: you run a food truck. Customers post ORDERS — division
+     problems. You choose one, work it in your NOTEBOOK, and the pay depends on
+     how clean the solve was: a perfect first-try order pays double. Money buys
+     UPGRADES for the truck, and the truck filling out is the game you are
+     winning. No timers, nothing to lose, every choice yours: which order to
+     take, when to spend, what to build next. */
+  var state = { stars: {}, ingots: 0, built: {}, jobsDone: 0, celebrated: false };
+  try {
+    var r = localStorage.getItem(KEY);
+    if (r) { var parsed = JSON.parse(r) || {}; Object.assign(state, parsed); }
+    state.stars = state.stars || {}; state.built = state.built || {};
+  } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
   function k(w, l) { return w + ":" + l; }
   function starsOf(w, l) { return state.stars[k(w, l)] || 0; }
-  function cleared(w) { var n = 0; for (var i = 0; i < PER; i++) if (starsOf(w, i)) n++; return n; }
-  function allStars() { var t = 0; for (var q in state.stars) t += state.stars[q]; return t; }
-  function allCleared() { var t = 0; SHOPS.forEach(function (s) { t += cleared(s.id); }); return t; }
 
-  /* Every job forges an ITEM. The collection is the long-term game: a shelf per
-     workshop, the item's shine set by the stars it was forged with. */
-  var ITEMS = {
-    tower: [["🔩", "Bronze Rivet"], ["🛠️", "Forged Wrench"], ["⚙️", "Iron Gear"], ["🏗️", "Crane Hook"], ["👑", "Foundry Crown"]],
-    slide: [["📏", "Brass Rule"], ["🎚️", "Precision Slider"], ["🧭", "Point Compass"], ["⚖️", "Balance Scale"], ["🏆", "Decimal Trophy"]],
-    tape: [["✂️", "Tin Snips"], ["🎗️", "Ribbon Spool"], ["🪢", "Knotted Cord"], ["🧵", "Golden Thread"], ["🥇", "Cutter's Medal"]],
-    kcf: [["🔁", "Flip Hinge"], ["🃏", "Reciprocal Card"], ["🧩", "Fraction Cog"], ["💠", "Number Gem"], ["🏅", "Master Seal"]],
-    final: [["🔥", "Foundry Flame"], ["🥉", "Bronze Casting"], ["🥈", "Silver Casting"], ["🥇", "Gold Casting"], ["🏁", "Master's Standard"]],
-  };
-  var RANKS = [[0, "Apprentice 🔧"], [12, "Journeyman 🔨"], [30, "Master Smith ⚒️"], [50, "Grand Artificer 👑"]];
+  var MACHINES = [
+    { id: "griddle", em: "🍳", name: "Griddle", cost: 20 },
+    { id: "fridge", em: "🧊", name: "Cold Box", cost: 30 },
+    { id: "blender", em: "🥤", name: "Smoothie Blender", cost: 45 },
+    { id: "awning", em: "⛱️", name: "Striped Awning", cost: 60 },
+    { id: "menu", em: "🪧", name: "Menu Board", cost: 80 },
+    { id: "lights", em: "✨", name: "String Lights", cost: 100 },
+    { id: "sign", em: "🌟", name: "The Neon Sign", cost: 120 },
+  ];
+  function builtCount() { var n = 0; MACHINES.forEach(function (m) { if (state.built[m.id]) n++; }); return n; }
+  var RANKS = [[0, "New Cook 🍳"], [2, "Line Cook 🔪"], [4, "Sous-Chef 🧑‍🍳"], [6, "Head Chef ⭐"]];
   function rankName() {
-    var s = allStars(), out = RANKS[0][1];
-    RANKS.forEach(function (rr) { if (s >= rr[0]) out = rr[1]; });
+    var b = builtCount(), out = RANKS[0][1];
+    RANKS.forEach(function (rr) { if (b >= rr[0]) out = rr[1]; });
     return out;
   }
+
+  /* Contract difficulty per job (1-3 gears) and pay. Harder pays more — which
+     contract to take is a real decision, not a sequence. */
+  var DIFF = {
+    tower: [1, 1, 2, 2, 3],
+    slide: [1, 1, 2, 2, 3],
+    tape: [1, 1, 2, 2, 2],
+    kcf: [1, 1, 2, 3, 3],
+  };
+  var BASE_PAY = { 1: 10, 2: 16, 3: 24 };
+  function payFor(shopId, lv, stars) {
+    var base = BASE_PAY[DIFF[shopId][lv]];
+    return stars === 3 ? base * 2 : stars === 2 ? Math.round(base * 1.5) : base;
+  }
+  var CLIENTS = ["Coach Rivera\u2019s team", "The Robotics Club", "Room 214", "The PTA Bake Sale",
+    "The Marching Band", "The Chess Club", "The Soccer Tournament", "Ms. Lopez\u2019s class",
+    "The Science Fair", "The Yearbook Crew"];
 
   function sparks(n) {
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -442,43 +520,116 @@
   var run = null;
 
   function paintGauges() {
-    el("gStars").textContent = allStars();
-    el("gLv").textContent = allCleared() + "/" + SHOPS.length * PER;
+    el("gStars").textContent = "$" + state.ingots;
+    el("gLv").textContent = builtCount() + "/" + MACHINES.length;
     el("gRank").textContent = rankName();
   }
 
-  function shelfHTML(sid, onPaper) {
-    var out = '<span class="shelf' + (onPaper ? " onpaper" : "") + '" aria-hidden="true">';
-    for (var i = 0; i < PER; i++) {
-      var st = starsOf(sid, i);
-      out += "<i" + (st ? ' class="st' + st + '"' : "") + ">" + (st ? ITEMS[sid][i][0] : "·") + "</i>";
-    }
-    return out + "</span>";
+  /* Contract text per job, read from the same hoisted data the stations use. */
+  function contractText(shopId, lv) {
+    if (shopId === "tower") return W1_JOBS[lv].story;
+    if (shopId === "slide") { var j2 = W2_JOBS[lv]; return "A batch to portion out: " + j2.a + " ÷ " + j2.b + "."; }
+    if (shopId === "tape") return w3Data(lv).prompt;
+    var j4 = W4_JOBS[lv];
+    return "A trail-mix order: " + (j4.mixed ? j4.mixed.w + " " + j4.mixed.n + "/" + j4.mixed.d : j4.A.n + "/" + j4.A.d) + " ÷ " + j4.B.n + "/" + j4.B.d + ".";
   }
 
-  function paintMap() {
-    var g = el("shopGrid");
-    g.innerHTML = "";
-    SHOPS.forEach(function (s, idx) {
-      var done = cleared(s.id);
+  /* Three open contracts, favouring jobs not yet forged gold and covering
+     different lessons when possible. Rerolled each time the board renders —
+     turning a contract down costs nothing. */
+  function rollContracts() {
+    var pool = [];
+    SHOPS.forEach(function (sh) {
+      for (var lv = 0; lv < PER; lv++) pool.push({ shop: sh, lv: lv, stars: starsOf(sh.id, lv) });
+    });
+    pool.sort(function (a, b) { return a.stars - b.stars || Math.random() - 0.5; });
+    var offers = [];
+    pool.forEach(function (c) {
+      if (offers.length >= 3) return;
+      if (offers.some(function (o) { return o.shop.id === c.shop.id; })) return;
+      offers.push(c);
+    });
+    pool.forEach(function (c) {
+      if (offers.length >= 3 || offers.indexOf(c) !== -1) return;
+      offers.push(c);
+    });
+    return offers;
+  }
+
+  function paintFoundry() {
+    // The floor: your machines, built and yet-to-build.
+    var floor = el("floorScene");
+    floor.innerHTML = "";
+    MACHINES.forEach(function (m) {
+      var d = document.createElement("div");
+      d.className = "mach" + (state.built[m.id] ? " up" : "");
+      d.innerHTML = '<span class="m-em">' + (state.built[m.id] ? m.em : "·") + '</span><span class="m-name">' + m.name + "</span>";
+      floor.appendChild(d);
+    });
+
+    // The contracts board.
+    var row = el("contractRow");
+    row.innerHTML = "";
+    rollContracts().forEach(function (c, i) {
+      var d = DIFF[c.shop.id][c.lv];
+      var payGold = payFor(c.shop.id, c.lv, 3);
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "shop";
-      b.setAttribute("aria-label", s.name + ", lesson " + s.lesson + ". " + s.blurb + " " + done + " of " + PER + " jobs done.");
+      b.className = "shop contract";
+      b.setAttribute("aria-label", "Order from " + CLIENTS[(i * 7 + c.lv * 3 + c.shop.id.length) % CLIENTS.length] + ". " + contractText(c.shop.id, c.lv) + " Difficulty " + d + " of 3. Pays up to " + payGold + " dollars.");
       b.innerHTML =
-        '<span class="no">Workshop ' + (idx + 1) + " · Lesson " + s.lesson + "</span>" +
-        '<span class="em" aria-hidden="true">' + s.emoji + "</span>" +
-        "<h3>" + s.name + "</h3><p>" + s.blurb + "</p>" +
-        shelfHTML(s.id, false) +
-        '<span class="bar"><i style="width:' + (done / PER) * 100 + '%"></i></span>' +
-        '<span class="cnt">' + done + " / " + PER + " jobs</span>";
-      b.addEventListener("click", function () { begin(s.id, done >= PER ? 0 : done); });
-      g.appendChild(b);
+        '<span class="no">' + CLIENTS[(i * 7 + c.lv * 3 + c.shop.id.length) % CLIENTS.length] + " · Lesson " + c.shop.lesson + "</span>" +
+        '<span class="em" aria-hidden="true">' + c.shop.emoji + "</span>" +
+        '<p style="color:#eaf3fa;font-weight:800">' + contractText(c.shop.id, c.lv) + "</p>" +
+        '<span class="cnt">' + "🌶️".repeat(d) + "&nbsp; pays up to <strong>$" + payGold + "</strong>" +
+        (c.stars ? " · best so far " + "★".repeat(c.stars) : "") + "</span>";
+      b.addEventListener("click", function () { begin(c.shop.id, c.lv); });
+      row.appendChild(b);
     });
-    var left = SHOPS.length * PER - allCleared();
+
+    // The build shop.
+    var shopEl = el("shopPanel");
+    shopEl.innerHTML = "";
+    MACHINES.forEach(function (m) {
+      var owned = !!state.built[m.id];
+      var rowEl = document.createElement("div");
+      rowEl.className = "buy-row" + (owned ? " owned" : "");
+      rowEl.innerHTML =
+        '<span class="m-em" aria-hidden="true">' + m.em + '</span>' +
+        '<span class="buy-name">' + m.name + "</span>" +
+        (owned ? '<span class="buy-done">✓ built</span>'
+          : '<span class="buy-cost">$' + m.cost + "</span>");
+      if (!owned) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "b brass";
+        btn.textContent = "Build";
+        btn.disabled = state.ingots < m.cost;
+        btn.addEventListener("click", function () {
+          if (state.ingots < m.cost) return;
+          state.ingots -= m.cost;
+          state.built[m.id] = 1;
+          save(); sparks(16);
+          say(m.name + " installed.");
+          paintFoundry();
+          if (builtCount() === MACHINES.length && !state.celebrated) {
+            state.celebrated = true; save();
+            el("doneEm").textContent = "🚚";
+            el("doneH").textContent = "Your truck is the talk of the town!";
+            el("doneStars").textContent = "★★★";
+            el("doneMsg").textContent = "Every upgrade is installed, and every one of them was paid for with division worked in your notebook. Orders keep coming — the truck rolls on.";
+            show("scDone"); sparks(60);
+          }
+        });
+        rowEl.appendChild(btn);
+      }
+      shopEl.appendChild(rowEl);
+    });
+
+    var left = MACHINES.length - builtCount();
     el("mapNote").textContent = left
-      ? left + " job" + (left === 1 ? "" : "s") + " left. Every job you finish forges an item for its shelf — a clean, unaided solve forges it in gold."
-      : "Every item is forged. Replay any job to re-forge it brighter.";
+      ? "Take an order, work it in your notebook, get paid — perfect orders pay DOUBLE. " + left + " upgrade" + (left === 1 ? "" : "s") + " left."
+      : "The truck is complete. Orders keep paying — how high can the earnings go?";
     paintGauges();
   }
 
@@ -494,14 +645,15 @@
   function begin(id, lv) {
     var s = shopOf(id);
     run = { shop: s, lv: lv, tries: 0, wrong: 0, streak: 0, tier: 0, mod: null };
-    el("playLv").textContent = "Lesson " + s.lesson + " · Job " + (lv + 1) + " of " + PER + " · forging: " + ITEMS[s.id][lv][1] + " " + ITEMS[s.id][lv][0];
+    var d = DIFF[id][lv];
+    el("playLv").textContent = "Order · Lesson " + s.lesson + " · " + "🌶️".repeat(d) +
+      " · pays $" + payFor(id, lv, 3) + " for a perfect order, $" + payFor(id, lv, 2) + " with fixes, $" + payFor(id, lv, 1) + " rough";
     el("playH").textContent = s.name;
     var p = el("playPips"); p.innerHTML = "";
-    for (var i = 0; i < PER; i++) {
-      var d = document.createElement("i");
-      if (starsOf(id, i)) d.className = "done";
-      if (i === lv) d.className = "now";
-      p.appendChild(d);
+    for (var i = 0; i < d; i++) {
+      var pip = document.createElement("i");
+      pip.className = "now";
+      p.appendChild(pip);
     }
     el("say").className = "say"; el("say").textContent = "";
     el("tries").textContent = "";
@@ -511,7 +663,7 @@
     var floor = el("floor"); floor.innerHTML = "";
     run.mod = s.build(lv, api());
     show("scPlay");
-    say(s.name + ", job " + (lv + 1) + ". " + el("goal").textContent);
+    say(s.name + " order. " + el("goal").textContent);
   }
 
   /* The api handed to a station. `good` and `wrong` are the accountability
@@ -613,6 +765,78 @@
     return wrap;
   }
 
+  /* =======================================================================
+     Notebook-first. Every job is worked ON PAPER — the full method, in the
+     student's notebook. The screen states the job and takes the answer, and
+     that is all it does while things go well: a clean first strike forges
+     gold. A wrong answer is what opens the interactive bench underneath, as
+     remediation — find the slip step by step, or fix the page and enter
+     again. The scaffold is earned by the mistake, never handed out first.
+     ======================================================================= */
+  function notebookFirst(a, spec, buildInner) {
+    var solvedOnPaper = false, inner = null;
+    a.brief(spec.goal, "Notebook out — work the whole order on paper. The screen only takes your answer, and a perfect first try pays double.");
+
+    var nb = document.createElement("div");
+    nb.className = "nbcard";
+    nb.innerHTML =
+      '<span class="nb-em" aria-hidden="true">📓</span><div>' +
+      '<p class="nb-lead">Work it in your notebook — the full method, on paper.</p>' +
+      '<p class="nb-sub">A wrong answer opens the prep bench below so you can find the slip.</p></div>';
+    a.floor.appendChild(nb);
+    var entryHost = document.createElement("div");
+    a.floor.appendChild(entryHost);
+    var innerDiv = document.createElement("div");
+    innerDiv.style.marginTop = "16px";
+    a.floor.appendChild(innerDiv);
+
+    function renderEntry() {
+      entryHost.innerHTML = "";
+      mkEntry(entryHost, {
+        label: spec.label,
+        fields: spec.fields,
+        focus: false,
+        onSubmit: function (nums) {
+          if (spec.right(nums)) {
+            solvedOnPaper = true;
+            entryHost.innerHTML = '<p class="nb-ok">✓ Solved on paper. Serve it up.</p>';
+            a.good("Solved in your notebook.");
+            return true;
+          }
+          var opened = !inner;
+          if (!inner) {
+            innerDiv.innerHTML = '<p class="nb-open">The prep bench is open — work it step by step and find the slip.</p>';
+            var ia = Object.assign({}, a, { floor: innerDiv, lock: function () {}, brief: function () {} });
+            inner = buildInner(ia);
+          }
+          a.wrong(spec.feedback(nums) + (opened
+            ? " The prep bench below is open — or fix it in your notebook and enter again."
+            : " Fix it on paper and enter again, or keep working the bench."));
+          return false;
+        },
+      });
+    }
+    renderEntry();
+    a.lock(true);
+
+    return {
+      check: function () {
+        if (solvedOnPaper) return { ok: true, why: spec.answerText };
+        if (inner) {
+          var r = inner.check();
+          return r.ok ? { ok: true, why: spec.answerText } : r;
+        }
+        return { ok: false, why: "Work the order in your notebook and enter your answer above." };
+      },
+      hint: spec.hint,
+      reset: function () {
+        solvedOnPaper = false; inner = null;
+        innerDiv.innerHTML = "";
+        renderEntry();
+      },
+    };
+  }
+
   function lock() {
     if (!run || !run.mod) return;
     var res = run.mod.check();
@@ -627,7 +851,7 @@
       run.tries++;
       box.className = "say bad on";
       box.innerHTML = res.why;
-      el("tries").textContent = "Nothing is lost — keep working and lock in when it is done.";
+      el("tries").textContent = "Nothing is lost — keep working and serve it when it is done.";
       say("Not yet.");
       return;
     }
@@ -639,19 +863,18 @@
     else if (run.tier === 1 || run.wrong > 0 || run.tries > 0) st = run.wrong + run.tries > 4 ? 1 : 2;
     var key = k(run.shop.id, run.lv);
     if ((state.stars[key] || 0) < st) state.stars[key] = st;
+    var pay = payFor(run.shop.id, run.lv, st);
+    state.ingots += pay;
+    state.jobsDone++;
     save(); paintGauges();
-    var item = ITEMS[run.shop.id][run.lv];
     box.className = "say good on";
     box.innerHTML = "<strong>" + "★".repeat(st) + "</strong> " + res.why +
-      '<span class="forged">' + item[0] + " You forged the <strong>" + item[1] + "</strong>" +
-      (st === 3 ? " — in gold, first strike clean." : st === 2 ? " in silver." : " in bronze.") + "</span>";
+      '<span class="forged">💵 The customer pays <strong>$' + pay + "</strong>" +
+      (st === 3 ? " — DOUBLE, for a perfect first-try order." : st === 2 ? " — with a fix along the way." : " — a rough one, but served.") + "</span>";
     el("bLock").disabled = true; el("bHint").disabled = true;
     sparks(st * 10);
-    say("Correct. You forged the " + item[1] + ".");
-    setTimeout(function () {
-      if (run.lv + 1 < PER) begin(run.shop.id, run.lv + 1);
-      else endShop(run.shop);
-    }, 2100);
+    say("Correct. Paid " + pay + " dollars.");
+    setTimeout(function () { paintFoundry(); show("scMap"); }, 2100);
   }
 
   function hint() {
@@ -663,17 +886,6 @@
     el("bHint").textContent = run.tier >= 2 ? "No more hints" : "One more hint";
     el("bHint").disabled = run.tier >= 2;
     say("Hint. " + t.replace(/<[^>]+>/g, ""));
-  }
-
-  function endShop(s) {
-    var got = 0; for (var i = 0; i < PER; i++) got += starsOf(s.id, i);
-    var avg = Math.max(1, Math.round(got / PER));
-    el("doneEm").textContent = s.emoji;
-    el("doneH").textContent = s.name + " — all five items forged";
-    el("doneStars").textContent = "★".repeat(avg) + "☆".repeat(3 - avg);
-    el("doneShelf").innerHTML = shelfHTML(s.id, true);
-    el("doneMsg").textContent = s.closing + " " + got + " of 15 stars — replay any job to re-forge its item brighter.";
-    show("scDone"); sparks(34); paintMap();
   }
 
   /* =======================================================================
@@ -840,53 +1052,85 @@
   }
 
   /* ── Workshop 1 · Lesson 2.6 ─────────────────────────────────────── */
+  var W1_JOBS = [
+    { a: 168, b: 12, story: "168 pretzels, packed 12 to a tray. How many trays?" },
+    { a: 340, b: 5, story: "340 ounces of lemonade poured into 5 equal jugs." },
+    { a: 1344, b: 12, story: "1,344 napkins shared into 12 dispensers — the lesson\u2019s own numbers." },
+    { a: 936, b: 4, story: "936 tortilla chips split into 4 equal baskets." },
+    { a: 2565, b: 15, story: "2,565 gummy bears packed 15 to a bag." },
+  ];
   var W1 = {
     id: "tower", lesson: "2.6", emoji: "🏗️", name: "The Long-Division Tower",
-    blurb: "Compute every step of D · M · S · B yourself — typed, not multiple choice.",
-    closing: "Four moves, in the same order, every single time — and every number was yours.",
+    blurb: "Long division, worked in your notebook — the tower only opens if you slip.",
+    closing: "Four moves, in the same order, every single time — and the page they lived on was yours.",
     build: function (lv, a) {
-      var set = [
-        { a: 168, b: 12, story: "168 rivets, packed 12 to a box. How many boxes?" },
-        { a: 340, b: 5, story: "340 metres of cable cut into 5 equal reels." },
-        { a: 1344, b: 12, story: "1,344 bolts shared into 12 crates — the lesson's own problem." },
-        { a: 936, b: 4, story: "936 tiles laid in 4 equal rows." },
-        { a: 2565, b: 15, story: "2,565 washers packed 15 to a bag." },
-      ];
-      var j = set[lv];
-      a.brief(j.story, "Work the tower. Every value is typed by you — the foundry only checks your strike.");
-      var tw = buildTower(a.floor, j.a, j.b, a);
-      return {
-        check: function () {
-          if (!tw.isDone()) return { ok: false, why: "The tower is not finished — keep going until every digit has come down." };
-          var q = Math.floor(j.a / j.b), rem = j.a % j.b;
-          return { ok: true, why: j.a + " ÷ " + j.b + " = " + q + (rem ? " remainder " + rem : "") + "." };
+      var j = W1_JOBS[lv];
+      var q = Math.floor(j.a / j.b);
+      return notebookFirst(a, {
+        goal: j.story,
+        label: j.a + " ÷ " + j.b + " =",
+        fields: [{ label: "quotient" }],
+        right: function (n) { return n[0] === q; },
+        feedback: function (n) {
+          return n[0] > q
+            ? "Too big — multiply your answer by " + j.b + " in your notebook and see if it overshoots " + j.a + "."
+            : "Too small — your quotient times " + j.b + " leaves part of " + j.a + " unshared.";
         },
+        answerText: j.a + " ÷ " + j.b + " = " + q + ".",
         hint: function (t) {
-          if (t === 1) return "Say the four moves out loud as you go: <strong>Divide, Multiply, Subtract, Bring down</strong>. The lit chip tells you which one you are on.";
-          return "For the DIVIDE step, count up by " + j.b + ": " + j.b + ", " + j.b * 2 + ", " + j.b * 3 + ", " + j.b * 4 + " … stop at the last one that still fits, and count how many steps you took.";
+          if (t === 1) return "Set the tower up on paper: " + j.b + " outside the bracket, " + j.a + " inside. Then the four moves, in order, until every digit has come down.";
+          return "For each DIVIDE step, count up by " + j.b + ": " + j.b + ", " + j.b * 2 + ", " + j.b * 3 + ", " + j.b * 4 + " … stop at the last one that still fits, and count how many steps you took.";
         },
-        reset: function () { a.floor.innerHTML = ""; tw = buildTower(a.floor, j.a, j.b, a); },
-      };
+      }, function (ia) {
+        var tw = buildTower(ia.floor, j.a, j.b, ia);
+        return {
+          check: function () {
+            return tw.isDone()
+              ? { ok: true }
+              : { ok: false, why: "Finish the tower — keep going until every digit has come down." };
+          },
+        };
+      });
     },
   };
 
   /* ── Workshop 2 · Lesson 2.7 ─────────────────────────────────────── */
+  var W2_JOBS = [
+    { a: 18.9, b: 6.3 },
+    { a: 7.5, b: 0.5 },
+    { a: 93.6, b: 0.4 },
+    { a: 12.5, b: 0.25 },
+    { a: 40.32, b: 1.44 },
+  ];
   var W2 = {
     id: "slide", lesson: "2.7", emoji: "🎚️", name: "The Decimal Slide",
-    blurb: "Rewrite the problem so long division can start — then work it.",
+    blurb: "Decimal division, solved in your notebook — the slide bench opens if you slip.",
     closing: "Slide BOTH points the same number of places and the answer does not change.",
     build: function (lv, a) {
-      /* Every dividend here lands WHOLE after the minimal slide — the tower
-         renders whole numbers. (9.36 ÷ 0.4 used to sit in this list; its slide
-         gives 93.6 ÷ 4, which the tower cannot draw. It is 93.6 ÷ 0.4 now.) */
-      var set = [
-        { a: 18.9, b: 6.3 },
-        { a: 7.5, b: 0.5 },
-        { a: 93.6, b: 0.4 },
-        { a: 12.5, b: 0.25 },
-        { a: 40.32, b: 1.44 },
-      ];
-      var j = set[lv];
+      var j = W2_JOBS[lv];
+      var q = Math.round(j.a * 100) / Math.round(j.b * 100);
+      return notebookFirst(a, {
+        goal: j.a + " ÷ " + j.b,
+        label: j.a + " ÷ " + j.b + " =",
+        fields: [{ label: "quotient" }],
+        right: function (n) { return n[0] === q; },
+        feedback: function () {
+          return "Not it. This problem cannot be divided as it stands — check your notebook: what did you change before dividing, and did BOTH numbers change together?";
+        },
+        answerText: j.a + " ÷ " + j.b + " = " + q + ".",
+        hint: function (t) {
+          if (t === 1) return "Look at the DIVISOR. What kind of number does long division need it to be — and what one move turns it into that kind of number?";
+          return "A decimal point moves one place per slide, and BOTH numbers\u2019 points must slide the same distance. Count the digits after the divisor\u2019s point; the rewriting and the dividing are yours.";
+        },
+      }, function (ia) {
+        return W2.remediate(lv, ia);
+      });
+    },
+    remediate: function (lv, a) {
+      /* Every dividend in W2_JOBS lands WHOLE after the minimal slide — the
+         tower renders whole numbers. (9.36 ÷ 0.4 used to sit in the list; its
+         slide gives 93.6 ÷ 4, which the tower cannot draw.) */
+      var j = W2_JOBS[lv];
       // Exact ratio comparison via scaled integers — the values have at most
       // two decimal places, and float products of decimals are not reliable.
       var A100 = Math.round(j.a * 100), B100 = Math.round(j.b * 100);
@@ -964,33 +1208,84 @@
   };
 
   /* ── Workshop 3 · Lesson 6.1 — the tape cutter ───────────────────── */
+  var W3_JOBS = [
+    { kind: "whole", whole: 3, d: 4 },
+    { kind: "whole", whole: 5, d: 3 },
+    { kind: "whole", whole: 4, d: 6 },
+    { kind: "frac", n: 3, d: 5, whole: 5 },
+    { kind: "frac", n: 2, d: 3, whole: 4 },
+  ];
+  function w3Data(lv) {
+    var j = W3_JOBS[lv];
+    if (j.kind === "whole") {
+      return {
+        j: j,
+        expr: j.whole + " ÷ 1/" + j.d,
+        ansN: j.whole * j.d, ansD: 1,
+        prompt: "A " + j.whole + "-foot rope of pretzel dough, cut into 1/" + j.d + "-foot sticks. How many sticks?",
+      };
+    }
+    var f = fr(j.n, j.d * j.whole);
+    return {
+      j: j,
+      expr: j.n + "/" + j.d + " ÷ " + j.whole,
+      ansN: f.n, ansD: f.d,
+      prompt: j.n + "/" + j.d + " of a pound of fudge shared equally between " + j.whole + " boxes. How much each?",
+    };
+  }
   var W3 = {
-    id: "tape", lesson: "6.1", emoji: "✂️", name: "The Tape Cutter",
-    blurb: "Set it up by tapping the numbers, compute the answer — the tape only cuts when you are right.",
+    id: "tape", lesson: "6.1", emoji: "🥨", name: "The Dough Cutter",
+    blurb: "Fraction division, worked in your notebook — the prep bench opens if you slip.",
     closing: "Put a 1 under the whole number, then Keep, Change, Flip — and YOU did the multiplying.",
     build: function (lv, a) {
-      var set = [
-        { kind: "whole", whole: 3, d: 4 },
-        { kind: "whole", whole: 5, d: 3 },
-        { kind: "whole", whole: 4, d: 6 },
-        { kind: "frac", n: 3, d: 5, whole: 5 },
-        { kind: "frac", n: 2, d: 3, whole: 4 },
-      ];
+      var d = w3Data(lv);
+      return notebookFirst(a, {
+        goal: d.prompt,
+        label: d.expr + " =",
+        fields: d.j.kind === "whole" ? [{ label: "sticks" }] : [{ label: "pounds per box", frac: true }],
+        right: function (n) {
+          return d.j.kind === "whole"
+            ? n[0] === d.ansN
+            : n[1] !== 0 && n[0] * d.ansD === d.ansN * n[1];
+        },
+        feedback: function (n) {
+          if (d.j.kind === "whole") {
+            return n[0] < d.ansN
+              ? "Too few. Each stick is SHORTER than a foot — check your notebook: should more or fewer of them come out of " + d.j.whole + " feet?"
+              : "Too many — something extra crept into your multiplying. Check the page.";
+          }
+          return "Not that share. Check your notebook: should each box get more or less than the fudge you started with?";
+        },
+        answerText: d.expr + " = " + (d.j.kind === "whole" ? d.ansN + " sticks" : frText({ n: d.ansN, d: d.ansD }) + " of a pound per box") + ".",
+        hint: function (t) {
+          if (t === 1) return d.j.kind === "whole"
+            ? "Dividing BY a piece smaller than 1 asks \u201chow many fit inside?\u201d, so the answer is BIGGER than " + d.j.whole + "."
+            : "Sharing a fraction between " + d.j.whole + " people makes each share SMALLER. Write " + d.j.whole + " as " + d.j.whole + "/1, then flip it.";
+          return d.j.kind === "whole"
+            ? "In your notebook the line is <strong>" + d.j.whole + "/1 × " + d.j.d + "/1</strong>. Multiply the tops together and the bottoms together — the multiplying is yours."
+            : "In your notebook the line is <strong>" + d.j.n + "/" + d.j.d + " × 1/" + d.j.whole + "</strong>. Multiply tops, multiply bottoms, then simplify — the arithmetic is yours.";
+        },
+      }, function (ia) {
+        return W3.remediate(lv, ia);
+      });
+    },
+    remediate: function (lv, a) {
+      var set = W3_JOBS;
       var j = set[lv];
       var expr, ansN, ansD, prompt;
       if (j.kind === "whole") {
         expr = j.whole + " ÷ 1/" + j.d;
         ansN = j.whole * j.d; ansD = 1;
-        prompt = "A " + j.whole + "-foot strip of tape, cut into 1/" + j.d + "-foot pieces. How many pieces?";
+        prompt = "A " + j.whole + "-foot rope of pretzel dough, cut into 1/" + j.d + "-foot sticks. How many sticks?";
       } else {
         var f = fr(j.n, j.d * j.whole);
         expr = j.n + "/" + j.d + " ÷ " + j.whole;
         ansN = f.n; ansD = f.d;
-        prompt = j.n + "/" + j.d + " of a metre of tape shared equally between " + j.whole + " people. How much each?";
+        prompt = j.n + "/" + j.d + " of a pound of fudge shared equally between " + j.whole + " boxes. How much each?";
       }
       var overOne = false, flipped = false, answered = false;
 
-      a.brief(prompt, "Set it up so you can multiply, then compute the answer yourself — the tape will only cut once your number is right.");
+      a.brief(prompt, "Set it up so you can multiply, then compute the answer yourself — the dough only cuts once your number is right.");
 
       var wrap = document.createElement("div");
       wrap.innerHTML =
@@ -1050,7 +1345,7 @@
         var host = wrap.querySelector(".tpAnswer");
         host.innerHTML = '<p style="font-weight:800;color:var(--steel);margin-bottom:4px">Now multiply it out yourself:</p>';
         mkEntry(host, {
-          label: j.kind === "whole" ? "How many pieces?" : "How much each?",
+          label: j.kind === "whole" ? "How many sticks?" : "How much per box?",
           fields: j.kind === "whole" ? [{ label: "pieces" }] : [{ label: "share", frac: true }],
           onSubmit: function (nums) {
             var right = j.kind === "whole"
@@ -1059,7 +1354,7 @@
             if (!right) {
               a.wrong(j.kind === "whole"
                 ? (nums[0] < ansN
-                  ? "Too few. Each piece is SMALLER than 1 foot, so more than " + j.whole + " of them fit. Multiply " + j.whole + "/1 × " + j.d + "/1."
+                  ? "Too few. Each stick is SHORTER than 1 foot, so more than " + j.whole + " of them come out. Multiply " + j.whole + "/1 × " + j.d + "/1."
                   : "Too many. Multiply the tops and the bottoms of " + j.whole + "/1 × " + j.d + "/1 — nothing extra.")
                 : "Not that share. The line is " + j.n + "/" + j.d + " × 1/" + j.whole + " — multiply the tops, multiply the bottoms, then simplify.");
               return false;
@@ -1067,7 +1362,7 @@
             answered = true;
             host.innerHTML = "";
             drawTape();
-            a.good("That is it — and the tape agrees.");
+            a.good("That is it — and the cutter agrees.");
             return true;
           },
         });
@@ -1086,13 +1381,13 @@
             marks += '<span style="left:' + (f2 / j.whole) * 100 + '%">' + f2 + " ft</span>";
           }
           host.innerHTML =
-            '<div class="tape-wrap"><p style="font-weight:800;color:var(--mint-lo);margin-bottom:10px">✓ ' + pieces + " pieces, each 1/" + j.d + " ft.</p>" +
+            '<div class="tape-wrap"><p style="font-weight:800;color:var(--mint-lo);margin-bottom:10px">✓ ' + pieces + " sticks, each 1/" + j.d + " ft.</p>" +
             '<div class="tape">' + nicks + '</div><div class="ruler">' + marks + "</div></div>";
         } else {
           var nicks2 = "";
           for (var s2 = 1; s2 < j.whole; s2++) nicks2 += '<span class="nick" style="left:' + (s2 / j.whole) * 100 + '%"></span>';
           host.innerHTML =
-            '<div class="tape-wrap"><p style="font-weight:800;color:var(--mint-lo);margin-bottom:10px">✓ Each of the ' + j.whole + " shares is " + frText({ n: ansN, d: ansD }) + " of a metre.</p>" +
+            '<div class="tape-wrap"><p style="font-weight:800;color:var(--mint-lo);margin-bottom:10px">✓ Each of the ' + j.whole + " boxes gets " + frText({ n: ansN, d: ansD }) + " of a pound.</p>" +
             '<div class="tape">' + nicks2 + "</div></div>";
         }
       }
@@ -1104,8 +1399,8 @@
         check: function () {
           if (!overOne) return { ok: false, why: "The setup is not finished — this cannot be multiplied while one of the numbers is not a fraction." };
           if (!flipped) return { ok: false, why: "Still dividing. Something on the bench has to change before you can multiply." };
-          if (!answered) return { ok: false, why: "Multiply it out and type your answer — the tape will confirm it." };
-          return { ok: true, why: expr + " = " + (j.kind === "whole" ? ansN + " pieces" : frText({ n: ansN, d: ansD }) + " of a metre each") + "." };
+          if (!answered) return { ok: false, why: "Multiply it out and type your answer — the cutter will confirm it." };
+          return { ok: true, why: expr + " = " + (j.kind === "whole" ? ansN + " sticks" : frText({ n: ansN, d: ansD }) + " of a pound per box") + "." };
         },
         hint: function (t) {
           if (t === 1) return j.kind === "whole"
@@ -1125,19 +1420,48 @@
   };
 
   /* ── Workshop 4 · Lesson 6.2 — Keep · Change · Flip bench ────────── */
+  var W4_JOBS = [
+    { A: { n: 3, d: 4 }, B: { n: 1, d: 8 }, mixed: null },
+    { A: { n: 2, d: 3 }, B: { n: 1, d: 6 }, mixed: null },
+    { A: { n: 7, d: 2 }, B: { n: 1, d: 4 }, mixed: { w: 3, n: 1, d: 2 } },
+    { A: { n: 10, d: 3 }, B: { n: 2, d: 3 }, mixed: { w: 3, n: 1, d: 3 } },
+    { A: { n: 9, d: 4 }, B: { n: 3, d: 8 }, mixed: { w: 2, n: 1, d: 4 } },
+  ];
   var W4 = {
     id: "kcf", lesson: "6.2", emoji: "🔁", name: "The Keep-Change-Flip Bench",
-    blurb: "Every number on the line — typed by you, in the order the method demands.",
-    closing: "a/b ÷ c/d = a/b × d/c — and every value on that line was computed by you.",
+    blurb: "Fractions and mixed numbers, solved in your notebook — the bench opens if you slip.",
+    closing: "a/b ÷ c/d = a/b × d/c — and the page it was worked on was yours.",
     build: function (lv, a) {
-      var set = [
-        { A: { n: 3, d: 4 }, B: { n: 1, d: 8 }, mixed: null },
-        { A: { n: 2, d: 3 }, B: { n: 1, d: 6 }, mixed: null },
-        { A: { n: 7, d: 2 }, B: { n: 1, d: 4 }, mixed: { w: 3, n: 1, d: 2 } },
-        { A: { n: 10, d: 3 }, B: { n: 2, d: 3 }, mixed: { w: 3, n: 1, d: 3 } },
-        { A: { n: 9, d: 4 }, B: { n: 3, d: 8 }, mixed: { w: 2, n: 1, d: 4 } },
-      ];
-      var j = set[lv];
+      var j = W4_JOBS[lv];
+      var ans = fr(j.A.n * j.B.d, j.A.d * j.B.n);
+      var label = (j.mixed ? j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d : j.A.n + "/" + j.A.d) + " ÷ " + j.B.n + "/" + j.B.d;
+      return notebookFirst(a, {
+        goal: label,
+        label: label + " =",
+        fields: ans.d === 1 ? [{ label: "answer" }] : [{ label: "answer", frac: true }],
+        right: function (n) {
+          return ans.d === 1
+            ? n[0] === ans.n
+            : n[1] !== 0 && n[0] * ans.d === ans.n * n[1];
+        },
+        feedback: function () {
+          return j.mixed
+            ? "Not it. Check your notebook: did the mixed number become improper FIRST? Did you flip the right fraction?"
+            : "Not it. Check your notebook: did you flip the right fraction — and only after changing ÷ to ×?";
+        },
+        answerText: label + " = " + mixedText(ans) + ".",
+        hint: function (t) {
+          if (t === 1) return j.mixed
+            ? "For the mixed number: multiply the bottom by the whole number, add the top, keep the same bottom. Then Keep, Change, Flip."
+            : "Keep the first fraction exactly as it is. Only the SECOND fraction turns over.";
+          return "In your notebook the line is <strong>" + j.A.n + "/" + j.A.d + " × " + j.B.d + "/" + j.B.n + "</strong> — tops together, bottoms together, then simplify. The arithmetic is yours.";
+        },
+      }, function (ia) {
+        return W4.remediate(lv, ia);
+      });
+    },
+    remediate: function (lv, a) {
+      var j = W4_JOBS[lv];
       var raw = { n: j.A.n * j.B.d, d: j.A.d * j.B.n };
       var ans = fr(raw.n, raw.d);
       var stage = j.mixed ? "convert" : "flip";
@@ -1288,31 +1612,17 @@
     },
   };
 
-  /* ── Workshop 5 · The Final Run ──────────────────────────────────── */
-  var W5 = {
-    id: "final", lesson: "2.6 · 2.7 · 6.1 · 6.2", emoji: "🏁", name: "The Final Run",
-    blurb: "One job from each workshop, then a last one that could be any of them.",
-    closing: "Every kind of division this unit teaches, in one run.",
-    build: function (lv, a) {
-      var picks = [W1, W2, W3, W4, [W1, W2, W3, W4][lv % 4]];
-      var src = picks[lv];
-      var inner = src.build((lv * 2 + 1) % 5, a);
-      el("sub").textContent = "Final Run · this job is from Lesson " + src.lesson + ". " + el("sub").textContent;
-      return inner;
-    },
-  };
-
-  var SHOPS = [W1, W2, W3, W4, W5];
+  var SHOPS = [W1, W2, W3, W4];
 
   el("bLock").addEventListener("click", lock);
   el("bHint").addEventListener("click", hint);
   el("bReset").addEventListener("click", function () {
     if (run && run.mod && run.mod.reset) { run.mod.reset(); el("say").className = "say"; el("say").textContent = ""; say("Reset."); }
   });
-  el("bMap").addEventListener("click", function () { paintMap(); show("scMap"); });
-  el("bBack").addEventListener("click", function () { paintMap(); show("scMap"); });
+  el("bMap").addEventListener("click", function () { paintFoundry(); show("scMap"); });
+  el("bBack").addEventListener("click", function () { paintFoundry(); show("scMap"); });
 
-  paintMap();
+  paintFoundry();
 })();
     </script>
     <script src="/assets/game-score.js" defer></script>
