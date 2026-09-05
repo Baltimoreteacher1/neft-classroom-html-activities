@@ -25,6 +25,16 @@
       "because": "for the Part II interactive lessons, include the objectives (again) after the 3 Group work. So it should be a card 4 that is the Objectives (do not take it away from the beginning-- just add it at the end) for all of the Part II interactive lessons",
       "pinnedBy": "tools/validate-lesson-visibility.mjs",
       "pinnedCheck": "partTwoObjectivesAtEnd"
+    },
+    {
+      "id": "engine-imports-go-through-the-package",
+      "surface": "tools/ and scripts/ — every ESM import of engine internals",
+      "decision": "engine/ is the @eduwonderlab/engine workspace package, and tools/scripts import its internals only through the package specifier, never by relative path. This keeps the engine's physical location movable (Phase 2 of the extraction) and is the boundary the productization plan depends on.",
+      "decidedBy": "Joel",
+      "decidedOn": "2026-09-05",
+      "because": "Let's build #1 [productize the lesson engine] ... no more questions-- you decide from here on out ... [on Phase 2, reroute the imports through the exports map:] Yes, do it",
+      "pinnedBy": "tools/validate-engine-imports.mjs",
+      "pinnedCheck": "RELATIVE_ENGINE_IMPORT"
     }
   ]
 }
