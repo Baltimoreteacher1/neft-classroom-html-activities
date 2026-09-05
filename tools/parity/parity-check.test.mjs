@@ -41,6 +41,25 @@ assert.equal(
   "html data-build-stamp normalized",
 );
 
+// Service-worker per-build cache epoch normalized (any nested sw.js).
+assert.equal(
+  normalizeContent("lessons/sw.js", 'const CACHE = "nt-cache-1788604263222";'),
+  normalizeContent("lessons/sw.js", 'const CACHE = "nt-cache-1788699999999";'),
+  "nt-cache epoch normalized",
+);
+
+// Asset cache-buster query stamps normalized in HTML.
+assert.equal(
+  normalizeContent("curriculum/index.html", '<link href="/assets/a.css?v=mto8sq74" />'),
+  normalizeContent("curriculum/index.html", '<link href="/assets/a.css?v=mto8twyg" />'),
+  "?v= cache-buster normalized",
+);
+assert.notEqual(
+  normalizeContent("curriculum/index.html", '<link href="/assets/a.css?v=x1" />'),
+  normalizeContent("curriculum/index.html", '<link href="/assets/b.css?v=x1" />'),
+  "real URL differences still detected",
+);
+
 // Missing/extra files are reported, not ignored.
 writeFileSync(join(b, "extra.txt"), "hi");
 const diff2 = diffManifests(ma, buildManifest(b));

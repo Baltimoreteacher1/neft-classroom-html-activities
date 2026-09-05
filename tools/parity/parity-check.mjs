@@ -8,6 +8,7 @@
 //   node tools/parity/parity-check.mjs --compare  <manifest.json>
 //
 // PARITY_DIST overrides the dist directory (tests use fixture dirs).
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -16,7 +17,7 @@ import process from "node:process";
 // [pathMatcher, transform, reason]
 const NORMALIZATIONS = [
   [
-    (p) => p === "access-practice-lab/config.json",
+    (p) => p === "access-practice-lab/config.json" || p === "access-practice-lab/inventory/config.json",
     (text) => {
       // tools/stamp-build.mjs rewrites this stamp on every build by design.
       try {
@@ -32,14 +33,39 @@ const NORMALIZATIONS = [
     "stamp-build.mjs build stamp (varies per build by design)",
   ],
   [
-    (p) => p.endsWith(".html") || p === "sw.js",
+    (p) => p.endsWith(".html") || p.endsWith("sw.js"),
     (text) =>
       text
         .replace(/data-build-stamp="[^"]*"/g, 'data-build-stamp=""')
         .replace(/BUILD_STAMP\s*=\s*["'][^"']*["']/g, 'BUILD_STAMP=""'),
     "HTML/service-worker build stamps re-stamped each build",
   ],
+  [
+    (p) => p.endsWith("sw.js"),
+    (text) => text.replace(/nt-cache-\d+/g, "nt-cache-"),
+    "service-worker cache name embeds a per-build epoch (M0 probe: sw.js x10)",
+  ],
+  [
+    (p) => p.endsWith(".html"),
+    (text) => text.replace(/\?v=[a-z0-9]+(["'])/g, "?v=$1"),
+    "asset cache-buster query stamps regenerated per build (M0 probe: curriculum html x3)",
+  ],
 ];
+
+// Generated archives whose bytes differ per build only via zip entry metadata
+// and OOXML dcterms timestamps (verified by unzip-and-diff in the M0 probe).
+// Their manifest hash is taken over concatenated entry CONTENTS (unzip -p)
+// with dcterms timestamps stripped, so real content drift still fails parity.
+const ARCHIVE_RE = /\.(docx|zip)$/;
+
+function archiveContentBuffer(fullPath) {
+  const bytes = execFileSync("unzip", ["-p", fullPath], { maxBuffer: 1 << 28 });
+  const text = bytes.toString("latin1").replace(
+    /<dcterms:(created|modified)[^<]*<\/dcterms:\1>/g,
+    "<dcterms:$1/>",
+  );
+  return Buffer.from(text, "latin1");
+}
 
 export function normalizeContent(relPath, text) {
   let out = text;
@@ -63,10 +89,13 @@ const TEXT_RE = /\.(html|js|mjs|css|json|svg|txt|xml|webmanifest|map)$/;
 export function buildManifest(rootDir) {
   const manifest = {};
   for (const rel of walk(rootDir, rootDir, []).sort()) {
-    const raw = readFileSync(join(rootDir, rel));
-    const data = TEXT_RE.test(rel)
-      ? Buffer.from(normalizeContent(rel, raw.toString("utf8")))
-      : raw;
+    let data;
+    if (ARCHIVE_RE.test(rel)) {
+      data = archiveContentBuffer(join(rootDir, rel));
+    } else {
+      const raw = readFileSync(join(rootDir, rel));
+      data = TEXT_RE.test(rel) ? Buffer.from(normalizeContent(rel, raw.toString("utf8"))) : raw;
+    }
     manifest[rel] = createHash("sha256").update(data).digest("hex");
   }
   return manifest;
