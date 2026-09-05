@@ -46,7 +46,7 @@ globalThis.document = dom.window.document;
 globalThis.MutationObserver = dom.window.MutationObserver;
 globalThis.HTMLElement = dom.window.HTMLElement;
 
-const { observeContentImageZoom } = await import("../engine/core/image-zoom.js");
+const { observeContentImageZoom } = await import("@eduwonderlab/engine/core/image-zoom.js");
 observeContentImageZoom(document.body);
 
 const first = document.getElementById("a");
@@ -93,7 +93,7 @@ console.log(
 );
 
 /* ── 3 · inline-SVG figures: pictures zoom, manipulatives do not ─────────── */
-const { attachFigureZoom } = await import("../engine/core/image-zoom.js");
+const { attachFigureZoom } = await import("@eduwonderlab/engine/core/image-zoom.js");
 void attachFigureZoom; // exported for direct use; behaviour is asserted below
 
 const svgNs = "http://www.w3.org/2000/svg";

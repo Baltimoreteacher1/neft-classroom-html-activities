@@ -5,8 +5,8 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { JSDOM } from "jsdom";
-import { renderTwrWriting } from "../engine/components/twr-writing.js";
-import { deriveTWR } from "../engine/core/twr.js";
+import { renderTwrWriting } from "@eduwonderlab/engine/components/twr-writing.js";
+import { deriveTWR } from "@eduwonderlab/engine/core/twr.js";
 
 const root = new URL("../", import.meta.url).pathname;
 const lessonsDir = join(root, "lessons");

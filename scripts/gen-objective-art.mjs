@@ -18,7 +18,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { OBJECTIVE_IMAGES } from "../engine/core/objective-art-catalog.js";
+import { OBJECTIVE_IMAGES } from "@eduwonderlab/engine/core/objective-art-catalog.js";
 import { bubble, C, CARD, cardSvg, partner, place } from "./lib/objective-art/kit.mjs";
 import { ALGEBRA_MODELS } from "./lib/objective-art/models-algebra.mjs";
 import { DATA_MODELS } from "./lib/objective-art/models-data.mjs";

@@ -29,7 +29,7 @@ const {
   framePartsFor,
   recordTurnAndTalk,
   resolveFrameLevel,
-} = await import("../engine/core/frame-fading.js");
+} = await import("@eduwonderlab/engine/core/frame-fading.js");
 
 let checks = 0;
 

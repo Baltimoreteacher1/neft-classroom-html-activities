@@ -20,7 +20,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");

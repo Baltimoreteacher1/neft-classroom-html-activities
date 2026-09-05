@@ -1,10 +1,10 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { normalizeFillTable } from "../engine/components/fill-table.js";
-import { deriveTWR } from "../engine/core/twr.js";
-import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
-import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
+import { normalizeFillTable } from "@eduwonderlab/engine/components/fill-table.js";
+import { deriveTWR } from "@eduwonderlab/engine/core/twr.js";
+import { resolveVocabImage, vocabImageAlt } from "@eduwonderlab/engine/core/vocab-images.js";
+import { deriveWorkedSteps } from "@eduwonderlab/engine/core/worked-steps.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";

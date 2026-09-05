@@ -13,7 +13,7 @@
 //
 // Usage in a test file (hooks affect DYNAMIC imports registered after them):
 //   import "../tools/lib/register-engine-hooks.mjs";
-//   const renderer = await import("../engine/core/lesson-renderer.js");
+//   const renderer = await import("@eduwonderlab/engine/core/lesson-renderer.js");
 //
 // This does not touch the build: Vite never sees these hooks, and no engine
 // file changes. It is the smallest possible door into unit-testing the

@@ -57,8 +57,8 @@ globalThis.document = dom.window.document;
 globalThis.localStorage = dom.window.localStorage;
 globalThis.URLSearchParams = dom.window.URLSearchParams;
 
-const { collectTools } = await import("../engine/core/tools-mode.js");
-const { catalogKey, TOOL_CATALOG } = await import("../engine/core/tool-catalog.js");
+const { collectTools } = await import("@eduwonderlab/engine/core/tools-mode.js");
+const { catalogKey, TOOL_CATALOG } = await import("@eduwonderlab/engine/core/tool-catalog.js");
 
 // ── REGISTRY, read from source ─────────────────────────────────────────────
 const registrySrc = read("../engine/core/interactive-visual.js");

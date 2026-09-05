@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
+import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
 
 const host = interactiveVisualHost(
   { kind: "factor-tree", value: 84 },

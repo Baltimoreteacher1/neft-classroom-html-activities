@@ -40,7 +40,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { bannedFor, MANIPULATIVES } from "../engine/core/objective-art-catalog.js";
+import { bannedFor, MANIPULATIVES } from "@eduwonderlab/engine/core/objective-art-catalog.js";
 import {
   classifyLesson,
   lessonTopic,
@@ -50,7 +50,7 @@ import {
   shortGoal,
   shortScene,
   TOPICS,
-} from "../engine/core/objective-visuals.js";
+} from "@eduwonderlab/engine/core/objective-visuals.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = resolve(ROOT, "lessons");

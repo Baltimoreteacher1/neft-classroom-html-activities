@@ -8,7 +8,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MISCONCEPTIONS, resolveAuthoredTag } from "../engine/core/misconceptions.js";
+import { MISCONCEPTIONS, resolveAuthoredTag } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");

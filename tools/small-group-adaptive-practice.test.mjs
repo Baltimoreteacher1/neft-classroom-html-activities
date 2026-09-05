@@ -5,7 +5,7 @@ import {
   bringInExtendingItems,
   collectPracticeItems,
   orderItemsForAdaptivePath,
-} from "../engine/core/small-group-practice.js";
+} from "@eduwonderlab/engine/core/small-group-practice.js";
 
 const sample = {
   variant: "group1",

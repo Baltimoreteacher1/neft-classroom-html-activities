@@ -19,7 +19,7 @@
 import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MISCONCEPTIONS } from "../engine/core/misconceptions.js";
+import { MISCONCEPTIONS } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const OUTPUT = resolve(ROOT, "data/misconception-labels.json");

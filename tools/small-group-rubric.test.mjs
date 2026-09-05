@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { MASTERY_BANDS, masteryBand } from "../engine/core/small-group-rubric.js";
+import { MASTERY_BANDS, masteryBand } from "@eduwonderlab/engine/core/small-group-rubric.js";
 
 test("empty or unstarted sessions read as approaching", () => {
   assert.equal(masteryBand({}).id, "approaching");

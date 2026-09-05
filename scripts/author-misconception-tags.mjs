@@ -62,7 +62,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MISCONCEPTIONS, predictions } from "../engine/core/misconceptions.js";
+import { MISCONCEPTIONS, predictions } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");

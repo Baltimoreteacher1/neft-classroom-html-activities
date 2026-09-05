@@ -10,7 +10,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveAuthoredTag } from "../engine/core/misconceptions.js";
+import { resolveAuthoredTag } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");

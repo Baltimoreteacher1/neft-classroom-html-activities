@@ -28,7 +28,7 @@ globalThis.Node = dom.window.Node;
 globalThis.NodeFilter = dom.window.NodeFilter;
 globalThis.MutationObserver = dom.window.MutationObserver;
 
-const { budgetKeyFor } = await import("../engine/core/small-group-annotation.js");
+const { budgetKeyFor } = await import("@eduwonderlab/engine/core/small-group-annotation.js");
 
 const { document } = dom.window;
 document.body.innerHTML = `

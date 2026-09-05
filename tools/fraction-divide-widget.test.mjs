@@ -27,7 +27,7 @@ globalThis.window = dom.window;
 globalThis.document = dom.window.document;
 globalThis.HTMLElement = dom.window.HTMLElement;
 
-const { renderFractionDivide } = await import("../engine/components/fraction-divide.js");
+const { renderFractionDivide } = await import("@eduwonderlab/engine/components/fraction-divide.js");
 
 let checks = 0;
 function mount(cfg) {

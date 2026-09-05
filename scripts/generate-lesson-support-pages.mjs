@@ -30,7 +30,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
+import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

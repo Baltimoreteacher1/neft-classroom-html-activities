@@ -43,7 +43,7 @@ globalThis.document = dom.window.document;
 globalThis.HTMLElement = dom.window.HTMLElement;
 globalThis.Node = dom.window.Node;
 
-const { attachImageZoom, isLightboxOpen } = await import("../engine/core/image-zoom.js");
+const { attachImageZoom, isLightboxOpen } = await import("@eduwonderlab/engine/core/image-zoom.js");
 
 const img = document.createElement("img");
 img.src = "/assets/vocab-images/ratio.svg";
@@ -103,7 +103,7 @@ lightbox.querySelector(".lesson-lightbox-close").click();
 //    pop-up, neither of which goes through lesson-renderer.js.
 // ───────────────────────────────────────────────────────────────────────────
 
-const { configureVocabImage } = await import("../engine/core/vocab-images.js");
+const { configureVocabImage } = await import("@eduwonderlab/engine/core/vocab-images.js");
 const wallImg = configureVocabImage(document.createElement("img"), {
   term: "unit rate",
   definition: "a rate for one unit",

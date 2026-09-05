@@ -6,7 +6,7 @@ import {
   resolveAlternativeStrategies,
   resolveStrategyDomain,
   strategyModel,
-} from "../engine/core/small-group-strategies.js";
+} from "@eduwonderlab/engine/core/small-group-strategies.js";
 
 const lesson = (title, objective = title) => ({ title, contentObjective: objective });
 

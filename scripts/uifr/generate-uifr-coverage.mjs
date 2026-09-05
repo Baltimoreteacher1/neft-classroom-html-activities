@@ -24,7 +24,7 @@ import {
   classifyActivityTeachSupport,
   computeTeachL4Evidence,
   TEACH_INDICATORS,
-} from "../../engine/core/uifr.js";
+} from "@eduwonderlab/engine/core/uifr.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const lessonsDir = join(root, "lessons");

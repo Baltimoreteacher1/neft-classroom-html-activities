@@ -267,9 +267,9 @@ function savedResponses(win) {
   return out;
 }
 
-const { loadRetrievalBank } = await import("../engine/core/retrieval.js");
-const { bootPartTwo } = await import("../engine/core/part-two-renderer.js");
-const { bootLesson, renderWarmupPhase } = await import("../engine/core/lesson-renderer.js");
+const { loadRetrievalBank } = await import("@eduwonderlab/engine/core/retrieval.js");
+const { bootPartTwo } = await import("@eduwonderlab/engine/core/part-two-renderer.js");
+const { bootLesson, renderWarmupPhase } = await import("@eduwonderlab/engine/core/lesson-renderer.js");
 
 /* ═══ 1 · PART 2 — the warm-up is a warm-up ══════════════════════════════════ */
 

@@ -44,7 +44,7 @@ import {
   NOTEBOOK_PROMPT_TYPES,
   notebookPromptFor,
   SCREEN_IS_THE_WORK_SURFACE,
-} from "../engine/core/notebook-prompt.js";
+} from "@eduwonderlab/engine/core/notebook-prompt.js";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

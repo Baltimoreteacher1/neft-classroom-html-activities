@@ -11,7 +11,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { computeTeachL4Evidence } from "../engine/core/uifr.js";
+import { computeTeachL4Evidence } from "@eduwonderlab/engine/core/uifr.js";
 import { targets } from "./inject-uifr.js";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
 import { assertSweptEnough } from "./lib/sweep-guard.mjs";

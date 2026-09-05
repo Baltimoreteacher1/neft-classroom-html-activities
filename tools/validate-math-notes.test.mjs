@@ -11,7 +11,7 @@ import {
   mountNotebookCheckpoint,
   openMathNotesModel,
   readCheckpoints,
-} from "../engine/core/notebook-checkpoint.js";
+} from "@eduwonderlab/engine/core/notebook-checkpoint.js";
 
 // Mock document for headless node environment
 if (typeof document === "undefined") {

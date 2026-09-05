@@ -22,7 +22,7 @@
 
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const lessonsUrl = new URL("../lessons/", import.meta.url);
 

@@ -31,7 +31,7 @@ import { fileURLToPath } from "node:url";
 import {
   carriedDivisionFigures,
   DIVISION_FIGURE_CSS,
-} from "../engine/core/division-walk-figure.js";
+} from "@eduwonderlab/engine/core/division-walk-figure.js";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { scaffoldFor } from "./lib/worksheet-scaffolds.mjs";

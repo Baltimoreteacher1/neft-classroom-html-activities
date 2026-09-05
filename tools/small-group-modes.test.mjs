@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
-import { isRight } from "../engine/core/answer-match.js";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { isRight } from "@eduwonderlab/engine/core/answer-match.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
 import { authoredBank } from "./lib/small-group-authored-banks.mjs";
@@ -230,7 +230,7 @@ dom.window.HTMLDialogElement.prototype.showModal = function showModal() {
 const runtimeConfig = JSON.parse(
   readFileSync(new URL("../lessons/6-13-group1/config.json", import.meta.url), "utf8"),
 );
-const { bootSmallGroup } = await import("../engine/core/small-group-renderer.js");
+const { bootSmallGroup } = await import("@eduwonderlab/engine/core/small-group-renderer.js");
 bootSmallGroup(runtimeConfig);
 const firstGuided = document.querySelector("#sg-guided-practice .prob");
 assert.ok(
@@ -265,7 +265,7 @@ assert.equal(
   "the Create-a-Challenge lab is removed",
 );
 // Passport bridge installs without a passport layer present and never throws.
-const { installSmallGroupPassport } = await import("../engine/core/small-group-passport.js");
+const { installSmallGroupPassport } = await import("@eduwonderlab/engine/core/small-group-passport.js");
 const passportStore = (() => {
   const data = {};
   return {

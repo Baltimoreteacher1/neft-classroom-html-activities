@@ -4,7 +4,7 @@
 // firing. One detector serves the lesson renderer and the small-group studio.
 import assert from "node:assert";
 
-const { detectConceptTool } = await import("../engine/core/concept-tool.js");
+const { detectConceptTool } = await import("@eduwonderlab/engine/core/concept-tool.js");
 const k = (s) => detectConceptTool(s)?.kind ?? null;
 // the collisions this rewrite exists to stop
 assert.strictEqual(

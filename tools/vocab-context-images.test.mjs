@@ -16,7 +16,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { hasRealVocabImage, resolveVocabImage } from "../engine/core/vocab-images.js";
+import { hasRealVocabImage, resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const lessonsDir = new URL("../lessons/", import.meta.url);
 const ids = readdirSync(lessonsDir, { withFileTypes: true })

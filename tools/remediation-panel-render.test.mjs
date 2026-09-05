@@ -23,7 +23,7 @@ globalThis.HTMLElement = dom.window.HTMLElement;
 globalThis.Event = dom.window.Event;
 globalThis.requestAnimationFrame = (cb) => dom.window.setTimeout(cb, 0);
 
-const { renderRemediation } = await import("../engine/components/remediation-panel.js");
+const { renderRemediation } = await import("@eduwonderlab/engine/components/remediation-panel.js");
 
 const ITEM = {
   type: "multiple-choice",

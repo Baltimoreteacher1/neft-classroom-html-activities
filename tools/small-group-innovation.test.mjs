@@ -5,7 +5,7 @@ import {
   AUTO_SUPPORT_DISTINCT_MISSES,
   chooseAdaptivePath,
   createAutoSupportTracker,
-} from "../engine/core/small-group-innovation.js";
+} from "@eduwonderlab/engine/core/small-group-innovation.js";
 
 test("recommends stabilize when the group needs another supported entry point", () => {
   assert.equal(chooseAdaptivePath({ before: 2 }, "group1").id, "stabilize");

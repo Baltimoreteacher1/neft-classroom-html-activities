@@ -21,7 +21,7 @@ import {
   TextRun,
   WidthType,
 } from "docx";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

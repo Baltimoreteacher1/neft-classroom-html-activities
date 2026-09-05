@@ -33,7 +33,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { diagnoseChoice, MISCONCEPTIONS, scanExpression } from "../engine/core/misconceptions.js";
+import { diagnoseChoice, MISCONCEPTIONS, scanExpression } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");

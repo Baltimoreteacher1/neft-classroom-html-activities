@@ -2,7 +2,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { MATH_CHECKS } from "../engine/core/small-group-math-check.js";
+import { MATH_CHECKS } from "@eduwonderlab/engine/core/small-group-math-check.js";
 import { FACILITATION_BY_LESSON } from "../functions/teacher-small-group/_facilitation-data.js";
 import { authoredBank } from "./lib/small-group-authored-banks.mjs";
 import { assertSweptEnough } from "./lib/sweep-guard.mjs";

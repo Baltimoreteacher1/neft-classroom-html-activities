@@ -21,7 +21,7 @@ global.localStorage = dom.window.localStorage;
 global.speechSynthesis = { speak() {}, cancel() {}, getVoices: () => [] };
 dom.window.speechSynthesis = global.speechSynthesis;
 
-const { collectPracticeItems } = await import("../engine/core/small-group-practice.js");
+const { collectPracticeItems } = await import("@eduwonderlab/engine/core/small-group-practice.js");
 
 const load = (id) => JSON.parse(fs.readFileSync(`lessons/${id}/config.json`, "utf8"));
 
@@ -87,7 +87,7 @@ const dupes = keys.filter((key, index) => keys.indexOf(key) !== index);
 check("no duplicate items after append", dupes.length === 0, dupes.join(" | "));
 
 // The exit ticket must actually render, and carry a second independent item.
-const { createCheckSection } = await import("../engine/core/small-group-practice.js");
+const { createCheckSection } = await import("@eduwonderlab/engine/core/small-group-practice.js");
 for (const id of ["6-13-group1", "6-13-group2", "6-12-catchup"]) {
   const memory = new Map();
   const store = { get: (k) => memory.get(k), set: (k, v) => memory.set(k, v) };

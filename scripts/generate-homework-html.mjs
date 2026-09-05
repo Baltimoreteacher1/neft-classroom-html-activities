@@ -1,14 +1,14 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
-import { augmentVocabWithGlossary } from "../engine/core/math-glossary.js";
+import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
+import { augmentVocabWithGlossary } from "@eduwonderlab/engine/core/math-glossary.js";
 import {
   hasRealVocabImage,
   resolveVocabImage,
   vocabImageAlt,
-} from "../engine/core/vocab-images.js";
-import { buildVocabMatcher } from "../engine/core/vocab-match.js";
+} from "@eduwonderlab/engine/core/vocab-images.js";
+import { buildVocabMatcher } from "@eduwonderlab/engine/core/vocab-match.js";
 import {
   detectVisualTopic,
   selectMorePracticeProblems,

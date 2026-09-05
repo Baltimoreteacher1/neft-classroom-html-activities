@@ -24,7 +24,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { hasRealVocabImage, slugify } from "../engine/core/vocab-images.js";
+import { hasRealVocabImage, slugify } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "vocab-images");
 

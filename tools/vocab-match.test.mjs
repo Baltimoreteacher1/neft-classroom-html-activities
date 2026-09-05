@@ -12,8 +12,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { augmentVocabWithGlossary } from "../engine/core/math-glossary.js";
-import { buildVocabMatcher, normalizeVocabSurface } from "../engine/core/vocab-match.js";
+import { augmentVocabWithGlossary } from "@eduwonderlab/engine/core/math-glossary.js";
+import { buildVocabMatcher, normalizeVocabSurface } from "@eduwonderlab/engine/core/vocab-match.js";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 

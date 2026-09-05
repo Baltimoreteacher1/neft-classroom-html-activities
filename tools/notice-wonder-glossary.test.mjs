@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
-import { resolveNoticeWonderAcademicWord } from "../engine/core/notice-wonder-glossary.js";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { resolveNoticeWonderAcademicWord } from "@eduwonderlab/engine/core/notice-wonder-glossary.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const ids = readdirSync(new URL("../lessons/", import.meta.url), { withFileTypes: true })
   .filter((entry) => entry.isDirectory() && /^\d+-\d+$/.test(entry.name))

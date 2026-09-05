@@ -22,7 +22,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { MISCONCEPTIONS } from "../engine/core/misconceptions.js";
+import { MISCONCEPTIONS } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const read = (name) =>
   JSON.parse(readFileSync(new URL(`../data/${name}`, import.meta.url), "utf8"));

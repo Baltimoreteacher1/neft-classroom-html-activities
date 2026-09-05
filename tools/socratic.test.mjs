@@ -78,8 +78,8 @@ let checks = 0;
   });
 
   const { FALLBACK_LADDER, askNextQuestion, collectQuestionLadders, mountQuestionLadderReader } =
-    await import("../engine/core/socratic.js");
-  const { mountSocraticDialogue } = await import("../engine/core/socratic.js");
+    await import("@eduwonderlab/engine/core/socratic.js");
+  const { mountSocraticDialogue } = await import("@eduwonderlab/engine/core/socratic.js");
 
   const res = await askNextQuestion({ itemText: "What is 15% of 60?" });
   checks += 1;

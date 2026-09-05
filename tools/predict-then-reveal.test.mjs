@@ -20,7 +20,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { derivePrediction } from "../engine/core/predict-then-reveal.js";
+import { derivePrediction } from "@eduwonderlab/engine/core/predict-then-reveal.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CORE = /^\d+-\d+$/;

@@ -19,8 +19,8 @@ import { readFileSync } from "node:fs";
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
-const { MISCONCEPTIONS } = await import("../engine/core/misconceptions.js");
-const { INTERVENTIONS } = await import("../engine/core/misconception-interventions.js");
+const { MISCONCEPTIONS } = await import("@eduwonderlab/engine/core/misconceptions.js");
+const { INTERVENTIONS } = await import("@eduwonderlab/engine/core/misconception-interventions.js");
 const { BOSS_TAGS, QUESTION_BANK } = await import("../curriculum/class-boss/questions.js");
 const { PERSONAS, TAGS: TTM_TAGS } = await import("../curriculum/teach-the-machine/personas.js");
 const broadcast = await import("../curriculum/family-connections/broadcast/broadcast-content.js");

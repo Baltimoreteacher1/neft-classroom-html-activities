@@ -44,7 +44,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MISCONCEPTIONS, resolveAuthoredTag } from "../engine/core/misconceptions.js";
+import { MISCONCEPTIONS, resolveAuthoredTag } from "@eduwonderlab/engine/core/misconceptions.js";
 import { matchesAnswer, parseAnswerValue, Rat } from "../scripts/lib/rational.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

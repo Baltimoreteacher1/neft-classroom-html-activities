@@ -17,7 +17,7 @@ import {
   scanExpression,
   studentExplanation,
   topMisconceptions,
-} from "../engine/core/misconceptions.js";
+} from "@eduwonderlab/engine/core/misconceptions.js";
 
 let checks = 0;
 const detects = (item, typed, expected, note) => {

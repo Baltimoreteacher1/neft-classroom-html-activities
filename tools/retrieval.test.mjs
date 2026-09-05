@@ -21,7 +21,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
-import { selectReviewItems, taughtBefore } from "../engine/core/retrieval.js";
+import { selectReviewItems, taughtBefore } from "@eduwonderlab/engine/core/retrieval.js";
 import {
   buildBank,
   isPortable,

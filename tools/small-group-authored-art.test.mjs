@@ -36,7 +36,7 @@ function fakeEl() {
 globalThis.window = { matchMedia: () => ({ matches: false }) };
 globalThis.document = { createElement: () => fakeEl() };
 
-const { mountAuthoredArt } = await import("../engine/core/small-group-storyboard.js");
+const { mountAuthoredArt } = await import("@eduwonderlab/engine/core/small-group-storyboard.js");
 
 test("returns false with no usable src (fallback path stays intact)", () => {
   assert.equal(

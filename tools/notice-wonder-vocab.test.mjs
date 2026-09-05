@@ -46,7 +46,7 @@ const {
   noticeWonderImageAlt,
   renderAcademicVocabulary,
   renderableVocabulary,
-} = await import("../engine/core/academic-vocabulary.js");
+} = await import("@eduwonderlab/engine/core/academic-vocabulary.js");
 
 const mount = () => {
   const host = document.createElement("div");

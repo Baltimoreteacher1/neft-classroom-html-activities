@@ -59,7 +59,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { extractEquation, parseKeyIdea, splitGuidedLine } from "../engine/core/learn-step-model.js";
+import { extractEquation, parseKeyIdea, splitGuidedLine } from "@eduwonderlab/engine/core/learn-step-model.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const lessonsDir = path.join(root, "lessons");

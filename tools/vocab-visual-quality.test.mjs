@@ -23,7 +23,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { hasRealVocabImage, resolveVocabImage } from "../engine/core/vocab-images.js";
+import { hasRealVocabImage, resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ART = join(ROOT, "assets/vocab-images");

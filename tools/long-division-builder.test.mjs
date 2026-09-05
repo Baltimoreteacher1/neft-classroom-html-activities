@@ -31,12 +31,12 @@ import assert from "node:assert/strict";
 import {
   buildNarration,
   createNarrationCursor,
-} from "../engine/components/long-division-narration.js";
+} from "@eduwonderlab/engine/components/long-division-narration.js";
 import {
   buildLongDivision,
   CYCLE_LABELS,
   checkInputs,
-} from "../engine/components/long-division-steps.js";
+} from "@eduwonderlab/engine/components/long-division-steps.js";
 
 let checked = 0;
 const failures = [];

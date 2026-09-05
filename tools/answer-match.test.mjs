@@ -8,7 +8,7 @@
 // crediting answers that are genuinely incomplete.
 
 import assert from "node:assert/strict";
-import { fullerFormHint, isRight, numericValue, stripLabel } from "../engine/core/answer-match.js";
+import { fullerFormHint, isRight, numericValue, stripLabel } from "@eduwonderlab/engine/core/answer-match.js";
 
 let passed = 0;
 const accepts = (input, answer, why) => {

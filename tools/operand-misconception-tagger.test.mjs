@@ -8,7 +8,7 @@
  * Each case below is either a shape that MUST be named or a shape that MUST
  * stay silent. The silent cases are the ones that matter.
  */
-import { MISCONCEPTIONS, resolveAuthoredTag } from "../engine/core/misconceptions.js";
+import { MISCONCEPTIONS, resolveAuthoredTag } from "@eduwonderlab/engine/core/misconceptions.js";
 import { tagsFor } from "./author-misconception-tags.mjs";
 import {
   binaryModel,

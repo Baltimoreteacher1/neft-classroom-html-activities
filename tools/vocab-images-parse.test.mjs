@@ -22,7 +22,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const IMG_DIR = path.join(ROOT, "assets/vocab-images");

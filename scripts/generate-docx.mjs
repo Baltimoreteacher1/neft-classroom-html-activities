@@ -41,9 +41,9 @@ import {
   VerticalAlign,
   WidthType,
 } from "docx";
-import { deriveTWR } from "../engine/core/twr.js";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
-import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
+import { deriveTWR } from "@eduwonderlab/engine/core/twr.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
+import { deriveWorkedSteps } from "@eduwonderlab/engine/core/worked-steps.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
