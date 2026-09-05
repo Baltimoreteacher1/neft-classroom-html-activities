@@ -13,7 +13,9 @@ import {
 } from "./homework-alignment.mjs";
 
 const root = join(import.meta.dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
 const REQUIRED_MARKERS = [

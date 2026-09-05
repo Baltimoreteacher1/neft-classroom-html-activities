@@ -34,7 +34,9 @@ import {
 } from "./lib/practice-detectors.mjs";
 
 const root = join(import.meta.dirname, "..");
-const LESSONS = join(root, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const CORE_RE = /^\d+-\d+$/;
 
 // ------------------------------------------------------------------ selftest

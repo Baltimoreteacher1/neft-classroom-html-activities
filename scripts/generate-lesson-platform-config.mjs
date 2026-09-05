@@ -32,6 +32,7 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import { loadCurriculumManifest } from "../tools/lib/curriculum-source.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MARK = "ntlp-config";
@@ -66,7 +67,7 @@ function load(rel) {
 // rather than restating it here.
 const identities = load("data/curriculum-unit-identities.json");
 const units = (identities && identities.units) || {};
-const curriculum = load("data/curriculum-manifest.json");
+const curriculum = loadCurriculumManifest();
 // Pages badge the cluster letter ("6.AT.C.8") while lesson configs omit it
 // ("6.AT.8"), so both forms are indexed and both are tried.
 const dropCluster = (id) => String(id || "").replace(/\.[A-Z](?=\.)/, "");

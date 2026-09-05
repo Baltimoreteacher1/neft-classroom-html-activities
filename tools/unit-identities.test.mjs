@@ -19,6 +19,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
+import { loadCurriculumManifest } from "./lib/curriculum-source.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 let failures = 0;
@@ -37,7 +38,7 @@ console.log("curriculum unit identities");
 const identities = JSON.parse(
   readFileSync(resolve(ROOT, "data/curriculum-unit-identities.json"), "utf8"),
 );
-const curriculum = JSON.parse(readFileSync(resolve(ROOT, "data/curriculum-manifest.json"), "utf8"));
+const curriculum = loadCurriculumManifest();
 const { document } = new JSDOM(readFileSync(resolve(ROOT, "curriculum/units/index.html"), "utf8"))
   .window;
 

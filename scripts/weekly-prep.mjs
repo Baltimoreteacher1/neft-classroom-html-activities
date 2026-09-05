@@ -40,7 +40,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
 
 /* ---------------- tiny ANSI helpers (no deps) ---------------- */
 const C = {

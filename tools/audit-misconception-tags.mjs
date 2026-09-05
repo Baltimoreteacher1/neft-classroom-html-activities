@@ -13,7 +13,9 @@ import { fileURLToPath } from "node:url";
 import { resolveAuthoredTag } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const argv = process.argv.slice(2);
 const STRICT = argv.includes("--strict");
 const floorArg = argv.indexOf("--floor");

@@ -25,7 +25,8 @@ import { fileURLToPath } from "node:url";
 import { _internals, workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 let failures = 0;
 const fail = (msg) => {

@@ -7,7 +7,9 @@ import { join } from "node:path";
 import vm from "node:vm";
 
 const root = join(import.meta.dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
 // Every page the homework generator writes, not every core lesson: a bridge or
 // review lesson that opted in ships a homework.html too, and a page nobody
 // sweeps is a page that can rot silently. Presence of the FILE is the evidence,

@@ -27,6 +27,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadCurriculumManifest } from "../tools/lib/curriculum-source.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DATABASE = "neft-student-progress";
@@ -96,8 +97,7 @@ function usage() {
 function inventory() {
   let lessons = [];
   try {
-    lessons =
-      JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8")).lessons || [];
+    lessons = loadCurriculumManifest().lessons || [];
   } catch {
     lessons = [];
   }

@@ -29,7 +29,9 @@ import {
 } from "../scripts/homework-alignment.mjs";
 
 const root = join(import.meta.dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
+
 const notesDir = join(root, "data", "family-homework-notes");
 
 const ids = readdirSync(lessonsDir, { withFileTypes: true })
