@@ -62,6 +62,19 @@ const NORMALIZATIONS = [
 // stable across regenerations, only zip entry metadata varied.
 const ARCHIVE_RE = /\.(docx|zip|imscc)$/;
 
+// [pathMatcher, reason] — files EXCLUDED from the manifest entirely. Use only
+// for local artifacts that cannot ship: each entry must name why.
+const IGNORED = [
+  [
+    (p) => p.startsWith("canvas-packages/neft-library."),
+    "gitignored local artifact; tools/canvas/validate-cartridge.test.mjs rebuilds it with --limit=5 on every `npm test`, and CI builds from a clean checkout where it does not exist, so it never reaches production",
+  ],
+];
+
+function isIgnored(rel) {
+  return IGNORED.some(([match]) => match(rel));
+}
+
 function archiveContentBuffer(fullPath) {
   const bytes = execFileSync("unzip", ["-p", fullPath], { maxBuffer: 1 << 28 });
   const text = bytes
@@ -92,6 +105,7 @@ const TEXT_RE = /\.(html|js|mjs|css|json|svg|txt|xml|webmanifest|map)$/;
 export function buildManifest(rootDir) {
   const manifest = {};
   for (const rel of walk(rootDir, rootDir, []).sort()) {
+    if (isIgnored(rel)) continue;
     let data;
     if (ARCHIVE_RE.test(rel)) {
       data = archiveContentBuffer(join(rootDir, rel));

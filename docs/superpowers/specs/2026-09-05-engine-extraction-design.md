@@ -1,7 +1,7 @@
 # Engine Extraction — Phase 1 Design
 
 **Date:** 2026-09-05
-**Status:** Approved (scope decisions locked by Joel 2026-09-05; execution delegated)
+**Status:** Phase 1 implemented on feat/engine-extraction (2026-09-05); awaiting Joel's review + ship
 **Project:** Productize the eduwonderlab lesson engine. Phase 1 of 4 (Extract → Manifest-ize → Tenant #2 → Foreign curriculum).
 
 ## Goal

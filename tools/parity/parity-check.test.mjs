@@ -73,4 +73,12 @@ assert.ok(
   "removed file reported",
 );
 
+// Ignored local-only artifacts never enter the manifest.
+mkdirSync(join(b, "canvas-packages"));
+writeFileSync(join(b, "canvas-packages", "neft-library.imscc"), "test residue");
+assert.ok(
+  !("canvas-packages/neft-library.imscc" in buildManifest(b)),
+  "neft-library test residue excluded from the manifest",
+);
+
 console.log("parity-check tests passed");
