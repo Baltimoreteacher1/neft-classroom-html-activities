@@ -67,7 +67,7 @@ const ARCHIVE_RE = /\.(docx|zip|imscc)$/;
 const IGNORED = [
   [
     (p) => p.startsWith("canvas-packages/neft-library."),
-    "gitignored local artifact; tools/canvas/validate-cartridge.test.mjs rebuilds it with --limit=5 on every `npm test`, and CI builds from a clean checkout where it does not exist, so it never reaches production",
+    "gitignored local artifact; CI builds from a clean checkout where it does not exist, so it never reaches production (validate-cartridge.test.mjs used to clobber it with a --limit=5 build; fixed via --out-dir, but the exclusion stays correct either way)",
   ],
 ];
 

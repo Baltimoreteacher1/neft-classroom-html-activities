@@ -56,6 +56,10 @@ const TYPE_FILTER = getOpt("type"); // e.g. Game, Project, Activity, Lesson
 const SECTION_FILTER = getOpt("section"); // url substring, e.g. "math", "esol"
 const LIMIT = Number(getOpt("limit", 0)) || 0;
 const INCLUDE_PRIVATE = args.includes("--include-private");
+// Where the .imscc + manifest sidecar land. The default is the real artifact
+// location; the self-test passes a temp dir so a `--limit=5` test build can
+// never overwrite the full library cartridge a person built on purpose.
+const OUT_DIR = resolve(repoRoot, getOpt("out-dir", "canvas-packages"));
 
 // Exact selection exported from Canvas Studio. --select=<file> reads a JSON
 // { urls:[...] } (or a bare array / newline list); --select-urls=a,b,c is inline.
@@ -156,7 +160,8 @@ function emit(modulesList, suffixParts) {
   /* ---------- zip ---------- */
   const suffix = suffixParts.filter(Boolean).join("-");
   const outName = suffix ? `neft-library-${suffix}.imscc` : "neft-library.imscc";
-  const outFile = resolve(repoRoot, "canvas-packages", outName);
+  mkdirSync(OUT_DIR, { recursive: true });
+  const outFile = resolve(OUT_DIR, outName);
   rmSync(outFile, { force: true });
   execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
 

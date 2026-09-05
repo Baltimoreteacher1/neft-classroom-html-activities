@@ -19,14 +19,21 @@ const repoRoot = resolve(here, "../..");
 let passed = 0;
 const ok = (l) => (console.log("  ✓ " + l), passed++);
 
-/** Build a tiny real cartridge into canvas-packages/ and stage its contents. */
+/** Build a tiny real cartridge into a TEMP dir and stage its contents.
+ * Never into canvas-packages/ — this --limit=5 build used to overwrite the
+ * full 1,051-item library artifact on every `npm test`. */
 function stageRealPackage() {
-  execFileSync("node", ["tools/canvas/build-library-cartridge.mjs", "--limit=5"], {
-    cwd: repoRoot,
-    stdio: "pipe",
-  });
+  const outDir = mkdtempSync(join(tmpdir(), "cart-out-"));
+  execFileSync(
+    "node",
+    ["tools/canvas/build-library-cartridge.mjs", "--limit=5", `--out-dir=${outDir}`],
+    {
+      cwd: repoRoot,
+      stdio: "pipe",
+    },
+  );
   // unzip the built package into a temp dir we can mutate
-  const pkg = resolve(repoRoot, "canvas-packages/neft-library.imscc");
+  const pkg = resolve(outDir, "neft-library.imscc");
   const dir = mkdtempSync(join(tmpdir(), "cart-"));
   execFileSync("unzip", ["-q", "-o", pkg, "-d", dir]);
   return dir;
