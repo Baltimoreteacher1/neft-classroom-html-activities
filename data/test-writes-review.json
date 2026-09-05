@@ -1,0 +1,80 @@
+{
+  "_doc": "Every test file that performs filesystem writes, with a reviewed statement of where those writes land and why that is safe. Enforced by tools/validate-test-writes.mjs: a writing test without an entry fails, and an entry whose file is gone or no longer writes fails. Written after two same-day incidents (2026-09-05): the cartridge self-test clobbered the real neft-library artifact on every npm test, and a sandbox test overwrote six real lesson configs when a refactor broke its generator's root redirection.",
+  "entries": [
+    {
+      "file": "night-shift/modules/06-lesson-render.test.mjs",
+      "targets": "tmpdir",
+      "reason": "all writes land under mkdtempSync(join(tmpdir(), 'ns-render-')) fixture roots"
+    },
+    {
+      "file": "scripts/lib/preserve-injected.test.mjs",
+      "targets": "tmpdir",
+      "reason": "writes learn.html/new.html under mkdtempSync(join(tmpdir(), 'preserve-injected-'))"
+    },
+    {
+      "file": "scripts/usage-report.test.mjs",
+      "targets": "tmpdir",
+      "reason": "writes a synthetic sqlite stub under a mkdtempSync-derived directory only"
+    },
+    {
+      "file": "teacher-tools/canvas-studio/cartridge-files.test.mjs",
+      "targets": "tmpdir",
+      "reason": "writes and removes cartridge scratch output under mkdtempSync temp dirs only"
+    },
+    {
+      "file": "tools/answer-position-balance.test.mjs",
+      "targets": "tmpdir",
+      "reason": "builds a fixture lessons tree under mkdtempSync(join(tmpdir(), 'answer-balance-'))"
+    },
+    {
+      "file": "tools/canvas/validate-cartridge.test.mjs",
+      "targets": "tmpdir",
+      "reason": "builds via --out-dir into mkdtempSync dirs since the 2026-09-05 clobber fix; mutations on temp copies only"
+    },
+    {
+      "file": "tools/gate-mutation.test.mjs",
+      "targets": "repo-additive",
+      "reason": "plants ADDITIVE-ONLY mutations (new files, deleted after) against a throwaway GIT_INDEX_FILE; never modifies a tracked file, by documented design in CLAUDE.md"
+    },
+    {
+      "file": "tools/generate-warmups.test.mjs",
+      "targets": "tmpdir",
+      "reason": "writes fixture configs under mkdtempSync(join(tmpdir(), 'neft-warmup-')) only"
+    },
+    {
+      "file": "tools/generators-preserve-vocabulary.test.mjs",
+      "targets": "tmpdir",
+      "reason": "builds a fixture repo under mkdtempSync and redirects generators into it via the REPO env contract"
+    },
+    {
+      "file": "tools/generators-preserve-injected.test.mjs",
+      "targets": "fixture-strings-only",
+      "reason": "performs no writes; the write calls are template-string fixtures feeding its own raw-overwrite detector's self-test"
+    },
+    {
+      "file": "tools/math-acronyms.test.mjs",
+      "targets": "flag-gated-baseline",
+      "reason": "writes only its own baseline JSON, and only when invoked by hand with --update; plain npm test runs never write"
+    },
+    {
+      "file": "tools/parity/parity-check.test.mjs",
+      "targets": "tmpdir",
+      "reason": "writes fixture trees under mkdtempSync(join(tmpdir(), 'parity-*')) only"
+    },
+    {
+      "file": "tools/self-hosted-fonts.test.mjs",
+      "targets": "tmpdir",
+      "reason": "writes fixture files under a mkdtempSync-derived directory and removes that directory"
+    },
+    {
+      "file": "tools/small-group-generator-idempotent.test.mjs",
+      "targets": "tmpdir",
+      "reason": "builds a fixture repo under mkdtempSync and redirects the generator via the REPO env contract"
+    },
+    {
+      "file": "tools/telemetry-honesty.test.mjs",
+      "targets": "tmpdir",
+      "reason": "creates and removes a scratch directory under tmpdir for the synthetic telemetry database"
+    }
+  ]
+}
