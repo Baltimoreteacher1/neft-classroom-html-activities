@@ -11,17 +11,14 @@ import MiniSearch from "minisearch";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
+import { loadCurriculumManifest } from "../tools/lib/curriculum-source.mjs";
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
-const manifestPath = resolve(root, "data/curriculum-manifest.json");
+
 const outPath = resolve(root, "data/curriculum-search-index.json");
 
-if (!existsSync(manifestPath)) {
-  console.error("Missing data/curriculum-manifest.json — run npm run generate-curriculum-manifest");
-  process.exit(1);
-}
-
-const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+const manifest = loadCurriculumManifest();
 const lessons = manifest.lessons || [];
 
 /** Flatten resource labels from manifest.resources object. */

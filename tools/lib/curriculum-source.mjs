@@ -55,3 +55,28 @@ export function tryLoadLessonConfig(id) {
     return null;
   }
 }
+
+// ---- curriculum STRUCTURE (loaders only — never ordering logic) ----------
+// data/curriculum-manifest.json is the structure SoT (generated from lesson
+// configs by generate-curriculum-manifest) and data/pacing-unit-ranges.json
+// carries the district unit order. Deliberately NO deriveUnitSequence here:
+// assets/curriculum-teacher-planning.js owns that, validate:pacing-unit-order
+// pins it, and a second derivation is how two orderings drift apart.
+
+export const DATA_DIR = join(REPO_ROOT, "data");
+
+/** Parsed JSON from data/<name>. Throws if absent or unparsable. */
+export function loadDataJson(name) {
+  return JSON.parse(readFileSync(join(DATA_DIR, name), "utf8"));
+}
+
+/** The curriculum structure SoT. Throws with the regeneration hint if absent. */
+export function loadCurriculumManifest() {
+  try {
+    return loadDataJson("curriculum-manifest.json");
+  } catch (e) {
+    throw new Error(
+      `data/curriculum-manifest.json unreadable (run npm run generate-curriculum-manifest): ${e.message}`,
+    );
+  }
+}
