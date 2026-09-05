@@ -19,6 +19,9 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { deriveTWR } from "@eduwonderlab/engine/core/twr.js";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
+import { deriveWorkedSteps } from "@eduwonderlab/engine/core/worked-steps.js";
 import { Resvg } from "@resvg/resvg-js";
 import {
   AlignmentType,
@@ -41,9 +44,6 @@ import {
   VerticalAlign,
   WidthType,
 } from "docx";
-import { deriveTWR } from "@eduwonderlab/engine/core/twr.js";
-import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
-import { deriveWorkedSteps } from "@eduwonderlab/engine/core/worked-steps.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

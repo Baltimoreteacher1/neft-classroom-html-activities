@@ -20,8 +20,13 @@
 
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
+import {
+  catalogKey,
+  SECTION_LABEL,
+  TOOL_CATALOG,
+  toolMeta,
+} from "@eduwonderlab/engine/core/tool-catalog.js";
 import { JSDOM } from "jsdom";
-import { catalogKey, SECTION_LABEL, TOOL_CATALOG, toolMeta } from "@eduwonderlab/engine/core/tool-catalog.js";
 
 const url = (p) => new URL(p, import.meta.url);
 const read = (p) => readFileSync(url(p), "utf8");
@@ -164,7 +169,9 @@ globalThis.cancelAnimationFrame = () => {};
 // The standards line does one best-effort fetch; JSDOM has none, so stub a miss.
 globalThis.fetch = () => Promise.resolve({ ok: false, json: () => Promise.resolve(null) });
 
-const { collectTools, isToolsMode, renderToolsPage } = await import("@eduwonderlab/engine/core/tools-mode.js");
+const { collectTools, isToolsMode, renderToolsPage } = await import(
+  "@eduwonderlab/engine/core/tools-mode.js"
+);
 const { mountToolDrawer } = await import("@eduwonderlab/engine/core/tool-drawer.js");
 
 assert.equal(isToolsMode(), true, "?mode=tools must be detected");

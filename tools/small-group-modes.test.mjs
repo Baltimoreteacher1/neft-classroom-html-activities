@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { JSDOM } from "jsdom";
 import { isRight } from "@eduwonderlab/engine/core/answer-match.js";
 import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
+import { JSDOM } from "jsdom";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
 import { authoredBank } from "./lib/small-group-authored-banks.mjs";
@@ -265,7 +265,9 @@ assert.equal(
   "the Create-a-Challenge lab is removed",
 );
 // Passport bridge installs without a passport layer present and never throws.
-const { installSmallGroupPassport } = await import("@eduwonderlab/engine/core/small-group-passport.js");
+const { installSmallGroupPassport } = await import(
+  "@eduwonderlab/engine/core/small-group-passport.js"
+);
 const passportStore = (() => {
   const data = {};
   return {

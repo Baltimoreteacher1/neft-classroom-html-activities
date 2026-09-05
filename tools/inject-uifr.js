@@ -20,7 +20,10 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { classifyActivityTeachSupport, computeTeachL4Evidence } from "@eduwonderlab/engine/core/uifr.js";
+import {
+  classifyActivityTeachSupport,
+  computeTeachL4Evidence,
+} from "@eduwonderlab/engine/core/uifr.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS_DIR = join(ROOT, "lessons");

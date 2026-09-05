@@ -20,8 +20,8 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { JSDOM } from "jsdom";
 import { selectReviewItems, taughtBefore } from "@eduwonderlab/engine/core/retrieval.js";
+import { JSDOM } from "jsdom";
 import {
   buildBank,
   isPortable,

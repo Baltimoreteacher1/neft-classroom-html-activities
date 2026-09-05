@@ -5,6 +5,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 import { Resvg } from "@resvg/resvg-js";
 import {
   AlignmentType,
@@ -21,7 +22,6 @@ import {
   TextRun,
   WidthType,
 } from "docx";
-import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

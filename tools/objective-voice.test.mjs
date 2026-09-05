@@ -12,7 +12,10 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { studentFirstName, toThirdPersonObjective } from "@eduwonderlab/engine/core/objective-voice.js";
+import {
+  studentFirstName,
+  toThirdPersonObjective,
+} from "@eduwonderlab/engine/core/objective-voice.js";
 
 const stateWith = (studentName) => ({ get: () => ({ studentName }) });
 
