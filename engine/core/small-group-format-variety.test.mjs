@@ -28,7 +28,9 @@ import {
   practiceDisplayOrder,
 } from "./small-group-practice.js";
 
-const LESSONS = path.join(process.cwd(), "lessons");
+// Resolved from this file, not cwd, so the sweep also runs standalone
+// (`npm test -w @eduwonderlab/engine` executes with cwd = engine/).
+const LESSONS = path.join(new URL("../..", import.meta.url).pathname, "lessons");
 
 function longestRun(types) {
   let best = 0;

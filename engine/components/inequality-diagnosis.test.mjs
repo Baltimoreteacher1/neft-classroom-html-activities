@@ -144,11 +144,14 @@ test("multi-step keys still compare as text, so nothing regresses", () => {
 
 test("the parser round-trips every authored inequality in the curriculum", async () => {
   const { readdirSync, readFileSync, existsSync } = await import("node:fs");
+  // Resolved from this file, not cwd, so the sweep also runs standalone
+  // (`npm test -w @eduwonderlab/engine` executes with cwd = engine/).
+  const LESSONS = new URL("../../lessons/", import.meta.url).pathname;
   let checked = 0;
   let simple = 0;
   let multiStep = 0;
-  for (const id of readdirSync("lessons")) {
-    const path = `lessons/${id}/config.json`;
+  for (const id of readdirSync(LESSONS)) {
+    const path = `${LESSONS}${id}/config.json`;
     if (!existsSync(path)) continue;
     const raw = readFileSync(path, "utf8");
     if (!raw.includes("circleType")) continue;

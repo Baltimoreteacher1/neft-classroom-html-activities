@@ -1,9 +1,10 @@
 // Unit tests for the byte-parity harness (engine extraction, phase 1).
 // Plain node script per repo test convention: top-level assertions, exit code.
-import { mkdtempSync, writeFileSync, mkdirSync } from "node:fs";
+
+import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import assert from "node:assert/strict";
 import { buildManifest, diffManifests, normalizeContent } from "./parity-check.mjs";
 
 const a = mkdtempSync(join(tmpdir(), "parity-a-"));

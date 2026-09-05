@@ -82,14 +82,17 @@ t("still regenerates a clean percent ask", () => {
 
 // ── the fleet guarantee ─────────────────────────────────────────────────────
 t("every regeneration the fleet produces answers its own printed problem", () => {
-  const dirs = readdirSync("lessons").filter((d) => /^\d+-\d+$/.test(d));
+  // Resolved from this file, not cwd, so the sweep also runs standalone
+  // (`npm test -w @eduwonderlab/engine` executes with cwd = engine/).
+  const LESSONS = new URL("../../lessons/", import.meta.url).pathname;
+  const dirs = readdirSync(LESSONS).filter((d) => /^\d+-\d+$/.test(d));
   let checked = 0;
   const wrong = [];
   for (let round = 0; round < 8; round += 1) {
     for (const d of dirs) {
       let cfg;
       try {
-        cfg = JSON.parse(readFileSync(`lessons/${d}/config.json`, "utf8"));
+        cfg = JSON.parse(readFileSync(`${LESSONS}${d}/config.json`, "utf8"));
       } catch {
         continue;
       }

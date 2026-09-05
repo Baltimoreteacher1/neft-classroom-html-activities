@@ -17,7 +17,8 @@ import process from "node:process";
 // [pathMatcher, transform, reason]
 const NORMALIZATIONS = [
   [
-    (p) => p === "access-practice-lab/config.json" || p === "access-practice-lab/inventory/config.json",
+    (p) =>
+      p === "access-practice-lab/config.json" || p === "access-practice-lab/inventory/config.json",
     (text) => {
       // tools/stamp-build.mjs rewrites this stamp on every build by design.
       try {
@@ -56,14 +57,16 @@ const NORMALIZATIONS = [
 // and OOXML dcterms timestamps (verified by unzip-and-diff in the M0 probe).
 // Their manifest hash is taken over concatenated entry CONTENTS (unzip -p)
 // with dcterms timestamps stripped, so real content drift still fails parity.
-const ARCHIVE_RE = /\.(docx|zip)$/;
+// .imscc joined the list after `npm test` (validate-cartridge) regenerated the
+// gitignored canvas-packages/neft-library.imscc between builds — content proven
+// stable across regenerations, only zip entry metadata varied.
+const ARCHIVE_RE = /\.(docx|zip|imscc)$/;
 
 function archiveContentBuffer(fullPath) {
   const bytes = execFileSync("unzip", ["-p", fullPath], { maxBuffer: 1 << 28 });
-  const text = bytes.toString("latin1").replace(
-    /<dcterms:(created|modified)[^<]*<\/dcterms:\1>/g,
-    "<dcterms:$1/>",
-  );
+  const text = bytes
+    .toString("latin1")
+    .replace(/<dcterms:(created|modified)[^<]*<\/dcterms:\1>/g, "<dcterms:$1/>");
   return Buffer.from(text, "latin1");
 }
 
