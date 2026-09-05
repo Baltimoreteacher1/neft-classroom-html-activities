@@ -118,7 +118,9 @@ function diagnosedErrors(base) {
   }
   return [...found];
 }
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const FACILITATION_MODULE = join(ROOT, "functions", "teacher-small-group", "_facilitation-data.js");
 /* `--dry-run` is the name every other generator here uses; `--dry` predates it
  * and still works. A safety flag that only answers to a spelling nobody guesses

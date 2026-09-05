@@ -44,7 +44,9 @@ const before = new Map(tracked.map((f) => [f, readFileSync(join(ROOT, f), "utf8"
 const scratch = mkdtempSync(join(tmpdir(), "printables-fresh-"));
 let stale = [];
 try {
-  for (const dir of ["lessons", "scripts", "engine", "shared", "assets"]) {
+  // tools/lib rides along because generators import the curriculum-source seam
+  // (and its own import.meta.url-derived root then correctly points at the scratch).
+  for (const dir of ["lessons", "scripts", "engine", "shared", "assets", "tools/lib"]) {
     const src = join(ROOT, dir);
     if (existsSync(src)) cpSync(src, join(scratch, dir), { recursive: true });
   }

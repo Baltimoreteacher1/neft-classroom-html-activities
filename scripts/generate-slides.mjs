@@ -27,7 +27,8 @@ import { linkifyDeck } from "./lib/vocab-linkify.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const lessonsDir = path.join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // Define color tokens matching Design System
 const _COLOR_BG = "#F7F4EC";

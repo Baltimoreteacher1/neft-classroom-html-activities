@@ -32,6 +32,7 @@ import {
   carriedDivisionFigures,
   DIVISION_FIGURE_CSS,
 } from "@eduwonderlab/engine/core/division-walk-figure.js";
+import { LESSONS_DIR as LESSONS, listLessonDirs } from "../tools/lib/curriculum-source.mjs";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { scaffoldFor } from "./lib/worksheet-scaffolds.mjs";
@@ -39,7 +40,6 @@ import { kindOf, partTwoSplit, setBPages } from "./lib/worksheet-set-b.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const LESSONS = join(ROOT, "lessons");
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
 /* ==========================================================================
@@ -2364,10 +2364,7 @@ ${pages}
    ========================================================================== */
 
 function lessonDirs() {
-  return readdirSync(LESSONS, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && existsSync(join(LESSONS, d.name, "config.json")))
-    .map((d) => d.name)
-    .sort();
+  return listLessonDirs();
 }
 
 function main() {
