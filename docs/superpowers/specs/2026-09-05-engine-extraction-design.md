@@ -20,18 +20,25 @@ platform) can consume.
 | Extraction scope | Runtime engine only — generators stay as-is (Phase 2)                           |
 | Parity bar       | Byte-identical `dist/` output (modulo build stamp) at every milestone           |
 
-## What moves
+## What becomes the package
 
-`engine/` (230 files, ~88k JS lines, 12 stylesheets, 36 colocated tests) moves to
-`packages/engine/src/` via `git mv`, published in-repo as the workspace package
-`@eduwonderlab/engine`. This includes: `engine/core/` (lesson-renderer, app,
-present-mode, notebook-checkpoint, teacher/tools/levels modes, misconceptions,
-hint-ladder, i18n, score-reporter, small-group sub-engine), `engine/components/`
-(77 manipulatives), `engine/styles/` (incl. design-system.css), and
-`engine/templates/flagship/`.
+**Revised 2026-09-05 during planning:** a reference inventory found **132 files in
+`tools/` and `scripts/`** that reach into `engine/` by path. Physically relocating the
+directory would force edits to all 132 under the byte-identical bar for zero functional
+gain, and symlink shims are banned (Drive mirror never syncs symlinks). So Phase 1
+declares **`engine/` itself as the workspace package, in place**: `engine/package.json`
+(name `@eduwonderlab/engine`) plus `"workspaces": ["engine"]` in the root
+`package.json`. The boundary is the package manifest + exports map + standalone test
+run — not the directory's address. Physical relocation to `packages/` is deferred to
+Phase 2, after the 132 external imports are rerouted through the package entry points.
 
-The `@engine` Vite alias repoints to `packages/engine/src`, so the 367 per-lesson
-`lesson.js` boot files (`import { bootFlagship } from "@engine/..."`) and all lesson
+The package covers `engine/` (230 files, ~88k JS lines, 12 stylesheets, 36 colocated
+tests): `engine/core/` (lesson-renderer, app, present-mode, notebook-checkpoint,
+teacher/tools/levels modes, misconceptions, hint-ladder, i18n, score-reporter,
+small-group sub-engine), `engine/components/` (77 manipulatives), `engine/styles/`
+(incl. design-system.css), and `engine/templates/flagship/`.
+
+The `@engine` Vite alias, the 367 per-lesson `lesson.js` boot files, and all lesson
 HTML are untouched.
 
 ## What explicitly does NOT move (Phase 1)
@@ -63,36 +70,31 @@ packages/engine/
 - Colocated `*.test.mjs` move with their modules; the root test runner
   (`tools/run-tests.mjs`) and vitest/biome/typecheck globs are updated to the new path.
 
-## Reference updates (exhaustive, not sampled)
+## Reference inventory (documented, not churned)
 
-Every reference to the `engine/` path must be found and updated in one pass:
-
-1. `vite.config.js` — `@engine` alias, the `engine/homework-lesson-models.js` entry,
-   `copyStandaloneHtml` skip list (add `packages/`, keep skipping the old path until it
-   is gone).
-2. Any `import`/`readFile`/glob in `tools/` (522 files) and `scripts/` (410 files) that
-   touches `engine/` by relative or root-relative path — discovered by grep for
-   `engine/`, `../engine`, `@engine` across the repo, excluding `lessons/`, `dist/`,
-   committed HTML.
-3. Validator globs among the 104 `validate:*` scripts that scan `engine/`.
-4. Config: `biome`, `tsconfig`/typecheck-ratchet file lists, vitest config, playwright
-   config, `.gitignore` patterns if any mention `engine/`.
-5. `package.json` scripts referencing `engine/` paths.
-
-Rule: the grep inventory is produced first and committed with the change, so the diff
-reviewer can see the full reference set, not a sample.
+Because the package is declared in place, no path references change in Phase 1. The
+132-file inventory of `tools/`+`scripts/` files that import engine internals is
+committed as a spec appendix (`2026-09-05-engine-reference-inventory.md`) — it is the
+Phase 2 worklist for rerouting external consumers through the package's exports map.
+The only files edited in Phase 1: root `package.json` (+ lockfile, intentionally, for
+the workspace entry), new `engine/package.json`, new `engine/README.md`, the parity
+harness under `tools/parity/`, and these docs.
 
 ## Parity harness (built first, before anything moves)
 
-`tools/parity/parity-check.sh`:
+`tools/parity/parity-check.mjs`, two modes:
 
-1. Build candidate (current worktree): full `npm run build` → snapshot `dist/` to a
-   scratch dir.
-2. Build baseline (merge-base with `main`) in a throwaway worktree with its own
-   `npm ci` → snapshot its `dist/`.
-3. Normalize both: strip the build stamp (`stamp-build` output) and any other
-   known-variable bytes (list maintained in the script; each normalization documented).
-4. `diff -r` the trees. Non-empty diff = FAIL, printed in full.
+- `--snapshot <manifest.json>`: after a full `npm run build`, walk `dist/`, apply the
+  normalization rules (strip the build stamp written by `tools/stamp-build.mjs` into
+  `dist/access-practice-lab/config.json` and stamped HTML, plus any nondeterminism
+  found by the M0 double-build probe — each rule documented in the script with its
+  reason), and write `{relativePath: sha256}` sorted JSON.
+- `--compare <manifest.json>`: snapshot the current `dist/` the same way and diff
+  against the stored manifest. Any added/removed/changed entry = FAIL, printed in full.
+
+The baseline manifest is produced once at the branch point (main `17191d6a4`) by
+building twice and reconciling — bytes that differ between two builds of the same
+commit are nondeterminism to normalize, never waved through silently.
 
 Vite content-hashed filenames make this strict: identical inputs ⇒ identical hashes ⇒
 identical names. Any drift shows up as renamed files, not just changed bytes.
@@ -103,14 +105,16 @@ heavy per-commit). Milestones: after workspace scaffolding (expect no-op), after
 
 ## Execution plan shape
 
-1. **M0 — baseline:** `npm ci`, full build, record dist manifest. Commit parity harness.
-2. **M1 — workspaces scaffolding:** root workspaces field + empty `packages/engine`
-   `package.json`. Build must be byte-identical (pure no-op).
-3. **M2 — the move:** `git mv engine packages/engine/src`, apply the full reference
-   inventory, build, parity check, full test suite + lint + typecheck ratchet.
-4. **M3 — package hygiene:** README, exports map, engine tests runnable standalone
-   (`npm test -w @eduwonderlab/engine` or equivalent), docs note in repo docs.
-5. Hand off: branch stays local; Joel reviews and ships via the guarded ship pipeline.
+1. **M0 — baseline + determinism probe:** commit the parity harness; build **twice** at
+   the branch point and diff the two runs against each other — every differing byte is
+   build nondeterminism and becomes a documented normalization rule; the normalized
+   manifest is the stored baseline.
+2. **M1 — the package:** root `workspaces: ["engine"]`, `engine/package.json` with
+   exports map, `npm install` (lockfile updated intentionally), engine tests runnable
+   standalone via `npm test -w @eduwonderlab/engine`. Build, parity vs baseline.
+3. **M2 — hygiene + handoff docs:** `engine/README.md` (boundary contract), reference
+   inventory appendix, full `npm test` + `lint` + `typecheck`, final parity run.
+4. Hand off: branch stays local; Joel reviews and ships via the guarded ship pipeline.
    No push, no deploy from this project.
 
 ## Error handling / rollback
