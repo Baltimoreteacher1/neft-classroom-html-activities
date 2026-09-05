@@ -26,7 +26,8 @@ import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const IMG_DIR = path.join(ROOT, "assets/vocab-images");
-const LESSONS = path.join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 let passed = 0;
 const ok = (n) => {

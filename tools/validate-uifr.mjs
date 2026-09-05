@@ -17,7 +17,8 @@ import { assertNonEmpty } from "./lib/non-empty.mjs";
 import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
 let total = 0;
 const failures = [];

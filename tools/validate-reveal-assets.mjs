@@ -224,7 +224,8 @@ if (existsSync(MANIFEST)) {
   }
 }
 
-const lessonsDir = join(ROOT, "lessons");
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
+
 const orphans = [];
 const kept = [];
 let scanned = 0;

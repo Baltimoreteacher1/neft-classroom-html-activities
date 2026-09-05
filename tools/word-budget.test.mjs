@@ -21,7 +21,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
 const quiet = new VirtualConsole();
 
 const root = new URL("../", import.meta.url).pathname;
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
+
 const coreIds = readdirSync(lessonsDir).filter((id) => /^\d+-\d+$/.test(id));
 assert.ok(coreIds.length >= 80, `expected the core fleet, found ${coreIds.length}`);
 

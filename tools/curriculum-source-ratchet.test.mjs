@@ -21,7 +21,7 @@ const ALLOWED = new Set([
 
 // The pin. Lower it in the same commit as a migration; never raise it without
 // Joel's sign-off recorded in data/product-decisions.json.
-const PIN = 216;
+const PIN = 209;
 
 const PATTERN = String.raw`["'](\.\./)*lessons/|["']lessons["']`;
 

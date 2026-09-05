@@ -48,7 +48,8 @@ import { MISCONCEPTIONS, resolveAuthoredTag } from "@eduwonderlab/engine/core/mi
 import { matchesAnswer, parseAnswerValue, Rat } from "../scripts/lib/rational.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 const R = (n, d = 1) => new Rat(BigInt(n), BigInt(d));
 /** Exact rational from a decimal literal — never Number, which cannot hold 0.7. */

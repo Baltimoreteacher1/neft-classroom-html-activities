@@ -31,7 +31,8 @@ import {
 } from "../scripts/lib/worksheet-set-b.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 const dirs = readdirSync(LESSONS, { withFileTypes: true })
   .filter((d) => d.isDirectory() && existsSync(join(LESSONS, d.name, "worksheet.html")))
