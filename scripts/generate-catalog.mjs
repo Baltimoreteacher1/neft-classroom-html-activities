@@ -427,6 +427,49 @@ function collectIndexDirs(dir, maxDepth, depth = 0) {
   return out;
 }
 
+/**
+ * The lesson titles the curriculum manifest places in a unit, as search text.
+ * The manifest is the source of truth for which lessons belong to which unit;
+ * a unit hub's own <title> is not, and for three units it disagrees.
+ */
+const lessonWordsByUnit = new Map();
+
+/**
+ * Maryland standard domain codes, spelled out. Lesson titles alone are not
+ * enough: unit 2's lessons say "Statistical", so a search for "statistics"
+ * still missed the statistics unit. The domain its standards actually carry
+ * (6.DS.*) supplies the word the reader types.
+ *
+ * Only the domain NAME. The lesson titles in the same bucket already supply the
+ * topic words ("Understand Ratios", "Determine the Volume of…"), so listing
+ * those here as well only spread false matches: every algebraic-thinking unit
+ * started answering to "equations", including the ratios and percent units.
+ */
+const DOMAIN_WORDS = {
+  DS: "data statistics",
+  NOS: "number sense operations",
+  AT: "algebraic thinking",
+  GR: "geometry measurement",
+};
+
+try {
+  const manifest = JSON.parse(readText(resolve(ROOT, "data", "curriculum-manifest.json")));
+  for (const lesson of manifest.lessons || []) {
+    if (lesson.unit == null) continue;
+    const bucket = lessonWordsByUnit.get(lesson.unit) || new Set();
+    if (lesson.title) bucket.add(lesson.title);
+    if (lesson.topic) bucket.add(String(lesson.topic).replace(/-/g, " "));
+    const domain = (String(lesson.standard || "").match(/^6\.([A-Z]+)/) || [])[1];
+    if (domain && DOMAIN_WORDS[domain]) bucket.add(DOMAIN_WORDS[domain]);
+    lessonWordsByUnit.set(lesson.unit, bucket);
+  }
+} catch {
+  // No manifest (or malformed): hubs simply keep their title-derived keywords.
+}
+function unitLessonWords(unit) {
+  return [...(lessonWordsByUnit.get(unit) || [])].join(" ");
+}
+
 const mathDir = resolve(ROOT, "math");
 if (existsSync(mathDir)) {
   for (const d of readdirSync(mathDir, { withFileTypes: true })) {
@@ -445,7 +488,19 @@ if (existsSync(mathDir)) {
           category: "Unit Hub",
           audience: "student",
           unit,
-          keywords: `unit ${unit} hub ${descFromHtml(idx)}`,
+          // Seed the hub's search text from the lessons the manifest actually
+          // places in this unit, not just its own <title>.
+          //
+          // Three unit hubs carry a title from before the district resequenced:
+          // unit-1 says "Number Sense", unit-2 says "Fraction Division" and
+          // unit-10 says "Volume and Surface Area", while their lessons are the
+          // "Math is…" identity unit, Statistics, and "Math Is…" respectively.
+          // Searching "statistics" therefore returned 63 results and NOT the
+          // statistics unit hub, while "number sense" surfaced a unit that has
+          // none. Renaming those pages is a labelling decision that belongs with
+          // the unit-numbering work, not with search — so this only widens what
+          // matches. No displayed title changes.
+          keywords: `unit ${unit} hub ${descFromHtml(idx)} ${unitLessonWords(unit)}`,
         });
       }
       // Everything inside the unit: on-ramps, enrichment, games, reviews,
