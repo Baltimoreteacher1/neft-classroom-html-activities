@@ -6,6 +6,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 import {
   decimalOperation,
   detectVisualTopic,
@@ -6323,7 +6324,7 @@ export function renderMoreContent(config, lessonId) {
   // Every lesson with a homework page also ships a printable .docx, but nothing
   // linked to it — families without a device at home had no paper path.
   const docxHref = `/lessons/${lessonId}/homework.docx`;
-  const hasDocx = existsSync(join(_root, "lessons", lessonId, "homework.docx"));
+  const hasDocx = existsSync(lessonPath(lessonId, "homework.docx"));
   const offlineCta = hasDocx
     ? `
         <a href="${esc(docxHref)}" download class="ai-lab-cta offline-cta">

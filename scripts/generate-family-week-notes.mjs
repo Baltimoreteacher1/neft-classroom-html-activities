@@ -19,6 +19,7 @@
  */
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const NOTES_DIR = path.join(ROOT, "data", "family-homework-notes");
@@ -60,7 +61,7 @@ function isTopicHeader(term, title) {
 }
 
 async function lessonVocabulary(lessonId, title) {
-  const configPath = path.join(ROOT, "lessons", lessonId, "config.json");
+  const configPath = lessonPath(lessonId, "config.json");
   let config;
   try {
     config = JSON.parse(await readFile(configPath, "utf8"));
