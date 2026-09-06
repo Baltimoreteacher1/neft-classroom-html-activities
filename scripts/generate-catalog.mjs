@@ -71,6 +71,15 @@ function decodeEntities(s) {
     .trim();
 }
 
+/**
+ * A trailing site-brand suffix on a <title>, e.g. " | Neft Teacher".
+ * Anchored to the end and limited to the brands this site actually uses, so a
+ * dash inside a real title is left alone. Repeated to catch stacked suffixes
+ * ("… · Neft Teacher Grade 6 Math").
+ */
+const BRAND_SUFFIX =
+  /(\s*[|·–—-]\s*(Neft Teacher|EduWonderLab|Grade 6 Math|Neft Teacher Grade 6 Math))+\s*$/i;
+
 /** Pull a human title from an HTML file: prefer <title>, fall back to <h1>. */
 function titleFromHtml(htmlPath, fallback) {
   const html = readText(htmlPath);
@@ -79,7 +88,13 @@ function titleFromHtml(htmlPath, fallback) {
     if (t && t[1].trim()) {
       let title = decodeEntities(t[1]);
       // Drop a trailing " | Neft Teacher" / " · Grade 6 Math" style suffix.
-      title = title.split(/\s+[|·–—]\s+/)[0].trim() || title;
+      //
+      // Strip only a KNOWN trailing brand, and only from the end. Splitting on
+      // the first separator instead — dashes included — truncated every title
+      // that uses a dash as punctuation rather than as a brand separator: 953
+      // titles on the site contain one, and "Unit 3 — Ratios & Rates" reached
+      // the directory as the bare, useless "Unit 3".
+      title = title.replace(BRAND_SUFFIX, "").trim() || title;
       if (title) return title;
     }
     const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
