@@ -34,11 +34,34 @@ curl -s https://eduwonderlab.com/t/staging/api/progress/health
 # after binding:  {"ok":true,"backend":"cloudflare","d1":true}
 ```
 
-## 4. Cloudflare Access (milestone 2, not needed for the staging data path)
+## 4. Cloudflare Access — switching on tenant teacher surfaces (milestone 2)
 
-When tenant teacher surfaces exist: Zero Trust → Access → Applications → add a
-self-hosted app for `eduwonderlab.com/t/*/teach*`, policy = allow the tenant
-teacher's Google identity. The existing Basic-auth model is untouched.
+The teacher surfaces exist and are inert (503) until this is done once, with
+Joel present:
+
+1. Zero Trust → Access → Applications → Add → Self-hosted:
+   domain `eduwonderlab.com`, path `t/*/teach*`; session 24h.
+2. Policy: Allow → Include → Emails → the tenant teacher's Google address
+   (add Joel's too). Login method: Google.
+3. Copy the application's **Audience (AUD) tag**, then set two Pages VARS
+   (Settings → Environment variables, non-secret) or wrangler.toml `[vars]`:
+   `ACCESS_TEAM_DOMAIN` = `<team>.cloudflareaccess.com`,
+   `ACCESS_AUD_TEACH` = the AUD tag. Redeploy (any ship).
+4. Verify: `/t/staging/teach/` now demands a Google login; the API verifies
+   the Access JWT against the team keys on every call (defense in depth —
+   the app never trusts the edge alone), and its teacher routes open via a
+   per-request nonce, never Joel's real TEACHER_KEY.
+
+## 5. Onboarding a real colleague (one command)
+
+```bash
+node scripts/onboard-tenant.mjs <id> "<Display Name>"
+```
+
+Creates their D1, adds the wrangler.toml binding, writes the registry entry,
+and prints their join code ONCE (never saved). Review the diff, ship, add
+their email to the Access policy, hand them the code and
+`/t/<id>/teach/`. Done.
 
 ## Join code
 
