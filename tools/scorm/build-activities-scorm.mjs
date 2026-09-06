@@ -13,6 +13,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { packageFileName } from "../../functions/_lib/scorm.js";
+import { pruneSupersededByIdentifier, reportPrune } from "./lib/prune-stale.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -64,9 +65,17 @@ const lines = [
 for (const a of ok) lines.push(`- [ ] \`${packageFileName(a.slug, false)}\` — ${a.title}`);
 writeFileSync(resolve(outRoot, "ACTIVITIES-CHECKLIST.md"), lines.join("\n"));
 
+// A rename in packageFileName leaves the old generation on disk reusing the
+// same manifest identifiers — prune what this run just superseded.
+const pruned = pruneSupersededByIdentifier(
+  outRoot,
+  ok.map((a) => packageFileName(a.slug, false)),
+);
+
 console.log("SCORM build (activities)");
 console.log("  built :", ok.length);
 console.log("  failed:", failed.length);
+reportPrune(pruned);
 if (failed.length) failed.forEach((f) => console.log(`    ✗ ${f.path}: ${f.err}`));
 console.log("  output: scorm-packages/  (+ ACTIVITIES-CHECKLIST.md)");
 if (failed.length) process.exit(1);

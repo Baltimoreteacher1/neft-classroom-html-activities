@@ -14,6 +14,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSyn
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { packageFileName } from "../../functions/_lib/scorm.js";
+import { pruneOutsideExpectedSet, reportPrune } from "./lib/prune-stale.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -72,9 +73,14 @@ const index = {
 };
 let ok = 0,
   fail = 0;
+// Every zip name scorm-packages/ SHOULD hold after this full-catalog run —
+// recorded before each build so a failed rebuild keeps its current-named
+// package rather than losing it to the sweep below.
+const expectedZips = [];
 
 for (const l of lessons) {
   const title = l.title || `Lesson ${l.id}`;
+  expectedZips.push(packageFileName(l.id, false));
   try {
     build(l.id, title);
     const file = `${packageFileName(l.id, false)}`;
@@ -99,6 +105,7 @@ for (const l of allLessons) {
   if (!existsSync(resolve(repoRoot, rel))) continue;
   const slug = `homework-${l.id}`;
   const title = `Homework ${l.id}: ${l.title || l.id}`;
+  expectedZips.push(packageFileName(slug, false));
   try {
     build(`${SITE}/${rel}`, title, slug);
     const file = `${packageFileName(slug, false)}`;
@@ -113,6 +120,7 @@ for (const l of allLessons) {
 
 for (const a of activities) {
   const { url, slug } = resolveEntry(a);
+  expectedZips.push(packageFileName(slug, false));
   try {
     build(url, a.title, slug);
     const file = `${packageFileName(slug, false)}`;
@@ -148,8 +156,14 @@ index.lessons.sort(byUnit);
 index.homework.sort(byUnit);
 writeFileSync(resolve(pageDir, "packages-index.json"), JSON.stringify(index, null, 2) + "\n");
 
+// This run enumerated EVERY family scorm-packages/ holds, so any zip outside
+// the intended set is a stale generation or a removed catalog entry — the
+// accumulation that twice broke validate:scorm:shipped. Checklists survive.
+const pruned = pruneOutsideExpectedSet(scormOut, expectedZips);
+
 console.log(
   `Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities + ${index.homework.length} homework + ${index.quizzes.length} quiz pack), ${fail} failed`,
 );
+reportPrune(pruned);
 console.log(`  → teacher-tools/canvas-scorm/packages/ + packages-index.json`);
 if (fail) console.log(`  (${fail} item(s) skipped — non-fatal)`);
