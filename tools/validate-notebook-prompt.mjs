@@ -104,7 +104,8 @@ if (failures.length) {
 
 /* ── Sweep every core lesson ───────────────────────────────────────────────── */
 
-const LESSONS = join(ROOT, "lessons");
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const dirs = readdirSync(LESSONS).filter(
   (d) => existsSync(join(LESSONS, d, "config.json")) && !/-group\d|-catchup/.test(d),
 );

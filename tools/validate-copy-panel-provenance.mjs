@@ -26,7 +26,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 /** Comparison form: case, punctuation and whitespace are presentation, not
  *  provenance. A meaning shortened from a definition must still be a literal

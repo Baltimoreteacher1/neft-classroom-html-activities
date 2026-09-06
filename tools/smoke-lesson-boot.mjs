@@ -43,7 +43,9 @@ import { skipExit as sharedSkipExit } from "./lib/skip-exit.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
-const LESSONS_DIR = path.join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "./lib/curriculum-source.mjs";
+
 const MANIFEST = path.join(ROOT, "night-shift", "render-manifest.json");
 // Ephemeral port by default: concurrent runs (pre-push gate, ship worktrees,
 // background automation) used to fight over a fixed 41847 — one run's server

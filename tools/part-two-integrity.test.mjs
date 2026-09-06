@@ -13,7 +13,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
 function normStem(s) {
   return String(s)

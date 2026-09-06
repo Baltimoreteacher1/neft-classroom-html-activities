@@ -23,7 +23,8 @@ import { fileURLToPath } from "node:url";
 import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
 
 const MEANING_MAX_WORDS = 11; // the shape gate fails at 12
 const RULE_MAX_WORDS = 16;

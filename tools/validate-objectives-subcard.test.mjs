@@ -51,7 +51,8 @@ assert.ok(
 );
 
 // 2. Verify all core lessons have contentObjective and languageObjective
-const lessonsDir = join(ROOT, "lessons");
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
+
 const lessonDirs = readdirSync(lessonsDir, { withFileTypes: true })
   .filter((d) => d.isDirectory() && /^\d+-\d+$/.test(d.name))
   .map((d) => d.name)

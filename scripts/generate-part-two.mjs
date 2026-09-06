@@ -32,7 +32,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
+
 const CORE = /^\d+-\d+$/;
 const CHECK = process.argv.includes("--check");
 

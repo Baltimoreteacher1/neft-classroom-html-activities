@@ -16,7 +16,8 @@ import { fileURLToPath } from "node:url";
 import { compileAllWorksheets } from "./generate-mstar-worksheets.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DIST_DIR = join(__dirname, "dist", "lessons");
+
+import { LESSONS_DIR as DIST_DIR } from "../lib/curriculum-source.mjs";
 
 function runValidation() {
   console.log("================================================================================");

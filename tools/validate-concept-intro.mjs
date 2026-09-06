@@ -46,7 +46,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 /** Artifacts the Build card cannot show. Narrow on purpose: a definite article
  *  plus a rendered-medium noun. "a photo of peas" is fine — it is describing a

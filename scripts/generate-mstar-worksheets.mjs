@@ -31,7 +31,9 @@ import { HONESTY, itemProblems, lessonMstarItems } from "./lib/mstar-items.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
+
 const LESSON_DIR_RE = /^\d+-\d+$/;
 
 function esc(s) {

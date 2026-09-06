@@ -42,7 +42,9 @@ import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { SG_PRACTICE_CSS } from "./lib/sg-practice-style.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
+
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
 /** Group 1 and Group 2 wear the labels the curriculum hub already shows. A

@@ -52,7 +52,8 @@ const CHECK = process.argv.includes("--check");
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // Match core/flagship lessons like "3-2" or "3-2-flagship"
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;

@@ -66,7 +66,8 @@ import {
 } from "@eduwonderlab/engine/core/learn-step-model.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const lessonsDir = path.join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
 /* ── numeric fingerprint ──────────────────────────────────────────────────── */
 

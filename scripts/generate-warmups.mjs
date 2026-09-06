@@ -36,7 +36,9 @@ import {
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BANK_PATH = join(ROOT, "spiral-review", "bank.json");
-const LESSONS_DIR = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "../tools/lib/curriculum-source.mjs";
+
 const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 
 /** Re-exported under its established name so callers keep working. */
