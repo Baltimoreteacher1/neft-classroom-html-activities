@@ -16,9 +16,9 @@ canonical lesson  +  lesson support profile  +  variant intrinsic data
 ```
 
 Nothing in that chain writes to a lesson file. There is exactly one copy of each
-lesson on disk, and it is the one a teacher edits, a generator regenerates, and
-a curriculum correction flows into. Turning every support off renders it
-unchanged — not because anything is undone, but because with no profile stored
+lesson on disk — the one a teacher edits, a generator regenerates, and a
+curriculum correction flows into. Turn every support off and it renders
+unchanged, not because anything was undone but because with no profile stored
 there is nothing to resolve.
 
 ## The files, and what each one owns
@@ -36,10 +36,10 @@ there is nothing to resolve.
 | `data/lesson-support-applicability-review.json`    | AUTHORED instructional decisions, each with reason and evidence.                                                                                                   |
 | `scripts/generate-support-overrides.mjs`           | Derives the runtime override file from that review. `--check` fails on stale.                                                                                       |
 | `tools/validate-support-equivalence.mjs`           | Screen / print / export must not disagree except where MODALITY says so.                                                                                            |
-| `tools/support-print.test.mjs`                     | The printed packet, asserted against real generated markup.                                                                                                             |
+| `tools/support-print.test.mjs`                     | The printed packet, asserted against real generated markup.                                                                        |
 | `data/lesson-support-overrides.json`               | GENERATED runtime shape of those decisions. Never hand-edit.                                                                                                       |
 | `tools/validate-lesson-supports.mjs`               | The gate.                                                                                                                                                          |
-| `tools/lesson-supports.test.mjs`         | The invariants.                                                                                                                                                    |
+| `tools/lesson-supports.test.mjs`                   | The invariants.                                                                                                                    |
 
 ## Source-of-truth rules
 
@@ -90,11 +90,11 @@ rewrites a value, and this test is what keeps that true.
 
 ## Adding a support type safely
 
-1. **Implement the behaviour first.** A support must name a real capability:
+1. **Implement the behaviour first.** A support must name a real capability —
    a `PROFILE_KEYS`/`TOOL_KEYS` entry in `learning-supports.js`, or a taxonomy
    key wired to a `MODE_KEYS` mode in `supports-adaptations.js`. The gate fails
-   otherwise, deliberately: a toggle labelled correctly that changes nothing is
-   the worst failure this system can have, because a teacher records the
+   otherwise, deliberately: a correctly labelled toggle that changes nothing is
+   the worst failure this system can have, because the teacher records the
    accommodation as provided and it was not.
 2. Add the catalogue entry with `impact`, `elements` (semantic names only — never
    CSS selectors), a `contract` of may/must-not, and a `requires` rule that is
@@ -141,10 +141,10 @@ Four surfaces render the same effective configuration:
 | export | `engine/core/export.js` (the in-lesson `.docx`) |
 
 All four call `resolveEffectiveSupports({lessonId, store, entry, surface, ctx})`.
-None of them works out "what is on" for itself. That is the single most
-load-bearing rule in this document: the moment print decides for itself, the
-worksheet in a student's hand can disagree with the lesson the teacher just
-taught, and nobody finds out until the middle of a class.
+None of them works out "what is on" for itself. That is the most load-bearing
+rule in this document: the moment print decides for itself, the worksheet in a
+student's hand can disagree with the lesson just taught, and nobody finds out
+until the middle of a class.
 
 Surfaces are still allowed to differ, because media differ. Every difference is
 declared in the `MODALITY` table, per support, per surface:
@@ -157,9 +157,9 @@ declared in the `MODALITY` table, per support, per surface:
 - `n/a` — the surface has nothing to adapt.
 
 `validate:support-equivalence` resolves every applicable configuration on every
-lesson through all three surfaces and fails on any difference `MODALITY` does
-not declare — and on any support declared `active` on paper that contributes
-nothing to a printed page.
+lesson through all three surfaces. It fails on any difference `MODALITY` does not
+declare, and on any support declared `active` on paper that contributes nothing
+to a printed page.
 
 ### The one thing print does not do
 

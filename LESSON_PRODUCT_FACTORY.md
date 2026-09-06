@@ -1,13 +1,12 @@
 # Lesson-to-Product Factory
 
-Turn any Grade 6 math lesson into a complete, classroom-ready, TPT-quality
-product bundle — student lesson page, emergency sub packet, activity pack,
-interactive practice, answer keys, and a QA report — then attach it to the right
-curriculum card.
+Turn any Grade 6 math lesson into a complete, classroom-ready, TPT-quality bundle
+— student lesson page, emergency sub packet, activity pack, interactive practice,
+answer keys, and a QA report — then attach it to the right curriculum card.
 
-It is built as an extension of **CardForge** (`tools/cardforge/`): one canonical
-system, local-first, staging-only by default. It never auto-publishes to live
-curriculum or changes deployment settings.
+It is an extension of **CardForge** (`tools/cardforge/`): one canonical system,
+local-first, staging-only by default. It never auto-publishes to live curriculum
+and never changes deployment settings.
 
 ## What it generates (per lesson)
 
@@ -42,16 +41,16 @@ tools/cardforge/
   reports/            inspection + factory plan
 ```
 
-## How to create a new lesson bundle
+## Creating a new lesson bundle
 
 1. Copy an example: `tools/cardforge/examples/ratio-unit-rate/job.json`.
 2. Edit the `card` block (unit, lesson, title, standard, skillFocus, objectives)
    and the `lesson` block (vocabulary, formulas, modeledExamples, practice with
-   answers + work, exitTicket, misconceptions, esolSupports, spedSupports,
-   extension). See `schemas/job.schema.json`.
-3. Keep the math correct — answer keys are checked.
+   answers and work, exitTicket, misconceptions, esolSupports, spedSupports,
+   extension). Schema: `schemas/job.schema.json`.
+3. Get the math right — the answer keys are checked.
 
-## How to run it
+## Running it
 
 ```
 npm run cardforge:build       -- <job.json>     # render the full bundle → staged/
@@ -70,49 +69,51 @@ npm run cardforge:stage -- tools/cardforge/examples/expressions-evaluate/job.jso
 npm run cardforge:stage -- tools/cardforge/examples/geometry-surface-area/job.json
 ```
 
-## How card updates work (safe by design)
+## How card updates stay safe
 
-`cardforge:update-card` finds the matching live lesson (by `unit-lesson` in
-`data/curriculum-manifest.json`), computes the five buttons (Student Lesson,
-Printable Packet, Activity Pack, Emergency Sub Plan, Interactive Practice),
-checks for ones already present (idempotent), and writes a **before/after
-report** + `card-buttons.json`. It does **not** mutate live cards for demo/sample
-bundles. Promoting to a live card is the deliberate publish step:
+`cardforge:update-card` finds the matching live lesson by `unit-lesson` in
+`data/curriculum-manifest.json`, computes the five buttons (Student Lesson,
+Printable Packet, Activity Pack, Emergency Sub Plan, Interactive Practice), skips
+any already present (idempotent), and writes a before/after report plus
+`card-buttons.json`. It does not mutate live cards for demo or sample bundles.
+
+Promoting to a live card is a deliberate, separate step:
 
 1. Author the lesson under `lessons/<unit>-<lesson>/` with a `bundleResources`
    block referencing the generated files.
 2. `npm run generate-curriculum-manifest` → `npm run validate` → `npm run audit`.
-3. Review the diff, commit, push to `main` (Cloudflare Git deploy — the only
-   deploy path; never run `wrangler` manually).
+3. Review the diff, commit, push to `main`. Cloudflare's Git deploy is the only
+   deploy path — never run `wrangler` by hand.
 
-## How to run QA / repair failures
+## QA and repair
 
-`cardforge:qa` checks: required card fields, resource completeness (teacher,
+`cardforge:qa` checks required card fields, resource completeness (teacher,
 student, answer key), answer-key coverage of every problem, inline math claims,
 ESOL/SPED presence, AI-slop phrases, stray TODOs, fake links, and scaffolding
-depth. On a ⛔ block: read `qa-report.md`, fix the `job.json`, rebuild, re-QA.
-Common fixes: add an answer-key entry for every practice `n`; remove a bare
-"answers may vary" (add a rubric); fix a mismatched number.
+depth.
 
-## How to add a new activity type
+On a ⛔ block: read `qa-report.md`, fix the `job.json`, rebuild, re-QA. The common
+fixes are adding an answer-key entry for every practice `n`, replacing a bare
+"answers may vary" with a rubric, and correcting a mismatched number.
 
-Add a builder function in `lib/activity-pack.mjs` (return an HTML `<section
-class="page">…</section>` using `print-style.mjs` helpers), then add it to the
-`parts` array in `renderActivityPack`. Keep it B/W-friendly and include a real
+## Adding an activity type
+
+Add a builder function in `lib/activity-pack.mjs` that returns an HTML
+`<section class="page">…</section>` using `print-style.mjs` helpers, then add it to
+the `parts` array in `renderActivityPack`. Keep it B/W-friendly and give it a real
 answer key in `buildKey`.
 
 ## Keeping printables TPT-quality
 
-- Black-and-white friendly: no color-only instructions; structure with borders
-  and bold, not color.
-- Large readable fonts (the print CSS is ≥12.5pt); no tiny cramped text.
-- Real problems, real directions, real answer keys — never outlines.
-- Teacher voice: direct, warm, practical. No AI filler ("unlock", "delve",
-  "robust", "seamless", "game-changing" are flagged by QA).
-- Keep the answer key on its own page, labeled teacher-only.
+- Black-and-white friendly: structure with borders and bold, never color alone.
+- Large readable fonts — the print CSS floor is 12.5pt. No cramped text.
+- Real problems, real directions, real answer keys. Never outlines.
+- Teacher voice: direct, warm, practical. QA flags AI filler ("unlock", "delve",
+  "robust", "seamless", "game-changing").
+- Answer key on its own page, labeled teacher-only.
 
-## Reusable Claude prompts
+## Reusable prompts
 
-See `docs/prompts/`: `generate-lesson-bundle.md`, `audit-curriculum-card.md`,
+`docs/prompts/`: `generate-lesson-bundle.md`, `audit-curriculum-card.md`,
 `repair-lesson-bundle.md`, `create-emergency-packet.md`,
 `create-interactive-activity.md`, `qa-all-lesson-products.md`.

@@ -11,7 +11,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE_RE = /^\d+-\d+$/;
 const REQUIRED = ["launch", "explore", "practice", "connect", "reflect"];
 
-// Editorial copy gate (LESSON_PRODUCT_FACTORY.md:110-111 — "no AI filler").
+// Editorial copy gate (LESSON_PRODUCT_FACTORY.md, "Keeping printables TPT-quality" — no AI filler).
 // Unambiguous AI-puffery only: words that never carry concrete classroom
 // meaning here, so a hit is real filler, not a false positive. Deliberately
 // EXCLUDES "unlock" — in these mission/game configs it is always concrete
