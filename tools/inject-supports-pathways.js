@@ -31,7 +31,9 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const MANIFEST = join(ROOT, "assets", "learning-supports", "manifest.json");
 
 const MARK = "ewl-supports-injected";

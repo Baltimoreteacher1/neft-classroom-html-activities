@@ -56,7 +56,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const OUT = join(ROOT, "reports", "apply-day-tiers.md");
 
 const LEVELS = [

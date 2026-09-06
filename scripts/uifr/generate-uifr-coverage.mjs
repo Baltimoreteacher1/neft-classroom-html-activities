@@ -27,7 +27,9 @@ import {
 } from "@eduwonderlab/engine/core/uifr.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../../tools/lib/curriculum-source.mjs";
+
 const reportsDir = join(root, "reports");
 const docsDir = join(root, "docs");
 const pageDir = join(root, "teacher-tools", "teaching-evidence");

@@ -65,7 +65,9 @@ import { fileURLToPath } from "node:url";
 import { MISCONCEPTIONS, predictions } from "@eduwonderlab/engine/core/misconceptions.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
+
 const REPORTS = join(ROOT, "reports");
 const TIERS = ["approaching", "onLevel", "extending", "optional"];
 const CHECK = process.argv.includes("--check");

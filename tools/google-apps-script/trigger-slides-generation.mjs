@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../..");
-const lessonsDir = path.join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../lib/curriculum-source.mjs";
+
 const dataDir = path.join(root, "data");
 
 const WEB_APP_URL =

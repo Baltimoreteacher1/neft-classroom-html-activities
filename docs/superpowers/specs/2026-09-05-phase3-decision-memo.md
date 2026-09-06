@@ -1,9 +1,14 @@
 # Phase 3 Decision Memo — Multi-Tenancy
 
 **Date:** 2026-09-05
-**Status:** AWAITING JOEL — nothing in this memo is decided; each section ends with the
-question and a recommendation. Answering the five questions (15 minutes) unblocks the
-Phase 3 design cycle.
+**Status:** DECIDED 2026-09-06 — Joel delegated all five ("Answer for me for phase 3"),
+adopting each recommendation below: (1) tenant #2 is a BCPS Grade 6 colleague, with a
+synthetic staging tenant built first; (2) v1 = teaching + their own pacing, no
+authoring; (3) class-code / no-PII student data model; (4) Cloudflare Access with
+Google sign-in for tenant teacher surfaces, the existing Basic-auth path untouched;
+(5) one D1 database per tenant. The colleague conversation itself (Decision 1's
+"have you floated it?") remains Joel's to have — the staging tenant does not wait
+on it.
 **Parent:** `2026-09-05-engine-extraction-design.md` (Phase 3 of: Extract → Manifest-ize →
 Tenant #2 → Foreign curriculum)
 

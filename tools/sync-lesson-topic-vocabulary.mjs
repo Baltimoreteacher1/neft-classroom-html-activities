@@ -5,7 +5,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
-const lessonsDir = path.join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
+
 const catalog = JSON.parse(
   fs.readFileSync(path.join(root, "data", "lesson-topic-vocabulary.json"), "utf8"),
 );

@@ -9,7 +9,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS_DIR = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "../tools/lib/curriculum-source.mjs";
+
 const OUT_DIR = join(ROOT, "assets", "learning-supports");
 const OUT_PATH = join(OUT_DIR, "manifest.json");
 

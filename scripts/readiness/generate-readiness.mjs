@@ -22,7 +22,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, "data");
 const VOCAB_DIR = path.join(DATA_DIR, "vocab");
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
-const LESSONS_DIR = path.join(REPO_ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "../../tools/lib/curriculum-source.mjs";
 
 const baseId = (id) => id.replace(/-flagship$/, "");
 

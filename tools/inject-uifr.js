@@ -26,7 +26,9 @@ import {
 } from "@eduwonderlab/engine/core/uifr.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS_DIR = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "./lib/curriculum-source.mjs";
+
 const BEGIN = "<!-- uifr-injected:begin -->";
 const END = "<!-- uifr-injected:end -->";
 const BLOCK_RE =

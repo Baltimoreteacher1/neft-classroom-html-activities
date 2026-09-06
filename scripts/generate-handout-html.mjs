@@ -12,7 +12,9 @@ import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-prin
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const root = join(import.meta.dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
 function esc(s) {

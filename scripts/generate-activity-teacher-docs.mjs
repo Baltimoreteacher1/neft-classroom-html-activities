@@ -29,7 +29,9 @@ import {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
+
 const OUT_DIR = join(ROOT, "teacher-tools", "activity-guides");
 
 const NAVY = "153F53";

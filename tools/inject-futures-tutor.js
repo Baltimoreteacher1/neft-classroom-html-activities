@@ -16,7 +16,9 @@ import { dirname, join, relative } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const LESSONS_DIR = join(__dirname, "..", "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "./lib/curriculum-source.mjs";
+
 const CSS_TAG =
   "  <!-- futures-injected:begin (Futures Study Buddy — tools/inject-futures-tutor.js) -->\n" +
   '  <link rel="stylesheet" href="/assets/futures-tutor.css">\n' +

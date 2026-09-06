@@ -51,7 +51,8 @@ import {
 } from "./lib/twr-writing.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUT_DIR = join(__dirname, "dist", "lessons");
+
+import { LESSONS_DIR as OUT_DIR } from "../lib/curriculum-source.mjs";
 
 /* ==========================================================================
    1. CONFIGURATION & PALETTES

@@ -35,7 +35,9 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const lessonsDir = path.join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
 const REVEAL_ASSETS_DIRNAME = "reveal-assets";
 const EXTRACTOR = path.join(__dirname, "lib", "extract_reveal.py");
 

@@ -42,7 +42,9 @@ import {
 } from "../scripts/generate-warmups.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const SRC = readFileSync(join(ROOT, "scripts/generate-warmups.mjs"), "utf8");
 
 test("importing the generator does not write lesson configs", () => {

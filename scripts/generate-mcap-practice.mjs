@@ -41,7 +41,8 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const dataDir = join(__dirname, "mcap-practice", "data");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // ── brand / MCAP palette (matches scripts/generate-mcap-packets.mjs) ──────────
 const NAVY = "12355B";

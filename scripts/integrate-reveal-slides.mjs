@@ -54,7 +54,8 @@ import { buildPptxDeck } from "./lib/pptx-deck.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const lessonsDir = path.join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 const REVEAL_DIRNAME = "reveal-slides";
 const MANIFEST_NAME = "reveal-slides.json";

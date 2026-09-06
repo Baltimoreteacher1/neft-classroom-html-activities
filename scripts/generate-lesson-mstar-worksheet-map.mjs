@@ -10,7 +10,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
 const outFile = join(root, "curriculum", "lesson-mstar-worksheets.js");
 
 const entries = readdirSync(lessonsDir)

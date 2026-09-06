@@ -32,7 +32,8 @@ const norm = (s) =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
-const LESSONS = join(ROOT, "lessons");
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
+
 // A companion's title embeds the base lesson's dotted number, not its title,
 // so companions need no retitling here — regenerating them picks up the base.
 const dirs = readdirSync(LESSONS).filter((d) => /^\d+-\d+$/.test(d) && bookTitle.has(d));

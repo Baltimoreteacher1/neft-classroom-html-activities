@@ -37,7 +37,8 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TAX_PATH = join(root, "data", "standards-taxonomy.json");
 const XWALK_PATH = join(root, "data", "standards-crosswalk-2025.json");
-const LESSONS_DIR = join(root, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "../tools/lib/curriculum-source.mjs";
 
 const args = new Set(process.argv.slice(2));
 const APPLY = args.has("--apply");

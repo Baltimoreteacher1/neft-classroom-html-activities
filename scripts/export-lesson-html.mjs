@@ -21,7 +21,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS_DIR = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "../tools/lib/curriculum-source.mjs";
+
 const ASSETS_DIR = join(ROOT, "assets");
 const OUT_DIR = join(ROOT, "dist", "lesson-html");
 

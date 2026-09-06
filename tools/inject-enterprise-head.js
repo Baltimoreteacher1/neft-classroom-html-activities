@@ -31,7 +31,9 @@ import { basename, dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+
 const SITE = "https://eduwonderlab.com";
 const OG_IMAGE = `${SITE}/assets/og-curriculum.png`;
 const THEME = "#12355b";

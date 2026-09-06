@@ -8,7 +8,9 @@ import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
 const outFile = join(root, "curriculum", "lesson-family-homework.js");
 
 const LESSON_DIR_RE = /^[0-9][0-9a-z-]*$/;

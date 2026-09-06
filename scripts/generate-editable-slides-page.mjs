@@ -30,7 +30,8 @@ import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const lessonsDir = path.join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // Matches core lessons ("3-2") and flagship lessons ("3-2-flagship").
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;

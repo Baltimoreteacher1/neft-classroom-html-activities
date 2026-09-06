@@ -21,7 +21,9 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LESSONS_DIR = join(ROOT, "lessons");
+
+import { LESSONS_DIR as LESSONS_DIR } from "./lib/curriculum-source.mjs";
+
 const SUBS = ["family", "student-help", "teacher-notes"];
 
 const MARK = "support-enhance-injected";

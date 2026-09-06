@@ -13,7 +13,9 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const root = join(import.meta.dirname, "..");
-const lessonsDir = join(root, "lessons");
+
+import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
 const LESSON_DIR_RE = /^(\d+)-(\d+)$/;
 
 function keyIdea(config) {
