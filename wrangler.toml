@@ -14,6 +14,15 @@ binding = "DB"
 database_name = "neft-student-progress"
 database_id = "b6de897c-2cde-4f47-9c59-db39844396ea"
 
+# Staging tenant progress (Phase 3 milestone 1). The tenant wrapper at
+# functions/t/[tenant]/api/progress/ resolves this by name from the registry
+# and forwards it as DB — the classroom DB above is never reachable from
+# tenant routes. See docs/tenancy-provisioning.md.
+[[d1_databases]]
+binding = "TENANT_DB_STAGING"
+database_name = "tenant-staging-progress"
+database_id = "59d0ca08-7f2d-4ee7-802c-521c091b3f5f"
+
 # Lesson plan documents for /curriculum/plan-notes/ (functions/api/plan-notes).
 # Teacher-authored and district-authored plan files, keyed by content hash.
 #

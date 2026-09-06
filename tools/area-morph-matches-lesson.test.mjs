@@ -22,6 +22,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { LESSONS_DIR, lessonPath } from "./lib/curriculum-source.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const AREA_STANDARD = "6.GR.1";
@@ -52,14 +53,12 @@ function loadSeeder() {
 
 const { seedAreaMorph } = loadSeeder();
 
-const lessons = readdirSync(join(ROOT, "lessons")).filter((d) =>
-  existsSync(join(ROOT, "lessons", d, "config.json")),
-);
+const lessons = readdirSync(LESSONS_DIR).filter((d) => existsSync(lessonPath(d, "config.json")));
 
 let checked = 0;
 const exempt = [];
 for (const id of lessons) {
-  const cfg = JSON.parse(readFileSync(join(ROOT, "lessons", id, "config.json"), "utf8"));
+  const cfg = JSON.parse(readFileSync(lessonPath(id, "config.json"), "utf8"));
   if (cfg.standard !== AREA_STANDARD) continue;
 
   const lines = cfg.launch?.conceptIntro?.iDo?.lines;

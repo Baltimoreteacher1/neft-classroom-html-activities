@@ -22,9 +22,10 @@ import {
   standaloneSvg,
   valuesAreInText,
 } from "../scripts/generate-launch-figures.mjs";
+import { LESSONS_DIR, lessonPath } from "./lib/curriculum-source.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const lessons = readdirSync(join(ROOT, "lessons")).filter((d) => /^\d+-\d+$/.test(d));
+const lessons = readdirSync(LESSONS_DIR).filter((d) => /^\d+-\d+$/.test(d));
 
 test("the sweep sees the fleet — a zero sweep verifies nothing", () => {
   assert.ok(lessons.length >= 80, `found ${lessons.length} lessons; the sweep is broken`);
@@ -33,7 +34,7 @@ test("the sweep sees the fleet — a zero sweep verifies nothing", () => {
 test("a figure never prints a number its narrative does not state", () => {
   const wrong = [];
   for (const id of lessons) {
-    const p = join(ROOT, "lessons", id, "config.json");
+    const p = lessonPath(id, "config.json");
     if (!existsSync(p)) continue;
     const config = JSON.parse(readFileSync(p, "utf8"));
     const text = narrativeOf(config);
@@ -49,7 +50,7 @@ test("a figure never prints a number its narrative does not state", () => {
 test("every committed launch SVG is a standalone document a browser will render", () => {
   const bad = [];
   for (const id of lessons) {
-    const f = join(ROOT, "lessons", id, "reveal-assets", "launch-problem.svg");
+    const f = lessonPath(id, "reveal-assets", "launch-problem.svg");
     if (!existsSync(f)) continue;
     const src = readFileSync(f, "utf8");
     if (!/^<\?xml/.test(src)) bad.push(`${id}: no XML declaration`);
@@ -63,7 +64,7 @@ test("every committed launch SVG is a standalone document a browser will render"
 test("every lesson claiming a generated figure has the file and real alt text", () => {
   const bad = [];
   for (const id of lessons) {
-    const p = join(ROOT, "lessons", id, "config.json");
+    const p = lessonPath(id, "config.json");
     if (!existsSync(p)) continue;
     const fig = JSON.parse(readFileSync(p, "utf8")).launch?.figure;
     if (!fig || !fig.url || !fig.url.endsWith(".svg")) continue;

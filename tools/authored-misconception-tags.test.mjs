@@ -9,6 +9,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { MISCONCEPTIONS, resolveAuthoredTag } from "@eduwonderlab/engine/core/misconceptions.js";
+import { LESSONS_DIR, lessonPath } from "./lib/curriculum-source.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
@@ -41,8 +42,8 @@ for (const [stem, tags] of entries) {
 //     never claims the correct choice is an error
 const stems = new Map(entries);
 const found = new Map();
-for (const dir of readdirSync(join(ROOT, "lessons"))) {
-  const file = join(ROOT, "lessons", dir, "config.json");
+for (const dir of readdirSync(LESSONS_DIR)) {
+  const file = lessonPath(dir, "config.json");
   if (!existsSync(file)) continue;
   const stack = [JSON.parse(readFileSync(file, "utf8"))];
   while (stack.length) {

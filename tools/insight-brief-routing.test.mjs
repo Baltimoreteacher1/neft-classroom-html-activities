@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { LESSONS_DIR, lessonPath } from "./lib/curriculum-source.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -46,7 +47,7 @@ export async function validateCatchupRouting(options = {}) {
   // Sweep all core lessons directly from lessons/
   const coreLessons =
     options.customLessons ||
-    readdirSync(join(ROOT, "lessons"), { withFileTypes: true })
+    readdirSync(LESSONS_DIR, { withFileTypes: true })
       .filter((e) => e.isDirectory() && /^\d+-\d+$/.test(e.name))
       .map((e) => e.name)
       .sort((a, b) => {
@@ -111,7 +112,7 @@ export async function validateCatchupRouting(options = {}) {
       }
     } else {
       // Local filesystem read
-      const stationDir = join(ROOT, "lessons", stationId);
+      const stationDir = lessonPath(stationId);
       const htmlPath = join(stationDir, "index.html");
       const configPath = join(stationDir, "config.json");
 
@@ -237,7 +238,7 @@ if (!baseUrl) {
   // Negative Control D: Orphaned station fails naming the orphaned station
   await assert.rejects(
     async () => {
-      const allCoreExcept14_16 = readdirSync(join(ROOT, "lessons"), {
+      const allCoreExcept14_16 = readdirSync(LESSONS_DIR, {
         withFileTypes: true,
       })
         .filter(

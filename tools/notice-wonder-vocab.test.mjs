@@ -32,6 +32,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
+import { lessonPath } from "./lib/curriculum-source.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -302,7 +303,7 @@ const mount = () => {
 
   const problems = [];
   for (const { id } of lessons) {
-    const file = path.join(ROOT, "lessons", id, "config.json");
+    const file = lessonPath(id, "config.json");
     if (!fs.existsSync(file)) {
       problems.push(`${id}: no config.json`);
       continue;

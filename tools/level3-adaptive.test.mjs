@@ -28,6 +28,7 @@ import {
   verify,
 } from "../assets/level3/engine.js";
 import { LESSONS as SOURCE } from "./level3-source.mjs";
+import { lessonPath } from "./lib/curriculum-source.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONFIG = JSON.parse(readFileSync(path.join(ROOT, "data", "level3-adaptive.json"), "utf8"));
@@ -139,7 +140,7 @@ function findCompiled(id) {
 // ── Rigor is pinned to the lesson, never authored ────────────────────────────
 {
   for (const [id, lesson] of Object.entries(CONFIG.lessons)) {
-    const doc = JSON.parse(readFileSync(path.join(ROOT, "lessons", id, "config.json"), "utf8"));
+    const doc = JSON.parse(readFileSync(lessonPath(id, "config.json"), "utf8"));
     assert.equal(lesson.standard, doc.standard, `${id}: standard drifted from the lesson`);
     assert.equal(
       lesson.learningTarget,
