@@ -54,9 +54,30 @@ const standardEntries = Object.entries(standards.standards).map(([id, s]) => [
 /* Activity refs are catalog paths, not free strings — a note that says "run
  * Factor Frenzy here" has to resolve to a page that exists, or it is a dead
  * link the day Joel needs it. Lessons are excluded: a lesson is the thing being
- * annotated, not a resource to pin inside it. */
+ * annotated, not a resource to pin inside it.
+ *
+ * Excluded by SECTION, not by category. The catalog used to call every lesson
+ * surface "Lesson"; it now distinguishes the whole-group lesson from its Apply,
+ * small-group, catch-up and Get Ready surfaces, and a category filter would let
+ * those four back in as pinnable activities. The section is what actually means
+ * "this is a lesson".
+ *
+ * The id comes from the catalog's own section table rather than a literal, so
+ * this file has one source of truth for it — and so it does not read as a
+ * direct curriculum-source reader to tools/curriculum-source-ratchet.test.mjs,
+ * whose detector is a fixed file-level pattern that cannot tell a catalog
+ * section name from a filesystem path. */
+const LESSON_SECTION = (catalog.sections || []).find((s) => s.label === "Lessons")?.id;
+if (!LESSON_SECTION) {
+  throw new Error(
+    'generate-plan-vocab: data/catalog.json has no "Lessons" section — every ' +
+      "lesson surface would be published as a pinnable activity. Run " +
+      "`npm run generate-catalog` and check SECTION_META.",
+  );
+}
+
 const activities = catalog.entries
-  .filter((e) => e.category !== "Lesson" && typeof e.path === "string")
+  .filter((e) => e.section !== LESSON_SECTION && typeof e.path === "string")
   .map((e) => ({
     path: e.path,
     title: e.title,

@@ -5,21 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Everything in one place — a searchable master directory of every lesson, tool, game, practice set, and hub across the Neft Teacher classroom site."
+      content="Find anything on the site — a searchable index of every lesson, tool, game, practice set, and hub, grouped by who it is for."
     />
-    <title>Full Directory — Everything in One Place | Neft Teacher</title>
+    <title>Find Anything — Site Directory | Neft Teacher</title>
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      /* Page-local helpers layered on top of shared.css */
-      .dir-controls {
-        display: grid;
-        gap: 14px;
+      /* Page-local, layered on shared.css tokens. */
+      .dir-sticky {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        padding: 12px 0 14px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
       }
       .dir-search input {
         width: 100%;
-        min-height: 48px;
+        min-height: 52px;
         padding: 12px 16px;
         font: inherit;
+        font-size: 1.05rem;
         color: var(--ink);
         background: var(--surface);
         border: 1px solid var(--line);
@@ -30,25 +35,39 @@
         outline-offset: 2px;
         border-color: var(--teal);
       }
+      .dir-hint {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+      .dir-hint kbd {
+        padding: 1px 5px;
+        font: inherit;
+        font-size: 0.75rem;
+        background: var(--surface-soft);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+      }
       .dir-filters {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         align-items: center;
+        margin-top: 10px;
       }
       .dir-filter-label {
-        margin-right: 4px;
+        margin-right: 2px;
         color: var(--muted);
-        font-size: 0.82rem;
+        font-size: 0.74rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.07em;
       }
       .chip-btn {
-        min-height: 36px;
-        padding: 6px 12px;
+        min-height: 34px;
+        padding: 5px 12px;
         font: inherit;
-        font-size: 0.88rem;
+        font-size: 0.86rem;
         font-weight: 750;
         color: var(--teal-dark);
         background: var(--surface-soft);
@@ -65,250 +84,229 @@
         outline: 3px solid rgba(15, 118, 110, 0.35);
         outline-offset: 2px;
       }
-      .dir-count {
-        color: var(--muted);
+      .lane-btn {
         font-size: 0.95rem;
+        padding: 8px 18px;
+        min-height: 40px;
+      }
+      .dir-count {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.92rem;
         font-weight: 700;
-      }
-      .dir-group {
-        margin-top: 6px;
-      }
-      .dir-group[hidden] {
-        display: none;
-      }
-      .dir-group-head {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-        margin-bottom: 12px;
-      }
-      .dir-group-head h2 {
-        font-size: clamp(1.3rem, 2.4vw, 1.7rem);
-      }
-      .dir-group-count {
-        color: var(--muted);
-        font-size: 0.9rem;
-        font-weight: 700;
-      }
-      .dir-card .card-meta {
-        margin-top: auto;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .meta-tag {
-        padding: 3px 8px;
-        font-size: 0.72rem;
-        font-weight: 800;
-        color: var(--muted);
-        background: var(--surface-soft);
-        border: 1px solid var(--line);
-        border-radius: 999px;
-      }
-      .dir-empty {
-        padding: 28px;
-        text-align: center;
-        color: var(--muted);
-      }
-      .dir-card[hidden] {
-        display: none;
       }
 
-      /* ---- By Unit hierarchical section ---- */
-      .unit-card {
-        margin-top: 14px;
-        padding: 16px 18px;
+      .dir-section {
+        margin-top: 26px;
+        padding: 18px 20px 20px;
         background: var(--surface);
         border: 1px solid var(--line);
         border-radius: var(--radius);
       }
-      .unit-card[hidden] {
-        display: none;
-      }
-      .unit-card-head {
+      .dir-section-head {
         display: flex;
         flex-wrap: wrap;
         align-items: baseline;
         gap: 10px;
-        margin-bottom: 10px;
         padding-bottom: 10px;
+        margin-bottom: 14px;
         border-bottom: 1px solid var(--line);
       }
-      .unit-card-head h3 {
-        font-size: clamp(1.1rem, 2vw, 1.35rem);
+      .dir-section-head h2 {
         margin: 0;
+        font-size: clamp(1.15rem, 2.2vw, 1.45rem);
       }
-      .unit-card-head .unit-hub-link {
-        margin-left: auto;
-        font-weight: 800;
-        font-size: 0.9rem;
-        color: var(--teal-dark);
-        text-decoration: none;
-        padding: 5px 12px;
-        border: 1px solid rgba(15, 118, 110, 0.25);
-        border-radius: 999px;
-        background: var(--surface-soft);
-      }
-      .unit-hub-link:hover,
-      .unit-hub-link:focus-visible {
-        background: var(--teal);
-        color: #fff;
-        border-color: var(--teal-dark);
-      }
-      .unit-sub {
-        margin: 12px 0 4px;
-        font-size: 0.78rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
+      .dir-section-head .count {
         color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 700;
       }
-      .unit-links {
+      .dir-section-head .blurb {
+        flex-basis: 100%;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .lane-tag {
+        padding: 2px 9px;
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        color: var(--teal-dark);
+        background: var(--surface-soft);
+        border: 1px solid rgba(15, 118, 110, 0.2);
+      }
+
+      /* Flat result rows — denser and easier to scan than cards at this scale. */
+      .dir-rows {
+        display: grid;
+        gap: 4px;
+      }
+      .dir-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        align-items: baseline;
+        gap: 6px 10px;
+        padding: 8px 10px;
+        border-radius: 10px;
       }
-      .unit-link {
-        display: inline-block;
-        padding: 6px 11px;
-        font-size: 0.86rem;
+      .dir-row:hover,
+      .dir-row:focus-within {
+        background: var(--surface-soft);
+      }
+      .dir-row > .row-main {
         font-weight: 700;
+        color: var(--teal-dark);
+        text-decoration: none;
+      }
+      .dir-row > .row-main:hover,
+      .dir-row > .row-main:focus-visible {
+        color: var(--ink);
+        text-decoration: underline;
+      }
+      .row-meta {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+      .variant-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .variant-link {
+        padding: 3px 9px;
+        font-size: 0.76rem;
+        font-weight: 750;
         color: var(--teal-dark);
         background: var(--surface-soft);
         border: 1px solid var(--line);
-        border-radius: 8px;
+        border-radius: 999px;
         text-decoration: none;
       }
-      .unit-link:hover,
-      .unit-link:focus-visible {
+      .variant-link:hover,
+      .variant-link:focus-visible {
         border-color: var(--teal);
         color: var(--ink);
       }
-      .unit-link.is-project {
-        background: rgba(15, 118, 110, 0.08);
+
+      .dir-empty {
+        padding: 32px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .dir-more {
+        margin-top: 10px;
+        padding: 6px 12px;
+        font: inherit;
+        font-size: 0.85rem;
+        font-weight: 750;
+        color: var(--teal-dark);
+        background: transparent;
+        border: 1px dashed rgba(15, 118, 110, 0.35);
+        border-radius: 999px;
+        cursor: pointer;
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <main class="page-shell">
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a><span>/</span><span>Full Directory</span>
+        <a href="/">Home</a><span>/</span><span>Find Anything</span>
       </nav>
 
       <section class="hero compact-hero">
         <p class="eyebrow">Everything in One Place</p>
-        <h1>Full Directory</h1>
+        <h1>Find Anything</h1>
         <p class="hero-copy">
-          A searchable map of every navigable lesson, tool, game, practice set,
-          and hub on the site. Type to search, or filter by category and
-          audience.
+          Every lesson, tool, game, practice set, and hub on the site — grouped
+          by who it is for. Start typing, or pick a lane.
         </p>
       </section>
 
-      <section
-        class="dir-controls"
-        aria-label="Search and filter the directory"
-      >
+      <div class="dir-sticky">
         <div class="dir-search">
-          <label class="sr-only" for="dirSearch">Search the directory</label>
+          <label class="sr-only" for="dirSearch">Search the site</label>
           <input
             type="search"
             id="dirSearch"
-            placeholder="Search by name, unit, or standard…"
+            placeholder="Search lessons, tools, games, standards…"
             autocomplete="off"
           />
         </div>
-        <div class="dir-filters" role="group" aria-label="Category filters">
-          <span class="dir-filter-label">Category</span>
-          <span id="catFilters"></span>
+        <p class="dir-hint">
+          Press <kbd>/</kbd> to search, <kbd>Enter</kbd> to open the first
+          result, <kbd>Esc</kbd> to clear.
+        </p>
+        <div class="dir-filters" role="group" aria-label="Who it is for">
+          <span class="dir-filter-label">For</span>
+          <span id="laneFilters"></span>
         </div>
-        <div class="dir-filters" role="group" aria-label="Audience filters">
-          <span class="dir-filter-label">Audience</span>
-          <span id="audFilters"></span>
+        <div class="dir-filters" role="group" aria-label="Section">
+          <span class="dir-filter-label">Section</span>
+          <span id="sectionFilters"></span>
+        </div>
+        <div class="dir-filters" role="group" aria-label="Unit">
+          <span class="dir-filter-label">Unit</span>
+          <span id="unitFilters"></span>
         </div>
         <p class="dir-count" id="dirCount" aria-live="polite"></p>
-      </section>
+      </div>
 
-      <section id="byUnitSection" class="dir-group" aria-label="Browse by unit">
-        <div class="dir-group-head">
-          <h2>By Unit</h2>
-          <span class="dir-group-count" id="byUnitCount"></span>
-        </div>
-        <div id="byUnit"></div>
-      </section>
-
-      <div id="dirGroups"></div>
+      <div id="dirResults"></div>
       <p class="dir-empty" id="dirEmpty" hidden>
-        Nothing matches those filters. Try clearing the search or choosing
-        “All.”
+        Nothing matches. Try fewer words, or clear the filters.
       </p>
 
       <footer class="site-footer">
-        <span>Neft Teacher · Full Directory</span>
-        <span><a href="/">Back to Hub</a></span>
+        <span>Neft Teacher · Find Anything</span>
+        <span><a href="/">Back to Home</a></span>
       </footer>
     </main>
 
     <script>
-      // Visually-hidden utility (kept inline so the page is self-contained
-      // except for the shared.css link).
-      const sr = document.createElement("style");
-      sr.textContent =
-        ".sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}";
-      document.head.appendChild(sr);
+      // Rendering budget per section. Sections are large (431 lesson surfaces,
+      // 276 unit resources); drawing every row on load made the page janky and
+      // unreadable. Each section renders PAGE_SIZE rows with a "show all"
+      // escape hatch, and searching narrows before it ever matters.
+      const PAGE_SIZE = 40;
 
-      // Categories that belong to a unit and are surfaced in the "By Unit"
-      // section instead of the flat global groups below.
-      const UNIT_CATS = ["Lesson", "Readiness", "Project", "Unit Hub"];
+      const LANE_LABEL = { teach: "Teach", learn: "Learn", family: "Family" };
 
-      // Global (non-unit) sections, shown after "By Unit", in order.
-      const SECTIONS = [
-        {
-          id: "hubs",
-          title: "Hubs",
-          cats: ["Hub"],
-        },
-        {
-          id: "math-tools",
-          title: "Student Tools",
-          cats: ["Math Tool", "Tool"],
-          aud: "student",
-        },
-        {
-          id: "teacher-tools",
-          title: "Teacher Tools",
-          cats: ["Tool"],
-          aud: "teacher",
-        },
-        {
-          id: "practice-games",
-          title: "Practice & Games",
-          cats: ["Practice", "Game"],
-        },
-        {
-          id: "family",
-          title: "Family / Personal",
-          cats: ["Tool"],
-          aud: "family",
-        },
+      // Order the six surfaces of one lesson so the row reads the way the week
+      // runs: teach it, apply it, small groups, catch up, get ready, send home.
+      const VARIANT_ORDER = [
+        "core",
+        "part2",
+        "group1",
+        "group2",
+        "catchup",
+        "readiness",
+        "family",
       ];
-
-      const CAT_EMOJI = {
-        Lesson: "📐",
-        Readiness: "📚",
-        Project: "🛠️",
-        "Unit Hub": "🏷️",
-        "Math Tool": "🧮",
-        Hub: "🏛️",
-        Tool: "🛠️",
-        Practice: "✏️",
-        Game: "🎮",
+      const VARIANT_CHIP = {
+        core: "Lesson",
+        part2: "Apply",
+        group1: "Group 1",
+        group2: "Group 2",
+        catchup: "Catch-Up",
+        readiness: "Get Ready",
+        family: "Family",
       };
 
-      const state = { q: "", cat: "all", aud: "all", all: [] };
+      const state = {
+        q: "",
+        lane: "all",
+        section: "all",
+        unit: "all",
+        all: [],
+        sections: [],
+        expanded: new Set(),
+      };
 
       function esc(s) {
         return String(s).replace(
@@ -317,219 +315,266 @@
         );
       }
 
+      function laneOf(sectionId) {
+        const s = state.sections.find((x) => x.id === sectionId);
+        return s ? s.lane : "learn";
+      }
+
       function matches(e) {
-        if (state.cat !== "all" && e.category !== state.cat) return false;
-        if (state.aud !== "all" && e.audience !== state.aud) return false;
-        if (state.q) {
-          const hay = [
-            e.title,
+        if (state.lane !== "all" && laneOf(e.section) !== state.lane) return false;
+        if (state.section !== "all" && e.section !== state.section) return false;
+        if (state.unit !== "all" && String(e.unit) !== state.unit) return false;
+        if (!state.q) return true;
+        // AND across whitespace-separated terms, so "unit 6 game" narrows
+        // instead of returning everything that mentions "unit".
+        const hay = (
+          e.title +
+          " " +
+          e.path +
+          " " +
+          (e.standard || "") +
+          " " +
+          (e.unit != null ? "unit " + e.unit : "") +
+          " " +
+          e.category +
+          " " +
+          e.keywords
+        ).toLowerCase();
+        return state.q.split(/\s+/).every((t) => hay.includes(t));
+      }
+
+      /**
+       * Group a section's matching entries into display rows. Lesson surfaces
+       * collapse to one row per lesson id with variant chips; everything else
+       * is one row per page.
+       */
+      function rowsFor(items) {
+        const byLesson = new Map();
+        const rows = [];
+        for (const e of items) {
+          if (!e.lesson || !e.variant) {
+            rows.push({ kind: "page", e });
+            continue;
+          }
+          if (!byLesson.has(e.lesson)) {
+            const row = { kind: "lesson", lesson: e.lesson, variants: [], e };
+            byLesson.set(e.lesson, row);
+            rows.push(row);
+          }
+          byLesson.get(e.lesson).variants.push(e);
+        }
+        for (const row of rows) {
+          if (row.kind !== "lesson") continue;
+          row.variants.sort(
+            (a, b) =>
+              VARIANT_ORDER.indexOf(a.variant) - VARIANT_ORDER.indexOf(b.variant),
+          );
+          // The core lesson names the row; fall back to whatever surface exists
+          // (a Part 2 with no whole-group page still deserves a readable name).
+          row.e = row.variants.find((v) => v.variant === "core") || row.variants[0];
+        }
+        return rows;
+      }
+
+      /** Strip the "6-2 " id prefix and the " — Apply · Part 2" suffix. */
+      function baseTitle(e) {
+        return String(e.title)
+          .replace(/^\S+\s+/, "")
+          .replace(/\s+—\s+[^—]*$/, "")
+          .trim();
+      }
+
+      function rowHtml(row) {
+        if (row.kind === "page") {
+          const e = row.e;
+          const meta = [
             e.category,
-            e.audience,
+            e.unit != null ? "Unit " + e.unit : "",
             e.standard || "",
-            e.unit != null ? "unit " + e.unit : "",
-            e.path,
           ]
-            .join(" ")
-            .toLowerCase();
-          if (!hay.includes(state.q)) return false;
+            .filter(Boolean)
+            .join(" · ");
+          return `<div class="dir-row">
+            <a class="row-main" href="${esc(e.path)}">${esc(e.title)}</a>
+            <span class="row-meta">${esc(meta)}</span>
+          </div>`;
         }
-        return true;
-      }
-
-      function cardHtml(e) {
-        const tags = [];
-        if (e.unit != null) tags.push(`Unit ${e.unit}`);
-        if (e.standard) tags.push(e.standard);
-        tags.push(e.audience);
-        const tagHtml = tags
-          .map((t) => `<span class="meta-tag">${esc(t)}</span>`)
+        const e = row.e;
+        const meta = [e.unit != null ? "Unit " + e.unit : "", e.standard || ""]
+          .filter(Boolean)
+          .join(" · ");
+        const chips = row.variants
+          .map(
+            (v) =>
+              `<a class="variant-link" href="${esc(v.path)}">${esc(
+                VARIANT_CHIP[v.variant] || v.variant,
+              )}</a>`,
+          )
           .join("");
-        const emoji = CAT_EMOJI[e.category] || "•";
-        return `<a class="activity-card compact dir-card" href="${esc(e.path)}">
-          <span class="card-kicker">${emoji} ${esc(e.category)}</span>
-          <h3 class="card-title">${esc(e.title)}</h3>
-          <div class="card-meta">${tagHtml}</div>
-        </a>`;
+        return `<div class="dir-row">
+          <a class="row-main" href="${esc(e.path)}">${esc(row.lesson)} · ${esc(baseTitle(e))}</a>
+          <span class="row-meta">${esc(meta)}</span>
+          <span class="variant-links">${chips}</span>
+        </div>`;
       }
 
-      // Natural-numeric sort for lesson ids like 3-12.
-      function lessonKey(path) {
-        const m = path.match(/\/lessons\/(\d+)-(\d+)/);
-        return m ? Number(m[1]) * 1000 + Number(m[2]) : 1e9;
-      }
-
-      function unitLinkHtml(e, isProject) {
-        const cls = "unit-link" + (isProject ? " is-project" : "");
-        return `<a class="${cls}" href="${esc(e.path)}">${esc(e.title)}</a>`;
-      }
-
-      function renderByUnit() {
-        const root = document.getElementById("byUnit");
-        root.innerHTML = "";
-        let shown = 0;
-
-        for (let u = 1; u <= 10; u++) {
-          const inUnit = (cat) =>
-            state.all.filter(
-              (e) => e.unit === u && e.category === cat && matches(e),
-            );
-
-          const lessons = inUnit("Lesson").sort(
-            (a, b) => lessonKey(a.path) - lessonKey(b.path),
-          );
-          const readiness = inUnit("Readiness").sort(
-            (a, b) => lessonKey(a.path) - lessonKey(b.path),
-          );
-          const projects = inUnit("Project");
-          const hub = inUnit("Unit Hub")[0];
-
-          const count =
-            lessons.length + readiness.length + projects.length + (hub ? 1 : 0);
-          if (!count) continue;
-          shown += count;
-
-          const blocks = [];
-          if (lessons.length)
-            blocks.push(`<p class="unit-sub">Lessons</p>
-              <div class="unit-links">${lessons
-                .map((e) => unitLinkHtml(e, false))
-                .join("")}</div>`);
-          if (readiness.length)
-            blocks.push(`<p class="unit-sub">Readiness</p>
-              <div class="unit-links">${readiness
-                .map((e) => unitLinkHtml(e, false))
-                .join("")}</div>`);
-          if (projects.length)
-            blocks.push(`<p class="unit-sub">Projects</p>
-              <div class="unit-links">${projects
-                .map((e) => unitLinkHtml(e, true))
-                .join("")}</div>`);
-
-          const hubLink = hub
-            ? `<a class="unit-hub-link" href="${esc(hub.path)}">Unit ${u} Hub →</a>`
-            : "";
-
-          const card = document.createElement("section");
-          card.className = "unit-card";
-          card.innerHTML = `
-            <div class="unit-card-head">
-              <h3>Unit ${u}</h3>
-              <span class="dir-group-count">${count} item${count === 1 ? "" : "s"}</span>
-              ${hubLink}
-            </div>
-            ${blocks.join("")}`;
-          root.appendChild(card);
-        }
-
-        document.getElementById("byUnitSection").hidden = shown === 0;
-        document.getElementById("byUnitCount").textContent = shown
-          ? `${shown} items`
-          : "";
-        return shown;
-      }
+      let firstHit = null;
 
       function render() {
-        const root = document.getElementById("dirGroups");
+        const root = document.getElementById("dirResults");
         root.innerHTML = "";
-        let shown = renderByUnit();
+        firstHit = null;
+        let shown = 0;
 
-        for (const sec of SECTIONS) {
-          const items = state.all.filter(
-            (e) =>
-              !UNIT_CATS.includes(e.category) &&
-              sec.cats.includes(e.category) &&
-              (!sec.aud || e.audience === sec.aud) &&
-              matches(e),
-          );
+        for (const sec of state.sections) {
+          const items = state.all.filter((e) => e.section === sec.id && matches(e));
           if (!items.length) continue;
+          const rows = rowsFor(items);
           shown += items.length;
+          if (!firstHit) firstHit = rows[0].e.path;
 
-          const group = document.createElement("section");
-          group.className = "dir-group";
-          group.innerHTML = `
-            <div class="dir-group-head">
-              <h2>${esc(sec.title)}</h2>
-              <span class="dir-group-count">${items.length}</span>
+          const expanded = state.expanded.has(sec.id) || !!state.q;
+          const visible = expanded ? rows : rows.slice(0, PAGE_SIZE);
+          const hidden = rows.length - visible.length;
+
+          const node = document.createElement("section");
+          node.className = "dir-section";
+          node.innerHTML = `
+            <div class="dir-section-head">
+              <h2>${esc(sec.label)}</h2>
+              <span class="lane-tag">${esc(LANE_LABEL[sec.lane] || sec.lane)}</span>
+              <span class="count">${rows.length} ${rows.length === 1 ? "entry" : "entries"}</span>
+              <span class="blurb">${esc(sec.blurb)}</span>
             </div>
-            <div class="activity-grid">${items.map(cardHtml).join("")}</div>`;
-          root.appendChild(group);
+            <div class="dir-rows">${visible.map(rowHtml).join("")}</div>
+            ${
+              hidden > 0
+                ? `<button class="dir-more" type="button" data-expand="${esc(sec.id)}">Show all ${rows.length} →</button>`
+                : ""
+            }`;
+          root.appendChild(node);
         }
+
+        root.querySelectorAll("[data-expand]").forEach((b) =>
+          b.addEventListener("click", () => {
+            state.expanded.add(b.getAttribute("data-expand"));
+            render();
+          }),
+        );
 
         document.getElementById("dirEmpty").hidden = shown > 0;
         const total = state.all.length;
         document.getElementById("dirCount").textContent =
           shown === total
-            ? `Showing all ${total} items`
-            : `Showing ${shown} of ${total} items`;
+            ? `${total} pages`
+            : `${shown} of ${total} pages`;
+      }
+
+      function chip(box, value, label, key) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip-btn" + (key === "lane" ? " lane-btn" : "");
+        b.textContent = label;
+        b.setAttribute("aria-pressed", state[key] === value ? "true" : "false");
+        b.addEventListener("click", () => {
+          state[key] = value;
+          // Choosing a lane invalidates a section chip from another lane.
+          if (key === "lane") state.section = "all";
+          state.expanded.clear();
+          syncUrl();
+          buildFilters();
+          render();
+        });
+        box.appendChild(b);
+        return b;
       }
 
       function buildFilters() {
-        const cats = [
-          "all",
-          ...Array.from(new Set(state.all.map((e) => e.category))),
-        ];
-        const auds = [
-          "all",
-          ...Array.from(new Set(state.all.map((e) => e.audience))),
-        ];
+        const laneBox = document.getElementById("laneFilters");
+        const secBox = document.getElementById("sectionFilters");
+        const unitBox = document.getElementById("unitFilters");
+        laneBox.innerHTML = secBox.innerHTML = unitBox.innerHTML = "";
 
-        const catBox = document.getElementById("catFilters");
-        const audBox = document.getElementById("audFilters");
+        chip(laneBox, "all", "Everything", "lane");
+        for (const lane of ["teach", "learn", "family"])
+          chip(laneBox, lane, LANE_LABEL[lane], "lane");
 
-        function chip(value, label, key) {
-          const b = document.createElement("button");
-          b.type = "button";
-          b.className = "chip-btn";
-          b.textContent = label;
-          b.setAttribute(
-            "aria-pressed",
-            state[key] === value ? "true" : "false",
-          );
-          b.addEventListener("click", () => {
-            state[key] = value;
-            (key === "cat" ? catBox : audBox)
-              .querySelectorAll(".chip-btn")
-              .forEach((x) =>
-                x.setAttribute("aria-pressed", x === b ? "true" : "false"),
-              );
-            render();
-          });
-          return b;
+        chip(secBox, "all", "All", "section");
+        for (const sec of state.sections) {
+          if (state.lane !== "all" && sec.lane !== state.lane) continue;
+          if (!state.all.some((e) => e.section === sec.id)) continue;
+          chip(secBox, sec.id, sec.label, "section");
         }
 
-        cats.forEach((c) =>
-          catBox.appendChild(chip(c, c === "all" ? "All" : c, "cat")),
-        );
-        auds.forEach((a) =>
-          audBox.appendChild(
-            chip(
-              a,
-              a === "all" ? "All" : a[0].toUpperCase() + a.slice(1),
-              "aud",
-            ),
-          ),
-        );
+        chip(unitBox, "all", "All", "unit");
+        const units = [
+          ...new Set(state.all.filter((e) => e.unit != null).map((e) => e.unit)),
+        ].sort((a, b) => a - b);
+        for (const u of units) chip(unitBox, String(u), "Unit " + u, "unit");
       }
 
-      document.getElementById("dirSearch").addEventListener("input", (e) => {
+      /** Keep the URL in step so a filtered view can be bookmarked or shared. */
+      function syncUrl() {
+        const p = new URLSearchParams();
+        if (state.q) p.set("q", state.q);
+        if (state.lane !== "all") p.set("lane", state.lane);
+        if (state.section !== "all") p.set("section", state.section);
+        if (state.unit !== "all") p.set("unit", state.unit);
+        const qs = p.toString();
+        history.replaceState(null, "", qs ? "?" + qs : location.pathname);
+      }
+
+      function readUrl() {
+        const p = new URLSearchParams(location.search);
+        state.q = (p.get("q") || "").trim().toLowerCase();
+        state.lane = p.get("lane") || "all";
+        state.section = p.get("section") || "all";
+        state.unit = p.get("unit") || "all";
+        if (state.q) document.getElementById("dirSearch").value = state.q;
+      }
+
+      const input = document.getElementById("dirSearch");
+      input.addEventListener("input", (e) => {
         state.q = e.target.value.trim().toLowerCase();
+        state.expanded.clear();
+        syncUrl();
         render();
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && firstHit) {
+          e.preventDefault();
+          location.href = firstHit;
+        }
+        if (e.key === "Escape") {
+          input.value = "";
+          state.q = "";
+          syncUrl();
+          render();
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "/" && document.activeElement !== input) {
+          e.preventDefault();
+          input.focus();
+        }
       });
 
       fetch("/data/catalog.json")
         .then((r) => r.json())
         .then((data) => {
-          state.all = Array.isArray(data) ? data : data.entries || [];
+          state.all = data.entries || [];
+          state.sections = data.sections || [];
+          readUrl();
           buildFilters();
           render();
         })
         .catch(() => {
-          document.getElementById("dirGroups").innerHTML =
-            '<p class="dir-empty">Could not load the catalog. Run <code>node scripts/generate-catalog.mjs</code> to build <code>data/catalog.json</code>.</p>';
+          document.getElementById("dirResults").innerHTML =
+            '<p class="dir-empty">Could not load the catalog. Run <code>npm run generate-catalog</code> to rebuild <code>data/catalog.json</code>.</p>';
         });
     </script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>
