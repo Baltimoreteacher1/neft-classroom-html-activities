@@ -2,6 +2,13 @@ name = "neft-classroom-html-activities"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-05-25"
 
+# Cloudflare Access in front of tenant teacher surfaces (/t/*/teach*).
+# Non-secret: the team domain and the Access application's audience tag,
+# verified in-app by functions/_lib/access-jwt.js on every teacher call.
+[vars]
+ACCESS_TEAM_DOMAIN = "flat-haze-aa5c.cloudflareaccess.com"
+ACCESS_AUD_TEACH = "f1bc9e3fc91afacb2c4cf84d2c93919ef16b3f3c522d447d0004517c3b2b906a"
+
 # Cloud sync for the Noam School planner (focus-school/ app, functions/api/state.js).
 # Optional feature: if this binding is absent the endpoint returns 503 and the
 # app stays local-only. KV namespace "noam-school-sync".
