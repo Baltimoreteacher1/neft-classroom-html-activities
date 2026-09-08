@@ -939,6 +939,12 @@ export const ACTIVITIES = [
     unit: 10,
   },
   {
+    path: "/lessons/1-practice/homework.html",
+    title: "1-practice Unit 1 Practice Test — Family Homework",
+    category: "Homework",
+    unit: 1,
+  },
+  {
     path: "/math/unit-1/projects/",
     title: "Unit 1 Culminating Projects",
     category: "Project",
