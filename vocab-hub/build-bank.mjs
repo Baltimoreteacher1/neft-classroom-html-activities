@@ -177,24 +177,40 @@ function main() {
   let rawCount = 0;
   let lessonsWithVocab = 0;
 
-  for (const dir of dirs) {
-    const cfgPath = path.join(LESSONS_DIR, dir, "config.json");
-    let cfg;
-    try {
-      cfg = JSON.parse(fs.readFileSync(cfgPath, "utf8"));
-    } catch (e) {
-      console.error(`[skip] ${dir}/config.json: ${e.message}`);
-      continue;
-    }
-    const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
-    if (vocab.length) lessonsWithVocab++;
+  // A term's canonical definition goes to the FIRST directory that declares it,
+  // and `dirs` is alphabetical — so ownership is decided by folder name, not by
+  // which lesson teaches the word. That is harmless while every declaration is a
+  // lesson's own word, and wrong the moment a REVIEW lesson repeats one: adding
+  // `1-practice` (a Unit 1 practice-test review quoting 2-6 and 6-2) moved the
+  // canonical "Dividend" off `2-12-catchup` and rewrote the embedded glossary on
+  // all 86 other homework pages, none of which had changed.
+  //
+  // A vocabulary entry carrying `reviewOf` is stating that another lesson taught
+  // this word. It is still recorded in `usedBy` — the term IS used here — but it
+  // claims the canonical slot only in the second pass, and only if no teaching
+  // lesson declared it at all, so a reviewed-only word is still never lost.
+  const isReview = (v) => Boolean(v?.reviewOf);
+  const passes = [(v) => !isReview(v), isReview];
 
-    const lessonId = cfg.lessonId || dir;
-    const unit = cfg.unit ?? null;
-    const lessonTitle = cfg.title || lessonId;
-    const standard = cfg.standard || "";
+  for (const declaredHere of passes) {
+    for (const dir of dirs) {
+      const cfgPath = path.join(LESSONS_DIR, dir, "config.json");
+      let cfg;
+      try {
+        cfg = JSON.parse(fs.readFileSync(cfgPath, "utf8"));
+      } catch (e) {
+        if (declaredHere === passes[0]) console.error(`[skip] ${dir}/config.json: ${e.message}`);
+        continue;
+      }
+      const vocab = (Array.isArray(cfg.vocabulary) ? cfg.vocabulary : []).filter(declaredHere);
+      if (vocab.length && declaredHere === passes[0]) lessonsWithVocab++;
 
-    for (const v of vocab) {
+      const lessonId = cfg.lessonId || dir;
+      const unit = cfg.unit ?? null;
+      const lessonTitle = cfg.title || lessonId;
+      const standard = cfg.standard || "";
+
+      for (const v of vocab) {
       if (!v || !v.term) continue;
       rawCount++;
       const key = normKey(v.term);
@@ -240,6 +256,7 @@ function main() {
       if (Array.isArray(v.sentences) && v.sentences.length) entry.sentences = v.sentences;
       if (v.cloze) entry.cloze = v.cloze;
       byTerm.set(key, entry);
+      }
     }
   }
 

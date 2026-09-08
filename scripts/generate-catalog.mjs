@@ -344,6 +344,30 @@ if (existsSync(lessonsDir)) {
     if (!cfg && !existsSync(idx)) continue; // not navigable
 
     const base = cfg?.title || titleFromHtml(idx, titleCase(name));
+
+    // A lesson folder with no launcher is not a student lesson — it is a config
+    // that exists so a generator can emit ONE family page (the Unit 1 practice
+    // test is the first). Cataloguing it at `/lessons/<name>/` would publish a
+    // URL that 404s, so the row names the page that is actually on disk, in the
+    // section whose audience it is written for.
+    if (!existsSync(idx)) {
+      const familyHomework = resolve(lessonsDir, name, "homework.html");
+      if (!existsSync(familyHomework)) continue; // nothing navigable to name
+      add({
+        title: `${name} ${base} — Family Homework`,
+        path: `/lessons/${name}/homework.html`,
+        section: "family",
+        category: "Homework",
+        audience: "family",
+        unit: cfg?.unit ?? null,
+        standard: cfg?.standard ?? null,
+        lesson: name,
+        variant: "family",
+        keywords: `family homework ${name} ${base} ${cfg?.standard || ""}`,
+      });
+      continue;
+    }
+
     const suffix = VARIANT_LABEL[variant];
     const title = suffix ? `${lesson || name} ${base} — ${suffix}` : `${lesson || name} ${base}`;
 

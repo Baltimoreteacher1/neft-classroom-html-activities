@@ -426,6 +426,11 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/10-6/homework.html",
     "isFamilyHomework": true
   },
+  "1-practice": {
+    "text": "🏠 Unit 1 Practice Test — Family Practice",
+    "href": "/lessons/1-practice/homework.html",
+    "isFamilyHomework": true
+  },
   "1-review": {
     "text": "🏠 Pre-Unit 1 Review — Family Practice",
     "href": "/lessons/1-review/homework.html",
