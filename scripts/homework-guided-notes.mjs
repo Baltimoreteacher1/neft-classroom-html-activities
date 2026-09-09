@@ -13,7 +13,7 @@ import {
   selectAlignedQuickCheckProblems,
 } from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
-import { renderPlayTab } from "./homework-games.mjs";
+import { buildHomeworkGame, renderPlayTab } from "./homework-games.mjs";
 import {
   plainObjective,
   polishSpanish,
@@ -349,13 +349,22 @@ function ladderCard(prob) {
     if (!q || !Array.isArray(prob.choices) || !Number.isInteger(prob.correctIndex)) return null;
     const a = prob.choices[prob.correctIndex];
     if (a == null) return null;
+    const qEs = prob.stemEs || prob.questionEs || "";
+    const choicesEs =
+      Array.isArray(prob.choicesEs) && prob.choicesEs.length === prob.choices.length
+        ? prob.choicesEs.map((c) => String(c))
+        : null;
+    const aEs = choicesEs ? choicesEs[prob.correctIndex] : null;
     // Carry the answer choices through so the ladder can render the options the
     // stem refers to ("Which of the following…?"). Without them the family sees
     // a question with no choices and only the reveal — impossible to answer.
     return {
       q,
+      qEs,
       a: String(a),
+      aEs: aEs != null ? String(aEs) : "",
       choices: prob.choices.map((c) => String(c)),
+      choicesEs,
       correctIndex: prob.correctIndex,
     };
   }
@@ -363,7 +372,9 @@ function ladderCard(prob) {
     const q = prob.prompt || prob.question || prob.stem || "";
     if (!q) return null;
     const a = prob.sampleAnswer || prob.answer || prob.exemplar || "";
-    return { q, a: String(a) };
+    const qEs = prob.promptEs || prob.questionEs || prob.stemEs || "";
+    const aEs = prob.sampleAnswerEs || prob.answerEs || prob.exemplarEs || "";
+    return { q, qEs, a: String(a), aEs: String(aEs) };
   }
   return null;
 }
@@ -823,7 +834,13 @@ function conceptVisual(config) {
       .map((i) => {
         const cx = 74 + i * 82;
         const isWhole = i < 4;
-        const fill = isWhole ? (i % 2 === 0 ? "#e0f2fe" : "#ffffff") : (i % 2 === 0 ? "#fef3c7" : "#ffffff");
+        const fill = isWhole
+          ? i % 2 === 0
+            ? "#e0f2fe"
+            : "#ffffff"
+          : i % 2 === 0
+            ? "#fef3c7"
+            : "#ffffff";
         const stroke = isWhole ? "#0284c7" : "#d97706";
         const textFill = isWhole ? "#0369a1" : "#b45309";
         const numBg = isWhole ? "#0284c7" : "#d97706";
@@ -838,7 +855,8 @@ function conceptVisual(config) {
 
     return {
       svg: conceptFrame({
-        label: "Unit 1 Practice Test: Dividing 1 1/2 yards by 1/4 yard shows 6 bows with a tape diagram and Keep Change Flip",
+        label:
+          "Unit 1 Practice Test: Dividing 1 1/2 yards by 1/4 yard shows 6 bows with a tape diagram and Keep Change Flip",
         tone: "coral",
         height: 456,
         title: "Dividing Fractions: Tape Diagram & Steps / Dividir fracciones: Diagrama y pasos",
@@ -896,7 +914,8 @@ function conceptVisual(config) {
   if (baseLesson === "3-1") {
     return {
       svg: conceptFrame({
-        label: "Ratios: 4 cups of water and 2 cups of lemon juice comparing part to part and part to whole",
+        label:
+          "Ratios: 4 cups of water and 2 cups of lemon juice comparing part to part and part to whole",
         tone: "teal",
         height: 410,
         title: "Understand Ratios / ¿Qué es una razón?",
@@ -943,8 +962,10 @@ function conceptVisual(config) {
         <text x="52" y="354" font-size="15" font-weight="700" fill="#5f6f80">Always write numbers in the exact order the question names them!</text>
         <text x="52" y="376" font-size="14" font-weight="700" fill="#0f766e">Three ways to write a ratio:  4 to 2   ·   4 : 2   ·   4/2</text>`,
       }),
-      capEn: "A ratio compares two quantities. The order of numbers must match the order of words in the question.",
-      capEs: "Una razón compara dos cantidades. El orden de los números debe coincidir con el orden de las palabras.",
+      capEn:
+        "A ratio compares two quantities. The order of numbers must match the order of words in the question.",
+      capEs:
+        "Una razón compara dos cantidades. El orden de los números debe coincidir con el orden de las palabras.",
     };
   }
 
@@ -983,15 +1004,18 @@ function conceptVisual(config) {
         <text x="320" y="340" text-anchor="middle" font-size="17" font-weight="700" fill="#12355b">A unit rate is a ratio that compares a quantity to exactly 1 unit.</text>
         <text x="320" y="368" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">Comparing unit rates ($/pencil) tells you which option gives more value!</text>`,
       }),
-      capEn: "A unit rate is a ratio that compares a quantity to 1 unit. Divide the total cost by the quantity to find the price for 1.",
-      capEs: "Una tasa unitaria es una razón que compara una cantidad con 1 unidad. Divide el costo entre la cantidad para hallar el precio de 1.",
+      capEn:
+        "A unit rate is a ratio that compares a quantity to 1 unit. Divide the total cost by the quantity to find the price for 1.",
+      capEs:
+        "Una tasa unitaria es una razón que compara una cantidad con 1 unidad. Divide el costo entre la cantidad para hallar el precio de 1.",
     };
   }
 
   if (baseLesson === "3-3") {
     return {
       svg: conceptFrame({
-        label: "Ratio Table Scaling: Multiplying both columns creates equivalent ratios, adding breaks the ratio",
+        label:
+          "Ratio Table Scaling: Multiplying both columns creates equivalent ratios, adding breaks the ratio",
         tone: "teal",
         height: 420,
         title: "Ratio Table Scaling / Tabla de razones",
@@ -1061,8 +1085,10 @@ function conceptVisual(config) {
         <text x="320" y="356" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">Equivalent Ratios:  2 : 3  =  4 : 6  =  6 : 9  =  8 : 12</text>
         <text x="320" y="384" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">Multiply or divide every quantity in the ratio table by the same scale factor.</text>`,
       }),
-      capEn: "Multiply or divide BOTH columns by the exact same scale factor to find equivalent ratios in a ratio table.",
-      capEs: "Multipliquen o dividan AMBAS columnas por el mismo factor para hallar razones equivalentes en una tabla de razones.",
+      capEn:
+        "Multiply or divide BOTH columns by the exact same scale factor to find equivalent ratios in a ratio table.",
+      capEs:
+        "Multipliquen o dividan AMBAS columnas por el mismo factor para hallar razones equivalentes en una tabla de razones.",
     };
   }
 
@@ -1072,7 +1098,8 @@ function conceptVisual(config) {
     const u = 54;
     return {
       svg: conceptFrame({
-        label: "Graphing Equivalent Ratios: Ordered pairs on a coordinate plane forming a straight ray from the origin (0, 0)",
+        label:
+          "Graphing Equivalent Ratios: Ordered pairs on a coordinate plane forming a straight ray from the origin (0, 0)",
         tone: "amber",
         height: 420,
         title: "Graphing Equivalent Ratios / Gráfica de razones",
@@ -1131,15 +1158,18 @@ function conceptVisual(config) {
           <text x="14" y="304" font-size="14" font-weight="800" fill="#047857">If it curves, it is NOT equivalent!</text>
         </g>`,
       }),
-      capEn: "Plotting equivalent ratios as ordered pairs on a coordinate plane creates a straight ray starting at the origin (0, 0).",
-      capEs: "Graficar razones equivalentes como pares ordenados en el plano de coordenadas forma un rayo recto que inicia en el origen (0, 0).",
+      capEn:
+        "Plotting equivalent ratios as ordered pairs on a coordinate plane creates a straight ray starting at the origin (0, 0).",
+      capEs:
+        "Graficar razones equivalentes como pares ordenados en el plano de coordenadas forma un rayo recto que inicia en el origen (0, 0).",
     };
   }
 
   if (baseLesson === "3-5") {
     return {
       svg: conceptFrame({
-        label: "Compare Ratio Relationships: Comparing runner speeds using unit rates to see who is faster",
+        label:
+          "Compare Ratio Relationships: Comparing runner speeds using unit rates to see who is faster",
         tone: "teal",
         height: 410,
         title: "Compare Ratio Relationships / Comparar razones",
@@ -1168,15 +1198,18 @@ function conceptVisual(config) {
         <line x1="60" y1="338" x2="580" y2="338" stroke="#fde68a" stroke-width="2"/>
         <text x="320" y="364" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">Key Strategy: Convert different ratios to a unit rate (rate per 1 unit) to compare fairly.</text>`,
       }),
-      capEn: "To compare two ratio relationships, calculate the unit rate for each one. The higher unit rate is faster or greater.",
-      capEs: "Para comparar dos relaciones de razón, calculen la tasa unitaria de cada una. La tasa mayor es más rápida o mayor.",
+      capEn:
+        "To compare two ratio relationships, calculate the unit rate for each one. The higher unit rate is faster or greater.",
+      capEs:
+        "Para comparar dos relaciones de razón, calculen la tasa unitaria de cada una. La tasa mayor es más rápida o mayor.",
     };
   }
 
   if (baseLesson === "3-6") {
     return {
       svg: conceptFrame({
-        label: "Measurement Conversion Ladder: Converting yards to feet to inches using ratios and multiplication",
+        label:
+          "Measurement Conversion Ladder: Converting yards to feet to inches using ratios and multiplication",
         tone: "teal",
         height: 420,
         title: "Measurement Conversion Ladder / Conversión de medidas",
@@ -1234,15 +1267,18 @@ function conceptVisual(config) {
           <text x="434" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">Inches to feet: divide by 12</text>
         </g>`,
       }),
-      capEn: "Use equivalent ratios to convert measurements: multiply when going to smaller units, divide when going to larger units.",
-      capEs: "Usen razones equivalentes para convertir medidas: multipliquen al cambiar a unidades menores, dividan al cambiar a mayores.",
+      capEn:
+        "Use equivalent ratios to convert measurements: multiply when going to smaller units, divide when going to larger units.",
+      capEs:
+        "Usen razones equivalentes para convertir medidas: multipliquen al cambiar a unidades menores, dividan al cambiar a mayores.",
     };
   }
 
   if (baseLesson === "3-7") {
     return {
       svg: conceptFrame({
-        label: "Converting Between Measurement Systems: Customary to metric using approximate ratio conversions",
+        label:
+          "Converting Between Measurement Systems: Customary to metric using approximate ratio conversions",
         tone: "amber",
         height: 420,
         title: "Converting Between Systems / Conversión entre sistemas",
@@ -1285,15 +1321,18 @@ function conceptVisual(config) {
         <text x="320" y="366" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">Set up an equivalent ratio with the conversion factor and multiply or divide.</text>
         <text x="320" y="386" text-anchor="middle" font-size="14" font-weight="600" fill="#5f6f80">Ratio benchmarks: 1 mi ≈ 1.61 km   ·   1 kg ≈ 2.2 lb   ·   1 in ≈ 2.54 cm</text>`,
       }),
-      capEn: "Conversions between measurement systems are approximate (≈). Set up an equivalent ratio with the conversion rate to solve.",
-      capEs: "Las conversiones entre sistemas son aproximadas (≈). Usen una razón equivalente con la tasa de conversión para resolver.",
+      capEn:
+        "Conversions between measurement systems are approximate (≈). Set up an equivalent ratio with the conversion rate to solve.",
+      capEs:
+        "Las conversiones entre sistemas son aproximadas (≈). Usen una razón equivalente con la tasa de conversión para resolver.",
     };
   }
 
   if (baseLesson === "3-8") {
     return {
       svg: conceptFrame({
-        label: "The Unit Rate Bridge: 2 steps to solve any rate problem by first finding the rate for 1",
+        label:
+          "The Unit Rate Bridge: 2 steps to solve any rate problem by first finding the rate for 1",
         tone: "teal",
         height: 420,
         title: "The Unit Rate Bridge / Resolver con tasa unitaria",
@@ -1336,15 +1375,18 @@ function conceptVisual(config) {
           <text x="504" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">9 Tickets ($108)</text>
         </g>`,
       }),
-      capEn: "The 2-step unit rate bridge: First divide to find the cost of 1, then multiply to find the total for any quantity.",
-      capEs: "El puente de 2 pasos: Primero dividan para hallar el costo de 1, luego multipliquen por la cantidad total deseada.",
+      capEn:
+        "The 2-step unit rate bridge: First divide to find the cost of 1, then multiply to find the total for any quantity.",
+      capEs:
+        "El puente de 2 pasos: Primero dividan para hallar el costo de 1, luego multipliquen por la cantidad total deseada.",
     };
   }
 
   if (baseLesson === "3-9") {
     return {
       svg: conceptFrame({
-        label: "Equivalent Ratios: Scaling up with multiplication and scaling down by dividing with tape diagrams",
+        label:
+          "Equivalent Ratios: Scaling up with multiplication and scaling down by dividing with tape diagrams",
         tone: "amber",
         height: 420,
         title: "Equivalent Ratios: Scale Up & Down / Razones equivalentes",
@@ -1402,15 +1444,18 @@ function conceptVisual(config) {
           <text x="312" y="162" font-size="14" font-weight="600" fill="#5f6f80">3:5 is the simplest form ratio.</text>
         </g>`,
       }),
-      capEn: "Equivalent ratios describe the same relationship. Multiply both terms to scale up, or divide by a common factor to simplify.",
-      capEs: "Las razones equivalentes describen la misma relación. Multipliquen ambos términos para agrandar o dividan para simplificar.",
+      capEn:
+        "Equivalent ratios describe the same relationship. Multiply both terms to scale up, or divide by a common factor to simplify.",
+      capEs:
+        "Las razones equivalentes describen la misma relación. Multipliquen ambos términos para agrandar o dividan para simplificar.",
     };
   }
 
   if (baseLesson === "3-10") {
     return {
       svg: conceptFrame({
-        label: "Unit Cancellation and Conversion Ratios: Crossing out diagonal matching units to leave target units",
+        label:
+          "Unit Cancellation and Conversion Ratios: Crossing out diagonal matching units to leave target units",
         tone: "teal",
         height: 420,
         title: "Unit Cancellation & Ratios / Conversión de unidades",
@@ -1467,8 +1512,10 @@ function conceptVisual(config) {
           <text x="20" y="98" font-size="14" font-weight="700" fill="#0f766e">Equivalent conversion ratios guarantee your final answer is accurate.</text>
         </g>`,
       }),
-      capEn: "Set up conversion ratios so units cancel diagonally across fractions, leaving only the unit you want to find.",
-      capEs: "Escriban razones de conversión de modo que las unidades se cancelen en diagonal, dejando solo la unidad deseada.",
+      capEn:
+        "Set up conversion ratios so units cancel diagonally across fractions, leaving only the unit you want to find.",
+      capEs:
+        "Escriban razones de conversión de modo que las unidades se cancelen en diagonal, dejando solo la unidad deseada.",
     };
   }
 
@@ -2407,28 +2454,46 @@ function renderTogetherLadder(config) {
       const hasChoices = Array.isArray(item.choices) && item.choices.length > 0;
       const choicesHtml = hasChoices
         ? `<ol class="ladder-choices">${item.choices
-            .map((c) => `<li class="ladder-choice">${esc(c)}</li>`)
+            .map((c, idx) => {
+              const cEs = item.choicesEs?.[idx];
+              return `<li class="ladder-choice">${
+                cEs
+                  ? `<span class="lang-en">${esc(c)}</span><span class="lang-es" lang="es">${esc(cEs)}</span>`
+                  : esc(c)
+              }</li>`;
+            })
             .join("")}</ol>`
         : "";
       // For multiple-choice, reveal the correct option with its letter (e.g. "A. …")
       // so it lines up with the rendered choices; open-response just shows the sample.
-      const answerText =
+      const answerTextEn =
         hasChoices && Number.isInteger(item.correctIndex)
           ? `${letters[item.correctIndex] ? `${letters[item.correctIndex]}. ` : ""}${item.a}`
           : item.a;
+      const answerTextEs = item.aEs
+        ? hasChoices && Number.isInteger(item.correctIndex)
+          ? `${letters[item.correctIndex] ? `${letters[item.correctIndex]}. ` : ""}${item.aEs}`
+          : item.aEs
+        : "";
+      const answerBody = answerTextEs
+        ? `<p class="ladder-answer-text"><span class="lang-en">${esc(answerTextEn)}</span><span class="lang-es" lang="es">${esc(answerTextEs)}</span></p>`
+        : `<p class="ladder-answer-text">${esc(answerTextEn)}</p>`;
       const answer = item.a
         ? `<details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">${esc(answerText)}</p>
+             ${answerBody}
            </details>`
         : "";
+      const questionHtml = item.qEs
+        ? `<p class="ladder-q"><span class="lang-en">${esc(item.q)}</span><span class="lang-es" lang="es">${esc(item.qEs)}</span></p>`
+        : `<p class="ladder-q">${esc(item.q)}</p>`;
       return `
         <li class="ladder-item">
           <div class="ladder-head">
             <span class="ladder-stars" aria-hidden="true">${item.stars}</span>
             <span class="ladder-tier"><span class="lang-en">${esc(item.tierEn)}</span><span class="lang-es" lang="es">${esc(item.tierEs)}</span></span>
           </div>
-          <p class="ladder-q">${esc(item.q)}</p>
+          ${questionHtml}
           ${choicesHtml}
           <input type="text" id="ladder_${i}" name="ladder_${i}" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}" />
           ${answer}
@@ -2455,7 +2520,7 @@ export function renderStuckSection(config) {
 
   return `
     <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
-      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+      <h2 class="section-title">💬 <span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atora</span></h2>
       <div class="stuck-grid">
         <div class="stuck-panel stuck-say">
           <h3 class="stuck-heading">✅ <span class="lang-en">What to say</span><span class="lang-es" lang="es">Qué decir</span></h3>
@@ -2490,7 +2555,7 @@ export function renderStuckSection(config) {
 export function renderCelebration() {
   return `
     <section class="guided-section card section-celebrate" aria-label="Celebration">
-      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
+      <h2 class="section-title">🎉 <span class="lang-en">You did it together!</span><span class="lang-es" lang="es">¡Lo lograron juntos!</span></h2>
       <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
       <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
       <p class="celebrate-sub bilingual-block">
@@ -5994,7 +6059,17 @@ export function renderFamilyGameBreak(topic, extras = {}) {
 ${
   extras.quizHtml
     ? `
-      <div class="fam-game-card" id="fam_quiz_game" data-arcade-panel="quiz" hidden>${extras.quizHtml}</div>`
+      <div class="fam-game-card" id="fam_quiz_game" data-arcade-panel="quiz" hidden>
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">⚡ <span class="lang-en">Quick Quiz</span><span class="lang-es" lang="es">Reto rápido</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="initHomeworkGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Reinforce tonight's topic with a quick family game. You ask; your student decides!</span>
+          <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
+        </p>
+        ${extras.quizHtml}
+      </div>`
     : ""
 }${
   extras.arcadeUrl
@@ -6347,7 +6422,7 @@ export function renderSkillPowerUp(config, topic = "expressions") {
             <span class="lang-es" lang="es">${esc(powerUp.qEs)}</span>
           </h3>
         </div>
-        <div class="powerup-badge-star" id="powerup_star_badge">★ 1 Star / 1 Estrella</div>
+        <div class="powerup-badge-star" id="powerup_star_badge"><span class="lang-en">★ 1 Star</span><span class="lang-es" lang="es">★ 1 Estrella</span></div>
       </div>
       <div class="powerup-choices-grid" id="powerup_choices">
         ${powerUp.choices
@@ -7039,13 +7114,14 @@ export function renderMoreContent(config, lessonId) {
  * family reached depended entirely on how far they had scrolled.
  */
 export function renderPlayTabPanel(config, lessonId = "") {
-  const quizHtml = renderPlayTab(config).replace(/<section[^>]*>|<\/section>/g, "");
+  const game = buildHomeworkGame(config);
+  const quizHtml = game ? game.html : "";
   const arcadeUrl = lessonId
     ? `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`
     : "";
   return `
     <div ${tabPanelAttrs("play", true)}>
-      <h2 class="section-title">🎮 Play together / Juguemos juntos</h2>
+      <h2 class="section-title">🎮 <span class="lang-en">Play together</span><span class="lang-es" lang="es">Juguemos juntos</span></h2>
       <p class="bilingual-block play-intro">
         <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
         <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
@@ -9565,6 +9641,12 @@ body.lang-mode-es .bilingual-grid {
   padding: 3px 10px;
   border-radius: 99px;
   white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.powerup-badge-star.is-unlocked {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #10b981;
 }
 .powerup-choices-grid {
   display: flex;

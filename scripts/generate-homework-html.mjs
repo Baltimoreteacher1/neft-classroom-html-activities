@@ -697,6 +697,8 @@ const SVG_NUMBER_LINE = `<svg viewBox="0 0 320 60" class="hw-visual-svg" role="i
 
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
+const SVG_FRACTION_STRIP = `<svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Fraction bar model to partition"><rect x="15" y="15" width="290" height="35" rx="4" fill="#ffffff" stroke="#12355b" stroke-width="2"/><text x="160" y="38" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="13" font-weight="bold" fill="#12355b">1 Whole</text><rect x="15" y="60" width="290" height="35" rx="4" fill="#ffffff" stroke="#12355b" stroke-width="2"/>${[1, 2, 3, 4, 5].map((i) => `<line x1="${15 + i * 48.33}" y1="60" x2="${15 + i * 48.33}" y2="95" stroke="#12355b" stroke-width="1.5" stroke-dasharray="4,2"/>`).join("")}</svg>`;
+
 const SVG_COORD = `<svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid">${Array.from({ length: 9 }, (_, i) => `<line x1="${20 + i * 20}" y1="20" x2="${20 + i * 20}" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="${20 + i * 20}" x2="180" y2="${20 + i * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}<line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>`;
 
 const SVG_RATIO_TABLE = `<svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/>${[85, 160, 235].map((x) => `<line x1="${x}" y1="15" x2="${x}" y2="95" stroke="#12355b" stroke-width="1.5"/>`).join("")}</svg>`;
@@ -715,7 +717,7 @@ const TOPIC_VISUAL = {
   "surface-area": SVG_PRISM,
   "coordinate-plane": SVG_COORD,
   "number-line": SVG_NUMBER_LINE,
-  fractions: SVG_NUMBER_LINE,
+  fractions: SVG_FRACTION_STRIP,
   decimals: SVG_NUMBER_LINE,
   equations: SVG_BALANCE,
   inequalities: SVG_NUMBER_LINE,
@@ -3584,6 +3586,11 @@ function checkSkillPowerUp(btn, choiceIdx, correctIdx) {
     contentEl.innerHTML = '<span class="lang-en">🎉 <strong>Power-Up Unlocked!</strong> You earned +1 Star and mastered the key concept.</span><span class="lang-es" lang="es">🎉 <strong>¡Poder Desbloqueado!</strong> Ganaste +1 Estrella y dominaste el concepto clave.</span>';
     const badge = document.getElementById("tab_badge_learn");
     if (badge) badge.textContent = "★";
+    const starBadge = document.getElementById("powerup_star_badge");
+    if (starBadge) {
+      starBadge.classList.add("is-unlocked");
+      starBadge.innerHTML = '<span class="lang-en">★ Earned!</span><span class="lang-es" lang="es">★ ¡Ganada!</span>';
+    }
     if (typeof playFanfareSound === "function") playFanfareSound();
     if (typeof triggerConfettiBurst === "function") triggerConfettiBurst();
     try {
@@ -4243,6 +4250,11 @@ function loadState() {
         if (badge) badge.textContent = "★";
         const btn = document.querySelector(".powerup-choice-btn[data-is-correct='true']");
         if (btn) btn.classList.add("is-correct");
+        const starBadge = document.getElementById("powerup_star_badge");
+        if (starBadge) {
+          starBadge.classList.add("is-unlocked");
+          starBadge.innerHTML = '<span class="lang-en">★ Earned!</span><span class="lang-es" lang="es">★ ¡Ganada!</span>';
+        }
       }
       if (localStorage.getItem(STORAGE_KEY + "_vocab_won") === "1") {
         const badge = document.getElementById("tab_badge_words");
@@ -5461,6 +5473,8 @@ function localizeBilingualLabels(html) {
     /(<span class="fam-game-badge">)([^<]*)(<\/span>)/g,
     /(<span class="help-frame-tag">)([^<]*)(<\/span>)/g,
     /(<span class="practice-tier-label">)([^<]*)(<\/span>)/g,
+    /(<div class="powerup-badge-star"[^>]*>)([^<]*)(<\/div>)/g,
+    /(<div class="hw-game-score"[^>]*>)([^<]*)(<\/div>)/g,
   ];
   let out = html;
   for (const re of rules) {

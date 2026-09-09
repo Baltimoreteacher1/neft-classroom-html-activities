@@ -204,7 +204,7 @@ function renderSharedLessonModel(topic, config, lessonModel) {
   const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
   let modelName = lessonModel.title;
   let modelNameEs = "";
-  let icon = isFactorTree ? "🌳" : (kind === "fraction-divide" ? "🥞" : "🖐️");
+  let icon = isFactorTree ? "🌳" : kind === "fraction-divide" ? "🥞" : "🖐️";
 
   if (kind === "fraction-divide") {
     modelName = "Fraction Division Visualizer & Lab";
@@ -241,14 +241,14 @@ function renderSharedLessonModel(topic, config, lessonModel) {
 
   const prompt = isFactorTree
     ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
-    : (kind === "fraction-divide"
+    : kind === "fraction-divide"
       ? "Choose a division problem. Watch how the total amount is cut into equal fraction pieces."
-      : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.");
+      : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
   const promptEs = isFactorTree
     ? "Escribe dos factores para cada círculo compuesto. Sigue dividiendo hasta que cada hoja sea prima."
-    : (kind === "fraction-divide"
+    : kind === "fraction-divide"
       ? "Elige un problema de división. Observa cómo la cantidad total se divide en partes fraccionarias iguales."
-      : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.");
+      : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.";
   const idea =
     config.launch?.conceptIntro?.keyIdea ||
     config.explore?.conceptIntro?.keyIdea ||

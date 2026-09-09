@@ -615,11 +615,11 @@ function mcSpeedGame(id, _title, nameEn, nameEs, rounds, coach) {
             <span class="lang-es" lang="es">🎮 ¡Jueguen juntos! ${esc(coach.es)}</span>
           </p>
         </div>
-        <div class="hw-game-score" id="hw_game_score">Round 1 / Ronda 1</div>
+        <div class="hw-game-score" id="hw_game_score"><span class="lang-en">Round 1</span><span class="lang-es" lang="es">Ronda 1</span></div>
         <p class="hw-game-question" id="hw_game_question"></p>
         <div class="hw-game-choices" id="hw_game_choices" role="group"></div>
         <p class="hw-game-feedback" id="hw_game_feedback" role="status" aria-live="polite"></p>
-        <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden>Play again / Jugar otra vez</button>
+        <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden><span class="lang-en">Play again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
       </div>`,
     initScript: "",
   };
@@ -644,7 +644,7 @@ function dragBucketGame(id, _title, nameEn, nameEs, items, buckets, coach) {
             .map(
               ([key, labels]) => `
             <div class="hw-game-bucket" data-bucket="${esc(key)}" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'${esc(key)}')">
-              <div class="hw-game-bucket-label">${esc(labels.en)} / <span lang="es">${esc(labels.es)}</span></div>
+              <div class="hw-game-bucket-label"><span class="lang-en">${esc(labels.en)}</span><span class="lang-es" lang="es">${esc(labels.es)}</span></div>
               <div class="hw-game-bucket-slots" id="bucket_${esc(key)}"></div>
             </div>`,
             )
@@ -672,7 +672,7 @@ export function renderPlayTab(config) {
   const game = buildHomeworkGame(config);
   return `
     <section class="guided-section card section-play" aria-label="Play together game">
-      <h2 class="section-title">🎮 Play together / Juguemos juntos</h2>
+      <h2 class="section-title">🎮 <span class="lang-en">Play together</span><span class="lang-es" lang="es">Juguemos juntos</span></h2>
       <p class="bilingual-block play-intro">
         <span class="lang-en">Reinforce tonight's topic with a quick family game. You ask; your student decides!</span>
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
@@ -707,10 +707,10 @@ function hwGameShowRound() {
   if (hwGameRound >= hwGameRounds.length) {
     qEl.textContent = '';
     cEl.innerHTML = '';
-    if (sEl) sEl.textContent = 'Score: ' + hwGameScore + '/' + hwGameRounds.length;
+    if (sEl) sEl.innerHTML = '<span class="lang-en">Score: ' + hwGameScore + '/' + hwGameRounds.length + '</span><span class="lang-es" lang="es">Puntaje: ' + hwGameScore + '/' + hwGameRounds.length + '</span>';
     if (fEl) {
-      fEl.textContent = hwGameScore === hwGameRounds.length
-        ? '🎉 Perfect! / ¡Perfecto!' : 'Nice work! / ¡Buen trabajo!';
+      fEl.innerHTML = hwGameScore === hwGameRounds.length
+        ? '<span class="lang-en">🎉 Perfect!</span><span class="lang-es" lang="es">🎉 ¡Perfecto!</span>' : '<span class="lang-en">Nice work!</span><span class="lang-es" lang="es">¡Buen trabajo!</span>';
       fEl.className = 'hw-game-feedback success';
     }
     if (rBtn) rBtn.hidden = false;
@@ -718,7 +718,7 @@ function hwGameShowRound() {
     return;
   }
   const round = hwGameRounds[hwGameRound];
-  if (sEl) sEl.textContent = 'Round ' + (hwGameRound + 1) + ' / Ronda ' + (hwGameRound + 1);
+  if (sEl) sEl.innerHTML = '<span class="lang-en">Round ' + (hwGameRound + 1) + '</span><span class="lang-es" lang="es">Ronda ' + (hwGameRound + 1) + '</span>';
   qEl.textContent = round.q || '';
   cEl.innerHTML = '';
   if (fEl) { fEl.textContent = round.hint ? '💡 ' + round.hint : ''; fEl.className = 'hw-game-feedback'; }
