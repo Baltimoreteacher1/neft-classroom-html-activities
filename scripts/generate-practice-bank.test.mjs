@@ -5,6 +5,7 @@ import {
   buildBank,
   domainOf,
   FOUNDATIONS,
+  isTypableAnswer,
   normalizeCode,
   serializeBank,
 } from "./generate-practice-bank.mjs";
@@ -16,6 +17,7 @@ const TYPES = [
   "multiple-choice",
   "find-error",
   "open-response",
+  "fill-table",
 ];
 
 test("normalizeCode maps crosswalk ids to lesson-config codes", () => {
@@ -74,4 +76,56 @@ test("no Spanish fields or empty strings leak into the bank", () => {
     const stem = it.type === "ebsr" ? it.partA.stem : it.stem || it.scenario || it.steps?.[0]?.work;
     assert.ok(stem, `${it.id}: empty stem`);
   }
+});
+
+/* ── fill-table ──────────────────────────────────────────────────────────── */
+
+const tables = bank.items.filter((i) => i.type === "fill-table");
+
+test("fill-table exports only tables whose blanks the lesson authored", () => {
+  assert.ok(tables.length >= 80, `expected ≥80 fill-table items, got ${tables.length}`);
+  for (const it of tables) {
+    assert.ok(it.stem, `${it.id}: no prompt`);
+    assert.ok(it.columns.length >= 2, `${it.id}: needs ≥2 columns`);
+    assert.ok(it.rows.length >= 1, `${it.id}: no rows`);
+    for (const row of it.rows) {
+      assert.equal(row.length, it.columns.length, `${it.id}: row width != columns`);
+    }
+    assert.ok(it.blanks.length >= 1, `${it.id}: no blanks to fill`);
+  }
+});
+
+test("every blank is inside the table, empty on the page, and answerable", () => {
+  for (const it of tables) {
+    for (const b of it.blanks) {
+      assert.ok(b.row >= 0 && b.row < it.rows.length, `${it.id}: blank row out of range`);
+      assert.ok(b.col >= 0 && b.col < it.columns.length, `${it.id}: blank col out of range`);
+      // The answer must not be sitting in the cell the student is asked to fill.
+      assert.equal(it.rows[b.row][b.col], "", `${it.id}: blank cell is not empty`);
+      assert.ok(isTypableAnswer(b.answer), `${it.id}: answer is not typable: ${b.answer}`);
+    }
+    const seen = new Set(it.blanks.map((b) => `${b.row},${b.col}`));
+    assert.equal(seen.size, it.blanks.length, `${it.id}: duplicate blank coordinates`);
+  }
+});
+
+test("a prose answer is deferred rather than string-matched against a student", () => {
+  assert.ok(isTypableAnswer("4"));
+  assert.ok(isTypableAnswer("$0.75 per game"));
+  assert.ok(isTypableAnswer("9:15"));
+  assert.ok(!isTypableAnswer("Median — the outlier 50 pulls the mean to 19.2, which is higher"));
+  assert.ok(!isTypableAnswer("Both work — no outlier, data is symmetric"));
+  assert.ok(!isTypableAnswer(""));
+});
+
+test("tables sharing a fallback prompt are kept apart by their own table", () => {
+  // Eleven tables carry their setup in the first row and share the stem
+  // "Complete the table."; keying dedupe on text alone discarded ten of them.
+  const fallback = tables.filter((t) => t.stem === "Complete the table.");
+  assert.ok(
+    fallback.length >= 8,
+    `expected the prompt-less tables to survive, got ${fallback.length}`,
+  );
+  const shapes = new Set(fallback.map((t) => JSON.stringify([t.columns, t.rows])));
+  assert.equal(shapes.size, fallback.length, "distinct tables were deduped as one");
 });

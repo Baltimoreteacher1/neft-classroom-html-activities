@@ -8,9 +8,11 @@
 //   node scripts/generate-practice-bank.mjs --out <path> --check   verify fresh
 //
 // Exported types: ebsr, multi-select, written-error (from mstarPractice);
-// multiple-choice, find-error, open-response (from practice tiers). Widget
-// types (number-line, fill-table, drag-sort, …) are deferred until the site
-// has renderers for them. Spanish fields are stripped.
+// multiple-choice, find-error, open-response, fill-table (from practice
+// tiers). The remaining widget types (number-line, drag-sort, matching-game, …)
+// are deferred until the site has renderers for them, as are the fill-table
+// items whose blanks are not authored — see fromFillTable. Spanish fields are
+// stripped.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -183,9 +185,69 @@ function fromPractice(item, ctx, tier, n) {
       return fromFindError(item, base, where);
     case "open-response":
       return fromOpenResponse(item, base, where);
+    case "fill-table":
+      return fromFillTable(item, base, where);
     default:
       return undefined; // widget type — deferred
   }
+}
+
+/**
+ * Fill-table items are authored in two dialects. Only one of them says which
+ * cells the student fills:
+ *
+ *   headers + array rows + editableCells[{row,col,answer}]  (93 items) — the
+ *     blanks are authored, so exporting them invents nothing.
+ *   columns + object rows                                   (56 items) — every
+ *     cell carries a value and nothing marks which are blank. Deciding that
+ *     would be authoring the task, not exporting it, so these are deferred.
+ *
+ * Of the first dialect, items whose every answer is short enough to type
+ * exactly are exported. Ten items answer in prose or full expressions
+ * ("Median — the outlier 50 pulls the mean to 19.2, ..."); string-matching a
+ * typed sentence would fail students who are right, so those are deferred too.
+ */
+const SHORT_ANSWER_MAX = 24;
+export function isTypableAnswer(value) {
+  const a = clean(value);
+  return (
+    a.length > 0 && a.length <= SHORT_ANSWER_MAX && a.split(/\s+/).length <= 4 && !/[.;]\s/.test(a)
+  );
+}
+
+function fromFillTable(item, base, where) {
+  const columns = strings(item.headers);
+  const cells = Array.isArray(item.editableCells) ? item.editableCells : [];
+  const rows = Array.isArray(item.rows) ? item.rows : [];
+  if (!columns.length || !cells.length || !rows.every((r) => Array.isArray(r))) {
+    return undefined; // the columns+object-rows dialect: no authored blanks
+  }
+  if (!rows.length) fail(`${where}: fill-table has headers but no rows`);
+  if (!rows.every((r) => r.length === columns.length))
+    fail(`${where}: fill-table row width != headers`);
+
+  const blanks = [];
+  for (const c of cells) {
+    if (!inRange(c.row, rows.length)) fail(`${where}: fill-table cell row ${c.row} out of range`);
+    if (!inRange(c.col, columns.length))
+      fail(`${where}: fill-table cell col ${c.col} out of range`);
+    if (!isTypableAnswer(c.answer)) return undefined; // prose answer — deferred
+    blanks.push({ row: c.row, col: c.col, answer: clean(c.answer) });
+  }
+  return {
+    ...base,
+    type: "fill-table",
+    // Some tables carry their setup in the first row instead of a prompt. The
+    // fallback names the task without inventing any mathematics.
+    stem: clean(item.instructions) || clean(item.label) || "Complete the table.",
+    columns,
+    rows: rows.map((row, r) =>
+      row.map((cell, c) => (blanks.some((b) => b.row === r && b.col === c) ? "" : clean(cell))),
+    ),
+    blanks,
+    explanation: clean(item.explanation),
+    hints: strings(item.hints),
+  };
 }
 
 /* ── assembly ─────────────────────────────────────────────────────────────── */
@@ -197,8 +259,15 @@ function lessonSort(a, b) {
 }
 
 function stemKey(item) {
+  // Tables are identified by the table, not the prompt: eleven of them carry
+  // their setup in the first row and share the same fallback stem, so keying on
+  // text alone would discard ten real items as duplicates.
   const text =
-    item.type === "ebsr" ? item.partA.stem : item.stem || item.scenario || item.steps?.[0]?.work;
+    item.type === "fill-table"
+      ? `${item.stem}|${item.columns.join("|")}|${item.rows.flat().join("|")}`
+      : item.type === "ebsr"
+        ? item.partA.stem
+        : item.stem || item.scenario || item.steps?.[0]?.work;
   return `${item.type}|${String(text).toLowerCase().replace(/\s+/g, " ")}`;
 }
 
