@@ -202,11 +202,39 @@ function initialPreview() {
 function renderSharedLessonModel(topic, config, lessonModel) {
   const kind = lessonModel.kind || "interactive model";
   const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
-  const modelName =
-    lessonModel.title || (isFactorTree ? "Factor Tree Builder" : "Interactive Lesson Model");
-  const modelNameEs = isFactorTree
-    ? "Constructor de árboles de factores"
-    : "Modelo interactivo de la lección";
+  let modelName = lessonModel.title;
+  let modelNameEs = "";
+  let icon = isFactorTree ? "🌳" : "🖐️";
+
+  if (!modelName || modelName === "Interactive Lesson Model") {
+    if (kind === "unit-rate-builder") {
+      modelName = "Unit Rate & Price Calculator";
+      modelNameEs = "Calculadora de tasa unitaria y precios";
+      icon = "⚖️";
+    } else if (kind === "ratio-table-builder") {
+      modelName = "Ratio Table Builder";
+      modelNameEs = "Constructor de tablas de razones";
+      icon = "📊";
+    } else if (kind === "line-grapher") {
+      modelName = "Ratio Line Grapher";
+      modelNameEs = "Graficador de razones";
+      icon = "📈";
+    } else if (kind === "tape-diagram") {
+      modelName = "Equal Batches Tape Diagram";
+      modelNameEs = "Diagrama de cinta de lotes iguales";
+      icon = "📏";
+    } else if (isFactorTree) {
+      modelName = "Factor Tree Builder";
+      modelNameEs = "Constructor de árboles de factores";
+      icon = "🌳";
+    } else {
+      modelName = config.title ? `${config.title} Model` : "Interactive Lesson Model";
+      modelNameEs = "Modelo interactivo de la lección";
+    }
+  } else {
+    modelNameEs = lessonModel.titleEs || "Modelo interactivo de la lección";
+  }
+
   const prompt = isFactorTree
     ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
     : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
@@ -222,7 +250,7 @@ function renderSharedLessonModel(topic, config, lessonModel) {
   return `<section class="family-visual-lab" data-visual-lab="${esc(topic)}" data-lesson-model="${esc(kind)}" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
       <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
-      <h2 id="visual_lab_title"><span aria-hidden="true">${isFactorTree ? "🌳" : "🖐️"}</span> <span class="lang-en">${esc(modelName)}</span><span class="lang-es" lang="es">${esc(modelNameEs)}</span></h2></div>
+      <h2 id="visual_lab_title"><span aria-hidden="true">${icon}</span> <span class="lang-en">${esc(modelName)}</span><span class="lang-es" lang="es">${esc(modelNameEs)}</span></h2></div>
       <p><span class="lang-en">${esc(prompt)}</span><span class="lang-es" lang="es">${esc(promptEs)}</span></p>
     </div>
     <div class="visual-lab-stage" data-lesson-model-host>${lessonModel.html}</div>

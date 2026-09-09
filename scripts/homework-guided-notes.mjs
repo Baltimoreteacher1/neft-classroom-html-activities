@@ -815,6 +815,587 @@ function conceptRow(y, n, text, color = "#12355b") {
 
 function conceptVisual(config) {
   const topic = detectVisualTopic(config);
+  const lessonId = String(config.lessonId || config.id || "").replace(/^lesson-/, "");
+  const baseLesson = lessonId.replace(/-(?:part\d|group\d|catchup)$/, "");
+
+  if (baseLesson === "3-1") {
+    return {
+      svg: conceptFrame({
+        label: "Ratios: 4 cups of water and 2 cups of lemon juice comparing part to part and part to whole",
+        tone: "teal",
+        height: 410,
+        title: "Understand Ratios / ¿Qué es una razón?",
+        body: `
+        <!-- Part to Part Card -->
+        ${conceptCard(34, 68, 276, 172)}
+        <text x="172" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="#0f766e">PART-TO-PART RATIO</text>
+        <g transform="translate(56, 110)">
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="30" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="60" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="90" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <text x="57" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#0284c7">4 Water</text>
+        </g>
+        <g transform="translate(196, 110)">
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <rect x="30" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <text x="27" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#ca8a04">2 Juice</text>
+        </g>
+        <text x="172" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">4 : 2  or  2 : 1</text>
+        <text x="172" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Water to Lemon Juice</text>
+
+        <!-- Part to Whole Card -->
+        ${conceptCard(330, 68, 276, 172)}
+        <text x="468" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="#2563eb">PART-TO-WHOLE RATIO</text>
+        <g transform="translate(362, 110)">
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="28" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="56" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="84" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="120" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <rect x="148" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <text x="106" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#12355b">6 Total Cups in Mixture</text>
+        </g>
+        <text x="468" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">4 : 6  or  2 : 3</text>
+        <text x="468" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Water to Total Mixture</text>
+
+        <!-- Order Matters Callout -->
+        <rect x="34" y="254" width="572" height="136" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+        <rect x="52" y="268" width="168" height="26" rx="6" fill="#f59e0b"/>
+        <text x="136" y="286" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">ORDER MATTERS!</text>
+        <text x="52" y="322" font-size="18" font-weight="800" fill="#12355b">Water to Juice = 4 : 2</text>
+        <text x="320" y="322" font-size="18" font-weight="800" fill="#b02a24">Juice to Water = 2 : 4</text>
+        <text x="52" y="354" font-size="15" font-weight="700" fill="#5f6f80">Always write numbers in the exact order the question names them!</text>
+        <text x="52" y="376" font-size="14" font-weight="700" fill="#0f766e">Three ways to write a ratio:  4 to 2   ·   4 : 2   ·   4/2</text>`,
+      }),
+      capEn: "A ratio compares two quantities. The order of numbers must match the order of words in the question.",
+      capEs: "Una razón compara dos cantidades. El orden de los números debe coincidir con el orden de las palabras.",
+    };
+  }
+
+  if (baseLesson === "3-2") {
+    return {
+      svg: conceptFrame({
+        label: "Rates and Unit Rates: Finding price per 1 pencil to find the better buy",
+        tone: "amber",
+        height: 410,
+        title: "Rates & Unit Rates / Tasa y tasa unitaria",
+        body: `
+        <!-- Pack A -->
+        ${conceptCard(34, 68, 276, 186)}
+        <rect x="50" y="82" width="90" height="24" rx="6" fill="#0f766e"/>
+        <text x="95" y="99" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">PACK A</text>
+        <text x="50" y="132" font-size="20" font-weight="800" fill="#12355b">$3.00 for 5 pencils</text>
+        <text x="50" y="162" font-size="16" font-weight="700" fill="#5f6f80">$3.00 ÷ 5 pencils =</text>
+        <text x="50" y="198" font-size="28" font-weight="800" fill="#0f766e">$0.60 per pencil</text>
+        <rect x="50" y="214" width="134" height="28" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+        <text x="117" y="233" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">★ BETTER BUY!</text>
+
+        <!-- Pack B -->
+        ${conceptCard(330, 68, 276, 186)}
+        <rect x="346" y="82" width="90" height="24" rx="6" fill="#64748b"/>
+        <text x="391" y="99" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">PACK B</text>
+        <text x="346" y="132" font-size="20" font-weight="800" fill="#12355b">$5.20 for 8 pencils</text>
+        <text x="346" y="162" font-size="16" font-weight="700" fill="#5f6f80">$5.20 ÷ 8 pencils =</text>
+        <text x="346" y="198" font-size="28" font-weight="800" fill="#12355b">$0.65 per pencil</text>
+        <rect x="346" y="214" width="134" height="28" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="413" y="233" text-anchor="middle" font-size="14" font-weight="800" fill="#64748b">Higher cost for 1</text>
+
+        <!-- Formula Rule Card -->
+        <rect x="34" y="268" width="572" height="122" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="320" y="298" text-anchor="middle" font-size="19" font-weight="800" fill="#0f766e">Unit Rate Formula: Total Cost ÷ Number of Units</text>
+        <line x1="60" y1="312" x2="580" y2="312" stroke="#99f6e4" stroke-width="2"/>
+        <text x="320" y="340" text-anchor="middle" font-size="17" font-weight="700" fill="#12355b">A unit rate is a ratio that compares a quantity to exactly 1 unit.</text>
+        <text x="320" y="368" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">Comparing unit rates ($/pencil) tells you which option gives more value!</text>`,
+      }),
+      capEn: "A unit rate is a ratio that compares a quantity to 1 unit. Divide the total cost by the quantity to find the price for 1.",
+      capEs: "Una tasa unitaria es una razón que compara una cantidad con 1 unidad. Divide el costo entre la cantidad para hallar el precio de 1.",
+    };
+  }
+
+  if (baseLesson === "3-3") {
+    return {
+      svg: conceptFrame({
+        label: "Ratio Table Scaling: Multiplying both columns creates equivalent ratios, adding breaks the ratio",
+        tone: "teal",
+        height: 420,
+        title: "Ratio Table Scaling / Tabla de razones",
+        body: `
+        <!-- Table on Left -->
+        <g transform="translate(34, 68)">
+          <!-- Headers -->
+          <rect x="0" y="0" width="100" height="42" rx="8" fill="#12355b"/>
+          <text x="50" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Batches</text>
+          <rect x="108" y="0" width="116" height="42" rx="8" fill="#0f766e"/>
+          <text x="166" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Mix (cups)</text>
+          <rect x="232" y="0" width="116" height="42" rx="8" fill="#0f766e"/>
+          <text x="290" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Milk (cups)</text>
+
+          <!-- Row 1 -->
+          <rect x="0" y="48" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">1</text>
+          <rect x="108" y="48" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">2</text>
+          <rect x="232" y="48" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">3</text>
+
+          <!-- Row 2 -->
+          <rect x="0" y="98" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">2</text>
+          <rect x="108" y="98" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">4</text>
+          <rect x="232" y="98" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">6</text>
+
+          <!-- Row 3 -->
+          <rect x="0" y="148" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">3</text>
+          <rect x="108" y="148" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">6</text>
+          <rect x="232" y="148" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">9</text>
+
+          <!-- Row 4 -->
+          <rect x="0" y="198" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">4</text>
+          <rect x="108" y="198" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">8</text>
+          <rect x="232" y="198" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">12</text>
+        </g>
+
+        <!-- Right Side Rules -->
+        <g transform="translate(394, 68)">
+          <!-- Multiply Rule -->
+          <rect x="0" y="0" width="212" height="114" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+          <text x="16" y="28" font-size="14" font-weight="800" fill="#047857">✔ MULTIPLY BOTH (×):</text>
+          <text x="16" y="56" font-size="15" font-weight="700" fill="#12355b">Row 1 × 2  →  4 : 6</text>
+          <text x="16" y="80" font-size="15" font-weight="700" fill="#12355b">Row 1 × 3  →  6 : 9</text>
+          <text x="16" y="102" font-size="13" font-weight="700" fill="#047857">Ratio stays in balance!</text>
+
+          <!-- Add Contrast Bug -->
+          <rect x="0" y="128" width="212" height="114" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+          <text x="16" y="156" font-size="14" font-weight="800" fill="#b91c1c">✗ NEVER ADD (+):</text>
+          <text x="16" y="184" font-size="14" font-weight="700" fill="#12355b">2 + 1 = 3   and   3 + 1 = 4</text>
+          <text x="16" y="208" font-size="15" font-weight="800" fill="#b91c1c">3 : 4 ≠ 2 : 3</text>
+          <text x="16" y="230" font-size="13" font-weight="700" fill="#b91c1c">Adding breaks the ratio!</text>
+        </g>
+
+        <!-- Bottom Summary Card -->
+        ${conceptCard(34, 324, 572, 76)}
+        <text x="320" y="356" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">Equivalent Ratios:  2 : 3  =  4 : 6  =  6 : 9  =  8 : 12</text>
+        <text x="320" y="384" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">Multiply or divide every quantity in the ratio table by the same scale factor.</text>`,
+      }),
+      capEn: "Multiply or divide BOTH columns by the exact same scale factor to find equivalent ratios in a ratio table.",
+      capEs: "Multipliquen o dividan AMBAS columnas por el mismo factor para hallar razones equivalentes en una tabla de razones.",
+    };
+  }
+
+  if (baseLesson === "3-4") {
+    const ox = 74;
+    const oy = 320;
+    const u = 54;
+    return {
+      svg: conceptFrame({
+        label: "Graphing Equivalent Ratios: Ordered pairs on a coordinate plane forming a straight ray from the origin (0, 0)",
+        tone: "amber",
+        height: 420,
+        title: "Graphing Equivalent Ratios / Gráfica de razones",
+        body: `
+        <!-- Coordinate Grid -->
+        <g stroke="#cbd5e1" stroke-width="1.5">
+          ${[0, 1, 2, 3, 4].map((i) => `<line x1="${ox + i * u}" y1="${oy - 4 * u}" x2="${ox + i * u}" y2="${oy}"/>`).join("")}
+          ${[0, 1, 2, 3, 4].map((i) => `<line x1="${ox}" y1="${oy - i * u}" x2="${ox + 4 * u}" y2="${oy - i * u}"/>`).join("")}
+        </g>
+        <!-- Axes -->
+        <line x1="${ox}" y1="${oy}" x2="${ox + 4 * u + 18}" y2="${oy}" stroke="#12355b" stroke-width="3"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - 4 * u - 18}" stroke="#12355b" stroke-width="3"/>
+        <!-- Arrowheads -->
+        <path d="M${ox + 4 * u + 18} ${oy - 5} L${ox + 4 * u + 28} ${oy} L${ox + 4 * u + 18} ${oy + 5} Z" fill="#12355b"/>
+        <path d="M${ox - 5} ${oy - 4 * u - 18} L${ox} ${oy - 4 * u - 28} L${ox + 5} ${oy - 4 * u - 18} Z" fill="#12355b"/>
+        
+        <!-- Axis Labels -->
+        <text x="${ox + 2 * u}" y="${oy + 38}" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b">Batches (x-axis)</text>
+        <text x="${ox - 46}" y="${oy - 2 * u}" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b" transform="rotate(-90 ${ox - 46} ${oy - 2 * u})">Milk Cups (y-axis)</text>
+
+        <!-- Ticks on x-axis -->
+        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox + i * u}" y="${oy + 18}" text-anchor="middle" font-size="13" font-weight="700" fill="#64748b">${i}</text>`).join("")}
+        <!-- Ticks on y-axis (0, 3, 6, 9, 12 cups) -->
+        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox - 12}" y="${oy - i * u + 5}" text-anchor="end" font-size="13" font-weight="700" fill="#64748b">${i * 3}</text>`).join("")}
+
+        <!-- Straight Ray through Origin -->
+        <line x1="${ox}" y1="${oy}" x2="${ox + 3.8 * u}" y2="${oy - 3.8 * u}" stroke="#0f766e" stroke-width="4"/>
+
+        <!-- Points Plotted -->
+        <circle cx="${ox}" cy="${oy}" r="6" fill="#12355b"/>
+        <text x="${ox + 10}" y="${oy - 10}" font-size="13" font-weight="800" fill="#12355b">(0, 0)</text>
+        <circle cx="${ox + u}" cy="${oy - u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+        <text x="${ox + u + 10}" y="${oy - u - 6}" font-size="14" font-weight="800" fill="#0f766e">(1, 3)</text>
+        <circle cx="${ox + 2 * u}" cy="${oy - 2 * u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+        <text x="${ox + 2 * u + 10}" y="${oy - 2 * u - 6}" font-size="14" font-weight="800" fill="#0f766e">(2, 6)</text>
+        <circle cx="${ox + 3 * u}" cy="${oy - 3 * u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+        <text x="${ox + 3 * u + 10}" y="${oy - 3 * u - 6}" font-size="14" font-weight="800" fill="#0f766e">(3, 9)</text>
+
+        <!-- Right Side Explainer Cards -->
+        <g transform="translate(324, 68)">
+          <!-- Ordered Pairs Card -->
+          ${conceptCard(0, 0, 282, 140)}
+          <text x="14" y="26" font-size="16" font-weight="800" fill="#12355b">Ordered Pairs from Ratio Table:</text>
+          <text x="14" y="54" font-size="15" font-weight="700" fill="#0f766e">1 batch : 3 cups  →  (1, 3)</text>
+          <text x="14" y="78" font-size="15" font-weight="700" fill="#0f766e">2 batches : 6 cups  →  (2, 6)</text>
+          <text x="14" y="102" font-size="15" font-weight="700" fill="#0f766e">3 batches : 9 cups  →  (3, 9)</text>
+          <text x="14" y="126" font-size="13" font-weight="700" fill="#5f6f80">(x = across on x-axis, y = up on y-axis)</text>
+
+          <!-- Key Rules Card -->
+          <rect x="0" y="152" width="282" height="172" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+          <text x="14" y="178" font-size="16" font-weight="800" fill="#047857">✔ 2 BIG CLUES FOR RATIOS:</text>
+          <text x="14" y="206" font-size="15" font-weight="800" fill="#12355b">1. Starts at the Origin (0, 0)</text>
+          <text x="14" y="226" font-size="13" font-weight="600" fill="#5f6f80">0 batches need 0 cups of milk.</text>
+          <text x="14" y="254" font-size="15" font-weight="800" fill="#12355b">2. Forms a Straight Ray</text>
+          <text x="14" y="274" font-size="13" font-weight="600" fill="#5f6f80">Points line up in a straight path.</text>
+          <text x="14" y="304" font-size="14" font-weight="800" fill="#047857">If it curves, it is NOT equivalent!</text>
+        </g>`,
+      }),
+      capEn: "Plotting equivalent ratios as ordered pairs on a coordinate plane creates a straight ray starting at the origin (0, 0).",
+      capEs: "Graficar razones equivalentes como pares ordenados en el plano de coordenadas forma un rayo recto que inicia en el origen (0, 0).",
+    };
+  }
+
+  if (baseLesson === "3-5") {
+    return {
+      svg: conceptFrame({
+        label: "Compare Ratio Relationships: Comparing runner speeds using unit rates to see who is faster",
+        tone: "teal",
+        height: 410,
+        title: "Compare Ratio Relationships / Comparar razones",
+        body: `
+        <!-- Runner A Card -->
+        ${conceptCard(34, 68, 572, 98)}
+        <rect x="50" y="82" width="104" height="26" rx="6" fill="#0f766e"/>
+        <text x="102" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">RUNNER A</text>
+        <text x="168" y="101" font-size="17" font-weight="700" fill="#12355b">6 miles in 2 hours  →  6 ÷ 2 =</text>
+        <text x="430" y="101" font-size="22" font-weight="800" fill="#0f766e">3.0 mph</text>
+        <rect x="50" y="124" width="360" height="24" rx="6" fill="#0d9488"/>
+        <text x="420" y="142" font-size="15" font-weight="800" fill="#0d9488">3.0 miles per hour</text>
+
+        <!-- Runner B Card -->
+        ${conceptCard(34, 180, 572, 98)}
+        <rect x="50" y="194" width="104" height="26" rx="6" fill="#6366f1"/>
+        <text x="102" y="212" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">RUNNER B</text>
+        <text x="168" y="213" font-size="17" font-weight="700" fill="#12355b">10 miles in 4 hours  →  10 ÷ 4 =</text>
+        <text x="430" y="213" font-size="22" font-weight="800" fill="#6366f1">2.5 mph</text>
+        <rect x="50" y="236" width="300" height="24" rx="6" fill="#818cf8"/>
+        <text x="360" y="254" font-size="15" font-weight="800" fill="#6366f1">2.5 miles per hour</text>
+
+        <!-- Comparison Winner Banner -->
+        <rect x="34" y="292" width="572" height="98" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+        <text x="320" y="324" text-anchor="middle" font-size="21" font-weight="800" fill="#b45309">★ Runner A is Faster!  (3.0 mph &gt; 2.5 mph)</text>
+        <line x1="60" y1="338" x2="580" y2="338" stroke="#fde68a" stroke-width="2"/>
+        <text x="320" y="364" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">Key Strategy: Convert different ratios to a unit rate (rate per 1 unit) to compare fairly.</text>`,
+      }),
+      capEn: "To compare two ratio relationships, calculate the unit rate for each one. The higher unit rate is faster or greater.",
+      capEs: "Para comparar dos relaciones de razón, calculen la tasa unitaria de cada una. La tasa mayor es más rápida o mayor.",
+    };
+  }
+
+  if (baseLesson === "3-6") {
+    return {
+      svg: conceptFrame({
+        label: "Measurement Conversion Ladder: Converting yards to feet to inches using ratios and multiplication",
+        tone: "teal",
+        height: 420,
+        title: "Measurement Conversion Ladder / Conversión de medidas",
+        body: `
+        <!-- Ladder Top: 3 Unit Boxes -->
+        <g transform="translate(44, 68)">
+          <!-- Yards -->
+          <rect x="0" y="0" width="130" height="60" rx="10" fill="#12355b"/>
+          <text x="65" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Yards (yd)</text>
+          
+          <!-- Arrow 1: × 3 -->
+          <path d="M142 22 L198 22" stroke="#0f766e" stroke-width="3"/>
+          <path d="M192 16 L202 22 L192 28 Z" fill="#0f766e"/>
+          <text x="170" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">× 3</text>
+          <!-- Reverse Arrow: ÷ 3 -->
+          <path d="M198 42 L142 42" stroke="#d9795d" stroke-width="2.5"/>
+          <path d="M148 36 L138 42 L148 48 Z" fill="#d9795d"/>
+          <text x="170" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#d9795d">÷ 3</text>
+
+          <!-- Feet -->
+          <rect x="210" y="0" width="130" height="60" rx="10" fill="#0f766e"/>
+          <text x="275" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Feet (ft)</text>
+
+          <!-- Arrow 2: × 12 -->
+          <path d="M352 22 L408 22" stroke="#0f766e" stroke-width="3"/>
+          <path d="M402 16 L412 22 L402 28 Z" fill="#0f766e"/>
+          <text x="380" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">× 12</text>
+          <!-- Reverse Arrow: ÷ 12 -->
+          <path d="M408 42 L352 42" stroke="#d9795d" stroke-width="2.5"/>
+          <path d="M358 36 L348 42 L358 48 Z" fill="#d9795d"/>
+          <text x="380" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#d9795d">÷ 12</text>
+
+          <!-- Inches -->
+          <rect x="420" y="0" width="130" height="60" rx="10" fill="#d97706"/>
+          <text x="485" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Inches (in)</text>
+        </g>
+
+        <!-- Worked Example Card -->
+        ${conceptCard(34, 156, 572, 136)}
+        <text x="54" y="186" font-size="17" font-weight="800" fill="#12355b">Example: Convert 4 yards to inches</text>
+        <text x="54" y="216" font-size="16" font-weight="700" fill="#0f766e">Step 1: 4 yards × 3 = 12 feet  (ratio of feet to yards = 3:1)</text>
+        <text x="54" y="244" font-size="16" font-weight="700" fill="#0f766e">Step 2: 12 feet × 12 = 144 inches  (ratio of inches to feet = 12:1)</text>
+        <text x="54" y="274" font-size="20" font-weight="800" fill="#12355b">Result: <tspan fill="#0f766e">4 yards = 144 inches</tspan></text>
+
+        <!-- Rule Card -->
+        <g transform="translate(34, 308)">
+          <rect x="0" y="0" width="276" height="92" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+          <text x="138" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="#047857">BIGGER → SMALLER</text>
+          <text x="138" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">MULTIPLY  (×)</text>
+          <text x="138" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">Yards to feet: multiply by 3</text>
+
+          <rect x="296" y="0" width="276" height="92" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+          <text x="434" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="#c2410c">SMALLER → BIGGER</text>
+          <text x="434" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">DIVIDE  (÷)</text>
+          <text x="434" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">Inches to feet: divide by 12</text>
+        </g>`,
+      }),
+      capEn: "Use equivalent ratios to convert measurements: multiply when going to smaller units, divide when going to larger units.",
+      capEs: "Usen razones equivalentes para convertir medidas: multipliquen al cambiar a unidades menores, dividan al cambiar a mayores.",
+    };
+  }
+
+  if (baseLesson === "3-7") {
+    return {
+      svg: conceptFrame({
+        label: "Converting Between Measurement Systems: Customary to metric using approximate ratio conversions",
+        tone: "amber",
+        height: 420,
+        title: "Converting Between Systems / Conversión entre sistemas",
+        body: `
+        <!-- Distance Dual Bar -->
+        ${conceptCard(34, 68, 572, 108)}
+        <rect x="50" y="80" width="160" height="24" rx="6" fill="#12355b"/>
+        <text x="130" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">DISTANCE (mi ↔ km)</text>
+        <text x="226" y="97" font-size="16" font-weight="800" fill="#d97706">1 mile ≈ 1.61 kilometers</text>
+        <g transform="translate(50, 116)">
+          <rect x="0" y="0" width="180" height="36" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#4338ca">5 miles</text>
+          <text x="200" y="23" font-size="20" font-weight="800" fill="#12355b">×</text>
+          <rect x="226" y="0" width="90" height="36" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">1.61</text>
+          <text x="330" y="23" font-size="20" font-weight="800" fill="#12355b">≈</text>
+          <rect x="354" y="0" width="168" height="36" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">8.05 kilometers</text>
+        </g>
+
+        <!-- Weight Dual Bar -->
+        ${conceptCard(34, 188, 572, 108)}
+        <rect x="50" y="200" width="160" height="24" rx="6" fill="#0f766e"/>
+        <text x="130" y="217" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">WEIGHT (kg ↔ lb)</text>
+        <text x="226" y="217" font-size="16" font-weight="800" fill="#d97706">1 kilogram ≈ 2.20 pounds</text>
+        <g transform="translate(50, 236)">
+          <rect x="0" y="0" width="180" height="36" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#4338ca">10 kilograms</text>
+          <text x="200" y="23" font-size="20" font-weight="800" fill="#12355b">×</text>
+          <rect x="226" y="0" width="90" height="36" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">2.20</text>
+          <text x="330" y="23" font-size="20" font-weight="800" fill="#12355b">≈</text>
+          <rect x="354" y="0" width="168" height="36" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">22.0 pounds</text>
+        </g>
+
+        <!-- Bottom Callout -->
+        <rect x="34" y="308" width="572" height="92" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+        <text x="320" y="338" text-anchor="middle" font-size="17" font-weight="800" fill="#b45309">Notice the wavy ≈ symbol: Between systems, conversions are approximate!</text>
+        <text x="320" y="366" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">Set up an equivalent ratio with the conversion factor and multiply or divide.</text>
+        <text x="320" y="386" text-anchor="middle" font-size="14" font-weight="600" fill="#5f6f80">Ratio benchmarks: 1 mi ≈ 1.61 km   ·   1 kg ≈ 2.2 lb   ·   1 in ≈ 2.54 cm</text>`,
+      }),
+      capEn: "Conversions between measurement systems are approximate (≈). Set up an equivalent ratio with the conversion rate to solve.",
+      capEs: "Las conversiones entre sistemas son aproximadas (≈). Usen una razón equivalente con la tasa de conversión para resolver.",
+    };
+  }
+
+  if (baseLesson === "3-8") {
+    return {
+      svg: conceptFrame({
+        label: "The Unit Rate Bridge: 2 steps to solve any rate problem by first finding the rate for 1",
+        tone: "teal",
+        height: 420,
+        title: "The Unit Rate Bridge / Resolver con tasa unitaria",
+        body: `
+        <!-- Problem Header Card -->
+        ${conceptCard(34, 68, 572, 60)}
+        <text x="320" y="104" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">Problem: 6 movie tickets cost $72. How much do 9 tickets cost?</text>
+
+        <!-- 2-Step Side-by-Side Cards -->
+        <g transform="translate(34, 140)">
+          <!-- Step 1 -->
+          <rect x="0" y="0" width="272" height="152" rx="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+          <rect x="16" y="14" width="144" height="26" rx="6" fill="#0f766e"/>
+          <text x="88" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">STEP 1: DIVIDE TO 1</text>
+          <text x="16" y="68" font-size="16" font-weight="700" fill="#5f6f80">Find the Unit Rate (Cost for 1):</text>
+          <text x="16" y="100" font-size="24" font-weight="800" fill="#12355b">$72 ÷ 6 tickets =</text>
+          <text x="16" y="132" font-size="26" font-weight="800" fill="#0f766e">$12 per ticket</text>
+
+          <!-- Step 2 -->
+          <rect x="300" y="0" width="272" height="152" rx="14" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
+          <rect x="316" y="14" width="190" height="26" rx="6" fill="#10b981"/>
+          <text x="411" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">STEP 2: MULTIPLY TO TARGET</text>
+          <text x="316" y="68" font-size="16" font-weight="700" fill="#5f6f80">Scale to the target amount:</text>
+          <text x="316" y="100" font-size="24" font-weight="800" fill="#12355b">$12 × 9 tickets =</text>
+          <text x="316" y="132" font-size="26" font-weight="800" fill="#15803d">$108 for 9 tickets</text>
+        </g>
+
+        <!-- Visual Bridge Flow Banner -->
+        <g transform="translate(34, 306)">
+          <rect x="0" y="0" width="572" height="96" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+          <text x="286" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">THE 2-STEP RATIO BRIDGE FLOW</text>
+          <text x="64" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">6 Tickets ($72)</text>
+          <path d="M142 62 L200 62" stroke="#0f766e" stroke-width="3"/>
+          <path d="M194 56 L204 62 L194 68 Z" fill="#0f766e"/>
+          <text x="171" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">÷ 6</text>
+          <text x="286" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">1 Ticket ($12)</text>
+          <path d="M372 62 L430 62" stroke="#10b981" stroke-width="3"/>
+          <path d="M424 56 L434 62 L424 68 Z" fill="#10b981"/>
+          <text x="401" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="#10b981">× 9</text>
+          <text x="504" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">9 Tickets ($108)</text>
+        </g>`,
+      }),
+      capEn: "The 2-step unit rate bridge: First divide to find the cost of 1, then multiply to find the total for any quantity.",
+      capEs: "El puente de 2 pasos: Primero dividan para hallar el costo de 1, luego multipliquen por la cantidad total deseada.",
+    };
+  }
+
+  if (baseLesson === "3-9") {
+    return {
+      svg: conceptFrame({
+        label: "Equivalent Ratios: Scaling up with multiplication and scaling down by dividing with tape diagrams",
+        tone: "amber",
+        height: 420,
+        title: "Equivalent Ratios: Scale Up & Down / Razones equivalentes",
+        body: `
+        <!-- Top Tape Diagrams -->
+        ${conceptCard(34, 68, 572, 136)}
+        <text x="50" y="94" font-size="15" font-weight="800" fill="#12355b">Ratio 2 : 5 (Base Ratio)</text>
+        <g transform="translate(50, 102)">
+          <rect x="0" y="0" width="46" height="24" rx="5" fill="#0d9488"/>
+          <rect x="50" y="0" width="46" height="24" rx="5" fill="#0d9488"/>
+          <rect x="108" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="158" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="208" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="258" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="308" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <text x="380" y="18" font-size="16" font-weight="800" fill="#0f766e">2 parts to 5 parts</text>
+        </g>
+        <text x="50" y="154" font-size="15" font-weight="800" fill="#12355b">Ratio 4 : 10 (Scaled up by 2)</text>
+        <g transform="translate(50, 162)">
+          <rect x="0" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="25" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="50" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="75" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="108" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="133" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="158" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="183" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="208" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="233" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="258" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="283" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="308" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="333" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <text x="380" y="17" font-size="16" font-weight="800" fill="#0f766e">4 parts to 10 parts (Equal!)</text>
+        </g>
+
+        <!-- Bottom Strategy Cards -->
+        <g transform="translate(34, 218)">
+          <!-- Scale UP Card -->
+          <rect x="0" y="0" width="276" height="184" rx="14" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
+          <rect x="16" y="14" width="170" height="26" rx="6" fill="#10b981"/>
+          <text x="101" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">SCALE UP (MULTIPLY)</text>
+          <text x="16" y="68" font-size="16" font-weight="700" fill="#5f6f80">Multiply both terms by 3:</text>
+          <text x="16" y="104" font-size="28" font-weight="800" fill="#12355b">3 : 4  =  9 : 12</text>
+          <text x="16" y="136" font-size="15" font-weight="700" fill="#047857">3 × 3 = 9   and   4 × 3 = 12</text>
+          <text x="16" y="162" font-size="14" font-weight="600" fill="#5f6f80">Scale factor is 3.</text>
+
+          <!-- Scale DOWN Card -->
+          <rect x="296" y="0" width="276" height="184" rx="14" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+          <rect x="312" y="14" width="180" height="26" rx="6" fill="#0284c7"/>
+          <text x="402" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">SCALE DOWN (SIMPLIFY)</text>
+          <text x="312" y="68" font-size="16" font-weight="700" fill="#5f6f80">Divide both terms by GCF (4):</text>
+          <text x="312" y="104" font-size="28" font-weight="800" fill="#12355b">12 : 20  =  3 : 5</text>
+          <text x="312" y="136" font-size="15" font-weight="700" fill="#0284c7">12 ÷ 4 = 3   and   20 ÷ 4 = 5</text>
+          <text x="312" y="162" font-size="14" font-weight="600" fill="#5f6f80">3:5 is the simplest form ratio.</text>
+        </g>`,
+      }),
+      capEn: "Equivalent ratios describe the same relationship. Multiply both terms to scale up, or divide by a common factor to simplify.",
+      capEs: "Las razones equivalentes describen la misma relación. Multipliquen ambos términos para agrandar o dividan para simplificar.",
+    };
+  }
+
+  if (baseLesson === "3-10") {
+    return {
+      svg: conceptFrame({
+        label: "Unit Cancellation and Conversion Ratios: Crossing out diagonal matching units to leave target units",
+        tone: "teal",
+        height: 420,
+        title: "Unit Cancellation & Ratios / Conversión de unidades",
+        body: `
+        <!-- Problem Card -->
+        ${conceptCard(34, 68, 572, 54)}
+        <text x="320" y="102" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">Problem: Convert 180 inches into yards using conversion ratios</text>
+
+        <!-- Big Dimensional Analysis Display Card -->
+        <g transform="translate(34, 134)">
+          <rect x="0" y="0" width="572" height="152" rx="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+          
+          <!-- Fraction 1: 180 in -->
+          <text x="36" y="80" font-size="28" font-weight="800" fill="#12355b">180</text>
+          <text x="92" y="80" font-size="26" font-weight="800" fill="#dc2626">in</text>
+          <line x1="88" y1="86" x2="118" y2="60" stroke="#dc2626" stroke-width="3.5"/>
+
+          <text x="134" y="80" font-size="28" font-weight="800" fill="#12355b">×</text>
+
+          <!-- Fraction 2: 1 ft / 12 in -->
+          <g transform="translate(162, 28)">
+            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">1 <tspan fill="#2563eb">ft</tspan></text>
+            <line x1="22" y1="36" x2="48" y2="14" stroke="#2563eb" stroke-width="3.5"/>
+            <line x1="0" y1="52" x2="68" y2="52" stroke="#12355b" stroke-width="2.5"/>
+            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">12 <tspan fill="#dc2626">in</tspan></text>
+            <line x1="32" y1="88" x2="62" y2="64" stroke="#dc2626" stroke-width="3.5"/>
+          </g>
+
+          <text x="254" y="80" font-size="28" font-weight="800" fill="#12355b">×</text>
+
+          <!-- Fraction 3: 1 yd / 3 ft -->
+          <g transform="translate(282, 28)">
+            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="#15803d">1 yd</text>
+            <line x1="0" y1="52" x2="68" y2="52" stroke="#12355b" stroke-width="2.5"/>
+            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">3 <tspan fill="#2563eb">ft</tspan></text>
+            <line x1="32" y1="88" x2="58" y2="64" stroke="#2563eb" stroke-width="3.5"/>
+          </g>
+
+          <text x="374" y="80" font-size="28" font-weight="800" fill="#12355b">=</text>
+
+          <!-- Result: 5 yards -->
+          <rect x="410" y="44" width="144" height="64" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="482" y="86" text-anchor="middle" font-size="26" font-weight="800" fill="#15803d">5 yards</text>
+
+          <text x="286" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Diagonal cancellation leaves only the target unit: yards!</text>
+        </g>
+
+        <!-- Bottom Explanation Card -->
+        <g transform="translate(34, 298)">
+          <rect x="0" y="0" width="572" height="104" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+          <text x="20" y="28" font-size="16" font-weight="800" fill="#0f766e">✔ DIAGONAL UNIT CANCELLATION RULE:</text>
+          <text x="20" y="56" font-size="15" font-weight="700" fill="#12355b">1. Place the unit you want to cancel in the opposite position (top vs bottom).</text>
+          <text x="20" y="78" font-size="15" font-weight="700" fill="#12355b">2. Calculate the math: (180 × 1 × 1) ÷ (12 × 3) = 180 ÷ 36 = 5 yards.</text>
+          <text x="20" y="98" font-size="14" font-weight="700" fill="#0f766e">Equivalent conversion ratios guarantee your final answer is accurate.</text>
+        </g>`,
+      }),
+      capEn: "Set up conversion ratios so units cancel diagonally across fractions, leaving only the unit you want to find.",
+      capEs: "Escriban razones de conversión de modo que las unidades se cancelen en diagonal, dejando solo la unidad deseada.",
+    };
+  }
 
   if (topic === "ratios") {
     const cols = ["Batches", "Cups A", "Cups B"];
@@ -1909,7 +2490,7 @@ export function renderCelebration() {
           </div>
 
           <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
-            <span class="lang-en">Confirm &amp; Save</span>
+            <span class="lang-en">Confirm &amp; Save</span><span class="lang-es" lang="es">Confirmar y guardar</span>
           </button>
         </div>
 
@@ -1932,10 +2513,10 @@ export function renderCelebration() {
           </div>
           <div class="cert-actions">
             <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
-              <span class="lang-en">🖨️ Print Certificate</span>
+              <span class="lang-en">🖨️ Print Certificate</span><span class="lang-es" lang="es">🖨️ Imprimir certificado</span>
             </button>
             <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
-              <span class="lang-en">Edit sign-off</span>
+              <span class="lang-en">Edit sign-off</span><span class="lang-es" lang="es">Editar firma</span>
             </button>
           </div>
         </div>

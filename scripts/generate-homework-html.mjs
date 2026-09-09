@@ -1235,6 +1235,8 @@ function selectLessonInteractiveModel(config) {
 }
 
 function generateHtml(lessonId, config) {
+  config.lessonId = config.lessonId || lessonId;
+  config.id = config.id || lessonId;
   const title = config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
   const vocabGlossary = buildVocabGlossary(vocab);
