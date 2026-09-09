@@ -1209,24 +1209,34 @@ function lessonModelCandidates(config) {
   };
 
   // Match the lesson flow: practice is the most actionable family model,
-  // followed by explore/connect and finally the launch visual.
+  // followed by explore/connect, the launch visual, and review diagram.
   add(config.practice?.diagram);
   add(config.explore?.diagram);
   add(config.connect?.diagram);
   add(config.launch?.visual);
+  add(config.reviewDiagram);
   return candidates;
 }
 
 function selectLessonInteractiveModel(config) {
   for (const candidate of lessonModelCandidates(config)) {
+    const candidateTitle =
+      candidate.title ||
+      (candidate.kind === "fraction-divide"
+        ? "Fraction Division Visualizer & Lab"
+        : config.title || "Interactive Lesson Model");
     const html = interactiveVisualHost(candidate, {
-      ariaLabel: `Interactive ${candidate.title || config.title || "lesson model"}`,
+      ariaLabel: `Interactive ${candidateTitle}`,
       fallback: "Turn on JavaScript to use the interactive lesson model.",
     });
     if (html) {
       return {
         kind: candidate.kind,
-        title: candidate.title || config.title || "Interactive Lesson Model",
+        title:
+          candidate.title ||
+          (candidate.kind === "fraction-divide"
+            ? "Fraction Division Visualizer & Lab"
+            : config.title || "Interactive Lesson Model"),
         html,
       };
     }

@@ -204,9 +204,13 @@ function renderSharedLessonModel(topic, config, lessonModel) {
   const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
   let modelName = lessonModel.title;
   let modelNameEs = "";
-  let icon = isFactorTree ? "🌳" : "🖐️";
+  let icon = isFactorTree ? "🌳" : (kind === "fraction-divide" ? "🥞" : "🖐️");
 
-  if (!modelName || modelName === "Interactive Lesson Model") {
+  if (kind === "fraction-divide") {
+    modelName = "Fraction Division Visualizer & Lab";
+    modelNameEs = "Visualizador interactivo de división de fracciones";
+    icon = "🥞";
+  } else if (!modelName || modelName === "Interactive Lesson Model") {
     if (kind === "unit-rate-builder") {
       modelName = "Unit Rate & Price Calculator";
       modelNameEs = "Calculadora de tasa unitaria y precios";
@@ -237,10 +241,14 @@ function renderSharedLessonModel(topic, config, lessonModel) {
 
   const prompt = isFactorTree
     ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
-    : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
+    : (kind === "fraction-divide"
+      ? "Choose a division problem. Watch how the total amount is cut into equal fraction pieces."
+      : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.");
   const promptEs = isFactorTree
     ? "Escribe dos factores para cada círculo compuesto. Sigue dividiendo hasta que cada hoja sea prima."
-    : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.";
+    : (kind === "fraction-divide"
+      ? "Elige un problema de división. Observa cómo la cantidad total se divide en partes fraccionarias iguales."
+      : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.");
   const idea =
     config.launch?.conceptIntro?.keyIdea ||
     config.explore?.conceptIntro?.keyIdea ||

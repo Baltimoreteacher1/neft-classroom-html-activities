@@ -818,6 +818,81 @@ function conceptVisual(config) {
   const lessonId = String(config.lessonId || config.id || "").replace(/^lesson-/, "");
   const baseLesson = lessonId.replace(/-(?:part\d|group\d|catchup)$/, "");
 
+  if (baseLesson === "1-practice") {
+    const tapeCells = [0, 1, 2, 3, 4, 5]
+      .map((i) => {
+        const cx = 74 + i * 82;
+        const isWhole = i < 4;
+        const fill = isWhole ? (i % 2 === 0 ? "#e0f2fe" : "#ffffff") : (i % 2 === 0 ? "#fef3c7" : "#ffffff");
+        const stroke = isWhole ? "#0284c7" : "#d97706";
+        const textFill = isWhole ? "#0369a1" : "#b45309";
+        const numBg = isWhole ? "#0284c7" : "#d97706";
+        return `
+          <rect x="${cx}" y="120" width="82" height="38" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+          <text x="${cx + 41}" y="144" text-anchor="middle" font-size="15" font-weight="800" fill="${textFill}">¼ yd</text>
+          <circle cx="${cx + 41}" cy="176" r="11" fill="${numBg}"/>
+          <text x="${cx + 41}" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">${i + 1}</text>
+          <text x="${cx + 41}" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#5f6f80">Bow ${i + 1}</text>`;
+      })
+      .join("");
+
+    return {
+      svg: conceptFrame({
+        label: "Unit 1 Practice Test: Dividing 1 1/2 yards by 1/4 yard shows 6 bows with a tape diagram and Keep Change Flip",
+        tone: "coral",
+        height: 456,
+        title: "Dividing Fractions: Tape Diagram & Steps / Dividir fracciones: Diagrama y pasos",
+        body: `
+        <!-- Tape Diagram Card -->
+        ${conceptCard(34, 66, 572, 166)}
+        <rect x="52" y="78" width="180" height="22" rx="6" fill="#0f766e"/>
+        <text x="142" y="94" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">TAPE DIAGRAM (STRIP)</text>
+        <text x="250" y="94" font-size="15" font-weight="800" fill="#12355b">Total: 1 ½ yards of ribbon ÷ ¼ yd per bow</text>
+
+        <!-- Brackets above tape -->
+        <line x1="74" y1="112" x2="402" y2="112" stroke="#0284c7" stroke-width="2"/>
+        <text x="238" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="#0284c7">1 Whole Yard (4 fourths)</text>
+        <line x1="402" y1="112" x2="566" y2="112" stroke="#d97706" stroke-width="2"/>
+        <text x="484" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="#d97706">½ Yard (2 fourths)</text>
+
+        <!-- Tape Cells -->
+        ${tapeCells}
+
+        <!-- Tape Summary -->
+        <text x="320" y="218" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">4 fourths + 2 fourths = 6 fourths in all  ➔  6 Whole Bows</text>
+
+        <!-- Check With Numbers Card -->
+        ${conceptCard(34, 244, 278, 196)}
+        <rect x="48" y="256" width="168" height="22" rx="5" fill="#2563eb"/>
+        <text x="132" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">CHECK WITH NUMBERS</text>
+        <text x="50" y="298" font-size="13" font-weight="700" fill="#64748b">1. Mixed to improper fraction:</text>
+        <text x="50" y="320" font-size="17" font-weight="800" fill="#12355b">1 ½  =  3/2</text>
+        <text x="50" y="348" font-size="13" font-weight="700" fill="#64748b">2. Keep · Change · Flip:</text>
+        <text x="50" y="370" font-size="17" font-weight="800" fill="#0f766e">3/2  ×  4/1  =  12/2</text>
+        <text x="50" y="398" font-size="13" font-weight="700" fill="#64748b">3. Divide to simplify:</text>
+        <text x="50" y="422" font-size="19" font-weight="800" fill="#2563eb">12/2  =  6 bows</text>
+
+        <!-- Watch For on the Test Card -->
+        ${conceptCard(328, 244, 278, 196)}
+        <rect x="342" y="256" width="176" height="22" rx="5" fill="#d97706"/>
+        <text x="430" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">WATCH FOR ON THE TEST</text>
+        <circle cx="348" cy="298" r="4" fill="#0f766e"/>
+        <text x="360" y="302" font-size="12" font-weight="700" fill="#12355b">Turn mixed numbers to fractions 1st</text>
+        <circle cx="348" cy="324" r="4" fill="#2563eb"/>
+        <text x="360" y="328" font-size="12" font-weight="700" fill="#12355b">Flip ONLY the 2nd fraction (divisor)</text>
+        <circle cx="348" cy="350" r="4" fill="#d97706"/>
+        <text x="360" y="354" font-size="12" font-weight="800" fill="#b45309">What Leftovers Mean (Q4A &amp; 4B):</text>
+        <rect x="342" y="364" width="250" height="62" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
+        <text x="352" y="385" font-size="12" font-weight="700" fill="#12355b">3 ½ batches = 3 FULL batches.</text>
+        <text x="352" y="405" font-size="12" font-weight="700" fill="#92400e">The ½ is half a batch, not a cup!</text>`,
+      }),
+      capEn:
+        "Dividing by a fraction asks how many small pieces fit inside the total amount. Convert mixed numbers first, then Keep, Change, Flip.",
+      capEs:
+        "Dividir entre una fracción pregunta cuántas partes pequeñas caben en el total. Convierte los números mixtos primero y luego Mantén, Cambia, Voltea.",
+    };
+  }
+
   if (baseLesson === "3-1") {
     return {
       svg: conceptFrame({
