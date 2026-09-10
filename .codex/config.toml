@@ -19,7 +19,7 @@ max_depth = 1
 matcher = ".*"
 [[hooks.SessionStart.hooks]]
 type = "command"
-command = "python3 .codex/hooks/session_context.py"
+command = 'python3 "$(git rev-parse --show-toplevel)/.codex/hooks/session_context.py"'
 timeout = 10
 statusMessage = "Loading EduWonderLab repo context"
 
@@ -27,7 +27,7 @@ statusMessage = "Loading EduWonderLab repo context"
 matcher = ".*"
 [[hooks.UserPromptSubmit.hooks]]
 type = "command"
-command = "python3 .codex/hooks/prompt_guard.py"
+command = 'python3 "$(git rev-parse --show-toplevel)/.codex/hooks/prompt_guard.py"'
 timeout = 10
 statusMessage = "Checking classroom repo policy"
 
@@ -35,7 +35,7 @@ statusMessage = "Checking classroom repo policy"
 matcher = "^(Bash|apply_patch|Edit|Write)$"
 [[hooks.PreToolUse.hooks]]
 type = "command"
-command = "python3 .codex/hooks/pre_tool_policy.py"
+command = 'python3 "$(git rev-parse --show-toplevel)/.codex/hooks/pre_tool_policy.py"'
 timeout = 10
 statusMessage = "Checking command safety"
 
@@ -43,7 +43,7 @@ statusMessage = "Checking command safety"
 matcher = "^(Bash|apply_patch|Edit|Write)$"
 [[hooks.PostToolUse.hooks]]
 type = "command"
-command = "python3 .codex/hooks/post_tool_reviewer.py"
+command = 'python3 "$(git rev-parse --show-toplevel)/.codex/hooks/post_tool_reviewer.py"'
 timeout = 10
 statusMessage = "Reviewing tool output"
 
@@ -51,7 +51,7 @@ statusMessage = "Reviewing tool output"
 matcher = ".*"
 [[hooks.Stop.hooks]]
 type = "command"
-command = "python3 .codex/hooks/final_qa.py"
+command = 'python3 "$(git rev-parse --show-toplevel)/.codex/hooks/final_qa.py"'
 timeout = 10
 statusMessage = "Checking final QA readiness"
 
@@ -59,12 +59,15 @@ statusMessage = "Checking final QA readiness"
 # Cloudflare bindings/telemetry, and a locally spawned browser driver — none of
 # these can write to production, which stays behind `npm run ship`.
 [mcp_servers.cloudflare-bindings]
+enabled = true
 url = "https://bindings.mcp.cloudflare.com/mcp"
 
 [mcp_servers.cloudflare-observability]
+enabled = true
 url = "https://observability.mcp.cloudflare.com/mcp"
 
 [mcp_servers.context7]
+enabled = true
 url = "https://mcp.context7.com/mcp"
 
 [mcp_servers.playwright]
