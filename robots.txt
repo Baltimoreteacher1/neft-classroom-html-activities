@@ -1,4 +1,50 @@
+# robots.txt for eduwonderlab.com
+#
+# The site is STUDENT-FACING and open: every activity, lesson, game and tool is
+# crawlable without a password, and stays that way. The Disallow rules below
+# name ONLY the teacher surfaces that already answer an anonymous request with
+# 401 (the HTTP Basic gate in functions/_middleware.js). They add no protection
+# — robots.txt is a request, not a lock, and the gate is what refuses — they
+# stop Google from spending crawl budget on 1,278 pages it can never index and
+# then reporting the whole set back as blocked in Search Console.
+#
+# THE RULES BELOW MIRROR `isTeacherSurface()` IN functions/_lib/teacher-surface.js
+# AND ARE GATED BOTH WAYS by `npm run validate:seo` — every gated page on disk
+# must be disallowed here, and no student page (nor anything under /assets/ or
+# /data/) may be. Do not hand-tune one side. Google honours `*` and `$`.
+
 User-agent: *
 Allow: /
+
+# Shared code and curriculum data. Listed explicitly and FIRST because Googlebot
+# renders pages with them; blocking a stylesheet or a data manifest makes the
+# page it builds look broken to the crawler. The teacher gate exempts these two
+# directories for the same reason, so a name that merely mentions a teacher
+# feature (e.g. /assets/curriculum-teacher-workflow.js, fetched unconditionally
+# by the PUBLIC curriculum hub) must stay crawlable.
+Allow: /assets/
+Allow: /data/
+
+# Answer keys — 1,038 pages: worksheet, worksheet-2, practice and mstar keys as
+# files, plus the project and MSTAR key folders.
+Disallow: /*answer-key.html$
+Disallow: /*answer-key/
+
+# Facilitation notes.
+Disallow: /*notes-teacher.html$
+Disallow: /*/teacher-notes/
+Disallow: /*/teacher/
+Disallow: /*/teacher.html$
+Disallow: /bridge-to-grade-6/resources/teacher-guide.html
+
+# Teacher consoles and dashboards.
+Disallow: /access-teacher/
+Disallow: /teacher-tools/
+Disallow: /*dashboard/
+Disallow: /admin
+
+# Teacher planning surfaces whose paths name none of the substrings above.
+Disallow: /curriculum/plan-notes
+Disallow: /curriculum/planning
 
 Sitemap: https://eduwonderlab.com/sitemap.xml

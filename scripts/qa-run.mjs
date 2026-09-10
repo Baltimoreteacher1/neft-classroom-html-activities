@@ -181,6 +181,23 @@ const COVERAGE = [
   // it. Editing either is editing what the gates are ALLOWED to insist on.
   [/^(data\/product-decisions\.json|tools\/product-decisions\.test\.mjs)$/, ["test", "check"]],
 
+  // SEARCH INDEXING — the files that tell a crawler which URL is real:
+  // robots.txt (what may be crawled) plus sitemap.xml and its generator (what
+  // is submitted). These disagreed with the site's 2,799 canonical tags for
+  // months while every other gate stayed green, because none of them reads a
+  // canonicalization signal.
+  //
+  // `functions/_lib/teacher-surface.js` is deliberately NOT listed here even
+  // though validate:seo imports it: COVERAGE is first-match-wins, and a rule
+  // naming it here would shadow the auth rule below and silently drop
+  // validate:auth-contract and validate:route-contract from a change to the
+  // predicate that decides what 401s. validate:seo is added to that rule
+  // instead, so coverage only ever grows.
+  [
+    /^(robots\.txt|sitemap\.xml|scripts\/generate-sitemap\.mjs|tools\/validate-seo\.mjs)$/,
+    ["validate:seo", "test", "check"],
+  ],
+
   // GATE COVERAGE — the check that decides which validators are allowed not to
   // gate. Its own inputs are the gate definition and the exemption registry, so
   // a change to either must re-run it; `check` comes along because both files
@@ -248,6 +265,10 @@ const COVERAGE = [
       "validate:route-contract",
       "validate:planning",
       "validate:js-syntax",
+      // `isTeacherSurface()` is also what robots.txt mirrors and what the
+      // sitemap generator filters on, so widening or narrowing it changes which
+      // URLs Google is asked to crawl and index, not only which ones 401.
+      "validate:seo",
       "check",
     ],
   ],
