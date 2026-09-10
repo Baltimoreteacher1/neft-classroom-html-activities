@@ -447,6 +447,23 @@ function unitFromName(name) {
   return m ? Number(m[1]) : null;
 }
 
+/**
+ * Build output, at any depth. `TOP_SKIP` already holds these names, but it is
+ * only tested against the TOP-LEVEL scan, and a sub-project keeps its build
+ * where it builds it. `neft-math-lab-studio/dist/index.html` was catalogued as
+ * a real page that way: root `.gitignore` lists `dist` and `node_modules` with
+ * no leading slash, so git ignores them at every depth and Cloudflare — which
+ * builds from a fresh clone — never sees that directory at all. The catalog is
+ * the canonical index of NAVIGABLE pages, so an entry nothing ships is a dead
+ * route, and the page that does ship is the tracked `/neft-math-lab-studio/`.
+ *
+ * It also failed locally and only locally: the directory is untracked, so
+ * `validate:catalog` went red on whichever checkout had run that sub-project's
+ * build and stayed green in CI. That gate is inside `qa:loop`, so the machine
+ * with the build directory was the machine that could not push.
+ */
+const BUILD_DIRS = new Set(["dist", "node_modules"]);
+
 /** Recursively collect index.html directories under `dir`, up to `maxDepth`. */
 function collectIndexDirs(dir, maxDepth, depth = 0) {
   const out = [];
@@ -459,6 +476,7 @@ function collectIndexDirs(dir, maxDepth, depth = 0) {
   }
   for (const it of items) {
     if (!it.isDirectory() || it.name.startsWith(".") || it.name.startsWith("_")) continue;
+    if (BUILD_DIRS.has(it.name)) continue;
     const sub = resolve(dir, it.name);
     if (existsSync(resolve(sub, "index.html"))) out.push({ name: it.name, dir: sub, depth });
     out.push(...collectIndexDirs(sub, maxDepth, depth + 1));
