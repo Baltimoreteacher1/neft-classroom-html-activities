@@ -7320,6 +7320,16 @@ function journeyStorageKey() {
   return 'hw_journey_' + (window.LESSON_ID || location.pathname);
 }
 
+/* Which stop to reopen on is a fact about ONE lesson, so it is keyed like the
+   journey map above. It used to be the single global 'hw_last_tab': a family
+   that finished 3-5 on the Done stop then opened 3-6 for the FIRST time landed
+   on its celebration + parent sign-off screen, never saw Learn/Words/Together/
+   Check/Play, and updateJourneyMap immediately ticked that untouched lesson
+   'done'. The old key is cleared on sight so nobody inherits that landing. */
+function lastTabStorageKey() {
+  return 'hw_last_tab_' + (window.LESSON_ID || location.pathname);
+}
+
 /* ── Family Game Break (Together tab) ─────────────────────────────────────
    Two content-free game engines; the content ships as the JSON island
    window.__HW_FAMGAMES__ rendered by renderFamilyGameBreak(). No timers. */
@@ -7793,7 +7803,7 @@ function switchHomeworkTab(tabId) {
     activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
     activeBtn.focus();
   }
-  try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
+  try { localStorage.setItem(lastTabStorageKey(), tabId); } catch(e) {}
   if (typeof initHomeworkVocabPopups === 'function') {
     initHomeworkVocabPopups();
   }
@@ -7848,10 +7858,20 @@ function triggerCelebration() {
   document.querySelector('.section-celebrate')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+/* The document language has to move WITH the toggle. It used to stay lang="en"
+   in Spanish mode, so a screen reader read a fully Spanish page with English
+   phonemes and browser auto-translate mis-fired on it. Bilingual stays "en":
+   the page's own prose is English and the Spanish half already carries its own
+   lang="es" on every .lang-es span. */
+function syncDocumentLanguage(mode) {
+  document.documentElement.lang = mode === 'es' ? 'es' : 'en';
+}
+
 function setLanguageMode(mode) {
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
+  syncDocumentLanguage(mode);
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
     btn.classList.toggle('active', active);
@@ -8035,7 +8055,8 @@ function initHomeworkPage() {
     p.hidden = i > 0;
   });
   try {
-    const last = localStorage.getItem('hw_last_tab');
+    localStorage.removeItem('hw_last_tab');
+    const last = localStorage.getItem(lastTabStorageKey());
     if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
     else switchHomeworkTab('learn');
   } catch(e) {}
@@ -9006,6 +9027,22 @@ body.lang-mode-en .vocab-def-es,
 body.lang-mode-en .ext-title-es,
 body.lang-mode-en [lang="es"],
 body.lang-mode-en .bilingual-col.lang-es {
+  display: none !important;
+}
+
+/* A label goes with its value. The glossary popup's translation row is
+   "Español:" + a <span lang="es"> holding the term, so the blanket [lang="es"]
+   rule above hid the term and left the chip reading "ESPAÑOL:" with nothing
+   after it on every vocabulary word in English mode. Hide the whole row. */
+body.lang-mode-en .obj-popup-translation {
+  display: none !important;
+}
+
+/* Same row, same reason, second way in: openPopup() sets .hidden on it for a
+   term that carries no Spanish at all, and the later .obj-popup-translation
+   rule declares display:inline-flex !important, which outranks a plain
+   [hidden]. Without this the empty chip comes back for those terms. */
+.obj-popup-translation[hidden] {
   display: none !important;
 }
 
