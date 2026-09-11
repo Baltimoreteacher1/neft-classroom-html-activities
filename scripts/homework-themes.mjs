@@ -372,6 +372,23 @@ header.homework-header,
   font-size: 12px;
   color: #92400e;
 }
+/* The first-miss card coaches instead of answering, so it reads amber rather
+   than the walkthrough's blue — a family should be able to tell at a glance
+   whether they are being nudged or being shown. */
+.visual-explanation-card.is-nudge {
+  background: #fffdf5;
+  border-color: #d97706;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.1);
+}
+.visual-explanation-card.is-nudge .exp-header {
+  color: #b45309;
+}
+.visual-explanation-card .exp-retry {
+  margin-top: 10px;
+}
+.visual-explanation-card .hw-reveal-btn {
+  min-height: 44px;
+}
 
 /* Visual Parent Step Guide in problem cards */
 .hw-step-guide {

@@ -285,6 +285,23 @@ header.homework-header,
   font-size: 12px;
   color: #92400e;
 }
+/* The first-miss card coaches instead of answering, so it reads amber rather
+   than the walkthrough's blue — a family should be able to tell at a glance
+   whether they are being nudged or being shown. */
+.visual-explanation-card.is-nudge {
+  background: #fffdf5;
+  border-color: #d97706;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.1);
+}
+.visual-explanation-card.is-nudge .exp-header {
+  color: #b45309;
+}
+.visual-explanation-card .exp-retry {
+  margin-top: 10px;
+}
+.visual-explanation-card .hw-reveal-btn {
+  min-height: 44px;
+}
 
 /* Visual Parent Step Guide in problem cards */
 .hw-step-guide {
@@ -9804,6 +9821,28 @@ let soundEnabled = true;
 let audioCtx = null;
 let currentStreak = 0;
 
+/* How many times each problem has been checked, so a multiple-choice question
+   can coach before it answers itself.
+   The page used to reveal on the FIRST wrong tap: it turned the chosen option
+   red, the right one green, and printed the full walkthrough — and its own
+   Parent Coach line then asked "why does the highlighted green choice fit
+   best?", which only makes sense once the answer is already exposed. A family
+   guessing gets the answer for free, and the page's own framing ("Ask
+   questions — let your student do the thinking") stops being true at the first
+   mistake. Now: attempt 1 wrong shows the trap written for THAT choice and
+   invites another go; attempt 2 reveals, and so does the explicit
+   "Show me how" button, because a stuck family should never have to burn a
+   wrong answer to get help. */
+const problemAttempts = {};
+const revealForced = {};
+function revealIsDue(idx) {
+  return (problemAttempts[idx] || 0) >= 2 || revealForced[idx] === true;
+}
+function forceReveal(idx) {
+  revealForced[idx] = true;
+  checkProblem(idx);
+}
+
 function initAudio() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -11333,6 +11372,10 @@ function checkProblem(idx, options) {
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
       
       let selectedFeedback = "";
+      // A miss only counts as an attempt once an answer is actually chosen —
+      // tapping Check on an empty question is not a try, and must not burn the
+      // one coaching turn the student gets.
+      let firstMiss = false;
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -11343,32 +11386,55 @@ function checkProblem(idx, options) {
           if (correctLabel) correctLabel.classList.add("is-correct");
         } else {
           isProblemCorrect = false;
+          problemAttempts[idx] = (problemAttempts[idx] || 0) + 1;
+          firstMiss = !revealIsDue(idx);
           // Highlight selected label as incorrect
           const incorrectLabel = document.getElementById("label_q_" + idx + "_" + val);
           if (incorrectLabel) incorrectLabel.classList.add("is-incorrect");
-          // Highlight correct label as correct
-          const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
-          if (correctLabel) correctLabel.classList.add("is-correct");
+          // Show where the answer IS only once coaching has had its turn.
+          if (!firstMiss) {
+            const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
+            if (correctLabel) correctLabel.classList.add("is-correct");
+          }
           selectedFeedback = choiceFeedback[val] || "";
         }
       }
-      
+
       // Append visual explanation if checked
       if (selected) {
         const expDiv = document.createElement("div");
         expDiv.className = "visual-explanation-card explanation-box";
-        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
-        if (!isProblemCorrect && selectedFeedback) {
-          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        if (firstMiss) {
+          // Coach, do not answer: the trap written for THIS choice, a way back
+          // in, and an explicit door to the full walkthrough for a family that
+          // would rather be shown than keep guessing.
+          expDiv.classList.add("is-nudge");
+          let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Not yet — here is a nudge", "Todavía no — aquí va una pista") + '</span></div>';
+          if (selectedFeedback) {
+            html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+          }
+          html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> ' +
+            pickLangText(
+              'Ask your student: <em>“What is this problem asking you to compare?”</em> Then let them pick again.',
+              'Pregunta a tu estudiante: <em>“¿Qué te pide comparar este problema?”</em> Luego deja que elija otra vez.'
+            ) + '</div>';
+          html += '<div class="exp-retry"><button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+            '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button></div>';
+          expDiv.innerHTML = html;
+        } else {
+          let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
+          if (!isProblemCorrect && selectedFeedback) {
+            html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+          }
+          if (explanation) {
+            html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
+          }
+          html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
+          expDiv.innerHTML = html;
         }
-        if (explanation) {
-          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
-        }
-        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
-        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
-      
+
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");
       
@@ -11569,6 +11635,12 @@ function checkProblem(idx, options) {
         feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
+      } else if (!revealIsDue(idx)) {
+        // Nothing is green yet, so the message must not say anything is.
+        feedbackMessage = pickLangText(
+          "Not yet — read the nudge above and try one more time.",
+          "Todavía no: lee la pista de arriba e inténtalo una vez más.",
+        );
       } else {
         feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
       }
