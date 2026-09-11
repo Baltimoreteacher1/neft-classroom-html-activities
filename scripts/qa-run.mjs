@@ -389,6 +389,7 @@ const COVERAGE = [
       "validate:ccss",
       "validate:connect",
       "validate:homework",
+      "validate:family-games",
       "validate:practice",
       "validate:scope",
       "audit:homework",
