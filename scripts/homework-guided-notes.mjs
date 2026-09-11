@@ -4344,10 +4344,34 @@ export function renderFamilyActivityCorner(topic) {
  * below; every pair and statement is checked arithmetic, not generated.
  */
 const FAMILY_GAME_PAIRS = {
+  // 6.AT.1 — writing a comparison, in the order it is named. No equivalence,
+  // no rates, no percent: none of it has been taught on the night this runs.
+  "ratios-understand": [
+    { a: "3 to 2", b: "3 : 2" },
+    { a: "3 red to 5 blue", b: "part to part" },
+    { a: "3 red out of 8 in all", b: "part to whole" },
+    { a: "the word “to”", b: "the symbol :" },
+  ],
+  // 6.AT.2 — the rate for ONE.
+  "ratios-rate": [
+    { a: "$6 for 3 lb", b: "$2 per lb" },
+    { a: "120 miles in 2 hours", b: "60 miles per hour" },
+    { a: "$5.00 for 10 pencils", b: "50¢ per pencil" },
+    { a: "the words “per” and “each”", b: "a rate for 1" },
+  ],
+  // 6.AT.4 — Unit 4.
+  percent: [
+    { a: "1/2 as a percent", b: "50%" },
+    { a: "0.25", b: "25%" },
+    { a: "percent", b: "per 100" },
+    { a: "10% of 80", b: "8" },
+  ],
+  // 6.AT.3* — equivalent ratios. This is the bank the whole strand used to
+  // share, and it fits the middle of Unit 3 exactly.
   ratios: [
     { a: "2 : 3 doubled", b: "4 : 6" },
-    { a: "$6 for 3 lb", b: "$2 per lb" },
-    { a: "1/2 as a percent", b: "50%" },
+    { a: "2 : 5 times 4", b: "8 : 20" },
+    { a: "6 : 9 simplified", b: "2 : 3" },
     { a: "3 to 4", b: "3 : 4" },
   ],
   fractions: [
@@ -4449,6 +4473,121 @@ const FAMILY_GAME_PAIRS = {
 };
 
 const FAMILY_TF_QUESTIONS = {
+  "ratios-understand": [
+    {
+      en: "The ratio 2:3 is the same as the ratio 3:2.",
+      es: "La razón 2:3 es igual a la razón 3:2.",
+      answer: false,
+      whyEn: "Order matters in a ratio — 2 cups juice to 3 cups water is not 3 juice to 2 water.",
+      whyEs:
+        "El orden importa en una razón: 2 tazas de jugo por 3 de agua no es lo mismo que 3 de jugo por 2 de agua.",
+    },
+    {
+      en: "A bowl has 3 apples and 5 oranges. The ratio of apples to oranges is 3:5.",
+      es: "Un frutero tiene 3 manzanas y 5 naranjas. La razón de manzanas a naranjas es 3:5.",
+      answer: true,
+      whyEn: "Apples are named first, so 3 goes first. That is a part-to-part ratio.",
+      whyEs:
+        "Las manzanas se nombran primero, así que el 3 va primero. Es una razón parte a parte.",
+    },
+    {
+      en: "In that same bowl, the ratio of apples to ALL the fruit is 3:5.",
+      es: "En ese mismo frutero, la razón de manzanas a TODA la fruta es 3:5.",
+      answer: false,
+      whyEn: "All the fruit is 3 + 5 = 8, so apples to all the fruit is 3:8 — part to whole.",
+      whyEs: "Toda la fruta es 3 + 5 = 8, así que manzanas a toda la fruta es 3:8 — parte a todo.",
+    },
+    {
+      en: "“12 cookies” by itself is a ratio.",
+      es: "“12 galletas” por sí solo es una razón.",
+      answer: false,
+      whyEn: "A ratio always compares TWO amounts. One number alone is just a count.",
+      whyEs: "Una razón siempre compara DOS cantidades. Un solo número es nada más un conteo.",
+    },
+    {
+      en: "“3 to 2” and “3 : 2” are two ways to write the same ratio.",
+      es: "“3 a 2” y “3 : 2” son dos maneras de escribir la misma razón.",
+      answer: true,
+      whyEn: "The colon is just a shorter way to write the word “to.”",
+      whyEs: "Los dos puntos son solo una manera más corta de escribir la palabra “a.”",
+    },
+  ],
+  "ratios-rate": [
+    {
+      en: "A unit rate compares a quantity to exactly 1 of something.",
+      es: "Una tasa unitaria compara una cantidad con exactamente 1 de algo.",
+      answer: true,
+      whyEn: "Miles per 1 hour, dollars per 1 pound — the 1 is what makes it a UNIT rate.",
+      whyEs: "Millas por 1 hora, dólares por 1 libra: el 1 es lo que la hace tasa UNITARIA.",
+    },
+    {
+      en: "To find the price for one item, divide the total cost by the number of items.",
+      es: "Para hallar el precio de un artículo, divide el costo total entre el número de artículos.",
+      answer: true,
+      whyEn: "$6 for 3 pounds is $6 ÷ 3 = $2 per pound.",
+      whyEs: "$6 por 3 libras es $6 ÷ 3 = $2 por libra.",
+    },
+    {
+      en: "$8 for 4 pounds is a better price per pound than $9 for 3 pounds.",
+      es: "$8 por 4 libras es mejor precio por libra que $9 por 3 libras.",
+      answer: true,
+      whyEn: "$8 ÷ 4 = $2 per pound; $9 ÷ 3 = $3 per pound. $2 is less.",
+      whyEs: "$8 ÷ 4 = $2 por libra; $9 ÷ 3 = $3 por libra. $2 es menos.",
+    },
+    {
+      en: "The bigger package is always the better buy.",
+      es: "El paquete más grande siempre es la mejor compra.",
+      answer: false,
+      whyEn:
+        "Only the price for ONE unit can answer that — a big box can still cost more per ounce.",
+      whyEs:
+        "Solo el precio por UNA unidad lo responde: una caja grande puede costar más por onza.",
+    },
+    {
+      en: "“60 miles per hour” and “60 miles every 2 hours” are the same rate.",
+      es: "“60 millas por hora” y “60 millas cada 2 horas” son la misma tasa.",
+      answer: false,
+      whyEn: "60 miles every 2 hours is 60 ÷ 2 = 30 miles per hour — half as fast.",
+      whyEs: "60 millas cada 2 horas es 60 ÷ 2 = 30 millas por hora: la mitad de rápido.",
+    },
+  ],
+  percent: [
+    {
+      en: "Percent means “per 100.”",
+      es: "Por ciento significa “por cada 100.”",
+      answer: true,
+      whyEn: "45% means 45 out of every 100.",
+      whyEs: "45% significa 45 de cada 100.",
+    },
+    {
+      en: "25% of a number is the same as 1/4 of it.",
+      es: "El 25% de un número es lo mismo que 1/4 de él.",
+      answer: true,
+      whyEn: "25 out of 100 simplifies to 1/4, so both take the same amount.",
+      whyEs: "25 de 100 se simplifica a 1/4, así que ambos toman la misma cantidad.",
+    },
+    {
+      en: "A percent can never be more than 100.",
+      es: "Un porcentaje nunca puede ser mayor que 100.",
+      answer: false,
+      whyEn: "150% just means one and a half times the whole — 150% of 20 is 30.",
+      whyEs: "150% significa una vez y media el total: el 150% de 20 es 30.",
+    },
+    {
+      en: "To find 10% of a number, move the decimal point one place to the left.",
+      es: "Para hallar el 10% de un número, mueve el punto decimal un lugar a la izquierda.",
+      answer: true,
+      whyEn: "10% of 80 is 8.0 — and that makes 5% and 20% easy from there.",
+      whyEs: "El 10% de 80 es 8.0, y desde ahí el 5% y el 20% salen fácil.",
+    },
+    {
+      en: "Taking 50% off, then 50% off again, is the same as 100% off.",
+      es: "Quitar 50%, y luego otro 50%, es lo mismo que quitar 100%.",
+      answer: false,
+      whyEn: "The second 50% comes off the SMALLER price, so you still pay 25% — never free.",
+      whyEs: "El segundo 50% se quita del precio MÁS PEQUEÑO, así que pagas 25%: nunca es gratis.",
+    },
+  ],
   ratios: [
     {
       en: "The ratio 2:3 is the same as the ratio 3:2.",
@@ -5137,6 +5276,120 @@ const FAMILY_TF_QUESTIONS = {
  * something specific (each card carries its own why).
  */
 const FAMILY_SORT_GAMES = {
+  // 6.AT.1's whole skill: is this comparing two GROUPS, or a group to the TOTAL?
+  "ratios-understand": {
+    a: { en: "Part to PART", es: "Parte a PARTE" },
+    b: { en: "Part to WHOLE", es: "Parte a TODO" },
+    cards: [
+      {
+        t: "3 boys to 4 girls",
+        bucket: 0,
+        en: "Two groups compared with each other.",
+        es: "Dos grupos comparados entre sí.",
+      },
+      {
+        t: "3 boys out of 7 students",
+        bucket: 1,
+        en: "One group compared with the whole class.",
+        es: "Un grupo comparado con toda la clase.",
+      },
+      {
+        t: "2 cups juice to 5 cups water",
+        bucket: 0,
+        en: "Juice and water are both parts of the mix.",
+        es: "El jugo y el agua son dos partes de la mezcla.",
+      },
+      {
+        t: "2 cups juice in 7 cups of punch",
+        bucket: 1,
+        en: "Juice compared with all 7 cups of punch.",
+        es: "El jugo comparado con las 7 tazas de ponche.",
+      },
+      {
+        t: "5 red marbles to 3 blue marbles",
+        bucket: 0,
+        en: "Red and blue are two separate parts.",
+        es: "Rojas y azules son dos partes distintas.",
+      },
+      {
+        t: "5 red marbles out of 8 marbles",
+        bucket: 1,
+        en: "Red compared with every marble there is.",
+        es: "Las rojas comparadas con todas las canicas.",
+      },
+    ],
+  },
+  // 6.AT.2 — spotting whether a rate has already been reduced to "for 1".
+  "ratios-rate": {
+    a: { en: "Already a rate for 1", es: "Ya es una tasa por 1" },
+    b: { en: "NOT yet a rate for 1", es: "TODAVÍA no es tasa por 1" },
+    cards: [
+      { t: "55 miles per hour", bucket: 0, en: "Per ONE hour.", es: "Por UNA hora." },
+      {
+        t: "$12 for 4 tickets",
+        bucket: 1,
+        en: "Divide by 4 to get $3 per ticket.",
+        es: "Divide entre 4 para obtener $3 por boleto.",
+      },
+      { t: "$3 per pound", bucket: 0, en: "Per ONE pound.", es: "Por UNA libra." },
+      {
+        t: "150 words in 5 minutes",
+        bucket: 1,
+        en: "Divide by 5 to get 30 words per minute.",
+        es: "Divide entre 5 para obtener 30 palabras por minuto.",
+      },
+      {
+        t: "9 miles each gallon",
+        bucket: 0,
+        en: "“Each” means per ONE.",
+        es: "“Cada” significa por UNO.",
+      },
+      {
+        t: "$20 for 8 gallons",
+        bucket: 1,
+        en: "Divide by 8 to get $2.50 per gallon.",
+        es: "Divide entre 8 para obtener $2.50 por galón.",
+      },
+    ],
+  },
+  // 6.AT.4 — the same amount wearing three different costumes.
+  percent: {
+    a: { en: "Equal to 1/4", es: "Igual a 1/4" },
+    b: { en: "NOT equal to 1/4", es: "NO es igual a 1/4" },
+    cards: [
+      { t: "25%", bucket: 0, en: "25 out of 100 = 1/4.", es: "25 de 100 = 1/4." },
+      {
+        t: "0.25",
+        bucket: 0,
+        en: "Twenty-five hundredths = 1/4.",
+        es: "Veinticinco centésimas = 1/4.",
+      },
+      {
+        t: "25 out of 100",
+        bucket: 0,
+        en: "That is what the word percent means.",
+        es: "Eso es lo que significa la palabra por ciento.",
+      },
+      {
+        t: "2.5%",
+        bucket: 1,
+        en: "2.5 out of 100 — that is 1/40, ten times smaller.",
+        es: "2.5 de 100: eso es 1/40, diez veces más pequeño.",
+      },
+      {
+        t: "1/40",
+        bucket: 1,
+        en: "Much smaller than one quarter.",
+        es: "Mucho más pequeño que un cuarto.",
+      },
+      {
+        t: "4%",
+        bucket: 1,
+        en: "That flips the fraction — 1/4 is 25%, not 4%.",
+        es: "Eso invierte la fracción: 1/4 es 25%, no 4%.",
+      },
+    ],
+  },
   ratios: {
     a: { en: "Equivalent to 2 : 3", es: "Equivale a 2 : 3" },
     b: { en: "NOT equivalent to 2 : 3", es: "NO equivale a 2 : 3" },
@@ -5644,6 +5897,60 @@ const FAMILY_SORT_GAMES = {
  * family argues about numbers for two minutes and then checks.
  */
 const FAMILY_WYR = {
+  "ratios-understand": [
+    {
+      a: {
+        en: "Punch mixed 1 part syrup to 4 parts water",
+        es: "Ponche de 1 parte de jarabe por 4 de agua",
+      },
+      b: {
+        en: "Punch mixed 4 parts syrup to 1 part water",
+        es: "Ponche de 4 partes de jarabe por 1 de agua",
+      },
+      en: "Same two numbers, opposite order — and 4:1 is far sweeter. Order is the whole point of a ratio.",
+      es: "Los mismos dos números, en orden opuesto: 4:1 es mucho más dulce. El orden es lo esencial de una razón.",
+    },
+    {
+      a: {
+        en: "A class with a 1 : 4 teacher-to-student ratio",
+        es: "Una clase con razón de 1 : 4 de maestro a estudiantes",
+      },
+      b: {
+        en: "A class with a 1 : 30 teacher-to-student ratio",
+        es: "Una clase con razón de 1 : 30 de maestro a estudiantes",
+      },
+      en: "1 : 4 means one teacher for every 4 students, so there is far more help to go around.",
+      es: "1 : 4 significa un maestro por cada 4 estudiantes, así que hay mucha más ayuda disponible.",
+    },
+  ],
+  "ratios-rate": [
+    {
+      a: { en: "8 oz of juice for $2.00", es: "8 oz de jugo por $2.00" },
+      b: { en: "12 oz of juice for $2.70", es: "12 oz de jugo por $2.70" },
+      en: "The 12 oz wins: 22.5¢ an ounce against 25¢ an ounce. Always compare the price for ONE.",
+      es: "Gana la de 12 oz: 22.5¢ por onza contra 25¢ por onza. Siempre comparen el precio de UNA.",
+    },
+    {
+      a: { en: "A job paying $45 for 5 hours", es: "Un trabajo que paga $45 por 5 horas" },
+      b: { en: "A job paying $60 for 8 hours", es: "Un trabajo que paga $60 por 8 horas" },
+      en: "The first: $9 an hour against $7.50 an hour. The bigger total is not the better rate.",
+      es: "El primero: $9 por hora contra $7.50 por hora. El total mayor no es la mejor tasa.",
+    },
+  ],
+  percent: [
+    {
+      a: { en: "25% off a $40 jacket", es: "25% de descuento en una chaqueta de $40" },
+      b: { en: "$12 off a $40 jacket", es: "$12 de descuento en una chaqueta de $40" },
+      en: "Take the $12. 25% of $40 is only $10 — a percent is worth whatever the whole is worth.",
+      es: "Tomen los $12. El 25% de $40 son solo $10: un porcentaje vale según el total del que se saca.",
+    },
+    {
+      a: { en: "A 10% raise on $500 a week", es: "Un aumento del 10% sobre $500 por semana" },
+      b: { en: "A $40 raise on $500 a week", es: "Un aumento de $40 sobre $500 por semana" },
+      en: "Take the 10% — that is $50, ten dollars more than the flat $40. Same idea, opposite answer.",
+      es: "Tomen el 10%: son $50, diez dólares más que los $40 fijos. La misma idea, respuesta opuesta.",
+    },
+  ],
   ratios: [
     {
       a: { en: "A 12 oz drink for $3", es: "Una bebida de 12 oz por $3" },
@@ -5896,21 +6203,77 @@ const FAMILY_WYR = {
   ],
 };
 
-function familySortGame(topic) {
-  return FAMILY_SORT_GAMES[topic] || FAMILY_SORT_GAMES.fallback;
+/**
+ * The arcade's own lookup key, which is FINER than detectVisualTopic().
+ *
+ * detectVisualTopic answers "which picture does this lesson need", and one
+ * picture legitimately serves a whole strand — every 6.AT standard except the
+ * algebra ones resolves to "ratios". The games are a different question. The
+ * arcade's lead says "four quick games about TONIGHT'S math", and one `ratios`
+ * bank spanning 14 lessons across 6 standards and two units could not keep that
+ * promise at either end: lesson 3-1 "Understand Ratios" — night one, where the
+ * whole skill is writing a comparison in the named order — was handed a memory
+ * pair for "1/2 as a percent → 50%" (Unit 4), a unit-rate pair, an equivalent-
+ * ratio sorting game and a better-buy dilemma. Three of its four games were
+ * mathematics the family had not been taught yet; the 4-x percent lessons got
+ * the mirror image, a bank about 2:3 equivalence with percent in one card.
+ *
+ * So the games key off the STANDARD, and fall back to the visual topic for
+ * every strand still served well by one bank. Kept deliberately separate from
+ * detectVisualTopic: that function also drives the visual lab, the spotlight,
+ * the misconception, the family activities and the external resources, and
+ * splitting it would move all of them to chase a games defect.
+ *
+ * REACHING BACK is fine and reaching FORWARD is not — a game may use what the
+ * family has already been taught, never what is still coming. That asymmetry is
+ * what tools/validate-family-games.mjs enforces.
+ */
+const FAMILY_GAME_STANDARD_KEYS = {
+  "6.AT.1": "ratios-understand",
+  "6.AT.2": "ratios-rate",
+  "6.AT.4": "percent",
+};
+
+export function familyGameKey(config) {
+  const topic = detectVisualTopic(config);
+  if (topic !== "ratios") return topic;
+  return FAMILY_GAME_STANDARD_KEYS[String(config.standard || "")] || topic;
 }
 
-function familyWyr(topic) {
-  return FAMILY_WYR[topic] || FAMILY_WYR.fallback;
+/* Resolution order is refined key -> visual topic -> fallback. Without the
+   middle step a refined key missing from one of the four banks would drop that
+   game to the generic bank instead of the strand's own, which is a worse answer
+   than the bug being fixed. */
+function pickBank(bank, key, topic) {
+  return bank[key] || bank[topic] || bank.fallback;
 }
 
-function familyGamePairs(topic) {
-  return FAMILY_GAME_PAIRS[topic] || FAMILY_GAME_PAIRS.fallback;
+function familySortGame(key, topic) {
+  return pickBank(FAMILY_SORT_GAMES, key, topic);
 }
 
-function familyTfQuestions(topic) {
-  return FAMILY_TF_QUESTIONS[topic] || FAMILY_TF_QUESTIONS.fallback;
+function familyWyr(key, topic) {
+  return pickBank(FAMILY_WYR, key, topic);
 }
+
+function familyGamePairs(key, topic) {
+  return pickBank(FAMILY_GAME_PAIRS, key, topic);
+}
+
+function familyTfQuestions(key, topic) {
+  return pickBank(FAMILY_TF_QUESTIONS, key, topic);
+}
+
+/* Exported for tools/validate-family-games.mjs, which has to read the banks as
+   DATA to ask which standards each one is authored for. It reads them here
+   rather than keeping its own copy, because a copy drifts from the thing it is
+   meant to be checking and then reports on a set nobody ships. */
+export const FAMILY_GAME_BANKS = {
+  pairs: FAMILY_GAME_PAIRS,
+  tf: FAMILY_TF_QUESTIONS,
+  sort: FAMILY_SORT_GAMES,
+  wyr: FAMILY_WYR,
+};
 
 /**
  * The Family Game Break: Memory Flip (pairs) + True/False Face-Off, rendered on
@@ -5937,11 +6300,11 @@ const ARCADE_GAMES = [
   { id: "full", icon: "🕹️", en: "Big Arcade", es: "Sala grande" },
 ];
 
-export function renderFamilyGameBreak(topic, extras = {}) {
-  const pairs = familyGamePairs(topic);
-  const tf = familyTfQuestions(topic);
-  const sort = familySortGame(topic);
-  const wyr = familyWyr(topic);
+export function renderFamilyGameBreak(key, extras = {}, topic = key) {
+  const pairs = familyGamePairs(key, topic);
+  const tf = familyTfQuestions(key, topic);
+  const sort = familySortGame(key, topic);
+  const wyr = familyWyr(key, topic);
   const payload = JSON.stringify({ pairs, tf, sort, wyr }).replace(/</g, "\\u003c");
   const games = ARCADE_GAMES.filter(
     (g) => (g.id !== "quiz" || extras.quizHtml) && (g.id !== "full" || extras.arcadeUrl),
@@ -7126,7 +7489,7 @@ export function renderPlayTabPanel(config, lessonId = "") {
         <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
         <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
       </p>
-      ${renderFamilyGameBreak(detectVisualTopic(config), { quizHtml, arcadeUrl })}
+      ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('done')">
           <span class="lang-en">Next: Finish up ➔</span>
