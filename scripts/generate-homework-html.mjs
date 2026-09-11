@@ -3330,6 +3330,10 @@ ${ARENA_CSS}
     }
   } catch (e) {}
   document.body.classList.add('lang-mode-' + mode);
+  // Stamp the document language in the same breath as the class, so assistive
+  // tech and browser translation see Spanish from the first paint rather than
+  // from whenever setLanguageMode() runs on DOMContentLoaded.
+  document.documentElement.lang = mode === 'es' ? 'es' : 'en';
 })();
 </script>
 
