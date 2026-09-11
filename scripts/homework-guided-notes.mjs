@@ -2209,6 +2209,52 @@ export function renderWelcomeBanner(config, lessonId) {
    needs to see it before they scroll, and it used to sit in a second nav card
    that competed with the tab bar for the same job. */
 export function renderQuickPlan() {
+  /* Each line is a BUTTON that goes there, not a sentence telling you where to
+     go. The plan itself is good advice and was measured to be exactly right at
+     30 minutes of content — but as prose it asked the one family with no time
+     to read three instructions, remember them, then find the Big Idea, the
+     first Try Together step and the Warm-up tier across three different stops.
+     That is the most navigation on the page handed to the family least able to
+     spend it. gotoQuickPlanStep() switches the stop, scrolls to the exact
+     element and flashes it, so the plan runs itself. Nothing is hidden or
+     skipped: this is a route through the page, not a reduced version of it. */
+  const steps = [
+    {
+      min: "2",
+      en: "Read the Big Idea out loud.",
+      es: "Lean en voz alta la idea principal.",
+      whereEn: "Learn",
+      whereEs: "Aprender",
+    },
+    {
+      min: "3",
+      en: "Do just the FIRST Try Together step.",
+      es: "Hagan solo el PRIMER paso de Intentar Juntos.",
+      whereEn: "Together",
+      whereEs: "Juntos",
+    },
+    {
+      min: "5",
+      en: "Answer the 3 Warm-up problems.",
+      es: "Contesten los 3 problemas de calentamiento.",
+      whereEn: "Check",
+      whereEs: "Repaso",
+    },
+  ];
+
+  const rows = steps
+    .map(
+      (s, i) => `
+          <li>
+            <button type="button" class="hw-quickplan-step" onclick="gotoQuickPlanStep(${i + 1})">
+              <span class="hw-quickplan-min">${s.min} min</span>
+              <span class="hw-quickplan-what"><span class="lang-en">${s.en}</span><span class="lang-es" lang="es">${s.es}</span></span>
+              <span class="hw-quickplan-go"><span class="lang-en">Take me there · ${s.whereEn}</span><span class="lang-es" lang="es">Llévame ahí · ${s.whereEs}</span> →</span>
+            </button>
+          </li>`,
+    )
+    .join("");
+
   return `
       <details class="hw-quickplan">
         <summary class="hw-quickplan-summary">
@@ -2216,11 +2262,11 @@ export function renderQuickPlan() {
           <strong><span class="lang-en">Only have 10 minutes tonight?</span><span class="lang-es" lang="es">¿Solo tienen 10 minutos hoy?</span></strong>
           <span class="hw-quickplan-chevron" aria-hidden="true">▾</span>
         </summary>
-        <ol class="hw-quickplan-steps">
-          <li><span class="lang-en"><strong>2 min</strong> — Read the Big Idea out loud on the Learn stop.</span><span class="lang-es" lang="es"><strong>2 min</strong> — Lean en voz alta la idea principal en la parada Aprender.</span></li>
-          <li><span class="lang-en"><strong>3 min</strong> — Do just the FIRST Try Together step.</span><span class="lang-es" lang="es"><strong>3 min</strong> — Hagan solo el PRIMER paso de Intentar Juntos.</span></li>
-          <li><span class="lang-en"><strong>5 min</strong> — Answer the 3 Warm-up problems on the Check stop.</span><span class="lang-es" lang="es"><strong>5 min</strong> — Contesten los 3 problemas de calentamiento en la parada Repaso.</span></li>
-        </ol>
+        <p class="hw-quickplan-lead">
+          <span class="lang-en">Tap a step and we will take you straight to it.</span>
+          <span class="lang-es" lang="es">Toquen un paso y los llevamos directo ahí.</span>
+        </p>
+        <ol class="hw-quickplan-steps">${rows}</ol>
         <p class="hw-quickplan-note">
           <span class="lang-en">💛 Short and calm beats long and stressful. Ten focused minutes tonight is a win.</span>
           <span class="lang-es" lang="es">💛 Corto y tranquilo vale más que largo y estresante. Diez minutos concentrados hoy ya son un logro.</span>
@@ -8089,6 +8135,38 @@ function updateJourneyMap(tabId) {
   }
 }
 
+/* The 10-minute plan, as navigation rather than instructions. Each step names a
+   stop and ONE element on it; we switch the stop, wait a frame for the panel to
+   be laid out (scrollIntoView on a panel that is still hidden scrolls nowhere),
+   then centre the target and flash it so a family can see what they were sent
+   to look at. Falls back to the stop itself if the element is missing, because
+   arriving on the right stop is still most of the value. */
+var QUICK_PLAN_STOPS = [
+  { tab: 'learn', sel: '.key-idea-banner' },
+  { tab: 'together', sel: '.together-steps > li' },
+  { tab: 'check', sel: '.practice-tier-warmup' },
+];
+
+function gotoQuickPlanStep(n) {
+  var stop = QUICK_PLAN_STOPS[n - 1];
+  if (!stop) return;
+  switchHomeworkTab(stop.tab);
+  var plan = document.querySelector('.hw-quickplan');
+  if (plan) plan.open = false;
+  requestAnimationFrame(function () {
+    var panel = document.querySelector('[data-tab-panel="' + stop.tab + '"]');
+    var target = (panel && panel.querySelector(stop.sel)) || panel;
+    if (!target) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    target.classList.remove('hw-quickplan-flash');
+    // Reading offsetWidth restarts the animation when the same step is tapped twice.
+    void target.offsetWidth;
+    target.classList.add('hw-quickplan-flash');
+    setTimeout(function () { target.classList.remove('hw-quickplan-flash'); }, 2600);
+  });
+}
+
 /* Help is a drawer over the current stop, not a place you travel to. Opening it
    never takes a family off the problem they are stuck on. */
 function toggleHelpDrawer() {
@@ -10944,10 +11022,63 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
 .hw-quickplan-summary .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
 .hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: #f2c15b; }
 .hw-quickplan[open] .hw-quickplan-chevron { transform: rotate(180deg); }
-.hw-quickplan-steps { margin: 0; padding: 0 18px 4px 36px; font-size: 14px; color: #e4eef7; }
+.hw-quickplan-lead { margin: 0; padding: 0 18px 8px; font-size: 13.5px; color: #cfe1f1; }
+.hw-quickplan-steps { margin: 0; padding: 0 14px 4px; font-size: 14px; color: #e4eef7; list-style: none; }
 .hw-quickplan-steps li { margin-bottom: 8px; }
 .hw-quickplan-steps .lang-es, .hw-quickplan-note .lang-es { color: #e4eef7; }
+/* Each step is a full-width tap target: this is the control a family reaches
+   for one-handed, on a phone, while standing up. */
+.hw-quickplan-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 14px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid rgba(242,193,91,.42);
+  border-radius: 12px;
+  background: rgba(255,255,255,.05);
+  color: #e4eef7;
+  font: inherit;
+  font-size: 14px;
+}
+.hw-quickplan-step:hover { background: rgba(242,193,91,.16); border-color: rgba(242,193,91,.75); }
+.hw-quickplan-step:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+.hw-quickplan-min {
+  flex: none;
+  min-width: 52px;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: #f2c15b;
+  color: #12355b;
+  font-weight: 800;
+  font-size: 12.5px;
+  text-align: center;
+}
+.hw-quickplan-what { flex: 1 1 auto; }
+.hw-quickplan-go { flex: none; font-size: 12.5px; font-weight: 700; color: #f2c15b; }
+@media (max-width: 560px) {
+  /* The destination label wraps under the task rather than squeezing it. */
+  .hw-quickplan-step { flex-wrap: wrap; }
+  .hw-quickplan-go { width: 100%; padding-left: 64px; }
+}
 .hw-quickplan-note { margin: 0; padding: 8px 18px 15px; font-size: 13.5px; color: #cfe1f1; }
+
+/* Where the plan just sent you. Outline only — a background change on an
+   arbitrary target would fight whatever that element already paints. */
+.hw-quickplan-flash {
+  animation: hwQuickPlanFlash 2.6s ease-out 1;
+  border-radius: 12px;
+}
+@keyframes hwQuickPlanFlash {
+  0%, 55% { box-shadow: 0 0 0 3px #f2c15b, 0 0 0 9px rgba(242,193,91,.3); }
+  100% { box-shadow: 0 0 0 3px rgba(242,193,91,0), 0 0 0 9px rgba(242,193,91,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hw-quickplan-flash { animation: none; box-shadow: 0 0 0 3px #f2c15b; }
+}
 
 @media (max-width: 700px) {
   .hw-hero { padding: 24px 20px 22px; border-radius: 20px; }
