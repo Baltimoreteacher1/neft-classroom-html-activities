@@ -12,7 +12,10 @@
 # to fail without failing the whole job. It updates fine when run from Terminal.
 set -euo pipefail
 
-REPO="/Users/joelneft/neft-classroom-html-activities"
+# Derive the repo from this script's location so the job operates on whichever
+# checkout launchd points at (the dedicated jobs-runner worktree), never a
+# feature-branch checkout that happens to live at a hardcoded path.
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NODE="/opt/homebrew/bin/node"
 SRC="$REPO/dist/lesson-html"
 DRIVE_DEST="$HOME/Library/CloudStorage/GoogleDrive-neftjd@gmail.com/My Drive/Neft Lesson Source"
