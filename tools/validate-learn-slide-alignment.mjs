@@ -65,7 +65,7 @@ import {
   splitGuidedLine,
 } from "@eduwonderlab/engine/core/learn-step-model.js";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const _root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
