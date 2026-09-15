@@ -1,0 +1,17 @@
+{
+  "$comment": "Reviewed findings from scripts/audit-homework-alignment.mjs. Every entry needs a written reason of at least 40 characters, and an entry whose finding no longer fires must be DELETED rather than left as a stale absolution. An entry here is a finding a human has read — never a way to quiet a gate. The two kinds are `alignment` (the page's core problems score below 70 against the lesson) and `note-ownership` (the family note reads like another lesson's).",
+  "reviewed": [
+    {
+      "id": "6-1",
+      "kind": "note-ownership",
+      "decision": "keep",
+      "reason": "The note is on the RIGHT lesson and says so: 6-1's objective is 'divide a whole number by a unit fraction and divide a fraction by a whole number', and the note opens 'we use models to divide BOTH ways: a whole number divided by a fraction, and a fraction divided by a whole number.' The flag is an inflection miss. 6-1's title, 'Division Expressions with Fractions and Whole Numbers', reduces to the single signature term 'division', and the note writes the verb 'divide' for a parent audience rather than the noun. With a one-term signature, condition 1 turns on one word ending. The rival it names, 6-9-part2, is a different lesson on the same standard (6.NOS.1) whose own session title is about dividing a whole number by a fraction, so it is a keyword magnet for any dividing-fractions text. Do not loosen the stemmer to clear this: NOTE_OWNERSHIP_GAP is calibrated against a real shipped defect (5-2 carrying 5-3's trapezoid note)."
+    },
+    {
+      "id": "6-8-part2",
+      "kind": "alignment",
+      "decision": "gap",
+      "reason": "A REAL CONTENT GAP, recorded so it stays visible — not an absolution. 6-8-part2's family note says tonight is 'Expanding and Factoring Expressions', and its entire inherited practice pool is the parent lesson's commutative-property guided-fill items ('Use the commutative property to rewrite 2 + 4'). No selector can fix this: there is no expand-or-factor practice item in the pool to choose. The fix is authored practice for that session, sourced from the Reveal Session 2 material, after which this entry must be deleted. Inventing the problems here to clear a gate is the copy-panel failure mode the repo already paid for. Every other Part 2 scores at or above 70 once the scorer reads the session's own topic."
+    }
+  ]
+}

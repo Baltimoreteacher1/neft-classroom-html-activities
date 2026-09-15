@@ -16,7 +16,12 @@ const root = join(import.meta.dirname, "..");
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
+/* Part 2 is swept alongside the core lessons. It is a family homework a parent
+   opens exactly like any other, and for its first four days on the site nothing
+   audited one: this regex stopped at `-flagship`, so 76 pages shipped with their
+   problems ranked against the OTHER session's mathematics and every gate stayed
+   green. A homework that no sweep reaches is a homework with no alignment. */
+const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship|-part2)?$/;
 
 const REQUIRED_MARKERS = [
   {
@@ -115,7 +120,7 @@ const lessons = loadLessons();
    that silently stops generating homework fails here instead of shrinking the
    denominator and still reporting "all compliant". Was 74 until the book-TOC
    renumber brought the curriculum to 84. */
-const expectedCount = 84;
+const expectedCount = 84 + 76;
 const failures = [];
 const alignmentRows = [];
 
@@ -186,6 +191,43 @@ for (const { id, config, html } of lessons) {
   }
 }
 
+/* Findings a human has read. Held to the same standard as the tree: a reason
+   under 40 characters is rejected, and an entry whose finding no longer fires
+   must be deleted rather than left behind as a stale absolution. */
+const REVIEW_PATH = join(root, "data", "homework-alignment-review.json");
+const reviewed = existsSync(REVIEW_PATH)
+  ? JSON.parse(readFileSync(REVIEW_PATH, "utf8")).reviewed || []
+  : [];
+for (const entry of reviewed) {
+  if (!entry.id || !entry.kind || String(entry.reason || "").length < 40) {
+    failures.push(
+      `homework-alignment-review: ${entry.id || "(no id)"} needs an id, a kind and a reason of at least 40 characters`,
+    );
+  }
+}
+const isReviewed = (id, kind) => reviewed.some((e) => e.id === id && e.kind === kind);
+const clearedAlignment = new Set();
+for (let i = failures.length - 1; i >= 0; i--) {
+  const f = failures[i];
+  if (typeof f === "string") continue;
+  const rest = f.fails.filter(
+    (t) => !(t.startsWith("alignment(") && isReviewed(f.id, "alignment")),
+  );
+  if (rest.length === f.fails.length) continue;
+  clearedAlignment.add(f.id);
+  if (rest.length) failures[i] = { id: f.id, fails: rest };
+  else failures.splice(i, 1);
+}
+/* A reviewed entry the audit no longer flags is stale and must go. */
+for (const entry of reviewed) {
+  if (entry.kind !== "alignment") continue;
+  if (!clearedAlignment.has(entry.id)) {
+    failures.push(
+      `homework-alignment-review: ${entry.id} no longer fires an alignment finding — delete the entry`,
+    );
+  }
+}
+
 const passCount = lessons.length - failures.length;
 const alignedCount = alignmentRows.filter((r) => r.aligned).length;
 
@@ -200,9 +242,18 @@ for (const marker of REQUIRED_MARKERS) {
    pre-renumber lesson ids while this audit reported "84/84 fully compliant". */
 const ownership = findNoteOwnershipConflicts(lessons);
 for (const c of ownership) {
+  if (isReviewed(c.id, "note-ownership")) continue;
   failures.push(
     `${c.id}: family note looks like ${c.suspectedOwner}'s lesson (score ${c.bestScore} vs ${c.ownScore}) — "${c.text}…"`,
   );
+}
+for (const entry of reviewed) {
+  if (entry.kind !== "note-ownership") continue;
+  if (!ownership.some((c) => c.id === entry.id)) {
+    failures.push(
+      `homework-alignment-review: ${entry.id} no longer fires a note-ownership finding — delete the entry`,
+    );
+  }
 }
 console.log(
   `Family notes: ${lessons.length - ownership.length}/${lessons.length} on the right lesson`,
@@ -214,8 +265,12 @@ console.log(
 
 if (failures.length) {
   console.log(`\n❌ FAIL — ${passCount}/${lessons.length} pass\n`);
+  /* `failures` holds two shapes — a per-lesson {id, fails} and a plain string
+     from the lesson-count and note-ownership checks. Printing only the first
+     shape crashed the reporter on the string, so the run that FOUND a problem
+     was the run that died before naming it. */
   for (const f of failures.slice(0, 20)) {
-    console.log(`  ${f.id}: ${f.fails.join(", ")}`);
+    console.log(typeof f === "string" ? `  ${f}` : `  ${f.id}: ${f.fails.join(", ")}`);
   }
   if (failures.length > 20) {
     console.log(`  … and ${failures.length - 20} more`);

@@ -218,6 +218,21 @@ export function extractLessonKeywords(config) {
   tokenize(config.contentObjective).forEach((t) => words.add(t));
   tokenize(config.title).forEach((t) => words.add(t));
 
+  /* A Part 2 config describes the OTHER session. Its `title` is "6.8 · Part II"
+     — no mathematics in it at all — and its objective and vocabulary are
+     inherited from day one, so ranking a Part 2's problems on them ranks them
+     against the wrong lesson: 6-8-part2 teaches expanding and factoring and was
+     scored on commutative/associative properties. What session two actually
+     teaches is authored in the family-note sidecar, and `sessionTitle` is
+     present on all 77 Part 2 notes and on none of the 87 core ones, so reading
+     it here changes nothing for a core lesson. */
+  const session = config.familyNotes || {};
+  if (session.sessionTitle) {
+    for (const part of [session.sessionTitle, session.learningTonight?.en, session.bigIdea?.en]) {
+      tokenize(part).forEach((t) => words.add(t));
+    }
+  }
+
   return {
     topic,
     keywords: [...words].filter((w) => w.length > 2),
@@ -557,6 +572,11 @@ function stemWord(word) {
    "must name its own title" rule produced 19 false alarms.
 
    `lessons` is [{ id, config }] with config.familyNotes already merged. */
+/** The lesson a variant belongs to: `6-8-part2` and `6-8-flagship` are both `6-8`. */
+function baseLessonOf(id) {
+  return String(id || "").replace(/-(?:part2|flagship|group[12]|catchup)$/, "");
+}
+
 export function findNoteOwnershipConflicts(lessons) {
   const metas = lessons.map(({ id, config }) => ({
     id,
@@ -581,7 +601,16 @@ export function findNoteOwnershipConflicts(lessons) {
        conditions are required because either alone is noisy — sibling lessons
        legitimately share vocabulary (3-6 and 3-10 are both unit conversion),
        and plenty of good notes phrase a title's topic in student words. */
+    /* A lesson's own Part 2 is not a rival owner — it is the same lesson, day
+       two, and it scores well against day one's note for exactly that reason.
+       The gap of 10 below was calibrated on a corpus of core lessons alone;
+       once the 76 Part 2 pages joined the sweep, 1-4, 3-5 and 6-15 were each
+       reported as belonging to their OWN twin. Rivals are compared by base id
+       so the detector keeps asking the question it exists for: is this note
+       pasted onto a DIFFERENT lesson? */
+    const ownBase = baseLessonOf(id);
     const scored = metas
+      .filter((l) => l.id === id || baseLessonOf(l.id) !== ownBase)
       .map((l) => ({ id: l.id, score: scoreTextAlignment(text, l.meta) }))
       .sort((a, b) => b.score - a.score);
     const own = scored.find((s) => s.id === id).score;
