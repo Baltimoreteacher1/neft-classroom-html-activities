@@ -2598,6 +2598,18 @@
       if (familyHw) {
         activities.push(familyHw);
       }
+      // A lesson taught over two sessions has a second night of practice, keyed
+      // on its own `-part2` id. There is no separate hub row for Part 2 — the
+      // row already links /lessons/<id>-part2/ as "Part 2 · Apply" — so the
+      // second tile is looked up explicitly and sits beside the first. Falls
+      // back through baseLessonId the same way, so the group1/group2 twins
+      // inherit both nights rather than only the first.
+      var familyHwPart2 =
+        LESSON_FAMILY_HOMEWORK[lessonId + "-part2"] ||
+        LESSON_FAMILY_HOMEWORK[baseLessonId + "-part2"];
+      if (familyHwPart2 && familyHwPart2 !== familyHw) {
+        activities.push(familyHwPart2);
+      }
 
       // Printables — paper game, color-by-number, word search, MCAP packet.
       var printables = LESSON_PRINTABLES[lessonId] || LESSON_PRINTABLES[baseLessonId];

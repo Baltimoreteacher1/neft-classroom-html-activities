@@ -68,6 +68,16 @@ const VARIANT_RE = /^(\d+-\d+)-(?:group[12]|flagship|catchup)$/;
 // answer it more narrowly, or the generator writes a hub key this gate then
 // calls a phantom.
 const BRIDGE_RE = /^\d+(?:-\d+)*-(?:practice|review)$/;
+// A `-part2` page is the SECOND SESSION of a lesson, not a variant of it — the
+// Reveal deck splits each lesson across two class days that teach different
+// content — so it sends its own night of practice home and keys the family
+// catalogue directly, exactly like a bridge lesson. Both tiles land on the ONE
+// hub row the lesson already has (the row links `/lessons/<id>-part2/` itself),
+// so the hub looks this key up explicitly rather than through the parent
+// fallback. Third copy of the question `generatesFamilyHomework` answers in
+// scripts/lib/lesson-scope.mjs; it must not answer it more narrowly, or the
+// generator writes a hub key this gate then calls a phantom.
+const PART_TWO_RE = /^\d+(?:-\d+)*(?:-practice)?-part2$/;
 
 /* --- Detectors -------------------------------------------------------------- */
 
@@ -166,6 +176,7 @@ const dirs = readdirSync(LESSONS, { withFileTypes: true })
 const core = dirs.filter((d) => CORE_RE.test(d)).sort();
 const variants = dirs.map((d) => d.match(VARIANT_RE)).filter(Boolean);
 const bridges = dirs.filter((d) => BRIDGE_RE.test(d)).sort();
+const partTwos = dirs.filter((d) => PART_TWO_RE.test(d)).sort();
 
 const findings = [];
 
@@ -239,9 +250,14 @@ const SURFACES = [
     label: "the hub family-homework catalogue",
     file: "curriculum/lesson-family-homework.js",
     anchor: "window.LESSON_FAMILY_HOMEWORK = {",
-    // Core lessons plus any bridge lesson that opted in. A page on disk is the
-    // evidence in both directions, so this cannot drift from the generator.
-    truth: () => [...lessonsWith(hasHomework), ...bridges.filter(hasHomework)],
+    // Core lessons, any bridge lesson that opted in, and every `-part2` second
+    // session. A page on disk is the evidence in both directions, so this
+    // cannot drift from the generator.
+    truth: () => [
+      ...lessonsWith(hasHomework),
+      ...bridges.filter(hasHomework),
+      ...partTwos.filter(hasHomework),
+    ],
     truthName: "lessons with a homework.html",
     missing: "a family is offered no take-home practice for that lesson",
     phantom: "the hub links family homework that does not exist",

@@ -531,6 +531,25 @@ function lessonConfigs() {
           console.error(`Bad family-homework sidecar for ${dir.name}: ${e.message}`);
         }
       }
+      /* A `-part2` page is the lesson's SECOND SESSION, taught with the same
+         manipulative as the first — but the Apply-Day config carries only the
+         Apply problem, so 13 of them declare no diagram at all and the family
+         page came out with no interactive model where every other homework has
+         one. Borrow the core lesson's, which is the tool that was on screen
+         both days. Only when the Part 2 config offers none of its own. */
+      if (dir.name.endsWith("-part2") && !selectLessonInteractiveModel(shaped)) {
+        const baseId = dir.name.slice(0, -"-part2".length);
+        const basePath = join(lessonsDir, baseId, "config.json");
+        if (existsSync(basePath)) {
+          try {
+            const base = JSON.parse(readFileSync(basePath, "utf8"));
+            const inherited = lessonModelCandidates(base)[0];
+            if (inherited) shaped.reviewDiagram = inherited;
+          } catch (e) {
+            console.error(`Could not read ${baseId} for ${dir.name}: ${e.message}`);
+          }
+        }
+      }
       out.push({ id: dir.name, config: shaped });
     } catch (err) {
       console.error(`Skipping ${dir.name}: ${err.message}`);
@@ -1249,7 +1268,14 @@ function selectLessonInteractiveModel(config) {
 function generateHtml(lessonId, config) {
   config.lessonId = config.lessonId || lessonId;
   config.id = config.id || lessonId;
-  const title = config.title || "Lesson Practice";
+  /* A `-part2` config titles itself "2.1 · Part II" — the label the lesson page
+     needs, and a redundancy on a family page whose own header already reads
+     "Lesson 2-1 · Part 2". The two sessions teach DIFFERENT mathematics (2-1
+     session 1 is statistical questions, session 2 is dot plots and shape), so
+     what a family needs there is the session's topic. It is authored beside the
+     rest of the parent-facing content, in the sidecar, because the part2
+     configs are generated and carry a "do not hand-edit" banner. */
+  const title = config.familyNotes?.sessionTitle || config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
   const vocabGlossary = buildVocabGlossary(vocab);
   // Serialize for an inline <script>; escape "<" so authored text can never

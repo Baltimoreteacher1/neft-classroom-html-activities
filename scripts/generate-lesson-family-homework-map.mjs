@@ -15,6 +15,15 @@ const outFile = join(root, "curriculum", "lesson-family-homework.js");
 
 const LESSON_DIR_RE = /^[0-9][0-9a-z-]*$/;
 
+/* A lesson taught over two sessions sends TWO nights of practice home, and both
+   tiles land on the SAME hub row. "Family Practice (optional)" twice is a
+   coin toss for a parent, so each tile says which session it belongs to — and
+   Part 1 only earns that suffix when a Part 2 actually exists, so the ~30
+   one-session lessons keep the unqualified label they have today. */
+function hasPartTwoHomework(id) {
+  return existsSync(join(lessonsDir, `${id}-part2`, "homework.html"));
+}
+
 function familyHomeworkEntry(id, cfg) {
   const custom = cfg.familyHomework || cfg.family?.homework;
   if (custom === false) return null;
@@ -34,7 +43,9 @@ function familyHomeworkEntry(id, cfg) {
      "Help Your Student" — but this hub tile used to say "Family Homework",
      which reads as required and graded. Families saw both. The tile now
      matches the promise the family page makes. */
-  const title = custom?.title || custom?.name || "Family Practice (optional)";
+  const isPartTwo = id.endsWith("-part2");
+  const session = isPartTwo ? " · Part 2" : hasPartTwoHomework(id) ? " · Part 1" : "";
+  const title = custom?.title || custom?.name || `Family Practice${session} (optional)`;
 
   /* A lesson and its -flagship variant cover the same standard, so the hub
      listed two identical "Family Homework" tiles with nothing to tell them

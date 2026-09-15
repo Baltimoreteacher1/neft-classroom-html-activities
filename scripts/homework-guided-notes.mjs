@@ -44,7 +44,13 @@ export const escAttr = esc;
 // human-facing label. The raw id still drives URLs, storage keys, and
 // window.LESSON_ID.
 export function displayLessonId(lessonId) {
-  return String(lessonId ?? "").replace(/-(flagship|group\d+|catchup)$/, "");
+  // `-part2` is NOT a build detail like the others: it is the second of the two
+  // sessions the lesson is taught over, and a family holding two pages for one
+  // lesson needs to see which night each belongs to. Kept, but said in words —
+  // "Lesson 2-1 · Part 2", never the folder slug "2-1-part2".
+  return String(lessonId ?? "")
+    .replace(/-(flagship|group\d+|catchup)$/, "")
+    .replace(/-part2$/, " · Part 2");
 }
 
 /**
@@ -61,7 +67,12 @@ export function displayLessonId(lessonId) {
  */
 export function homeworkPageLabel(lessonId) {
   const id = String(lessonId ?? "");
-  return /-(practice|catchup|review)$/.test(id) ? "Review" : `Lesson ${displayLessonId(id)}`;
+  if (/-(practice|catchup|review)$/.test(id)) return "Review";
+  // A bridge lesson's Part 2 is still a review: its own title says which
+  // lessons it covers, so naming it "Lesson 6-1-6-2-practice · Part 2" is the
+  // folder slug leaking to a family all over again.
+  if (/-(practice|catchup|review)-part2$/.test(id)) return "Review · Part 2";
+  return `Lesson ${displayLessonId(id)}`;
 }
 
 function firstTurnAndTalk(config) {
