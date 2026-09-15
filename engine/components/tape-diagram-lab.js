@@ -42,6 +42,12 @@ function ensureStyles() {
        out, so nothing here should invite tapping. */
     cursor:default;}
   .tdl-part-unknown{opacity:.92;}
+  /* Ratio shape only: the cell becomes an equal-width GROUP column and this is
+     the bar inside it, so group boundaries line up across the two rows and each
+     column reads "3 to 2" at a glance. */
+  .tdl-part-col{background:none!important;border:0!important;padding:0;justify-content:flex-start;}
+  .tdl-fill{height:100%;min-width:0;overflow:hidden;border-radius:5px;display:flex;
+    align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.78rem;}
   .tdl-ask{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:12px;}
   .tdl-asklab{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
     color:var(--muted,#54677c);}
@@ -193,6 +199,9 @@ export function renderTapeDiagram(host, cfg) {
   // Scale part widths to the longest row, so a part's size reflects its value.
   const rowTotals = rows.map((r) => r.parts.reduce((s, p) => s + (Number(p.value) || 1), 0));
   const maxTotal = Math.max(...rowTotals, 1);
+  /* For the ratio shape the columns are equal and the BAR inside is scaled, so
+     the scale is the largest single part, not the longest row. */
+  const maxPart = Math.max(...rows.flatMap((r) => r.parts.map((p) => Number(p.value) || 1)), 1);
 
   // The activity used to be "tap each part to count them". Counting boxes that
   // are already drawn on the screen is not the thinking the diagram is there to
@@ -371,12 +380,29 @@ export function renderTapeDiagram(host, cfg) {
       r.parts.forEach((p, i) => {
         const cell = document.createElement("div");
         cell.className = `tdl-part${rowIsUnknown && !solved ? " tdl-part-unknown" : ""}`;
-        const grow = (Number(p.value) || 1) / maxTotal;
-        cell.style.flex = `${grow} 1 0`;
-        cell.style.background = p.fill || PALETTE[colorIx % PALETTE.length];
+        const value = Number(p.value) || 1;
+        const colour = p.fill || PALETTE[colorIx % PALETTE.length];
         colorIx += 1;
         const text = partLabel(rowIsUnknown, p);
-        cell.textContent = String(text);
+        if (ratio) {
+          /* Equal columns, proportional bar. Sizing the CELL by value instead
+             put group 1 of a 3-part row at 0-25% and group 1 of a 2-part row at
+             0-16.7%, so nothing lined up and the 3 : 2 in each group could not
+             be read off the picture — which is the one thing this shape exists
+             to show. */
+          cell.classList.add("tdl-part-col");
+          cell.style.flex = "1 1 0";
+          const fill = document.createElement("span");
+          fill.className = "tdl-fill";
+          fill.style.width = `${(value / maxPart) * 100}%`;
+          fill.style.background = colour;
+          fill.textContent = String(text);
+          cell.appendChild(fill);
+        } else {
+          cell.style.flex = `${value / maxTotal} 1 0`;
+          cell.style.background = colour;
+          cell.textContent = String(text);
+        }
         cell.setAttribute("aria-label", `${r.label || "Part"} ${i + 1}: ${text}`);
         track.appendChild(cell);
       });
@@ -426,11 +452,19 @@ export function renderTapeDiagram(host, cfg) {
         const per = ri === 0 ? ratio.a : ratio.b;
         track.innerHTML = "";
         for (let i = 0; i < groups; i += 1) {
+          /* Same equal-column, proportional-bar layout build() uses. This
+             redraw replaces the rows on every +/- group, so sizing cells by
+             value here undid the alignment the moment a family touched the
+             control — and it also renders the FIRST explorer view. */
           const cell = document.createElement("div");
-          cell.className = "tdl-part";
-          cell.style.flex = `${per / maxTotal} 1 0`;
-          cell.style.background = PALETTE[(ri * 2 + (i % 2)) % PALETTE.length];
-          cell.textContent = formatQty(per);
+          cell.className = "tdl-part tdl-part-col";
+          cell.style.flex = "1 1 0";
+          const fill = document.createElement("span");
+          fill.className = "tdl-fill";
+          fill.style.width = `${(per / maxPart) * 100}%`;
+          fill.style.background = PALETTE[(ri * 2 + (i % 2)) % PALETTE.length];
+          fill.textContent = formatQty(per);
+          cell.appendChild(fill);
           cell.setAttribute(
             "aria-label",
             `${row.label || "Row"} group ${i + 1}: ${formatQty(per)}`,
