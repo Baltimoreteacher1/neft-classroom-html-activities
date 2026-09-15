@@ -477,6 +477,16 @@ export function detectVisualMismatch(config, html) {
    neighbours, not the vocabulary the whole unit shares. Built from the title and
    the vocabulary terms with the generic mathematical scaffolding removed. */
 const GENERIC_SIGNATURE = new Set([
+  /* A bridge lesson is titled for its ROLE, not its mathematics — "6.1–6.2 ·
+     Extra Practice" reduces to exactly these two words. Left in, they are a
+     signature a correct note can never satisfy, and `6-1-6-2-practice` was
+     reported as belonging to `6-2-part2` while its note names Lessons 6.1 and
+     6.2 and Keep-Change-Flip, which is precisely its own objective. Out, the
+     title yields no signature and the detector's existing opt-out for
+     topic-free titles takes over. */
+  "extra",
+  "practice",
+  "review",
   "determine",
   "describe",
   "understand",

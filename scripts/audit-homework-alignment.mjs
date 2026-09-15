@@ -16,12 +16,16 @@ const root = join(import.meta.dirname, "..");
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
-/* Part 2 is swept alongside the core lessons. It is a family homework a parent
-   opens exactly like any other, and for its first four days on the site nothing
-   audited one: this regex stopped at `-flagship`, so 76 pages shipped with their
-   problems ranked against the OTHER session's mathematics and every gate stayed
-   green. A homework that no sweep reaches is a homework with no alignment. */
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship|-part2)?$/;
+/* THE SUBJECT IS EVERY PAGE THAT EXISTS, not every page whose name was
+   anticipated. This used to be `/^(\d+)-(\d+)(-flagship)?$/`, and a name-shaped
+   filter silently shrinks: the 76 `-part2` homeworks shipped outside it and were
+   ranked against the OTHER session's mathematics with every gate green, and
+   widening it by hand to `-part2` STILL missed four more — the bridge lessons
+   `1-practice`, `1-review`, `6-1-6-2-practice` and `6-1-6-2-practice-part2`, all
+   four live and returning 200. Discovery is now "the directory ships a
+   homework.html", which is the thing this audit is named for and cannot be
+   outgrown by the next id shape somebody invents. */
+const ORDER_RE = /^(\d+)-(\d+)/;
 
 const REQUIRED_MARKERS = [
   {
@@ -92,11 +96,19 @@ const REQUIRED_MARKERS = [
 
 function loadLessons() {
   return readdirSync(lessonsDir)
-    .filter((d) => LESSON_DIR_RE.test(d) && existsSync(join(lessonsDir, d, "config.json")))
+    .filter(
+      (d) =>
+        existsSync(join(lessonsDir, d, "config.json")) &&
+        existsSync(join(lessonsDir, d, "homework.html")),
+    )
     .sort((a, b) => {
-      const [, u1, l1] = a.match(LESSON_DIR_RE);
-      const [, u2, l2] = b.match(LESSON_DIR_RE);
-      return Number(u1) - Number(u2) || Number(l1) - Number(l2);
+      /* Unit/lesson order where the id carries one; a bridge id like
+         `6-1-6-2-practice` still leads with its unit, and anything with no
+         leading number sorts by name rather than being dropped. */
+      const m1 = a.match(ORDER_RE);
+      const m2 = b.match(ORDER_RE);
+      if (!m1 || !m2) return m1 ? -1 : m2 ? 1 : a.localeCompare(b);
+      return Number(m1[1]) - Number(m2[1]) || Number(m1[2]) - Number(m2[2]) || a.localeCompare(b);
     })
     .map((id) => {
       const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
@@ -120,7 +132,7 @@ const lessons = loadLessons();
    that silently stops generating homework fails here instead of shrinking the
    denominator and still reporting "all compliant". Was 74 until the book-TOC
    renumber brought the curriculum to 84. */
-const expectedCount = 84 + 76;
+const expectedCount = 164;
 const failures = [];
 const alignmentRows = [];
 
