@@ -214,7 +214,15 @@ export function renderTapeDiagram(host, cfg) {
     <div class="tdl-hint">${
       model
         ? esc(model.question)
-        : "Read the bars: the top one is the whole, the bottom one shows the equal parts."
+        : ratio
+          ? /* The two-parallel-rows shape has no whole and no equal parts of a
+               whole — it compares two quantities. The whole/parts sentence was
+               printed for it anyway, telling a family the top bar is "the
+               whole" when it is one side of a comparison. */
+            esc(
+              `Read the bars: each group is ${ratio.a} to ${ratio.b}, and there are ${ratio.groups} groups.`,
+            )
+          : "Read the bars: the top one is the whole, the bottom one shows the equal parts."
     }</div>
     <div class="tdl-stage"></div>
     ${

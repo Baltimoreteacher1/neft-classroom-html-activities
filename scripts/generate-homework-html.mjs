@@ -1261,6 +1261,16 @@ function lessonModelCandidates(config) {
     }
   };
 
+  /* An AUTHORED family model wins. The lesson's own `practice.diagram` is
+     chosen for the lesson's surfaces, and it is not always the right thing to
+     hand a parent: 3-1 teaches "write a ratio, part-to-part and part-to-whole",
+     and its practice diagram is a 20-cup bowl split into 4 equal batches, which
+     the tape-diagram lab reads as "the whole is 20, split into 4 equal parts —
+     what is ONE part worth?". That is division for a unit value, the Part 2
+     session's mathematics, and no wording of the TOUCH & TRY prompts can make
+     it ask for a ratio. Authoring the family model in the sidecar fixes the
+     family page without editing lesson content the worksheets also render. */
+  add(config.familyNotes?.model);
   // Match the lesson flow: practice is the most actionable family model,
   // followed by explore/connect, the launch visual, and review diagram.
   add(config.practice?.diagram);
