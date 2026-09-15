@@ -1282,12 +1282,18 @@ function lessonModelCandidates(config) {
 }
 
 function selectLessonInteractiveModel(config) {
+  /* A model with no title of its own borrows the lesson's — and a Part 2's own
+     title is "7.1 · Part II", so all 76 Part 2 pages headed their TOUCH & TRY
+     with a section number and no mathematics, next to a page header that
+     already says "Lesson 7-1 · Part 2". The page title already prefers the
+     sidecar's sessionTitle for exactly this reason; the model title did not. */
+  const lessonTitle = config.familyNotes?.sessionTitle || config.title;
   for (const candidate of lessonModelCandidates(config)) {
     const candidateTitle =
       candidate.title ||
       (candidate.kind === "fraction-divide"
         ? "Fraction Division Visualizer & Lab"
-        : config.title || "Interactive Lesson Model");
+        : lessonTitle || "Interactive Lesson Model");
     const html = interactiveVisualHost(candidate, {
       ariaLabel: `Interactive ${candidateTitle}`,
       fallback: "Turn on JavaScript to use the interactive lesson model.",
@@ -1295,11 +1301,7 @@ function selectLessonInteractiveModel(config) {
     if (html) {
       return {
         kind: candidate.kind,
-        title:
-          candidate.title ||
-          (candidate.kind === "fraction-divide"
-            ? "Fraction Division Visualizer & Lab"
-            : config.title || "Interactive Lesson Model"),
+        title: candidateTitle,
         html,
       };
     }
