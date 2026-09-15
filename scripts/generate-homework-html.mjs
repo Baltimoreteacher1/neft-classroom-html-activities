@@ -53,6 +53,19 @@ const CHECK = process.argv.includes("--check");
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 
+/** Authored Session 2 practice, keyed by part2 lesson id. See the file's own
+ *  $comment, and tools/part-two-session2-practice.test.mjs for the answer key
+ *  verification. Absent file = every Part 2 keeps its inherited pool. */
+const SESSION2_PRACTICE = (() => {
+  const path = join(root, "data", "part-two-session2-practice.json");
+  if (!existsSync(path)) return {};
+  try {
+    return JSON.parse(readFileSync(path, "utf8")).lessons || {};
+  } catch (e) {
+    throw new Error(`data/part-two-session2-practice.json is unreadable: ${e.message}`);
+  }
+})();
+
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // Match core/flagship lessons like "3-2" or "3-2-flagship"
@@ -549,6 +562,25 @@ function lessonConfigs() {
             console.error(`Could not read ${baseId} for ${dir.name}: ${e.message}`);
           }
         }
+      }
+      /* A Part 2 whose session has AUTHORED practice uses it instead of the
+         pool it inherits from day one. `buildGroupLevels` in
+         generate-part-two.mjs sources every Part 2's items from the PARENT
+         lesson's parallel banks, which drill the parent's skill — so 3-1
+         session 2 taught splitting a total with a tape diagram and then asked
+         "write the ratio" fifteen times. This replaces the tiers rather than
+         appending, because leaving the inherited items in place leaves the
+         family answering the other session's questions. Lessons absent from the
+         file are untouched and are listed by `npm run report:part-two-practice`. */
+      const authoredPractice = SESSION2_PRACTICE[dir.name];
+      if (authoredPractice) {
+        shaped.practice = {
+          ...(shaped.practice || {}),
+          approaching: authoredPractice.approaching || [],
+          onLevel: authoredPractice.onLevel || [],
+          extending: authoredPractice.extending || [],
+          optional: [],
+        };
       }
       out.push({ id: dir.name, config: shaped });
     } catch (err) {

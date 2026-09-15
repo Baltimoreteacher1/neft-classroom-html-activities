@@ -255,6 +255,31 @@ function renderSharedLessonModel(topic, config, lessonModel) {
     config.contentObjective ||
     config.title;
 
+  /* The three TOUCH & TRY cards default to text that is IDENTICAL on all 164
+     family homeworks — "Move, type, tap, or drag in the model" tells a family
+     nothing about tonight's mathematics. A lesson whose model shows more than
+     one idea cannot ask for either one without saying so, which is how 3-1
+     ended up with a tape diagram that can show part-to-part AND part-to-whole
+     and a prompt that named neither. A lesson authors its own in the
+     family-note sidecar under `touchAndTry`; everything unset falls back. */
+  const authored = config.familyNotes?.touchAndTry || {};
+  const touch = {
+    touchEn:
+      authored.touchEn ||
+      (isFactorTree
+        ? "Choose two factors that multiply to the number in the circle."
+        : "Move, type, tap, or drag in the model. Watch what changes."),
+    touchEs:
+      authored.touchEs ||
+      (isFactorTree
+        ? "Elige dos factores cuyo producto sea el número del círculo."
+        : "Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia."),
+    mathEn: authored.mathEn || "Record one equation, value, or relationship you can see.",
+    mathEs: authored.mathEs || "Escribe una ecuación, un valor o una relación que puedas ver.",
+    explainEn: authored.explainEn || "I notice ___ changes when ___ changes. This shows ___.",
+    explainEs: authored.explainEs || "Noto que ___ cambia cuando ___ cambia. Esto muestra ___.",
+  };
+
   return `<section class="family-visual-lab" data-visual-lab="${esc(topic)}" data-lesson-model="${esc(kind)}" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
       <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
@@ -263,9 +288,9 @@ function renderSharedLessonModel(topic, config, lessonModel) {
     </div>
     <div class="visual-lab-stage" data-lesson-model-host>${lessonModel.html}</div>
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
-      <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">${isFactorTree ? "Choose two factors that multiply to the number in the circle." : "Move, type, tap, or drag in the model. Watch what changes."}</span><span class="lang-es" lang="es">${isFactorTree ? "Elige dos factores cuyo producto sea el número del círculo." : "Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia."}</span></p></article>
-      <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">${esc(idea)}</p></details></article>
+      <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">${esc(touch.touchEn)}</span><span class="lang-es" lang="es">${esc(touch.touchEs)}</span></p></article>
+      <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">${esc(touch.mathEn)}</span><span class="lang-es" lang="es">${esc(touch.mathEs)}</span></p></article>
+      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">${esc(touch.explainEn)}</span><span class="lang-es" lang="es">${esc(touch.explainEs)}</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">${esc(idea)}</p></details></article>
     </div>
   </section>`;
 }
