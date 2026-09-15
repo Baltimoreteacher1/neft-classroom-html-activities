@@ -907,8 +907,11 @@
         ["mstarWorksheet", "MSTAR practice"],
         ["exitTicket", "Exit ticket"],
       ];
+      /* The family homework is composed in renderOpen rather than listed here,
+       * because a lesson taught over two sessions has TWO nights of it — Part 2
+       * teaches the session's own mathematics, not a repeat of night one — and
+       * both belong in this row. */
       var HOME_PARTS = [
-        ["homework", "Family homework"],
         ["familyPage", "Family page"],
         ["studentHelp", "Student help"],
       ];
@@ -925,26 +928,42 @@
         ["practice", "Practice Set"],
       ];
 
-      /** One labelled row of links, appended only if it has something in it. */
-      function partRow(lesson, parts, labelText, className) {
-        var present = parts.filter(function (p) {
-          return lesson.resources && lesson.resources[p[0]];
-        });
-        if (!present.length) return;
+      /** One labelled row of links, appended only if it has something in it.
+       *  Entries are [href, label], already resolved against a manifest entry. */
+      function linkRow(entries, labelText, className) {
+        if (!entries.length) return;
         var row = document.createElement("p");
         row.className = "tws-actions " + className;
         var label = document.createElement("span");
         label.className = "tws-open-label";
         label.textContent = labelText;
         row.appendChild(label);
-        present.forEach(function (p) {
+        entries.forEach(function (entry) {
           var a = document.createElement("a");
           a.className = "tws-btn ghost";
-          a.href = lesson.resources[p[0]];
-          a.textContent = p[1];
+          a.href = entry[0];
+          a.textContent = entry[1];
           row.appendChild(a);
         });
         openBox.appendChild(row);
+      }
+
+      /** The [href, label] entries a manifest entry actually carries for
+       *  `parts`. A key the manifest does not carry yields nothing — that is the
+       *  dead-button rule, applied once here. */
+      function partEntries(lesson, parts) {
+        return parts
+          .filter(function (p) {
+            return lesson.resources && lesson.resources[p[0]];
+          })
+          .map(function (p) {
+            return [lesson.resources[p[0]], p[1]];
+          });
+      }
+
+      /** One labelled row of links, appended only if it has something in it. */
+      function partRow(lesson, parts, labelText, className) {
+        linkRow(partEntries(lesson, parts), labelText, className);
       }
 
       function renderOpen() {
@@ -1064,7 +1083,24 @@
          * find the notes, the homework and the family page — the parts are all
          * in the manifest already, so the trip was pure navigation cost. */
         partRow(lesson, TEACH_PARTS, "Lesson materials", "tws-open-parts");
-        partRow(lesson, HOME_PARTS, "Home & student support", "tws-open-home");
+
+        /* What goes home, both nights of it. A two-session lesson ships a second
+         * family homework on its Part 2 — 2-1 night one is statistical
+         * questions, night two is dot plots — so it sits beside night one here
+         * rather than only on /curriculum/units/, suffixed the way that page
+         * labels the pair. A one-session lesson keeps the plain label. */
+        var homework = (lesson.resources && lesson.resources.homework) || null;
+        var p2Homework = (p2 && p2.resources && p2.resources.homework) || null;
+        var homeEntries = [];
+        if (homework) {
+          homeEntries.push([homework, p2Homework ? "Family homework · Part 1" : "Family homework"]);
+        }
+        if (p2Homework) homeEntries.push([p2Homework, "Family homework · Part 2"]);
+        linkRow(
+          homeEntries.concat(partEntries(lesson, HOME_PARTS)),
+          "Home & student support",
+          "tws-open-home",
+        );
       }
 
       function remember() {
