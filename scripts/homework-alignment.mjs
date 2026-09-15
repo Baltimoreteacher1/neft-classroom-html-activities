@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 /**
  * Shared topic detection and alignment scoring for family homework.
  */
@@ -46,10 +48,72 @@ function keyIdea(config) {
   return intro?.keyIdea || intro?.intro || config.contentObjective || config.title || "";
 }
 
+/** The topics scripts/homework-visual-labs.mjs actually ships a lab for. A
+ *  declared topic with no lab is no better than the fallback. */
+const LAB_TOPICS = new Set([
+  "exponents",
+  "ratios",
+  "equations",
+  "inequalities",
+  "properties",
+  "expressions",
+  "area",
+  "volume",
+  "surface-area",
+  "statistics",
+  "coordinate-plane",
+  "number-line",
+  "fractions",
+  "division",
+  "decimals",
+  "factors",
+]);
+
+/* The curriculum already DECLARES each standard's topic in
+   data/ccss-standards.json, and those ids are the same vocabulary the labs use
+   ("coordinate-plane", "number-line", …). Consulted only after every rule below
+   has failed, so it changes nothing that already resolves — it just stops a
+   lesson falling back to a generic lab when its own standard says what it is
+   about. `validate:interactive-alignment` reads the same field for the same
+   reason: the standard is read, never inferred from a title. */
+let standardTopics = null;
+function topicFromStandard(code) {
+  if (!code) return null;
+  if (!standardTopics) {
+    standardTopics = new Map();
+    try {
+      const url = new URL("../data/ccss-standards.json", import.meta.url);
+      const raw = JSON.parse(readFileSync(url, "utf8"));
+      /* The registry nests the codes under `standards`; the top level is
+         $schema/description/domains/standards. Reading the top level yielded
+         one entry called "standards" and every lookup missed. */
+      const table = raw && typeof raw === "object" && raw.standards ? raw.standards : raw;
+      const entries = Array.isArray(table) ? table : Object.entries(table);
+      for (const entry of entries) {
+        const [id, value] = Array.isArray(entry) ? entry : [entry.code || entry.id, entry];
+        if (id && value && typeof value.topic === "string") standardTopics.set(id, value.topic);
+      }
+    } catch {
+      /* No standards file is not a reason to fail generation; the rules above
+         still decide, and the result is the same fallback as before. */
+    }
+  }
+  return standardTopics.get(code) || null;
+}
+
 /** Topic id used for visuals, anti-keywords, and alignment. */
 export function detectVisualTopic(config) {
   const standard = String(config.standard || "");
-  const title = String(config.title || "").toLowerCase();
+  /* A Part 2's own title is "7.1 · Part II" — no mathematics in it at all — so
+     every title-driven rule below fell through and the lesson got the generic
+     fallback lab. Core 7-1 "Explore Integers and Their Opposites" resolves to
+     number-line and 7-5 to coordinate-plane; all seven Unit 7 Part 2 pages
+     resolved to `fallback` while those labs sat unused. What session two
+     teaches is the sidecar's `sessionTitle` ("Reflecting Points Across the
+     Axes"), which is present on all 77 Part 2 notes and on none of the 87 core
+     ones — the same discriminator extractLessonKeywords already uses, applied
+     to the other half of the problem. */
+  const title = String(config.familyNotes?.sessionTitle || config.title || "").toLowerCase();
   const unit = Number(config.unit) || 0;
 
   if (standard === "6.AT.5" || /exponent|power/i.test(title)) return "exponents";
@@ -103,6 +167,8 @@ export function detectVisualTopic(config) {
     return "division";
   if (standard === "6.NOS.3" || /decimal/i.test(title)) return "decimals";
   if (standard === "6.NOS.4" || /prime|factor|lcm|gcf|multiple/i.test(title)) return "factors";
+  const declared = topicFromStandard(standard);
+  if (declared && LAB_TOPICS.has(declared)) return declared;
   return "fallback";
 }
 
