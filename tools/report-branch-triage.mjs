@@ -68,11 +68,34 @@ const branches = git(
   .filter((b) => b && b !== BASE && b !== "origin/HEAD" && b !== "main");
 
 const rows = [];
+let considered = 0;
 for (const branch of branches) {
-  const mergeBase = git("merge-base", BASE, branch).trim();
-  if (!mergeBase) continue;
   const ahead = Number(git("rev-list", "--count", `${BASE}..${branch}`).trim() || 0);
   if (!ahead) continue;
+  considered++;
+
+  /* NO COMMON ANCESTOR. `git merge-base` EXITS 1 when two histories are
+     unrelated, and an early `continue` on that dropped 15 of 159 branches from
+     this report in silence — `haftarah-trope-words-and-accent`,
+     `noam-school-v9-upgrade`, `calendar-customization-classroom-sync` and the
+     rest, which are other PROJECTS' histories that were pushed to this remote.
+     They are not stale feature branches and they never branched from main, so
+     they get their own verdict rather than a presence score: there is no shared
+     file history to compare against. A report that quietly omits its hardest
+     cases is worse than no report. */
+  const mergeBase = git("merge-base", BASE, branch).trim();
+  if (!mergeBase) {
+    rows.push({
+      branch,
+      ahead,
+      tip: git("log", "-1", "--format=%ad", "--date=short", branch).trim(),
+      base: "—",
+      presence: null,
+      sampled: 0,
+      verdict: "unrelated history",
+    });
+    continue;
+  }
 
   const files = git("diff", "--name-only", `${mergeBase}..${branch}`)
     .split("\n")
@@ -119,7 +142,13 @@ for (const branch of branches) {
   });
 }
 
-const order = { unshipped: 0, partial: 1, superseded: 2, "no comparable lines": 3 };
+const order = {
+  unshipped: 0,
+  partial: 1,
+  superseded: 2,
+  "no comparable lines": 3,
+  "unrelated history": 4,
+};
 rows.sort((a, b) => order[a.verdict] - order[b.verdict] || (a.presence ?? 0) - (b.presence ?? 0));
 const count = (v) => rows.filter((r) => r.verdict === v).length;
 
@@ -131,6 +160,7 @@ const lines = [
   `- **${count("unshipped")} unshipped** (<40% of added lines on main)`,
   `- **${count("partial")} partial** (40–79%)`,
   `- **${count("superseded")} superseded** (≥80%)`,
+  `- **${count("unrelated history")} unrelated history** — no common ancestor with \`${BASE}\`; other projects' branches living on this remote, not work pending here.`,
   "",
   "`ahead` is a commit count and **overstates** — ship.sh cherry-picks, so shipped work reaches main with a different sha. `presence` is the real signal. Neither is proof: this report deletes nothing and recommends nothing be deleted on its number alone.",
   "",
@@ -142,6 +172,12 @@ const lines = [
   ),
   "",
 ];
+if (rows.length !== considered) {
+  throw new Error(
+    `branch-triage dropped ${considered - rows.length} of ${considered} branches — every branch with commits ahead must appear`,
+  );
+}
+
 const text = lines.join("\n");
 
 if (STDOUT) {
