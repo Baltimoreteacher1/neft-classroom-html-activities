@@ -95,11 +95,11 @@
         '<div class="dc-step1-launch-text">' +
         '  <span class="en-text">🚀 Words reviewed? Jump straight to building your plan!</span>' +
         '  <span class="es-text">🚀 ¿Palabras repasadas? ¡Pasa directo a construir tu plan!</span>' +
-        '</div>' +
+        "</div>" +
         '<button type="button" class="dc-step1-launch-btn">' +
         '  <span class="en-text">Start Building (Step 2) →</span>' +
         '  <span class="es-text">Comenzar a construir (Paso 2) →</span>' +
-        '</button>';
+        "</button>";
 
       var launchBtn = banner.querySelector(".dc-step1-launch-btn");
       launchBtn.addEventListener("click", function () {
@@ -157,9 +157,17 @@
       var div = document.createElement("div");
       div.className = "dc-glossary-item";
       div.innerHTML =
-        '<div class="dc-glossary-term">' + item.icon + " " + item.termHtml + "</div>" +
-        '<div class="dc-glossary-def">' + item.defHtml + "</div>" +
-        (item.exHtml ? '<div class="vocab-ex" style="margin-top:4px">' + item.exHtml + "</div>" : "");
+        '<div class="dc-glossary-term">' +
+        item.icon +
+        " " +
+        item.termHtml +
+        "</div>" +
+        '<div class="dc-glossary-def">' +
+        item.defHtml +
+        "</div>" +
+        (item.exHtml
+          ? '<div class="vocab-ex" style="margin-top:4px">' + item.exHtml + "</div>"
+          : "");
       body.appendChild(div);
     });
 
@@ -179,13 +187,15 @@
 
   /* ---- 3. Step 5: Instant Partner / Classmate Benchmark Helper ---- */
   function decoratePartnerCompare() {
-    var pNameInput = document.getElementById("p-name") ||
-                     document.getElementById("partner-name") ||
-                     document.getElementById("deal-partner");
+    var pNameInput =
+      document.getElementById("p-name") ||
+      document.getElementById("partner-name") ||
+      document.getElementById("deal-partner");
     if (!pNameInput || pNameInput.dataset.dcPartnerDone) return;
     pNameInput.dataset.dcPartnerDone = "1";
 
-    var container = pNameInput.closest(".card") || pNameInput.closest(".step-panel") || pNameInput.parentNode;
+    var container =
+      pNameInput.closest(".card") || pNameInput.closest(".step-panel") || pNameInput.parentNode;
     if (!container || container.querySelector(".dc-partner-helper")) return;
 
     var helper = document.createElement("div");
@@ -194,11 +204,11 @@
       '<span class="dc-partner-helper-text">' +
       '  <span class="en-text">Working solo or partner isn\'t ready yet?</span>' +
       '  <span class="es-text">¿Trabajas solo o tu compañero aún no está listo?</span>' +
-      '</span>' +
+      "</span>" +
       '<button type="button" class="dc-partner-btn">' +
       '  <span class="en-text">⚡ Load Classmate Benchmark Data</span>' +
       '  <span class="es-text">⚡ Cargar datos de compañero estándar</span>' +
-      '</button>';
+      "</button>";
 
     var pBtn = helper.querySelector(".dc-partner-btn");
     pBtn.addEventListener("click", function () {
@@ -215,7 +225,7 @@
         "partner-dim-l": "12",
         "partner-dim-w": "10",
         "partner-area": "120",
-        "partner-budget": "250"
+        "partner-budget": "250",
       };
 
       for (var id in bank) {
@@ -252,11 +262,11 @@
       var bench = document.createElement("div");
       bench.className = "dc-research-benchmark no-print";
       bench.innerHTML =
-        '<span>🛒 <strong>Standard Supermarket Benchmark:</strong> Strawberries $3.99 for 16 oz ($0.25/oz) · Yogurt $2.40 for 32 oz ($0.08/oz)</span>' +
+        "<span>🛒 <strong>Standard Supermarket Benchmark:</strong> Strawberries $3.99 for 16 oz ($0.25/oz) · Yogurt $2.40 for 32 oz ($0.08/oz)</span>" +
         '<button type="button" class="dc-research-fill-btn">' +
         '  <span class="en-text">⚡ Use Market Averages</span>' +
         '  <span class="es-text">⚡ Usar promedios del mercado</span>' +
-        '</button>';
+        "</button>";
 
       var fillBtn = bench.querySelector(".dc-research-fill-btn");
       fillBtn.addEventListener("click", function () {
@@ -318,4 +328,3 @@
   setTimeout(run, 1500); // Guard for dynamically rendered panels
   if (typeof window !== "undefined") window.NTDeclutter = run;
 })();
-
