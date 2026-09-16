@@ -176,23 +176,17 @@ function fitsInto(total, per) {
   checks += 3;
 }
 
-/* 3-3 bridge strategy: build the simplified ratio up group by group. */
+/* 3-3 missing ratio-table value: independently re-derive via cross-multiplication,
+   a differently-shaped method than "find the scale factor, apply it to both terms". */
 {
-  const bridge = (a, b) => {
-    const g = (x, y) => (y ? g(y, x % y) : x);
-    const k = g(a, b);
-    return [a / k, b / k];
-  };
-  const [ba, bb] = bridge(14, 21);
-  ok("3-3 bridge of 14 : 21", `${ba}:${bb}`, "2:3");
-  let brown = 0;
-  let black = 0;
-  while (brown < 8) {
-    brown += ba;
-    black += bb;
-  }
-  ok("3-3 brown reaches the target exactly", brown, 8);
-  ok("3-3 black for 8 drops of brown", black, 12);
+  // 4 : 3 :: x : 1 — cross-multiply to solve for the unknown red-paint amount.
+  const crossMultiply = (a, b, d) => (a * d) / b; // a : b :: x : d  =>  x = a*d/b
+  const red = crossMultiply(4, 3, 1);
+  ok("3-3 red paint for 1 cup yellow (4:3 scaled down)", red, 4 / 3);
+  ok("3-3 red paint as thirds matches 1 1/3", Math.round(red * 3), 4);
+  // Check going back up: scaling 1 cup yellow by 3 must return the original ratio.
+  ok("3-3 check: yellow scaled back up", 1 * 3, 3);
+  ok("3-3 check: red scaled back up", red * 3, 4);
   let a45 = 0;
   let b45 = 0;
   while (a45 < 20) {
