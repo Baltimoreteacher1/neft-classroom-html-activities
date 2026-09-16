@@ -152,9 +152,17 @@ export function detectVisualTopic(config) {
   // and percent lesson by standard, so nothing depends on the loose prefix.
   if (standard.startsWith("6.AT") || /\bratios?\b|unit rate|\brate\b|percent/i.test(title))
     return "ratios";
-  if (unit === 5 || standard === "6.GR.1") return "area";
+  /* Volume and surface area are claimed BEFORE the unit-5 catch-all. Read the
+     other way round, `unit === 5` swallowed the whole geometry unit: 5-5 and
+     5-10 ("Volume of Rectangular Prisms", 6.GR.2) and 5-6 through 5-8 (surface
+     area, 6.GR.4) all resolved to "area" — ten lessons whose family lab taught
+     a different measurement than the lesson. 5-10 is the lesson this repo
+     already caught shipping an open-top SURFACE-AREA readout in a volume
+     lesson; the topic was wrong underneath it the whole time. 6.GR.1 is the
+     genuine area standard and still claims the rest of the unit. */
   if (standard === "6.GR.2" || /volume/i.test(title)) return "volume";
-  if (standard === "6.GR.4" || /surface/i.test(title)) return "surface-area";
+  if (standard === "6.GR.4" || /surface|net\b|pyramid/i.test(title)) return "surface-area";
+  if (unit === 5 || standard === "6.GR.1") return "area";
   if (
     standard.startsWith("6.DS") ||
     /box plot|dot plot|histogram|display data|data distribution/i.test(title)
