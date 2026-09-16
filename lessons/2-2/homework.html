@@ -1989,10 +1989,10 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
   font-family: var(--font-display); font-weight: 800; color: var(--white);
   flex-shrink: 0;
 }
-.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
-.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
-.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
-.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+.step-color-1 .step-dot, .step-color-1.step-badge, .step-color-1.guided-step-num { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge, .step-color-2.guided-step-num { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge, .step-color-3.guided-step-num { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge, .step-color-4.guided-step-num { background: var(--coral); }
 
 .concept-quick-wrap {
   margin: 0 0 16px;
@@ -5339,29 +5339,36 @@ body.lang-mode-es .concept-title-es { display: inline; }
 .big-idea .concept-quick-step .lang-es { font-size: 14px; color: var(--muted); }
 
 /* 4. Guided steps. A large numeral carries the order so a parent can follow
-   the sequence without reading a word of it first. */
-.big-idea .guided-steps { gap: 16px; }
+   the sequence without reading a word of it first. Compact cards, colored
+   left border + numeral per step (matching the quick-path above) so the
+   sequence reads as a scannable trail rather than four tall blocks. */
+.big-idea .guided-steps { gap: 10px; }
 .big-idea .guided-step {
-  padding: 22px 24px;
-  border: 2px solid var(--line);
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--line);
   border-radius: var(--radius-md);
 }
-.big-idea .guided-step-head { gap: 14px; margin-bottom: 14px; align-items: center; }
+.big-idea .guided-step.step-color-1 { border-left-color: #5b8def; }
+.big-idea .guided-step.step-color-2 { border-left-color: var(--success); }
+.big-idea .guided-step.step-color-3 { border-left-color: var(--amber); }
+.big-idea .guided-step.step-color-4 { border-left-color: var(--coral); }
+.big-idea .guided-step-head { gap: 10px; margin-bottom: 6px; align-items: center; }
 .guided-step-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
   border-radius: 50%;
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--white);
   background: var(--navy);
 }
-.big-idea .step-cue-label { font-size: 21px; }
+.big-idea .step-cue-label { font-size: 16px; }
 .big-idea .guided-step-icon {
   display: inline;
   width: auto;
@@ -5369,8 +5376,8 @@ body.lang-mode-es .concept-title-es { display: inline; }
   flex: none;
   background: none;
   border-radius: 0;
-  font-size: 24px;
-  margin-right: 8px;
+  font-size: 19px;
+  margin-right: 6px;
 }
 /* The big numeral already states the order, so the "Step 1 / Paso 1" pill is
    pure repetition here — it only competed with the cue label for attention. */
@@ -5401,18 +5408,19 @@ body.lang-mode-es .concept-title-es { display: inline; }
   border-left: 0;
 }
 .big-idea .guided-step .step-lead {
-  font-size: 22px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.4;
   font-weight: 600;
   margin: 0;
 }
 .big-idea .guided-step .step-lead.lang-es {
-  margin-top: 12px;
-  padding-left: 14px;
-  border-left: 4px solid var(--teal);
+  margin-top: 6px;
+  padding-left: 10px;
+  border-left: 3px solid var(--teal);
 }
-.big-idea .step-detail summary { font-size: 17px; }
-.big-idea .step-detail p { font-size: 19px; line-height: 1.5; }
+.big-idea .step-detail { margin-top: 6px; padding-top: 6px; }
+.big-idea .step-detail summary { font-size: 13px; }
+.big-idea .step-detail p { font-size: 14.5px; line-height: 1.45; }
 
 /* 5. Watch-for cues read at the same weight as the steps they support. */
 .big-idea .watch-for-list { padding: 18px 20px; margin-top: 20px; }
@@ -5430,15 +5438,15 @@ body.lang-mode-es .concept-title-es { display: inline; }
    still fits a 375px viewport without a horizontal scroll. */
 @media (max-width: 620px) {
   .big-idea .key-idea-banner p { font-size: 20px; }
-  .big-idea .guided-step { padding: 18px 16px; }
-  .big-idea .guided-step .step-lead { font-size: 20px; }
+  .big-idea .guided-step { padding: 12px 14px; }
+  .big-idea .guided-step .step-lead { font-size: 16px; }
   .big-idea .concept-visual-caption { font-size: 18px; }
   /* Give the drawing back the frame's side padding — on a 375px phone that is
      the difference between a 301px and a 341px picture. */
   .big-idea .concept-visual-wrap { padding: 14px 8px; }
   .big-idea .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .big-idea .concept-quick-step:not(:last-child)::after { content: none; }
-  .guided-step-num { width: 48px; height: 48px; flex: 0 0 48px; font-size: 26px; }
+  .guided-step-num { width: 34px; height: 34px; flex: 0 0 34px; font-size: 16px; }
 }
 
 @media print {
