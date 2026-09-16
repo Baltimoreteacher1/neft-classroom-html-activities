@@ -221,6 +221,141 @@ function fitsInto(total, per) {
   checks += 2;
 }
 
+/* ── Unit 4 · percent reasoning ────────────────────────────────────────────
+   Independent of the JSON's own "decompose and add" / "convert to percent"
+   / "10% building block" / "divide by the decimal" explanations: percents
+   greater than 100% are rebuilt from an exact whole/remainder fraction via
+   cross-multiplication (not decimal multiplication); comparisons are settled
+   by cross-multiplying fractions pairwise (not by converting to percent);
+   estimates are rebuilt by dealing the friendly total into equal boxes (not
+   by multiplying a 10% unit up); and "solve for the whole" equations are
+   re-solved by multiplying by the RECIPROCAL fraction of the percent rather
+   than dividing by its decimal form. */
+
+/** Rebuild a "times as much" multiplier (numerator/denominator) as a percent
+    via whole-piece decomposition and cross-multiplication — no decimal math. */
+function wholesToPercent(numerator, denominator) {
+  const whole = Math.floor(numerator / denominator);
+  const remNum = numerator - whole * denominator;
+  assert.equal(
+    (remNum * 100) % denominator,
+    0,
+    `${numerator}/${denominator} does not land on a whole percent`,
+  );
+  return whole * 100 + (remNum * 100) / denominator;
+}
+
+/* 4-1 percents greater than 100%: decompose into whole pieces + a remainder piece. */
+{
+  ok("4-1 sunflower 1.5x (3/2) as a percent", wholesToPercent(3, 2), 150);
+  ok("4-1 backpack 3x (3/1) as a percent", wholesToPercent(3, 1), 300);
+  ok("4-1 recipe 1.25x (5/4) as a percent", wholesToPercent(5, 4), 125);
+  const wholes340 = Math.floor(340 / 100);
+  const rem340 = 340 - wholes340 * 100;
+  ok("4-1 340% breaks into 3 whole pieces", wholes340, 3);
+  ok("4-1 340% leaves a 40% piece", rem340, 40);
+  assert.ok(rem340 > 0, "4-1: 340% must be MORE than exactly 3 times (300% with no remainder)");
+  checks++;
+}
+
+/** Compare a/b vs c/d by cross-multiplication — never convert to a decimal. */
+function cmpFractions(a, b, c, d) {
+  const left = a * d;
+  const right = c * b;
+  return left === right ? 0 : left > right ? 1 : -1;
+}
+
+/* 4-2 compare and order: settle every pair by cross-multiplication. */
+{
+  ok("4-2 1/4 vs 0.29 (29/100)", cmpFractions(1, 4, 29, 100), -1);
+  ok("4-2 0.29 (29/100) vs 32%", cmpFractions(29, 100, 32, 100), -1);
+  ok("4-2 0.48 (48/100) vs 55%", cmpFractions(48, 100, 55, 100), -1);
+  ok("4-2 55% vs 3/5", cmpFractions(55, 100, 3, 5), -1);
+  ok("4-2 0.7 (7/10) vs 7/10 — the tie", cmpFractions(7, 10, 7, 10), 0);
+  ok("4-2 7/10 vs 68%", cmpFractions(7, 10, 68, 100), 1);
+}
+
+/* 4-3 estimation: rebuild the 10%/25% unit by dealing the total into equal
+   boxes, then rebuild the target percent by repeated addition of that box. */
+{
+  const box40 = dealIntoBoxes(40, 10);
+  let est19 = 0;
+  for (let i = 0; i < 2; i++) est19 += box40;
+  ok("4-3 20% of 40 built from ten boxes", est19, 8);
+
+  const box90 = dealIntoBoxes(90, 10);
+  let est32 = 0;
+  for (let i = 0; i < 3; i++) est32 += box90;
+  ok("4-3 30% of 90 built from ten boxes", est32, 27);
+
+  let discount21 = 0;
+  for (let i = 0; i < 2; i++) discount21 += box40;
+  ok("4-3 20% of $40 discount built from ten boxes", discount21, 8);
+  ok("4-3 sale price is a different question than the discount", 40 - discount21, 32);
+
+  const quarter240 = dealIntoBoxes(240, 4);
+  ok("4-3 25% of 240 built from four boxes", quarter240, 60);
+  const exact = 0.24 * 243;
+  assert.ok(
+    Math.abs(exact - quarter240) < 3,
+    "4-3: the benchmark estimate must land close to the exact 24% of 243",
+  );
+  checks++;
+}
+
+/* 4-4 compare with percents: settle scores by cross-multiplication, and
+   discount dollars by building from a 1%-unit rather than decimal-multiplying. */
+{
+  ok("4-4 27/30 vs 44/50 by cross-multiplication", cmpFractions(27, 30, 44, 50), 1);
+
+  const onePercentOf50 = 50 / 100;
+  let forty50 = 0;
+  for (let i = 0; i < 40; i++) forty50 += onePercentOf50;
+  ok("4-4 40% of 50 built from a 1% unit", forty50, 20);
+
+  const onePercentOf90 = 90 / 100;
+  let twentyfive90 = 0;
+  for (let i = 0; i < 25; i++) twentyfive90 += onePercentOf90;
+  ok("4-4 25% of 90 built from a 1% unit", Math.round(twentyfive90 * 100) / 100, 22.5);
+  assert.ok(
+    twentyfive90 > forty50,
+    "4-4: 25% of the bigger base must beat 40% of the smaller base",
+  );
+  checks++;
+
+  const onePercentOf60 = 60 / 100;
+  let thirty60 = 0;
+  for (let i = 0; i < 30; i++) thirty60 += onePercentOf60;
+  const onePercentOf80 = 80 / 100;
+  let twenty80 = 0;
+  for (let i = 0; i < 20; i++) twenty80 += onePercentOf80;
+  ok("4-4 Store A discount (30% of $60) via 1% units", Math.round(thirty60 * 100) / 100, 18);
+  ok("4-4 Store B discount (20% of $80) via 1% units", Math.round(twenty80 * 100) / 100, 16);
+  assert.ok(thirty60 > twenty80, "4-4: Store A must actually give the bigger discount");
+  checks++;
+}
+
+/** Solve percent × w = part by multiplying both sides by the RECIPROCAL
+    fraction of the percent — never by dividing by its decimal form. */
+function solveWhole(partNumerator, percentAsFraction) {
+  const [pNum, pDen] = percentAsFraction;
+  assert.equal(
+    (partNumerator * pDen) % pNum,
+    0,
+    `${partNumerator} does not scale evenly by ${pDen}/${pNum}`,
+  );
+  return (partNumerator * pDen) / pNum;
+}
+
+/* 4-5 solve for the whole: scale up by the reciprocal fraction, not division. */
+{
+  ok("4-5 24 is 20% (1/5) of what number", solveWhole(24, [1, 5]), 120);
+  ok("4-5 $153 is 45% (9/20) of what first price", solveWhole(153, [9, 20]), 340);
+  ok("4-5 $6 tip is 15% (3/20) of what bill", solveWhole(6, [3, 20]), 40);
+  const forwardCheck = (40 * 15) / 100;
+  ok("4-5 checking forward: 15% of $40 returns the original tip", forwardCheck, 6);
+}
+
 /* ── Structure every item must satisfy to render ────────────────────────── */
 const RENDERABLE = new Set(["multiple-choice", "open-response"]);
 for (const [id, lesson] of Object.entries(DATA.lessons)) {
