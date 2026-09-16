@@ -540,6 +540,18 @@ function lessonConfigs() {
         try {
           const notes = JSON.parse(readFileSync(notesPath, "utf8"));
           shaped.familyNotes = { ...notes, ...(shaped.familyNotes || {}) };
+          /* A Part 2 config carries the CORE lesson's vocabulary verbatim —
+             `generate-part-two.mjs` lists it under CARRIED — so the Words step
+             offers session ONE's terms on a page whose whole subject is session
+             two's. 3-1's Part 2 teaches scale factor and equivalent ratios and
+             named neither. A sidecar may therefore state the session's own word
+             list; it replaces rather than appends, because the family page shows
+             every term it is given and a session-one term is not wrong, just not
+             tonight's. The lesson's own `vocabulary` is untouched — worksheets,
+             slides and the printable all render that field. */
+          if (Array.isArray(notes.vocabulary) && notes.vocabulary.length) {
+            shaped.vocabulary = notes.vocabulary;
+          }
         } catch (e) {
           console.error(`Bad family-homework sidecar for ${dir.name}: ${e.message}`);
         }

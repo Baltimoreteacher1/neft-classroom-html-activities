@@ -1,125 +1,189 @@
 {
-  "$comment": "AUTHORED family-homework practice for a Part 2, keyed by part2 lesson id. Every item here exercises the mathematics THAT SESSION teaches, taken from the district's Reveal 'Session 2' material (the extracted source is data/part-two-session2-source.json). Without this, a Part 2's family homework inherits the PARENT session's practice pool: lesson 3-1 session 2 teaches splitting a total with a tape diagram and its homework asked 'write the ratio' fifteen times. Types are limited to what family homework renders (see isPrintableProblem in scripts/homework-alignment.mjs) — guided-fill is NOT among them, which is why the inherited pool showed only 5 of its 15 items. Every numeric answer is verified by tools/part-two-session2-practice.test.mjs, which re-derives it independently. Distractors are the lesson's own misconceptions, never filler.",
-  "$authoring": "A lesson belongs here only when a human has worked its Session 2 problems and checked the key. Answers are NOT pattern-derived: 160 of the 216 stems across the 54 sourced lessons are bespoke, so a matcher that guesses puts a wrong key in front of a student. Lessons absent from this file keep the inherited pool and are listed by `npm run report:part-two-practice`.",
+  "$comment": "AUTHORED family-homework practice for a Part 2, keyed by part2 lesson id. Every item here exercises the mathematics THAT SESSION teaches, taken from the district's Reveal 'Session 2' material (the extracted source is data/part-two-session2-source.json). Without this, a Part 2's family homework inherits the PARENT session's practice pool: lesson 3-1's homework asked 'write the ratio' fifteen times for a session that never asks it. Types are limited to what family homework renders (see isPrintableProblem in scripts/homework-alignment.mjs) — guided-fill is NOT among them, which is why the inherited pool showed only 5 of its 15 items. Every numeric answer is verified by tools/part-two-session2-practice.test.mjs, which re-derives it independently. Distractors are the lesson's own misconceptions, never filler.",
+  "$authoring": "A lesson belongs here only when a human has worked its Session 2 problems and checked the key. Answers are NOT pattern-derived: 160 of the 216 stems across the 54 sourced lessons are bespoke, so a matcher that guesses puts a wrong key in front of a student. Lessons absent from this file keep the inherited pool and are listed by `npm run report:part-two-practice`. WHEN THE DISTRICT MATERIAL MOVES ON: the imported snapshot records the Practice docx, which the revised deck can outrun. A lesson whose `sessionTitle` no longer matches the snapshot must also carry `sourceSessionTitle` (the snapshot's exact title, so the provenance link still verifies) and `sourceDivergenceReason` naming the newer district artifact and what it teaches. The test requires both, and requires the reason to be substantive — an unexplained rename is a drift bug, not an authoring decision.",
   "lessons": {
     "3-1-part2": {
-      "sessionTitle": "Ratios with Tape Diagrams",
-      "method": "add the terms to find total parts, divide the total by the parts, multiply each row, check by adding",
+      "sessionTitle": "Equivalent Ratios and Scale Factor",
+      "sourceSessionTitle": "Ratios with Tape Diagrams",
+      "sourceDivergenceReason": "The district's Reveal deck 3.1 was revised on 2026-09-16 and its Session 2 learning target now reads \"I can use a tape diagram or double number line to represent equivalent ratios\" (slide 19, divider slide 16 \"SCALE · MODEL · EXPLAIN\"). The newer Practice/3.1 Part II worksheet.docx and the 3.1-3.7 Student HW Packet agree — both drill scale factor, ratio tables and equivalent ratios, not splitting a total. The imported Practice/3.1 Session 2.docx snapshot still carries the older title, so the provenance link is kept here while the items follow the deck that is actually taught.",
+      "method": "find the scale factor the first quantity was multiplied by, multiply the second quantity by that same factor, and check the new pair is an equivalent ratio on a tape diagram, ratio table or double number line",
       "approaching": [
         {
           "id": "3-1-part2-s2-01",
           "type": "multiple-choice",
-          "stem": "A dish uses 2 cups of rice for every 1 cup of beans. The cook makes 21 cups in all. How many cups of RICE are there?",
-          "stemEs": "Un plato usa 2 tazas de arroz por cada 1 taza de frijoles. El cocinero prepara 21 tazas en total. ¿Cuántas tazas de ARROZ hay?",
+          "stem": "Tahira's salad dressing uses 1 spoon of vinegar for every 3 spoons of olive oil. She uses 4 spoons of vinegar. How many spoons of OLIVE OIL does she need?",
+          "stemEs": "El aderezo de Tahira usa 1 cucharada de vinagre por cada 3 cucharadas de aceite de oliva. Ella usa 4 cucharadas de vinagre. ¿Cuántas cucharadas de ACEITE DE OLIVA necesita?",
           "choices": [
-            "14 cups",
-            "7 cups",
-            "10.5 cups",
-            "21 cups"
+            "12 spoons",
+            "6 spoons",
+            "9 spoons",
+            "7 spoons"
           ],
           "choicesEs": [
-            "14 tazas",
-            "7 tazas",
-            "10.5 tazas",
-            "21 tazas"
+            "12 cucharadas",
+            "6 cucharadas",
+            "9 cucharadas",
+            "7 cucharadas"
           ],
           "correctIndex": 0,
           "hints": [
-            "Add the terms of the ratio to find the total number of equal boxes.",
-            "2 + 1 = 3 boxes. Divide 21 by 3 to find what ONE box is worth.",
-            "One box is 7 cups. Rice gets 2 boxes."
+            "The vinegar went from 1 spoon to 4 spoons. What was it multiplied by?",
+            "1 × 4 = 4, so the scale factor is ×4.",
+            "Use that same scale factor on the olive oil: 3 × 4."
           ],
           "hintsEs": [
-            "Suma los términos de la razón para hallar el total de cajas iguales.",
-            "2 + 1 = 3 cajas. Divide 21 entre 3 para hallar cuánto vale UNA caja.",
-            "Una caja vale 7 tazas. El arroz recibe 2 cajas."
+            "El vinagre pasó de 1 cucharada a 4 cucharadas. ¿Por cuánto se multiplicó?",
+            "1 × 4 = 4, así que el factor de escala es ×4.",
+            "Usa ese mismo factor de escala en el aceite: 3 × 4."
           ],
-          "explanation": "2 + 1 = 3 total parts. 21 ÷ 3 = 7 cups in each box. Rice has 2 boxes: 2 × 7 = 14 cups. Check: 14 + 7 = 21. ✓",
-          "explanationEs": "2 + 1 = 3 partes en total. 21 ÷ 3 = 7 tazas en cada caja. El arroz tiene 2 cajas: 2 × 7 = 14 tazas. Comprobación: 14 + 7 = 21. ✓"
+          "explanation": "The scale factor is ×4 because 1 × 4 = 4. Multiply the olive oil by the SAME factor: 3 × 4 = 12 spoons. Check: 4 : 12 divides back to 1 : 3. ✓",
+          "explanationEs": "El factor de escala es ×4 porque 1 × 4 = 4. Multiplica el aceite por el MISMO factor: 3 × 4 = 12 cucharadas. Comprobación: 4 : 12 se reduce a 1 : 3. ✓"
+        },
+        {
+          "id": "3-1-part2-s2-02",
+          "type": "multiple-choice",
+          "stem": "A ratio table starts with 1 spoon of vinegar to 3 spoons of olive oil. What pair belongs in the column where the vinegar is 5 spoons?",
+          "stemEs": "Una tabla de razones empieza con 1 cucharada de vinagre y 3 cucharadas de aceite de oliva. ¿Qué par va en la columna donde el vinagre es 5 cucharadas?",
+          "choices": [
+            "5 vinegar and 15 olive oil",
+            "5 vinegar and 7 olive oil",
+            "5 vinegar and 9 olive oil",
+            "5 vinegar and 8 olive oil"
+          ],
+          "choicesEs": [
+            "5 de vinagre y 15 de aceite",
+            "5 de vinagre y 7 de aceite",
+            "5 de vinagre y 9 de aceite",
+            "5 de vinagre y 8 de aceite"
+          ],
+          "correctIndex": 0,
+          "hints": [
+            "Every column of a ratio table holds the same ratio, 1 : 3.",
+            "The vinegar went from 1 to 5, so the scale factor for that column is ×5.",
+            "Do the same thing to the olive oil: 3 × 5."
+          ],
+          "hintsEs": [
+            "Cada columna de una tabla de razones tiene la misma razón, 1 : 3.",
+            "El vinagre pasó de 1 a 5, así que el factor de escala de esa columna es ×5.",
+            "Haz lo mismo con el aceite: 3 × 5."
+          ],
+          "explanation": "The vinegar row is 1, 2, 3, 4, 5 and the olive oil row is 3, 6, 9, 12, 15. In the fifth column the scale factor is ×5, so the olive oil is 3 × 5 = 15 spoons.",
+          "explanationEs": "La fila del vinagre es 1, 2, 3, 4, 5 y la del aceite es 3, 6, 9, 12, 15. En la quinta columna el factor de escala es ×5, así que el aceite es 3 × 5 = 15 cucharadas."
         }
       ],
       "onLevel": [
         {
-          "id": "3-1-part2-s2-02",
+          "id": "3-1-part2-s2-03",
           "type": "multiple-choice",
-          "stem": "The ratio of red to blue marbles is 2:3. In the tape diagram, each box represents 4 marbles. How many RED marbles are there?",
-          "stemEs": "La razón de canicas rojas a azules es 2:3. En el diagrama, cada caja representa 4 canicas. ¿Cuántas canicas ROJAS hay?",
+          "stem": "A snack mix uses 2 cups of pretzels for every 5 cups of cereal. Marcus uses 6 cups of pretzels. How many cups of CEREAL does he need?",
+          "stemEs": "Una mezcla usa 2 tazas de pretzels por cada 5 tazas de cereal. Marcus usa 6 tazas de pretzels. ¿Cuántas tazas de CEREAL necesita?",
           "choices": [
-            "8 marbles",
-            "12 marbles",
-            "4 marbles",
-            "20 marbles"
+            "15 cups",
+            "9 cups",
+            "8 cups",
+            "10 cups"
           ],
           "choicesEs": [
-            "8 canicas",
-            "12 canicas",
-            "4 canicas",
-            "20 canicas"
+            "15 tazas",
+            "9 tazas",
+            "8 tazas",
+            "10 tazas"
           ],
           "correctIndex": 0,
           "hints": [
-            "Red gets 2 boxes because the 2 comes first in 2:3.",
-            "Each box is worth 4 marbles.",
-            "2 boxes × 4 marbles in each box."
+            "The pretzels went from 2 cups to 6 cups. 2 × what = 6?",
+            "The scale factor is ×3.",
+            "Multiply the cereal by the same scale factor: 5 × 3."
           ],
           "hintsEs": [
-            "El rojo recibe 2 cajas porque el 2 va primero en 2:3.",
-            "Cada caja vale 4 canicas.",
-            "2 cajas × 4 canicas en cada caja."
+            "Los pretzels pasaron de 2 tazas a 6 tazas. ¿2 por cuánto da 6?",
+            "El factor de escala es ×3.",
+            "Multiplica el cereal por el mismo factor de escala: 5 × 3."
           ],
-          "explanation": "Red has 2 boxes and each box is 4 marbles, so 2 × 4 = 8 red marbles. Blue has 3 boxes: 3 × 4 = 12.",
-          "explanationEs": "El rojo tiene 2 cajas y cada caja vale 4 canicas, así que 2 × 4 = 8 canicas rojas. El azul tiene 3 cajas: 3 × 4 = 12."
+          "explanation": "2 × 3 = 6, so the scale factor is ×3. The cereal must be scaled the same way: 5 × 3 = 15 cups. Check: 6 : 15 divides by 3 back to 2 : 5. ✓",
+          "explanationEs": "2 × 3 = 6, así que el factor de escala es ×3. El cereal se escala igual: 5 × 3 = 15 tazas. Comprobación: 6 : 15 dividido entre 3 vuelve a 2 : 5. ✓"
+        },
+        {
+          "id": "3-1-part2-s2-04",
+          "type": "multiple-choice",
+          "stem": "On a double number line, 3 tickets line up with $5. What dollar amount lines up with 9 tickets?",
+          "stemEs": "En una recta numérica doble, 3 boletos se alinean con $5. ¿Qué cantidad de dólares se alinea con 9 boletos?",
+          "choices": [
+            "$15",
+            "$11",
+            "$20",
+            "$9"
+          ],
+          "choicesEs": [
+            "$15",
+            "$11",
+            "$20",
+            "$9"
+          ],
+          "correctIndex": 0,
+          "hints": [
+            "Find how the tickets grew: 3 tickets to 9 tickets.",
+            "3 × 3 = 9, so the scale factor is ×3.",
+            "Move the dollar line by the same factor: 5 × 3."
+          ],
+          "hintsEs": [
+            "Halla cómo crecieron los boletos: de 3 boletos a 9 boletos.",
+            "3 × 3 = 9, así que el factor de escala es ×3.",
+            "Mueve la recta de dólares con el mismo factor: 5 × 3."
+          ],
+          "explanation": "Matching ticks on a double number line always show the same ratio. The tickets were scaled ×3 (3 × 3 = 9), so the dollars are scaled ×3 too: 5 × 3 = $15. The pair 9 : 15 is equivalent to 3 : 5.",
+          "explanationEs": "Las marcas alineadas de una recta numérica doble siempre muestran la misma razón. Los boletos se escalaron ×3 (3 × 3 = 9), así que los dólares también: 5 × 3 = $15. El par 9 : 15 es equivalente a 3 : 5."
         }
       ],
       "extending": [
         {
-          "id": "3-1-part2-s2-03",
+          "id": "3-1-part2-s2-05",
           "type": "multiple-choice",
-          "stem": "A recipe has a flour-to-sugar ratio of 4:1. There are 20 cups of flour. How many cups of SUGAR are there?",
-          "stemEs": "Una receta tiene una razón de harina a azúcar de 4:1. Hay 20 tazas de harina. ¿Cuántas tazas de AZÚCAR hay?",
+          "stem": "Which pair of ratios is EQUIVALENT?",
+          "stemEs": "¿Cuál par de razones es EQUIVALENTE?",
           "choices": [
-            "5 cups",
-            "4 cups",
-            "16 cups",
-            "80 cups"
+            "5 : 8 and 15 : 24",
+            "3 : 7 and 9 : 20",
+            "4 : 6 and 6 : 8",
+            "5 : 8 and 10 : 13"
           ],
           "choicesEs": [
-            "5 tazas",
-            "4 tazas",
-            "16 tazas",
-            "80 tazas"
+            "5 : 8 y 15 : 24",
+            "3 : 7 y 9 : 20",
+            "4 : 6 y 6 : 8",
+            "5 : 8 y 10 : 13"
           ],
           "correctIndex": 0,
           "hints": [
-            "Flour takes 4 boxes and sugar takes 1 box.",
-            "The 20 cups of flour fill the 4 flour boxes. What is one box worth?",
-            "20 ÷ 4 = 5, and sugar is a single box."
+            "Test each pair: is there ONE number that multiplies both parts of the first ratio into the second?",
+            "For 5 : 8, try ×3 on both parts.",
+            "A pair where only one part changed, or where each part had the same amount ADDED, is not equivalent."
           ],
           "hintsEs": [
-            "La harina ocupa 4 cajas y el azúcar ocupa 1 caja.",
-            "Las 20 tazas de harina llenan las 4 cajas de harina. ¿Cuánto vale una caja?",
-            "20 ÷ 4 = 5, y el azúcar es una sola caja."
+            "Prueba cada par: ¿hay UN número que multiplique las dos partes de la primera razón para dar la segunda?",
+            "Para 5 : 8, prueba ×3 en las dos partes.",
+            "Un par donde solo cambió una parte, o donde se SUMÓ la misma cantidad a cada parte, no es equivalente."
           ],
-          "explanation": "The 20 cups of flour fill 4 boxes, so one box is 20 ÷ 4 = 5 cups. Sugar is 1 box, so sugar is 5 cups.",
-          "explanationEs": "Las 20 tazas de harina llenan 4 cajas, así que una caja vale 20 ÷ 4 = 5 tazas. El azúcar es 1 caja, así que el azúcar es 5 tazas."
+          "explanation": "5 × 3 = 15 and 8 × 3 = 24, so 5 : 8 and 15 : 24 are equivalent with a scale factor of ×3. The others fail: 3 : 7 scaled ×3 is 9 : 21, not 9 : 20; 4 : 6 scaled to 6 needs ×1.5, and 6 × 1.5 = 9, not 8; 5 : 8 scaled ×2 is 10 : 16, not 10 : 13.",
+          "explanationEs": "5 × 3 = 15 y 8 × 3 = 24, así que 5 : 8 y 15 : 24 son equivalentes con un factor de escala de ×3. Los demás fallan: 3 : 7 escalado ×3 da 9 : 21, no 9 : 20; para que 4 llegue a 6 hace falta ×1.5, y 6 × 1.5 = 9, no 8; 5 : 8 escalado ×2 da 10 : 16, no 10 : 13."
         },
         {
-          "id": "3-1-part2-s2-04",
+          "id": "3-1-part2-s2-06",
           "type": "open-response",
-          "stem": "Explain how the tape diagram helped you split 21 cups into 14 cups of rice and 7 cups of beans. Use the words total parts and each box.",
-          "stemEs": "Explica cómo el diagrama te ayudó a repartir 21 tazas en 14 tazas de arroz y 7 tazas de frijoles. Usa las palabras partes en total y cada caja.",
+          "stem": "A recipe uses 3 cups of rice for every 5 cups of water. You use 12 cups of rice. Explain how you find the cups of water. Use the words scale factor and equivalent ratio.",
+          "stemEs": "Una receta usa 3 tazas de arroz por cada 5 tazas de agua. Ustedes usan 12 tazas de arroz. Expliquen cómo hallan las tazas de agua. Usen las palabras factor de escala y razón equivalente.",
           "hints": [
-            "Start with how many equal boxes there were in all.",
-            "Then say what one box was worth and why.",
-            "Finish with how many boxes each food got."
+            "Start with what the rice was multiplied by to reach 12.",
+            "Say the scale factor out loud, then use it on the water.",
+            "Finish by showing the new pair is an equivalent ratio."
           ],
           "hintsEs": [
-            "Empieza con cuántas cajas iguales había en total.",
-            "Luego di cuánto valía una caja y por qué.",
-            "Termina con cuántas cajas recibió cada alimento."
+            "Empiecen con por cuánto se multiplicó el arroz para llegar a 12.",
+            "Digan el factor de escala en voz alta y luego úsenlo con el agua.",
+            "Terminen mostrando que el par nuevo es una razón equivalente."
           ],
-          "explanation": "There were 3 total parts, so each box was 21 ÷ 3 = 7 cups. Rice took 2 boxes (14 cups) and beans took 1 box (7 cups).",
-          "explanationEs": "Había 3 partes en total, así que cada caja valía 21 ÷ 3 = 7 tazas. El arroz ocupó 2 cajas (14 tazas) y los frijoles 1 caja (7 tazas)."
+          "explanation": "The rice went from 3 to 12, and 3 × 4 = 12, so the scale factor is ×4. Multiply the water by the same factor: 5 × 4 = 20 cups. 12 : 20 is an equivalent ratio to 3 : 5 because dividing both parts by 4 gives 3 : 5 again.",
+          "explanationEs": "El arroz pasó de 3 a 12, y 3 × 4 = 12, así que el factor de escala es ×4. Multiplica el agua por el mismo factor: 5 × 4 = 20 tazas. 12 : 20 es una razón equivalente a 3 : 5 porque dividir las dos partes entre 4 da otra vez 3 : 5."
         }
       ]
     },

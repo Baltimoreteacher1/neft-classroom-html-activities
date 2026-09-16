@@ -44,6 +44,28 @@ function dealIntoBoxes(total, parts) {
   return boxes[0];
 }
 
+/**
+ * Scale `a : b` up ONE GROUP AT A TIME until the first quantity reaches
+ * `targetA`, and report how many groups that took plus what the partner
+ * quantity reached. Repeated addition, never a division — so a scale factor
+ * verified here cannot inherit the arithmetic slip that produced the key.
+ */
+function scaleTo(a, b, targetA) {
+  let sumA = 0;
+  let sumB = 0;
+  let groups = 0;
+  while (sumA < targetA) {
+    sumA += a;
+    sumB += b;
+    groups += 1;
+  }
+  assert.equal(sumA, targetA, `${a} : ${b} does not scale exactly to ${targetA}`);
+  return { groups, partner: sumB };
+}
+
+/** Equivalence by cross-multiplication — a different derivation from scaling. */
+const equivalentRatio = (a, b, c, d) => a * d === b * c;
+
 /** Evaluate a linear form like "6(2x + 3)" or "12x + 8" at x = n. */
 function evaluate(form, n) {
   const grouped = /^(\d+)\(\s*(\d*)([a-z])\s*\+\s*(\d+)\s*\)$/.exec(form);
@@ -64,18 +86,42 @@ function evaluate(form, n) {
 const AT = [0, 1, 3, 10, 47];
 const identical = (a, b) => AT.every((n) => evaluate(a, n) === evaluate(b, n));
 
-/* ── 3-1-part2 · Ratios with Tape Diagrams ──────────────────────────────── */
+/* ── 3-1-part2 · Equivalent Ratios and Scale Factor ──────────────────────── */
 {
-  const unit = dealIntoBoxes(21, 2 + 1);
-  ok("3-1 rice share", 2 * unit, 14);
-  ok("3-1 beans share", 1 * unit, 7);
-  ok("3-1 shares restore the total", 2 * unit + 1 * unit, 21);
+  const dressing = scaleTo(1, 3, 4);
+  ok("3-1 salad dressing scale factor", dressing.groups, 4);
+  ok("3-1 olive oil for 4 spoons of vinegar", dressing.partner, 12);
+  /* The distractor set is the lesson's own misconception, so the additive slip
+     has to land somewhere ELSE than the key or the item teaches nothing. */
+  assert.notEqual(3 + 3, dressing.partner, "3-1: adding 3 to each must not reach the key");
+  checks++;
 
-  ok("3-1 red marbles (2 boxes of 4)", 4 + 4, 8);
-  ok("3-1 blue marbles (3 boxes of 4)", 4 + 4 + 4, 12);
+  ok("3-1 ratio-table column where vinegar is 5", scaleTo(1, 3, 5).partner, 15);
 
-  const flourBox = dealIntoBoxes(20, 4);
-  ok("3-1 sugar (1 box)", 1 * flourBox, 5);
+  const snack = scaleTo(2, 5, 6);
+  ok("3-1 snack mix scale factor", snack.groups, 3);
+  ok("3-1 cereal for 6 cups of pretzels", snack.partner, 15);
+
+  ok("3-1 double number line dollars at 9 tickets", scaleTo(3, 5, 9).partner, 15);
+
+  assert.ok(equivalentRatio(5, 8, 15, 24), "3-1: 5 : 8 must be equivalent to 15 : 24");
+  for (const [a, b, c, d] of [
+    [3, 7, 9, 20],
+    [4, 6, 6, 8],
+    [5, 8, 10, 13],
+  ]) {
+    assert.ok(
+      !equivalentRatio(a, b, c, d),
+      `3-1: ${a} : ${b} must NOT be equivalent to ${c} : ${d}`,
+    );
+  }
+  checks += 4;
+
+  const rice = scaleTo(3, 5, 12);
+  ok("3-1 rice-to-water scale factor", rice.groups, 4);
+  ok("3-1 water for 12 cups of rice", rice.partner, 20);
+  assert.ok(equivalentRatio(3, 5, 12, rice.partner), "3-1: 12 : 20 must reduce back to 3 : 5");
+  checks++;
 }
 
 /* ── 6-8-part2 · Expanding and Factoring ────────────────────────────────── */
@@ -361,12 +407,38 @@ const RENDERABLE = new Set(["multiple-choice", "open-response"]);
 for (const [id, lesson] of Object.entries(DATA.lessons)) {
   const source = SOURCE.lessons.find((l) => l.id === id);
   assert.ok(source, `${id}: authored practice with no imported Reveal source`);
-  assert.equal(
-    lesson.sessionTitle,
-    source.sessionTitle,
-    `${id}: session title disagrees with the imported source`,
-  );
-  checks += 2;
+  /* The imported snapshot records the district's Practice docx, and a revised
+     deck can outrun it — 3.1's Session 2 moved from splitting a total to
+     equivalent ratios and scale factor while the docx kept its old title. A
+     rename is therefore allowed, but only as a DECLARED divergence: the lesson
+     must still quote the snapshot's exact title, so the provenance link keeps
+     verifying, and must say which newer district artifact it now follows. An
+     unexplained rename is drift, not an authoring decision. */
+  if (lesson.sourceSessionTitle) {
+    assert.equal(
+      lesson.sourceSessionTitle,
+      source.sessionTitle,
+      `${id}: sourceSessionTitle does not quote the imported source`,
+    );
+    assert.ok(
+      String(lesson.sourceDivergenceReason || "").trim().length >= 40,
+      `${id}: a session-title divergence needs a written sourceDivergenceReason`,
+    );
+    assert.notEqual(
+      lesson.sessionTitle,
+      source.sessionTitle,
+      `${id}: declares a divergence it does not have — drop sourceSessionTitle`,
+    );
+    checks += 3;
+  } else {
+    assert.equal(
+      lesson.sessionTitle,
+      source.sessionTitle,
+      `${id}: session title disagrees with the imported source`,
+    );
+    checks += 1;
+  }
+  checks += 1;
 
   const items = [
     ...(lesson.approaching || []),
