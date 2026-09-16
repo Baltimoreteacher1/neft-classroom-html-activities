@@ -402,6 +402,222 @@ function solveWhole(partNumerator, percentAsFraction) {
   ok("4-5 checking forward: 15% of $40 returns the original tip", forwardCheck, 6);
 }
 
+/* ── Unit 5 · area, volume and surface area ─────────────────────────────────
+   Independent of the JSON's own "b × h", "double the area then divide", and
+   "add the bases then halve" explanations: every product is rebuilt by
+   repeated addition rather than the `*` operator, every halving step by
+   dealing into two boxes rather than `/2`, a missing triangle side by
+   forward search-and-check rather than algebraic undo, a missing volume edge
+   by repeated subtraction rather than straight division, and a solid's face
+   count by Euler's formula (F + V − E = 2) rather than by re-reading the net. */
+
+/** Multiply by repeated addition: add `a` to itself `b` times — never `*`. */
+function repeatedAddProduct(a, b) {
+  let total = 0;
+  for (let i = 0; i < b; i++) total += a;
+  return Math.round(total * 1e6) / 1e6;
+}
+
+/** Count up from 0 until `part + x` reaches `total` — subtraction by search. */
+function findDifference(total, part) {
+  let x = 0;
+  while (Math.round((part + x) * 1e6) / 1e6 !== total) {
+    x++;
+    assert.ok(x <= total, `${part} + x never reaches ${total}`);
+  }
+  return x;
+}
+
+/** Find a triangle's missing base/height by forward search: try each whole
+    number, rebuild its area by repeated addition + dealt halving, and stop
+    at the first match — never "double the area, then divide". */
+function triangleMissingSide(area, knownSide) {
+  for (let x = 1; x <= 1000; x++) {
+    const doubled = repeatedAddProduct(knownSide, x);
+    if (doubled % 2 === 0 && dealIntoBoxes(doubled, 2) === area) return x;
+  }
+  throw new Error(`no whole-number side rebuilds an area of ${area}`);
+}
+
+/** Trapezoid area by decomposing into a rectangle (the shorter base) plus a
+    triangle (the leftover width) — never the ½(b1+b2)h formula directly. */
+function trapezoidByDecomposition(b1, b2, h) {
+  const shorter = Math.min(b1, b2);
+  const longer = Math.max(b1, b2);
+  const rectangle = repeatedAddProduct(shorter, h);
+  const triangleDoubled = repeatedAddProduct(longer - shorter, h);
+  const triangle = dealIntoBoxes(triangleDoubled, 2);
+  return rectangle + triangle;
+}
+
+/* 5-1 rhombus area: b × h rebuilt by repeated addition; the diagonal formula
+   rebuilt by halving ONE diagonal first, then multiplying — never multiply
+   the two diagonals and halve the product. */
+{
+  ok("5-1 side 11cm × height 6cm by repeated addition", repeatedAddProduct(11, 6), 66);
+  ok("5-1 homework base 6m × height 4m by repeated addition", repeatedAddProduct(6, 4), 24);
+  const halfOfTenFt = dealIntoBoxes(10, 2);
+  ok("5-1 half of the 10ft diagonal dealt into two boxes", halfOfTenFt, 5);
+  ok("5-1 diagonals 10ft & 8ft: half-then-multiply", repeatedAddProduct(halfOfTenFt, 8), 40);
+  checks++;
+}
+
+/* 5-2 missing triangle measures: rebuild the missing side by forward search
+   (try a value, rebuild its area, check the match) — never "double, then
+   divide by the known measure". */
+{
+  ok(
+    "5-2 yourProblem: area 96ft², height 16ft → base by forward search",
+    triangleMissingSide(96, 16),
+    12,
+  );
+  ok(
+    "5-2 homework 1: area 24cm², base 8cm → height by forward search",
+    triangleMissingSide(24, 8),
+    6,
+  );
+  ok(
+    "5-2 homework 2: area 30ft², height 6ft → base by forward search",
+    triangleMissingSide(30, 6),
+    10,
+  );
+}
+
+/* 5-3 trapezoid area: rebuild by splitting into a rectangle + a triangle —
+   never the ½(b1+b2)h formula directly. */
+{
+  ok(
+    "5-3 yourProblem bases 13in & 19in, height 6in by decomposition",
+    trapezoidByDecomposition(13, 19, 6),
+    96,
+  );
+  ok(
+    "5-3 homework 1 bases 6cm & 10cm, height 4cm by decomposition",
+    trapezoidByDecomposition(6, 10, 4),
+    32,
+  );
+  ok(
+    "5-3 homework 2 bases 5ft & 9ft, height 6ft by decomposition",
+    trapezoidByDecomposition(5, 9, 6),
+    42,
+  );
+}
+
+/* 5-4 composite figures: every piece rebuilt by repeated addition, then
+   added or subtracted — never a direct `*` on the two dimensions. */
+{
+  const piece1 = repeatedAddProduct(16, 9);
+  const piece2 = repeatedAddProduct(7, 3);
+  ok("5-4 yourProblem L-rug piece 1 (16×9) by repeated addition", piece1, 144);
+  ok("5-4 yourProblem L-rug piece 2 (7×3) by repeated addition", piece2, 21);
+  ok("5-4 yourProblem total rug area", piece1 + piece2, 165);
+
+  const rect = repeatedAddProduct(8, 5);
+  const triDoubled = repeatedAddProduct(5, 4);
+  const tri = dealIntoBoxes(triDoubled, 2);
+  ok("5-4 homework 1 rectangle (8×5) by repeated addition", rect, 40);
+  ok("5-4 homework 1 triangle (base5,height4) by dealt halving", tri, 10);
+  ok("5-4 homework 1 total (attached triangle adds on)", rect + tri, 50);
+
+  const bigRect = repeatedAddProduct(10, 6);
+  const cutout = repeatedAddProduct(3, 2);
+  ok("5-4 homework 2 large rectangle (10×6) by repeated addition", bigRect, 60);
+  ok("5-4 homework 2 cut-out (3×2) by repeated addition", cutout, 6);
+  ok("5-4 homework 2 remaining area (cut-out is subtracted)", bigRect - cutout, 54);
+  checks += 2;
+}
+
+/* 5-5 missing/fractional volume edges: base area by repeated addition, the
+   missing edge by repeated subtraction (fitsInto) — never straight division. */
+{
+  const baseArea1 = repeatedAddProduct(15, 12);
+  ok("5-5 yourProblem base area (15×12) by repeated addition", baseArea1, 180);
+  const length = fitsInto(720, baseArea1);
+  ok("5-5 yourProblem missing length by repeated subtraction", length.whole, 4);
+  ok("5-5 yourProblem division has no remainder", length.remainderCents, 0);
+
+  const volume = repeatedAddProduct(repeatedAddProduct(2.5, 2), 3);
+  ok("5-5 homework 1 volume (2½ × 2 × 3) by repeated addition", volume, 15);
+
+  const baseArea2 = repeatedAddProduct(1.5, 4);
+  ok("5-5 homework 2 base area (4 × 1½) by repeated addition", baseArea2, 6);
+  const height = fitsInto(12, baseArea2);
+  ok("5-5 homework 2 missing height by repeated subtraction", height.whole, 2);
+  ok("5-5 homework 2 division has no remainder", height.remainderCents, 0);
+  checks++;
+}
+
+/* 5-6 nets and solids: name a solid, then PROVE it with Euler's formula
+   (faces + vertices − edges = 2) instead of trusting the net-reading count;
+   surface areas rebuilt by repeated addition, grouped by congruent pairs. */
+{
+  const pyramidFaces = 5;
+  const pyramidEdges = 8;
+  const pyramidVertices = 5;
+  ok(
+    "5-6 yourProblem square pyramid satisfies Euler's formula",
+    pyramidFaces + pyramidVertices - pyramidEdges,
+    2,
+  );
+
+  const cubeFaceArea = repeatedAddProduct(9, 6);
+  ok("5-6 homework 1 cube surface area (6 faces × 9cm²) by repeated addition", cubeFaceArea, 54);
+
+  const prismFaces = 5;
+  const prismEdges = 9;
+  const prismVertices = 6;
+  ok(
+    "5-6 homework 2 triangular prism satisfies Euler's formula",
+    prismFaces + prismVertices - prismEdges,
+    2,
+  );
+
+  const pairedTotal =
+    repeatedAddProduct(12, 2) + repeatedAddProduct(20, 2) + repeatedAddProduct(15, 2);
+  ok("5-6 homework 3 total surface area, grouped by congruent pairs", pairedTotal, 94);
+  checks++;
+}
+
+/* 5-7 triangular prism surface area: lateral rectangles rebuilt by factoring
+   the shared length out of the perimeter FIRST — never three separate
+   rectangle products summed one at a time. */
+{
+  const perimeter = 9 + 12 + 15;
+  const lateral = repeatedAddProduct(perimeter, 7);
+  const oneTriangle = dealIntoBoxes(repeatedAddProduct(9, 12), 2);
+  const bothTriangles = repeatedAddProduct(oneTriangle, 2);
+  ok("5-7 yourProblem lateral area via perimeter × length", lateral, 252);
+  ok("5-7 yourProblem both triangular ends via dealt halving", bothTriangles, 108);
+  ok("5-7 yourProblem total surface area", lateral + bothTriangles, 360);
+
+  const twoBases = repeatedAddProduct(12, 2);
+  ok("5-7 homework 1 two triangular bases (12cm² each) by repeated addition", twoBases, 24);
+  ok("5-7 homework 1 total surface area", twoBases + 20 + 20 + 24, 88);
+
+  const rectArea = repeatedAddProduct(6, 4);
+  ok("5-7 homework 2 full rectangle (base6 × height4) by repeated addition", rectArea, 24);
+  ok("5-7 homework 2 one triangular base by dealt halving", dealIntoBoxes(rectArea, 2), 12);
+  checks++;
+}
+
+/* 5-8 pyramid lateral area: one slanted face rebuilt by repeated addition +
+   dealt halving, then scaled by the number of sides — and the
+   total-minus-base subtraction rebuilt by counting up rather than "−". */
+{
+  const oneFace = dealIntoBoxes(repeatedAddProduct(11, 16), 2);
+  ok("5-8 yourProblem one slanted face by dealt halving", oneFace, 88);
+  ok("5-8 yourProblem lateral area (4 congruent faces)", repeatedAddProduct(oneFace, 4), 352);
+
+  ok("5-8 homework 1 lateral area by counting up from the base area", findDifference(90, 25), 65);
+
+  ok(
+    "5-8 homework 2 lateral area (4 faces × 14cm²) by repeated addition",
+    repeatedAddProduct(14, 4),
+    56,
+  );
+  checks++;
+}
+
 /* ── Structure every item must satisfy to render ────────────────────────── */
 const RENDERABLE = new Set(["multiple-choice", "open-response"]);
 for (const [id, lesson] of Object.entries(DATA.lessons)) {
