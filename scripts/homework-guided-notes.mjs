@@ -5212,12 +5212,12 @@ const FAMILY_TF_QUESTIONS = {
       whyEs: "En la recta, −7 está más a la IZQUIERDA. ¡Deber $7 es peor que deber $2!",
     },
     {
-      en: "The absolute value of −6 is −6.",
-      es: "El valor absoluto de −6 es −6.",
+      en: "Only whole numbers belong on a number line.",
+      es: "Solo los números enteros van en una recta numérica.",
       answer: false,
-      whyEn: "Absolute value is DISTANCE from zero, and distance is never negative: |−6| = 6.",
+      whyEn: "Fractions and decimals have their own spots: −2.5 sits halfway between −2 and −3.",
       whyEs:
-        "El valor absoluto es la DISTANCIA a cero, y la distancia nunca es negativa: |−6| = 6.",
+        "Las fracciones y los decimales tienen su propio lugar: −2.5 queda a la mitad entre −2 y −3.",
     },
     {
       en: "−4 and 4 are opposites.",
