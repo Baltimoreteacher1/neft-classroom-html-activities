@@ -1,0 +1,2693 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Family Jeopardy · Jeopardy en familia</title>
+    <meta
+      name="description"
+      content="A bilingual (English/Spanish) family Jeopardy game for Pre-K through 8th grade academic nights."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --stage: #070f2b;
+        --stage2: #0f2166;
+        --tile: #132a78;
+        --tile2: #1e44b3;
+        --tile-edge: #081745;
+        --gold: #ffc83d;
+        --gold2: #ff9f1c;
+        --gold-shadow: #8a5200;
+        --coral: #ff5c7a;
+        --mint: #35e0a1;
+        --sky: #8fe3ff;
+        --ink: #fff6dc;
+        --muted: #a9b8ec;
+        --es: #9be9ff;
+        --display:
+          "Lilita One", "Baloo 2", "Fredoka", "Arial Rounded MT Bold",
+          sans-serif;
+        --body: "Nunito", "Segoe UI", "Helvetica Neue", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        font-family: var(--body);
+        font-weight: 700;
+        color: var(--ink);
+        background: var(--stage);
+        background-image:
+          radial-gradient(
+            ellipse 60% 55% at 15% -10%,
+            rgba(255, 200, 61, 0.28),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 55% at 85% -10%,
+            rgba(255, 92, 122, 0.22),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 80% 40% at 50% 110%,
+            rgba(53, 224, 161, 0.14),
+            transparent 60%
+          ),
+          radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.5px);
+        background-size:
+          auto,
+          auto,
+          auto,
+          26px 26px;
+        padding: 0 clamp(12px, 2vw, 32px) 48px;
+        overflow-x: hidden;
+      }
+      button {
+        font-family: inherit;
+        font-weight: 800;
+        cursor: pointer;
+        border: 0;
+        color: inherit;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      label:focus-within {
+        outline: 4px solid var(--sky);
+        outline-offset: 3px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .es {
+        color: var(--es);
+      }
+      .btn-gold .es,
+      .btn-mint .es,
+      .btn-coral .es,
+      .chip.val .es,
+      .toast .es,
+      .dbl .es {
+        color: inherit;
+        opacity: 0.8;
+      }
+      .howto {
+        grid-column: 1 / -1;
+      }
+      .sep {
+        opacity: 0.5;
+        margin: 0 0.35em;
+      }
+
+      /* ---------- top bar ---------- */
+      .topbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 4px 8px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand h1 {
+        font-family: var(--display);
+        font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+        margin: 0;
+        letter-spacing: 0.5px;
+        line-height: 1;
+        background: linear-gradient(
+          180deg,
+          #fff2b0,
+          var(--gold) 55%,
+          var(--gold2)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 3px 0 var(--gold-shadow));
+      }
+      .brand .logo {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 35% 30%,
+          #fff5c2,
+          var(--gold) 45%,
+          var(--gold2) 80%
+        );
+        box-shadow:
+          0 0 0 4px var(--stage),
+          0 0 0 7px var(--gold2),
+          0 0 30px rgba(255, 200, 61, 0.6);
+        display: grid;
+        place-items: center;
+        font-size: 24px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .seg {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        padding: 4px;
+      }
+      .seg button {
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .seg button[aria-pressed="true"] {
+        background: var(--gold);
+        color: #1a1200;
+        box-shadow: 0 2px 0 var(--gold-shadow);
+      }
+      .icon-btn {
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.18);
+        font-size: 0.95rem;
+      }
+      .icon-btn[aria-pressed="true"] {
+        border-color: var(--mint);
+        color: var(--mint);
+      }
+
+      /* ---------- setup ---------- */
+      .screen {
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+      .hero {
+        text-align: center;
+        padding: 22px 0 10px;
+      }
+      .hero h2 {
+        font-family: var(--display);
+        font-size: clamp(2.4rem, 7vw, 5rem);
+        margin: 0;
+        line-height: 0.95;
+        letter-spacing: 1px;
+        background: linear-gradient(
+          180deg,
+          #fff9d6 0%,
+          var(--gold) 50%,
+          var(--gold2) 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 5px 0 var(--gold-shadow))
+          drop-shadow(0 10px 24px rgba(255, 159, 28, 0.35));
+      }
+      .hero p {
+        font-size: clamp(1.05rem, 2vw, 1.35rem);
+        color: var(--muted);
+        margin: 14px 0 0;
+      }
+      .panel {
+        background: linear-gradient(
+          180deg,
+          rgba(30, 68, 179, 0.35),
+          rgba(19, 42, 120, 0.35)
+        );
+        border: 2px solid rgba(255, 255, 255, 0.14);
+        border-radius: 24px;
+        padding: 22px;
+        margin-top: 22px;
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+      .panel h3 {
+        font-family: var(--display);
+        font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+        margin: 0 0 14px;
+        color: var(--gold);
+        letter-spacing: 0.5px;
+        font-weight: 400;
+      }
+      .setup-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 18px;
+      }
+      .boards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+      }
+      .board-card {
+        text-align: left;
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(7, 15, 43, 0.6);
+        border: 3px solid rgba(255, 255, 255, 0.12);
+        transition:
+          transform 0.15s,
+          border-color 0.15s;
+      }
+      .board-card:hover {
+        transform: translateY(-3px);
+      }
+      .board-card[aria-pressed="true"] {
+        border-color: var(--gold);
+        box-shadow:
+          0 0 0 3px rgba(255, 200, 61, 0.25),
+          0 0 30px rgba(255, 200, 61, 0.25);
+      }
+      .board-card .em {
+        font-size: 2rem;
+        line-height: 1;
+      }
+      .board-card .nm {
+        font-family: var(--display);
+        font-size: 1.35rem;
+        margin: 6px 0 4px;
+        font-weight: 400;
+      }
+      .board-card .bl {
+        color: var(--muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+      .board-card ul {
+        margin: 10px 0 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .board-card li {
+        font-size: 0.8rem;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .stepper {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(7, 15, 43, 0.6);
+        border-radius: 999px;
+        padding: 6px;
+      }
+      .stepper button {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: #1a1200;
+        font-size: 1.6rem;
+        line-height: 1;
+        box-shadow: 0 3px 0 var(--gold-shadow);
+      }
+      .stepper button:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .stepper output {
+        font-family: var(--display);
+        font-size: 1.8rem;
+        min-width: 2ch;
+        text-align: center;
+      }
+      .team-inputs {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .team-inputs label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(7, 15, 43, 0.6);
+        border-radius: 14px;
+        padding: 6px 8px 6px 12px;
+        border-left: 6px solid var(--c);
+      }
+      .team-inputs input,
+      .score input {
+        flex: 1;
+        min-width: 0;
+        background: transparent;
+        border: 0;
+        color: var(--ink);
+        font: inherit;
+        font-size: 1.05rem;
+        padding: 8px 4px;
+        font-weight: 800;
+      }
+      .team-inputs input:focus,
+      .score input:focus {
+        outline: 2px solid var(--sky);
+        border-radius: 8px;
+      }
+      .toggles {
+        display: grid;
+        gap: 10px;
+      }
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(7, 15, 43, 0.6);
+        border-radius: 14px;
+        padding: 12px 14px;
+        cursor: pointer;
+      }
+      .toggle input {
+        width: 26px;
+        height: 26px;
+        accent-color: var(--mint);
+        cursor: pointer;
+      }
+      .howto ol {
+        margin: 0;
+        padding-left: 1.4em;
+        display: grid;
+        gap: 10px;
+        font-size: 1.05rem;
+        line-height: 1.45;
+      }
+      .howto li::marker {
+        color: var(--gold);
+        font-family: var(--display);
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: center;
+        margin-top: 26px;
+      }
+      .btn {
+        padding: 16px 30px;
+        border-radius: 999px;
+        font-size: 1.25rem;
+        letter-spacing: 0.3px;
+        transition:
+          transform 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:active {
+        transform: translateY(3px);
+      }
+      .btn-gold {
+        background: linear-gradient(
+          180deg,
+          #ffe27a,
+          var(--gold) 60%,
+          var(--gold2)
+        );
+        color: #1a1200;
+        box-shadow:
+          0 6px 0 var(--gold-shadow),
+          0 12px 30px rgba(255, 159, 28, 0.35);
+      }
+      .btn-gold:active {
+        box-shadow: 0 3px 0 var(--gold-shadow);
+      }
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.22);
+      }
+      .btn-mint {
+        background: var(--mint);
+        color: #032a1a;
+        box-shadow: 0 6px 0 #147a55;
+      }
+      .btn-coral {
+        background: var(--coral);
+        color: #fff;
+        box-shadow: 0 6px 0 #a3243f;
+      }
+      .btn-sm {
+        padding: 10px 18px;
+        font-size: 1rem;
+      }
+
+      /* ---------- game board ---------- */
+      .gamebar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 0 14px;
+      }
+      .gamebar .bname {
+        font-family: var(--display);
+        font-size: clamp(1.3rem, 3vw, 2rem);
+        letter-spacing: 0.5px;
+        font-weight: 400;
+      }
+      .gamebar .bname small {
+        display: block;
+        font-family: var(--body);
+        font-size: 0.85rem;
+        color: var(--muted);
+        letter-spacing: 0;
+      }
+      .gamebar .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .board-wrap {
+        overflow-x: auto;
+        padding: 14px;
+        border-radius: 26px;
+        background: linear-gradient(180deg, #0b1a52, #060e30);
+        border: 4px solid #0b1a52;
+        box-shadow:
+          0 0 0 3px var(--gold2),
+          0 0 0 9px #0b1a52,
+          0 30px 80px rgba(0, 0, 0, 0.5);
+        position: relative;
+      }
+      .board-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -12px;
+        border-radius: 34px;
+        pointer-events: none;
+        border: 6px dotted #ffe9a3;
+        animation: marquee 0.9s steps(2) infinite alternate;
+      }
+      @keyframes marquee {
+        from { opacity: 0.35; }
+        to { opacity: 1; }
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(140px, 1fr));
+        gap: 8px;
+        min-width: 880px;
+      }
+      .cat {
+        background: linear-gradient(
+          180deg,
+          #ffe27a,
+          var(--gold) 55%,
+          var(--gold2)
+        );
+        color: #1a1200;
+        border-radius: 14px;
+        padding: 10px 8px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        min-height: 92px;
+        box-shadow: 0 4px 0 var(--gold-shadow);
+        animation: drop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+        animation-delay: calc(var(--i) * 60ms);
+      }
+      .cat .em {
+        font-size: 1.7rem;
+        line-height: 1;
+      }
+      .cat .nm {
+        font-family: var(--display);
+        font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+        line-height: 1.1;
+        font-weight: 400;
+      }
+      .cat .nm span {
+        display: block;
+      }
+      .cat .nm .es {
+        color: #4a3200;
+      }
+      .cell {
+        position: relative;
+        min-height: clamp(74px, 11vh, 112px);
+        border-radius: 14px;
+        background: linear-gradient(180deg, var(--tile2), var(--tile));
+        border: 3px solid var(--tile-edge);
+        box-shadow:
+          inset 0 2px 0 rgba(255, 255, 255, 0.18),
+          0 6px 0 #050c26;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        transition:
+          transform 0.12s,
+          box-shadow 0.12s,
+          filter 0.2s;
+        animation: drop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+        animation-delay: calc(var(--i) * 45ms);
+      }
+      .cell .v {
+        font-family: var(--display);
+        font-size: clamp(1.7rem, 3.6vw, 3rem);
+        color: var(--gold);
+        text-shadow:
+          0 3px 0 var(--gold-shadow),
+          0 0 18px rgba(255, 200, 61, 0.35);
+        line-height: 1;
+        font-weight: 400;
+      }
+      .cell .g {
+        font-size: 0.78rem;
+        color: var(--muted);
+        letter-spacing: 0.3px;
+      }
+      .cell:hover:not(.used) {
+        transform: translateY(-4px);
+        box-shadow:
+          inset 0 2px 0 rgba(255, 255, 255, 0.2),
+          0 10px 0 #050c26,
+          0 0 28px rgba(255, 200, 61, 0.35);
+      }
+      .cell:active {
+        transform: translateY(2px);
+        box-shadow:
+          inset 0 2px 0 rgba(255, 255, 255, 0.18),
+          0 2px 0 #050c26;
+      }
+      .cell.used {
+        filter: saturate(0.3);
+        opacity: 0.45;
+      }
+      .cell.used .v {
+        font-size: 2rem;
+        color: #fff;
+      }
+      .cell.used.won .v {
+        color: var(--mint);
+      }
+      @keyframes drop {
+        from {
+          opacity: 0;
+          transform: translateY(-24px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* ---------- scoreboard ---------- */
+      .scores {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .score {
+        background: rgba(7, 15, 43, 0.7);
+        border-radius: 18px;
+        padding: 12px 14px;
+        border-top: 8px solid var(--c);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+      .score.leader::after {
+        content: "👑";
+        position: absolute;
+        right: 10px;
+        top: 8px;
+        font-size: 1.5rem;
+      }
+      .score .pts {
+        font-family: var(--display);
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        margin: 4px 0 8px;
+        color: var(--c);
+        font-weight: 400;
+        transition: transform 0.2s;
+      }
+      .score .pts.bump {
+        animation: bump 0.5s;
+      }
+      @keyframes bump {
+        30% {
+          transform: scale(1.25);
+        }
+      }
+      .score .adj {
+        display: flex;
+        gap: 6px;
+      }
+      .score .adj button {
+        flex: 1;
+        padding: 6px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 0.9rem;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%) translateY(200%);
+        visibility: hidden;
+        background: var(--gold);
+        color: #1a1200;
+        padding: 14px 22px;
+        border-radius: 999px;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        transition: transform 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+        z-index: 60;
+        max-width: 92vw;
+        text-align: center;
+      }
+      .toast.show {
+        transform: translateX(-50%);
+        visibility: visible;
+      }
+
+      /* ---------- modals ---------- */
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: rgba(3, 8, 30, 0.86);
+        backdrop-filter: blur(8px);
+        overflow: auto;
+      }
+      .card {
+        width: min(1100px, 100%);
+        background: linear-gradient(180deg, #14309a, #0b1a52 40%, #070f2b);
+        border: 4px solid var(--gold);
+        border-radius: 28px;
+        padding: clamp(18px, 3vw, 40px);
+        box-shadow:
+          0 0 0 8px #0b1a52,
+          0 0 80px rgba(255, 200, 61, 0.35),
+          0 40px 100px rgba(0, 0, 0, 0.6);
+        text-align: center;
+        animation: pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+        position: relative;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+      }
+      .card .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 14px;
+      }
+      .chip {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 1rem;
+      }
+      .chip.val {
+        background: var(--gold);
+        color: #1a1200;
+        border-color: var(--gold);
+        font-family: var(--display);
+        font-size: 1.2rem;
+        font-weight: 400;
+      }
+      .dbl {
+        display: inline-block;
+        background: linear-gradient(90deg, var(--coral), var(--gold2));
+        color: #fff;
+        font-family: var(--display);
+        font-size: clamp(1.3rem, 3vw, 2rem);
+        padding: 8px 26px;
+        border-radius: 999px;
+        margin-bottom: 14px;
+        animation: wiggle 0.6s ease-in-out infinite alternate;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+        font-weight: 400;
+      }
+      @keyframes wiggle {
+        from {
+          transform: rotate(-2deg) scale(1);
+        }
+        to {
+          transform: rotate(2deg) scale(1.05);
+        }
+      }
+      .clue {
+        font-size: clamp(1.5rem, 3.4vw, 2.7rem);
+        line-height: 1.3;
+        margin: 10px auto;
+        max-width: 22ch;
+        text-wrap: balance;
+      }
+      .clue.long {
+        font-size: clamp(1.25rem, 2.5vw, 2rem);
+        max-width: 30ch;
+      }
+      .clue .es {
+        font-size: 0.86em;
+        display: block;
+        margin-top: 12px;
+      }
+      .clue .es::before,
+      .answer .es::before {
+        content: "ES";
+        font-size: 0.55em;
+        vertical-align: middle;
+        background: var(--es);
+        color: #04233a;
+        padding: 2px 7px;
+        border-radius: 6px;
+        margin-right: 10px;
+        font-family: var(--body);
+        font-weight: 900;
+      }
+      .answer {
+        margin: 20px auto 0;
+        padding: 18px;
+        border-radius: 18px;
+        background: rgba(53, 224, 161, 0.14);
+        border: 3px dashed var(--mint);
+        font-size: clamp(1.4rem, 3vw, 2.3rem);
+        line-height: 1.3;
+        color: #d9fff0;
+        max-width: 26ch;
+        animation: pop 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+      }
+      .answer .es {
+        display: block;
+        font-size: 0.86em;
+        margin-top: 8px;
+      }
+      .award {
+        margin-top: 22px;
+      }
+      .award .lbl {
+        color: var(--muted);
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+      }
+      .award .teams {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+      .tbtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border-radius: 999px;
+        background: var(--c);
+        color: #04102a;
+        font-size: 1.1rem;
+        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.35);
+        transition: transform 0.1s;
+      }
+      .tbtn:hover {
+        transform: translateY(-2px);
+      }
+      .tbtn:active {
+        transform: translateY(3px);
+        box-shadow: none;
+      }
+      .tbtn .neg {
+        margin-left: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.35);
+        color: #fff;
+        font-size: 0.9rem;
+      }
+      .close-x {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 1.4rem;
+      }
+      .modal .cta-row {
+        margin-top: 20px;
+      }
+      .final-teams {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin: 18px 0;
+      }
+      .ft {
+        background: rgba(7, 15, 43, 0.7);
+        border-radius: 16px;
+        padding: 12px;
+        border-left: 8px solid var(--c);
+        text-align: left;
+      }
+      .ft .nm {
+        font-size: 1.1rem;
+        font-weight: 900;
+      }
+      .ft .have {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .ft input[type="number"] {
+        width: 100%;
+        margin-top: 8px;
+        font: inherit;
+        font-size: 1.3rem;
+        font-weight: 900;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--ink);
+      }
+      .ft .verdict {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .ft .verdict button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 1.05rem;
+      }
+      .ft .verdict .ok {
+        background: var(--mint);
+        color: #032a1a;
+      }
+      .ft .verdict .no {
+        background: var(--coral);
+        color: #fff;
+      }
+      .ft .verdict button:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .ft.decided .verdict button:not(:disabled) {
+        outline: 4px solid #fff;
+      }
+      .podium {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 18px auto 0;
+        max-width: 560px;
+      }
+      .podium .row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: rgba(7, 15, 43, 0.7);
+        border-radius: 16px;
+        padding: 12px 16px;
+        border-left: 10px solid var(--c);
+        text-align: left;
+        animation: drop 0.5s both;
+        animation-delay: calc(var(--i) * 120ms);
+      }
+      .podium .rank {
+        font-family: var(--display);
+        font-size: 2rem;
+        width: 2.2ch;
+        font-weight: 400;
+      }
+      .podium .nm {
+        flex: 1;
+        font-size: 1.3rem;
+      }
+      .podium .pts {
+        font-family: var(--display);
+        font-size: 1.8rem;
+        color: var(--c);
+        font-weight: 400;
+      }
+      .podium .row:first-child {
+        background: linear-gradient(
+          90deg,
+          rgba(255, 200, 61, 0.25),
+          rgba(7, 15, 43, 0.7)
+        );
+        transform-origin: center;
+        font-size: 1.1em;
+      }
+      #confetti {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 70;
+        width: 100%;
+        height: 100%;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      @media (max-width: 640px) {
+        .card .chips {
+          margin-top: 40px;
+        }
+        .board-wrap {
+          padding: 10px;
+        }
+        .grid {
+          gap: 6px;
+        }
+        .cell {
+          min-height: 64px;
+        }
+        .cell .g {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🎓</div>
+        <h1 id="brandTitle">Family Jeopardy</h1>
+      </div>
+      <div class="controls">
+        <div
+          class="seg"
+          role="group"
+          aria-label="Language / Idioma"
+          id="langSeg"
+        >
+          <button data-lang="en">English</button
+          ><button data-lang="es">Español</button
+          ><button data-lang="both">Both · Ambos</button>
+        </div>
+        <button class="icon-btn" id="soundBtn" aria-pressed="true">
+          🔊 <span data-t="sound"></span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section id="setup" class="screen"></section>
+      <section id="game" class="screen" hidden></section>
+    </main>
+
+    <div
+      id="clue"
+      class="modal"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="clueTitle"
+    ></div>
+    <div
+      id="final"
+      class="modal"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="finalTitle"
+    ></div>
+    <div
+      id="winner"
+      class="modal"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="winTitle"
+    ></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      /* ============================== CONTENT ============================== */
+      const ROWS = [
+        { v: 100, g: { en: "Pre-K – K", es: "Pre-K – K" } },
+        { v: 200, g: { en: "Grades 1–2", es: "Grados 1–2" } },
+        { v: 300, g: { en: "Grades 3–4", es: "Grados 3–4" } },
+        { v: 400, g: { en: "Grades 5–6", es: "Grados 5–6" } },
+        { v: 500, g: { en: "Grades 7–8", es: "Grados 7–8" } },
+      ];
+      const cat = (emoji, en, es, rows) => ({
+        emoji,
+        name: { en, es },
+        qs: rows.map((r) => ({
+          q: { en: r[0], es: r[1] },
+          a: { en: r[2], es: r[3] },
+        })),
+      });
+
+      const BOARDS = [
+        {
+          id: "mix",
+          emoji: "🎉",
+          name: { en: "Family Mix", es: "Mezcla familiar" },
+          blurb: {
+            en: "A little of everything — the best first game.",
+            es: "Un poco de todo: el mejor primer juego.",
+          },
+          final: {
+            q: {
+              en: "How many days are in a leap year?",
+              es: "¿Cuántos días tiene un año bisiesto?",
+            },
+            a: { en: "366", es: "366" },
+          },
+          cats: [
+            cat("🔢", "Math", "Matemáticas", [
+              [
+                "How many legs does a dog have?",
+                "¿Cuántas patas tiene un perro?",
+                "4",
+                "4",
+              ],
+              ["What is 7 + 8?", "¿Cuánto es 7 + 8?", "15", "15"],
+              ["What is 6 × 7?", "¿Cuánto es 6 × 7?", "42", "42"],
+              [
+                "What is half of 3/4?",
+                "¿Cuál es la mitad de 3/4?",
+                "3/8",
+                "3/8",
+              ],
+              [
+                "Solve for x:  3x − 5 = 16",
+                "Resuelve:  3x − 5 = 16",
+                "x = 7",
+                "x = 7",
+              ],
+            ]),
+            cat("🔬", "Science", "Ciencias", [
+              [
+                "What do plants need from the sun to grow?",
+                "¿Qué necesitan las plantas del sol para crecer?",
+                "Light (sunlight)",
+                "Luz (luz solar)",
+              ],
+              [
+                "When water turns into ice, is it a solid, a liquid, or a gas?",
+                "Cuando el agua se convierte en hielo, ¿es sólido, líquido o gas?",
+                "A solid",
+                "Sólido",
+              ],
+              [
+                "What is the closest star to Earth?",
+                "¿Cuál es la estrella más cercana a la Tierra?",
+                "The Sun",
+                "El Sol",
+              ],
+              [
+                "What gas do humans breathe in to stay alive?",
+                "¿Qué gas respiramos los humanos para vivir?",
+                "Oxygen",
+                "Oxígeno",
+              ],
+              [
+                "What part of the cell is called the “powerhouse”?",
+                "¿Qué parte de la célula se conoce como la “central de energía”?",
+                "The mitochondria",
+                "La mitocondria",
+              ],
+            ]),
+            cat("📖", "Words & Reading", "Palabras y lectura", [
+              [
+                "What letter comes right after “B”?",
+                "¿Qué letra viene justo después de la “B”?",
+                "C",
+                "C",
+              ],
+              [
+                "What is the opposite of “hot”?",
+                "¿Cuál es lo opuesto de “caliente”?",
+                "Cold",
+                "Frío",
+              ],
+              [
+                "What do we call a word that means the same as another word? (Like “big” and “large”)",
+                "¿Cómo se llama una palabra que significa lo mismo que otra? (Como “grande” y “enorme”)",
+                "A synonym",
+                "Un sinónimo",
+              ],
+              [
+                "What is the main character of a story called?",
+                "¿Cómo se llama el personaje principal de una historia?",
+                "The protagonist",
+                "El protagonista",
+              ],
+              [
+                "What do we call a word that reads the same forward and backward, like “level”?",
+                "¿Cómo se llama una palabra que se lee igual al derecho y al revés, como “oso”?",
+                "A palindrome",
+                "Un palíndromo",
+              ],
+            ]),
+            cat("🐾", "Animals", "Animales", [
+              [
+                "What sound does a cow make?",
+                "¿Qué sonido hace la vaca?",
+                "Moo!",
+                "¡Mu!",
+              ],
+              [
+                "Which animal is called the “King of the Jungle”?",
+                "¿Qué animal es conocido como el “rey de la selva”?",
+                "The lion",
+                "El león",
+              ],
+              [
+                "What is the largest animal in the world?",
+                "¿Cuál es el animal más grande del mundo?",
+                "The blue whale",
+                "La ballena azul",
+              ],
+              [
+                "What do we call animals that eat only plants?",
+                "¿Cómo se llaman los animales que solo comen plantas?",
+                "Herbivores",
+                "Herbívoros",
+              ],
+              [
+                "What is the only mammal that can truly fly?",
+                "¿Cuál es el único mamífero que puede volar de verdad?",
+                "The bat",
+                "El murciélago",
+              ],
+            ]),
+            cat("🌎", "Around the World", "Alrededor del mundo", [
+              [
+                "What color is the sky on a sunny day?",
+                "¿De qué color es el cielo en un día soleado?",
+                "Blue",
+                "Azul",
+              ],
+              [
+                "What is the name of the planet we live on?",
+                "¿Cómo se llama el planeta donde vivimos?",
+                "Earth",
+                "La Tierra",
+              ],
+              [
+                "How many continents are there?",
+                "¿Cuántos continentes hay?",
+                "7",
+                "7",
+              ],
+              [
+                "What is the largest ocean on Earth?",
+                "¿Cuál es el océano más grande de la Tierra?",
+                "The Pacific Ocean",
+                "El océano Pacífico",
+              ],
+              [
+                "What is the longest river in the world?",
+                "¿Cuál es el río más largo del mundo?",
+                "The Nile (the Amazon is accepted too!)",
+                "El Nilo (¡el Amazonas también se acepta!)",
+              ],
+            ]),
+            cat("🤪", "Just for Fun", "Solo por diversión", [
+              [
+                "What do you say when someone sneezes?",
+                "¿Qué se dice cuando alguien estornuda?",
+                "“Bless you!”",
+                "“¡Salud!”",
+              ],
+              [
+                "How many colors are in a rainbow?",
+                "¿Cuántos colores tiene el arcoíris?",
+                "7",
+                "7",
+              ],
+              [
+                "As a family, say all the days of the week in order!",
+                "En familia, ¡digan todos los días de la semana en orden!",
+                "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday",
+                "Lunes, martes, miércoles, jueves, viernes, sábado, domingo",
+              ],
+              [
+                "What has hands but can never clap?",
+                "¿Qué tiene manos pero nunca aplaude?",
+                "A clock",
+                "Un reloj",
+              ],
+              [
+                "Everyone on your team: do 5 jumping jacks together! Now, how many jumps did your whole team do in total?",
+                "¡Todos en el equipo: hagan 5 saltos de tijera juntos! Ahora, ¿cuántos saltos hizo el equipo en total?",
+                "5 × the number of people on your team",
+                "5 × el número de personas del equipo",
+              ],
+            ]),
+          ],
+        },
+
+        {
+          id: "stem",
+          emoji: "🚀",
+          name: { en: "STEM Night", es: "Noche STEM" },
+          blurb: {
+            en: "Numbers, shapes, space, the body, and brain teasers.",
+            es: "Números, figuras, espacio, el cuerpo y acertijos.",
+          },
+          final: {
+            q: {
+              en: "At what temperature does water boil, in degrees Celsius?",
+              es: "¿A qué temperatura hierve el agua, en grados Celsius?",
+            },
+            a: { en: "100 °C (212 °F)", es: "100 °C (212 °F)" },
+          },
+          cats: [
+            cat("🧮", "Numbers", "Números", [
+              [
+                "Count to 10 out loud — all together!",
+                "¡Cuenten hasta 10 en voz alta, todos juntos!",
+                "1, 2, 3, 4, 5, 6, 7, 8, 9, 10 — Bravo!",
+                "1, 2, 3, 4, 5, 6, 7, 8, 9, 10 — ¡Bravo!",
+              ],
+              ["What is 20 − 9?", "¿Cuánto es 20 − 9?", "11", "11"],
+              ["What is 144 ÷ 12?", "¿Cuánto es 144 ÷ 12?", "12", "12"],
+              ["What is 25% of 80?", "¿Cuánto es el 25% de 80?", "20", "20"],
+              [
+                "What is 2 to the 5th power (2⁵)?",
+                "¿Cuánto es 2 elevado a la 5 (2⁵)?",
+                "32",
+                "32",
+              ],
+            ]),
+            cat("📐", "Shapes & Measurement", "Figuras y medidas", [
+              [
+                "How many sides does a triangle have?",
+                "¿Cuántos lados tiene un triángulo?",
+                "3",
+                "3",
+              ],
+              [
+                "What shape is a STOP sign?",
+                "¿Qué forma tiene la señal de ALTO (STOP)?",
+                "An octagon (8 sides)",
+                "Un octágono (8 lados)",
+              ],
+              [
+                "How many inches are in one foot?",
+                "¿Cuántas pulgadas hay en un pie?",
+                "12",
+                "12",
+              ],
+              [
+                "What is the perimeter of a square with sides of 6 cm?",
+                "¿Cuál es el perímetro de un cuadrado con lados de 6 cm?",
+                "24 cm",
+                "24 cm",
+              ],
+              [
+                "What is the area of a triangle with a base of 10 and a height of 4?",
+                "¿Cuál es el área de un triángulo con base 10 y altura 4?",
+                "20 (½ × 10 × 4)",
+                "20 (½ × 10 × 4)",
+              ],
+            ]),
+            cat("🌙", "Earth & Space", "Tierra y espacio", [
+              [
+                "What big, round, glowing thing do we see in the sky at night?",
+                "¿Qué cosa grande, redonda y brillante vemos en el cielo de noche?",
+                "The Moon",
+                "La Luna",
+              ],
+              [
+                "How many planets are in our solar system?",
+                "¿Cuántos planetas hay en nuestro sistema solar?",
+                "8",
+                "8",
+              ],
+              [
+                "Which planet is called the Red Planet?",
+                "¿Qué planeta se conoce como el planeta rojo?",
+                "Mars",
+                "Marte",
+              ],
+              [
+                "What causes day and night on Earth?",
+                "¿Qué causa el día y la noche en la Tierra?",
+                "Earth spinning (rotating) on its axis",
+                "La rotación de la Tierra sobre su eje",
+              ],
+              [
+                "What is the layer of gases that surrounds Earth called?",
+                "¿Cómo se llama la capa de gases que rodea la Tierra?",
+                "The atmosphere",
+                "La atmósfera",
+              ],
+            ]),
+            cat("🫀", "Human Body", "El cuerpo humano", [
+              [
+                "How many fingers do you have on both hands together?",
+                "¿Cuántos dedos tienes en las dos manos juntas?",
+                "10",
+                "10",
+              ],
+              [
+                "What part of your body pumps blood?",
+                "¿Qué parte del cuerpo bombea la sangre?",
+                "The heart",
+                "El corazón",
+              ],
+              [
+                "About how many bones are in an adult human body?",
+                "¿Aproximadamente cuántos huesos tiene el cuerpo de un adulto?",
+                "206",
+                "206",
+              ],
+              [
+                "Which organs help you breathe?",
+                "¿Qué órganos te ayudan a respirar?",
+                "The lungs",
+                "Los pulmones",
+              ],
+              [
+                "What is the largest organ of the human body?",
+                "¿Cuál es el órgano más grande del cuerpo humano?",
+                "The skin",
+                "La piel",
+              ],
+            ]),
+            cat("💡", "Inventions & Tech", "Inventos y tecnología", [
+              [
+                "What do you use to call your grandma who lives far away?",
+                "¿Qué usas para llamar a tu abuela que vive lejos?",
+                "A phone",
+                "Un teléfono",
+              ],
+              [
+                "What machine takes you from one floor to another without stairs?",
+                "¿Qué máquina te lleva de un piso a otro sin usar escaleras?",
+                "An elevator (or escalator)",
+                "Un ascensor (o una escalera eléctrica)",
+              ],
+              [
+                "Who is usually credited with inventing the electric light bulb?",
+                "¿A quién se le atribuye la invención de la bombilla eléctrica (el foco)?",
+                "Thomas Edison",
+                "Thomas Edison",
+              ],
+              [
+                "What does “WWW” stand for in a website address?",
+                "¿Qué significa “WWW” en una dirección de internet?",
+                "World Wide Web",
+                "World Wide Web (la “red mundial”)",
+              ],
+              [
+                "What do we call the step-by-step instructions a computer follows?",
+                "¿Cómo se llaman las instrucciones paso a paso que sigue una computadora?",
+                "An algorithm (or a program / code)",
+                "Un algoritmo (o un programa / código)",
+              ],
+            ]),
+            cat("🧠", "Brain Teasers", "Acertijos", [
+              [
+                "I am yellow, I grow in the sun, and monkeys love me. What am I?",
+                "Soy amarillo, crezco al sol y a los monos les encanto. ¿Qué soy?",
+                "A banana",
+                "Un plátano (una banana)",
+              ],
+              [
+                "What gets wetter the more it dries?",
+                "¿Qué se moja más mientras más seca?",
+                "A towel",
+                "Una toalla",
+              ],
+              [
+                "What has teeth but cannot bite?",
+                "¿Qué tiene dientes pero no muerde?",
+                "A comb",
+                "Un peine",
+              ],
+              [
+                "A farmer has 17 sheep. All but 9 run away. How many are left?",
+                "Un granjero tiene 17 ovejas. Todas menos 9 se escapan. ¿Cuántas quedan?",
+                "9",
+                "9",
+              ],
+              [
+                "There are 3 apples on the table and you take away 2. How many apples do YOU have?",
+                "Hay 3 manzanas en la mesa y tú tomas 2. ¿Cuántas manzanas tienes TÚ?",
+                "2 (you took them!)",
+                "2 (¡las que tomaste!)",
+              ],
+            ]),
+          ],
+        },
+
+        {
+          id: "words",
+          emoji: "🗺️",
+          name: { en: "Words & World", es: "Palabras y mundo" },
+          blurb: {
+            en: "Spelling, stories, places, history, and two languages.",
+            es: "Ortografía, cuentos, lugares, historia y dos idiomas.",
+          },
+          final: {
+            q: {
+              en: "How many stars are on the flag of the United States, and what do they stand for?",
+              es: "¿Cuántas estrellas tiene la bandera de los Estados Unidos y qué representan?",
+            },
+            a: { en: "50 — one for each state", es: "50: una por cada estado" },
+          },
+          cats: [
+            cat("🔤", "Spelling", "Ortografía", [
+              [
+                "Spell your first name out loud!",
+                "¡Deletrea tu nombre en voz alta!",
+                "Everyone wins this one! ✓",
+                "¡Aquí ganan todos! ✓",
+              ],
+              [
+                "Spell the word CAT — and in Spanish, GATO!",
+                "Deletrea la palabra GATO — ¡y en inglés, CAT!",
+                "C-A-T  /  G-A-T-O",
+                "G-A-T-O  /  C-A-T",
+              ],
+              [
+                "Spell BECAUSE",
+                "Deletrea PORQUE",
+                "B-E-C-A-U-S-E",
+                "P-O-R-Q-U-E",
+              ],
+              [
+                "Spell NECESSARY",
+                "Deletrea NECESARIO",
+                "N-E-C-E-S-S-A-R-Y",
+                "N-E-C-E-S-A-R-I-O",
+              ],
+              [
+                "Spell MISCHIEVOUS",
+                "Deletrea MURCIÉLAGO (¡tiene las cinco vocales!)",
+                "M-I-S-C-H-I-E-V-O-U-S",
+                "M-U-R-C-I-É-L-A-G-O",
+              ],
+            ]),
+            cat("🏰", "Story Time", "Cuentos", [
+              [
+                "Whose houses did the Big Bad Wolf try to blow down?",
+                "¿A quiénes intentó derribar sus casas el Lobo Feroz?",
+                "The Three Little Pigs",
+                "Los tres cerditos",
+              ],
+              [
+                "Who lost a glass slipper at the ball?",
+                "¿Quién perdió una zapatilla de cristal en el baile?",
+                "Cinderella",
+                "Cenicienta",
+              ],
+              [
+                "In “Goldilocks,” how many bears were there?",
+                "En “Ricitos de Oro”, ¿cuántos osos había?",
+                "3",
+                "3",
+              ],
+              [
+                "What do we call the lesson a fable teaches?",
+                "¿Cómo se llama la lección que enseña una fábula?",
+                "The moral",
+                "La moraleja",
+              ],
+              [
+                "Who wrote “Romeo and Juliet”?",
+                "¿Quién escribió “Romeo y Julieta”?",
+                "William Shakespeare",
+                "William Shakespeare",
+              ],
+            ]),
+            cat("🧭", "Geography", "Geografía", [
+              [
+                "Name the state we live in.",
+                "Nombra el estado donde vivimos.",
+                "Maryland (or your home state!)",
+                "Maryland (¡o tu estado!)",
+              ],
+              [
+                "What is the capital of the United States?",
+                "¿Cuál es la capital de los Estados Unidos?",
+                "Washington, D.C.",
+                "Washington, D.C.",
+              ],
+              [
+                "Which country is directly south of the United States?",
+                "¿Qué país está justo al sur de los Estados Unidos?",
+                "Mexico",
+                "México",
+              ],
+              [
+                "What is the largest continent?",
+                "¿Cuál es el continente más grande?",
+                "Asia",
+                "Asia",
+              ],
+              [
+                "What is the capital of Maryland?",
+                "¿Cuál es la capital de Maryland?",
+                "Annapolis",
+                "Annapolis",
+              ],
+            ]),
+            cat("🏛️", "History", "Historia", [
+              [
+                "Who was the first president of the United States?",
+                "¿Quién fue el primer presidente de los Estados Unidos?",
+                "George Washington",
+                "George Washington",
+              ],
+              [
+                "What holiday celebrates the birthday of the United States on July 4th?",
+                "¿Qué fiesta celebra el cumpleaños de los Estados Unidos el 4 de julio?",
+                "Independence Day",
+                "El Día de la Independencia",
+              ],
+              [
+                "Who gave the famous “I Have a Dream” speech?",
+                "¿Quién dio el famoso discurso “Yo tengo un sueño”?",
+                "Dr. Martin Luther King Jr.",
+                "El Dr. Martin Luther King Jr.",
+              ],
+              [
+                "Which ancient civilization built the pyramids of Giza?",
+                "¿Qué civilización antigua construyó las pirámides de Guiza?",
+                "The ancient Egyptians",
+                "Los antiguos egipcios",
+              ],
+              [
+                "In what year did the United States declare its independence?",
+                "¿En qué año declararon su independencia los Estados Unidos?",
+                "1776",
+                "1776",
+              ],
+            ]),
+            cat("🚒", "Community Helpers", "Ayudantes de la comunidad", [
+              [
+                "Who helps you when you are sick?",
+                "¿Quién te ayuda cuando estás enfermo?",
+                "A doctor (or a nurse)",
+                "Un médico o una enfermera",
+              ],
+              [
+                "Who puts out fires?",
+                "¿Quién apaga los incendios?",
+                "Firefighters",
+                "Los bomberos",
+              ],
+              [
+                "Who brings letters and packages to your house?",
+                "¿Quién trae cartas y paquetes a tu casa?",
+                "A mail carrier",
+                "El cartero o la cartera",
+              ],
+              [
+                "Who helps you find books at the library?",
+                "¿Quién te ayuda a encontrar libros en la biblioteca?",
+                "A librarian",
+                "El bibliotecario o la bibliotecaria",
+              ],
+              [
+                "Who designs buildings and draws the plans before they are built?",
+                "¿Quién diseña edificios y dibuja los planos antes de construirlos?",
+                "An architect",
+                "Un arquitecto o una arquitecta",
+              ],
+            ]),
+            cat("💬", "Two Languages", "Dos idiomas", [
+              [
+                "How do you say “hello” in Spanish?",
+                "¿Cómo se dice “hola” en inglés?",
+                "¡Hola!",
+                "Hello!",
+              ],
+              [
+                "How do you say “thank you” in Spanish?",
+                "¿Cómo se dice “gracias” en inglés?",
+                "Gracias",
+                "Thank you",
+              ],
+              [
+                "How do you say “family” in Spanish?",
+                "¿Cómo se dice “familia” en inglés?",
+                "Familia",
+                "Family",
+              ],
+              [
+                "“Biblioteca” is the Spanish word for what?",
+                "¿Qué significa “library” en español?",
+                "Library",
+                "Biblioteca",
+              ],
+              [
+                "Words that look alike in both languages are called cognates. Name 3 cognates! (Example: animal / animal)",
+                "Las palabras que se parecen en los dos idiomas se llaman cognados. ¡Digan 3 cognados! (Ejemplo: animal / animal)",
+                "Any 3! (hospital, music/música, family/familia, doctor, color, chocolate…)",
+                "¡Cualquier 3! (hospital, música/music, familia/family, doctor, color, chocolate…)",
+              ],
+            ]),
+          ],
+        },
+
+        {
+          id: "daily",
+          emoji: "🌈",
+          name: { en: "Everyday Learning", es: "Aprendizaje diario" },
+          blurb: {
+            en: "Money, food, sports, art, nature, and riddles.",
+            es: "Dinero, comida, deportes, arte, naturaleza y adivinanzas.",
+          },
+          final: {
+            q: {
+              en: "What is the largest planet in our solar system?",
+              es: "¿Cuál es el planeta más grande de nuestro sistema solar?",
+            },
+            a: { en: "Jupiter", es: "Júpiter" },
+          },
+          cats: [
+            cat("💰", "Money & Time", "Dinero y tiempo", [
+              [
+                "How many cents is a penny worth?",
+                "¿Cuántos centavos vale un penny (un centavo)?",
+                "1 cent",
+                "1 centavo",
+              ],
+              [
+                "How many minutes are in one hour?",
+                "¿Cuántos minutos hay en una hora?",
+                "60",
+                "60",
+              ],
+              [
+                "How many quarters make one dollar?",
+                "¿Cuántas monedas de 25 centavos (quarters) hacen un dólar?",
+                "4",
+                "4",
+              ],
+              [
+                "A toy costs $12 and you pay with a $20 bill. How much change do you get?",
+                "Un juguete cuesta $12 y pagas con un billete de $20. ¿Cuánto cambio recibes?",
+                "$8",
+                "$8",
+              ],
+              [
+                "How many seconds are in one day?",
+                "¿Cuántos segundos hay en un día?",
+                "86,400 (60 × 60 × 24)",
+                "86 400 (60 × 60 × 24)",
+              ],
+            ]),
+            cat("🍎", "Food & Nutrition", "Comida y nutrición", [
+              [
+                "Name a fruit that is red.",
+                "Nombra una fruta roja.",
+                "Apple, strawberry, cherry, watermelon…",
+                "Manzana, fresa, cereza, sandía…",
+              ],
+              [
+                "Bread and rice belong to which food group?",
+                "¿A qué grupo de alimentos pertenecen el pan y el arroz?",
+                "Grains",
+                "Los granos (cereales)",
+              ],
+              [
+                "Which nutrient in milk helps build strong bones?",
+                "¿Qué nutriente de la leche ayuda a tener huesos fuertes?",
+                "Calcium",
+                "El calcio",
+              ],
+              [
+                "Which vitamin does our body make from sunlight?",
+                "¿Qué vitamina produce nuestro cuerpo con la luz del sol?",
+                "Vitamin D",
+                "La vitamina D",
+              ],
+              [
+                "What are the three main macronutrients our bodies need?",
+                "¿Cuáles son los tres macronutrientes principales que necesita el cuerpo?",
+                "Carbohydrates, proteins, and fats",
+                "Carbohidratos, proteínas y grasas",
+              ],
+            ]),
+            cat("⚽", "Sports & Games", "Deportes y juegos", [
+              [
+                "In which sport do you kick a ball into a goal?",
+                "¿En qué deporte se patea un balón para meter un gol?",
+                "Soccer (fútbol)",
+                "El fútbol",
+              ],
+              [
+                "How many players from one basketball team are on the court at the same time?",
+                "¿Cuántos jugadores de un equipo de baloncesto están en la cancha al mismo tiempo?",
+                "5",
+                "5",
+              ],
+              [
+                "In chess, which piece can only move diagonally?",
+                "En ajedrez, ¿qué pieza solo se mueve en diagonal?",
+                "The bishop",
+                "El alfil",
+              ],
+              [
+                "How many bases are on a baseball field, including home plate?",
+                "¿Cuántas bases hay en un campo de béisbol, incluyendo el home?",
+                "4",
+                "4",
+              ],
+              [
+                "How often are the Summer Olympic Games held?",
+                "¿Cada cuánto tiempo se celebran los Juegos Olímpicos de verano?",
+                "Every 4 years",
+                "Cada 4 años",
+              ],
+            ]),
+            cat("🎨", "Music & Art", "Música y arte", [
+              [
+                "What are the three primary colors?",
+                "¿Cuáles son los tres colores primarios?",
+                "Red, yellow, and blue",
+                "Rojo, amarillo y azul",
+              ],
+              [
+                "What color do you get when you mix blue and yellow?",
+                "¿Qué color obtienes al mezclar azul y amarillo?",
+                "Green",
+                "Verde",
+              ],
+              [
+                "Which instrument has 88 keys?",
+                "¿Qué instrumento tiene 88 teclas?",
+                "The piano",
+                "El piano",
+              ],
+              [
+                "How many notes are in the “do-re-mi” scale before it repeats?",
+                "¿Cuántas notas hay en la escala “do-re-mi” antes de que se repita?",
+                "7 (do, re, mi, fa, sol, la, ti)",
+                "7 (do, re, mi, fa, sol, la, si)",
+              ],
+              [
+                "Who painted the Mona Lisa?",
+                "¿Quién pintó la Mona Lisa?",
+                "Leonardo da Vinci",
+                "Leonardo da Vinci",
+              ],
+            ]),
+            cat("🍂", "Nature & Seasons", "Naturaleza y estaciones", [
+              [
+                "In which season do leaves fall from the trees?",
+                "¿En qué estación caen las hojas de los árboles?",
+                "Fall (autumn)",
+                "El otoño",
+              ],
+              [
+                "How many seasons are there in a year?",
+                "¿Cuántas estaciones tiene el año?",
+                "4",
+                "4",
+              ],
+              [
+                "What do caterpillars turn into?",
+                "¿En qué se convierten las orugas?",
+                "Butterflies (or moths)",
+                "Mariposas (o polillas)",
+              ],
+              [
+                "What is the process plants use to make food from sunlight?",
+                "¿Cómo se llama el proceso que usan las plantas para hacer su alimento con la luz del sol?",
+                "Photosynthesis",
+                "La fotosíntesis",
+              ],
+              [
+                "What do we call water that falls from clouds as rain, snow, sleet, or hail?",
+                "¿Cómo se llama el agua que cae de las nubes como lluvia, nieve, aguanieve o granizo?",
+                "Precipitation",
+                "La precipitación",
+              ],
+            ]),
+            cat("🕵️", "Riddles", "Adivinanzas", [
+              [
+                "I have four wheels and I take kids to school. What am I?",
+                "Tengo cuatro ruedas y llevo a los niños a la escuela. ¿Qué soy?",
+                "A school bus",
+                "Un autobús escolar",
+              ],
+              [
+                "What has to be broken before you can use it?",
+                "¿Qué se tiene que romper antes de poder usarlo?",
+                "An egg",
+                "Un huevo",
+              ],
+              [
+                "What goes up but never comes down?",
+                "¿Qué sube pero nunca baja?",
+                "Your age",
+                "Tu edad",
+              ],
+              [
+                "The more you take, the more you leave behind. What are they?",
+                "Cuantos más tomas, más dejas atrás. ¿Qué son?",
+                "Footsteps",
+                "Los pasos (las huellas)",
+              ],
+              [
+                "I speak without a mouth and hear without ears. What am I?",
+                "Hablo sin boca y oigo sin oídos. ¿Qué soy?",
+                "An echo",
+                "El eco",
+              ],
+            ]),
+          ],
+        },
+        {
+          id: "raices",
+          emoji: "🦜",
+          name: { en: "Our Roots: Central America", es: "Nuestras raíces: Centroamérica" },
+          blurb: { en: "Honduras, El Salvador, and Guatemala — flags, food, the Maya, and more.", es: "Honduras, El Salvador y Guatemala: banderas, comida, los mayas y más." },
+          final: {
+            q: { en: "Name all seven countries of Central America!", es: "¡Nombren los siete países de Centroamérica!" },
+            a: { en: "Guatemala, Belize, El Salvador, Honduras, Nicaragua, Costa Rica, and Panama", es: "Guatemala, Belice, El Salvador, Honduras, Nicaragua, Costa Rica y Panamá" },
+          },
+          cats: [
+            cat("🇭🇳", "Honduras", "Honduras", [
+              ["What two colors are on the flag of Honduras?", "¿Qué dos colores tiene la bandera de Honduras?", "Blue (turquoise) and white — with 5 stars", "Azul (turquesa) y blanco, con 5 estrellas"],
+              ["What is the capital city of Honduras?", "¿Cuál es la capital de Honduras?", "Tegucigalpa", "Tegucigalpa"],
+              ["What big, colorful bird is the national bird of Honduras?", "¿Qué ave grande y colorida es el ave nacional de Honduras?", "The scarlet macaw (guacamaya / guara roja)", "La guacamaya roja (guara roja)"],
+              ["What is the money of Honduras called?", "¿Cómo se llama la moneda de Honduras?", "The lempira", "El lempira"],
+              ["Which famous ancient Maya city with carved stone monuments is in western Honduras?", "¿Qué famosa ciudad maya antigua con monumentos de piedra tallada está en el oeste de Honduras?", "Copán", "Copán"],
+            ]),
+            cat("🇸🇻", "El Salvador", "El Salvador", [
+              ["Which country is the smallest in Central America?", "¿Cuál es el país más pequeño de Centroamérica?", "El Salvador", "El Salvador"],
+              ["What is the capital city of El Salvador?", "¿Cuál es la capital de El Salvador?", "San Salvador", "San Salvador"],
+              ["What is the famous Salvadoran food: a thick corn tortilla stuffed with cheese, beans, or pork?", "¿Cuál es la famosa comida salvadoreña: una tortilla gruesa de maíz rellena de queso, frijoles o chicharrón?", "The pupusa", "La pupusa"],
+              ["El Salvador has a nickname because it has so many volcanoes. What is it?", "El Salvador tiene un apodo porque tiene muchos volcanes. ¿Cuál es?", "“The Land of Volcanoes”", "“La Tierra de los Volcanes”"],
+              ["El Salvador is the only Central American country that does NOT touch which sea?", "El Salvador es el único país de Centroamérica que NO toca ¿qué mar?", "The Caribbean Sea (it only has a Pacific coast)", "El mar Caribe (solo tiene costa en el Pacífico)"],
+            ]),
+            cat("🇬🇹", "Guatemala", "Guatemala", [
+              ["What green-and-red bird is on the flag of Guatemala — and is also the name of its money?", "¿Qué ave verde y roja está en la bandera de Guatemala y también es el nombre de su moneda?", "The quetzal", "El quetzal"],
+              ["What is the capital city of Guatemala?", "¿Cuál es la capital de Guatemala?", "Guatemala City", "Ciudad de Guatemala"],
+              ["What colorful old city near three volcanoes was once the capital of Guatemala?", "¿Qué colorida ciudad antigua cerca de tres volcanes fue la capital de Guatemala hace mucho tiempo?", "Antigua Guatemala (La Antigua)", "Antigua Guatemala (La Antigua)"],
+              ["What deep, beautiful lake in Guatemala is surrounded by three volcanoes?", "¿Qué lago profundo y hermoso de Guatemala está rodeado por tres volcanes?", "Lake Atitlán", "El lago de Atitlán"],
+              ["Which ancient Maya city in northern Guatemala has giant pyramids rising above the rainforest?", "¿Qué antigua ciudad maya del norte de Guatemala tiene pirámides gigantes que sobresalen de la selva?", "Tikal", "Tikal"],
+            ]),
+            cat("🌎", "Central America", "Centroamérica", [
+              ["What language do most people speak in Honduras, El Salvador, and Guatemala?", "¿Qué idioma habla la mayoría de la gente en Honduras, El Salvador y Guatemala?", "Spanish", "Español"],
+              ["How many countries are in Central America?", "¿Cuántos países hay en Centroamérica?", "7", "7"],
+              ["Central America is a bridge of land between which two continents?", "Centroamérica es un puente de tierra entre ¿qué dos continentes?", "North America and South America", "América del Norte y América del Sur"],
+              ["On what date do Honduras, El Salvador, and Guatemala all celebrate their Independence Day?", "¿En qué fecha celebran Honduras, El Salvador y Guatemala su Día de la Independencia?", "September 15 (since 1821)", "El 15 de septiembre (desde 1821)"],
+              ["Which country has the most people in all of Central America?", "¿Qué país tiene más habitantes en toda Centroamérica?", "Guatemala (about 18 million)", "Guatemala (unos 18 millones)"],
+            ]),
+            cat("🫓", "Food & Fiestas", "Comida y fiestas", [
+              ["What yellow fruit grows in Honduras and is sent all over the world? (Monkeys love it!)", "¿Qué fruta amarilla crece en Honduras y se envía a todo el mundo? (¡A los monos les encanta!)", "Bananas", "Los bananos (plátanos / guineos)"],
+              ["What warm, sweet drink made from cacao beans did the Maya drink long ago?", "¿Qué bebida caliente y dulce hecha de cacao tomaban los mayas hace mucho tiempo?", "Chocolate (hot chocolate)", "El chocolate (chocolate caliente)"],
+              ["What Honduran food is a thick flour tortilla folded over beans, cheese, and cream?", "¿Qué comida hondureña es una tortilla gruesa de harina doblada con frijoles, queso y crema?", "The baleada", "La baleada"],
+              ["On November 1st, giant colorful kites fill the sky in Sumpango and Santiago Sacatepéquez. In which country?", "El 1 de noviembre, barriletes gigantes y coloridos llenan el cielo en Sumpango y Santiago Sacatepéquez. ¿En qué país?", "Guatemala (the Giant Kite Festival)", "Guatemala (el Festival de Barriletes Gigantes)"],
+              ["What Guatemalan stew — a national dish — has meat, vegetables, and a thick sauce made with toasted pumpkin seeds?", "¿Qué guiso guatemalteco, plato nacional, tiene carne, verduras y una salsa espesa de pepitoria (semillas de calabaza tostadas)?", "Pepián", "El pepián"],
+            ]),
+            cat("🗿", "The Maya & History", "Los mayas e historia", [
+              ["Which ancient people built great stone pyramids in Guatemala and Honduras?", "¿Qué pueblo antiguo construyó grandes pirámides de piedra en Guatemala y Honduras?", "The Maya", "Los mayas"],
+              ["The ancient Maya played a game on a stone court with what kind of ball?", "Los antiguos mayas jugaban en una cancha de piedra con ¿qué tipo de pelota?", "A rubber ball (the Maya ball game)", "Una pelota de hule (el juego de pelota maya)"],
+              ["The Maya were amazing at math. What number did they use that means “nothing”?", "Los mayas eran excelentes en matemáticas. ¿Qué número usaban que significa “nada”?", "Zero", "El cero"],
+              ["Which Lenca leader fought against the Spanish and is honored on Honduran money?", "¿Qué líder lenca luchó contra los españoles y aparece en el dinero de Honduras?", "Lempira", "Lempira"],
+              ["What is the name of the sacred Maya book that tells the story of how the world was created?", "¿Cómo se llama el libro sagrado maya que cuenta cómo se creó el mundo?", "The Popol Vuh", "El Popol Vuh"],
+            ]),
+          ],
+        },
+      ];
+
+      const UI = {
+        title: { en: "Family Jeopardy", es: "Jeopardy en familia" },
+        subtitle: {
+          en: "Family Academic Night · Pre-K through 8th grade",
+          es: "Noche académica familiar · Pre-K a 8.º grado",
+        },
+        chooseBoard: { en: "1. Pick a game board", es: "1. Elige un tablero" },
+        teams: { en: "2. Teams (families)", es: "2. Equipos (familias)" },
+        team: { en: "Familia", es: "Familia" },
+        options: { en: "3. Options", es: "3. Opciones" },
+        sound: { en: "Sounds", es: "Sonidos" },
+        penalty: {
+          en: "Subtract points for wrong answers (off = no penalties, more fun for little ones)",
+          es: "Restar puntos por respuestas incorrectas (apagado = sin penalización, más divertido para los pequeños)",
+        },
+        howTo: { en: "How to play", es: "Cómo jugar" },
+        howTo1: {
+          en: "Each family is a team. Take turns choosing a category and a point value.",
+          es: "Cada familia es un equipo. Por turnos, elijan una categoría y un valor.",
+        },
+        howTo2: {
+          en: "Lower points = easier (Pre-K & K). Higher points = harder (middle school). Let the youngest player pick!",
+          es: "Menos puntos = más fácil (Pre-K y K). Más puntos = más difícil (secundaria). ¡Que elija el más pequeño!",
+        },
+        howTo3: {
+          en: "Talk it over as a family, then say your answer out loud. The host clicks “Show answer” and gives the points.",
+          es: "Conversen en familia y digan su respuesta en voz alta. El anfitrión hace clic en “Mostrar respuesta” y da los puntos.",
+        },
+        howTo4: {
+          en: "Watch for the hidden ⭐ DOUBLE squares — they are worth 2× the points!",
+          es: "Busquen las casillas ⭐ DOBLE escondidas: ¡valen el doble de puntos!",
+        },
+        howTo5: {
+          en: "When the board is empty, play the Final Challenge: every team wagers points and answers together.",
+          es: "Cuando el tablero esté vacío, jueguen el Desafío final: cada equipo apuesta puntos y responde junto.",
+        },
+        start: { en: "Start the game!", es: "¡Empezar el juego!" },
+        resume: { en: "Continue saved game", es: "Continuar juego guardado" },
+        board: { en: "Board", es: "Tablero" },
+        random: { en: "Random clue", es: "Pista al azar" },
+        final: { en: "Final Challenge", es: "Desafío final" },
+        finalBtn: { en: "Final Challenge", es: "Desafío final" },
+        newGame: { en: "New game", es: "Juego nuevo" },
+        confirmNew: {
+          en: "Click again to confirm",
+          es: "Haz clic otra vez para confirmar",
+        },
+        showAnswer: { en: "Show answer", es: "Mostrar respuesta" },
+        whoGotIt: {
+          en: "Who got it right? Tap the team to give the points.",
+          es: "¿Quién acertó? Toca el equipo para darle los puntos.",
+        },
+        nobody: { en: "Nobody got it — close", es: "Nadie acertó — cerrar" },
+        played: { en: "Already played", es: "Ya se jugó" },
+        close: { en: "Close", es: "Cerrar" },
+        double: { en: "⭐ DOUBLE POINTS! ⭐", es: "⭐ ¡PUNTOS DOBLES! ⭐" },
+        points: { en: "points", es: "puntos" },
+        finalIntro: {
+          en: "Every team plays! Choose how many points to risk, then answer together.",
+          es: "¡Todos los equipos juegan! Elijan cuántos puntos arriesgar y luego respondan juntos.",
+        },
+        wager: { en: "Wager", es: "Apuesta" },
+        youHave: { en: "You have", es: "Tienen" },
+        reveal: { en: "Reveal the question", es: "Revelar la pregunta" },
+        correct: { en: "✓ Correct", es: "✓ Correcto" },
+        incorrect: { en: "✗ Wrong", es: "✗ Incorrecto" },
+        results: { en: "See the results!", es: "¡Ver los resultados!" },
+        winner: { en: "Winner!", es: "¡Ganador!" },
+        tie: { en: "It’s a tie!", es: "¡Empate!" },
+        everyone: {
+          en: "Great job, everyone! Give yourselves a round of applause 👏",
+          es: "¡Buen trabajo a todos! Dense un fuerte aplauso 👏",
+        },
+        backToBoard: { en: "Back to the board", es: "Volver al tablero" },
+        playAgain: { en: "Play again", es: "Jugar otra vez" },
+        allDone: {
+          en: "All clues played! Ready for the Final Challenge? 🏆",
+          es: "¡Se jugaron todas las pistas! ¿Listos para el Desafío final? 🏆",
+        },
+        scoreboard: { en: "Scoreboard", es: "Marcador" },
+        setup: { en: "Setup", es: "Configuración" },
+      };
+      const TEAM_COLORS = [
+        "#ff5c7a",
+        "#35e0a1",
+        "#8fe3ff",
+        "#ffc83d",
+        "#c79bff",
+        "#ff9f1c",
+        "#7cf29a",
+        "#ff8fd8",
+      ];
+
+      /* ============================== STATE ============================== */
+      const KEY = "familyJeopardy.v1";
+      const $ = (s) => document.querySelector(s);
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const fresh = () => ({
+        inGame: false,
+        lang: "both",
+        sound: true,
+        penalty: false,
+        boardId: "mix",
+        teams: [1, 2, 3, 4].map((n) => ({ name: "Familia " + n, score: 0 })),
+        used: {},
+        doubles: [],
+        finalDone: false,
+      });
+      let S = (() => {
+        try {
+          const s = JSON.parse(localStorage.getItem(KEY));
+          return s && s.teams ? { ...fresh(), ...s } : fresh();
+        } catch (e) {
+          return fresh();
+        }
+      })();
+      const save = () => {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(S));
+        } catch (e) {}
+      };
+      const board = () => BOARDS.find((b) => b.id === S.boardId) || BOARDS[0];
+      const t = (k) => L(UI[k]);
+      function L(o) {
+        return S.lang === "both"
+          ? `${esc(o.en)}<span class="sep">·</span><span class="es">${esc(o.es)}</span>`
+          : esc(o[S.lang]);
+      }
+      function LStack(o) {
+        return S.lang === "both"
+          ? `<span class="en">${esc(o.en)}</span><span class="es">${esc(o.es)}</span>`
+          : esc(o[S.lang]);
+      }
+      const cellKey = (c, r) => c + "-" + r;
+      const cellValue = (c, r) =>
+        ROWS[r].v * (S.doubles.includes(cellKey(c, r)) ? 2 : 1);
+
+      /* ============================== EFFECTS ============================== */
+      let AC;
+      function beep(seq) {
+        if (!S.sound) return;
+        try {
+          AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+          if (AC.state === "suspended") AC.resume();
+          let at = AC.currentTime;
+          for (const [f, d, type] of seq) {
+            const o = AC.createOscillator(),
+              g = AC.createGain();
+            o.type = type || "triangle";
+            o.frequency.value = f;
+            g.gain.setValueAtTime(0.0001, at);
+            g.gain.exponentialRampToValueAtTime(0.22, at + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.0001, at + d);
+            o.connect(g).connect(AC.destination);
+            o.start(at);
+            o.stop(at + d + 0.02);
+            at += d;
+          }
+        } catch (e) {}
+      }
+      const SFX = {
+        open: () =>
+          beep([
+            [660, 0.08],
+            [880, 0.12],
+          ]),
+        reveal: () =>
+          beep([
+            [523, 0.1],
+            [659, 0.1],
+            [784, 0.18],
+          ]),
+        win: () =>
+          beep([
+            [523, 0.12],
+            [659, 0.12],
+            [784, 0.12],
+            [1047, 0.3],
+          ]),
+        lose: () =>
+          beep([
+            [220, 0.18, "sawtooth"],
+            [175, 0.3, "sawtooth"],
+          ]),
+        dbl: () =>
+          beep([
+            [784, 0.08],
+            [988, 0.08],
+            [1175, 0.08],
+            [1568, 0.28],
+          ]),
+        fanfare: () =>
+          beep([
+            [523, 0.15],
+            [523, 0.15],
+            [523, 0.15],
+            [659, 0.3],
+            [587, 0.15],
+            [659, 0.15],
+            [784, 0.5],
+          ]),
+      };
+      const cv = $("#confetti"),
+        cx = cv.getContext("2d");
+      let parts = [],
+        raf = null;
+      function confetti(n = 180) {
+        cv.width = innerWidth;
+        cv.height = innerHeight;
+        const cols = [
+          "#ffc83d",
+          "#ff5c7a",
+          "#35e0a1",
+          "#8fe3ff",
+          "#ffffff",
+          "#ff9f1c",
+          "#c79bff",
+        ];
+        for (let i = 0; i < n; i++)
+          parts.push({
+            x: Math.random() * cv.width,
+            y: -20 - Math.random() * cv.height * 0.4,
+            r: 7 + Math.random() * 9,
+            c: cols[i % cols.length],
+            vy: 2.5 + Math.random() * 4,
+            vx: -2 + Math.random() * 4,
+            rot: Math.random() * 6.3,
+            vr: -0.25 + Math.random() * 0.5,
+          });
+        if (!raf) tick();
+      }
+      function tick() {
+        cx.clearRect(0, 0, cv.width, cv.height);
+        parts = parts.filter((p) => p.y < cv.height + 30);
+        for (const p of parts) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vr;
+          p.vy += 0.04;
+          cx.save();
+          cx.translate(p.x, p.y);
+          cx.rotate(p.rot);
+          cx.fillStyle = p.c;
+          cx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2);
+          cx.restore();
+        }
+        raf = parts.length
+          ? requestAnimationFrame(tick)
+          : (cx.clearRect(0, 0, cv.width, cv.height), null);
+      }
+      let toastTimer;
+      function toast(html) {
+        const el = $("#toast");
+        el.innerHTML = html;
+        el.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("show"), 4200);
+      }
+
+      /* ============================== RENDER: SHELL ============================== */
+      function renderShell() {
+        document.documentElement.lang = S.lang === "es" ? "es" : "en";
+        document.title = UI.title.en + " · " + UI.title.es;
+        $("#brandTitle").innerHTML = t("title");
+        document
+          .querySelectorAll("#langSeg button")
+          .forEach((b) =>
+            b.setAttribute("aria-pressed", b.dataset.lang === S.lang),
+          );
+        $("#soundBtn").setAttribute("aria-pressed", S.sound);
+        $("#soundBtn").innerHTML = (S.sound ? "🔊 " : "🔇 ") + t("sound");
+      }
+
+      /* ============================== RENDER: SETUP ============================== */
+      function renderSetup() {
+        const b = board();
+        $("#setup").innerHTML = `
+  <div class="hero"><h2>${t("title")}</h2><p>${t("subtitle")}</p></div>
+  <div class="panel"><h3>${t("chooseBoard")}</h3><div class="boards">
+    ${BOARDS.map(
+      (
+        x,
+      ) => `<button class="board-card" data-board="${x.id}" aria-pressed="${x.id === S.boardId}">
+      <div class="em">${x.emoji}</div><div class="nm">${L(x.name)}</div><div class="bl">${L(x.blurb)}</div>
+      <ul>${x.cats.map((c) => `<li>${c.emoji} ${esc(S.lang === "es" ? c.name.es : c.name.en)}</li>`).join("")}</ul></button>`,
+    ).join("")}
+  </div></div>
+  <div class="setup-grid">
+    <div class="panel"><h3>${t("teams")}</h3>
+      <div class="stepper"><button id="teamMinus" aria-label="−" ${S.teams.length <= 1 ? "disabled" : ""}>−</button><output>${S.teams.length}</output><button id="teamPlus" aria-label="+" ${S.teams.length >= 8 ? "disabled" : ""}>+</button></div>
+      <div class="team-inputs">${S.teams.map((tm, i) => `<label style="--c:${TEAM_COLORS[i]}"><span>${i + 1}.</span><input data-team="${i}" value="${esc(tm.name)}" maxlength="24" aria-label="Team ${i + 1} name"></label>`).join("")}</div>
+    </div>
+    <div class="panel"><h3>${t("options")}</h3><div class="toggles">
+      <label class="toggle"><input type="checkbox" id="optSound" ${S.sound ? "checked" : ""}><span>🔊 ${t("sound")}</span></label>
+      <label class="toggle"><input type="checkbox" id="optPenalty" ${S.penalty ? "checked" : ""}><span>➖ ${t("penalty")}</span></label>
+    </div></div>
+    <div class="panel howto"><h3>${t("howTo")}</h3><ol>${[1, 2, 3, 4, 5].map((n) => `<li>${t("howTo" + n)}</li>`).join("")}</ol></div>
+  </div>
+  <div class="cta-row">
+    ${S.inGame ? `<button class="btn btn-mint" id="resumeBtn">▶ ${t("resume")}</button>` : ""}
+    <button class="btn btn-gold" id="startBtn">🎉 ${t("start")}</button>
+  </div>`;
+        document.querySelectorAll(".board-card").forEach(
+          (el) =>
+            (el.onclick = () => {
+              S.boardId = el.dataset.board;
+              save();
+              renderSetup();
+              SFX.open();
+            }),
+        );
+        $("#teamMinus").onclick = () => {
+          S.teams.pop();
+          save();
+          renderSetup();
+        };
+        $("#teamPlus").onclick = () => {
+          S.teams.push({ name: "Familia " + (S.teams.length + 1), score: 0 });
+          save();
+          renderSetup();
+        };
+        document.querySelectorAll("[data-team]").forEach(
+          (inp) =>
+            (inp.oninput = () => {
+              S.teams[+inp.dataset.team].name =
+                inp.value.trim() || "Familia " + (+inp.dataset.team + 1);
+              save();
+            }),
+        );
+        $("#optSound").onchange = (e) => {
+          S.sound = e.target.checked;
+          save();
+          renderShell();
+        };
+        $("#optPenalty").onchange = (e) => {
+          S.penalty = e.target.checked;
+          save();
+        };
+        $("#startBtn").onclick = startGame;
+        const r = $("#resumeBtn");
+        if (r)
+          r.onclick = () => {
+            showScreen("game");
+          };
+      }
+
+      function startGame() {
+        S.inGame = true;
+        S.used = {};
+        S.finalDone = false;
+        S.teams.forEach((tm) => (tm.score = 0));
+        // two hidden DOUBLE squares, rows 300+ in different categories
+        const cats = [...Array(6).keys()]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 2);
+        S.doubles = cats.map((c) =>
+          cellKey(c, 2 + Math.floor(Math.random() * 3)),
+        );
+        save();
+        SFX.fanfare();
+        showScreen("game");
+      }
+      function showScreen(name) {
+        $("#setup").hidden = name !== "setup";
+        $("#game").hidden = name !== "game";
+        name === "setup" ? renderSetup() : renderGame();
+        window.scrollTo({ top: 0 });
+      }
+
+      /* ============================== RENDER: GAME ============================== */
+      let newGameArmed = false;
+      function renderGame() {
+        const b = board();
+        const cells = [];
+        ROWS.forEach((row, r) =>
+          b.cats.forEach((c, ci) => {
+            const k = cellKey(ci, r),
+              u = S.used[k];
+            cells.push(`<button class="cell ${u ? "used " + u : ""}" data-c="${ci}" data-r="${r}" style="--i:${r * 6 + ci + 6}" aria-label="${esc(c.name.en)} ${row.v}${u ? " (played)" : ""}">
+      <span class="v">${u === "won" ? "✓" : u ? "—" : row.v}</span><span class="g">${esc(S.lang === "es" ? row.g.es : row.g.en)}</span></button>`);
+          }),
+        );
+        $("#game").innerHTML = `
+  <div class="gamebar">
+    <div class="bname">${b.emoji} ${L(b.name)}<small>${t("board")} · ${L(UI.subtitle)}</small></div>
+    <div class="actions">
+      <button class="btn btn-ghost btn-sm" id="randomBtn">🎲 ${t("random")}</button>
+      <button class="btn btn-mint btn-sm" id="finalBtn">🏆 ${t("finalBtn")}</button>
+      <button class="btn btn-ghost btn-sm" id="setupBtn">⚙️ ${t("setup")}</button>
+      <button class="btn btn-coral btn-sm" id="newBtn">${t("newGame")}</button>
+    </div>
+  </div>
+  <div class="board-wrap"><div class="grid" role="grid">
+    ${b.cats.map((c, i) => `<div class="cat" style="--i:${i}"><span class="em">${c.emoji}</span><span class="nm">${LStack(c.name)}</span></div>`).join("")}
+    ${cells.join("")}
+  </div></div>
+  <h3 class="sr">${t("scoreboard")}</h3>
+  <div class="scores" id="scores"></div>`;
+        renderScores();
+        document
+          .querySelectorAll(".cell")
+          .forEach(
+            (el) => (el.onclick = () => openClue(+el.dataset.c, +el.dataset.r)),
+          );
+        $("#randomBtn").onclick = () => {
+          const free = [...document.querySelectorAll(".cell:not(.used)")];
+          if (!free.length) return toast(t("allDone"));
+          const el = free[Math.floor(Math.random() * free.length)];
+          el.scrollIntoView({ block: "nearest" });
+          openClue(+el.dataset.c, +el.dataset.r);
+        };
+        $("#finalBtn").onclick = openFinal;
+        $("#setupBtn").onclick = () => showScreen("setup");
+        $("#newBtn").onclick = (e) => {
+          if (!newGameArmed) {
+            newGameArmed = true;
+            e.target.textContent =
+              "⚠️ " + (S.lang === "es" ? UI.confirmNew.es : UI.confirmNew.en);
+            setTimeout(() => {
+              newGameArmed = false;
+              if ($("#newBtn")) $("#newBtn").innerHTML = t("newGame");
+            }, 3000);
+            return;
+          }
+          newGameArmed = false;
+          S.inGame = false;
+          save();
+          showScreen("setup");
+        };
+      }
+      function renderScores() {
+        const max = Math.max(...S.teams.map((x) => x.score));
+        $("#scores").innerHTML = S.teams
+          .map(
+            (tm, i) => `
+    <div class="score ${tm.score === max && max > 0 ? "leader" : ""}" style="--c:${TEAM_COLORS[i]}">
+      <input data-score-team="${i}" value="${esc(tm.name)}" maxlength="24" aria-label="Team ${i + 1} name">
+      <div class="pts" id="pts${i}">${tm.score}</div>
+      <div class="adj"><button data-adj="${i}" data-d="-100" aria-label="minus 100">−100</button><button data-adj="${i}" data-d="100" aria-label="plus 100">+100</button></div>
+    </div>`,
+          )
+          .join("");
+        document.querySelectorAll("[data-score-team]").forEach(
+          (inp) =>
+            (inp.onchange = () => {
+              S.teams[+inp.dataset.scoreTeam].name =
+                inp.value.trim() || "Familia " + (+inp.dataset.scoreTeam + 1);
+              save();
+              renderScores();
+            }),
+        );
+        document
+          .querySelectorAll("[data-adj]")
+          .forEach(
+            (bt) =>
+              (bt.onclick = () => addScore(+bt.dataset.adj, +bt.dataset.d)),
+          );
+      }
+      function addScore(i, d) {
+        S.teams[i].score += d;
+        save();
+        renderScores();
+        const el = $("#pts" + i);
+        if (el) {
+          el.classList.add("bump");
+        }
+      }
+
+      /* ============================== CLUE MODAL ============================== */
+      let open = null;
+      function openClue(c, r) {
+        const k = cellKey(c, r);
+        open = {
+          c,
+          r,
+          k,
+          revealed: !!S.used[k],
+          played: !!S.used[k],
+          dbl: S.doubles.includes(k),
+        };
+        renderClue();
+        $("#clue").hidden = false;
+        open.dbl && !open.played ? SFX.dbl() : SFX.open();
+      }
+      function renderClue() {
+        if (!open) return;
+        const b = board(),
+          c = b.cats[open.c],
+          q = c.qs[open.r],
+          row = ROWS[open.r],
+          val = cellValue(open.c, open.r);
+        $("#clue").innerHTML = `<div class="card">
+    <button class="close-x" id="clueClose" aria-label="${esc(UI.close.en)}">✕</button>
+    <div class="chips"><span class="chip">${c.emoji} ${L(c.name)}</span><span class="chip val">${val} ${t("points")}</span><span class="chip">${L(row.g)}</span></div>
+    ${open.dbl ? `<div class="dbl">${t("double")}</div>` : ""}
+    <h2 id="clueTitle" class="clue ${q.q.en.length > 80 ? "long" : ""}">${LStack(q.q)}</h2>
+    ${open.revealed ? `<div class="answer">${LStack(q.a)}</div>` : `<div class="cta-row"><button class="btn btn-gold" id="revealBtn">👀 ${t("showAnswer")}</button></div>`}
+    ${
+      open.revealed && !open.played
+        ? `<div class="award"><div class="lbl">${t("whoGotIt")}</div><div class="teams">
+      ${S.teams.map((tm, i) => `<button class="tbtn" style="--c:${TEAM_COLORS[i]}" data-win="${i}">🎉 ${esc(tm.name)} <b>+${val}</b>${S.penalty ? `<span class="neg" data-lose="${i}" role="button" aria-label="minus ${val}">−${val}</span>` : ""}</button>`).join("")}
+    </div><div class="cta-row"><button class="btn btn-ghost btn-sm" id="nobodyBtn">${t("nobody")}</button></div></div>`
+        : ""
+    }
+    ${open.played ? `<div class="cta-row"><span class="chip">✓ ${t("played")}</span><button class="btn btn-ghost btn-sm" id="closeBtn">${t("close")}</button></div>` : ""}
+  </div>`;
+        $("#clueClose").onclick = closeClue;
+        const cb = $("#closeBtn");
+        if (cb) cb.onclick = closeClue;
+        const rb = $("#revealBtn");
+        if (rb) {
+          rb.onclick = () => {
+            open.revealed = true;
+            SFX.reveal();
+            renderClue();
+          };
+          rb.focus();
+        }
+        document.querySelectorAll("[data-win]").forEach(
+          (bt) =>
+            (bt.onclick = (e) => {
+              const lose = e.target.closest("[data-lose]");
+              if (lose) {
+                addScore(+lose.dataset.lose, -val);
+                SFX.lose();
+                return;
+              }
+              addScore(+bt.dataset.win, val);
+              S.used[open.k] = "won";
+              save();
+              SFX.win();
+              confetti();
+              closeClue();
+            }),
+        );
+        const nb = $("#nobodyBtn");
+        if (nb)
+          nb.onclick = () => {
+            S.used[open.k] = "miss";
+            save();
+            SFX.lose();
+            closeClue();
+          };
+      }
+      function closeClue() {
+        $("#clue").hidden = true;
+        open = null;
+        renderGame();
+        const total = board().cats.length * ROWS.length;
+        if (Object.keys(S.used).length >= total && !S.finalDone)
+          toast(t("allDone"));
+      }
+
+      /* ============================== FINAL CHALLENGE ============================== */
+      let fin = null;
+      function openFinal() {
+        fin = {
+          step: "wager",
+          wagers: S.teams.map((tm) =>
+            Math.min(
+              tm.score,
+              Math.max(0, Math.round(tm.score / 2 / 100) * 100),
+            ),
+          ),
+          decided: S.teams.map(() => null),
+        };
+        renderFinal();
+        $("#final").hidden = false;
+        SFX.fanfare();
+      }
+      function renderFinal() {
+        const b = board(),
+          f = b.final;
+        const teamCards = S.teams
+          .map(
+            (
+              tm,
+              i,
+            ) => `<div class="ft ${fin.decided[i] !== null ? "decided" : ""}" style="--c:${TEAM_COLORS[i]}">
+    <div class="nm">${esc(tm.name)}</div><div class="have">${t("youHave")}: <b>${tm.score}</b> · ${t("wager")}: <b>${fin.wagers[i]}</b></div>
+    ${fin.step === "wager" ? `<input type="number" min="0" max="${Math.max(0, tm.score)}" step="100" value="${fin.wagers[i]}" data-wager="${i}" aria-label="${esc(tm.name)} wager">` : ""}
+    ${
+      fin.step === "answer"
+        ? `<div class="verdict">
+      <button class="ok" data-fin="${i}" data-ok="1" ${fin.decided[i] !== null && fin.decided[i] !== true ? "disabled" : ""}>${t("correct")}</button>
+      <button class="no" data-fin="${i}" data-ok="0" ${fin.decided[i] !== null && fin.decided[i] !== false ? "disabled" : ""}>${t("incorrect")}</button></div>`
+        : ""
+    }
+  </div>`,
+          )
+          .join("");
+        $("#final").innerHTML = `<div class="card">
+    <button class="close-x" id="finalClose" aria-label="${esc(UI.close.en)}">✕</button>
+    <div class="chips"><span class="chip val">🏆 ${t("final")}</span></div>
+    <h2 id="finalTitle" class="clue" style="font-size:clamp(1.2rem,2.4vw,1.6rem);color:var(--muted)">${fin.step === "wager" ? t("finalIntro") : ""}</h2>
+    ${fin.step !== "wager" ? `<h2 class="clue ${f.q.en.length > 80 ? "long" : ""}">${LStack(f.q)}</h2>` : ""}
+    ${fin.step === "answer" ? `<div class="answer">${LStack(f.a)}</div>` : ""}
+    <div class="final-teams">${teamCards}</div>
+    <div class="cta-row">
+      ${fin.step === "wager" ? `<button class="btn btn-gold" id="finNext">👀 ${t("reveal")}</button>` : ""}
+      ${fin.step === "question" ? `<button class="btn btn-gold" id="finNext">👀 ${t("showAnswer")}</button>` : ""}
+      ${fin.step === "answer" ? `<button class="btn btn-gold" id="finNext" ${fin.decided.some((d) => d === null) ? "disabled" : ""}>🎉 ${t("results")}</button>` : ""}
+    </div></div>`;
+        $("#finalClose").onclick = () => {
+          $("#final").hidden = true;
+          renderGame();
+        };
+        document.querySelectorAll("[data-wager]").forEach(
+          (inp) =>
+            (inp.oninput = () => {
+              const i = +inp.dataset.wager,
+                max = Math.max(0, S.teams[i].score);
+              fin.wagers[i] = Math.max(
+                0,
+                Math.min(max, Math.round(+inp.value || 0)),
+              );
+            }),
+        );
+        document.querySelectorAll("[data-fin]").forEach(
+          (bt) =>
+            (bt.onclick = () => {
+              const i = +bt.dataset.fin,
+                ok = bt.dataset.ok === "1";
+              if (fin.decided[i] !== null) return;
+              fin.decided[i] = ok;
+              addScore(i, ok ? fin.wagers[i] : -fin.wagers[i]);
+              ok ? SFX.win() : SFX.lose();
+              renderFinal();
+            }),
+        );
+        const nx = $("#finNext");
+        if (nx)
+          nx.onclick = () => {
+            if (fin.step === "wager") {
+              fin.step = "question";
+              SFX.open();
+            } else if (fin.step === "question") {
+              fin.step = "answer";
+              SFX.reveal();
+            } else {
+              S.finalDone = true;
+              save();
+              $("#final").hidden = true;
+              showWinner();
+              return;
+            }
+            renderFinal();
+          };
+      }
+      function showWinner() {
+        const sorted = S.teams
+          .map((tm, i) => ({ ...tm, i }))
+          .sort((a, b) => b.score - a.score);
+        const tie = sorted.length > 1 && sorted[0].score === sorted[1].score;
+        $("#winner").innerHTML = `<div class="card">
+    <div style="font-size:4rem;line-height:1">${tie ? "🤝" : "🏆"}</div>
+    <div class="chips"><span class="chip val">${tie ? t("tie") : t("winner")}</span></div>
+    <h2 id="winTitle" class="clue" style="color:var(--gold)">${tie ? "🤝" : esc(sorted[0].name)}</h2>
+    <p style="font-size:1.2rem;color:var(--muted)">${t("everyone")}</p>
+    <div class="podium">${sorted.map((tm, r) => `<div class="row" style="--c:${TEAM_COLORS[tm.i]};--i:${r}"><span class="rank">${["🥇", "🥈", "🥉"][r] || r + 1}</span><span class="nm">${esc(tm.name)}</span><span class="pts">${tm.score}</span></div>`).join("")}</div>
+    <div class="cta-row"><button class="btn btn-ghost" id="winBack">${t("backToBoard")}</button><button class="btn btn-gold" id="winAgain">🔁 ${t("playAgain")}</button></div>
+  </div>`;
+        $("#winner").hidden = false;
+        SFX.fanfare();
+        confetti(320);
+        setTimeout(() => confetti(200), 900);
+        $("#winBack").onclick = () => {
+          $("#winner").hidden = true;
+          renderGame();
+        };
+        $("#winAgain").onclick = () => {
+          $("#winner").hidden = true;
+          S.inGame = false;
+          save();
+          showScreen("setup");
+        };
+      }
+
+      /* ============================== WIRING ============================== */
+      document.querySelectorAll("#langSeg button").forEach(
+        (b) =>
+          (b.onclick = () => {
+            S.lang = b.dataset.lang;
+            save();
+            renderAll();
+          }),
+      );
+      $("#soundBtn").onclick = () => {
+        S.sound = !S.sound;
+        save();
+        renderShell();
+        if (!$("#setup").hidden) renderSetup();
+        SFX.open();
+      };
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (!$("#clue").hidden) closeClue();
+          else if (!$("#final").hidden) {
+            $("#final").hidden = true;
+            renderGame();
+          } else if (!$("#winner").hidden) {
+            $("#winner").hidden = true;
+            renderGame();
+          }
+        }
+      });
+      addEventListener("resize", () => {
+        cv.width = innerWidth;
+        cv.height = innerHeight;
+      });
+      function renderAll() {
+        renderShell();
+        if (!$("#setup").hidden) renderSetup();
+        else renderGame();
+        if (open) renderClue();
+        if (fin && !$("#final").hidden) renderFinal();
+      }
+      renderShell();
+      showScreen(S.inGame ? "game" : "setup");
+    </script>
+  </body>
+</html>

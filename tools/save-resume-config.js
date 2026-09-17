@@ -79,6 +79,8 @@ export const SKIP_TOPLEVEL = new Set([
   // "save your work" bar sat on top of the wizard and meant nothing here
   "osamr-case-clinic", // same teacher PD model: local state plus a shared board
   // via /api/osamr-board, so there is no student work for the widget to hold
+  "family-jeopardy", // host-run family-night game show — teams, scores and the
+  // board self-persist to its own localStorage key; no individual student work
 ]);
 
 // Filename patterns that are not student-facing activities.
