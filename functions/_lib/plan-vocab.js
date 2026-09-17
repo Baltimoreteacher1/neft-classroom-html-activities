@@ -3478,6 +3478,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/ratio-quest/",
+    title: "Ratio Quest: Meridian Market",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/showcase/",
     title: "Student Work Gallery",
     category: "Hub",

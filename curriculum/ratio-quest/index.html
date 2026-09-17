@@ -1,0 +1,2990 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A Grade 6 ratio game for Lesson 3-2 — brew potions to a ratio, scale bakery batches with equivalent ratios, stamp parcels ratio / rate / unit rate, and find the best buy at market with unit rates. Calm, self-paced, no timers; coins buy upgrades for your own stall."
+    />
+    <title>Ratio Quest: Meridian Market</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%AA%3C/text%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --ink: #22243a;
+        --muted: #6b6f8a;
+        --paper: #fffaf0;
+        --line: #e8dcc4;
+        --gold: #ffc447;
+        --good: #35c26e;
+        --bad: #ff5d6c;
+        --potion: #8b6cf0;
+        --bakery: #f2913d;
+        --post: #3d9be9;
+        --market: #35c26e;
+        --shadow: 0 10px 30px rgba(30, 20, 60, 0.18);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        font-family:
+          "Nunito",
+          "Avenir Next",
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        color: var(--ink);
+        background: #1d1b3a;
+        overflow: hidden;
+        font-size: 18px;
+        line-height: 1.35;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      input {
+        font: inherit;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .screen {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        animation: fadein 0.45s ease;
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: scale(1.02);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .screen.out {
+        animation: fadeout 0.35s ease forwards;
+      }
+      @keyframes fadeout {
+        to {
+          opacity: 0;
+          transform: scale(0.98);
+        }
+      }
+
+      /* ---------- world background ---------- */
+      .sky {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(#7cc4ff 0%, #bfe6ff 55%, #eef9ff 100%);
+      }
+      .sky.dusk {
+        background: linear-gradient(#5a4fb8 0%, #ff9c7a 60%, #ffd9a8 100%);
+      }
+      .sky svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .cloud {
+        animation: drift linear infinite;
+      }
+      @keyframes drift {
+        from {
+          transform: translateX(-300px);
+        }
+        to {
+          transform: translateX(1500px);
+        }
+      }
+      .bob {
+        animation: bob 2.6s ease-in-out infinite;
+        transform-origin: bottom center;
+      }
+      @keyframes bob {
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      .glow {
+        animation: glow 2.2s ease-in-out infinite;
+      }
+      @keyframes glow {
+        50% {
+          opacity: 0.55;
+        }
+      }
+      .rise {
+        animation: rise 3s ease-in infinite;
+      }
+      @keyframes rise {
+        from {
+          transform: translateY(0);
+          opacity: 0.8;
+        }
+        to {
+          transform: translateY(-90px);
+          opacity: 0;
+        }
+      }
+      .spin {
+        animation: spin 6s linear infinite;
+        transform-origin: center;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ---------- HUD ---------- */
+      .hud {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        z-index: 5;
+        pointer-events: none;
+      }
+      .hud > * {
+        pointer-events: auto;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 999px;
+        padding: 8px 16px;
+        font-weight: 800;
+        box-shadow: var(--shadow);
+        border: 2px solid rgba(255, 255, 255, 0.6);
+      }
+      .chip.coins {
+        color: #7a5200;
+        background: #fff3cf;
+      }
+      .chip.btn:hover {
+        transform: translateY(-1px);
+      }
+      .hud .grow {
+        flex: 1;
+      }
+      .toggle input {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--post);
+      }
+
+      /* ---------- title ---------- */
+      .title-wrap {
+        position: relative;
+        z-index: 2;
+        margin: auto;
+        text-align: center;
+        padding: 20px;
+        max-width: 760px;
+        width: 100%;
+      }
+      .logo {
+        font-size: clamp(2.4rem, 7vw, 5rem);
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: #fff;
+        text-shadow:
+          0 6px 0 #4b3aa8,
+          0 14px 30px rgba(0, 0, 0, 0.25);
+        margin: 0;
+        line-height: 1;
+      }
+      .logo small {
+        display: block;
+        font-size: 0.38em;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        color: #ffe89a;
+        text-shadow: 0 3px 0 #4b3aa8;
+        margin-top: 10px;
+      }
+      .panel {
+        background: rgba(255, 250, 240, 0.96);
+        border-radius: 26px;
+        padding: 22px 26px;
+        box-shadow: var(--shadow);
+        margin-top: 26px;
+      }
+      .avatars {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .avatar-pick {
+        border: 4px solid transparent;
+        border-radius: 20px;
+        background: #fff;
+        padding: 8px;
+        width: 120px;
+        transition: 0.15s;
+      }
+      .avatar-pick svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .avatar-pick .nm {
+        font-weight: 900;
+      }
+      .avatar-pick.on {
+        border-color: var(--gold);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow);
+      }
+      .name-in {
+        width: 100%;
+        max-width: 320px;
+        font-size: 1.25rem;
+        font-weight: 800;
+        padding: 10px 16px;
+        border: 3px solid var(--line);
+        border-radius: 14px;
+        text-align: center;
+      }
+      .name-in:focus {
+        outline: none;
+        border-color: var(--post);
+      }
+
+      .big-btn {
+        border: 0;
+        border-radius: 18px;
+        padding: 14px 34px;
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: #3a2a00;
+        background: linear-gradient(#ffd66b, #ffb020);
+        box-shadow:
+          0 6px 0 #c97d00,
+          0 10px 24px rgba(0, 0, 0, 0.2);
+        transition: transform 0.08s;
+      }
+      .big-btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #c97d00;
+      }
+      .big-btn.alt {
+        color: #fff;
+        background: linear-gradient(#6c8cff, #4e5fe8);
+        box-shadow:
+          0 6px 0 #2f3aa8,
+          0 10px 24px rgba(0, 0, 0, 0.2);
+      }
+      .big-btn.alt:active {
+        box-shadow: 0 2px 0 #2f3aa8;
+      }
+      .big-btn.quiet {
+        color: var(--ink);
+        background: #fff;
+        box-shadow: 0 6px 0 #d8ccb2;
+      }
+      .big-btn.quiet:active {
+        box-shadow: 0 2px 0 #d8ccb2;
+      }
+      .big-btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ---------- map ---------- */
+      .map-wrap {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .map-wrap svg.map {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        display: block;
+      }
+      .building {
+        cursor: pointer;
+        transition: transform 0.15s;
+        transform-box: fill-box;
+        transform-origin: bottom center;
+      }
+      .building:hover {
+        transform: scale(1.04);
+      }
+      .building.locked {
+        filter: saturate(0.3) brightness(0.85);
+        cursor: not-allowed;
+      }
+      .sign-label {
+        font-weight: 900;
+        font-size: 22px;
+        fill: #fff;
+        paint-order: stroke;
+        stroke: #2a2350;
+        stroke-width: 6px;
+        stroke-linejoin: round;
+      }
+      .sign-stars {
+        font-size: 18px;
+        fill: #ffd54a;
+        paint-order: stroke;
+        stroke: #2a2350;
+        stroke-width: 5px;
+      }
+      .map-toast {
+        position: absolute;
+        top: 72px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 250, 240, 0.96);
+        border-radius: 18px;
+        padding: 12px 22px;
+        font-weight: 800;
+        box-shadow: var(--shadow);
+        max-width: 92vw;
+        text-align: center;
+      }
+
+      /* ---------- shop scene ---------- */
+      .scene {
+        position: relative;
+        flex: 1;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        overflow: hidden;
+      }
+      .scene-art {
+        position: relative;
+        height: clamp(150px, 26vh, 240px);
+        overflow: hidden;
+      }
+      .scene-art svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .scene-body {
+        position: relative;
+        overflow: auto;
+        padding: 14px 18px 30px;
+      }
+      .scene-inner {
+        max-width: 1040px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+      .npc-card {
+        background: rgba(255, 250, 240, 0.96);
+        border-radius: 22px;
+        padding: 14px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        position: sticky;
+        top: 0;
+      }
+      .npc-card svg {
+        width: 130px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+      }
+      .npc-name {
+        font-weight: 900;
+        font-size: 1.05rem;
+        margin-top: 6px;
+      }
+      .npc-role {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .speech {
+        margin-top: 10px;
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 16px;
+        padding: 12px 14px;
+        text-align: left;
+        min-height: 96px;
+        font-weight: 700;
+        position: relative;
+      }
+      .speech::before {
+        content: "";
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        margin-left: -10px;
+        border: 10px solid transparent;
+        border-bottom-color: var(--line);
+        border-top: 0;
+      }
+      .board {
+        background: rgba(255, 250, 240, 0.97);
+        border-radius: 22px;
+        padding: 18px 20px 22px;
+        box-shadow: var(--shadow);
+        border-top: 8px solid var(--c, var(--gold));
+      }
+      .board-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 16px;
+        margin-bottom: 10px;
+      }
+      .board-head h2 {
+        margin: 0;
+        font-size: 1.35rem;
+      }
+      .pill {
+        font-weight: 900;
+        padding: 5px 14px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--c) 16%, white);
+        color: color-mix(in srgb, var(--c) 70%, black);
+      }
+      .task {
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin: 6px 0 14px;
+      }
+      .task b {
+        color: color-mix(in srgb, var(--c) 70%, black);
+      }
+      .feedback {
+        margin-top: 12px;
+        font-size: 1.15rem;
+        font-weight: 900;
+        min-height: 1.5em;
+      }
+      .feedback.good {
+        color: #1f8f4e;
+      }
+      .feedback.bad {
+        color: #d5323f;
+      }
+      .hint {
+        margin-top: 12px;
+        background: #fff7dc;
+        border: 2px dashed var(--gold);
+        border-radius: 14px;
+        padding: 10px 14px;
+        font-size: 1rem;
+      }
+      .hint strong {
+        color: #a36f00;
+      }
+      .coach {
+        margin-top: 10px;
+        background: #e8f2ff;
+        border: 2px solid #b5d4f8;
+        border-radius: 14px;
+        padding: 9px 14px;
+        font-weight: 800;
+      }
+      .coach::before {
+        content: "🧭 ";
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 16px;
+        align-items: center;
+      }
+      .btn {
+        border: 0;
+        border-radius: 14px;
+        padding: 12px 22px;
+        font-weight: 900;
+        font-size: 1.05rem;
+        color: #fff;
+        background: var(--c, var(--ink));
+        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.22);
+        transition: transform 0.08s;
+      }
+      .btn:active {
+        transform: translateY(3px);
+        box-shadow: none;
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--ink);
+        border: 2px solid var(--line);
+        box-shadow: 0 4px 0 var(--line);
+      }
+      .btn.gold {
+        background: linear-gradient(#ffd66b, #ffb020);
+        color: #3a2a00;
+        box-shadow: 0 5px 0 #c97d00;
+      }
+      .btn[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .num {
+        width: 5.4rem;
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-align: center;
+        padding: 8px;
+        border: 3px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .num.wide {
+        width: 8.5rem;
+      }
+      .num:focus {
+        outline: none;
+        border-color: var(--c);
+      }
+      .num.ok {
+        border-color: var(--good);
+        background: #e9fbf0;
+      }
+      .num.no {
+        border-color: var(--bad);
+        background: #ffeef0;
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      .stars {
+        font-size: 1.5rem;
+        letter-spacing: 3px;
+        color: var(--gold);
+        text-shadow: 0 2px 0 #b07600;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        align-items: center;
+        margin: 10px 0;
+        font-weight: 800;
+      }
+      .row .lbl {
+        min-width: 220px;
+      }
+      .pop {
+        animation: pop 0.25s;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.4);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      /* potion lab */
+      .lab {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+      }
+      .cauldron-wrap svg {
+        width: 100%;
+        max-width: 360px;
+        display: block;
+        margin: 0 auto;
+      }
+      .dispensers {
+        display: grid;
+        gap: 12px;
+      }
+      .disp {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 18px;
+        padding: 10px 14px;
+      }
+      .disp .ic {
+        font-size: 2rem;
+      }
+      .disp .cnt {
+        font-size: 1.7rem;
+        font-weight: 900;
+        text-align: center;
+      }
+      .disp .ctl {
+        display: flex;
+        gap: 8px;
+      }
+      .circ {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 0;
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #fff;
+        background: var(--k);
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+      }
+      .circ:active {
+        transform: translateY(3px);
+        box-shadow: none;
+      }
+      .recipe {
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 16px;
+        padding: 12px 16px;
+        font-weight: 900;
+        font-size: 1.25rem;
+        text-align: center;
+        box-shadow: 4px 4px 0 var(--line);
+        transform: rotate(-1deg);
+      }
+      .recipe small {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--muted);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+      }
+      .label-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+      .label-form .way {
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 16px;
+        padding: 12px;
+        text-align: center;
+      }
+      .label-form .t {
+        font-weight: 900;
+        margin-bottom: 6px;
+      }
+      .shelf {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        padding: 14px;
+        background: linear-gradient(#fff, #f3ead6);
+        border: 3px solid var(--line);
+        border-radius: 18px;
+      }
+      .shelf svg {
+        width: 44px;
+        height: 64px;
+      }
+
+      /* bakery */
+      .oven-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+      }
+      .oven-wrap svg {
+        width: 100%;
+        max-width: 340px;
+        display: block;
+        margin: 0 auto;
+      }
+      .dial {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+      .dial button {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 3px solid var(--line);
+        background: #fff;
+        font-weight: 900;
+        font-size: 1.05rem;
+        box-shadow: 0 4px 0 var(--line);
+      }
+      .dial button.on {
+        background: var(--c);
+        color: #fff;
+        border-color: var(--c);
+        transform: scale(1.1);
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+      }
+      .ticket {
+        background: #fff;
+        border: 3px dashed var(--line);
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+      table.chart {
+        border-collapse: separate;
+        border-spacing: 6px;
+        margin: 8px auto;
+        font-size: 1.2rem;
+        font-weight: 900;
+      }
+      table.chart td {
+        border: 3px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 14px;
+        text-align: center;
+        min-width: 78px;
+        background: #fff;
+      }
+      table.chart td.head {
+        background: color-mix(in srgb, var(--c) 16%, white);
+        border-color: var(--c);
+      }
+      table.chart td .num {
+        width: 4.4rem;
+      }
+      table.chart tr.arrows td {
+        border: 0;
+        padding: 0;
+        font-size: 0.95rem;
+        color: color-mix(in srgb, var(--c) 70%, black);
+      }
+      .crates {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .crate {
+        border: 0;
+        border-radius: 14px;
+        padding: 18px 6px 12px;
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #5a3a12;
+        background: linear-gradient(#f5d9a5, #e2b878);
+        box-shadow:
+          inset 0 -6px 0 #b98a4a,
+          0 5px 0 #a3773c;
+        transition: transform 0.1s;
+      }
+      .crate:hover {
+        transform: translateY(-3px);
+      }
+      .crate.sel {
+        outline: 4px solid var(--gold);
+        transform: translateY(-4px);
+      }
+      .crate.matched {
+        background: linear-gradient(#c8f5d6, #8fe0aa);
+        color: #1f6b3a;
+        box-shadow:
+          inset 0 -6px 0 #5fbf7f,
+          0 5px 0 #3f9c5e;
+        pointer-events: none;
+      }
+      .crate.wrong {
+        animation: shake 0.3s;
+      }
+
+      /* post office */
+      .belt {
+        position: relative;
+        background: repeating-linear-gradient(
+          90deg,
+          #4a4a5a 0 40px,
+          #5a5a6c 40px 80px
+        );
+        border-radius: 18px;
+        padding: 24px 18px;
+        overflow: hidden;
+      }
+      .belt::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 12px;
+        background: #2f2f3c;
+      }
+      .parcel {
+        margin: 0 auto;
+        max-width: 560px;
+        background: linear-gradient(#f2d7a8, #dcb77c);
+        border-radius: 12px;
+        padding: 22px 24px;
+        text-align: center;
+        font-size: 1.55rem;
+        font-weight: 900;
+        color: #4a2f10;
+        box-shadow:
+          0 8px 0 #a77b3f,
+          0 14px 30px rgba(0, 0, 0, 0.35);
+        position: relative;
+        animation: slidein 0.45s ease;
+      }
+      @keyframes slidein {
+        from {
+          transform: translateX(120%);
+        }
+        to {
+          transform: none;
+        }
+      }
+      .parcel::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 26px;
+        margin-left: -13px;
+        background: rgba(120, 80, 20, 0.18);
+      }
+      .parcel .lbl {
+        position: relative;
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px 14px;
+        display: inline-block;
+        border: 2px solid #c9a56a;
+      }
+      .stampmark {
+        position: absolute;
+        right: -6px;
+        top: -18px;
+        font-size: 1rem;
+        font-weight: 900;
+        letter-spacing: 2px;
+        padding: 6px 10px;
+        border: 4px solid;
+        border-radius: 8px;
+        transform: rotate(-12deg);
+        animation: stamp 0.3s ease;
+      }
+      @keyframes stamp {
+        from {
+          transform: rotate(-12deg) scale(3);
+          opacity: 0;
+        }
+        to {
+          transform: rotate(-12deg) scale(1);
+          opacity: 1;
+        }
+      }
+      .stampmark.ok {
+        color: #1f8f4e;
+        border-color: #1f8f4e;
+      }
+      .stampmark.bad {
+        color: #d5323f;
+        border-color: #d5323f;
+      }
+      .stamps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .stamp {
+        border: 0;
+        border-radius: 18px;
+        padding: 16px 12px;
+        background: #fff;
+        box-shadow:
+          0 8px 0 #cbbfa6,
+          0 12px 24px rgba(0, 0, 0, 0.12);
+        text-align: center;
+        transition: transform 0.1s;
+      }
+      .stamp:active {
+        transform: translateY(6px);
+        box-shadow: 0 2px 0 #cbbfa6;
+      }
+      .stamp h3 {
+        margin: 0 0 4px;
+        font-size: 1.25rem;
+      }
+      .stamp p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .stamp.ratio h3 {
+        color: var(--potion);
+      }
+      .stamp.rate h3 {
+        color: var(--post);
+      }
+      .stamp.unit h3 {
+        color: #1f8f4e;
+      }
+
+      /* market */
+      .stalls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+      .stall {
+        border-radius: 18px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: var(--shadow);
+        border: 3px solid transparent;
+        cursor: pointer;
+        transition: transform 0.12s;
+      }
+      .stall:hover {
+        transform: translateY(-3px);
+      }
+      .stall.pick {
+        border-color: var(--gold);
+      }
+      .stall.win {
+        border-color: var(--good);
+      }
+      .stall .awn {
+        height: 22px;
+        background: repeating-linear-gradient(
+          90deg,
+          var(--a) 0 18px,
+          #fff 18px 36px
+        );
+      }
+      .stall .body {
+        padding: 12px 14px;
+        text-align: center;
+      }
+      .stall h3 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+      .stall .offer {
+        font-size: 1.25rem;
+        font-weight: 900;
+        margin: 6px 0 10px;
+      }
+      .stall .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #fff7dc;
+        border: 2px solid var(--gold);
+        border-radius: 10px;
+        padding: 6px 10px;
+        font-weight: 900;
+      }
+      .stall .tag .num {
+        width: 4.6rem;
+      }
+      .signboard {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 14px;
+        align-items: center;
+      }
+      .signboard .in,
+      .signboard .outp {
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 1.3rem;
+      }
+      .signboard .outp {
+        background: #fff7dc;
+        border-color: var(--gold);
+      }
+      .arrow {
+        font-size: 2.4rem;
+        text-align: center;
+      }
+      .groups {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 8px;
+        align-items: center;
+      }
+      .groups .g {
+        display: flex;
+        gap: 3px;
+        flex-wrap: wrap;
+        padding: 4px 8px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+      }
+      .groups .g i {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: var(--c);
+        display: inline-block;
+      }
+
+      /* upgrades */
+      .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 14px;
+      }
+      .item {
+        background: #fff;
+        border-radius: 18px;
+        padding: 14px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        border: 3px solid transparent;
+      }
+      .item .ic {
+        font-size: 2.4rem;
+      }
+      .item .nm {
+        font-weight: 900;
+      }
+      .item .cost {
+        color: #7a5200;
+        font-weight: 900;
+      }
+      .item.owned {
+        border-color: var(--good);
+      }
+      .item button {
+        margin-top: 8px;
+      }
+      .item.owned button {
+        background: var(--good);
+      }
+      .swatches {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 8px;
+      }
+      .sw {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px var(--line);
+      }
+      .sw.on {
+        box-shadow: 0 0 0 3px var(--ink);
+      }
+
+      /* overlays */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 16, 50, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 16px;
+        animation: fadein 0.3s;
+      }
+      .overlay[hidden] {
+        display: none;
+      }
+      .modal {
+        background: var(--paper);
+        border-radius: 26px;
+        padding: 26px;
+        max-width: 800px;
+        width: 100%;
+        max-height: 92vh;
+        overflow: auto;
+        box-shadow: var(--shadow);
+      }
+      .modal h2 {
+        margin: 0 0 10px;
+      }
+      .words {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+      }
+      .word {
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 16px;
+        padding: 12px;
+      }
+      .word .w {
+        font-weight: 900;
+        font-size: 1.1rem;
+      }
+      .word .pic {
+        font-size: 1.6rem;
+      }
+      .word .d {
+        font-size: 0.95rem;
+      }
+      .word .ex {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 4px;
+      }
+      .result {
+        text-align: center;
+      }
+      .result .big {
+        font-size: 3.4rem;
+      }
+      .result .coins {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #7a5200;
+      }
+      canvas#fx {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 60;
+      }
+
+      @media (max-width: 820px) {
+        body {
+          font-size: 16px;
+        }
+        .scene-inner {
+          grid-template-columns: 1fr;
+        }
+        .npc-card {
+          position: static;
+          display: grid;
+          grid-template-columns: 90px 1fr;
+          gap: 10px;
+          text-align: left;
+          align-items: center;
+        }
+        .npc-card svg {
+          width: 90px;
+        }
+        .speech {
+          grid-column: 1 / -1;
+          margin-top: 4px;
+        }
+        .lab,
+        .oven-wrap,
+        .signboard {
+          grid-template-columns: 1fr;
+        }
+        .crates {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stamps {
+          grid-template-columns: 1fr;
+        }
+        .hud {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div class="overlay" id="guide" hidden>
+      <div class="modal">
+        <h2>📖 Field Guide</h2>
+        <div class="words">
+          <div class="word">
+            <div class="pic">🔥🔥🔥 : ❄️❄️</div>
+            <div class="w">ratio</div>
+            <div class="d">Compares two amounts. <b>Order matters!</b></div>
+            <div class="ex">3 ember to 2 frost → 3 : 2, 3 to 2, or 3/2</div>
+          </div>
+          <div class="word">
+            <div class="pic">2 : 3 = 4 : 6</div>
+            <div class="w">equivalent ratios</div>
+            <div class="d">
+              Same relationship. Multiply or divide <b>both</b> numbers by the
+              same number.
+            </div>
+            <div class="ex">2 : 3 → ×2 → 4 : 6</div>
+          </div>
+          <div class="word">
+            <div class="pic">🚚 150 miles in 3 hours</div>
+            <div class="w">rate</div>
+            <div class="d">A ratio of two <b>different kinds</b> of units.</div>
+            <div class="ex">miles & hours · dollars & pounds</div>
+          </div>
+          <div class="word">
+            <div class="pic">🚚 50 miles per <b>1</b> hour</div>
+            <div class="w">unit rate</div>
+            <div class="d">A rate where the second amount is <b>1</b>.</div>
+            <div class="ex">$3 per pound · 60 words per minute</div>
+          </div>
+          <div class="word">
+            <div class="pic">➗</div>
+            <div class="w">per</div>
+            <div class="d">Means "for each 1."</div>
+            <div class="ex">$4 per pound = $4 for each 1 pound</div>
+          </div>
+          <div class="word">
+            <div class="pic">🔥 3 : 5 🔥❄️</div>
+            <div class="w">part-to-whole</div>
+            <div class="d">One part compared to the <b>total</b>.</div>
+            <div class="ex">3 ember out of 5 drops → 3 : 5</div>
+          </div>
+        </div>
+        <div class="actions" style="justify-content: center">
+          <button class="big-btn" id="guideClose">Got it!</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal" hidden>
+      <div class="modal" id="modalBody"></div>
+    </div>
+    <canvas id="fx"></canvas>
+    <script src="/assets/game-score.js" defer></script>
+
+    <script>
+      /* ============================================================
+   RATIO QUEST: MERIDIAN MARKET
+   A calm, self-paced ratio adventure. No timers. No links out.
+   Shops: Potion Lab (ratios) · Bakery (equivalent ratios)
+          Post Office (ratio / rate / unit rate) · Market (unit rates)
+   ============================================================ */
+      const $ = (s, el = document) => el.querySelector(s);
+      const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+      const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+      const pick = (arr) => arr[rnd(0, arr.length - 1)];
+      const shuffle = (arr) =>
+        arr
+          .map((v) => [Math.random(), v])
+          .sort((a, b) => a[0] - b[0])
+          .map((x) => x[1]);
+      const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+      const money = (n) => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
+      const near = (a, b) => Math.abs(a - b) < 0.005;
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      function parseRatio(str) {
+        const m = String(str)
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, " ")
+          .match(/^(\d+)\s*(?::|to|\/)\s*(\d+)$/);
+        return m ? [Number(m[1]), Number(m[2])] : null;
+      }
+      function parseNum(str) {
+        const s = String(str)
+          .trim()
+          .replace(/[$,\s]/g, "");
+        return s === "" || isNaN(Number(s)) ? null : Number(s);
+      }
+      const sameRatio = (a, b) =>
+        a[0] * b[1] === a[1] * b[0] && a[0] + a[1] > 0;
+
+      /* ---------- save ---------- */
+      const SAVE_KEY = "ratioQuest.v2";
+      const ORDERS = 6;
+      const SHOP_IDS = ["potion", "bakery", "post", "market"];
+      let S = {
+        name: "",
+        avatar: "",
+        coins: 0,
+        level1: false,
+        sawGuide: false,
+        finale: 0,
+        upgrades: { awning: "red" },
+        shops: {},
+      };
+      SHOP_IDS.forEach((id) => (S.shops[id] = { best: [], visits: 0 }));
+      try {
+        const j = JSON.parse(localStorage.getItem(SAVE_KEY) || "{}");
+        Object.assign(S, j);
+        SHOP_IDS.forEach(
+          (id) => (S.shops[id] = S.shops[id] || { best: [], visits: 0 }),
+        );
+      } catch (e) {}
+      const save = () => {
+        try {
+          localStorage.setItem(SAVE_KEY, JSON.stringify(S));
+        } catch (e) {}
+      };
+      const shopStars = (id) => S.shops[id].best.reduce((a, b) => a + b, 0);
+      const totalStars = () => SHOP_IDS.reduce((s, id) => s + shopStars(id), 0);
+      const finaleUnlocked = () =>
+        SHOP_IDS.every((id) => S.shops[id].best.length >= ORDERS);
+
+      /* ---------- sound (WebAudio synth, no files) ---------- */
+      const SFX = (() => {
+        let ctx = null,
+          muted = false;
+        try {
+          muted = localStorage.getItem("ratioQuest.muted") === "1";
+        } catch (e) {}
+        const ac = () => {
+          if (!ctx) {
+            try {
+              ctx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {}
+          }
+          if (ctx && ctx.state === "suspended") ctx.resume();
+          return ctx;
+        };
+        const tone = (f, t0, dur, type = "sine", vol = 0.18, slide = 0) => {
+          const c = ac();
+          if (!c || muted) return;
+          const o = c.createOscillator(),
+            g = c.createGain();
+          o.type = type;
+          o.frequency.setValueAtTime(f, c.currentTime + t0);
+          if (slide)
+            o.frequency.exponentialRampToValueAtTime(
+              slide,
+              c.currentTime + t0 + dur,
+            );
+          g.gain.setValueAtTime(0.0001, c.currentTime + t0);
+          g.gain.exponentialRampToValueAtTime(vol, c.currentTime + t0 + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + t0 + dur);
+          o.connect(g).connect(c.destination);
+          o.start(c.currentTime + t0);
+          o.stop(c.currentTime + t0 + dur + 0.05);
+        };
+        return {
+          click: () => tone(640, 0, 0.06, "triangle", 0.12),
+          pop: () => tone(420, 0, 0.09, "sine", 0.15, 720),
+          good: () => {
+            tone(523, 0, 0.12);
+            tone(659, 0.1, 0.12);
+            tone(784, 0.2, 0.22);
+          },
+          bad: () => tone(200, 0, 0.22, "sawtooth", 0.08, 140),
+          coin: () => {
+            tone(1250, 0, 0.08, "square", 0.07);
+            tone(1870, 0.08, 0.16, "square", 0.07);
+          },
+          fanfare: () =>
+            [523, 659, 784, 1047, 784, 1047].forEach((f, i) =>
+              tone(f, i * 0.11, 0.2, "triangle", 0.14),
+            ),
+          stamp: () => tone(120, 0, 0.12, "square", 0.1, 60),
+          brew: () => {
+            for (let i = 0; i < 6; i++)
+              tone(300 + i * 90, i * 0.06, 0.1, "sine", 0.08);
+          },
+          toggle() {
+            muted = !muted;
+            try {
+              localStorage.setItem("ratioQuest.muted", muted ? "1" : "0");
+            } catch (e) {}
+            return muted;
+          },
+          get muted() {
+            return muted;
+          },
+        };
+      })();
+      document.addEventListener("pointerdown", () => SFX.click && null, {
+        once: true,
+      });
+
+      /* ---------- particles ---------- */
+      const FX = (() => {
+        const c = $("#fx"),
+          ctx = c.getContext("2d");
+        let bits = [],
+          running = false;
+        const resize = () => {
+          c.width = innerWidth;
+          c.height = innerHeight;
+        };
+        resize();
+        addEventListener("resize", resize);
+        const loop = () => {
+          ctx.clearRect(0, 0, c.width, c.height);
+          bits = bits.filter((b) => b.life > 0);
+          bits.forEach((b) => {
+            b.x += b.vx;
+            b.y += b.vy;
+            b.vy += b.g;
+            b.life -= 1;
+            b.rot += b.vr;
+            ctx.save();
+            ctx.globalAlpha = Math.min(1, b.life / 30);
+            ctx.translate(b.x, b.y);
+            ctx.rotate(b.rot);
+            ctx.fillStyle = b.col;
+            if (b.shape === "star") {
+              ctx.beginPath();
+              for (let i = 0; i < 10; i++) {
+                const r = i % 2 ? b.r * 0.45 : b.r,
+                  a = (i * Math.PI) / 5;
+                ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+              }
+              ctx.closePath();
+              ctx.fill();
+            } else ctx.fillRect(-b.r / 2, -b.r / 2, b.r, b.r * 1.5);
+            ctx.restore();
+          });
+          if (bits.length) requestAnimationFrame(loop);
+          else running = false;
+        };
+        const emit = (n, make) => {
+          for (let i = 0; i < n; i++) bits.push(make());
+          if (!running) {
+            running = true;
+            requestAnimationFrame(loop);
+          }
+        };
+        const cols = [
+          "#ff7a59",
+          "#3fa7d6",
+          "#8e6cf0",
+          "#2fbf71",
+          "#ffc447",
+          "#ff5d9e",
+        ];
+        return {
+          burst(x, y, n = 26) {
+            emit(n, () => {
+              const a = Math.random() * 6.28,
+                sp = 2 + Math.random() * 5;
+              return {
+                x,
+                y,
+                vx: Math.cos(a) * sp,
+                vy: Math.sin(a) * sp - 2,
+                g: 0.15,
+                r: 5 + Math.random() * 6,
+                rot: Math.random() * 6,
+                vr: (Math.random() - 0.5) * 0.3,
+                col: pick(cols),
+                life: 50 + Math.random() * 30,
+                shape: Math.random() < 0.4 ? "star" : "rect",
+              };
+            });
+          },
+          confetti() {
+            emit(160, () => ({
+              x: Math.random() * c.width,
+              y: -20 - Math.random() * 200,
+              vx: (Math.random() - 0.5) * 2,
+              vy: 2 + Math.random() * 3,
+              g: 0.03,
+              r: 6 + Math.random() * 6,
+              rot: Math.random() * 6,
+              vr: (Math.random() - 0.5) * 0.2,
+              col: pick(cols),
+              life: 160 + Math.random() * 80,
+              shape: Math.random() < 0.3 ? "star" : "rect",
+            }));
+          },
+          at(el, n) {
+            const r = el.getBoundingClientRect();
+            this.burst(r.left + r.width / 2, r.top + r.height / 2, n);
+          },
+        };
+      })();
+
+      /* ============================================================
+   ART — inline SVG generators (flat vector, no external assets)
+   ============================================================ */
+      const ART = {
+        cloud: (x, y, s, dur) =>
+          `<g class="cloud" style="animation-duration:${dur}s;animation-delay:-${rnd(0, dur)}s" transform="translate(${x} ${y}) scale(${s})" fill="#fff" opacity=".92"><ellipse cx="0" cy="0" rx="46" ry="22"/><ellipse cx="-30" cy="6" rx="30" ry="18"/><ellipse cx="34" cy="8" rx="34" ry="18"/><ellipse cx="4" cy="-14" rx="28" ry="20"/></g>`,
+        sky(w = 1200, h = 720, dusk = false) {
+          return `<defs><radialGradient id="sunG"><stop offset="0" stop-color="#fff6c2"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#ffd54a" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="${w - 150}" cy="120" r="120" fill="url(#sunG)" class="glow"/><circle cx="${w - 150}" cy="120" r="46" fill="#ffe27a"/>
+      ${this.cloud(100, 90, 1, 70)}${this.cloud(500, 60, 0.7, 95)}${this.cloud(900, 140, 1.2, 80)}${this.cloud(300, 170, 0.55, 110)}`;
+        },
+        hills: (w, h) =>
+          `<path d="M0 ${h * 0.55} C ${w * 0.2} ${h * 0.42}, ${w * 0.35} ${h * 0.62}, ${w * 0.55} ${h * 0.5} S ${w * 0.85} ${h * 0.4}, ${w} ${h * 0.52} V ${h} H0Z" fill="#a9df8e"/><path d="M0 ${h * 0.62} C ${w * 0.25} ${h * 0.55}, ${w * 0.5} ${h * 0.72}, ${w * 0.7} ${h * 0.6} S ${w * 0.9} ${h * 0.58}, ${w} ${h * 0.66} V ${h} H0Z" fill="#8fd17a"/>`,
+        tree: (x, y, s = 1) =>
+          `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-6" y="-10" width="12" height="30" rx="4" fill="#8a5a2b"/><circle cx="0" cy="-30" r="26" fill="#3fa65b"/><circle cx="-16" cy="-18" r="18" fill="#4fbf6b"/><circle cx="16" cy="-20" r="18" fill="#4fbf6b"/></g>`,
+        shadow: (rx = 100) =>
+          `<ellipse cx="0" cy="4" rx="${rx}" ry="${rx * 0.16}" fill="rgba(20,10,60,.16)"/>`,
+
+        potionLab(x, y) {
+          return `<g class="building" data-shop="potion" transform="translate(${x} ${y})">${this.shadow(96)}
+      <rect x="-64" y="-200" width="128" height="200" rx="14" fill="#8b6cf0"/><rect x="-64" y="-200" width="128" height="200" rx="14" fill="url(#brick)" opacity=".18"/>
+      <polygon points="-84,-198 84,-198 0,-320" fill="#5b3fb8"/><polygon points="-84,-198 0,-320 0,-198" fill="#4a30a0"/>
+      <circle cx="0" cy="-136" r="30" fill="#ffe680" class="glow"/><circle cx="0" cy="-136" r="30" fill="none" stroke="#3b2a6b" stroke-width="6"/><path d="M-30 -136 H30 M0 -166 V-106" stroke="#3b2a6b" stroke-width="5"/>
+      <rect x="-24" y="-64" width="48" height="64" rx="24" fill="#3b2a6b"/><circle cx="12" cy="-30" r="4" fill="#ffd54a"/>
+      <g class="rise" style="animation-delay:-1s"><circle cx="-40" cy="-240" r="8" fill="#c9b6ff"/></g><g class="rise" style="animation-delay:-2s"><circle cx="-34" cy="-250" r="5" fill="#e6dcff"/></g>
+      <circle cx="0" cy="-330" r="10" fill="#ffd54a"/>
+      <text class="sign-label" text-anchor="middle" y="40">Potion Lab</text><text class="sign-stars" text-anchor="middle" y="66" data-stars="potion"></text></g>`;
+        },
+        bakery(x, y) {
+          return `<g class="building" data-shop="bakery" transform="translate(${x} ${y})">${this.shadow(120)}
+      <rect x="-110" y="-150" width="220" height="150" rx="14" fill="#f7c58a"/><polygon points="-124,-150 124,-150 0,-232" fill="#c9622a"/>
+      <rect x="-70" y="-124" width="140" height="18" rx="4" fill="#fff"/><text x="0" y="-110" text-anchor="middle" font-size="16" font-weight="900" fill="#c9622a">BAKERY</text>
+      ${[-100, -60, -20, 20, 60].map((i) => `<rect x="${i}" y="-90" width="20" height="26" rx="4" fill="${i % 40 ? "#f2913d" : "#fff"}"/>`).join("")}
+      <path d="M-104 -64 H104 L96 -44 H-96Z" fill="#e26d2c"/>
+      <rect x="-90" y="-46" width="52" height="40" rx="6" fill="#ffe9c9" stroke="#c9622a" stroke-width="4"/><rect x="38" y="-46" width="52" height="40" rx="6" fill="#ffe9c9" stroke="#c9622a" stroke-width="4"/>
+      <rect x="-22" y="-56" width="44" height="56" rx="20" fill="#8a4a1c"/>
+      <rect x="60" y="-220" width="22" height="50" fill="#a04a20"/><g class="rise"><circle cx="71" cy="-232" r="9" fill="#fff" opacity=".8"/></g><g class="rise" style="animation-delay:-1.5s"><circle cx="76" cy="-240" r="6" fill="#fff" opacity=".7"/></g>
+      <text class="sign-label" text-anchor="middle" y="40">Bakery</text><text class="sign-stars" text-anchor="middle" y="66" data-stars="bakery"></text></g>`;
+        },
+        postOffice(x, y) {
+          return `<g class="building" data-shop="post" transform="translate(${x} ${y})">${this.shadow(120)}
+      <rect x="-110" y="-160" width="220" height="160" rx="12" fill="#5fb0f5"/><rect x="-124" y="-172" width="248" height="22" rx="6" fill="#2f6fb5"/>
+      <polygon points="-124,-172 124,-172 0,-236" fill="#3d9be9"/><circle cx="0" cy="-196" r="18" fill="#fff" stroke="#2f6fb5" stroke-width="4"/><path d="M0 -196 V-208 M0 -196 H8" stroke="#2f6fb5" stroke-width="3"/>
+      ${[-86, -46, 46, 86].map((i) => `<rect x="${i - 8}" y="-150" width="16" height="150" fill="#dff0ff"/>`).join("")}
+      <rect x="-26" y="-70" width="52" height="70" rx="6" fill="#1e3f6b"/><rect x="-60" y="-130" width="120" height="30" rx="6" fill="#fff"/><text x="0" y="-108" text-anchor="middle" font-size="16" font-weight="900" fill="#2f6fb5">POST</text>
+      <rect x="100" y="-260" width="4" height="90" fill="#2f6fb5"/><path d="M104 -260 H150 L138 -244 L150 -228 H104Z" fill="#ff5d6c"/>
+      <text class="sign-label" text-anchor="middle" y="40">Post Office</text><text class="sign-stars" text-anchor="middle" y="66" data-stars="post"></text></g>`;
+        },
+        market(x, y) {
+          const stall = (
+            dx,
+            col,
+          ) => `<g transform="translate(${dx} 0)"><rect x="-50" y="-60" width="100" height="60" rx="6" fill="#d9a066"/><rect x="-50" y="-60" width="100" height="14" fill="#8a5a2b"/>
+      <rect x="-56" y="-124" width="6" height="64" fill="#8a5a2b"/><rect x="50" y="-124" width="6" height="64" fill="#8a5a2b"/>
+      <path d="M-64 -124 H64 L58 -100 H-58Z" fill="${col}"/>${[-50, -30, -10, 10, 30].map((i) => `<rect x="${i}" y="-124" width="10" height="24" fill="#fff" opacity=".7"/>`).join("")}
+      ${[-30, -8, 14].map((cx, i) => `<circle cx="${cx}" cy="-70" r="9" fill="${["#ff5d6c", "#ffc447", "#8fe0aa"][i]}"/>`).join("")}</g>`;
+          return `<g class="building" data-shop="market" transform="translate(${x} ${y})">${this.shadow(150)}
+      ${stall(-110, "#ff5d6c")}${stall(0, "#3fa7d6")}${stall(110, "#2fbf71")}
+      <text class="sign-label" text-anchor="middle" y="40">Market Street</text><text class="sign-stars" text-anchor="middle" y="66" data-stars="market"></text></g>`;
+        },
+        playerStall(x, y, up) {
+          const awn = {
+            red: "#ff5d6c",
+            blue: "#3fa7d6",
+            green: "#2fbf71",
+            purple: "#8e6cf0",
+            gold: "#ffc447",
+          }[up.awning || "red"];
+          return `<g class="building" data-shop="stall" transform="translate(${x} ${y})">${this.shadow(110)}
+      ${up.fountain ? `<g transform="translate(-150 -10)"><ellipse cx="0" cy="0" rx="40" ry="14" fill="#5fb0f5"/><rect x="-6" y="-40" width="12" height="40" fill="#cfd8e3"/><g class="rise"><circle cx="0" cy="-46" r="5" fill="#bfe6ff"/></g><g class="rise" style="animation-delay:-1s"><circle cx="6" cy="-50" r="4" fill="#bfe6ff"/></g></g>` : ""}
+      <rect x="-70" y="-70" width="140" height="70" rx="8" fill="#e0b87a"/><rect x="-70" y="-70" width="140" height="16" fill="#9b6b3a"/>
+      <rect x="-78" y="-150" width="7" height="80" fill="#9b6b3a"/><rect x="71" y="-150" width="7" height="80" fill="#9b6b3a"/>
+      <path d="M-90 -150 H90 L82 -120 H-82Z" fill="${awn}"/>${[-80, -56, -32, -8, 16, 40, 64].map((i) => `<rect x="${i}" y="-150" width="12" height="30" fill="#fff" opacity=".75"/>`).join("")}
+      ${up.banner ? `<rect x="-60" y="-190" width="120" height="30" rx="6" fill="#fff" stroke="#9b6b3a" stroke-width="3"/><text x="0" y="-169" text-anchor="middle" font-size="16" font-weight="900" fill="#9b6b3a">${esc((S.name || "MY").toUpperCase().slice(0, 10))}'S</text>` : ""}
+      ${up.flowers ? `<g transform="translate(-60 -74)">${[0, 14, 28].map((i) => `<circle cx="${i}" cy="0" r="7" fill="${["#ff5d9e", "#ffc447", "#ff7a59"][i / 14]}"/>`).join("")}<rect x="-8" y="6" width="44" height="12" rx="3" fill="#8a5a2b"/></g>` : ""}
+      ${up.lantern ? `<g transform="translate(100 -150)"><rect x="-2" y="0" width="4" height="30" fill="#5a4a3a"/><rect x="-10" y="30" width="20" height="26" rx="6" fill="#ffe27a" class="glow"/></g>` : ""}
+      ${up.cat ? `<g transform="translate(40 -70)" class="bob"><ellipse cx="0" cy="0" rx="16" ry="10" fill="#f5b04c"/><circle cx="12" cy="-8" r="9" fill="#f5b04c"/><polygon points="6,-14 8,-22 12,-15" fill="#f5b04c"/><polygon points="14,-15 18,-22 19,-14" fill="#f5b04c"/><circle cx="10" cy="-9" r="1.5" fill="#333"/><circle cx="15" cy="-9" r="1.5" fill="#333"/></g>` : ""}
+      ${up.trophy ? `<g transform="translate(0 -100)"><path d="M-14 -20 H14 V-4 Q14 10 0 10 Q-14 10 -14 -4Z" fill="#ffc447"/><rect x="-10" y="10" width="20" height="6" fill="#c97d00"/><rect x="-14" y="16" width="28" height="6" rx="2" fill="#c97d00"/><path d="M-14 -14 H-22 V-4 Q-22 4 -14 4 M14 -14 H22 V-4 Q22 4 14 4" fill="none" stroke="#ffc447" stroke-width="4"/></g>` : ""}
+      <text class="sign-label" text-anchor="middle" y="40">Your Stall</text><text class="sign-stars" text-anchor="middle" y="66" style="font-size:16px">✨ upgrades</text></g>`;
+        },
+        finaleTent(x, y, locked) {
+          return `<g class="building ${locked ? "locked" : ""}" data-shop="finale" transform="translate(${x} ${y})">${this.shadow(110)}
+      <polygon points="-100,0 100,0 70,-120 -70,-120" fill="#ff5d6c"/><polygon points="-70,-120 70,-120 0,-200" fill="#ffc447"/>
+      ${[-80, -40, 0, 40].map((i) => `<polygon points="${i},0 ${i + 20},0 ${i + 14},-120 ${i + 6},-120" fill="#fff" opacity=".7"/>`).join("")}
+      <rect x="-24" y="-70" width="48" height="70" rx="20" fill="#7a1f2b"/><circle cx="0" cy="-206" r="8" fill="#fff"/>
+      ${locked ? `<g transform="translate(0 -100)"><rect x="-22" y="-16" width="44" height="34" rx="8" fill="#3a3550"/><path d="M-12 -16 V-28 a12 12 0 0 1 24 0 V-16" fill="none" stroke="#3a3550" stroke-width="6"/><circle cx="0" cy="0" r="5" fill="#ffc447"/></g>` : ""}
+      <text class="sign-label" text-anchor="middle" y="40">Grand Market Day</text><text class="sign-stars" text-anchor="middle" y="66" style="font-size:15px">${locked ? "finish all 4 shops" : S.finale ? "⭐ " + S.finale : "READY!"}</text></g>`;
+        },
+
+        /* characters — head/body base with variants */
+        character(kind, size = 120) {
+          const V = {
+            fox: {
+              skin: "#ffb366",
+              body: "#ff7a59",
+              extra: `<polygon points="-30,-52 -20,-84 -6,-56" fill="#ff9a4a"/><polygon points="30,-52 20,-84 6,-56" fill="#ff9a4a"/>`,
+            },
+            cat: {
+              skin: "#d9d9e6",
+              body: "#8e6cf0",
+              extra: `<polygon points="-28,-54 -22,-82 -8,-58" fill="#d9d9e6"/><polygon points="28,-54 22,-82 8,-58" fill="#d9d9e6"/>`,
+            },
+            robot: {
+              skin: "#bfe6ff",
+              body: "#3fa7d6",
+              extra: `<rect x="-3" y="-96" width="6" height="18" fill="#3fa7d6"/><circle cx="0" cy="-100" r="7" fill="#ffc447" class="glow"/>`,
+            },
+            vex: {
+              skin: "#f4c9a8",
+              body: "#5b3fb8",
+              extra: `<path d="M-40 -60 H40 L28 -66 L8 -130 L-8 -130 L-28 -66Z" fill="#3b2a6b"/><path d="M-30 -66 H30" stroke="#ffc447" stroke-width="5"/><circle cx="0" cy="-120" r="6" fill="#ffc447" class="glow"/>`,
+            },
+            bruno: {
+              skin: "#b4784a",
+              body: "#f2913d",
+              extra: `<circle cx="-30" cy="-72" r="14" fill="#b4784a"/><circle cx="30" cy="-72" r="14" fill="#b4784a"/><circle cx="-30" cy="-72" r="7" fill="#e8b48a"/><circle cx="30" cy="-72" r="7" fill="#e8b48a"/><path d="M-50 -18 H50 V20 H-50Z" fill="#fff" opacity=".9"/><path d="M-44 -18 Q0 -60 44 -18" fill="#fff"/>`,
+            },
+            quill: {
+              skin: "#e8d8c0",
+              body: "#3d9be9",
+              extra: `<polygon points="-34,-58 -26,-86 -12,-62" fill="#8a6a4a"/><polygon points="34,-58 26,-86 12,-62" fill="#8a6a4a"/><circle cx="-13" cy="-40" r="12" fill="#fff"/><circle cx="13" cy="-40" r="12" fill="#fff"/><polygon points="0,-32 -7,-22 7,-22" fill="#ffc447"/>`,
+            },
+            zara: {
+              skin: "#8a5a3c",
+              body: "#2fbf71",
+              extra: `<path d="M-38 -56 Q0 -100 38 -56 Z" fill="#ff5d9e"/><path d="M28 -70 Q56 -76 50 -50" fill="none" stroke="#ff5d9e" stroke-width="10" stroke-linecap="round"/><circle cx="-32" cy="-36" r="5" fill="#ffc447"/><circle cx="32" cy="-36" r="5" fill="#ffc447"/>`,
+            },
+          }[kind] || { skin: "#f4c9a8", body: "#3fa7d6", extra: "" };
+          const eyes =
+            kind === "quill"
+              ? `<circle cx="-13" cy="-40" r="5" fill="#222"/><circle cx="13" cy="-40" r="5" fill="#222"/>`
+              : `<ellipse cx="-13" cy="-42" rx="5" ry="7" fill="#222"/><ellipse cx="13" cy="-42" rx="5" ry="7" fill="#222"/><circle cx="-11" cy="-45" r="2" fill="#fff"/><circle cx="15" cy="-45" r="2" fill="#fff"/>`;
+          const mouth =
+            kind === "quill"
+              ? ""
+              : `<path d="M-10 -24 Q0 -14 10 -24" fill="none" stroke="#7a3a2a" stroke-width="3.5" stroke-linecap="round"/>`;
+          return `<svg viewBox="-70 -140 140 170" width="${size}" height="${size * 1.21}"><g class="bob">
+      <ellipse cx="0" cy="24" rx="40" ry="8" fill="rgba(0,0,0,.14)"/>
+      <rect x="-34" y="-14" width="68" height="40" rx="18" fill="${V.body}"/>
+      <circle cx="0" cy="-46" r="38" fill="${V.skin}"/>${V.extra}${eyes}${mouth}
+      <circle cx="-24" cy="-28" r="6" fill="#ff8ea0" opacity=".55"/><circle cx="24" cy="-28" r="6" fill="#ff8ea0" opacity=".55"/></g></svg>`;
+        },
+
+        cauldron(ember, frost) {
+          const total = ember + frost,
+            p = total ? ember / total : 0.5;
+          const mix = (a, b, t) => {
+            const c = (i) =>
+              Math.round(
+                parseInt(a.slice(i, i + 2), 16) * (1 - t) +
+                  parseInt(b.slice(i, i + 2), 16) * t,
+              );
+            return `rgb(${c(1)},${c(3)},${c(5)})`;
+          };
+          const col = total ? mix("#5ec8ff", "#ff6b3d", p) : "#7a7a8a";
+          const level = total ? Math.min(1, total / 14) : 0.15;
+          return `<svg viewBox="0 0 320 260"><defs><clipPath id="cauldClip"><path d="M60 110 Q40 200 160 215 Q280 200 260 110Z"/></clipPath></defs>
+      <ellipse cx="160" cy="236" rx="120" ry="14" fill="rgba(0,0,0,.14)"/>
+      <path d="M60 110 Q40 200 160 215 Q280 200 260 110Z" fill="#3a3550"/>
+      <g clip-path="url(#cauldClip)"><rect x="40" y="${215 - level * 105}" width="240" height="120" fill="${col}"/>
+        ${total ? [0, 1, 2, 3].map((i) => `<g class="rise" style="animation-delay:-${i * 0.7}s;animation-duration:2.4s"><circle cx="${100 + i * 40}" cy="205" r="${5 + i * 2}" fill="#fff" opacity=".45"/></g>`).join("") : ""}</g>
+      <ellipse cx="160" cy="110" rx="104" ry="24" fill="#4a4566"/><ellipse cx="160" cy="110" rx="86" ry="16" fill="${col}"/>
+      <path d="M50 120 Q30 90 60 84 M270 120 Q290 90 260 84" fill="none" stroke="#3a3550" stroke-width="10" stroke-linecap="round"/>
+      <rect x="120" y="215" width="14" height="22" fill="#2a2640"/><rect x="186" y="215" width="14" height="22" fill="#2a2640"/>
+      <g transform="translate(160 246)">${[-40, -20, 0, 20, 40].map((x, i) => `<path d="M${x} 0 Q${x - 8} -18 ${x} -34 Q${x + 8} -18 ${x} 0Z" fill="${i % 2 ? "#ffb020" : "#ff6b3d"}" class="glow" style="animation-delay:-${i * 0.3}s"/>`).join("")}</g>
+      <text x="160" y="60" text-anchor="middle" font-size="18" font-weight="900" fill="#3a3550">${total ? `${ember} 🔥 : ${frost} ❄️` : "empty"}</text></svg>`;
+        },
+        bottle(color, label = "") {
+          return `<svg viewBox="0 0 44 64"><rect x="16" y="2" width="12" height="10" rx="2" fill="#8a5a2b"/><path d="M14 12 H30 V20 Q40 26 40 40 V54 Q40 62 32 62 H12 Q4 62 4 54 V40 Q4 26 14 20Z" fill="${color}" stroke="#3a3550" stroke-width="3"/><ellipse cx="14" cy="34" rx="4" ry="7" fill="#fff" opacity=".45"/>${label ? `<text x="22" y="50" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">${label}</text>` : ""}</svg>`;
+        },
+        oven(items, rows) {
+          const muffin = (x, y) =>
+            `<g transform="translate(${x} ${y})" class="pop"><path d="M-10 0 H10 L8 12 H-8Z" fill="#d9a066"/><ellipse cx="0" cy="-2" rx="13" ry="9" fill="#f2b56b"/><circle cx="-4" cy="-4" r="2" fill="#7a3a2a"/><circle cx="4" cy="-5" r="2" fill="#7a3a2a"/><circle cx="1" cy="0" r="2" fill="#7a3a2a"/></g>`;
+          let trays = "";
+          for (let r = 0; r < rows; r++)
+            for (let i = 0; i < items; i++)
+              if (r * items + i < 36)
+                trays += muffin(
+                  50 + (i % 9) * 30 + (r % 2) * 0,
+                  90 + r * 32 + Math.floor(i / 9) * 32,
+                );
+          return `<svg viewBox="0 0 320 240"><rect x="10" y="10" width="300" height="220" rx="16" fill="#6b4a2b"/><rect x="24" y="24" width="272" height="192" rx="10" fill="#2a1a10"/>
+      <rect x="24" y="24" width="272" height="192" rx="10" fill="#ff8a3d" opacity=".25" class="glow"/>
+      ${[0, 1, 2].map((i) => `<rect x="30" y="${70 + i * 48}" width="260" height="6" rx="3" fill="#8a6a4a"/>`).join("")}
+      ${trays}
+      <rect x="130" y="230" width="60" height="6" rx="3" fill="#3a2a1a"/><circle cx="290" cy="18" r="6" fill="#ff5d6c" class="glow"/></svg>`;
+        },
+        sceneBanner(shop) {
+          const w = 1200,
+            h = 260;
+          const ground = {
+            potion: "#5b3fb8",
+            bakery: "#c9622a",
+            post: "#2f6fb5",
+            market: "#1f8f4e",
+            finale: "#b8323f",
+          }[shop];
+          const inside = {
+            potion: `${[80, 260, 440, 800, 980, 1120].map((x, i) => `<g transform="translate(${x} ${180 - (i % 3) * 40})">${[0, 40, 80, 120].map((d, j) => `<g transform="translate(${d} 0) scale(.8)"><rect x="16" y="2" width="12" height="10" rx="2" fill="#8a5a2b"/><path d="M14 12 H30 V20 Q40 26 40 40 V54 Q40 62 32 62 H12 Q4 62 4 54 V40 Q4 26 14 20Z" fill="${["#ff6b3d", "#5ec8ff", "#8e6cf0", "#2fbf71", "#ffc447"][(i + j) % 5]}" stroke="#2a2350" stroke-width="3"/></g>`).join("")}<rect x="-10" y="60" width="150" height="8" rx="3" fill="#3b2a6b"/></g>`).join("")}<circle cx="600" cy="80" r="40" fill="#ffe680" class="glow"/>`,
+            bakery: `${[100, 300, 700, 900, 1080].map((x, i) => `<g transform="translate(${x} 150)"><rect x="0" y="0" width="140" height="70" rx="10" fill="#f7c58a"/>${[10, 45, 80].map((d) => `<ellipse cx="${d + 20}" cy="20" rx="20" ry="12" fill="#e2913d"/><ellipse cx="${d + 20}" cy="16" rx="18" ry="8" fill="#f2b56b"/>`).join("")}</g>`).join("")}<g class="rise" style="animation-duration:5s"><circle cx="560" cy="120" r="14" fill="#fff" opacity=".6"/></g>`,
+            post: `${[60, 220, 380, 780, 940, 1100].map((x, i) => `<g transform="translate(${x} ${120 + (i % 2) * 40})"><rect x="0" y="0" width="90" height="70" rx="8" fill="#dcb77c"/><rect x="40" y="0" width="10" height="70" fill="rgba(120,80,20,.25)"/><rect x="12" y="14" width="30" height="18" fill="#fff"/></g>`).join("")}<rect x="0" y="200" width="1200" height="30" fill="#4a4a5a"/>`,
+            market: `${[40, 260, 480, 700, 920].map((x, i) => `<g transform="translate(${x} 60)"><rect x="0" y="0" width="200" height="34" fill="${["#ff5d6c", "#3fa7d6", "#ffc447", "#8e6cf0", "#2fbf71"][i]}"/>${[0, 40, 80, 120, 160].map((d) => `<rect x="${d}" y="0" width="20" height="34" fill="#fff" opacity=".7"/>`).join("")}<rect x="20" y="120" width="160" height="60" rx="8" fill="#d9a066"/>${[40, 80, 120].map((d, j) => `<circle cx="${d + 20}" cy="115" r="14" fill="${["#ff5d6c", "#ffc447", "#8fe0aa"][j]}"/>`).join("")}</g>`).join("")}`,
+            finale: `${[100, 400, 700, 1000].map((x, i) => `<polygon points="${x},230 ${x + 160},230 ${x + 130},110 ${x + 30},110" fill="${["#ff5d6c", "#3fa7d6", "#ffc447", "#8e6cf0"][i]}"/><polygon points="${x + 30},110 ${x + 130},110 ${x + 80},50" fill="#fff"/>`).join("")}${[0, 1, 2, 3, 4, 5, 6].map((i) => `<circle cx="${100 + i * 170}" cy="${30 + (i % 2) * 20}" r="10" fill="${["#ff5d6c", "#ffc447", "#3fa7d6"][i % 3]}" class="glow" style="animation-delay:-${i * 0.3}s"/>`).join("")}`,
+          }[shop];
+          return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMax slice"><rect width="${w}" height="${h}" fill="${ground}"/><rect width="${w}" height="${h}" fill="url(#brick)" opacity=".12"/>${inside}<rect x="0" y="${h - 30}" width="${w}" height="30" fill="rgba(0,0,0,.25)"/></svg>`;
+        },
+      };
+      const DEFS = `<svg width="0" height="0" style="position:absolute"><defs><pattern id="brick" width="40" height="20" patternUnits="userSpaceOnUse"><rect width="40" height="20" fill="none"/><path d="M0 10 H40 M20 0 V10 M0 10 V20 M40 10 V20" stroke="#000" stroke-width="2" fill="none"/></pattern></defs></svg>`;
+
+      /* ============================================================
+   NPCs
+   ============================================================ */
+      const NPC = {
+        potion: {
+          kind: "vex",
+          name: "Madame Vex",
+          role: "Alchemist",
+          color: "var(--potion)",
+          title: "Potion Lab",
+          hello: (n) =>
+            `Ah, ${n}! My potions only work when the ingredients are in the right <b>ratio</b>. Ember to frost — the order matters. Ready to brew?`,
+          done: "The lab hasn't glowed like this in years. Take these coins, apprentice.",
+        },
+        bakery: {
+          kind: "bruno",
+          name: "Baker Bruno",
+          role: "Head Baker",
+          color: "var(--bakery)",
+          title: "Bakery",
+          hello: (n) =>
+            `${n}! Big orders today. My recipes are for one batch — you'll scale them up with <b>equivalent ratios</b>. Same recipe, bigger batch!`,
+          done: "Every batch came out perfect. That's what I call equivalent!",
+        },
+        post: {
+          kind: "quill",
+          name: "Inspector Quill",
+          role: "Parcel Inspector",
+          color: "var(--post)",
+          title: "Post Office",
+          hello: (n) =>
+            `Hoo, ${n}. Every parcel gets a stamp: <b>RATIO</b>, <b>RATE</b>, or <b>UNIT RATE</b>. Read the label, ask two questions: different units? per 1?`,
+          done: "Not one mis-stamped parcel. You have a sharp eye.",
+        },
+        market: {
+          kind: "zara",
+          name: "Zara",
+          role: "Market Vendor",
+          color: "var(--market)",
+          title: "Market Street",
+          hello: (n) =>
+            `Welcome, ${n}! Every good shopper knows the <b>unit rate</b> — the price for just <b>one</b>. Find it and you'll never overpay.`,
+          done: "You found every best buy. The market is yours!",
+        },
+        finale: {
+          kind: "vex",
+          name: "The Whole Town",
+          role: "Grand Market Day",
+          color: "#b8323f",
+          title: "Grand Market Day",
+          hello: (n) =>
+            `${n}, the whole town is here! Eight orders from every shop, all mixed up. Show them what you've learned.`,
+          done: "Meridian Market will never forget this day. The Golden Trophy is yours!",
+        },
+      };
+
+      /* ============================================================
+   Round helper: misses / hints / stars
+   - first try = 3 stars · one miss = 2 · more = 1
+   - hint 1 after first miss (or always with Level 1 Coach) · hint 2 after second miss
+   ============================================================ */
+      function makeRound(hints) {
+        const r = { misses: 0, done: false, hints };
+        r.stars = () => (r.misses === 0 ? 3 : r.misses === 1 ? 2 : 1);
+        r.miss = () => {
+          r.misses++;
+          SFX.bad();
+          if (window.NeftScore) NeftScore.attempt(false);
+          r.refresh();
+        };
+        r.refresh = () => {
+          const box = $("#hintBox");
+          if (!box) return;
+          const tier = Math.max(S.level1 ? 1 : 0, Math.min(r.misses, 2));
+          box.hidden = tier === 0;
+          if (tier)
+            box.innerHTML = `<strong>Hint ${tier}:</strong> ${r.hints[tier - 1]}`;
+          const coach = $("#coach");
+          if (coach) coach.hidden = !(S.level1 || r.misses > 0);
+        };
+        return r;
+      }
+      const fb = (kind, html) => {
+        const f = $("#fb");
+        if (!f) return;
+        f.className = "feedback " + kind;
+        f.innerHTML = html;
+      };
+      const markInputs = (pairs) =>
+        pairs.forEach(
+          ([inp, ok]) =>
+            (inp.className =
+              inp.className.replace(/ (ok|no)/g, "") + (ok ? " ok" : " no")),
+        );
+      const onEnter = (root, btnSel) =>
+        $$("input", root).forEach((i) =>
+          i.addEventListener(
+            "keydown",
+            (e) => e.key === "Enter" && $(btnSel).click(),
+          ),
+        );
+
+      /* ============================================================
+   POTION LAB — ratios (build, order matters, write 3 ways, part-to-whole)
+   ============================================================ */
+      const POTIONS = [
+        "Glow Tonic",
+        "Moon Syrup",
+        "Dragon Fizz",
+        "Star Dew",
+        "Frost Bloom",
+        "Ember Shine",
+      ];
+      const potionOrders = [
+        (b, api) => brewOrder(b, api, false),
+        (b, api) => shelfOrder(b, api),
+        (b, api) => brewOrder(b, api, true),
+        (b, api) => shelfOrder(b, api),
+        (b, api) => brewOrder(b, api, false),
+        (b, api) => shelfOrder(b, api),
+      ];
+
+      function brewOrder(board, api, worded) {
+        const e = rnd(1, 6),
+          f = pick([1, 2, 3, 4, 5, 6].filter((x) => x !== e));
+        const frostFirst = Math.random() < 0.4; // sometimes the recipe names frost first
+        const first = frostFirst ? ["frost", f] : ["ember", e],
+          second = frostFirst ? ["ember", e] : ["frost", f];
+        const name = pick(POTIONS);
+        const recipe = worded
+          ? `${first[1]} ${first[0]} for every ${second[1]} ${second[0]}`
+          : `${first[0]} to ${second[0]} &nbsp;<span style="font-size:1.5em">${first[1]} : ${second[1]}</span>`;
+        const round = makeRound([
+          `The <b>first</b> word goes with the <b>first</b> number. "${first[0]} … ${second[0]}" means ${first[0]} = ${first[1]}, ${second[0]} = ${second[1]}.`,
+          `Add ${e} 🔥 ember drops and ${f} ❄️ frost drops, then brew.`,
+        ]);
+        const drops = { ember: 0, frost: 0 };
+        board.innerHTML = `
+    <div class="task">Brew <b>${name}</b>. Add drops so the ratio matches the recipe card, then press Brew.</div>
+    <div class="lab">
+      <div class="cauldron-wrap" id="cauld">${ART.cauldron(0, 0)}</div>
+      <div class="dispensers">
+        <div class="recipe"><small>Recipe</small>${name}<br>${recipe}</div>
+        <div class="disp" style="--k:#ff6b3d"><div class="ic">🔥</div><div><div class="muted">ember drops</div><div class="cnt" id="cE">0</div></div><div class="ctl"><button class="circ" data-k="ember" data-d="-1">−</button><button class="circ" data-k="ember" data-d="1">+</button></div></div>
+        <div class="disp" style="--k:#3fa7d6"><div class="ic">❄️</div><div><div class="muted">frost drops</div><div class="cnt" id="cF">0</div></div><div class="ctl"><button class="circ" data-k="frost" data-d="-1">−</button><button class="circ" data-k="frost" data-d="1">+</button></div></div>
+      </div>
+    </div>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>
+    <div class="actions"><button class="btn" id="check">🧪 Brew!</button></div>`;
+        round.refresh();
+        $$(".circ", board).forEach(
+          (btn) =>
+            (btn.onclick = () => {
+              const k = btn.dataset.k;
+              drops[k] = Math.max(
+                0,
+                Math.min(24, drops[k] + Number(btn.dataset.d)),
+              );
+              $("#cE").textContent = drops.ember;
+              $("#cF").textContent = drops.frost;
+              $("#cauld").innerHTML = ART.cauldron(drops.ember, drops.frost);
+              SFX.pop();
+            }),
+        );
+        $("#check").onclick = () => {
+          const got = [drops.ember, drops.frost],
+            want = [e, f];
+          if (got[0] + got[1] === 0) return fb("bad", "Add some drops first!");
+          SFX.brew();
+          if (got[0] === e && got[1] === f)
+            fb("good", "Perfect brew! It glows! ✨");
+          else if (sameRatio(got, want))
+            fb(
+              "good",
+              `${got[0]} : ${got[1]} is equivalent to ${e} : ${f} — a bigger batch of the same potion! ✨`,
+            );
+          else if (got[0] === f && got[1] === e) {
+            fb(
+              "bad",
+              "Fizzle… the drops are swapped. Check which ingredient the recipe names <b>first</b>.",
+            );
+            return round.miss();
+          } else {
+            fb("bad", `Fizzle… that's ${got[0]} : ${got[1]}, not the recipe.`);
+            return round.miss();
+          }
+          FX.at($("#cauld"), 40);
+          labelBottle(board, round, api, first, second, name);
+        };
+      }
+
+      function labelBottle(board, round, api, first, second, name) {
+        const [a, b] = [first[1], second[1]];
+        $("#check").parentElement.remove();
+        $("#fb").remove();
+        const wrap = document.createElement("div");
+        wrap.innerHTML = `
+    <div class="task" style="margin-top:20px">Label the bottle: write the ratio of <b>${first[0]} to ${second[0]}</b> three ways.</div>
+    <div class="label-form">
+      <div class="way"><div class="t">with a colon</div><input class="num wide" id="w1" placeholder="? : ?"><div class="muted">like 5 : 4</div></div>
+      <div class="way"><div class="t">with the word "to"</div><input class="num wide" id="w2" placeholder="? to ?"><div class="muted">like 5 to 4</div></div>
+      <div class="way"><div class="t">as a fraction</div><input class="num wide" id="w3" placeholder="? / ?"><div class="muted">like 5/4</div></div>
+    </div>
+    <div class="feedback" id="fb"></div>
+    <div class="actions"><button class="btn" id="check2">🏷️ Stick the label</button></div>`;
+        board.appendChild(wrap);
+        $("#w1").focus();
+        const forms = [
+          [/^\d+\s*:\s*\d+$/, "w1"],
+          [/^\d+\s+to\s+\d+$/i, "w2"],
+          [/^\d+\s*\/\s*\d+$/, "w3"],
+        ];
+        $("#check2").onclick = () => {
+          const checks = forms.map(([re, id]) => {
+            const inp = $("#" + id),
+              v = inp.value.trim(),
+              pr = parseRatio(v);
+            return [inp, re.test(v) && pr && pr[0] === a && pr[1] === b];
+          });
+          markInputs(checks);
+          if (checks.every((c) => c[1])) {
+            fb(
+              "good",
+              `${name} is labeled: ${a} : ${b}, ${a} to ${b}, ${a}/${b}. Same numbers, same order.`,
+            );
+            api.finish(round.stars());
+          } else {
+            fb(
+              "bad",
+              "Fix the red boxes — same numbers, same order, each way.",
+            );
+            round.miss();
+          }
+        };
+        onEnter(wrap, "#check2");
+      }
+
+      function shelfOrder(board, api) {
+        const e = rnd(2, 7),
+          f = pick([2, 3, 4, 5, 6, 7].filter((x) => x !== e));
+        const q1 =
+          Math.random() < 0.5
+            ? { txt: "frost to ember", ans: [f, e] }
+            : { txt: "ember to frost", ans: [e, f] };
+        const q2 =
+          Math.random() < 0.5
+            ? { txt: "ember to <u>all</u> bottles", ans: [e, e + f] }
+            : { txt: "frost to <u>all</u> bottles", ans: [f, e + f] };
+        const round = makeRound([
+          `Count each color. The first word in "${q1.txt}" tells you which number goes first.`,
+          `There are ${e} ember (orange) and ${f} frost (blue), so ${e + f} bottles in all.`,
+        ]);
+        const bottles = shuffle([
+          ...Array(e).fill("#ff6b3d"),
+          ...Array(f).fill("#5ec8ff"),
+        ])
+          .map((c) => ART.bottle(c))
+          .join("");
+        board.innerHTML = `
+    <div class="task">Madame Vex's shelf got mixed up. Count the bottles and write each ratio like <b>4 : 3</b>.</div>
+    <div class="shelf">${bottles}</div>
+    <div class="row"><span class="lbl">🔥 = ember &nbsp; ❄️ = frost</span></div>
+    <div class="row"><span class="lbl">ratio of <b>${q1.txt}</b>:</span><input class="num wide" id="q1" placeholder="? : ?"></div>
+    <div class="row"><span class="lbl">ratio of <b>${q2.txt}</b>:</span><input class="num wide" id="q2" placeholder="? : ?"></div>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>
+    <div class="actions"><button class="btn" id="check">Check the shelf ✔</button></div>`;
+        round.refresh();
+        $("#q1").focus();
+        $("#check").onclick = () => {
+          const r1 = parseRatio($("#q1").value),
+            r2 = parseRatio($("#q2").value);
+          const ok1 = r1 && r1[0] === q1.ans[0] && r1[1] === q1.ans[1],
+            ok2 = r2 && r2[0] === q2.ans[0] && r2[1] === q2.ans[1];
+          markInputs([
+            [$("#q1"), ok1],
+            [$("#q2"), ok2],
+          ]);
+          if (ok1 && ok2) {
+            fb("good", "Both ratios are right — shelf sorted! ✨");
+            return api.finish(round.stars());
+          }
+          if (r1 && !ok1 && r1[0] === q1.ans[1] && r1[1] === q1.ans[0])
+            fb(
+              "bad",
+              "The first ratio is backwards — check the order of the words.",
+            );
+          else if (r2 && !ok2 && sameRatio(r2, [e, f]))
+            fb(
+              "bad",
+              "The second one compares a part to <b>all</b> the bottles — add both colors together.",
+            );
+          else fb("bad", "Not yet. Count carefully and try again.");
+          round.miss();
+        };
+        onEnter(board, "#check");
+      }
+
+      /* ============================================================
+   BAKERY — equivalent ratios (scale a batch, batch chart, crate match)
+   ============================================================ */
+      const RECIPES = [
+        ["eggs", "cups of flour"],
+        ["cups of sugar", "cups of flour"],
+        ["scoops of cocoa", "cups of milk"],
+        ["bananas", "muffins"],
+        ["sticks of butter", "loaves"],
+      ];
+      const bakeryOrders = [
+        scaleOrder,
+        chartOrder,
+        crateOrder,
+        scaleOrder,
+        chartOrder,
+        crateOrder,
+      ];
+
+      function scaleOrder(board, api) {
+        const [ia, ib] = pick(RECIPES),
+          a = rnd(1, 6),
+          b = pick([1, 2, 3, 4, 5, 6].filter((x) => x !== a)),
+          k = rnd(2, 6);
+        const missLeft = Math.random() < 0.5,
+          known = missLeft ? b * k : a * k,
+          answer = missLeft ? a * k : b * k;
+        const knownName = missLeft ? ib : ia,
+          missName = missLeft ? ia : ib;
+        const round = makeRound([
+          `What do you multiply <b>${missLeft ? b : a}</b> by to get <b>${known}</b>? That's the batch size. Multiply the other number by the same thing.`,
+          `${missLeft ? b : a} × ${k} = ${known}, so it's a ×${k} batch. Now ${missLeft ? a : b} × ${k} = ?`,
+        ]);
+        let mult = 1;
+        board.innerHTML = `
+    <div class="task">Scale the recipe to fill the order. Set the batch dial, then fill in the missing amount.</div>
+    <div class="oven-wrap">
+      <div>
+        <div class="recipe"><small>Recipe · 1 batch</small>${a} ${ia} : ${b} ${ib}</div>
+        <div class="ticket" style="margin-top:12px">📋 <b>Order:</b> "I need <b>${known} ${knownName}</b> worth. How many ${missName}?"</div>
+        <div class="dial" id="dial">${[2, 3, 4, 5, 6].map((m) => `<button data-m="${m}">×${m}</button>`).join("")}</div>
+        <div class="row" style="justify-content:center"><span class="lbl" style="min-width:0">${missName}:</span><input class="num" id="ans" inputmode="numeric"></div>
+      </div>
+      <div id="oven">${ART.oven(missLeft ? b : a, 1)}</div>
+    </div>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>
+    <div class="actions"><button class="btn" id="check">🔥 Bake it</button></div>`;
+        round.refresh();
+        $$("#dial button").forEach(
+          (btn) =>
+            (btn.onclick = () => {
+              mult = Number(btn.dataset.m);
+              $$("#dial button").forEach((x) =>
+                x.classList.toggle("on", x === btn),
+              );
+              $("#oven").innerHTML = ART.oven(missLeft ? b : a, mult);
+              SFX.pop();
+            }),
+        );
+        $("#check").onclick = () => {
+          const v = parseNum($("#ans").value);
+          if (mult === 1) return fb("bad", "Set the batch dial first.");
+          if (mult !== k) {
+            fb(
+              "bad",
+              `A ×${mult} batch gives ${missLeft ? b * mult : a * mult} ${knownName}, but the order needs ${known}. Try another dial.`,
+            );
+            return round.miss();
+          }
+          if (v === answer) {
+            markInputs([[$("#ans"), true]]);
+            fb(
+              "good",
+              `${a} : ${b} = ${a * k} : ${b * k}. Both numbers × ${k} — a perfect batch! 🧁`,
+            );
+            FX.at($("#oven"), 30);
+            api.finish(round.stars());
+          } else {
+            markInputs([[$("#ans"), false]]);
+            fb(
+              "bad",
+              `Right batch size! Now multiply ${missLeft ? a : b} ${missName} by ${k}.`,
+            );
+            round.miss();
+          }
+        };
+        onEnter(board, "#check");
+      }
+
+      function chartOrder(board, api) {
+        const [ia, ib] = pick(RECIPES),
+          a = rnd(1, 6),
+          b = pick([1, 2, 3, 4, 5, 6].filter((x) => x !== a));
+        const cols = [1, 2, 3, 4],
+          blanks = [];
+        while (blanks.length < 3) {
+          const c = [rnd(0, 1), rnd(2, 4)];
+          if (!blanks.some((x) => x[1] === c[1])) blanks.push(c);
+        }
+        const round = makeRound([
+          `Every column is the first column multiplied by the same number: column 2 is ×2, column 3 is ×3, column 4 is ×4.`,
+          `Top row: ${a}, ${2 * a}, ${3 * a}, ${4 * a}. Bottom row: ${b}, ${2 * b}, ${3 * b}, ${4 * b}. Which cells are empty?`,
+        ]);
+        const cell = (row, c) =>
+          blanks.some((x) => x[0] === row && x[1] === c)
+            ? `<td><input class="num" data-row="${row}" data-col="${c}" inputmode="numeric"></td>`
+            : `<td>${(row ? b : a) * c}</td>`;
+        board.innerHTML = `
+    <div class="task">Bruno's batch chart is smudged. Fill in the missing amounts — every column is an <b>equivalent ratio</b> of ${a} : ${b}.</div>
+    <table class="chart">
+      <tr class="arrows" id="arrows"><td></td>${cols.map((c) => `<td>${c === 1 ? "1 batch" : "×" + c}</td>`).join("")}</tr>
+      <tr><td class="head">${ia}</td>${cols.map((c) => cell(0, c)).join("")}</tr>
+      <tr><td class="head">${ib}</td>${cols.map((c) => cell(1, c)).join("")}</tr>
+    </table>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>
+    <div class="actions"><button class="btn" id="check">Check the chart ✔</button></div>`;
+        const arrows = () =>
+          ($("#arrows").style.visibility =
+            S.level1 || round.misses > 0 ? "visible" : "hidden");
+        arrows();
+        round.refresh();
+        $("#check").onclick = () => {
+          const checks = $$("input", board).map((inp) => [
+            inp,
+            parseNum(inp.value) ===
+              (Number(inp.dataset.row) ? b : a) * Number(inp.dataset.col),
+          ]);
+          markInputs(checks);
+          if (checks.every((c) => c[1])) {
+            fb("good", "Chart complete — every column is equivalent! 🧁");
+            api.finish(round.stars());
+          } else {
+            fb(
+              "bad",
+              "Some cells are off. Multiply <b>both</b> numbers by the same amount.",
+            );
+            round.miss();
+            arrows();
+          }
+        };
+        onEnter(board, "#check");
+        $("input", board).focus();
+      }
+
+      function crateOrder(board, api) {
+        const bases = [];
+        while (bases.length < 4) {
+          const x = rnd(1, 5),
+            y = rnd(1, 6);
+          if (x === y || gcd(x, y) !== 1) continue;
+          if (!bases.some((q) => sameRatio(q, [x, y]))) bases.push([x, y]);
+        }
+        const crates = shuffle(
+          bases.flatMap((q, i) => {
+            const k = rnd(2, 5);
+            let j = rnd(1, 5);
+            if (j === k) j = 1;
+            return [
+              { id: i, txt: `${q[0] * k} : ${q[1] * k}` },
+              { id: i, txt: `${q[0] * j} : ${q[1] * j}` },
+            ];
+          }),
+        );
+        const round = makeRound([
+          `Two ratios are equivalent if you can multiply or divide both numbers by the same thing. Shrink each ratio to its simplest form.`,
+          `Simplest forms on these crates: ${bases.map((q) => q.join(" : ")).join(" · ")}. Find the two that shrink to the same one.`,
+        ]);
+        let sel = null,
+          matched = 0;
+        board.innerHTML = `
+    <div class="task">The delivery crates got mixed up! Tap two crates with <b>equivalent ratios</b> to pair them. Find all 4 pairs.</div>
+    <div class="crates">${crates.map((c, i) => `<button class="crate" data-i="${i}">${c.txt}</button>`).join("")}</div>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>`;
+        round.refresh();
+        $$(".crate", board).forEach(
+          (btn) =>
+            (btn.onclick = () => {
+              const i = Number(btn.dataset.i);
+              SFX.click();
+              if (sel === null) {
+                sel = i;
+                btn.classList.add("sel");
+                return;
+              }
+              if (sel === i) {
+                sel = null;
+                btn.classList.remove("sel");
+                return;
+              }
+              const first = $(`.crate[data-i="${sel}"]`, board);
+              if (crates[sel].id === crates[i].id) {
+                first.classList.add("matched");
+                btn.classList.add("matched");
+                matched++;
+                SFX.good();
+                FX.at(btn, 14);
+                fb("good", `${crates[sel].txt} = ${crates[i].txt} ✔`);
+                if (matched === 4) {
+                  fb("good", "All four pairs matched — deliveries sorted! 🧁");
+                  api.finish(round.stars());
+                }
+              } else {
+                btn.classList.add("wrong");
+                first.classList.add("wrong");
+                setTimeout(() => {
+                  btn.classList.remove("wrong");
+                  first.classList.remove("wrong");
+                }, 400);
+                fb(
+                  "bad",
+                  `${crates[sel].txt} and ${crates[i].txt} are not equivalent.`,
+                );
+                round.miss();
+              }
+              first.classList.remove("sel");
+              sel = null;
+            }),
+        );
+      }
+
+      /* ============================================================
+   POST OFFICE — stamp each parcel RATIO / RATE / UNIT RATE
+   ============================================================ */
+      const PARCELS = [
+        [
+          "3 cups of flour to 2 cups of sugar",
+          "ratio",
+          "Same kind of units (cups and cups). A plain ratio.",
+        ],
+        [
+          "5 boys to 7 girls",
+          "ratio",
+          "Boys and girls are both people — same kind. A ratio.",
+        ],
+        [
+          "2 red marbles for every 3 blue marbles",
+          "ratio",
+          "Marbles to marbles. Same units → ratio.",
+        ],
+        ["4 : 9", "ratio", "Just two numbers, no units at all. A ratio."],
+        [
+          "1 teacher for every 25 students",
+          "ratio",
+          "Teachers and students are both people — a ratio, even with a 1 in it!",
+        ],
+        [
+          "150 miles in 3 hours",
+          "rate",
+          "Miles and hours are different units, and the second number isn't 1. A rate.",
+        ],
+        [
+          "$12 for 4 pounds of apples",
+          "rate",
+          "Dollars and pounds — different units. Second number is 4, not 1. A rate.",
+        ],
+        [
+          "240 words in 8 minutes",
+          "rate",
+          "Words and minutes — different units. Not per 1 minute yet. A rate.",
+        ],
+        [
+          "18 laps in 6 minutes",
+          "rate",
+          "Laps and minutes — different units, and 6 ≠ 1. A rate.",
+        ],
+        [
+          "6 slices of pizza for $9",
+          "rate",
+          "Slices and dollars — different units; $9 is not for 1 slice. A rate.",
+        ],
+        [
+          "45 heartbeats in 30 seconds",
+          "rate",
+          "Beats and seconds — different units. A rate.",
+        ],
+        [
+          "$4 per pound",
+          "unit",
+          '"Per" means for each 1 pound. Different units, second amount is 1. Unit rate!',
+        ],
+        ["60 miles per hour", "unit", "Miles for each 1 hour. A unit rate."],
+        ["$2.50 for each can", "unit", '"For each" = per 1 can. Unit rate.'],
+        ["30 words per minute", "unit", "Words for each 1 minute. Unit rate."],
+        [
+          "8 dollars per hour of babysitting",
+          "unit",
+          "Dollars for each 1 hour. Unit rate.",
+        ],
+      ];
+      const TYPE_NAME = { ratio: "RATIO", rate: "RATE", unit: "UNIT RATE" };
+      let parcelDeck = [];
+      const postOrders = Array.from(
+        { length: ORDERS },
+        (_, i) => (board, api) => parcelOrder(board, api, i),
+      );
+
+      function parcelOrder(board, api, i) {
+        if (i === 0 || parcelDeck.length < ORDERS)
+          parcelDeck = shuffle(PARCELS).slice(0, ORDERS);
+        const [txt, type, why] = parcelDeck[i];
+        const round = makeRound([
+          `Two questions: (1) Are the units <b>different kinds</b>? (2) Is the second amount <b>1</b>?`,
+          `Same kind of units → <b>RATIO</b>. Different units → <b>RATE</b>. Different units AND "per 1" → <b>UNIT RATE</b>.`,
+        ]);
+        board.innerHTML = `
+    <div class="task">A parcel arrives. Read the label and press the right stamp.</div>
+    <div class="belt"><div class="parcel" id="parcel"><span class="lbl">${esc(txt)}</span></div></div>
+    <div class="stamps">
+      <button class="stamp ratio" data-t="ratio"><h3>📦 RATIO</h3><p>two amounts of the <b>same</b> kind</p></button>
+      <button class="stamp rate" data-t="rate"><h3>🚚 RATE</h3><p><b>different</b> kinds of units</p></button>
+      <button class="stamp unit" data-t="unit"><h3>1️⃣ UNIT RATE</h3><p>a rate "per <b>1</b>"</p></button>
+    </div>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>`;
+        round.refresh();
+        $$(".stamp", board).forEach(
+          (st) =>
+            (st.onclick = () => {
+              if (round.done) return;
+              SFX.stamp();
+              const old = $(".stampmark", board);
+              if (old) old.remove();
+              const mark = document.createElement("div");
+              mark.className =
+                "stampmark " + (st.dataset.t === type ? "ok" : "bad");
+              mark.textContent =
+                st.dataset.t === type ? TYPE_NAME[type] : "RETURN";
+              $("#parcel").appendChild(mark);
+              if (st.dataset.t === type) {
+                round.done = true;
+                fb("good", `✔ ${TYPE_NAME[type]} — ${why}`);
+                FX.at($("#parcel"), 24);
+                api.finish(round.stars());
+              } else {
+                fb(
+                  "bad",
+                  st.dataset.t === "unit"
+                    ? "Not a unit rate — is the second amount 1?"
+                    : st.dataset.t === "rate"
+                      ? "Look again at the units. Are they different kinds? Is the second one 1?"
+                      : "Look again — are the units the same kind of thing?",
+                );
+                round.miss();
+              }
+            }),
+        );
+      }
+
+      /* ============================================================
+   MARKET — unit rates (fix the sign, best buy)
+   ============================================================ */
+      const RATES = [
+        {
+          top: 12,
+          bot: 4,
+          unit: "$",
+          thing: "pound of apples",
+          things: "pounds of apples",
+        },
+        { top: 150, bot: 3, unit: "miles", thing: "hour", things: "hours" },
+        { top: 240, bot: 8, unit: "words", thing: "minute", things: "minutes" },
+        { top: 18, bot: 6, unit: "laps", thing: "minute", things: "minutes" },
+        {
+          top: 15,
+          bot: 6,
+          unit: "$",
+          thing: "can of juice",
+          things: "cans of juice",
+        },
+        {
+          top: 9,
+          bot: 2,
+          unit: "$",
+          thing: "pound of grapes",
+          things: "pounds of grapes",
+        },
+        { top: 84, bot: 7, unit: "pages", thing: "day", things: "days" },
+        { top: 36, bot: 4, unit: "$", thing: "ticket", things: "tickets" },
+        {
+          top: 200,
+          bot: 5,
+          unit: "meters",
+          thing: "minute",
+          things: "minutes",
+        },
+        {
+          top: 21,
+          bot: 6,
+          unit: "$",
+          thing: "pizza slice",
+          things: "pizza slices",
+        },
+        {
+          top: 120,
+          bot: 4,
+          unit: "heartbeats",
+          thing: "minute",
+          things: "minutes",
+        },
+        { top: 45, bot: 5, unit: "$", thing: "shirt", things: "shirts" },
+      ];
+      const fmtRate = (r) =>
+        r.unit === "$"
+          ? `${money(r.top)} for ${r.bot} ${r.things}`
+          : `${r.top} ${r.unit} in ${r.bot} ${r.things}`;
+      const fmtUnit = (r, v) =>
+        r.unit === "$"
+          ? `${money(v)} per ${r.thing}`
+          : `${v} ${r.unit} per ${r.thing}`;
+      const marketOrders = [
+        signOrder,
+        bestBuyOrder,
+        signOrder,
+        bestBuyOrder,
+        signOrder,
+        bestBuyOrder,
+      ];
+
+      function groupsVisual(r) {
+        if (!Number.isInteger(r.top / r.bot) || r.top > 60)
+          return `Think: ${r.bot} × ? = ${r.top}`;
+        return `Split ${r.top} into ${r.bot} equal groups and count one group:<div class="groups">${Array.from({ length: r.bot }, () => `<div class="g">${"<i></i>".repeat(r.top / r.bot)}</div>`).join("")}</div>`;
+      }
+      function signOrder(board, api) {
+        const r = pick(RATES),
+          ans = r.top / r.bot;
+        const round = makeRound([
+          `A unit rate is "per <b>1</b>." To turn ${r.bot} ${r.things} into 1, <b>divide by ${r.bot}</b>. Do the same to ${r.unit === "$" ? money(r.top) : r.top}.`,
+          groupsVisual(r),
+        ]);
+        board.innerHTML = `
+    <div class="task">Zara's sign is half-missing. Turn the rate into a <b>unit rate</b> — the amount per <b>1</b> ${esc(r.thing)}.</div>
+    <div class="signboard">
+      <div class="in"><div class="muted" style="font-size:.85rem;letter-spacing:2px">OLD SIGN</div>${fmtRate(r)}</div>
+      <div class="arrow">➡️</div>
+      <div class="outp"><div class="muted" style="font-size:.85rem;letter-spacing:2px">NEW SIGN</div><input class="num" id="ans" inputmode="decimal"> ${r.unit === "$" ? "dollars" : r.unit} per <b>1</b> ${esc(r.thing)}</div>
+    </div>
+    <div class="coach" id="coach" hidden>${r.top} ÷ ${r.bot} = ?</div>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>
+    <div class="actions"><button class="btn" id="check">🪧 Hang the sign</button></div>`;
+        round.refresh();
+        $("#ans").focus();
+        $("#check").onclick = () => {
+          const v = parseNum($("#ans").value);
+          if (v === null) return fb("bad", "Type a number first.");
+          if (near(v, ans)) {
+            markInputs([[$("#ans"), true]]);
+            fb("good", `${fmtUnit(r, ans)} — the new sign is up! 🪧`);
+            FX.at($(".outp"), 24);
+            api.finish(round.stars());
+          } else {
+            markInputs([[$("#ans"), false]]);
+            fb(
+              "bad",
+              near(v, r.top * r.bot)
+                ? "You multiplied — to get to 1, you need to divide."
+                : near(v, r.bot / r.top)
+                  ? `Flipped! Divide the first amount by the number of ${r.things}.`
+                  : "Not yet. Divide so the second amount becomes 1.",
+            );
+            round.miss();
+          }
+        };
+        onEnter(board, "#check");
+      }
+
+      function bestBuyOrder(board, api) {
+        const thing = pick([
+          ["apples", "pound", "pounds"],
+          ["juice", "can", "cans"],
+          ["pencils", "pencil", "pencils"],
+          ["stickers", "sticker", "stickers"],
+          ["tacos", "taco", "tacos"],
+          ["oranges", "pound", "pounds"],
+        ]);
+        const prices = shuffle([1, 1.5, 2, 2.5, 3, 4, 5]).slice(0, 3);
+        const stalls = prices.map((u, i) => {
+          const bot = rnd(2, 6);
+          return {
+            id: "ABC"[i],
+            u,
+            top: u * bot,
+            bot,
+            awn: ["#ff5d6c", "#3fa7d6", "#8e6cf0"][i],
+            name: ["Ana's Stand", "Big Ben's", "Corner Cart"][i],
+          };
+        });
+        const best = stalls.reduce((m, s) => (s.u < m.u ? s : m));
+        const round = makeRound([
+          `Find the price for <b>1</b> ${thing[1]} at each stall: divide the dollars by the number of ${thing[2]}. The smallest price per 1 is the best buy.`,
+          stalls
+            .map((s) => `${s.name}: ${money(s.top)} ÷ ${s.bot}`)
+            .join(" · "),
+        ]);
+        let picked = null;
+        board.innerHTML = `
+    <div class="task">You need <b>${thing[0]}</b>. Work out each stall's unit price, write it on the tag, then tap the best buy.</div>
+    <div class="stalls">${stalls.map((s) => `<div class="stall" data-s="${s.id}" style="--a:${s.awn}"><div class="awn"></div><div class="body"><h3>${s.name}</h3><div class="offer">${money(s.top)} for ${s.bot} ${thing[2]}</div><div class="tag">$<input class="num" data-s="${s.id}" inputmode="decimal"> per ${thing[1]}</div></div></div>`).join("")}</div>
+    <div class="coach" id="coach" hidden>Divide each price by its number of ${thing[2]}. Then compare — smaller is better.</div>
+    <div class="hint" id="hintBox" hidden></div>
+    <div class="feedback" id="fb"></div>
+    <div class="actions"><button class="btn" id="check">🛒 Buy here</button><span class="muted" id="pickNote">Tap a stall to choose it.</span></div>`;
+        round.refresh();
+        $("input", board).focus();
+        $$(".stall", board).forEach(
+          (st) =>
+            (st.onclick = (e) => {
+              if (e.target.tagName === "INPUT") return;
+              picked = st.dataset.s;
+              $$(".stall", board).forEach((x) =>
+                x.classList.toggle("pick", x === st),
+              );
+              $("#pickNote").textContent =
+                `You chose ${stalls.find((s) => s.id === picked).name}.`;
+              SFX.click();
+            }),
+        );
+        $("#check").onclick = () => {
+          const checks = stalls.map((s) => {
+            const inp = $(`input[data-s="${s.id}"]`, board),
+              v = parseNum(inp.value);
+            return [inp, v !== null && near(v, s.u)];
+          });
+          markInputs(checks);
+          if (!checks.every((c) => c[1])) {
+            fb(
+              "bad",
+              `Check the red tags. Divide the dollars by the number of ${thing[2]}.`,
+            );
+            return round.miss();
+          }
+          if (!picked)
+            return fb(
+              "bad",
+              "All unit prices are right! Now tap the stall with the best buy.",
+            );
+          if (picked === best.id) {
+            $(`.stall[data-s="${best.id}"]`, board).classList.add("win");
+            const saved = Math.max(...stalls.map((s) => s.u)) - best.u;
+            fb(
+              "good",
+              `${best.name} wins: ${money(best.u)} per ${thing[1]} is the lowest. You saved ${money(saved)} per ${thing[1]}! 🛒`,
+            );
+            SFX.coin();
+            FX.at($(`.stall[data-s="${best.id}"]`, board), 30);
+            api.finish(round.stars());
+          } else {
+            fb(
+              "bad",
+              "The best buy costs the <b>least</b> per 1. Compare your three unit prices again.",
+            );
+            round.miss();
+          }
+        };
+        onEnter(board, "#check");
+      }
+
+      /* ============================================================
+   SHOP REGISTRY + FINALE
+   ============================================================ */
+      const SHOPS = {
+        potion: potionOrders,
+        bakery: bakeryOrders,
+        post: postOrders,
+        market: marketOrders,
+      };
+      const finaleOrders = () =>
+        shuffle([
+          potionOrders[0],
+          potionOrders[1],
+          bakeryOrders[0],
+          bakeryOrders[2],
+          postOrders[0],
+          postOrders[1],
+          marketOrders[0],
+          marketOrders[1],
+        ]);
+
+      /* ============================================================
+   SCREENS
+   ============================================================ */
+      const app = $("#app");
+      let currentScreen = null;
+      function screen(html, cls = "") {
+        const s = document.createElement("div");
+        s.className = "screen " + cls;
+        s.innerHTML = DEFS + html;
+        if (currentScreen) {
+          const old = currentScreen;
+          old.classList.add("out");
+          setTimeout(() => old.remove(), 350);
+        }
+        app.appendChild(s);
+        currentScreen = s;
+        return s;
+      }
+      function hud(extra = "") {
+        return `<div class="hud">
+    <button class="chip btn" id="hudMap">🗺️ Map</button>
+    <span class="chip coins">🪙 <span id="coinCount">${S.coins}</span></span>
+    <span class="chip">⭐ ${totalStars()}</span>
+    <span class="grow"></span>
+    <label class="chip toggle"><input type="checkbox" id="level1" ${S.level1 ? "checked" : ""}> Level 1 Coach</label>
+    <button class="chip btn" id="hudGuide">📖 Guide</button>
+    <button class="chip btn" id="hudSound">${SFX.muted ? "🔇" : "🔊"}</button>${extra}</div>`;
+      }
+      function wireHud(s, onLevel) {
+        $("#hudMap", s).onclick = () => {
+          SFX.click();
+          showMap();
+        };
+        $("#hudGuide", s).onclick = () => {
+          SFX.click();
+          $("#guide").hidden = false;
+        };
+        $("#hudSound", s).onclick = (e) => {
+          e.target.textContent = SFX.toggle() ? "🔇" : "🔊";
+        };
+        $("#level1", s).onchange = (e) => {
+          S.level1 = e.target.checked;
+          save();
+          if (onLevel) onLevel();
+        };
+      }
+
+      /* ---------- title ---------- */
+      function showTitle() {
+        const s =
+          screen(`<div class="sky"><svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMax slice">${ART.sky()}${ART.hills(1200, 720)}${ART.tree(120, 620, 1.3)}${ART.tree(1080, 600, 1.1)}${ART.tree(980, 660, 0.8)}</svg></div>
+    <div class="title-wrap">
+      <h1 class="logo">Ratio Quest<small>Meridian Market</small></h1>
+      <div class="panel">
+        ${
+          S.name
+            ? `<p style="font-weight:800;font-size:1.2rem;margin:0 0 12px">Welcome back, ${esc(S.name)}! 🪙 ${S.coins} coins · ⭐ ${totalStars()} stars</p>
+          <div class="actions" style="justify-content:center"><button class="big-btn" id="continue">Continue ▶</button><button class="big-btn quiet" id="newGame">New game</button></div>`
+            : `<p style="font-weight:800;margin:0 0 6px">Pick your apprentice</p>
+          <div class="avatars">${["fox", "cat", "robot"].map((k) => `<button class="avatar-pick" data-k="${k}">${ART.character(k, 90)}<div class="nm">${{ fox: "Finn", cat: "Mika", robot: "Bolt" }[k]}</div></button>`).join("")}</div>
+          <input class="name-in" id="nameIn" placeholder="Your name" maxlength="16">
+          <div class="actions" style="justify-content:center;margin-top:14px"><button class="big-btn" id="start" disabled>Start the quest ▶</button></div>`
+        }
+        <p class="muted" style="margin:14px 0 0;font-size:.95rem">Four shops. Real ratios. No timers — think, then act.</p>
+      </div>
+    </div>`);
+        if (S.name) {
+          $("#continue", s).onclick = () => {
+            SFX.good();
+            showMap();
+          };
+          $("#newGame", s).onclick = () =>
+            confirmModal(
+              "Start a brand-new game? Your coins, stars, and upgrades will be cleared.",
+              () => {
+                S = {
+                  name: "",
+                  avatar: "",
+                  coins: 0,
+                  level1: S.level1,
+                  sawGuide: false,
+                  finale: 0,
+                  upgrades: { awning: "red" },
+                  shops: {},
+                };
+                SHOP_IDS.forEach(
+                  (id) => (S.shops[id] = { best: [], visits: 0 }),
+                );
+                save();
+                showTitle();
+              },
+            );
+          return;
+        }
+        let kind = "";
+        const ready = () =>
+          ($("#start", s).disabled = !(kind && $("#nameIn", s).value.trim()));
+        $$(".avatar-pick", s).forEach(
+          (b) =>
+            (b.onclick = () => {
+              kind = b.dataset.k;
+              $$(".avatar-pick", s).forEach((x) =>
+                x.classList.toggle("on", x === b),
+              );
+              SFX.pop();
+              ready();
+            }),
+        );
+        $("#nameIn", s).oninput = ready;
+        $("#nameIn", s).addEventListener(
+          "keydown",
+          (e) =>
+            e.key === "Enter" &&
+            !$("#start", s).disabled &&
+            $("#start", s).click(),
+        );
+        $("#start", s).onclick = () => {
+          S.name = $("#nameIn", s).value.trim();
+          S.avatar = kind;
+          save();
+          SFX.fanfare();
+          showMap(true);
+        };
+      }
+
+      /* ---------- map ---------- */
+      function showMap(first = false) {
+        const allDone = finaleUnlocked();
+        const s =
+          screen(`${hud()}<div class="map-wrap"><svg class="map" viewBox="0 0 1200 820" preserveAspectRatio="xMidYMid meet">
+      <rect width="1200" height="820" fill="#bfe6ff"/>${ART.sky(1200, 820)}${ART.hills(1200, 820)}
+      <path d="M600 760 C 600 700, 260 640, 200 420 M600 760 C 600 700, 940 640, 1000 400 M600 760 C 560 700, 300 700, 260 760 M600 760 C 640 700, 900 700, 950 760 M600 760 V 660 M600 660 C 600 520, 600 460, 600 380" fill="none" stroke="#e9d5a3" stroke-width="34" stroke-linecap="round"/>
+      <path d="M600 760 C 600 700, 260 640, 200 420 M600 760 C 600 700, 940 640, 1000 400 M600 760 C 560 700, 300 700, 260 760 M600 760 C 640 700, 900 700, 950 760 M600 760 V 660 M600 660 C 600 520, 600 460, 600 380" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="2 22" stroke-linecap="round" opacity=".7"/>
+      ${ART.tree(60, 600, 1.2)}${ART.tree(1150, 600, 1)}${ART.tree(400, 330, 0.8)}${ART.tree(820, 330, 0.9)}${ART.tree(440, 560, 0.7)}${ART.tree(760, 560, 0.7)}
+      ${ART.finaleTent(600, 300, !allDone)}
+      ${ART.potionLab(190, 370)}${ART.postOffice(1000, 350)}${ART.playerStall(600, 640, S.upgrades)}
+      ${ART.bakery(260, 740)}${ART.market(950, 740)}
+      <g transform="translate(470 760) scale(.6)"><foreignObject x="-70" y="-160" width="140" height="170">${ART.character(S.avatar || "fox", 140)}</foreignObject></g>
+    </svg>
+    <div class="map-toast" id="toast"></div></div>`);
+        wireHud(s);
+        SHOP_IDS.forEach((id) => {
+          const t = $(`[data-stars="${id}"]`, s);
+          const st = shopStars(id);
+          t.textContent = st ? `⭐ ${st} / ${ORDERS * 3}` : "not visited";
+        });
+        const toast = $("#toast", s);
+        toast.innerHTML = first
+          ? `Welcome to Meridian Market, ${esc(S.name)}! Tap a shop to start. Tap <b>Your Stall</b> to spend coins on upgrades.`
+          : allDone && !S.finale
+            ? `🎪 <b>Grand Market Day</b> is open! Tap the big tent.`
+            : `Tap a shop to take orders. 🪙 coins buy upgrades for your stall.`;
+        $$(".building", s).forEach(
+          (b) =>
+            (b.onclick = () => {
+              const id = b.dataset.shop;
+              SFX.click();
+              if (id === "stall") return showUpgrades();
+              if (id === "finale") {
+                if (!allDone) {
+                  toast.innerHTML =
+                    "🔒 Finish all six orders in each of the four shops to open Grand Market Day.";
+                  SFX.bad();
+                  return;
+                }
+                return showShop("finale");
+              }
+              showShop(id);
+            }),
+        );
+        if (!S.sawGuide) {
+          $("#guide").hidden = false;
+          S.sawGuide = true;
+          save();
+        }
+      }
+
+      /* ---------- shop ---------- */
+      const SHOP_STANDARD = {
+        potion: "6.RP.A.1",
+        bakery: "6.RP.A.3",
+        post: "6.RP.A.2",
+        market: "6.RP.A.2",
+        finale: "6.RP.A.3",
+      };
+      function showShop(id) {
+        // One game_scores row per shop visit: every judged answer (misses included) counts.
+        if (window.NeftScore)
+          NeftScore.init({ gameId: "ratio-quest", standard: SHOP_STANDARD[id], level: S.level1 ? 1 : 2 });
+        const npc = NPC[id],
+          orders = id === "finale" ? finaleOrders() : SHOPS[id],
+          total = orders.length;
+        let n = 0,
+          earned = [];
+        const s = screen(`${hud()}<div class="scene" style="--c:${npc.color}">
+      <div class="scene-art">${ART.sceneBanner(id)}</div>
+      <div class="scene-body"><div class="scene-inner">
+        <div class="npc-card">${ART.character(npc.kind, 130)}<div class="npc-name">${npc.name}</div><div class="npc-role">${npc.role}</div><div class="speech" id="speech"></div></div>
+        <div class="board" id="board"></div>
+      </div></div></div>`);
+        wireHud(s, () => renderOrder());
+        s.style.background = "#1d1b3a";
+        const say = (html) => typewriter($("#speech", s), html);
+        say(npc.hello(esc(S.name)));
+        const board = $("#board", s);
+
+        function renderOrder() {
+          if (n >= total) return finishShop();
+          board.innerHTML = `<div class="board-head"><h2>${npc.title}</h2><span class="pill">Order ${n + 1} of ${total}</span><span class="stars" id="roundStars"></span></div><div id="orderBody"></div>`;
+          const body = $("#orderBody", board);
+          const api = {
+            finish(stars) {
+              earned.push(stars);
+              SFX.good();
+              if (window.NeftScore) NeftScore.attempt(true);
+              const coins = stars * 10;
+              S.coins += coins;
+              if (id !== "finale") {
+                const sh = S.shops[id];
+                sh.best[n] = Math.max(sh.best[n] || 0, stars);
+              }
+              save();
+              $(".hud .chip:nth-child(3)").textContent = "⭐ " + totalStars();
+              $("#coinCount").textContent = S.coins;
+              $("#roundStars").textContent =
+                "★".repeat(stars) + "☆".repeat(3 - stars);
+              say(
+                pick([
+                  "Nicely done!",
+                  "That's the way!",
+                  "Perfect — next order.",
+                  "You're a natural.",
+                  "Keep it up!",
+                ]) + ` <b>+${coins} 🪙</b>`,
+              );
+              $$(
+                "input, .btn, .circ, .crate, .dial button, .stamp, .stall",
+                body,
+              ).forEach((x) => (x.disabled = true));
+              const act = document.createElement("div");
+              act.className = "actions";
+              const next = document.createElement("button");
+              next.className = "btn gold pop";
+              next.textContent = n + 1 >= total ? "Finish 🏁" : "Next order →";
+              next.onclick = () => {
+                n++;
+                renderOrder();
+              };
+              act.appendChild(next);
+              body.appendChild(act);
+              next.focus();
+            },
+          };
+          orders[n](body, api);
+        }
+        function finishShop() {
+          const stars = earned.reduce((a, b) => a + b, 0);
+          if (window.NeftScore) NeftScore.finish();
+          if (id === "finale") {
+            S.finale = Math.max(S.finale, stars);
+            S.upgrades.trophy = true;
+          } else {
+            S.shops[id].visits++;
+          }
+          save();
+          SFX.fanfare();
+          FX.confetti();
+          say(npc.done);
+          const allDone = finaleUnlocked();
+          board.innerHTML = `<div class="result"><div class="big">${id === "finale" ? "🏆" : "🎉"}</div><h2>${npc.title} complete!</h2>
+      <div class="stars">${"★".repeat(Math.min(3, Math.round(stars / total)))}${"☆".repeat(3 - Math.min(3, Math.round(stars / total)))}</div>
+      <p style="font-weight:800;font-size:1.15rem">${stars} of ${total * 3} stars this visit</p>
+      <p class="coins">+${stars * 10} 🪙 earned · ${S.coins} total</p>
+      ${id === "finale" ? `<p>The <b>Golden Trophy</b> now sits on your stall.</p>` : allDone && !S.finale ? `<p>🎪 All four shops done — <b>Grand Market Day</b> is open on the map!</p>` : ""}
+      <div class="actions" style="justify-content:center"><button class="big-btn" id="toMap">🗺️ Back to town</button><button class="big-btn quiet" id="again">Play again</button></div></div>`;
+          $("#toMap", board).onclick = () => showMap();
+          $("#again", board).onclick = () => showShop(id);
+        }
+        renderOrder();
+      }
+
+      /* ---------- upgrades ---------- */
+      const ITEMS = [
+        { key: "flowers", ic: "🌸", nm: "Flower box", cost: 30 },
+        { key: "lantern", ic: "🏮", nm: "Lantern", cost: 40 },
+        { key: "banner", ic: "🪧", nm: "Name banner", cost: 50 },
+        { key: "cat", ic: "🐈", nm: "Shop cat", cost: 60 },
+        { key: "fountain", ic: "⛲", nm: "Fountain", cost: 80 },
+      ];
+      function showUpgrades() {
+        const s =
+          screen(`${hud()}<div class="scene" style="--c:var(--gold)"><div class="scene-art"><svg viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice">${ART.sky(1200, 260)}<rect y="200" width="1200" height="60" fill="#8fd17a"/>${ART.playerStall(600, 240, S.upgrades)}</svg></div>
+    <div class="scene-body"><div class="scene-inner" style="grid-template-columns:1fr">
+      <div class="board"><div class="board-head"><h2>✨ Your Stall</h2><span class="pill">🪙 ${S.coins} coins</span></div>
+        <p class="muted" style="margin-top:0">Earn coins by completing orders (10 per ⭐). Spend them to decorate your stall on the map.</p>
+        <div class="item" style="max-width:340px"><div class="ic">⛺</div><div class="nm">Awning color</div><div class="swatches" id="swatches">${["red", "blue", "green", "purple", "gold"].map((c) => `<button class="sw ${S.upgrades.awning === c ? "on" : ""}" data-c="${c}" style="background:${{ red: "#ff5d6c", blue: "#3fa7d6", green: "#2fbf71", purple: "#8e6cf0", gold: "#ffc447" }[c]}"></button>`).join("")}</div><div class="muted">free · tap to change</div></div>
+        <div class="shop-grid" style="margin-top:14px">${ITEMS.map((it) => `<div class="item ${S.upgrades[it.key] ? "owned" : ""}"><div class="ic">${it.ic}</div><div class="nm">${it.nm}</div><div class="cost">${S.upgrades[it.key] ? "owned ✔" : it.cost + " 🪙"}</div><button class="btn" data-k="${it.key}" ${S.upgrades[it.key] || S.coins < it.cost ? "disabled" : ""}>${S.upgrades[it.key] ? "Placed" : "Buy"}</button></div>`).join("")}</div>
+      </div></div></div></div>`);
+        wireHud(s);
+        $$("#swatches .sw", s).forEach(
+          (b) =>
+            (b.onclick = () => {
+              S.upgrades.awning = b.dataset.c;
+              save();
+              SFX.pop();
+              showUpgrades();
+            }),
+        );
+        $$(".shop-grid button", s).forEach(
+          (b) =>
+            (b.onclick = () => {
+              const it = ITEMS.find((x) => x.key === b.dataset.k);
+              if (S.coins < it.cost) return;
+              S.coins -= it.cost;
+              S.upgrades[it.key] = true;
+              save();
+              SFX.coin();
+              FX.at(b, 20);
+              showUpgrades();
+            }),
+        );
+      }
+
+      /* ---------- helpers ---------- */
+      function typewriter(el, html) {
+        el.innerHTML = html;
+        const full = el.innerHTML;
+        const text = el.textContent;
+        el.textContent = "";
+        let i = 0;
+        const id = Math.random();
+        el.dataset.tw = id;
+        (function step() {
+          if (el.dataset.tw != id) return;
+          i += 2;
+          el.textContent = text.slice(0, i);
+          if (i < text.length) setTimeout(step, 14);
+          else el.innerHTML = full;
+        })();
+      }
+      function confirmModal(text, onYes) {
+        $("#modalBody").innerHTML =
+          `<h2>Are you sure?</h2><p style="font-weight:700">${text}</p><div class="actions"><button class="big-btn alt" id="mYes">Yes</button><button class="big-btn quiet" id="mNo">Cancel</button></div>`;
+        $("#modal").hidden = false;
+        $("#mYes").onclick = () => {
+          $("#modal").hidden = true;
+          onYes();
+        };
+        $("#mNo").onclick = () => ($("#modal").hidden = true);
+      }
+      $("#guideClose").onclick = () => {
+        $("#guide").hidden = true;
+        SFX.click();
+      };
+
+      showTitle();
+    </script>
+  </body>
+</html>
