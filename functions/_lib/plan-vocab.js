@@ -3694,6 +3694,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/family-jeopardy/",
+    title: "Family Jeopardy · Jeopardy en familia",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/focus-school/",
     title: "Focus School",
     category: "Tool",
