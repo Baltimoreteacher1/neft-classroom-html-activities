@@ -505,7 +505,7 @@ export function renderProblemDiagram(it) {
     return renderTapeDiagramSvg({
       parts,
       total: it.total ?? it.whole,
-      totalLabel: it.totalLabel || (Array.isArray(it.bars) ? it.whole ?? "" : ""),
+      totalLabel: it.totalLabel || (Array.isArray(it.bars) ? (it.whole ?? "") : ""),
     });
   }
   if (it.type === "fraction-bars") {
