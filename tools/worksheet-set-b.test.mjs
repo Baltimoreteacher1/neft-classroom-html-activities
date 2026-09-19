@@ -19,8 +19,7 @@
  * ========================================================================== */
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import {
   coreReserve,
   itemFingerprint,
@@ -29,8 +28,6 @@ import {
   printable,
   setBPages,
 } from "../scripts/lib/worksheet-set-b.mjs";
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
