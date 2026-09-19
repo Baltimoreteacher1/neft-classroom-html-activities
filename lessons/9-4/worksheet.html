@@ -6,359 +6,165 @@
 <title>Apply Two-Variable Relationships to Solve Problems — Practice Worksheet</title>
 <link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
 <style>
+
 :root {
-  --navy: #0f172a;
-  --navy-light: #1e293b;
-  --blue: #1d4ed8;
-  --blue-light: #eff6ff;
-  --teal: #0f766e;
-  --teal-light: #f0fdfa;
-  --amber-dark: #b45309;
-  --amber-light: #fef3c7;
-  --amber-border: #fde68a;
-  --purple-dark: #6b21a8;
-  --purple-light: #f5f3ff;
-  --purple-border: #d8b4fe;
-  --ink: #0f172a;
-  --muted: #475569;
-  --line: #cbd5e1;
-  --line-light: #e2e8f0;
-  --soft: #f8fafc;
-  --card-bg: #ffffff;
+  --navy: #1f3864;
+  --navy-deep: #17294a;
+  --teal: #0f6e6e;
+  --teal-soft: #e6f4f3;
+  --teal-line: #9fd0cc;
+  --amber-dark: #8a5a00;
+  --amber-soft: #fff4d6;
+  --amber-line: #f2d48a;
+  --ink: #19262f;
+  --muted: #4f5d68;
+  --line: #c9d2da;
+  --line-light: #e3e8ed;
+  --soft: #f6f8fa;
+  --key: #0b6b3a;
+  --key-soft: #e7f6ec;
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  margin: 0;
-  background: #f1f5f9;
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { background: #eef1f4; color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.45; }
 
-/* Page Container (Publisher Sheet) */
-.ws-page {
-  background: #ffffff;
-  max-width: 820px;
-  margin: 24px auto;
-  padding: 36px 44px 44px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
-  border-radius: 8px;
-  border: 1.5px solid var(--line-light);
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
+/* Pages */
+.ws-page { background: #fff; max-width: 8.5in; margin: 20px auto; padding: 0.55in 0.6in 0.6in; box-shadow: 0 6px 24px rgba(15,23,42,.10); border: 1px solid var(--line-light); }
+.ws-page + .ws-page { break-before: page; }
 
-/* Tiered Custom Color Themes */
-.ws-group1-page { border-top: 6px solid var(--amber-dark); }
-.ws-group2-page { border-top: 6px solid var(--purple-dark); }
-.ws-catchup-page { border-top: 6px solid var(--teal); }
-.ws-core-tier-page { border-top: 6px solid var(--blue); }
+/* Header */
+.ws-header { margin-bottom: 14px; }
+.ws-band { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.ws-band span:last-child { white-space: nowrap; }
+.ws-band-x { background: var(--navy); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; }
+.ws-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-top: 10px; }
+.ws-title { font-family: var(--font-display); font-size: 22px; line-height: 1.15; font-weight: 700; color: var(--navy-deep); }
+.ws-lesson-n { display: block; font-family: var(--font-body); font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); margin-bottom: 2px; }
+.ws-edition { margin-top: 4px; font-size: 13px; font-weight: 700; color: var(--navy); }
+.ws-edition-note { font-weight: 500; color: var(--muted); }
+.ws-edition-note::before { content: " · "; }
+.ws-mastery { flex-shrink: 0; display: grid; gap: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 10.5px; color: var(--muted); min-width: 130px; }
+.ws-mastery-title { font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); font-size: 9.5px; }
+.ws-meta-row { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 10px; font-size: 12.5px; }
+.ws-fill-line { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 90px; height: 16px; vertical-align: bottom; }
+.ws-fill-line-wide { width: 100%; min-width: 0; height: 20px; border-bottom-color: var(--line); }
+.ws-fill-inline { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 56px; height: 14px; vertical-align: baseline; }
+.ws-target { margin-top: 10px; padding: 7px 12px; background: var(--teal-soft); border-left: 4px solid var(--teal); border-radius: 0 6px 6px 0; font-size: 12.5px; }
+.ws-target b { color: var(--teal); text-transform: uppercase; letter-spacing: .05em; font-size: 10.5px; margin-right: 6px; }
 
-/* Publisher Header */
-.ws-publisher-header {
-  border-bottom: 2.5px solid var(--navy);
-  padding-bottom: 14px;
-  margin-bottom: 18px;
-}
-.ws-header-top-ribbon {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-.ws-ribbon-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.ws-pill {
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  padding: 3px 10px;
-  border-radius: 999px;
-}
-.ws-pill-std { background: var(--navy); color: #ffffff; }
-.ws-pill-lesson { background: #e2e8f0; color: #1e293b; }
-.ws-pill-level { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-.ws-group1-page .ws-pill-level { background: var(--amber-light); color: var(--amber-dark); border-color: var(--amber-border); }
-.ws-group2-page .ws-pill-level { background: var(--purple-light); color: var(--purple-dark); border-color: var(--purple-border); }
+/* Support blocks */
+.ws-block { margin: 9px 0; border: 1px solid var(--teal-line); border-radius: 6px; padding: 8px 12px 10px; background: #fff; break-inside: avoid; }
+.ws-block-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--navy-deep); margin-bottom: 4px; line-height: 1.25; }
+.ws-block-kicker { display: block; font-family: var(--font-body); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 1px; }
+.ws-block-sub { display: block; font-family: var(--font-body); font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: capitalize; }
+.ws-block-lead { font-size: 11.5px; color: var(--muted); margin-bottom: 8px; }
+.ws-words { width: 100%; border-collapse: collapse; font-size: 11.5px; line-height: 1.35; }
+.ws-words th { background: var(--teal); color: #fff; text-align: left; padding: 5px 8px; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; }
+.ws-words td { border: 1px solid var(--line-light); padding: 4px 7px; vertical-align: top; }
+.ws-words .ws-word { width: 26%; }
+.ws-es { display: block; font-size: 10.5px; color: var(--muted); font-style: italic; }
+.ws-word-ex { width: 30%; }
+.ws-example-problem { font-size: 13px; font-weight: 600; padding: 7px 10px; background: var(--soft); border-radius: 5px; margin-bottom: 8px; }
+.ws-example-steps { padding-left: 26px; font-size: 12.5px; display: grid; gap: 2px; }
+.ws-example-steps li::marker { font-weight: 800; color: var(--teal); }
+.ws-try-steps li { padding: 2px 0; }
+.ws-example-answer { margin-top: 8px; font-size: 12.5px; padding: 6px 10px; border-left: 3px solid var(--teal); }
+.ws-starters { list-style: none; display: grid; gap: 5px; font-size: 12.5px; }
+.ws-starters li::before { content: "•"; color: var(--teal); font-weight: 800; margin-right: 6px; }
+.ws-word-bank { margin-top: 8px; font-size: 11.5px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ws-chip { display: inline-block; padding: 1px 8px; border: 1px solid var(--teal-line); border-radius: 999px; background: var(--teal-soft); font-size: 11px; font-weight: 600; color: var(--navy-deep); }
+.ws-block-watch { border-color: var(--amber-line); background: var(--amber-soft); }
+.ws-block-watch .ws-block-kicker { color: var(--amber-dark); }
+.ws-watch-text { font-size: 12px; }
+.ws-block-remember { border-color: var(--line); }
+.ws-remember-lead { font-size: 12.5px; margin-bottom: 4px; }
+.ws-remember-steps { padding-left: 24px; font-size: 12px; display: grid; gap: 2px; margin-bottom: 6px; }
+.ws-remember-words, .ws-remember-watch { font-size: 11.5px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ws-remember-watch { display: block; }
+.ws-block-keynote { border-color: var(--key); background: var(--key-soft); }
 
-.ws-rubric-box {
-  background: var(--soft);
-  border: 1.5px solid var(--line);
-  border-radius: 6px;
-  padding: 4px 10px;
-  text-align: right;
-  font-size: 11px;
-}
-.ws-rubric-score { font-weight: 800; color: var(--navy); }
-.ws-score-blank { font-family: var(--font-mono); color: var(--blue); }
-.ws-rubric-badges { font-size: 10px; color: var(--muted); font-weight: 600; }
+/* Sections and problems */
+.ws-section-head { display: flex; align-items: baseline; gap: 10px; background: var(--navy); color: #fff; padding: 4px 12px; border-radius: 4px; margin: 10px 0 6px; break-after: avoid; }
+.ws-section-n { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.ws-section-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; }
+.ws-section-tag { margin-left: auto; font-size: 10.5px; opacity: .85; }
+.ws-problems { list-style: none; display: grid; gap: 8px; }
+.ws-problem-card { border: 1px solid var(--line); border-radius: 6px; background: #fff; break-inside: avoid; }
+.ws-problem-head { display: flex; align-items: center; gap: 10px; padding: 4px 12px; border-bottom: 1px solid var(--line-light); background: var(--soft); border-radius: 6px 6px 0 0; }
+.ws-pnum { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: var(--navy); color: #fff; font-weight: 800; font-size: 12.5px; }
+.ws-directions { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.ws-pbody { padding: 7px 12px 9px; }
+.ws-stem { font-size: 13.5px; font-weight: 500; margin-bottom: 8px; }
+.ws-opts { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; margin: 4px 0 6px; }
+.ws-opt { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.ws-bub { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 1.4px solid var(--navy); border-radius: 50%; font-size: 11px; font-weight: 800; color: var(--navy); flex-shrink: 0; }
+.ws-bub-sm { width: 18px; height: 18px; font-size: 10px; }
+.ws-hint { margin: 6px 0; padding: 6px 10px; background: var(--teal-soft); border-left: 3px solid var(--teal); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-hint-tag, .ws-frame-tag { font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; margin-right: 6px; }
+.ws-frame { margin: 6px 0; padding: 6px 10px; border: 1px dashed var(--teal-line); border-radius: 5px; font-size: 12px; }
+.ws-work { margin-top: 6px; border: 1px solid var(--line-light); border-radius: 5px; padding: 6px 10px 8px; background: #fff; }
+.ws-work-label { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.ws-lines { margin: 4px 0 0; }
+.ws-line { display: block; border-bottom: 1.2px solid var(--line); height: 21px; }
+.ws-answer-line { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; font-size: 12.5px; }
+.ws-answer-label { font-weight: 800; color: var(--navy); }
+.ws-answer-line .ws-fill-line { flex: 1 1 180px; max-width: 320px; }
+.ws-answer-unit { font-size: 11.5px; color: var(--muted); }
+.ws-prompt { font-size: 12.5px; font-weight: 600; margin: 8px 0 4px; }
 
-.ws-title-group {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-.ws-main-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--navy);
-  line-height: 1.15;
-}
-.ws-sub-title {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--muted);
-  margin-top: 2px;
-}
-.ws-digital-link-box {
-  background: var(--blue-light);
-  border: 1px solid #bfdbfe;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--blue);
-}
-.ws-digital-link-box a { color: var(--blue); text-decoration: none; }
+/* Matching, sorting, tables, steps */
+.ws-match { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; margin: 6px 0; font-size: 12.5px; }
+.ws-match-terms, .ws-match-bank { list-style: none; display: grid; gap: 6px; }
+.ws-match-term { display: flex; align-items: center; gap: 8px; }
+.ws-match-bank li { display: flex; align-items: flex-start; gap: 8px; }
+.ws-blank { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 120px; height: 18px; text-align: center; font-weight: 700; }
+.ws-blank-sm { min-width: 34px; }
+.ws-blank-md { min-width: 96px; }
+.ws-cats-bar { font-size: 12px; margin: 4px 0 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ws-cat-pill { display: inline-block; padding: 2px 10px; border: 1px solid var(--navy); border-radius: 999px; font-size: 11.5px; font-weight: 700; color: var(--navy); }
+.ws-sort-list { list-style: none; display: grid; gap: 7px; margin: 4px 0; }
+.ws-sort-item { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.ws-table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 12.5px; }
+.ws-table th { background: var(--navy); color: #fff; font-size: 11px; padding: 5px 9px; text-align: left; }
+.ws-table td { border: 1px solid var(--line); padding: 7px 9px; }
+.ws-table td.ws-cell-blank { background: #fff; height: 30px; }
+.ws-scale-table th, .ws-scale-table td { text-align: center; }
+.ws-scale-n { font-weight: 800; color: var(--navy); }
+.ws-scale-eq { color: var(--muted); font-weight: 700; }
+.ws-check { white-space: nowrap; font-weight: 600; }
+.ws-steps-box { border: 1px solid var(--line-light); border-radius: 5px; padding: 8px 10px; background: var(--soft); margin: 6px 0; }
+.ws-steps { list-style: none; display: grid; gap: 5px; font-size: 12.5px; }
+.ws-steps li { display: grid; grid-template-columns: 22px auto 1fr; gap: 8px; align-items: baseline; }
+.ws-step-n { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10.5px; font-weight: 800; }
+.ws-step-l { font-weight: 700; color: var(--navy); }
+.ws-step-wrong .ws-step-n { background: #b42318; }
+.ws-gf-steps { list-style: none; display: grid; gap: 7px; margin: 6px 0; font-size: 12.5px; }
+.ws-gf-step { display: grid; grid-template-columns: 22px 1fr 150px; gap: 8px; align-items: end; }
+.ws-figure-wrap { margin: 8px auto; }
 
-.ws-meta-row {
-  display: flex;
-  gap: 20px;
-  margin-top: 12px;
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--ink);
-  flex-wrap: wrap;
-}
-.ws-fill-line {
-  display: inline-block;
-  border-bottom: 1.5px solid var(--ink);
-}
+/* Closing blocks */
+.ws-block-explain .ws-block-title { font-size: 13.5px; }
+.ws-confidence { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin-top: 12px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 11.5px; color: var(--muted); }
+.ws-confidence b { color: var(--navy); }
 
-/* Anchor Boxes */
-.ws-anchor-box {
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  border: 1.5px solid var(--line);
-}
-.ws-support-anchor { background: #fffbeb; border-color: var(--amber-border); border-left: 5px solid var(--amber-dark); }
-.ws-challenge-anchor { background: #faf5ff; border-color: var(--purple-border); border-left: 5px solid var(--purple-dark); }
-.ws-anchor-title {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 6px;
-}
-.ws-anchor-idea { font-size: 12.5px; margin-bottom: 6px; }
-.ws-anchor-steps ol { margin-left: 20px; font-size: 12px; }
-.ws-anchor-steps li { margin: 2px 0; }
+/* Answer key */
+.ws-keynote { margin: 4px 0; padding: 5px 10px; background: var(--key-soft); border-left: 3px solid var(--key); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-keynote b { color: var(--key); }
+.ws-keynote-inline { font-size: 11px; color: var(--key); }
+.ws-watch { margin: 4px 0; padding: 5px 10px; background: var(--amber-soft); border-left: 3px solid var(--amber-dark); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-watch b { color: var(--amber-dark); }
+.ws-opt.ws-correct .ws-bub { background: var(--key); border-color: var(--key); color: #fff; }
+.ws-opt.ws-correct .ws-opt-text { font-weight: 800; color: var(--key); }
+.ws-blank.ws-correct, .ws-fill-line.ws-correct { color: var(--key); font-weight: 800; padding: 0 6px; height: auto; min-height: 18px; }
+td.ws-correct { color: var(--key); font-weight: 800; background: var(--key-soft); }
+.ws-key-page .ws-problem-card { break-inside: auto; }
+.ws-key-page .ws-pbody { padding: 8px 14px 10px; }
+.ws-key-page .ws-stem { font-size: 12.5px; margin-bottom: 4px; }
+.ws-key-page .ws-opts { margin: 2px 0 4px; gap: 2px 18px; }
 
-/* Word Bank */
-.ws-vocab-box { background: #f0fdf4; border-color: #bbf7d0; }
-.ws-bankgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 6px;
-}
-.ws-bank-card {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 5px 8px;
-  font-size: 11.5px;
-}
-.ws-bankword { font-weight: 800; color: #166534; }
-.ws-es-term { color: #64748b; font-style: italic; font-weight: 500; }
-.ws-bankdef { color: #475569; }
 
-/* Problems Grid & Cards */
-.ws-problems-grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.ws-problem-card {
-  background: #ffffff;
-  border: 1.5px solid var(--line-light);
-  border-radius: 8px;
-  padding: 14px 16px;
-  margin-bottom: 14px;
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-.ws-problem-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.ws-pnum {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.ws-pbadge {
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--muted);
-  letter-spacing: 0.05em;
-}
-.ws-stem {
-  font-size: 13.5px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #1e293b;
-}
-.ws-prompt {
-  font-size: 12.5px;
-  color: var(--muted);
-  margin: 6px 0;
-}
-
-/* Options */
-.ws-opts {
-  list-style: none;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
-  margin-top: 8px;
-}
-.ws-opt {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-.ws-bub {
-  flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
-  border: 1.8px solid var(--navy);
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 11px;
-}
-.ws-bub-sm { width: 19px; height: 19px; font-size: 10px; }
-.ws-opt-text { font-size: 13px; font-weight: 500; }
-.ws-correct .ws-bub { background: var(--teal); border-color: var(--teal); color: #fff; }
-.ws-correct .ws-opt-text { font-weight: 700; color: var(--teal); }
-
-/* Workspaces */
-.ws-work {
-  border: 1.5px dashed var(--line);
-  border-radius: 6px;
-  min-height: 75px;
-  padding: 8px 10px 2px;
-  margin-top: 8px;
-  background: #fafbfc;
-}
-.ws-work-tall { min-height: 110px; }
-.ws-work-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
-.ws-rubric-badges { display: flex; gap: 10px; }
-.ws-mastery { white-space: nowrap; font-weight: 700; }
-.ws-strategy-line {
-  margin: 3px 0 0;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-}
-.ws-notes-box { break-inside: avoid; }
-.ws-note-point { margin-top: 8px; }
-.ws-note-head {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: var(--navy);
-}
-.ws-note-n {
-  display: inline-grid;
-  place-items: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: #fff;
-  font-size: 9.5px;
-  font-weight: 800;
-}
-.ws-note-list {
-  margin: 4px 0 0;
-  padding-left: 30px;
-  font-size: 11px;
-  line-height: 1.5;
-}
-.ws-note-list > li { margin-bottom: 2px; }
-.ws-note-warn .ws-note-head { color: #9a3412; }
-.ws-note-warn .ws-note-n { background: #9a3412; }
-.ws-section-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 14px 0 6px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  background: var(--navy);
-  color: #fff;
-  break-after: avoid;
-}
-.ws-section-n {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  opacity: 0.75;
-  white-space: nowrap;
-}
-.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
-.ws-section-tag {
-  margin-left: auto;
-  font-size: 9.5px;
-  font-weight: 700;
-  opacity: 0.85;
-  white-space: nowrap;
-}
-.ws-lines { margin: 6px 0; }
-.ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
-
-/* Division Frames */
 
   .dwf { display: block; }
   .dwf text {
@@ -582,123 +388,16 @@ body {
   background: #ffffff;
 }
 
-/* Tables */
-.ws-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 8px 0;
-}
-.ws-table th {
-  background: var(--navy);
-  color: #ffffff;
-  font-size: 11.5px;
-  padding: 6px 10px;
-  text-align: left;
-}
-.ws-table td {
-  border: 1px solid var(--line);
-  padding: 8px 10px;
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-/* Matching & Sorting */
-.ws-match { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
-.ws-match-terms, .ws-match-bank { list-style: none; flex: 1; min-width: 180px; }
-.ws-match-term { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-weight: 600; font-size: 12.5px; }
-.ws-blank { display: inline-block; min-width: 44px; border-bottom: 1.5px solid var(--ink); text-align: center; font-weight: 800; }
-.ws-blank-sm { min-width: 32px; }
-.ws-match-bank { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; }
-.ws-match-bank li { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; }
-
-.ws-cats-bar { margin: 6px 0; font-size: 12px; }
-.ws-cat-pill { background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 4px; padding: 2px 8px; font-weight: 700; color: #0369a1; }
-.ws-sort-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin-top: 8px; }
-.ws-sort-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; }
-
-/* Steps */
-.ws-steps-box { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; margin: 8px 0; }
-.ws-steps { list-style: none; }
-.ws-steps li { display: flex; gap: 8px; align-items: baseline; padding: 3px 0; font-size: 12.5px; }
-.ws-step-n { width: 18px; height: 18px; border-radius: 50%; background: #e2e8f0; font-size: 10.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
-.ws-step-l { font-weight: 700; width: 35%; }
-.ws-step-w { font-family: var(--font-mono); font-weight: 600; }
-
-/* Discourse & CER */
-.ws-discourse-box {
-  background: #f0fdfa;
-  border: 1.5px solid #99f6e4;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 16px 0;
-}
-.ws-disc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.ws-disc-badge { font-size: 11px; font-weight: 800; color: var(--teal); letter-spacing: 0.04em; }
-.ws-disc-prompt { font-size: 13px; margin-bottom: 8px; color: #134e4a; }
-.ws-disc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.ws-disc-card { background: #ffffff; border: 1px solid #ccfbf1; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #115e59; }
-
-.ws-cer-section {
-  background: var(--soft);
-  border: 1.5px solid var(--line);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 16px 0;
-}
-.ws-cer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.ws-cer-badge { font-size: 11px; font-weight: 800; color: var(--navy); letter-spacing: 0.04em; }
-.ws-cer-prompt { font-size: 13px; margin-bottom: 8px; font-weight: 600; }
-.ws-cer-table { display: flex; flex-direction: column; gap: 6px; }
-.ws-cer-row { display: flex; gap: 10px; background: #ffffff; border: 1px solid var(--line-light); border-radius: 6px; padding: 8px 10px; }
-.ws-cer-label { width: 90px; font-size: 12px; font-weight: 800; color: var(--navy); }
-.ws-cer-cell { flex: 1; }
-.ws-cer-prompt-hint { font-size: 11.5px; color: var(--muted); font-style: italic; display: block; margin-bottom: 4px; }
-
-.ws-author-challenge-box {
-  background: #faf5ff;
-  border: 1.5px solid var(--purple-border);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 16px 0;
-}
-.ws-author-head { font-size: 11.5px; font-weight: 800; color: var(--purple-dark); margin-bottom: 6px; letter-spacing: 0.04em; }
-.ws-author-prompt { font-size: 12.5px; margin-bottom: 8px; color: #3b0764; }
-
-/* Self-Check */
-.ws-self-check-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 6px 14px;
-  margin-top: 16px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--navy);
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.ws-sc-box { display: inline-block; width: 13px; height: 13px; border: 1.5px solid var(--navy); border-radius: 3px; vertical-align: -2px; margin-right: 4px; }
-
-/* Teacher Keys */
-.ws-keynote { margin: 6px 0 0; color: var(--teal); font-size: 12px; font-weight: 600; background: #f0fdfa; border-left: 3px solid var(--teal); padding: 4px 8px; border-radius: 0 4px 4px 0; }
-.ws-gf-steps { list-style: none; margin: 8px 0 0; padding: 0; }
-.ws-gf-step { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px dotted var(--line); }
-.ws-gf-prompt { flex: 0 1 auto; font-size: 12.5px; }
-.ws-gf-step .ws-blank { flex: 1 1 90px; min-width: 90px; }
-.ws-gf-final { margin-top: 10px; font-size: 12.5px; }
-.ws-blank-lg { display: inline-block; min-width: 150px; }
-.ws-watch { margin: 6px 0 0; color: #9a4a12; font-size: 12px; background: #fff3e6; border-left: 3px solid #e08a3c; padding: 4px 8px; border-radius: 0 4px 4px 0; }
 
 @media print {
-  body { background: #ffffff !important; font-size: 11pt; }
-  .ws-page { box-shadow: none !important; border: none !important; margin: 0 auto !important; max-width: none !important; padding: 0 !important; page-break-after: always; }
-  .ws-page:last-child { page-break-after: auto; }
-  .ws-digital-link-box { display: none !important; }
-  @page { margin: 1.2cm; }
+  body { background: #fff !important; font-size: 11pt; }
+  .ws-page { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; padding: 0 !important; }
+  .ws-page + .ws-page { break-before: page; page-break-before: always; }
+  .ws-block, .ws-problem-card { break-inside: avoid; page-break-inside: avoid; }
+  .ws-section-head { break-after: avoid; page-break-after: avoid; }
+  @page { size: letter; margin: 0.6in 0.6in 0.65in; }
 }
+
 
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
@@ -742,726 +441,243 @@ header.packet h1::after{
 </head>
 <body>
 <main data-support-slot="practice">
-
-    <section class="ws-page ws-core-tier-page">
-      
-    <header class="ws-publisher-header">
-      <div class="ws-header-top-ribbon">
-        <div class="ws-ribbon-left">
-          <span class="ws-pill ws-pill-std">6.AT.11</span>
-          <span class="ws-pill ws-pill-lesson">Lesson 9-4</span>
-          <span class="ws-pill ws-pill-level">Level 0</span>
+<section class="ws-page ws-support-page">
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 9: Relationships Between Two Variables</span><span>Standard 6.AT.11</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 9.4</span>Apply Two-Variable Relationships to Solve Problems</h1>
+          <p class="ws-edition">Start here<span class="ws-edition-note">Words, worked example, and sentence starters</span></p>
         </div>
-        <div class="ws-rubric-box">
-          <div class="ws-rubric-score">MASTERY CHECK</div>
-          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
-        </div>
+        
       </div>
-      <div class="ws-title-group">
-        <div class="ws-title-text-box">
-          <h1 class="ws-main-title">Apply Two-Variable Relationships to Solve Problems</h1>
-          <p class="ws-sub-title">Core Foundation · Step-by-Step Scaffolds</p>
-          <p class="ws-strategy-line">solution · substitute · Procedural Fluency · Real-World Applications</p>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> I can write an equation to represent the relationship between two variable quantities and use it to solve a real problem.</p>
+    </header><section class="ws-block ws-block-words">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Start here</span>Words for this lesson</h2>
+    <p class="ws-block-lead">Read each word before you begin. Say it out loud.</p>
+    <table class="ws-words"><thead><tr><th>Word</th><th>What it means</th><th>Example</th></tr></thead><tbody><tr>
+        <td class="ws-word"><b>solution</b><span class="ws-es">Spanish: solución</span></td>
+        <td>A value of the variable that makes an equation true.</td>
+        <td class="ws-word-ex">the number you solve for</td></tr><tr>
+        <td class="ws-word"><b>substitute</b><span class="ws-es">Spanish: sustituir</span></td>
+        <td>To replace a variable with a number so you can compute.</td>
+        <td class="ws-word-ex">put 8 in for x</td></tr><tr>
+        <td class="ws-word"><b>at least</b><span class="ws-es">Spanish: al menos</span></td>
+        <td>That amount or more — the smallest amount that still works.</td>
+        <td class="ws-word-ex">“At least $500” means $500 counts, and so does anything more.</td></tr><tr>
+        <td class="ws-word"><b>predict</b><span class="ws-es">Spanish: predecir</span></td>
+        <td>To make a reasonable guess about a future amount using information you already have.</td>
+        <td class="ws-word-ex">We measured up to 5 minutes → 6,000 feet. Reach PAST what was measured: 6 minutes should be about 7,200.</td></tr><tr>
+        <td class="ws-word"><b>justify</b><span class="ws-es">Spanish: justificar</span></td>
+        <td>To explain WHY an answer or recommendation makes sense, using the mathematics.</td>
+        <td class="ws-word-ex">“35 cars at $14.30 raises $500.50, which clears the $500 goal.”</td></tr><tr>
+        <td class="ws-word"><b>equation</b><span class="ws-es">Spanish: ecuación</span></td>
+        <td>A math sentence with an equals sign.</td>
+        <td class="ws-word-ex">c = 4n</td></tr></tbody></table>
+  </section>
+<section class="ws-block ws-block-example">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">How it works</span>Worked example<span class="ws-block-sub">substituting to find the output</span></h2>
+    <p class="ws-block-lead">These numbers are not on your problems. The steps are. Follow them with your own numbers.</p>
+    <p class="ws-example-problem">A press makes 22 posters each hour. Write an equation, then find the posters made in 15 hours.</p>
+    <ol class="ws-example-steps"><li>Define: h = hours running, p = posters made. Posters depend on hours.</li><li>The rate is 22 posters for each hour, so the rule is p = 22h.</li><li>Substitute 15 for h: 22 × 15 → 330 posters.</li><li>Check the context: many more hours gave a much larger count, so this fits.</li></ol>
+    <p class="ws-example-answer"><b>Answer:</b> p = 22h, so a 15-hour run makes 330 posters.</p>
+  </section>
+<section class="ws-block ws-block-try">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Now you try</span>Same steps, your turn</h2>
+    <p class="ws-block-lead">The steps are the same as the worked example. The numbers are yours. Do the work.</p>
+    <p class="ws-example-problem">A juicer fills 13 bottles each minute. Write an equation, then find the bottles filled in 40 minutes.</p>
+    <ol class="ws-example-steps ws-try-steps"><li>Define: m = <span class="ws-fill-inline"></span> , b = <span class="ws-fill-inline"></span> .</li><li>The rate is <span class="ws-fill-inline"></span> bottles for each minute, so the rule is b = <span class="ws-fill-inline"></span> m.</li><li>Substitute 40 for m: <span class="ws-fill-inline"></span> × 40 → <span class="ws-fill-inline"></span> bottles.</li><li>Check the context: does your answer fit that many minutes? <span class="ws-fill-inline"></span></li></ol>
+    <div class="ws-answer-line"><span class="ws-answer-label">Answer:</span><span class="ws-fill-line"></span><span class="ws-answer-unit">equation; bottles in 40 minutes</span></div>
+  </section>
+<section class="ws-block ws-block-say">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Say it and write it</span>Sentence starters</h2>
+    <p class="ws-block-lead">Finish each sentence out loud with a partner. Then use them in your writing.</p>
+    <ul class="ws-starters"><li>I let <span class="ws-fill-inline"></span> stand for <span class="ws-fill-inline"></span> and <span class="ws-fill-inline"></span> stand for <span class="ws-fill-inline"></span> .</li><li>My equation is <span class="ws-fill-inline"></span> , so I substitute <span class="ws-fill-inline"></span> for <span class="ws-fill-inline"></span> .</li><li>The solution is <span class="ws-fill-inline"></span> , which means <span class="ws-fill-inline"></span> in this situation.</li><li>This answer is reasonable because <span class="ws-fill-inline"></span> .</li></ul>
+    <p class="ws-word-bank"><b>Word bank</b> <span class="ws-chip">equation</span><span class="ws-chip">substitute</span><span class="ws-chip">solution</span><span class="ws-chip">rate</span><span class="ws-chip">variable</span><span class="ws-chip">multiply</span><span class="ws-chip">per</span><span class="ws-chip">total</span><span class="ws-chip">reasonable</span><span class="ws-chip">check</span><span class="ws-chip">input</span><span class="ws-chip">output</span></p>
+  </section>
+<section class="ws-block ws-block-watch">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Watch out</span>A common mistake</h2>
+    <p class="ws-watch-text">Adding the rate instead of multiplying — writing 2.5 + 8 = 10.5 cars for an 8-hour shift instead of 2.5 × 8 = 20. The rate applies to EVERY hour, so the total is always rate × amount.</p>
+  </section></section>
+<section class="ws-page ws-edition-page">
+    
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 9: Relationships Between Two Variables</span><span>Standard 6.AT.11</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 9.4</span>Apply Two-Variable Relationships to Solve Problems</h1>
+          <p class="ws-edition">Version A<span class="ws-edition-note">Supported practice</span></p>
         </div>
-        <div class="ws-digital-link-box">
-          <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
-        </div>
+        <div class="ws-mastery" aria-label="Mastery check"><span class="ws-mastery-title">Mastery check</span><span>&#9744; Exceeds</span><span>&#9744; Meets target</span><span>&#9744; Needs practice</span></div>
       </div>
-      <div class="ws-meta-row">
-        <span><b>Name:</b> <span class="ws-fill-line" style="width:230px;"></span></span>
-        <span><b>Date:</b> <span class="ws-fill-line" style="width:110px;"></span></span>
-        <span><b>Period:</b> <span class="ws-fill-line" style="width:70px;"></span></span>
-        <span><b>Learning Goal:</b> <span class="ws-fill-line" style="width:160px;"></span></span>
-      </div>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> I can write an equation to represent the relationship between two variable quantities and use it to solve a real problem.</p>
     </header>
-  
-      
-    <section class="ws-anchor-box ws-notes-box">
-      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Use the equation to answer a real question</div>
-      <div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">1</span>Analyzing &amp; Applying Two-Variable Relationships</div>
-        <ul class="ws-note-list"><li>Writing the equation is only half the job. Applying it means substituting what you know, solving for what you don't, and checking whether the answer makes sense in the situation.</li></ul>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
-        <ol class="ws-note-list"><li>Connect the four representations: Scenario, Table, Graph, and Equation.</li><li>Substitute given values into the equation to make predictions and solve problems.</li><li>Interpret coordinates and rate of change in the real-world context</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me test the car order</div>
-        <ol class="ws-note-list"><li>The number of cars produced depends on the number of hours of operation. Every hour, the plant produces 2.5 cars.</li><li>Let h = hours and c = cars. The equation is c = 2.5h. Check with the table: 8 hours gives 2.5 × 8 = 20 cars per shift.</li><li>The order needs 1,000 cars, so substitute: 2.5h = 1,000.</li><li>Divide both sides by 2.5: h = 1,000 ÷ 2.5 = 400 hours.</li><li>Interpret it: 400 hours running 24 hours a day is about 17 days — about 2.5 weeks. That fits inside 3 weeks only if the plant runs 24 hours a day, 7 days a week.</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
-        <ul class="ws-note-list"><li>solution (solución) — A value of the variable that makes an equation true.</li><li>substitute (sustituir) — To replace a variable with a number so you can compute.</li><li>at least (al menos) — That amount or more — the smallest amount that still works.</li><li>predict (predecir) — To make a reasonable guess about a future amount using information you already have.</li><li>justify (justificar) — To explain WHY an answer or recommendation makes sense, using the mathematics.</li></ul>
-      </div><div class="ws-note-point ws-note-warn">
-        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
-        <ul class="ws-note-list"><li>Adding the rate instead of multiplying — writing 2.5 + 8 = 10.5 cars for an 8-hour shift instead of 2.5 × 8 = 20. The rate applies to EVERY hour, so the total is always rate × amount.</li></ul>
-      </div>
-    </section>
-  
-      <div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>
-      <ol class="ws-problems-grid">
+    
+    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
+        <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The assembly line produces 2.5 cars per hour. How many cars does it produce in one 8-hour shift?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10.5 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">16 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">25 cars</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Write the name of the correct group on each line.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Sort each statement about c = 2.5h.</p>
+  <div class="ws-cats-bar"><b>Groups:</b> <span class="ws-cat-pill">True</span> <span class="ws-cat-pill">False</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">In 4 hours the line produces 10 cars</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">h is the independent variable</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">The unit rate is 2.5 cars per hour</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">In 2 hours the line produces 4 cars</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">c is the input of the equation</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">In 5 hours the line produces 25 cars</span></li></ul>
+  <p class="ws-hint"><span class="ws-hint-tag">Hint</span> Test the number claims by substituting into c = 2.5h.</p></div>
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
+        <ol class="ws-problems">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The assembly line produces 2.5 cars per hour. How many cars does it produce in one 8-hour shift?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10.5 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">16 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">25 cars</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> How many cars come off the line in ONE hour?</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div>
-      </div>
+    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Let h = hours of operation and c = cars produced. Which equation represents the assembly line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">c = 2.5h</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">c = 2.5 + h</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h = 2.5c</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">c = h ÷ 2.5</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Let h = hours of operation and c = cars produced. Which equation represents the assembly line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">c = 2.5h</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">c = 2.5 + h</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h = 2.5c</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">c = h ÷ 2.5</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Say it in words: the cars produced equal 2.5 ___ the hours.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Using the table (1 hour, 2.5 cars; 8 hours, 20 cars; 16 hours, 40 cars), how many cars are produced in 24 hours?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">26.5 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">50 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">60 cars</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Using the table (1 hour, 2.5 cars; 8 hours, 20 cars; 16 hours, 40 cars), how many cars are produced in 24 hours?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">26.5 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">50 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">60 cars</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> How many 8-hour shifts fit in 24 hours?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Last year the student council washed 34 cars and raised $408. How much did they charge per car?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$374</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Last year the student council washed 34 cars and raised $408. How much did they charge per car?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$374</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> The total is the price per car times the number of cars.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div>
-      </div>
+    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div></div>
     </li>
-  </ol>
-      
-    <section class="ws-cer-section">
-      <div class="ws-cer-header">
-        <span class="ws-cer-badge">📐 CER MATHEMATICAL PROOF MATRIX (CER 2.0)</span>
-        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">SMP.3 / Proof &amp; Justification</span>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">At $12 per car, how much does the student council raise by washing 20 cars?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$32</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$120</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$200</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$240</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Each car adds $12.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
+      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
+    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">7</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The price is set at $12 per car. Which is the DEPENDENT variable at the car wash?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The number of cars washed</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The total amount of money raised</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The price of $12 per car</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The number of students on the council</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Which quantity responds to the other?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+    </li></ol>
+    <section class="ws-block ws-block-explain">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>One rate is cars per hour and the other is dollars per car. Ask your partner to predict one value from each, then check by substituting — which prediction could you make without a calculator, and why?</h2>
+    <p class="ws-frame"><span class="ws-frame-tag">Sentence starter</span> Substituting ___ gives ___, so I predict ___.</p>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </section><div class="ws-confidence"><b>How did it go?</b>
+    <span>&#9744; 4 · I can teach it</span><span>&#9744; 3 · I've got it</span><span>&#9744; 2 · I need a hint</span><span>&#9744; 1 · I need help</span></div>
+  </section>
+<section class="ws-page ws-edition-page">
+    
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 9: Relationships Between Two Variables</span><span>Standard 6.AT.11</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 9.4</span>Apply Two-Variable Relationships to Solve Problems</h1>
+          <p class="ws-edition">Version B<span class="ws-edition-note">Core practice</span></p>
+        </div>
+        <div class="ws-mastery" aria-label="Mastery check"><span class="ws-mastery-title">Mastery check</span><span>&#9744; Exceeds</span><span>&#9744; Meets target</span><span>&#9744; Needs practice</span></div>
       </div>
-      <p class="ws-cer-prompt"><b>Writing Task:</b> Justify why your mathematical solution is accurate and complete.</p>
-      <div class="ws-cer-table">
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>C</b> Claim</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: My mathematical claim is that the solution is...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>E</b> Evidence</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: The evidence from the model/table demonstrates that...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>R</b> Reasoning</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: This proves my answer because the standard mathematical definition of...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-      </div>
-    </section>
-  
-      
-    <div class="ws-self-check-bar">
-      <div class="ws-sc-item"><b>Student Mastery Self-Assessment:</b></div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 1 · Need More Support</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 2 · Getting Closer</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 3 · Got It / Solid</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 4 · Master / Can Teach It</div>
-    </div>
-  
-    </section>
-  
-
-    <section class="ws-page ws-core-tier-page">
-      
-    <header class="ws-publisher-header">
-      <div class="ws-header-top-ribbon">
-        <div class="ws-ribbon-left">
-          <span class="ws-pill ws-pill-std">6.AT.11</span>
-          <span class="ws-pill ws-pill-lesson">Lesson 9-4</span>
-          <span class="ws-pill ws-pill-level">Version A</span>
-        </div>
-        <div class="ws-rubric-box">
-          <div class="ws-rubric-score">MASTERY CHECK</div>
-          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
-        </div>
-      </div>
-      <div class="ws-title-group">
-        <div class="ws-title-text-box">
-          <h1 class="ws-main-title">Apply Two-Variable Relationships to Solve Problems</h1>
-          <p class="ws-sub-title">Approaching Standard · Supported Practice</p>
-          <p class="ws-strategy-line">solution · substitute · Procedural Fluency · Real-World Applications</p>
-        </div>
-        <div class="ws-digital-link-box">
-          <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
-        </div>
-      </div>
-      <div class="ws-meta-row">
-        <span><b>Name:</b> <span class="ws-fill-line" style="width:230px;"></span></span>
-        <span><b>Date:</b> <span class="ws-fill-line" style="width:110px;"></span></span>
-        <span><b>Period:</b> <span class="ws-fill-line" style="width:70px;"></span></span>
-        <span><b>Learning Goal:</b> <span class="ws-fill-line" style="width:160px;"></span></span>
-      </div>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> I can write an equation to represent the relationship between two variable quantities and use it to solve a real problem.</p>
     </header>
-  
-      
-    <section class="ws-anchor-box ws-notes-box">
-      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Use the equation to answer a real question</div>
-      <div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">1</span>Analyzing &amp; Applying Two-Variable Relationships</div>
-        <ul class="ws-note-list"><li>Writing the equation is only half the job. Applying it means substituting what you know, solving for what you don't, and checking whether the answer makes sense in the situation.</li></ul>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">2</span>Strategy Model — step by step</div>
-        <ol class="ws-note-list"><li>Connect the four representations: Scenario, Table, Graph, and Equation.</li><li>Substitute given values into the equation to make predictions and solve problems.</li><li>Interpret coordinates and rate of change in the real-world context</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me test the car order</div>
-        <ol class="ws-note-list"><li>The number of cars produced depends on the number of hours of operation. Every hour, the plant produces 2.5 cars.</li><li>Let h = hours and c = cars. The equation is c = 2.5h. Check with the table: 8 hours gives 2.5 × 8 = 20 cars per shift.</li><li>The order needs 1,000 cars, so substitute: 2.5h = 1,000.</li><li>Divide both sides by 2.5: h = 1,000 ÷ 2.5 = 400 hours.</li><li>Interpret it: 400 hours running 24 hours a day is about 17 days — about 2.5 weeks. That fits inside 3 weeks only if the plant runs 24 hours a day, 7 days a week.</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">4</span>Mathematical Word Bank</div>
-        <ul class="ws-note-list"><li>solution (solución) — A value of the variable that makes an equation true.</li><li>substitute (sustituir) — To replace a variable with a number so you can compute.</li><li>at least (al menos) — That amount or more — the smallest amount that still works.</li><li>predict (predecir) — To make a reasonable guess about a future amount using information you already have.</li><li>justify (justificar) — To explain WHY an answer or recommendation makes sense, using the mathematics.</li></ul>
-      </div><div class="ws-note-point ws-note-warn">
-        <div class="ws-note-head"><span class="ws-note-n">5</span>Watch out</div>
-        <ul class="ws-note-list"><li>Adding the rate instead of multiplying — writing 2.5 + 8 = 10.5 cars for an 8-hour shift instead of 2.5 × 8 = 20. The rate applies to EVERY hour, so the total is always rate × amount.</li></ul>
-      </div>
-    </section>
-  
-      
-      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
-          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
-          <span class="ws-section-tag">[Visual Modeling]</span>
-        </div>
-        <ol class="ws-problems-grid">
+    
+    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
+        <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each statement about c = 2.5h.</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">True</span> <span class="ws-cat-pill">False</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">In 4 hours the line produces 10 cars</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">h is the independent variable</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">The unit rate is 2.5 cars per hour</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">In 2 hours the line produces 4 cars</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">c is the input of the equation</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-sm"></span><span class="ws-sort-text">In 5 hours the line produces 25 cars</span></li></ul>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete the table. Show how you found each value.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The assembly line produces 2.5 cars per hour. Complete the production table.</p>
+  <table class="ws-table"><thead><tr><th>Hours (h)</th><th>Substitute c = 2.5h</th><th>Cars produced (c)</th></tr></thead><tbody><tr><td>4</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr><tr><td>8 (one shift)</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr><tr><td>100</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr></tbody></table>
+  <div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
+        <ol class="ws-problems">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The order requires 1,000 cars. Using 2.5h = 1,000, how many hours will the plant need?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">40 hours</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">400 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">997.5 hours</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2,500 hours</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ledger"><thead><tr><th>My work — one step per line</th><th>What I did to both sides</th></tr></thead><tbody><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr></tbody></table></div></div></div>
     </li>
-  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
-          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
-          <span class="ws-section-tag">[Applications]</span>
-        </div>
-        <ol class="ws-problems-grid">
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The assembly line produces 2.5 cars per hour. How many cars does it produce in one 8-hour shift?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">10.5 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">16 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">20 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">25 cars</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The plant needs 400 hours to fill the order. Running 24 hours a day, about how many days is that?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 days</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 17 days</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">50 days</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">400 days</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The goal is $500 at $12 per car. Using 12n = 500, at least how many cars must be washed?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">40 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">41 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">42 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">50 cars</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
       <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
       <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div>
-      </div>
+    </tbody></table></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Let h = hours of operation and c = cars produced. Which equation represents the assembly line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">c = 2.5h</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">c = 2.5 + h</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">h = 2.5c</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">c = h ÷ 2.5</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Can the student council wash 41 cars at $12 each and meet the $500 goal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">No — 41 cars raise $492, which is less than $500</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Yes — 41 cars raise $502</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes — 41 rounds up to 42, so it counts</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No — 41 cars raise $412</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Using the table (1 hour, 2.5 cars; 8 hours, 20 cars; 16 hours, 40 cars), how many cars are produced in 24 hours?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">26.5 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">40 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">50 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">60 cars</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The council predicts 35 cars this year. Using 35p = 500, at least how much must they charge per car to reach $500?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$12.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$14.00</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About $14.30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$465.00</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Last year the student council washed 34 cars and raised $408. How much did they charge per car?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$10</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$34</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$374</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">At $12 per car, how much does the student council raise by washing 20 cars?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$32</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$120</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$200</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$240</span></li></ol><div class="wsd-wrap wsd-supported"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Label</span><span class="wsd-step-h">Write what each column is.</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Find per 1</span><span class="wsd-step-h">Divide to get one.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Scale</span><span class="wsd-step-h">Multiply up to what is asked.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Check</span><span class="wsd-step-h">Does the size make sense?</span></li></ol></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The price is set at $12 per car. Which is the DEPENDENT variable at the car wash?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">The number of cars washed</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">The total amount of money raised</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">The price of $12 per car</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">The number of students on the council</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
-    </li>
-  </ol>
-      
-    <section class="ws-cer-section">
-      <div class="ws-cer-header">
-        <span class="ws-cer-badge">📐 CER MATHEMATICAL PROOF MATRIX (CER 2.0)</span>
-        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">SMP.3 / Proof &amp; Justification</span>
-      </div>
-      <p class="ws-cer-prompt"><b>Writing Task:</b> Justify why your mathematical solution is accurate and complete.</p>
-      <div class="ws-cer-table">
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>C</b> Claim</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: My mathematical claim is that the solution is...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">7</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">How could the council CHECK that charging $14.30 for 35 cars meets the goal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Divide 35 by 14.30 and confirm it is at least $500</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Multiply 35 × 14.30 = 500.50 and confirm it is at least $500</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Add 35 + 14.30 and confirm it is at least $500</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No check is possible after solving</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+    </li></ol>
+    <section class="ws-block ws-block-explain">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>One rate is cars per hour and the other is dollars per car. Ask your partner to predict one value from each, then check by substituting — which prediction could you make without a calculator, and why?</h2>
+    
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </section><div class="ws-confidence"><b>How did it go?</b>
+    <span>&#9744; 4 · I can teach it</span><span>&#9744; 3 · I've got it</span><span>&#9744; 2 · I need a hint</span><span>&#9744; 1 · I need help</span></div>
+  </section>
+<section class="ws-page ws-edition-page">
+    
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 9: Relationships Between Two Variables</span><span>Standard 6.AT.11</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 9.4</span>Apply Two-Variable Relationships to Solve Problems</h1>
+          <p class="ws-edition">Challenge<span class="ws-edition-note">Extension</span></p>
         </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>E</b> Evidence</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: The evidence from the model/table demonstrates that...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>R</b> Reasoning</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: This proves my answer because the standard mathematical definition of...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
+        <div class="ws-mastery" aria-label="Mastery check"><span class="ws-mastery-title">Mastery check</span><span>&#9744; Exceeds</span><span>&#9744; Meets target</span><span>&#9744; Needs practice</span></div>
       </div>
-    </section>
-  
-      
-    <div class="ws-self-check-bar">
-      <div class="ws-sc-item"><b>Student Mastery Self-Assessment:</b></div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 1 · Need More Support</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 2 · Getting Closer</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 3 · Got It / Solid</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 4 · Master / Can Teach It</div>
-    </div>
-  
-    </section>
-  
-
-    <section class="ws-page ws-core-tier-page">
-      
-    <header class="ws-publisher-header">
-      <div class="ws-header-top-ribbon">
-        <div class="ws-ribbon-left">
-          <span class="ws-pill ws-pill-std">6.AT.11</span>
-          <span class="ws-pill ws-pill-lesson">Lesson 9-4</span>
-          <span class="ws-pill ws-pill-level">Version B</span>
-        </div>
-        <div class="ws-rubric-box">
-          <div class="ws-rubric-score">MASTERY CHECK</div>
-          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
-        </div>
-      </div>
-      <div class="ws-title-group">
-        <div class="ws-title-text-box">
-          <h1 class="ws-main-title">Apply Two-Variable Relationships to Solve Problems</h1>
-          <p class="ws-sub-title">On-Level Core Mastery · Standard Rigor</p>
-          <p class="ws-strategy-line">solution · substitute · Procedural Fluency · Real-World Applications</p>
-        </div>
-        <div class="ws-digital-link-box">
-          <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
-        </div>
-      </div>
-      <div class="ws-meta-row">
-        <span><b>Name:</b> <span class="ws-fill-line" style="width:230px;"></span></span>
-        <span><b>Date:</b> <span class="ws-fill-line" style="width:110px;"></span></span>
-        <span><b>Period:</b> <span class="ws-fill-line" style="width:70px;"></span></span>
-        <span><b>Learning Goal:</b> <span class="ws-fill-line" style="width:160px;"></span></span>
-      </div>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> I can write an equation to represent the relationship between two variable quantities and use it to solve a real problem.</p>
     </header>
-  
-      
-    <section class="ws-anchor-box ws-notes-box">
-      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Use the equation to answer a real question</div>
-      <div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">1</span>Analyzing &amp; Applying Two-Variable Relationships</div>
-        <ul class="ws-note-list"><li>Writing the equation is only half the job. Applying it means substituting what you know, solving for what you don't, and checking whether the answer makes sense in the situation.</li></ul>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
-        <ol class="ws-note-list"><li>Connect the four representations: Scenario, Table, Graph, and Equation.</li><li>Substitute given values into the equation to make predictions and solve problems.</li><li>Interpret coordinates and rate of change in the real-world context</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me test the car order</div>
-        <ol class="ws-note-list"><li>The number of cars produced depends on the number of hours of operation. Every hour, the plant produces 2.5 cars.</li><li>Let h = hours and c = cars. The equation is c = 2.5h. Check with the table: 8 hours gives 2.5 × 8 = 20 cars per shift.</li><li>The order needs 1,000 cars, so substitute: 2.5h = 1,000.</li><li>Divide both sides by 2.5: h = 1,000 ÷ 2.5 = 400 hours.</li><li>Interpret it: 400 hours running 24 hours a day is about 17 days — about 2.5 weeks. That fits inside 3 weeks only if the plant runs 24 hours a day, 7 days a week.</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's plan the car wash together</div>
-        <ol class="ws-note-list"><li>Last year the council washed 34 cars and raised $408. What did they charge per car? Divide: 408 ÷ 34 = $12.</li><li>At $12 per car, let n = cars washed and t = total raised: t = 12n.</li><li>The goal is $500, so 12n = 500 means n = 500 ÷ 12, which is about 41.7 — so they must wash at least 42 cars, because 41 cars raise only 41 × 12 = $492.</li><li>Or fix the cars instead: if they predict 35 cars, then 35p = 500 gives p = 500 ÷ 35, about $14.29 — so they must charge at least $14.30 per car.</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
-        <ul class="ws-note-list"><li>solution (solución) — A value of the variable that makes an equation true.</li><li>substitute (sustituir) — To replace a variable with a number so you can compute.</li><li>at least (al menos) — That amount or more — the smallest amount that still works.</li><li>predict (predecir) — To make a reasonable guess about a future amount using information you already have.</li><li>justify (justificar) — To explain WHY an answer or recommendation makes sense, using the mathematics.</li></ul>
-      </div><div class="ws-note-point ws-note-warn">
-        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
-        <ul class="ws-note-list"><li>Adding the rate instead of multiplying — writing 2.5 + 8 = 10.5 cars for an 8-hour shift instead of 2.5 × 8 = 20. The rate applies to EVERY hour, so the total is always rate × amount.</li></ul>
-      </div>
-    </section>
-  
-      
-      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
-          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
-          <span class="ws-section-tag">[Visual Modeling]</span>
-        </div>
-        <ol class="ws-problems-grid">
+    
+    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
+        <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">FILL TABLE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The assembly line produces 2.5 cars per hour. Complete the production table.</p>
-  <table class="ws-table"><thead><tr><th>Hours (h)</th><th>Substitute c = 2.5h</th><th>Cars produced (c)</th></tr></thead><tbody><tr><td>4</td><td></td><td></td></tr><tr><td>8 (one shift)</td><td></td><td></td></tr><tr><td>100</td><td></td><td></td></tr></tbody></table>
-  <div class="ws-work">
-    <span class="ws-work-label">✏️ Scratchpad / Reasoning</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
-    </li>
-  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
-          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
-          <span class="ws-section-tag">[Applications]</span>
-        </div>
-        <ol class="ws-problems-grid">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The order requires 1,000 cars. Using 2.5h = 1,000, how many hours will the plant need?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">40 hours</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">400 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">997.5 hours</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">2,500 hours</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ledger"><thead><tr><th>My work — one step per line</th><th>What I did to both sides</th></tr></thead><tbody><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr><tr><td class="wss-cell"></td><td class="wss-cell wss-cell-why"></td></tr></tbody></table></div></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The plant needs 400 hours to fill the order. Running 24 hours a day, about how many days is that?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">4 days</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">About 17 days</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">50 days</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">400 days</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The goal is $500 at $12 per car. Using 12n = 500, at least how many cars must be washed?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">40 cars</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">41 cars</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">42 cars</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">50 cars</span></li></ol><div class="wsd-wrap"><div class="wss-body"><table class="wss-ratio"><thead><tr><th></th><th></th></tr></thead><tbody>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-      <tr class="wss-row-per"><td class="wss-cell"><span class="wss-per">per 1</span></td><td class="wss-cell"></td></tr>
-      <tr><td class="wss-cell"></td><td class="wss-cell"></td></tr>
-    </tbody></table></div></div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Can the student council wash 41 cars at $12 each and meet the $500 goal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">No — 41 cars raise $492, which is less than $500</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Yes — 41 cars raise $502</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Yes — 41 rounds up to 42, so it counts</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No — 41 cars raise $412</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The council predicts 35 cars this year. Using 35p = 500, at least how much must they charge per car to reach $500?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$12.00</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$14.00</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About $14.30</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$465.00</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
-    </li>
-  
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">7</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">How could the council CHECK that charging $14.30 for 35 cars meets the goal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Divide 35 by 14.30 and confirm it is at least $500</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Multiply 35 × 14.30 = 500.50 and confirm it is at least $500</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Add 35 + 14.30 and confirm it is at least $500</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">No check is possible after solving</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
-    </li>
-  </ol>
-      
-    <section class="ws-cer-section">
-      <div class="ws-cer-header">
-        <span class="ws-cer-badge">📐 CER MATHEMATICAL PROOF MATRIX (CER 2.0)</span>
-        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">SMP.3 / Proof &amp; Justification</span>
-      </div>
-      <p class="ws-cer-prompt"><b>Writing Task:</b> Justify why your mathematical solution is accurate and complete.</p>
-      <div class="ws-cer-table">
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>C</b> Claim</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">State your direct mathematical answer/claim with units.</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>E</b> Evidence</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Cite exact numbers, calculations, dimensions, or graph data.</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>R</b> Reasoning</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Explain the mathematical theorem, property, or definition connecting evidence to claim.</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-      </div>
-    </section>
-  
-      
-    <div class="ws-self-check-bar">
-      <div class="ws-sc-item"><b>Student Mastery Self-Assessment:</b></div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 1 · Need More Support</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 2 · Getting Closer</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 3 · Got It / Solid</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 4 · Master / Can Teach It</div>
-    </div>
-  
-    </section>
-  
-
-    <section class="ws-page ws-core-tier-page">
-      
-    <header class="ws-publisher-header">
-      <div class="ws-header-top-ribbon">
-        <div class="ws-ribbon-left">
-          <span class="ws-pill ws-pill-std">6.AT.11</span>
-          <span class="ws-pill ws-pill-lesson">Lesson 9-4</span>
-          <span class="ws-pill ws-pill-level">Challenge</span>
-        </div>
-        <div class="ws-rubric-box">
-          <div class="ws-rubric-score">MASTERY CHECK</div>
-          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
-        </div>
-      </div>
-      <div class="ws-title-group">
-        <div class="ws-title-text-box">
-          <h1 class="ws-main-title">Apply Two-Variable Relationships to Solve Problems</h1>
-          <p class="ws-sub-title">Enrichment &amp;amp; Non-Routine Synthesis</p>
-          <p class="ws-strategy-line">solution · substitute · Procedural Fluency · Real-World Applications</p>
-        </div>
-        <div class="ws-digital-link-box">
-          <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=9-4" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
-        </div>
-      </div>
-      <div class="ws-meta-row">
-        <span><b>Name:</b> <span class="ws-fill-line" style="width:230px;"></span></span>
-        <span><b>Date:</b> <span class="ws-fill-line" style="width:110px;"></span></span>
-        <span><b>Period:</b> <span class="ws-fill-line" style="width:70px;"></span></span>
-        <span><b>Learning Goal:</b> <span class="ws-fill-line" style="width:160px;"></span></span>
-      </div>
-    </header>
-  
-      
-    <section class="ws-anchor-box ws-notes-box">
-      <div class="ws-anchor-title">&#9632; ADVANCED CONCEPT ANCHOR: Use the equation to answer a real question</div>
-      <div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">1</span>Analyzing &amp; Applying Two-Variable Relationships</div>
-        <ul class="ws-note-list"><li>Writing the equation is only half the job. Applying it means substituting what you know, solving for what you don't, and checking whether the answer makes sense in the situation.</li></ul>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">2</span>The Structural Procedure</div>
-        <ol class="ws-note-list"><li>Connect the four representations: Scenario, Table, Graph, and Equation.</li><li>Substitute given values into the equation to make predictions and solve problems.</li><li>Interpret coordinates and rate of change in the real-world context</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">3</span>Worked Example — Watch me test the car order</div>
-        <ol class="ws-note-list"><li>The number of cars produced depends on the number of hours of operation. Every hour, the plant produces 2.5 cars.</li><li>Let h = hours and c = cars. The equation is c = 2.5h. Check with the table: 8 hours gives 2.5 × 8 = 20 cars per shift.</li><li>The order needs 1,000 cars, so substitute: 2.5h = 1,000.</li><li>Divide both sides by 2.5: h = 1,000 ÷ 2.5 = 400 hours.</li><li>Interpret it: 400 hours running 24 hours a day is about 17 days — about 2.5 weeks. That fits inside 3 weeks only if the plant runs 24 hours a day, 7 days a week.</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">4</span>Second Model — Let's plan the car wash together</div>
-        <ol class="ws-note-list"><li>Last year the council washed 34 cars and raised $408. What did they charge per car? Divide: 408 ÷ 34 = $12.</li><li>At $12 per car, let n = cars washed and t = total raised: t = 12n.</li><li>The goal is $500, so 12n = 500 means n = 500 ÷ 12, which is about 41.7 — so they must wash at least 42 cars, because 41 cars raise only 41 × 12 = $492.</li><li>Or fix the cars instead: if they predict 35 cars, then 35p = 500 gives p = 500 ÷ 35, about $14.29 — so they must charge at least $14.30 per car.</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">5</span>Mathematical Word Bank</div>
-        <ul class="ws-note-list"><li>solution (solución) — A value of the variable that makes an equation true.</li><li>substitute (sustituir) — To replace a variable with a number so you can compute.</li><li>at least (al menos) — That amount or more — the smallest amount that still works.</li><li>predict (predecir) — To make a reasonable guess about a future amount using information you already have.</li><li>justify (justificar) — To explain WHY an answer or recommendation makes sense, using the mathematics.</li></ul>
-      </div><div class="ws-note-point ws-note-warn">
-        <div class="ws-note-head"><span class="ws-note-n">6</span>Watch out</div>
-        <ul class="ws-note-list"><li>Adding the rate instead of multiplying — writing 2.5 + 8 = 10.5 cars for an 8-hour shift instead of 2.5 × 8 = 20. The rate applies to EVERY hour, so the total is always rate × amount.</li></ul>
-      </div>
-    </section>
-  
-      
-      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
-          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
-          <span class="ws-section-tag">[Visual Modeling]</span>
-        </div>
-        <ol class="ws-problems-grid">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Connect the four representations of the assembly line: scenario, equation, table, and graph.</p>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Write the letter of the matching item on each line.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Connect the four representations of the assembly line: scenario, equation, table, and graph.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Scenario: 2.5 cars every hour</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Table row: h = 8, c = 20</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Graph point (400, 1000)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">Equation c = 20s</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Equation: c = 2.5h</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Graph point (8, 20)</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">The 1,000-car order takes 400 hours</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Cars counted by 8-hour shifts</span></li></ul></div>
-      </div>
-    </li>
-  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
-          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
-          <span class="ws-section-tag">[Applications]</span>
-        </div>
-        <ol class="ws-problems-grid">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Suppose the variable s counts 8-hour SHIFTS instead of hours. Which equation gives the cars produced?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">c = 2.5s</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">c = 8s</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">c = 10.5s</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">c = 20s</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
   </div>
-      </div>
-    </li>
-  
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
+        <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">If the plant runs 24 hours a day, 7 days a week for the full 3 weeks, how many hours is that — and can it fill the 1,000-car order?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 hours — no, that is less than 400 hours</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">168 hours — no, that is less than 400 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">504 hours — yes, because 504 hours is more than the 400 hours needed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">504 hours — no, because 504 is less than 1,000</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Suppose the variable s counts 8-hour SHIFTS instead of hours. Which equation gives the cars produced?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">c = 2.5s</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">c = 8s</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">c = 10.5s</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">c = 20s</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">The solution to one problem was 41.7 cars. Would producing or washing a PARTIAL car make sense?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">No — cars come in whole numbers, so round up to the next whole car</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Yes — 0.7 of a car is a real amount you can wash</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">No — so round down and accept a smaller total</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Yes — the equation is wrong if it gives a decimal</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">If the plant runs 24 hours a day, 7 days a week for the full 3 weeks, how many hours is that — and can it fill the 1,000-car order?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">72 hours — no, that is less than 400 hours</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">168 hours — no, that is less than 400 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">504 hours — yes, because 504 hours is more than the 400 hours needed</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">504 hours — no, because 504 is less than 1,000</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Would you recommend the student council charge $12 or $14.30 per car? Which reasoning is strongest?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Either can work: $12 needs at least 42 cars washed, while $14.30 needs only about 35 — so the choice depends on how many customers they expect</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12 is always better because a smaller number is always better</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$14.30 is always better because more money per car is always better</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither price can reach the $500 goal</span></li></ol><div class="ws-work">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">The solution to one problem was 41.7 cars. Would producing or washing a PARTIAL car make sense?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">No — cars come in whole numbers, so round up to the next whole car</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Yes — 0.7 of a car is a real amount you can wash</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">No — so round down and accept a smaller total</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Yes — the equation is wrong if it gives a decimal</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  </ol>
-      
-    <section class="ws-cer-section">
-      <div class="ws-cer-header">
-        <span class="ws-cer-badge">📐 CER MATHEMATICAL PROOF MATRIX (CER 2.0)</span>
-        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">SMP.3 / Proof &amp; Justification</span>
-      </div>
-      <p class="ws-cer-prompt"><b>Writing Task:</b> Justify why your mathematical solution is accurate and complete.</p>
-      <div class="ws-cer-table">
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>C</b> Claim</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">State your direct mathematical answer/claim with units.</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>E</b> Evidence</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Cite exact numbers, calculations, dimensions, or graph data.</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>R</b> Reasoning</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Explain the mathematical theorem, property, or definition connecting evidence to claim.</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-      </div>
-    </section>
-  
-      
-    <div class="ws-self-check-bar">
-      <div class="ws-sc-item"><b>Student Mastery Self-Assessment:</b></div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 1 · Need More Support</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 2 · Getting Closer</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 3 · Got It / Solid</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 4 · Master / Can Teach It</div>
-    </div>
-  
-    </section>
-  
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Would you recommend the student council charge $12 or $14.30 per car? Which reasoning is strongest?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Either can work: $12 needs at least 42 cars washed, while $14.30 needs only about 35 — so the choice depends on how many customers they expect</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12 is always better because a smaller number is always better</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">$14.30 is always better because more money per car is always better</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Neither price can reach the $500 goal</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+    </li></ol>
+    <section class="ws-block ws-block-explain">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>One rate is cars per hour and the other is dollars per car. Ask your partner to predict one value from each, then check by substituting — which prediction could you make without a calculator, and why?</h2>
+    
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </section><div class="ws-confidence"><b>How did it go?</b>
+    <span>&#9744; 4 · I can teach it</span><span>&#9744; 3 · I've got it</span><span>&#9744; 2 · I need a hint</span><span>&#9744; 1 · I need help</span></div>
+  </section>
 </main>
 <script src="/shared/supports/print-supports.js" defer></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

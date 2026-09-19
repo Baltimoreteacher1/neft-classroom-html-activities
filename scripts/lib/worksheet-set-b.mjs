@@ -364,7 +364,7 @@ export function setBPages(cfg) {
       {
         pool: reserve.slice(0, MAX_PER_PAGE * 2),
         label: "Apply Day · Set B",
-        sub: "Second Practice Form · Independent Application and Spiral Review",
+        sub: "Second form · new problems, same idea",
         supported: false,
       },
     ];
@@ -374,8 +374,8 @@ export function setBPages(cfg) {
     return [
       {
         pool: reserve.slice(0, MAX_PER_PAGE),
-        label: "🟡 Group 1 · Set B",
-        sub: "Second Practice Form · Re-Teach, Homework or Retake · Same Standard, New Problems",
+        label: "Group 1 · Set B",
+        sub: "Second form · new problems, same idea",
         supported: true,
       },
     ];
@@ -384,8 +384,8 @@ export function setBPages(cfg) {
     return [
       {
         pool: reserve.slice(0, MAX_PER_PAGE),
-        label: "🟣 Group 2 · Set B",
-        sub: "Second Challenge Form · Non-Routine Extension · Same Standard, New Problems",
+        label: "Group 2 · Set B",
+        sub: "Second challenge form · new problems, same idea",
         supported: false,
       },
     ];
@@ -394,8 +394,8 @@ export function setBPages(cfg) {
     return [
       {
         pool: reserve.slice(0, MAX_PER_PAGE),
-        label: "🔵 Catch-Up · Set B",
-        sub: "Second Bridge Form · Additional Prerequisite Reinforcement",
+        label: "Catch-Up · Set B",
+        sub: "Second skill-bridge form · new problems",
         supported: true,
       },
     ];
@@ -409,7 +409,7 @@ export function setBPages(cfg) {
       {
         pool: capped,
         label: "Set B",
-        sub: "Second Practice Form · Re-Teach, Homework or Retake · Same Standard, New Problems",
+        sub: "Second form · new problems, same idea",
         supported: true,
       },
     ];
@@ -419,13 +419,13 @@ export function setBPages(cfg) {
     {
       pool: capped.slice(0, at),
       label: "Set B · Version A",
-      sub: "Second Practice Form · Supported · Review and Guided Checks",
+      sub: "Second form · supported practice",
       supported: true,
     },
     {
       pool: capped.slice(at),
       label: "Set B · Version B",
-      sub: "Second Practice Form · Core Mastery · Stretch and Independent Application",
+      sub: "Second form · core practice",
       supported: false,
     },
   ];
