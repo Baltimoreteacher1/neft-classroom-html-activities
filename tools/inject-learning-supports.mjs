@@ -13,8 +13,6 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
 import { LESSONS_DIR as LESSONS_DIR } from "./lib/curriculum-source.mjs";
 
 const BEGIN_MARK = "<!-- ewl-supports-injected:begin -->";

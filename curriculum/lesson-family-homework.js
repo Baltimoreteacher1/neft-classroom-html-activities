@@ -767,8 +767,13 @@ window.LESSON_FAMILY_HOMEWORK = {
     "isFamilyHomework": true
   },
   "9-4": {
-    "text": "🏠 Family Practice (optional)",
+    "text": "🏠 Family Practice · Part 1 (optional)",
     "href": "/lessons/9-4/homework.html",
+    "isFamilyHomework": true
+  },
+  "9-4-part2": {
+    "text": "🏠 Family Practice · Part 2 (optional)",
+    "href": "/lessons/9-4-part2/homework.html",
     "isFamilyHomework": true
   },
   "10-1": {

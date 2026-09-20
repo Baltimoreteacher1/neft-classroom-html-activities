@@ -34,7 +34,6 @@ import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-vis
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, "..");
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 

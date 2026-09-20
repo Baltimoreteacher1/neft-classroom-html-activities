@@ -47,7 +47,6 @@ import {
 } from "@eduwonderlab/engine/core/notebook-prompt.js";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
 const fail = (m) => failures.push(m);
 

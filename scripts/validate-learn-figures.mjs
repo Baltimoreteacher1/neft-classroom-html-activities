@@ -22,11 +22,8 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { _internals, workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
-
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+import { _internals, workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 
 let failures = 0;
 const fail = (msg) => {

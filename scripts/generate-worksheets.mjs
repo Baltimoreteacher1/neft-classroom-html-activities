@@ -39,12 +39,14 @@ import {
 } from "./lib/worksheet-layout.mjs";
 import { renderProblem, sectionedProblems } from "./lib/worksheet-problems.mjs";
 import { revealFor } from "./lib/worksheet-reveal.mjs";
-import { kindOf, partTwoSplit, setBPages } from "./lib/worksheet-set-b.mjs";
-import { rememberBox, supportPage } from "./lib/worksheet-support.mjs";
+import { kindOf, partTwoSplit, SET_A_TIER_CAP, setBPages } from "./lib/worksheet-set-b.mjs";
+import { exampleBlock, rememberBox, supportPage } from "./lib/worksheet-support.mjs";
 
 const printable = (pool) => (pool || []).filter((p) => p && (p.type || p.stem || p.prompt));
 
 /* ── which editions a lesson prints (Set A) ────────────────────────────── */
+
+const LEVEL_ZERO_COUNT = 4;
 
 const CORE_TIERS = [
   { key: "approaching", label: "Version A", note: "Supported practice", supported: true },
@@ -96,9 +98,30 @@ function setAEditions(cfg) {
     const pool = (approaching.length ? approaching : onLevel).slice(0, 5);
     return [{ pool, label: "Catch-Up", note: "Skill bridge", supported: true }];
   }
-  return CORE_TIERS.map((t) => ({ ...t, pool: printable(cfg.practice?.[t.key]) })).filter(
-    (t) => t.pool.length,
-  );
+  return CORE_TIERS.map((t) => ({
+    ...t,
+    pool: printable(cfg.practice?.[t.key]).slice(0, SET_A_TIER_CAP),
+  })).filter((t) => t.pool.length);
+}
+
+/**
+ * Level 0 — most support — is its OWN sheet (worksheet-level-0.html), not a
+ * page of Set A: a teacher hands it to the students who work from it, and the
+ * packet everyone else gets stays short. The first four Version A problems as
+ * the app's Level 0 delivers them: every authored hint printed as steps to
+ * try, the worked example on the page, sentence starters on. Core lessons only.
+ */
+function levelZeroEdition(cfg) {
+  if (kindOf(cfg.lessonId || "", cfg) !== "core") return null;
+  const pool = printable(cfg.practice?.approaching).slice(0, LEVEL_ZERO_COUNT);
+  if (!pool.length) return null;
+  return {
+    pool,
+    label: "Level 0",
+    note: "Most support · every hint printed",
+    supported: "all",
+    extras: "example",
+  };
 }
 
 /* ── one edition page ──────────────────────────────────────────────────── */
@@ -113,8 +136,9 @@ function packetTitle(cfg, reveal) {
   return cfg.title || cfg.lessonId || "Practice";
 }
 
-function editionPage(cfg, edition, { isKey = false, lead = "", title = "" } = {}) {
+function editionPage(cfg, edition, { isKey = false, lead = "", title = "", reveal = null } = {}) {
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
+  if (edition.extras === "example" && !isKey) lead += exampleBlock(cfg, reveal);
   const problems = sectionedProblems(edition.pool, (p, n) =>
     renderProblem(p, n, { key: isKey, supported: edition.supported, commonMistake }),
   );
@@ -136,11 +160,28 @@ export function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
   const reveal = revealFor(lessonId);
   const audience = key ? "teacher" : "student";
   const title = packetTitle(cfg, reveal);
-  const suffixBase = set === "B" ? "Practice Set B" : "Practice";
+  const suffixBase =
+    set === "B" ? "Practice Set B" : set === "L0" ? "Practice Level 0" : "Practice";
   const titleSuffix = key ? `${suffixBase} Answer Key` : `${suffixBase} Worksheet`;
 
   let pages = [];
-  if (set === "B") {
+  if (set === "L0") {
+    const edition = levelZeroEdition(cfg);
+    if (!edition) return "";
+    if (!key) {
+      const support = supportPage(cfg, reveal, {
+        header: packetHeader(cfg, {
+          edition: "Start here",
+          note: "Words, worked example, and sentence starters",
+          mastery: false,
+          target: cfg.contentObjective || "",
+          title,
+        }),
+      });
+      if (support.html) pages.push(support.html);
+    }
+    pages.push(editionPage(cfg, edition, { isKey: key, title, reveal }));
+  } else if (set === "B") {
     // Every Set B page runs through the one edition builder: the reserve is a
     // flat list of practice items regardless of lesson kind. The first page
     // opens with a short REMEMBER box instead of the full START HERE page,
@@ -171,7 +212,7 @@ export function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
         }),
       });
       if (support.html) pages.push(support.html);
-      pages.push(...editions.map((e) => editionPage(cfg, e, { isKey: false, title })));
+      pages.push(...editions.map((e) => editionPage(cfg, e, { isKey: false, title, reveal })));
     } else {
       const support = supportPage(cfg, reveal);
       pages = editions.map((e, i) =>
@@ -249,6 +290,12 @@ function main() {
       );
     } else {
       missingSetB.push(d);
+    }
+    if (levelZeroEdition(cfg)) {
+      outputs.push(
+        ["worksheet-level-0.html", buildWorksheet(cfg, { key: false, set: "L0" })],
+        ["worksheet-level-0-answer-key.html", buildWorksheet(cfg, { key: true, set: "L0" })],
+      );
     }
 
     if (CHECK) {

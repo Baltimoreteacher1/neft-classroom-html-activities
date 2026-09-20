@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" data-ewl-supports-lesson="2-6" data-support-audience="student">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Divide Multi-Digit Numbers Using an Algorithm — Practice Level 0 Worksheet</title>
+<link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
+<style>
+
+:root {
+  --navy: #1f3864;
+  --navy-deep: #17294a;
+  --teal: #0f6e6e;
+  --teal-soft: #e6f4f3;
+  --teal-line: #9fd0cc;
+  --amber-dark: #8a5a00;
+  --amber-soft: #fff4d6;
+  --amber-line: #f2d48a;
+  --ink: #19262f;
+  --muted: #4f5d68;
+  --line: #c9d2da;
+  --line-light: #e3e8ed;
+  --soft: #f6f8fa;
+  --key: #0b6b3a;
+  --key-soft: #e7f6ec;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { background: #eef1f4; color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.45; }
+
+/* Pages */
+.ws-page { background: #fff; max-width: 8.5in; margin: 20px auto; padding: 0.55in 0.6in 0.6in; box-shadow: 0 6px 24px rgba(15,23,42,.10); border: 1px solid var(--line-light); }
+.ws-page + .ws-page { break-before: page; }
+
+/* Header */
+.ws-header { margin-bottom: 14px; }
+.ws-band { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--navy); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; }
+.ws-band span:last-child { white-space: nowrap; }
+.ws-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-top: 10px; }
+.ws-title { font-family: var(--font-display); font-size: 22px; line-height: 1.15; font-weight: 700; color: var(--navy-deep); }
+.ws-lesson-n { display: block; font-family: var(--font-body); font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); margin-bottom: 2px; }
+.ws-edition { margin-top: 4px; font-size: 13px; font-weight: 700; color: var(--navy); }
+.ws-edition-note { font-weight: 500; color: var(--muted); }
+.ws-edition-note::before { content: " · "; }
+.ws-mastery { flex-shrink: 0; display: grid; gap: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 10.5px; color: var(--muted); min-width: 130px; }
+.ws-mastery-title { font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); font-size: 9.5px; }
+.ws-meta-row { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 10px; font-size: 12.5px; }
+.ws-fill-line { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 90px; height: 16px; vertical-align: bottom; }
+.ws-fill-line-wide { width: 100%; min-width: 0; height: 20px; border-bottom-color: var(--line); }
+.ws-fill-inline { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 56px; height: 14px; vertical-align: baseline; }
+.ws-target { margin-top: 10px; padding: 7px 12px; background: var(--teal-soft); border-left: 4px solid var(--teal); border-radius: 0 6px 6px 0; font-size: 12.5px; }
+.ws-target b { color: var(--teal); text-transform: uppercase; letter-spacing: .05em; font-size: 10.5px; margin-right: 6px; }
+
+/* Support blocks */
+.ws-block { margin: 9px 0; border: 1px solid var(--teal-line); border-radius: 6px; padding: 8px 12px 10px; background: #fff; break-inside: avoid; }
+.ws-block-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--navy-deep); margin-bottom: 4px; line-height: 1.25; }
+.ws-block-kicker { display: block; font-family: var(--font-body); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 1px; }
+.ws-block-sub { display: block; font-family: var(--font-body); font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: capitalize; }
+.ws-block-lead { font-size: 11.5px; color: var(--muted); margin-bottom: 8px; }
+.ws-words { width: 100%; border-collapse: collapse; font-size: 11.5px; line-height: 1.35; }
+.ws-words th { background: var(--teal); color: #fff; text-align: left; padding: 5px 8px; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; }
+.ws-words td { border: 1px solid var(--line-light); padding: 4px 7px; vertical-align: top; }
+.ws-words .ws-word { width: 26%; }
+.ws-es { display: block; font-size: 10.5px; color: var(--muted); font-style: italic; }
+.ws-word-ex { width: 30%; }
+.ws-example-problem { font-size: 13px; font-weight: 600; padding: 7px 10px; background: var(--soft); border-radius: 5px; margin-bottom: 8px; }
+.ws-example-steps { padding-left: 26px; font-size: 12.5px; display: grid; gap: 2px; }
+.ws-example-steps li::marker { font-weight: 800; color: var(--teal); }
+.ws-try-steps li { padding: 2px 0; }
+.ws-example-answer { margin-top: 8px; font-size: 12.5px; padding: 6px 10px; border-left: 3px solid var(--teal); }
+.ws-starters { list-style: none; display: grid; gap: 5px; font-size: 12.5px; }
+.ws-starters li::before { content: "•"; color: var(--teal); font-weight: 800; margin-right: 6px; }
+.ws-word-bank { margin-top: 8px; font-size: 11.5px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ws-chip { display: inline-block; padding: 1px 8px; border: 1px solid var(--teal-line); border-radius: 999px; background: var(--teal-soft); font-size: 11px; font-weight: 600; color: var(--navy-deep); }
+.ws-block-watch { border-color: var(--amber-line); background: var(--amber-soft); }
+.ws-block-watch .ws-block-kicker { color: var(--amber-dark); }
+.ws-watch-text { font-size: 12px; }
+.ws-block-remember { border-color: var(--line); }
+.ws-remember-lead { font-size: 12.5px; margin-bottom: 4px; }
+.ws-remember-steps { padding-left: 24px; font-size: 12px; display: grid; gap: 2px; margin-bottom: 6px; }
+.ws-remember-words, .ws-remember-watch { font-size: 11.5px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ws-remember-watch { display: block; }
+.ws-block-keynote { border-color: var(--key); background: var(--key-soft); }
+
+/* Sections and problems */
+.ws-section-head { display: flex; align-items: baseline; gap: 10px; background: var(--navy); color: #fff; padding: 4px 12px; border-radius: 4px; margin: 10px 0 6px; break-after: avoid; }
+.ws-section-n { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.ws-section-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; }
+.ws-section-tag { margin-left: auto; font-size: 10.5px; opacity: .85; }
+.ws-problems { list-style: none; display: grid; gap: 8px; }
+.ws-problem-card { border: 1px solid var(--line); border-radius: 6px; background: #fff; break-inside: avoid; }
+.ws-problem-head { display: flex; align-items: center; gap: 10px; padding: 4px 12px; border-bottom: 1px solid var(--line-light); background: var(--soft); border-radius: 6px 6px 0 0; }
+.ws-pnum { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: var(--navy); color: #fff; font-weight: 800; font-size: 12.5px; }
+.ws-directions { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.ws-pbody { padding: 7px 12px 9px; }
+.ws-stem { font-size: 13.5px; font-weight: 500; margin-bottom: 8px; }
+.ws-opts { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; margin: 4px 0 6px; }
+.ws-opt { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.ws-bub { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 1.4px solid var(--navy); border-radius: 50%; font-size: 11px; font-weight: 800; color: var(--navy); flex-shrink: 0; }
+.ws-bub-sm { width: 18px; height: 18px; font-size: 10px; }
+.ws-hint { margin: 6px 0; padding: 6px 10px; background: var(--teal-soft); border-left: 3px solid var(--teal); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-hint-steps ol { margin: 4px 0 0 18px; display: grid; gap: 3px; }
+.ws-hint-steps li::marker { font-weight: 800; color: var(--teal); }
+.ws-hint-tag, .ws-frame-tag { font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; margin-right: 6px; }
+.ws-frame { margin: 6px 0; padding: 6px 10px; border: 1px dashed var(--teal-line); border-radius: 5px; font-size: 12px; }
+.ws-work { margin-top: 6px; border: 1px solid var(--line-light); border-radius: 5px; padding: 6px 10px 8px; background: #fff; }
+.ws-work-label { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.ws-lines { margin: 4px 0 0; }
+.ws-line { display: block; border-bottom: 1.2px solid var(--line); height: 21px; }
+.ws-answer-line { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; font-size: 12.5px; }
+.ws-answer-label { font-weight: 800; color: var(--navy); }
+.ws-answer-line .ws-fill-line { flex: 1 1 180px; max-width: 320px; }
+.ws-answer-unit { font-size: 11.5px; color: var(--muted); }
+.ws-prompt { font-size: 12.5px; font-weight: 600; margin: 8px 0 4px; }
+
+/* Matching, sorting, tables, steps */
+.ws-match { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; margin: 6px 0; font-size: 12.5px; }
+.ws-match-terms, .ws-match-bank { list-style: none; display: grid; gap: 6px; }
+.ws-match-term { display: flex; align-items: center; gap: 8px; }
+.ws-match-bank li { display: flex; align-items: flex-start; gap: 8px; }
+.ws-blank { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 120px; height: 18px; text-align: center; font-weight: 700; }
+.ws-blank-sm { min-width: 34px; }
+.ws-blank-md { min-width: 96px; }
+.ws-cats-bar { font-size: 12px; margin: 4px 0 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ws-cat-pill { display: inline-block; padding: 2px 10px; border: 1px solid var(--navy); border-radius: 999px; font-size: 11.5px; font-weight: 700; color: var(--navy); }
+.ws-sort-list { list-style: none; display: grid; gap: 7px; margin: 4px 0; }
+.ws-sort-item { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.ws-table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 12.5px; }
+.ws-table th { background: var(--navy); color: #fff; font-size: 11px; padding: 5px 9px; text-align: left; }
+.ws-table td { border: 1px solid var(--line); padding: 7px 9px; }
+.ws-table td.ws-cell-blank { background: #fff; height: 30px; }
+.ws-scale-table th, .ws-scale-table td { text-align: center; }
+.ws-scale-n { font-weight: 800; color: var(--navy); }
+.ws-scale-eq { color: var(--muted); font-weight: 700; }
+.ws-check { white-space: nowrap; font-weight: 600; }
+.ws-steps-box { border: 1px solid var(--line-light); border-radius: 5px; padding: 8px 10px; background: var(--soft); margin: 6px 0; }
+.ws-steps { list-style: none; display: grid; gap: 5px; font-size: 12.5px; }
+.ws-steps li { display: grid; grid-template-columns: 22px auto 1fr; gap: 8px; align-items: baseline; }
+.ws-step-n { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10.5px; font-weight: 800; }
+.ws-step-l { font-weight: 700; color: var(--navy); }
+.ws-step-wrong .ws-step-n { background: #b42318; }
+.ws-gf-steps { list-style: none; display: grid; gap: 7px; margin: 6px 0; font-size: 12.5px; }
+.ws-gf-step { display: grid; grid-template-columns: 22px 1fr 150px; gap: 8px; align-items: end; }
+.ws-figure-wrap { margin: 8px auto; }
+
+/* Closing blocks */
+.ws-block-explain .ws-block-title { font-size: 13.5px; }
+.ws-confidence { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin-top: 12px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 11.5px; color: var(--muted); }
+.ws-confidence b { color: var(--navy); }
+
+/* Answer key */
+.ws-keynote { margin: 4px 0; padding: 5px 10px; background: var(--key-soft); border-left: 3px solid var(--key); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-keynote b { color: var(--key); }
+.ws-keynote-inline { font-size: 11px; color: var(--key); }
+.ws-watch { margin: 4px 0; padding: 5px 10px; background: var(--amber-soft); border-left: 3px solid var(--amber-dark); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-watch b { color: var(--amber-dark); }
+.ws-opt.ws-correct .ws-bub { background: var(--key); border-color: var(--key); color: #fff; }
+.ws-opt.ws-correct .ws-opt-text { font-weight: 800; color: var(--key); }
+.ws-blank.ws-correct, .ws-fill-line.ws-correct { color: var(--key); font-weight: 800; padding: 0 6px; height: auto; min-height: 18px; }
+td.ws-correct { color: var(--key); font-weight: 800; background: var(--key-soft); }
+.ws-key-page .ws-problem-card { break-inside: auto; }
+.ws-key-page .ws-pbody { padding: 8px 14px 10px; }
+.ws-key-page .ws-stem { font-size: 12.5px; margin-bottom: 4px; }
+.ws-key-page .ws-opts { margin: 2px 0 4px; gap: 2px 18px; }
+
+
+
+  .dwf { display: block; }
+  .dwf text {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 22px;
+    fill: #0f172a;
+  }
+  .dwf .dwf-bracket { stroke: #0f172a; stroke-width: 2.5; fill: none; }
+  .dwf .dwf-rule { stroke: #0f172a; stroke-width: 2; }
+  .dwf .dwf-q { font-weight: 700; }
+  .dwf .dwf-bring { fill: #b45309; }
+  .dwf .dwf-new { fill: #0d7a76; font-weight: 700; }
+
+.wsd-wrap {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  margin: 10px 0 12px;
+}
+.wsd-supported {
+  background: #fdfbf7;
+  border: 1.5px solid var(--amber-border);
+  border-left: 4px solid var(--amber-dark);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.wsd-frame {
+  background: #ffffff;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+  display: inline-block;
+}
+.wsd { display: block; }
+.wsd-cell { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 2 2; }
+.wsd-rule { stroke: #0f172a; stroke-width: 2; }
+.wsd-given { font-family: var(--font-body); font-size: 15px; font-weight: 700; fill: #0f172a; }
+.wsd-rail { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; min-width: 170px; }
+.wsd-step { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+.wsd-step-n { width: 18px; height: 18px; border-radius: 50%; background: var(--navy); color: #ffffff; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.wsd-step-t { font-weight: 800; color: var(--navy); }
+.wsd-step-h { color: var(--muted); font-style: italic; font-size: 10.5px; }
+
+/* ── Task-Responsive Workspace Scaffolds ─────────────────────────────────── */
+.wss-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wss-panel {
+  background: #ffffff;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+.wss-panel-tight {
+  padding: 6px 10px;
+}
+.wss-panel-t {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.wss-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 4px 0 6px;
+}
+.wss-rule {
+  display: block;
+  border-bottom: 1.5px solid var(--line-light);
+  height: 0;
+}
+
+/* 2-Column Equation & Algebra Ledger */
+.wss-ledger {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+.wss-ledger th {
+  background: var(--navy);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  text-align: left;
+  letter-spacing: 0.02em;
+}
+.wss-ledger th:last-child {
+  background: #334155;
+  border-left: 1.5px solid #475569;
+}
+.wss-cell {
+  border: 1px solid var(--line-light);
+  height: 28px;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.wss-cell-why {
+  background: #fafbfc;
+  border-left: 1.5px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+/* Step-by-Step Slot Cards (Measure, Fraction, Statistics) */
+.wss-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.wss-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+.wss-slot-t {
+  flex: 0 0 160px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.wss-slot-w {
+  flex: 1;
+  border-bottom: 1.5px solid var(--navy);
+  height: 20px;
+}
+
+/* Proportional Ratio Table */
+.wss-ratio {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+.wss-ratio th {
+  background: #e2e8f0;
+  color: var(--navy);
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 6px 10px;
+  height: 24px;
+}
+.wss-row-per {
+  background: #f0fdf4;
+}
+.wss-row-per .wss-cell {
+  border-top: 1.5px solid #86efac;
+  border-bottom: 1.5px solid #86efac;
+}
+.wss-per {
+  display: inline-block;
+  background: #166534;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* 10-Segment Percent Benchmark Bar */
+.wss-bar {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  height: 24px;
+  border: 2px solid var(--navy);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #ffffff;
+  margin-bottom: 4px;
+}
+.wss-bar span {
+  border-right: 1px dashed var(--line);
+  background: #ffffff;
+}
+.wss-bar span:last-child {
+  border-right: none;
+}
+.wss-barlab {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+
+/* Place Value Decimal Alignment Grid */
+.wss-cols {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 6px 0;
+}
+.wss-col {
+  width: 28px;
+  height: 36px;
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+
+@media print {
+  body { background: #fff !important; font-size: 11pt; }
+  .ws-page { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; padding: 0 !important; }
+  .ws-page + .ws-page { break-before: page; page-break-before: always; }
+  .ws-block, .ws-problem-card { break-inside: avoid; page-break-inside: avoid; }
+  .ws-section-head { break-after: avoid; page-break-after: avoid; }
+  @page { size: letter; margin: 0.6in 0.6in 0.65in; }
+}
+
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/2-6/worksheet-level-0.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Divide Multi-Digit Numbers Using an Algorithm — Practice Level 0 Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Divide Multi-Digit Numbers Using an Algorithm — Practice Level 0 Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Divide Multi-Digit Numbers Using an Algorithm — Practice Level 0 Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/2-6/worksheet-level-0.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main data-support-slot="practice">
+<section class="ws-page ws-support-page">
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 2: Understanding the World Around Us Through Statistics</span><span>Standard 6.NOS.2</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 2.6</span>Divide Multi-Digit Numbers Using an Algorithm</h1>
+          <p class="ws-edition">Start here<span class="ws-edition-note">Words, worked example, and sentence starters</span></p>
+        </div>
+        
+      </div>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> I can divide multi-digit whole numbers and explain the meaning of the quotient and remainder.</p>
+    </header><section class="ws-block ws-block-words">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Start here</span>Words for this lesson</h2>
+    <p class="ws-block-lead">Read each word before you begin. Say it out loud.</p>
+    <table class="ws-words"><thead><tr><th>Word</th><th>What it means</th><th>Example</th></tr></thead><tbody><tr>
+        <td class="ws-word"><b>Algorithm</b><span class="ws-es">Spanish: Algoritmo</span></td>
+        <td>A step-by-step set of rules or instructions to solve a math problem.</td>
+        <td class="ws-word-ex">Long Division Algorithm — D (Divide), M (Multiply), S (Subtract), B (Bring Down)</td></tr><tr>
+        <td class="ws-word"><b>Dividend</b><span class="ws-es">Spanish: Dividendo</span></td>
+        <td>The total number being divided into equal groups (the number inside the division bracket).</td>
+        <td class="ws-word-ex">In 1,344 ÷ 12 = 112, the dividend is 1,344 — the total amount being divided</td></tr><tr>
+        <td class="ws-word"><b>Divisor</b><span class="ws-es">Spanish: Divisor</span></td>
+        <td>The number of equal groups you are dividing into (the number outside the division bracket).</td>
+        <td class="ws-word-ex">In 1,344 ÷ 12 = 112, the divisor is 12 — the number of equal groups</td></tr><tr>
+        <td class="ws-word"><b>Quotient</b><span class="ws-es">Spanish: Cociente</span></td>
+        <td>The answer when you divide.</td>
+        <td class="ws-word-ex">In 156 ÷ 12 = 13, the quotient is 13 — there are 13 groups</td></tr><tr>
+        <td class="ws-word"><b>Remainder</b><span class="ws-es">Spanish: Residuo</span></td>
+        <td>What is left over when a number does not divide evenly.</td>
+        <td class="ws-word-ex">17 ÷ 5 = 3 R 2 means 3 groups of 5 with 2 left over</td></tr><tr>
+        <td class="ws-word"><b>Divide Multi-Digit Numbers</b><span class="ws-es">Spanish: Dividir números de varias cifras</span></td>
+        <td>Separate a multi-digit number into equal groups to find a quotient.</td>
+        <td class="ws-word-ex">1,344 ÷ 12 = 112</td></tr></tbody></table>
+  </section>
+<section class="ws-block ws-block-example">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">How it works</span>Worked example</h2>
+    <p class="ws-block-lead">These numbers are not on your problems. The steps are. Follow them with your own numbers.</p>
+    <p class="ws-example-problem">I want 1,344 ÷ 12. The dividend is 1,344 and the divisor is 12, so 12 goes outside the bracket and 1,344 goes inside.</p>
+    <ol class="ws-example-steps"><li>DIVIDE: 12 does not fit into 1, so I look at 13. How many 12s fit into 13? One. I write 1 above the 3.</li><li>MULTIPLY: 1 × 12 = 12. I write 12 underneath the 13.</li><li>SUBTRACT: 13 − 12 = 1. That is what is left so far.</li><li>BRING DOWN: I bring the next digit, 4, down next to the 1 to make 14. Now I repeat the cycle.</li><li>REPEAT: 14 ÷ 12 → 1 (written above the 4), 1 × 12 = 12, 14 − 12 = 2, and I bring down the last 4 to make 24.</li><li>REPEAT: 24 ÷ 12 → 2 (written above the last 4), 2 × 12 = 24, 24 − 24 = 0. Nothing is left to bring down, so the remainder is 0.</li><li>The digits I wrote are 1, 1, 2, so 1,344 ÷ 12 = 112. I check by multiplying: 12 × 112 = 1,344.</li></ol>
+    
+  </section>
+<section class="ws-block ws-block-try">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Now you try</span>Same steps, your turn</h2>
+    <p class="ws-block-lead">The steps are the same as the worked example. The numbers are yours. Do the work.</p>
+    <p class="ws-example-problem">Let's do 384 ÷ 8. DIVIDE: 8 does not fit into 3, so we look at 38. How many 8s fit into 38? (4 — write it above the 8.)</p>
+    <ol class="ws-example-steps ws-try-steps"><li><span class="ws-fill-line ws-fill-line-wide"></span></li><li><span class="ws-fill-line ws-fill-line-wide"></span></li><li><span class="ws-fill-line ws-fill-line-wide"></span></li><li><span class="ws-fill-line ws-fill-line-wide"></span></li><li><span class="ws-fill-line ws-fill-line-wide"></span></li></ol>
+    <div class="ws-answer-line"><span class="ws-answer-label">Answer:</span><span class="ws-fill-line"></span></div>
+  </section>
+<section class="ws-block ws-block-say">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Say it and write it</span>Sentence starters</h2>
+    <p class="ws-block-lead">Finish each sentence out loud with a partner. Then use them in your writing.</p>
+    <ul class="ws-starters"><li>2,184 ÷ 14 = <span class="ws-fill-inline"></span> because I repeated divide, multiply, subtract, and bring down until there were no digits left to bring down, and what was left at the end was <span class="ws-fill-inline"></span>.</li></ul>
+    <p class="ws-word-bank"><b>Word bank</b> <span class="ws-chip">Algorithm</span><span class="ws-chip">Dividend</span><span class="ws-chip">Divisor</span><span class="ws-chip">Quotient</span><span class="ws-chip">Remainder</span><span class="ws-chip">Divide Multi-Digit Numbers</span><span class="ws-chip">divide</span><span class="ws-chip">multiply</span><span class="ws-chip">subtract</span><span class="ws-chip">bring down</span><span class="ws-chip">repeat</span><span class="ws-chip">quotient</span></p>
+  </section>
+<section class="ws-block ws-block-watch">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Watch out</span>A common mistake</h2>
+    <p class="ws-watch-text">A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p>
+  </section></section>
+<section class="ws-page ws-edition-page">
+    
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 2: Understanding the World Around Us Through Statistics</span><span>Standard 6.NOS.2</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 2.6</span>Divide Multi-Digit Numbers Using an Algorithm</h1>
+          <p class="ws-edition">Level 0<span class="ws-edition-note">Most support · every hint printed</span></p>
+        </div>
+        <div class="ws-mastery" aria-label="Mastery check"><span class="ws-mastery-title">Mastery check</span><span>&#9744; Exceeds</span><span>&#9744; Meets target</span><span>&#9744; Needs practice</span></div>
+      </div>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> I can divide multi-digit whole numbers and explain the meaning of the quotient and remainder.</p>
+    </header>
+    <section class="ws-block ws-block-example">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">How it works</span>Worked example</h2>
+    <p class="ws-block-lead">These numbers are not on your problems. The steps are. Follow them with your own numbers.</p>
+    <p class="ws-example-problem">I want 1,344 ÷ 12. The dividend is 1,344 and the divisor is 12, so 12 goes outside the bracket and 1,344 goes inside.</p>
+    <ol class="ws-example-steps"><li>DIVIDE: 12 does not fit into 1, so I look at 13. How many 12s fit into 13? One. I write 1 above the 3.</li><li>MULTIPLY: 1 × 12 = 12. I write 12 underneath the 13.</li><li>SUBTRACT: 13 − 12 = 1. That is what is left so far.</li><li>BRING DOWN: I bring the next digit, 4, down next to the 1 to make 14. Now I repeat the cycle.</li><li>REPEAT: 14 ÷ 12 → 1 (written above the 4), 1 × 12 = 12, 14 − 12 = 2, and I bring down the last 4 to make 24.</li><li>REPEAT: 24 ÷ 12 → 2 (written above the last 4), 2 × 12 = 24, 24 − 24 = 0. Nothing is left to bring down, so the remainder is 0.</li><li>The digits I wrote are 1, 1, 2, so 1,344 ÷ 12 = 112. I check by multiplying: 12 × 112 = 1,344.</li></ol>
+    
+  </section>
+    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
+        <ol class="ws-problems">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete the table. Show how you found each value.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Run the long-division cycle. Fill in the quotient.</p>
+  <table class="ws-table"><thead><tr><th>Problem</th><th>Divide</th><th>Multiply &amp; Subtract</th><th>Bring Down</th><th>Quotient</th></tr></thead><tbody><tr><td>384 ÷ 8</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr><tr><td>672 ÷ 6</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr></tbody></table>
+  <div class="ws-hint ws-hint-steps"><span class="ws-hint-tag">Steps to try</span><ol><li>Read the row left to right — it is one trip around the cycle: divide, multiply, subtract, bring down.</li><li>The Quotient column wants the WHOLE answer, not just the first digit. Keep repeating the cycle until no digits are left to bring down.</li><li>Row 1: after you bring down the 4 you are looking at 64. Divide, multiply and subtract once more, then read the digits you wrote across the top.</li></ol></div><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Practice the skill</span><span class="ws-section-tag">show every step</span></div>
+        <ol class="ws-problems">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">68</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">76</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">78</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">87</span></li></ol><div class="ws-hint ws-hint-steps"><span class="ws-hint-tag">Steps to try</span><ol><li>Estimate first: 12 × 70 = 840 and 12 × 80 = 960, so the quotient must land between 70 and 80.</li><li>Set it up as long division and DIVIDE first — how many 12s fit into 93?</li><li>DIVIDE: 93 ÷ 12 → 7. MULTIPLY: 7 × 12 = 84. SUBTRACT: 93 − 84 = 9. BRING DOWN the 6 to make 96, then repeat the cycle.</li></ol></div><div class="wsd-wrap wsd-supported">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 246" width="195" height="246" role="img" aria-label="Blank long-division frame for 936 divided by 12" style="background:white;"><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">1</text><text class="wsd-given" x="74" y="58" text-anchor="middle">2</text><path class="wsd-rule" d="M 84 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="84" y1="40" x2="186" y2="40"/><text class="wsd-given" x="105" y="58" text-anchor="middle">9</text><text class="wsd-given" x="135" y="58" text-anchor="middle">3</text><text class="wsd-given" x="165" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/></svg></div>
+      <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
+    </div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">What is 2,485 ÷ 5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">487</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">496</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">497</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">507</span></li></ol><div class="ws-hint ws-hint-steps"><span class="ws-hint-tag">Steps to try</span><ol><li>Size it up: 5 × 500 = 2,500, just a bit more than 2,485 — so the quotient is a little under 500.</li><li>Set it up as long division and DIVIDE first — how many 5s fit into 24?</li><li>DIVIDE: 24 ÷ 5 → 4. MULTIPLY: 4 × 5 = 20. SUBTRACT: 24 − 20 = 4. BRING DOWN the 8 to make 48, then repeat until the last digit is used.</li></ol></div><div class="wsd-wrap wsd-supported">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 195 314" width="195" height="314" role="img" aria-label="Blank long-division frame for 2485 divided by 5" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">5</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="186" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">2</text><text class="wsd-given" x="105" y="58" text-anchor="middle">4</text><text class="wsd-given" x="135" y="58" text-anchor="middle">8</text><text class="wsd-given" x="165" y="58" text-anchor="middle">5</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="242" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="276" width="24" height="22" rx="3"/><rect class="wsd-cell" x="153" y="276" width="24" height="22" rx="3"/></svg></div>
+      <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
+    </div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">83</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">84</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">86</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">94</span></li></ol><div class="ws-hint ws-hint-steps"><span class="ws-hint-tag">Steps to try</span><ol><li>Anchor on a fact you know: 9 × 80 = 720, which is close to 756 — so the quotient is just above 80.</li><li>Set it up as long division and DIVIDE first — how many 9s fit into 75?</li><li>DIVIDE: 75 ÷ 9 → 8. MULTIPLY: 8 × 9 = 72. SUBTRACT: 75 − 72 = 3. BRING DOWN the 6 to make 36, then repeat the cycle.</li></ol></div><div class="wsd-wrap wsd-supported">
+      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 165 246" width="165" height="246" role="img" aria-label="Blank long-division frame for 756 divided by 9" style="background:white;"><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="8" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">9</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="156" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">7</text><text class="wsd-given" x="105" y="58" text-anchor="middle">5</text><text class="wsd-given" x="135" y="58" text-anchor="middle">6</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="140" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="174" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="93" y="208" width="24" height="22" rx="3"/><rect class="wsd-cell" x="123" y="208" width="24" height="22" rx="3"/></svg></div>
+      <ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Divide</span><span class="wsd-step-h">How many fit?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Multiply</span><span class="wsd-step-h">Multiply back.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Subtract</span><span class="wsd-step-h">What is left?</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Bring down</span><span class="wsd-step-h">Next digit.</span></li></ol>
+    </div></div>
+    </li></ol>
+    <section class="ws-block ws-block-explain">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>You ran the cycle three times. What is 2,184 ÷ 14, and how did you know when to stop repeating divide, multiply, subtract, bring down?</h2>
+    <p class="ws-frame"><span class="ws-frame-tag">Sentence starter</span> 2,184 ÷ 14 = ___ because I repeated divide, multiply, subtract, and bring down until there were no digits left to bring down, and what was left at the end was ___.</p>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </section><div class="ws-confidence"><b>How did it go?</b>
+    <span>&#9744; 4 · I can teach it</span><span>&#9744; 3 · I've got it</span><span>&#9744; 2 · I need a hint</span><span>&#9744; 1 · I need help</span></div>
+  </section>
+</main>
+<script src="/shared/supports/print-supports.js" defer></script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

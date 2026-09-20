@@ -20,8 +20,6 @@ import { JSDOM, VirtualConsole } from "jsdom";
 // harmless here (we only read text), so route its chatter nowhere.
 const quiet = new VirtualConsole();
 
-const root = new URL("../", import.meta.url).pathname;
-
 import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
 const coreIds = readdirSync(lessonsDir).filter((id) => /^\d+-\d+$/.test(id));

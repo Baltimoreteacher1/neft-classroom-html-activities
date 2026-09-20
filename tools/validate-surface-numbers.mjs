@@ -53,8 +53,6 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
 import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 const SURFACES = ["learn.html", "slides.html", "printable.html"];

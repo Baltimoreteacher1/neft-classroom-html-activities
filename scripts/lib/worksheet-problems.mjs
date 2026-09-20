@@ -86,9 +86,15 @@ function workArea(it, { supported = false } = {}) {
    belong to the interactive lesson's earned-hint flow, not to paper. */
 function hintHtml(it, supported) {
   if (!supported) return "";
-  const hint = Array.isArray(it.hints) ? it.hints[0] : it.hint;
-  if (!hint) return "";
-  return `<p class="ws-hint"><span class="ws-hint-tag">Hint</span> ${esc(hint)}</p>`;
+  const hints = (Array.isArray(it.hints) ? it.hints : [it.hint]).filter(Boolean);
+  if (!hints.length) return "";
+  // Level 0 (most support) prints EVERY authored hint as numbered steps to
+  // try — the paper form of the app's always-on hints. Version A prints only
+  // the first, the one that names the move without doing the arithmetic.
+  if (supported === "all" && hints.length > 1) {
+    return `<div class="ws-hint ws-hint-steps"><span class="ws-hint-tag">Steps to try</span><ol>${hints.map((h) => `<li>${esc(h)}</li>`).join("")}</ol></div>`;
+  }
+  return `<p class="ws-hint"><span class="ws-hint-tag">Hint</span> ${esc(hints[0])}</p>`;
 }
 
 function keyNote(label, text, cls = "ws-keynote") {

@@ -56,8 +56,8 @@ const bareNumbers = (id) => lessonNumbers(withoutInteractives(byId.get(id).confi
 
 await t("the sweep sees the whole fleet, not a subset", () => {
   assert.equal(fleet.filter((l) => l.canonical).length, 84, "canonical lesson count moved");
-  // 168 small-group + 36 catch-up + 76 Part 2 = 280.
-  assert.equal(fleet.filter((l) => !l.canonical).length, 280, "variant count moved");
+  // 168 small-group + 36 catch-up + 77 Part 2 = 281 (9-4 gained its Apply Day 2026-09-20).
+  assert.equal(fleet.filter((l) => !l.canonical).length, 281, "variant count moved");
   const elements = fleet.reduce((n, l) => n + extractElements(l.config).length, 0);
   assert.ok(
     elements > 900,

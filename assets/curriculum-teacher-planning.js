@@ -904,6 +904,7 @@
         ["handout", "Student handout"],
         ["worksheet", "Worksheet"],
         ["worksheet2", "Worksheet B"],
+        ["worksheetLevel0", "Worksheet · Level 0"],
         ["mstarWorksheet", "MSTAR practice"],
         ["exitTicket", "Exit ticket"],
       ];

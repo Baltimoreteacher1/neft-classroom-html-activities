@@ -53,7 +53,6 @@ import { fileURLToPath } from "url";
 import { buildPptxDeck } from "./lib/pptx-deck.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, "..");
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 

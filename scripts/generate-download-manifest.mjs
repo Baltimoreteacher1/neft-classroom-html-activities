@@ -151,6 +151,8 @@ const LINK_RULES = [
   // files under the same type and rides the same presets; the label the hub
   // supplies is what distinguishes the two rows.
   [/worksheet-2\.html$/i, /worksheet/i, "small-group-worksheet"],
+  // Level 0 — the most-supported form. Same resource kind again.
+  [/worksheet-level-0\.html$/i, /worksheet/i, "small-group-worksheet"],
   [/\/practice\.html$/i, /practice set/i, "small-group-practice"],
   // These three are decided by href alone. Matching their labels as well used
   // to file the unit-level "Small-Group Studio" tile as a small-group LESSON.

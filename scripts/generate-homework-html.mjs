@@ -69,7 +69,6 @@ const SESSION2_PRACTICE = (() => {
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // Match core/flagship lessons like "3-2" or "3-2-flagship"
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 // Folders this generator will consider at all. `generatesFamilyHomework` then
 // decides: core lessons always, anything else only when its config opts in.
 const HOMEWORK_DIR_RE = /^[0-9][0-9a-z-]*$/;

@@ -117,8 +117,25 @@ function tag(items, origin) {
  * pool in half and calling the halves A and B would imply a rigor difference
  * that is not there.
  */
+/** Set A prints at most this many problems per core tier (Version A / B / Challenge). */
+export const SET_A_TIER_CAP = 6;
+
+/** The core practice items Set A prints: the first SET_A_TIER_CAP of each tier. */
+export function coreSetAPool(cfg) {
+  return ["approaching", "onLevel", "extending"].flatMap((tier) =>
+    printable(cfg?.practice?.[tier]).slice(0, SET_A_TIER_CAP),
+  );
+}
+
 export function coreReserve(cfg) {
   const out = [];
+  // Practice items past Set A's per-tier cap come first: they are the lesson's
+  // own tiered practice, so they lead the second form before the warm-up and
+  // check items. Set A used to print every tier in full, which ran a
+  // problem-heavy lesson to 14 pages.
+  for (const tier of ["approaching", "onLevel", "extending"]) {
+    out.push(...tag(printable(cfg?.practice?.[tier]).slice(SET_A_TIER_CAP), "practice"));
+  }
   for (const q of printable(cfg?.warmup?.questions)) {
     const item = asProblem(q, { origin: "warmup" });
     if (item) out.push(item);
