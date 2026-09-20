@@ -217,7 +217,7 @@
     form.innerHTML =
       '<div style="font-size:36px; margin-bottom:8px;">👩‍🏫</div>' +
       '<h3 style="margin:0 0 6px; font-family:Nunito,sans-serif; font-size:20px; font-weight:800; color:#0f172a;">Teacher Mode Access</h3>' +
-      '<p style="margin:0 0 18px; font-size:13.5px; color:#64748b;">Enter your teacher PIN to unlock answer keys, lesson plans, IEP accommodations, and teacher tools.</p>' +
+      '<p style="margin:0 0 18px; font-size:13.5px; color:#64748b;">Enter your teacher PIN to unlock answer keys, lesson plans, learning supports, and teacher tools.</p>' +
       '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" style="display:none;" />' +
       '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter teacher password" aria-label="Enter teacher password" style="width:100%; min-height:46px; padding:0 16px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:15px; margin-bottom:14px; outline:none;" />' +
       '<div style="display:flex; gap:10px;">' +
