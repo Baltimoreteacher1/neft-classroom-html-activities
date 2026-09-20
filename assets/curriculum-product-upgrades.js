@@ -79,7 +79,20 @@
   function audiencePortals() {
     var guide = document.querySelector(".curriculum-guide");
     var actions = guide?.querySelector(".curriculum-guide__actions");
-    if (!guide || !actions || document.getElementById("curriculum-audiences")) return;
+    if (!guide || !actions) return;
+    // The hub ships the nav statically (curriculum/index.html) so the header
+    // does not reflow after load — bind to it. Other pages get it built here.
+    var existing = document.getElementById("curriculum-audiences");
+    if (existing) {
+      if (existing.dataset.bound) return;
+      existing.dataset.bound = "1";
+      bindAudience(
+        existing.querySelector('[data-audience="teacher"]'),
+        existing.querySelector('[data-audience="student"]'),
+        existing.querySelector('[data-audience="search"]'),
+      );
+      return;
+    }
     var nav = el("nav", "cpu-audiences");
     nav.id = "curriculum-audiences";
     nav.setAttribute("aria-label", "Choose your curriculum experience");
@@ -87,23 +100,9 @@
     teacher.type = "button";
     teacher.innerHTML =
       '<span aria-hidden="true">👩‍🏫</span><strong>Teacher workspace</strong><small>Plan, review, approve, and launch</small>';
-    teacher.addEventListener("click", function () {
-      var panel = document.getElementById("curriculum-teacher-workflow");
-      // On the Curriculum Hub console the panel is always rendered, because the
-      // page is password-gated and boots in Teacher Mode. The toggle fallback is
-      // for the other pages this bundle loads on, where one may still exist; it
-      // is optional-chained because on the console there is none, and a click on
-      // nothing must be a no-op rather than a throw.
-      if (panel && !panel.hidden) panel.scrollIntoView({ behavior: "smooth", block: "start" });
-      else document.getElementById("hub-mode-toggle")?.click();
-    });
     var student = el("a", "cpu-audience");
-    student.href = studentLaunch(selectedLessonId());
     student.innerHTML =
       '<span aria-hidden="true">🎒</span><strong>Student lesson</strong><small>Only student-safe resources</small>';
-    student.addEventListener("click", function () {
-      student.href = studentLaunch(selectedLessonId());
-    });
     var family = el("a", "cpu-audience");
     family.href = "/curriculum/family-connections/";
     family.innerHTML =
@@ -112,11 +111,32 @@
     search.type = "button";
     search.innerHTML =
       '<span aria-hidden="true">⌘K</span><strong>Find anything</strong><small>Search by need, time, or standard</small>';
-    search.addEventListener("click", openPalette);
+    bindAudience(teacher, student, search);
     [teacher, student, family, search].forEach(function (item) {
       nav.appendChild(item);
     });
     guide.insertBefore(nav, actions);
+  }
+
+  function bindAudience(teacher, student, search) {
+    if (teacher)
+      teacher.addEventListener("click", function () {
+        var panel = document.getElementById("curriculum-teacher-workflow");
+        // On the Curriculum Hub console the panel is always rendered, because the
+        // page is password-gated and boots in Teacher Mode. The toggle fallback is
+        // for the other pages this bundle loads on, where one may still exist; it
+        // is optional-chained because on the console there is none, and a click on
+        // nothing must be a no-op rather than a throw.
+        if (panel && !panel.hidden) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        else document.getElementById("hub-mode-toggle")?.click();
+      });
+    if (student) {
+      student.href = studentLaunch(selectedLessonId());
+      student.addEventListener("click", function () {
+        student.href = studentLaunch(selectedLessonId());
+      });
+    }
+    if (search) search.addEventListener("click", openPalette);
   }
 
   function catalogContract() {

@@ -40,10 +40,23 @@
     />
     <meta name="twitter:image" content="https://eduwonderlab.com/assets/og-curriculum.png" />
 
+    <!-- Preload the three latin faces the first paint uses (Atkinson 400/700,
+         Nunito variable). Without this the browser learns the URLs only after
+         hub-curriculum.css arrives and the swap shifted the layout by
+         CLS 0.52 (Lighthouse mobile, 2026-09-20). Stable content-hashed names
+         written by tools/self-host-fonts.mjs. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/atkinson-hyperlegible-ef295152.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/nunito-c67f9657.woff2" />
     <link
       rel="stylesheet"
       href="/assets/fonts/hub-curriculum.css"
     />
+    <!-- Static Course schema: crawlers that do not run JS never saw the
+         JS-injected one, and on this page it listed zero units because the
+         units browser lives at /curriculum/units/. tools/validate-curriculum-hub.mjs
+         pins it to data/curriculum-manifest.json. -->
+    <script type="application/ld+json" id="curriculum-jsonld">{"@context":"https://schema.org","@type":"Course","@id":"https://eduwonderlab.com/curriculum/","name":"Neft Teacher Grade 6 Math Curriculum","description":"Grade 6 math curriculum hub — 10 units and 84 lessons with interactive lessons, guided notes, homework, games, and projects, aligned to the Maryland College and Career Ready Standards (2025).","url":"https://eduwonderlab.com/curriculum/","provider":{"@type":"Organization","name":"Neft Teacher","url":"https://eduwonderlab.com/"},"educationalLevel":"Grade 6","inLanguage":"en","isAccessibleForFree":true,"hasPart":[{"@type":"Course","name":"Unit 1 — Math Is...","url":"https://eduwonderlab.com/curriculum/units/#unit-1","description":"6 lessons"},{"@type":"Course","name":"Unit 2 — Statistics","url":"https://eduwonderlab.com/curriculum/units/#unit-2","description":"12 lessons"},{"@type":"Course","name":"Unit 3 — Ratios & Rates","url":"https://eduwonderlab.com/curriculum/units/#unit-3","description":"10 lessons"},{"@type":"Course","name":"Unit 4 — Percents","url":"https://eduwonderlab.com/curriculum/units/#unit-4","description":"5 lessons"},{"@type":"Course","name":"Unit 5 — Area, Surface Area & Volume","url":"https://eduwonderlab.com/curriculum/units/#unit-5","description":"10 lessons"},{"@type":"Course","name":"Unit 6 — Expressions","url":"https://eduwonderlab.com/curriculum/units/#unit-6","description":"15 lessons"},{"@type":"Course","name":"Unit 7 — Integers & the Coordinate Plane","url":"https://eduwonderlab.com/curriculum/units/#unit-7","description":"9 lessons"},{"@type":"Course","name":"Unit 8 — Equations & Inequalities","url":"https://eduwonderlab.com/curriculum/units/#unit-8","description":"7 lessons"},{"@type":"Course","name":"Unit 9 — Two-Variable Relationships","url":"https://eduwonderlab.com/curriculum/units/#unit-9","description":"4 lessons"},{"@type":"Course","name":"Unit 10 — Math Is...","url":"https://eduwonderlab.com/curriculum/units/#unit-10","description":"6 lessons"}]}</script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -194,6 +207,16 @@
       <a class="skip-link" href="/curriculum/units/">Skip to units and lessons</a>
       <p class="curriculum-guide__eyebrow">Neft Teacher · Grade 6 Math</p>
       <h1>Curriculum Hub</h1>
+      <!-- Static on purpose. This banner and the audience nav below used to be
+           built by JS after load and pushed the 1,000px-tall actions nav down
+           the page: CLS 0.52 on mobile (Lighthouse, 2026-09-20). The scripts
+           now bind to these nodes instead of creating them. -->
+      <p id="hub-mode-banner" class="hub-mode-banner hub-student-only">
+        <span>🎒 You're in Student view — teacher tools are hidden. </span>
+        <button type="button" class="hub-hint-link" id="hub-mode-banner-switch">
+          Switch to Teacher view
+        </button>
+      </p>
       <p class="curriculum-guide__lede hub-teacher-only">
         Start with the next teaching decision. The full library stays available, but today’s lesson,
         the weekly plan, and the unit sequence come first.
@@ -483,6 +506,29 @@
       <script src="/assets/pacing-unit-dates.generated.js"></script>
       <script src="/assets/curriculum-district-pacing.js"></script>
 
+      <nav
+        class="cpu-audiences"
+        id="curriculum-audiences"
+        aria-label="Choose your curriculum experience"
+      >
+        <button type="button" class="cpu-audience cpu-audience-teacher" data-audience="teacher">
+          <span aria-hidden="true">👩‍🏫</span><strong>Teacher workspace</strong
+          ><small>Plan, review, approve, and launch</small>
+        </button>
+        <a class="cpu-audience" data-audience="student" href="/curriculum/student-launch/?lesson=1-1">
+          <span aria-hidden="true">🎒</span><strong>Student lesson</strong
+          ><small>Only student-safe resources</small>
+        </a>
+        <a class="cpu-audience" data-audience="family" href="/curriculum/family-connections/">
+          <span aria-hidden="true">👪</span><strong>Family connection</strong
+          ><small>Optional, ungraded home support</small>
+        </a>
+        <button type="button" class="cpu-audience cpu-audience-search" data-audience="search">
+          <span aria-hidden="true">⌘K</span><strong>Find anything</strong
+          ><small>Search by need, time, or standard</small>
+        </button>
+      </nav>
+
       <nav class="curriculum-guide__actions" aria-label="Start with a curriculum workflow">
         <button
           class="curriculum-guide__action hub-teacher-only"
@@ -686,6 +732,8 @@
       .teacher-toolbelt > summary.ttb-heading {
         list-style: none;
         cursor: pointer;
+        min-height: 44px;
+        align-items: center;
         font-size: 12px;
         font-weight: 800;
         letter-spacing: 0.12em;
@@ -3607,7 +3655,7 @@
                shows the same district menus as the lesson dock + Teacher Tools
                console. Served no-cache (see _headers) so edits go live at once. -->
           <script src="/assets/learning-supports/supports-schema.js"></script>
-          <script defer src="/assets/curriculum-hub-options.js?v=516ce5d5"></script>
+          <script defer src="/assets/curriculum-hub-options.js?v=0ca629f2"></script>
         </div>
 
         <!-- Seasonal entry point: End-of-Year Command Center -->
