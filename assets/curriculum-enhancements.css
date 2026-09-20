@@ -98,10 +98,11 @@ body.light-theme .hub-clear-filters {
 }
 
 .hub-hint-link {
-  display: inline;
+  display: inline-block;
+  min-height: 44px;
   border: 0;
   background: none;
-  padding: 0;
+  padding: 10px 2px;
   margin: 0;
   color: var(--teal);
   font-weight: 700;
@@ -114,7 +115,13 @@ body.light-theme .hub-clear-filters {
 .hub-hint-link:hover,
 .hub-hint-link:focus-visible {
   color: var(--amber);
-  outline: none;
+}
+
+/* Colour alone is not a focus indicator (WCAG 2.4.7). */
+.hub-hint-link:focus-visible {
+  outline: 3px solid var(--teal, #0f766e);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .hub-enhance-controls {
@@ -163,7 +170,7 @@ body.light-theme .hub-clear-filters {
 }
 
 .hub-filter-chip {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 14px;
   border: 1px solid var(--line);
   background: #161825;
@@ -397,6 +404,54 @@ body.light-theme .lesson-real-world {
 }
 
 /* --- Search clear (x) button --- */
+/* Browserless hub (/curriculum/): the box hands the query to the units
+   browser, so it gets a real Search control and a one-line explanation. */
+/* Let the box give way to the Search control at 320px instead of
+   overflowing the viewport (inputs carry an intrinsic min-width). */
+.search input {
+  min-width: 0;
+}
+.curr-search-go {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: var(--teal, #0f766e);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.curr-search-go:hover,
+.curr-search-go:focus-visible {
+  background: #0b5f59;
+  color: #fff;
+  outline: 3px solid #0f766e;
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  /* Phones: the Search control drops to its own row so the box keeps
+     enough width to show what was typed. */
+  .search:has(.curr-search-go) {
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+  }
+  .search:has(.curr-search-go) .curr-search-go {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+.hub-search-hint {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #56627a;
+}
+.hub-search-hint a {
+  color: #0f766e;
+  font-weight: 700;
+}
+
 .curr-search-clear {
   flex: 0 0 auto;
   width: 30px;

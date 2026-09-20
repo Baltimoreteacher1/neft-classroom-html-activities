@@ -40,6 +40,14 @@
     />
     <meta name="twitter:image" content="https://eduwonderlab.com/assets/og-curriculum.png" />
 
+    <!-- Preload the three latin faces the first paint uses (Atkinson 400/700,
+         Nunito variable). Without this the browser learns the URLs only after
+         hub-curriculum.css arrives and the swap shifted the layout by
+         CLS 0.52 (Lighthouse mobile, 2026-09-20). Stable content-hashed names
+         written by tools/self-host-fonts.mjs. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/atkinson-hyperlegible-ef295152.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/nunito-c67f9657.woff2" />
     <link rel="stylesheet" href="/assets/fonts/hub-curriculum.css" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />

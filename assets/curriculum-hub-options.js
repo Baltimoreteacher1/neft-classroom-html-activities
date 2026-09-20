@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     translate: "language-support",
   };
   const GROUP_NOTES = {
-    iep: "District IEP accommodations & modifications",
+    iep: "District access supports & modifications",
     esol: "District ESOL modifications (WIDA)",
   };
   const schema = window.EWLSupportsSchema;
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!items.length) return;
     const digital = items.filter((it) => !it.inPerson).map((it) => it.label);
     const inPerson = items.filter((it) => it.inPerson).map((it) => it.label);
-    const lines = [`IEP accommodations — Lesson ${select.value}`];
+    const lines = [`Learning supports — Lesson ${select.value}`];
     if (digital.length) {
       lines.push("In the lesson link:", ...digital.map((l) => `• ${l}`));
     }
