@@ -127,20 +127,23 @@ jobs:
         id: biome
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm run check
-      - name: Unit and contract tests
-        id: tests
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: npm test
-      # BEFORE validation, not after it. `npm run validate` includes
-      # validate:notebook-render, which launches Playwright — with the install
-      # sitting further down (it was gated on the build), that check died with
-      # "Executable doesn't exist" and took the whole required gate red. The
-      # browser journeys below need the same browser, so this is the same
-      # install moved earlier, not an extra one.
+      # BEFORE the unit tests AND validation. `npm test` runs
+      # tools/focus-school-point-sync.test.mjs, which launches Playwright, and
+      # `npm run validate` includes validate:notebook-render, which does too.
+      # With the install sitting below either of them the step died with
+      # "Executable doesn't exist" and took the whole required gate red — main
+      # sat there from 2026-09-18 to 2026-09-20 on the test step after an
+      # earlier move only put it ahead of validation. The browser journeys
+      # further down need the same browser, so this is one install, early.
       - name: Install Chromium
         id: chromium
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npx playwright install --with-deps chromium
+
+      - name: Unit and contract tests
+        id: tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm test
 
       - name: Static + reveal-math + hub-lock validation
         id: validate
