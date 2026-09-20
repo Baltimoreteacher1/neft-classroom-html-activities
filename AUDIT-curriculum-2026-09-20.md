@@ -98,6 +98,7 @@ Severity: P0 must fix now · P1 fix this pass · P2 fix if low-risk · P3 note.
 | Before — production 2026-09-20 | 74 | 100 | 100 | 100 | 2.8 s | 0.516 | 0 ms |
 | Before — local build of `origin/main` (`vite preview`) | 74 | 100 | 96 | 100 | 2.4 s | 0.516 | 0 ms |
 | After — local build of this branch (`vite preview`) | **97** | 100 | 96 | 100 | 2.4 s | **0** | 0 ms |
+| **After — production 2026-09-20** (`bd58f9541`) | **97** | 100 | 100 | 100 | 2.4 s | **0** | 0 ms |
 
 Local Best Practices is 96 in both rows for one reason: `vite preview` has no
 Pages Functions, so `/api/supports/sections` 404s in the console. Production
@@ -105,8 +106,13 @@ serves it (100 before; expected 100 after). A `PerformanceObserver`
 layout-shift probe on a throttled 390 px mobile profile agrees: 0.505 before,
 0 after.
 
-Production "after" numbers can only be taken once the branch ships (deploys go
-through `ALLOW_DEPLOY=1 npm run ship`, which needs Joel's authorization).
+Shipped 2026-09-20 via `ALLOW_DEPLOY=1 npm run ship` as `b9e6244f8` (squash of
+this branch) and `bd58f9541` (final wording sweep). Production after both:
+Playwright on the live hub — student and teacher view — shows 0 filter chips,
+no "0 lessons" line, the Search hand-off landing on "Showing 19 lessons · 39
+pathways (of 260) in 7 units", static Course schema present, CLS 0 by
+layout-shift observer, no console errors; the units page links 64 Get Ready
+pages and 0 legacy Drive decks.
 
 ## Shipping this pass (ranked)
 
@@ -150,7 +156,7 @@ through `ALLOW_DEPLOY=1 npm run ship`, which needs Joel's authorization).
 | Layout-shift observer, throttled 390 px | 0 (before 0.505) |
 | Rendered link check, hub + units, student + teacher, all details open | 2,362 unique URLs, **0 unresolved** (before: 24 × 404, 53 × 410) |
 | Behaviour | hub: no chips, no "0 lessons", no progress line, Search control 88×44, Enter → `/curriculum/units/?q=ratio` → "Showing 19 lessons · 39 pathways (of 260) in 7 units"; units page: 64 Get Ready links = the 64 pages on disk, 0 dead, 0 legacy Drive links; `?q=` deep link still pre-fills; `/` focuses, Esc clears |
-| Restricted strings (IEP / SPED / 504 / accommodat) in rendered text | student view 0; teacher view 1 — the deferred district-schema heading (C-07) |
+| Restricted strings (IEP / SPED / 504 / accommodat) in rendered text | student view 0; teacher view 1 — the deferred district-schema heading (C-07). A second, context-free sweep after the first deploy found five more rendered strings the first grep had missed (nervous-system card heading and button, "SPED / language" in the small-group blurb, the link-builder summary "(IEP)" and its how-to, the PIN prompt) — reworded in `f2fa5dcad`, shipped as `bd58f9541` |
 | axe-core WCAG 2.1 A/AA on the hub | 0 violations (before 0) |
 | Horizontal overflow at 320 / 390 / 768 / 1024 / 1280 | none |
 | Touch targets < 44 px in the hub (non-inline) | 1 — the site-wide Math Workbench launcher (M-02, deferred) |
