@@ -12,7 +12,6 @@ import { MISCONCEPTIONS, resolveAuthoredTag } from "@eduwonderlab/engine/core/mi
 import { LESSONS_DIR, lessonPath } from "./lib/curriculum-source.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, "..");
 const table = JSON.parse(readFileSync(join(HERE, "authored-misconception-tags.json"), "utf8"));
 const entries = Object.entries(table).filter(([key]) => !key.startsWith("_"));
 

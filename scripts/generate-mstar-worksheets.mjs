@@ -349,7 +349,7 @@ ${item.title ? `      <p class="ws-scenario-title">${esc(item.title)}</p>` : ""}
 
 /* ── teacher key rendering ────────────────────────────────────────────────── */
 
-function feedbackHtml(choices, feedback) {
+function feedbackHtml(_choices, feedback) {
   if (!Array.isArray(feedback)) return "";
   const notes = feedback
     .map((f, i) => (f ? `<li><strong>${LETTERS[i]}:</strong> ${esc(f)}</li>` : ""))

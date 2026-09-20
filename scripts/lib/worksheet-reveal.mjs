@@ -32,13 +32,37 @@ const UNIT_LABELS = (() => {
   return names;
 })();
 
+/**
+ * Reveal lessons whose number does NOT name the site lesson with the same
+ * number, so the sheet must not be read onto it.
+ *
+ * `Unit N/Lesson N.x` matches `lessons/N-x` for 53 of the 54 district lessons.
+ * Reveal 2.6 is "Median and Outliers"; site 2-6 is "Divide Multi-Digit Numbers
+ * Using an Algorithm" (6.NOS.2), because the site interleaves the unit's
+ * division lessons with its statistics lessons and the district does not. The
+ * district's median/outlier teaching already lives on site 2-3 (median) and
+ * 2-5 (range and IQR), so 2.6 has no home here at all — reading it onto 2-6
+ * put a statistics word wall and a median worked example on a long-division
+ * worksheet, live, on 2026-09-19.
+ *
+ * `tools/reveal-lesson-map.test.mjs` compares every remaining pair's topic
+ * words and fails on a new crossing rather than letting one ship again.
+ */
+const UNMAPPED = new Set(["2-6"]);
+
 /** The Reveal sheet this lesson's packet opens with, or null. */
 export function revealFor(lessonId) {
   const id = String(lessonId || "");
-  if (/^\d+-\d+-part2$/.test(id)) return SESSION_2.get(id) || null;
+  const p2 = /^(\d+-\d+)-part2$/.exec(id);
+  if (p2) return UNMAPPED.has(p2[1]) ? null : SESSION_2.get(id) || null;
   const m = /^(\d+)-(\d+)(?:-(?:group1|group2|catchup))?$/.exec(id);
-  return m ? SESSION_1.get(`${m[1]}-${m[2]}`) || null : null;
+  if (!m) return null;
+  const base = `${m[1]}-${m[2]}`;
+  return UNMAPPED.has(base) ? null : SESSION_1.get(base) || null;
 }
+
+/** Exposed for the map guard test. */
+export const UNMAPPED_REVEAL_LESSONS = UNMAPPED;
 
 /** "Unit 3: Ratios & Rates" — the district's own unit name. */
 export function unitLabel(cfg) {

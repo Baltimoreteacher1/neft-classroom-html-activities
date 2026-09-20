@@ -6,8 +6,6 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import vm from "node:vm";
 
-const root = join(import.meta.dirname, "..");
-
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // Every page the homework generator writes, not every core lesson: a bridge or

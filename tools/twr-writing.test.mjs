@@ -8,8 +8,6 @@ import { renderTwrWriting } from "@eduwonderlab/engine/components/twr-writing.js
 import { deriveTWR } from "@eduwonderlab/engine/core/twr.js";
 import { JSDOM } from "jsdom";
 
-const root = new URL("../", import.meta.url).pathname;
-
 import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
 const lessonIds = readdirSync(lessonsDir)

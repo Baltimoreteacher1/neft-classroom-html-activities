@@ -31,8 +31,6 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
 import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 /** Key markup a student page must not carry. CSS `.ws-correct{` is exempt. */
@@ -93,6 +91,8 @@ const FAMILIES = [
   // "worksheet-2-answer-key.html" carries `answer-key`, so Basic Auth gates the
   // key without retouching the five pinned auth files.
   { student: "worksheet-2.html", key: "worksheet-2-answer-key.html" },
+  // Level 0 — most support, core lessons only. Same seam, same reason.
+  { student: "worksheet-level-0.html", key: "worksheet-level-0-answer-key.html" },
   { student: "practice.html", key: "practice-answer-key.html" },
   // Per-lesson MSTAR practice worksheet (scripts/generate-mstar-worksheets.mjs).
   // Same seam again: the student sheet carries no key markup, and the key page's

@@ -132,7 +132,7 @@ function wordsBlock(rows) {
 
 const blankify = (s) => esc(s).replace(/_{3,}/g, '<span class="ws-fill-inline"></span>');
 
-function exampleBlock(cfg, reveal) {
+export function exampleBlock(cfg, reveal) {
   const rx = reveal?.workedExample;
   const intro = conceptIntroOf(cfg);
   let title = "";

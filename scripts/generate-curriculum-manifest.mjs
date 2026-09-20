@@ -83,6 +83,15 @@ function resourcesFor(id) {
       file: `lessons/${id}/worksheet-2.html`,
       applicable: true,
     },
+    /* Level 0 — the most-supported form: the START HERE page plus the first
+       four Version A problems with every authored hint printed as steps. Its
+       own sheet so the packet everyone else prints stays short. Core lessons
+       with an approaching pool have one; presence is the file on disk. */
+    worksheetLevel0: {
+      path: `/lessons/${id}/worksheet-level-0.html`,
+      file: `lessons/${id}/worksheet-level-0.html`,
+      applicable: true,
+    },
     /* The printable MSTAR-style practice worksheet (generate-mstar-worksheets.mjs)
        — the per-lesson rehearsal of the state test's question formats. Same
        rule as worksheet/worksheet2: a sheet the manifest does not name is a

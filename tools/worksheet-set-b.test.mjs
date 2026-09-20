@@ -22,6 +22,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   coreReserve,
+  coreSetAPool,
   itemFingerprint,
   kindOf,
   partTwoSetAPool,
@@ -48,7 +49,7 @@ function setAPool(cfg) {
   if (kind === "group2") return (ext.length ? ext : on).slice(0, 6);
   if (kind === "catchup") return (app.length ? app : on).slice(0, 5);
   if (kind === "partTwo") return partTwoSetAPool(cfg);
-  return [...app, ...on, ...ext];
+  return coreSetAPool(cfg);
 }
 
 const fingerprint = itemFingerprint;

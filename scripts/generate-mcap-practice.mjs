@@ -39,7 +39,6 @@ import {
 } from "docx";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, "..");
 const dataDir = join(__dirname, "mcap-practice", "data");
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";

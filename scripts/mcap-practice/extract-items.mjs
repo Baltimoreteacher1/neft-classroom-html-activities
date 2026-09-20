@@ -29,7 +29,6 @@ import { fileURLToPath } from "node:url";
 import JSZip from "jszip";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, "..", "..");
 
 import { LESSONS_DIR as lessonsDir } from "../../tools/lib/curriculum-source.mjs";
 
