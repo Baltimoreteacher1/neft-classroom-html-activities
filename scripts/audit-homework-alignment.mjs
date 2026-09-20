@@ -131,8 +131,9 @@ const lessons = loadLessons();
 /* One entry per lesson directory that ships family homework. Pinned so a lesson
    that silently stops generating homework fails here instead of shrinking the
    denominator and still reporting "all compliant". Was 74 until the book-TOC
-   renumber brought the curriculum to 84. */
-const expectedCount = 164;
+   renumber brought the curriculum to 84, and 164 until lesson 9-4 gained its
+   Apply Day on 2026-09-20. */
+const expectedCount = 165;
 const failures = [];
 const alignmentRows = [];
 
