@@ -116,9 +116,26 @@ export function detectVisualTopic(config) {
   const title = String(config.familyNotes?.sessionTitle || config.title || "").toLowerCase();
   const unit = Number(config.unit) || 0;
 
+  /* A lesson whose mathematics no title or standard can name — 10-4 "Math is
+     Ingenuity" is gear RATIOS under an MPP standard — may declare its topic in
+     the family-note sidecar. Only a topic the labs actually draw counts. */
+  const declaredTopic = String(config.familyNotes?.visualTopic || "").trim();
+  if (declaredTopic && LAB_TOPICS.has(declaredTopic)) return declaredTopic;
+
   if (standard === "6.AT.5" || /exponent|power/i.test(title)) return "exponents";
   if (/inequal/i.test(title) || standard === "6.AT.9") return "inequalities";
-  if (/equation/i.test(title) || standard === "6.AT.8") return "equations";
+  /* Percent stays percent. 4-5's second session is titled "Solving for the
+     Whole with an EQUATION", and the equation rule below handed it a balance
+     scale and NASA-fuel spotlight in a percent lesson whose model is a percent
+     bar; 6.AT.4 is the percent standard and belongs with the ratio strand. */
+  if (standard === "6.AT.4") return "ratios";
+  /* Unit 9 (6.AT.11, two-variable relationships) is equations — y = 2x + 4 in
+     a table, on a graph, in words. The 6.AT catch-all further down read it as
+     ratios, so 9-1's "Tables of Values" and 9-4's Part 2 drew a ratio table
+     captioned "multiply BOTH columns by the same number", which is false for
+     every relationship in the unit that has a constant term. */
+  if (/equation/i.test(title) || standard === "6.AT.8" || standard === "6.AT.11")
+    return "equations";
   // A graphing lesson (e.g. "Graph Ratio Tables") is about plotting on the plane,
   // so the coordinate-plane visual fits better than a ratio table — check before ratios.
   if (/graph/i.test(title) && /ratio|coordinate|plane|plot|ordered pair/i.test(title))

@@ -1185,7 +1185,12 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       </div>
     `;
   } else if (type === "open-response") {
-    const prompt = it.prompt || "";
+    /* Authored Session 2 items (data/part-two-session2-practice.json) state
+       their question as `stem`, like every other type; lesson configs say
+       `prompt`. Reading only `prompt` left the English side of every authored
+       open-response EMPTY while the Spanish side (which already fell back to
+       stemEs) rendered — an English-only family saw a blank question. */
+    const prompt = it.prompt || it.stem || "";
     const promptEs = it.promptEs || it.stemEs || "";
     const sentenceFrame = it.sentenceFrame || "";
     const _sentenceFrameEs = it.sentenceFrameEs || "";
@@ -1351,7 +1356,7 @@ function generateHtml(lessonId, config) {
   const themeCss = renderUnitThemeCss(theme);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
-  const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length);
+  const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length, moreSelected.length > 0);
   const warmupHtml = warmup
     .map((p, idx) =>
       renderProblem(p, idx, topic, { badgeEn: "Warm-up", badgeEs: "Calentamiento", num: idx + 1 }),

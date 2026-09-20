@@ -2753,14 +2753,19 @@ export function renderCelebration() {
    button, the hero total and this paragraph cannot disagree. They did: the hero
    promised 25 minutes across 5 stops, the rail billed Check at 10, and this
    paragraph asked for 15-20 — three numbers for one stop, on one screen. */
-export function renderQuickCheckIntro(coreCount = 6) {
+export function renderQuickCheckIntro(coreCount = 6, hasMore = true) {
   const mins = HOMEWORK_TABS.find((t) => t.id === "check")?.min ?? 8;
+  /* A Part 2 with authored session practice ships exactly its core set and no
+     bonus accordion, so "the extra practice at the bottom" pointed at nothing.
+     Only promise it when the page renders it. */
+  const extraEn = hasMore ? " The extra practice at the bottom is optional." : "";
+  const extraEs = hasMore ? " La práctica extra al final es opcional." : "";
   return `
     <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">⏱️ About <strong>${mins} minutes</strong> for the ${coreCount} problems below. The extra practice at the bottom is optional.</span>
-        <span class="lang-es" lang="es">⏱️ Unos <strong>${mins} minutos</strong> para los ${coreCount} problemas de abajo. La práctica extra al final es opcional.</span>
+        <span class="lang-en">⏱️ About <strong>${mins} minutes</strong> for the ${coreCount} problems below.${extraEn}</span>
+        <span class="lang-es" lang="es">⏱️ Unos <strong>${mins} minutos</strong> para los ${coreCount} problemas de abajo.${extraEs}</span>
       </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
@@ -7205,7 +7210,11 @@ export function renderCheckTab(
       <span class="goal-icon" aria-hidden="true">🌟</span>
       <div class="goal-text">
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
-        <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to celebrate and sign off.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para celebrar y firmar.</span></p>
+        <p>${
+          moreHtml
+            ? `<span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to celebrate and sign off.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para celebrar y firmar.</span>`
+            : `<span class="lang-en">Great work. Head to <strong>Done</strong> to celebrate and sign off.</span><span class="lang-es" lang="es">Buen trabajo. Vayan a <strong>Listo</strong> para celebrar y firmar.</span>`
+        }</p>
       </div>
       <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
         <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
