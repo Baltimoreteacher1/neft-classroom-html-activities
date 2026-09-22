@@ -3191,6 +3191,17 @@
         resRow.appendChild(a);
       });
       if (u.unitIndex) {
+        var projPath =
+          UNIT_CULMINATING_PROJECT[u.unitIndex] || "/math/unit-" + u.unitIndex + "/projects/";
+        var openProjBtn = document.createElement("a");
+        openProjBtn.className = "unit-resource-btn";
+        openProjBtn.href = projPath;
+        openProjBtn.innerHTML = "🚀 " + (u.num ? u.num + " Project" : "Unit Project");
+        openProjBtn.style.background = "#1a6fb5";
+        openProjBtn.style.color = "#ffffff";
+        openProjBtn.style.fontWeight = "700";
+        resRow.appendChild(openProjBtn);
+
         resRow.appendChild(
           makeScormLink(
             "/math/games/practice-arcade/?unit=" + u.unitIndex,
@@ -3205,7 +3216,7 @@
         // the live unit projects page, the same path the review-game chip
         // above uses, so there is nothing to keep in sync.
         var zipBtn = makeScormLink(
-          "/math/unit-" + u.unitIndex + "/projects/",
+          projPath,
           u.num + " Project",
           "📦 Unit Project — Canvas SCORM",
           "unit-resource-btn scorm-dl",
