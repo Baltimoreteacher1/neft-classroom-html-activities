@@ -77,7 +77,11 @@ const BRIDGE_RE = /^\d+(?:-\d+)*-(?:practice|review)$/;
 // fallback. Third copy of the question `generatesFamilyHomework` answers in
 // scripts/lib/lesson-scope.mjs; it must not answer it more narrowly, or the
 // generator writes a hub key this gate then calls a phantom.
-const PART_TWO_RE = /^\d+(?:-\d+)*(?:-practice)?-part2$/;
+// `-part3` is the same kind of page one section further along; 3-2 is the only
+// lesson taught over three sections. Kept in step with EXTRA_SESSION_RE in
+// scripts/lib/lesson-scope.mjs — widening one without the other either hides a
+// real page from this gate or makes the gate call a live page a phantom.
+const EXTRA_SESSION_RE = /^\d+(?:-\d+)*(?:-practice)?-part[23]$/;
 
 /* --- Detectors -------------------------------------------------------------- */
 
@@ -176,7 +180,7 @@ const dirs = readdirSync(LESSONS, { withFileTypes: true })
 const core = dirs.filter((d) => CORE_RE.test(d)).sort();
 const variants = dirs.map((d) => d.match(VARIANT_RE)).filter(Boolean);
 const bridges = dirs.filter((d) => BRIDGE_RE.test(d)).sort();
-const partTwos = dirs.filter((d) => PART_TWO_RE.test(d)).sort();
+const extraSessions = dirs.filter((d) => EXTRA_SESSION_RE.test(d)).sort();
 
 const findings = [];
 
@@ -250,13 +254,13 @@ const SURFACES = [
     label: "the hub family-homework catalogue",
     file: "curriculum/lesson-family-homework.js",
     anchor: "window.LESSON_FAMILY_HOMEWORK = {",
-    // Core lessons, any bridge lesson that opted in, and every `-part2` second
-    // session. A page on disk is the evidence in both directions, so this
+    // Core lessons, any bridge lesson that opted in, and every `-part2`/`-part3`
+    // extra session. A page on disk is the evidence in both directions, so this
     // cannot drift from the generator.
     truth: () => [
       ...lessonsWith(hasHomework),
       ...bridges.filter(hasHomework),
-      ...partTwos.filter(hasHomework),
+      ...extraSessions.filter(hasHomework),
     ],
     truthName: "lessons with a homework.html",
     missing: "a family is offered no take-home practice for that lesson",

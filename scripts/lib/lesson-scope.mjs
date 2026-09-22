@@ -57,7 +57,11 @@ const GROUP_TWIN_RE = /-group\d+$/;
 // the second session with nothing for families. Unlike `-group1`/`-group2`,
 // which ARE the same lesson at another level and must resolve through the
 // parent, this one keys the hub catalogue directly.
-const PART_TWO_RE = /^\d+-\d+-part2$/;
+// `-part3` is the same thing one section further along. It exists for exactly
+// one lesson — 3-2, which is taught over three sections this year — so the
+// suffix is enumerated rather than left open-ended: a `-part4` should be a
+// deliberate edit here, not something a stray directory name switches on.
+const EXTRA_SESSION_RE = /^\d+-\d+-part[23]$/;
 
 /**
  * True when `id` should be given a `homework.html` and a hub tile.
@@ -68,7 +72,7 @@ const PART_TWO_RE = /^\d+-\d+-part2$/;
  */
 export function generatesFamilyHomework(id, config) {
   if (LESSON_DIR_RE.test(id)) return true;
-  if (PART_TWO_RE.test(id)) return true;
+  if (EXTRA_SESSION_RE.test(id)) return true;
   if (GROUP_TWIN_RE.test(id)) return false;
   return FAMILY_HOMEWORK_DIR_RE.test(id) && Boolean(config?.familyHomework);
 }
@@ -91,4 +95,4 @@ export function compareFamilyHomeworkIds(a, b) {
   return ka[0] - kb[0] || ka[1] - kb[1] || (ka[2] < kb[2] ? -1 : ka[2] > kb[2] ? 1 : 0);
 }
 
-export { FAMILY_HOMEWORK_DIR_RE, GROUP_TWIN_RE, LESSON_DIR_RE, PART_TWO_RE };
+export { EXTRA_SESSION_RE, FAMILY_HOMEWORK_DIR_RE, GROUP_TWIN_RE, LESSON_DIR_RE };

@@ -186,6 +186,11 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/3-2-part2/homework.html",
     "isFamilyHomework": true
   },
+  "3-2-part3": {
+    "text": "🏠 Family Practice · Section 3 (optional)",
+    "href": "/lessons/3-2-part3/homework.html",
+    "isFamilyHomework": true
+  },
   "3-3": {
     "text": "🏠 Family Practice · Part 1 (optional)",
     "href": "/lessons/3-3/homework.html",

@@ -554,6 +554,12 @@ export const ACTIVITIES = [
     unit: 3,
   },
   {
+    path: "/lessons/3-2-part3/homework.html",
+    title: "3-2-part3 3.2 · Section 3 — Family Homework",
+    category: "Homework",
+    unit: 3,
+  },
+  {
     path: "/families/lessons/3-3/",
     title: "3-3 Determine Equivalent Ratios Using Tables — Family Homework",
     category: "Homework",

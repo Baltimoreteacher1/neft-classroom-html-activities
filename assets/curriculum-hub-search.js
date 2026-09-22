@@ -2918,18 +2918,22 @@
       if (familyHw) {
         activities.push(familyHw);
       }
-      // A lesson taught over two sessions has a second night of practice, keyed
-      // on its own `-part2` id. There is no separate hub row for Part 2 — the
-      // row already links /lessons/<id>-part2/ as "Part 2 · Apply" — so the
-      // second tile is looked up explicitly and sits beside the first. Falls
-      // back through baseLessonId the same way, so the group1/group2 twins
-      // inherit both nights rather than only the first.
-      var familyHwPart2 =
-        LESSON_FAMILY_HOMEWORK[lessonId + "-part2"] ||
-        LESSON_FAMILY_HOMEWORK[baseLessonId + "-part2"];
-      if (familyHwPart2 && familyHwPart2 !== familyHw) {
-        activities.push(familyHwPart2);
-      }
+      // A lesson taught over more than one session sends a night of practice
+      // home for each, keyed on its own `-part2` / `-part3` id. There is no
+      // separate hub row for those sessions — the row already links
+      // /lessons/<id>-part2/ as "Part 2 · Apply" — so each extra tile is looked
+      // up explicitly and sits beside the first. Falls back through
+      // baseLessonId the same way, so the group1/group2 twins inherit every
+      // night rather than only the first. `-part3` exists for lesson 3-2 alone;
+      // a lesson without one simply has no key here and adds no tile.
+      ["-part2", "-part3"].forEach(function (suffix) {
+        var extra =
+          LESSON_FAMILY_HOMEWORK[lessonId + suffix] ||
+          LESSON_FAMILY_HOMEWORK[baseLessonId + suffix];
+        if (extra && extra !== familyHw && activities.indexOf(extra) === -1) {
+          activities.push(extra);
+        }
+      });
 
       // Printables — paper game, color-by-number, word search, MCAP packet.
       var printables = LESSON_PRINTABLES[lessonId] || LESSON_PRINTABLES[baseLessonId];

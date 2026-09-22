@@ -132,8 +132,9 @@ const lessons = loadLessons();
    that silently stops generating homework fails here instead of shrinking the
    denominator and still reporting "all compliant". Was 74 until the book-TOC
    renumber brought the curriculum to 84, and 164 until lesson 9-4 gained its
-   Apply Day on 2026-09-20. */
-const expectedCount = 165;
+   Apply Day on 2026-09-20. 166 since 2026-09-22, when lesson 3-2 — the one
+   lesson taught over three sections — gained its Section 3 page. */
+const expectedCount = 166;
 const failures = [];
 const alignmentRows = [];
 

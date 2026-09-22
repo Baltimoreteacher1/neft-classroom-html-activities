@@ -38,19 +38,30 @@ export function esc(s) {
 }
 export const escAttr = esc;
 
+/**
+ * How each extra session names itself wherever a family reads it.
+ *
+ * `-part2` is the second of the two class days nearly every lesson is taught
+ * over. `-part3` exists for lesson 3-2 alone — the one lesson taught over three
+ * sections — and it is called "Section 3" because that is the word used with
+ * families for it; the hub tile in lessons/3-2-part3/config.json says the same
+ * words, and this map is the one place the two are kept in step.
+ */
+const SESSION_LABELS = { part2: "Part 2", part3: "Section 3" };
+
 // Lesson folder slugs carry internal variant suffixes ("2-1-flagship",
 // "2-1-group1", "2-1-catchup"). Those are build/routing details — families
 // should only ever see the lesson number, so strip the suffix for any
 // human-facing label. The raw id still drives URLs, storage keys, and
 // window.LESSON_ID.
 export function displayLessonId(lessonId) {
-  // `-part2` is NOT a build detail like the others: it is the second of the two
-  // sessions the lesson is taught over, and a family holding two pages for one
+  // `-partN` is NOT a build detail like the others: it is one of the sessions
+  // the lesson is taught over, and a family holding several pages for one
   // lesson needs to see which night each belongs to. Kept, but said in words —
   // "Lesson 2-1 · Part 2", never the folder slug "2-1-part2".
   return String(lessonId ?? "")
     .replace(/-(flagship|group\d+|catchup)$/, "")
-    .replace(/-part2$/, " · Part 2");
+    .replace(/-(part[23])$/, (_, slug) => ` · ${SESSION_LABELS[slug]}`);
 }
 
 /**
@@ -71,7 +82,8 @@ export function homeworkPageLabel(lessonId) {
   // A bridge lesson's Part 2 is still a review: its own title says which
   // lessons it covers, so naming it "Lesson 6-1-6-2-practice · Part 2" is the
   // folder slug leaking to a family all over again.
-  if (/-(practice|catchup|review)-part2$/.test(id)) return "Review · Part 2";
+  const bridgeSession = /-(?:practice|catchup|review)-(part[23])$/.exec(id);
+  if (bridgeSession) return `Review · ${SESSION_LABELS[bridgeSession[1]]}`;
   return `Lesson ${displayLessonId(id)}`;
 }
 
