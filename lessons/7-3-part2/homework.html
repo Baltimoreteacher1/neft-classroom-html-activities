@@ -354,6 +354,138 @@ header.homework-header,
 }
 
 
+/* Enhancements: Share bar, Standard details, Time remaining, Kitchen table, Audio buttons */
+.hw-hero-share-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 6px 0;
+}
+.hw-share-btn {
+  font-size: 0.82rem;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.hw-share-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  text-decoration: none;
+}
+.hw-standard-details {
+  margin: 6px 0 10px 0;
+  font-size: 0.85rem;
+}
+.hw-standard-summary {
+  cursor: pointer;
+  color: var(--amber-light);
+  font-weight: 600;
+}
+.hw-standard-desc {
+  margin: 4px 0 0 0;
+  font-size: 0.8rem;
+  color: var(--teal-light);
+}
+.hw-tab-meta-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 12px 2px 12px;
+}
+.hw-time-remaining {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--amber-light);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+.btn-listen-prob {
+  background: var(--teal-light);
+  border: 1px solid var(--teal);
+  color: var(--teal-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+.btn-listen-prob:hover {
+  background: var(--teal);
+  color: #ffffff;
+}
+.kitchen-table-card {
+  margin: 20px 0;
+  padding: 18px 20px;
+  background: #fff;
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.kt-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--teal-ink);
+  margin-bottom: 6px;
+}
+.kt-title {
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
+  color: var(--navy);
+}
+.kt-materials {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0 0 10px 0;
+}
+.kt-steps {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+.kt-why {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+}
+.cert-streak-box {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--amber-light);
+  border-radius: 8px;
+  color: #78350f;
+  font-size: 0.9rem;
+}
+
+@media print {
+  body.print-problems-only [data-tab-panel]:not([data-tab-panel="check"]),
+  body.print-problems-only .hw-hero,
+  body.print-problems-only .homework-tab-chrome,
+  body.print-problems-only .hw-stuck-fab,
+  body.print-problems-only .workbench-drawer,
+  body.print-problems-only .more-practice,
+  body.print-problems-only .tab-flow-nav,
+  body.print-problems-only .problem-check-row {
+    display: none !important;
+  }
+  body.print-problems-only [data-tab-panel="check"] {
+    display: block !important;
+  }
+}
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -4240,6 +4372,227 @@ body.hw-drawer-open { overflow: hidden; }
 .workbench-drawer[open] .workbench-drawer-chevron { transform: rotate(180deg); }
 .workbench-drawer-body { padding: 4px 16px 18px; background: #fff; }
 
+/* ── Workbench and Quick Launch Styling ── */
+.workbench-quick-launch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin: 18px 0;
+}
+.wb-launch-content { display: flex; align-items: center; gap: 14px; }
+.wb-launch-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+.wb-launch-text strong { display: block; color: var(--navy); font-size: 14.5px; margin-bottom: 2px; }
+.wb-launch-text p { margin: 0; font-size: 13px; color: var(--ink); line-height: 1.4; }
+.wb-launch-btn { flex-shrink: 0; white-space: nowrap; font-weight: 700; }
+@media (max-width: 600px) {
+  .workbench-quick-launch { flex-direction: column; align-items: flex-start; }
+}
+
+.wb-tool-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0 14px;
+  border-bottom: 1.5px solid var(--line);
+  overflow-x: auto;
+}
+.wb-tool-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #f8fafc;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.wb-tool-tab:hover { background: #e2e8f0; }
+.wb-tool-tab.is-active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+.tool-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 8px 12px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+.tool-presets-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.wb-preset-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #94a3b8;
+  background: #fff;
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.wb-preset-btn:hover {
+  background: var(--teal-light);
+  border-color: var(--teal);
+  color: var(--teal-ink);
+}
+
+.fraction-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.fraction-stage-canvas {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.fraction-row {
+  display: flex;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.frac-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  border-right: 1px solid rgba(255,255,255,.4);
+  user-select: none;
+}
+.frac-tile:last-child { border-right: none; }
+.tile-1 { background: #1e293b; }
+.tile-2 { background: #0284c7; }
+.tile-3 { background: #059669; }
+.tile-4 { background: #d97706; }
+.tile-6 { background: #7c3aed; }
+.tile-8 { background: #dc2626; }
+.tile-12 { background: #db2777; }
+
+.tape-diagram-render {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.tape-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tape-label {
+  min-width: 90px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--navy);
+}
+.tape-blocks {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.tape-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 38px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  border: 2px solid rgba(0,0,0,.15);
+}
+.tape-block-a { background: #0b8f87; }
+.tape-block-b { background: #ff775f; }
+
+.dec-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.dec-grid-table th {
+  padding: 8px 6px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+.dec-grid-table th small {
+  font-weight: 500;
+  opacity: .8;
+  display: block;
+}
+.dec-grid-table td {
+  padding: 6px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+.dec-grid-table .dec-pt {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--navy);
+  width: 20px;
+  padding: 0 4px;
+}
+.dg-cell {
+  width: 38px;
+  height: 38px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  color: var(--navy);
+}
+.dg-cell:focus {
+  outline: 3px solid var(--teal);
+  border-color: var(--teal);
+}
+
 /* ============================================================
    Family Activity Corner — hands-on activity cards on the Together tab.
    ============================================================ */
@@ -4697,6 +5050,22 @@ body.hw-drawer-open { overflow: hidden; }
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
 .visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
+.visual-lab-presets{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:rgba(255,255,255,.1);border-radius:14px;border:1px solid rgba(255,255,255,.2);margin-bottom:4px}
+.presets-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--lab-sun)}
+.preset-pill-group{display:flex;flex-wrap:wrap;gap:6px}
+.preset-pill-btn{padding:5px 10px;border-radius:999px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s ease;display:inline-flex;align-items:center}
+.preset-pill-btn:hover{background:var(--lab-sun);color:var(--lab-ink);border-color:var(--lab-sun);transform:translateY(-1px)}
+.preset-pill-btn.is-active{background:var(--lab-coral);color:#fff;border-color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.preset-pill-btn:focus-visible{outline:3px solid var(--lab-sun);outline-offset:2px}
+.visual-lab-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 6px 2px}
+.legend-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:8px;background:rgba(255,255,255,.88);border:1px solid rgba(23,58,94,.18);font-size:12px;font-weight:700;color:var(--lab-ink)}
+.legend-swatch{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.25)}
+.legend-swatch.swatch-teal{background:var(--lab-teal)}
+.legend-swatch.swatch-coral{background:var(--lab-coral)}
+.legend-swatch.swatch-gold{background:var(--lab-sun)}
+.visual-coach-box{margin-top:10px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.85);border:1.5px solid rgba(23,58,94,.14)}
+.visual-coach-box strong{display:block;margin-bottom:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--lab-ink)}
+.visual-coach-q{margin:0!important;font-size:13.5px!important;font-weight:700!important;line-height:1.35!important;color:#183654!important;font-style:italic}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
 .lab-label{font:800 16px "Outfit",sans-serif;fill:#173a5e}.lab-small{font:700 12px "Hanken Grotesk",sans-serif;fill:#173a5e}.lab-big{font:800 24px "Outfit",sans-serif;fill:#173a5e}.lab-grid{stroke:#bcd7d0;stroke-width:1}.lab-axis{stroke:#173a5e;stroke-width:3}.lab-accent{fill:#ff775f;stroke:#173a5e;stroke-width:2}.lab-teal{fill:#0b8f87;stroke:#173a5e;stroke-width:2}.lab-sun{fill:#f6c94c;stroke:#173a5e;stroke-width:2}
@@ -5742,6 +6111,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <span class="hw-hero-lesson-meta">Lesson 7-3 · Part 2 · 6.NOS.8</span>
         </p>
 
+        
+        <details class="hw-standard-details">
+          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>6.NOS.8</code></span> ▾</summary>
+          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard 6.NOS.8.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado 6.NOS.8.</span></p>
+        </details>
+
         <p class="hw-hero-lead">
           <span class="lang-en">Use the pictures and the short steps. Ask questions — let your student do the thinking.</span>
           <span class="lang-es" lang="es">Usen los dibujos y los pasos cortos. Hagan preguntas: dejen que su estudiante piense.</span>
@@ -5752,6 +6127,13 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About 30 minutes</span><span class="lang-es" lang="es">Unos 30 minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
+
+        <div class="hw-hero-share-bar" aria-label="Share or print this homework">
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
+        </div>
 
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
@@ -5814,12 +6196,15 @@ body.lang-mode-es .concept-title-es { display: inline; }
   
     <div class="homework-tabs-shell" data-tab-count="6">
       <div class="homework-tab-chrome">
+        <div class="hw-tab-meta-row">
+          <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~30 min left</span><span class="lang-es" lang="es">~30 min restantes</span></span>
+        </div>
         <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
           
             <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
-              aria-selected="true" aria-controls="hw_panel_learn"
+              aria-selected="true" aria-current="step" aria-controls="hw_panel_learn"
               aria-label="Learn — stop 1 of 6, about 5 minutes"
-              data-tab="learn" data-stop="1" onclick="switchHomeworkTab('learn')">
+              data-tab="learn" data-stop="1" data-min="5" onclick="switchHomeworkTab('learn')">
               <span class="tab-step" aria-hidden="true">1</span>
               <span class="tab-icon" aria-hidden="true">📖</span>
               <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
@@ -5829,7 +6214,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_words"
               aria-label="Words — stop 2 of 6, about 3 minutes"
-              data-tab="words" data-stop="2" onclick="switchHomeworkTab('words')">
+              data-tab="words" data-stop="2" data-min="3" onclick="switchHomeworkTab('words')">
               <span class="tab-step" aria-hidden="true">2</span>
               <span class="tab-icon" aria-hidden="true">📚</span>
               <span class="tab-label"><span class="tab-en">Words</span><span class="tab-es" lang="es">Palabras</span></span>
@@ -5839,7 +6224,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_together"
               aria-label="Together — stop 3 of 6, about 6 minutes"
-              data-tab="together" data-stop="3" onclick="switchHomeworkTab('together')">
+              data-tab="together" data-stop="3" data-min="6" onclick="switchHomeworkTab('together')">
               <span class="tab-step" aria-hidden="true">3</span>
               <span class="tab-icon" aria-hidden="true">🤝</span>
               <span class="tab-label"><span class="tab-en">Together</span><span class="tab-es" lang="es">Juntos</span></span>
@@ -5849,7 +6234,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_check"
               aria-label="Check — stop 4 of 6, about 8 minutes"
-              data-tab="check" data-stop="4" onclick="switchHomeworkTab('check')">
+              data-tab="check" data-stop="4" data-min="8" onclick="switchHomeworkTab('check')">
               <span class="tab-step" aria-hidden="true">4</span>
               <span class="tab-icon" aria-hidden="true">✅</span>
               <span class="tab-label"><span class="tab-en">Check</span><span class="tab-es" lang="es">Repaso</span></span>
@@ -5859,7 +6244,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_play"
               aria-label="Play — stop 5 of 6, about 5 minutes"
-              data-tab="play" data-stop="5" onclick="switchHomeworkTab('play')">
+              data-tab="play" data-stop="5" data-min="5" onclick="switchHomeworkTab('play')">
               <span class="tab-step" aria-hidden="true">5</span>
               <span class="tab-icon" aria-hidden="true">🎮</span>
               <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
@@ -5869,7 +6254,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_done"
               aria-label="Done — stop 6 of 6, about 3 minutes"
-              data-tab="done" data-stop="6" onclick="switchHomeworkTab('done')">
+              data-tab="done" data-stop="6" data-min="3" onclick="switchHomeworkTab('done')">
               <span class="tab-step" aria-hidden="true">6</span>
               <span class="tab-icon" aria-hidden="true">🎉</span>
               <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
@@ -6033,9 +6418,31 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
       <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">Move, type, tap, or drag in the model. Watch what changes.</span><span class="lang-es" lang="es">Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia.</span></p></article>
       <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Absolute Value Formula: |a| = Distance of a from 0 (always ≥ 0)</p></details></article>
+      <article class="visual-representation-card visual-representation-words">
+        <span class="representation-number">3</span>
+        <h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3>
+        <p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p>
+        <div class="visual-coach-box">
+          <strong>💬 <span class="lang-en">Family conversation:</span><span class="lang-es" lang="es">Conversación familiar:</span></strong>
+          <p class="visual-coach-q"><span class="lang-en">Ask: "Where do you see the numbers from tonight&#039;s math in this model?"</span><span class="lang-es" lang="es">Pregunta: "¿Dónde ves los números de la tarea de hoy en este modelo?"</span></p>
+        </div>
+        <details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Absolute Value Formula: |a| = Distance of a from 0 (always ≥ 0)</p></details>
+      </article>
     </div>
   </section>
+      <div class="workbench-quick-launch card-ish">
+        <div class="wb-launch-content">
+          <span class="wb-launch-icon" aria-hidden="true">🧮</span>
+          <div class="wb-launch-text">
+            <strong><span class="lang-en">Need hands-on math manipulatives?</span><span class="lang-es" lang="es">¿Necesitan herramientas matemáticas prácticas?</span></strong>
+            <p><span class="lang-en">Build with Fraction Strips, Coordinate Grids, and Ratio Tape in the Together tab Workbench!</span><span class="lang-es" lang="es">¡Construyan con Tiras de fracciones, Cuadrícula y Cintas de razón en la Pizarra de la pestaña Juntos!</span></p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openTogetherWorkbench()">
+          <span class="lang-en">Open Math Tools ➔</span>
+          <span class="lang-es" lang="es">Abrir Herramientas ➔</span>
+        </button>
+      </div>
       
     <details class="parent-coaching-drawer">
       <summary class="parent-coaching-summary">
@@ -6830,6 +7237,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
                 <button type="button" class="btn btn-sm btn-secondary" onclick="clearFractionBars()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
               </div>
             </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Compare:</span><span class="lang-es" lang="es">⚡ Comparar:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('half')"><span class="lang-en">1/2 = 2/4</span><span class="lang-es" lang="es">1/2 = 2/4</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('third')"><span class="lang-en">1/3 = 2/6</span><span class="lang-es" lang="es">1/3 = 2/6</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('threefourths')"><span class="lang-en">3/4 = 6/8</span><span class="lang-es" lang="es">3/4 = 6/8</span></button>
+            </div>
             <div class="fraction-stage-canvas" id="fraction_stage_canvas">
               <div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>
             </div>
@@ -6838,8 +7251,16 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <!-- 2. Coordinate Grid Tool -->
           <div class="wb-panel" id="wb_panel_coords" hidden>
             <div class="tool-controls-row">
-              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid to plot an (x, y) point and see its quadrant:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula para marcar un punto (x, y) y ver su cuadrante:</span></span>
+              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid or tap a sample point:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula o toca un punto de muestra:</span></span>
               <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — <span class="lang-en">Origin</span><span class="lang-es" lang="es">Origen</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Sample Points:</span><span class="lang-es" lang="es">⚡ Puntos muestra:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(3, 4)"><span class="lang-en">(3, 4) Quad I</span><span class="lang-es" lang="es">(3, 4) Cuad I</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-3, 2)"><span class="lang-en">(-3, 2) Quad II</span><span class="lang-es" lang="es">(-3, 2) Cuad II</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-4, -3)"><span class="lang-en">(-4, -3) Quad III</span><span class="lang-es" lang="es">(-4, -3) Cuad III</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(4, -2)"><span class="lang-en">(4, -2) Quad IV</span><span class="lang-es" lang="es">(4, -2) Cuad IV</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(0, 0)"><span class="lang-en">(0, 0) Origin</span><span class="lang-es" lang="es">(0, 0) Origen</span></button>
             </div>
             <div class="coord-canvas-wrap">
               <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
@@ -6848,6 +7269,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
 
           <!-- 3. Ratio Tape Diagram Tool -->
           <div class="wb-panel" id="wb_panel_tapes" hidden>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Quick Ratios:</span><span class="lang-es" lang="es">⚡ Razones rápidas:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(2, 3, 2)"><span class="lang-en">Paint (2 : 3 × 2)</span><span class="lang-es" lang="es">Pintura (2 : 3 × 2)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(1, 4, 3)"><span class="lang-en">Juice (1 : 4 × 3)</span><span class="lang-es" lang="es">Jugo (1 : 4 × 3)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(3, 5, 2)"><span class="lang-en">Recipe (3 : 5 × 2)</span><span class="lang-es" lang="es">Receta (3 : 5 × 2)</span></button>
+            </div>
             <div class="tool-controls-row">
               <label class="tape-slider-label">
                 <span class="lang-en">Part A (Blue):</span><span class="lang-es" lang="es">Parte A (Azul):</span>
@@ -6872,6 +7299,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <div class="wb-panel" id="wb_panel_decimals" hidden>
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Type numbers to align decimal points vertically:</span><span class="lang-es" lang="es">Escribe números para alinear puntos decimales:</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Examples:</span><span class="lang-es" lang="es">⚡ Ejemplos:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('25.40', '8.75')"><span class="lang-en">Add: 25.40 + 8.75</span><span class="lang-es" lang="es">Suma: 25.40 + 8.75</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('14.50', '3.25')"><span class="lang-en">Money: $14.50 + $3.25</span><span class="lang-es" lang="es">Dinero: $14.50 + $3.25</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('12.08', '12.80')"><span class="lang-en">Compare: 12.08 vs 12.80</span><span class="lang-es" lang="es">Comparar: 12.08 vs 12.80</span></button>
             </div>
             <div class="decimal-place-grid">
               <table class="dec-grid-table">
@@ -7005,6 +7438,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Warm-up</span><span class="lang-es" lang="es">Calentamiento</span> 1</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_0 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_0 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"−3 is left of 0 and 5 is right of 0 — opposite sides.","es":"−3 está a la izquierda del 0 y 5 a la derecha — lados opuestos.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7012,7 +7446,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Find the distance between −3 and 5 on a number line.</span><span class="lang-es" lang="es">Halla la distancia entre −3 y 5 en una recta numérica.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The trip goes 3 units up to 0 and 5 more to 5: 3 + 5 = 8. Subtracting (5 − 3 = 2) is for two numbers on the SAME side; a distance is never negative; 15 multiplies." data-explanation-es="El recorrido va 3 unidades hasta el 0 y 5 más hasta el 5: 3 + 5 = 8. Restar (5 − 3 = 2) es para dos números del MISMO lado; una distancia nunca es negativa; 15 multiplica." data-choice-feedback='[]' data-topic="number-line">
+        <div class="mc-options" data-correct="0" data-explanation="The trip goes 3 units up to 0 and 5 more to 5: 3 + 5 = 8. Subtracting (5 − 3 = 2) is for two numbers on the SAME side; a distance is never negative; 15 multiplies." data-explanation-es="El recorrido va 3 unidades hasta el 0 y 5 más hasta el 5: 3 + 5 = 8. Restar (5 − 3 = 2) es para dos números del MISMO lado; una distancia nunca es negativa; 15 multiplica." data-choice-feedback='[]' data-choice-feedback-es='[]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_0_0">
               <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
@@ -7085,6 +7519,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Warm-up</span><span class="lang-es" lang="es">Calentamiento</span> 2</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_1 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_1 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both numbers are left of 0 — the same side.","es":"Los dos números están a la izquierda del 0 — el mismo lado.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7092,7 +7527,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Find the distance between −8 and −2.</span><span class="lang-es" lang="es">Halla la distancia entre −8 y −2.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Both are on the negative side, so the trip never crosses zero: 8 − 2 = 6 units. Adding (10) would be right only if they were on opposite sides; a distance cannot be negative; 16 multiplies." data-explanation-es="Los dos están del lado negativo, así que el recorrido nunca cruza el cero: 8 − 2 = 6 unidades. Sumar (10) sería correcto solo si estuvieran en lados opuestos; una distancia no puede ser negativa; 16 multiplica." data-choice-feedback='[]' data-topic="number-line">
+        <div class="mc-options" data-correct="0" data-explanation="Both are on the negative side, so the trip never crosses zero: 8 − 2 = 6 units. Adding (10) would be right only if they were on opposite sides; a distance cannot be negative; 16 multiplies." data-explanation-es="Los dos están del lado negativo, así que el recorrido nunca cruza el cero: 8 − 2 = 6 unidades. Sumar (10) sería correcto solo si estuvieran en lados opuestos; una distancia no puede ser negativa; 16 multiplica." data-choice-feedback='[]' data-choice-feedback-es='[]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
@@ -7165,6 +7600,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Warm-up</span><span class="lang-es" lang="es">Calentamiento</span> 3</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_2 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_2 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"−38 and 46 are on opposite sides of 0.","es":"−38 y 46 están en lados opuestos del 0.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7172,7 +7608,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">In one day a town&#039;s temperature rose from −38° to 46°. How great was the temperature swing?</span><span class="lang-es" lang="es">En un día la temperatura de un pueblo subió de −38° a 46°. ¿De cuánto fue el cambio de temperatura?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The temperature climbed 38 degrees to reach 0 and 46 more to reach 46: 38 + 46 = 84 degrees. 8 subtracts as if both were on the same side; 38 and 46 are each only half the trip." data-explanation-es="La temperatura subió 38 grados para llegar a 0 y 46 más para llegar a 46: 38 + 46 = 84 grados. 8 resta como si los dos estuvieran del mismo lado; 38 y 46 son cada uno solo la mitad del recorrido." data-choice-feedback='[]' data-topic="number-line">
+        <div class="mc-options" data-correct="0" data-explanation="The temperature climbed 38 degrees to reach 0 and 46 more to reach 46: 38 + 46 = 84 degrees. 8 subtracts as if both were on the same side; 38 and 46 are each only half the trip." data-explanation-es="La temperatura subió 38 grados para llegar a 0 y 46 más para llegar a 46: 38 + 46 = 84 grados. 8 resta como si los dos estuvieran del mismo lado; 38 y 46 son cada uno solo la mitad del recorrido." data-choice-feedback='[]' data-choice-feedback-es='[]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -7261,6 +7697,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Level up</span><span class="lang-es" lang="es">Reto</span> 1</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_3 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_3 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Where is 0 (sea level) compared with each hiker&#39;s start and finish?","es":"¿Dónde está el 0 (nivel del mar) respecto al inicio y al final de cada excursionista?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7328,6 +7765,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Level up</span><span class="lang-es" lang="es">Reto</span> 2</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_4 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_4 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sea level is 0; −40 is below and +10 is above.","es":"El nivel del mar es 0; −40 está abajo y +10 arriba.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7335,7 +7773,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A submarine at −40 feet rises to +10 feet. How far did it travel?</span><span class="lang-es" lang="es">Un submarino a −40 pies sube a +10 pies. ¿Cuánto recorrió?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="From −40 up to 0 is 40 feet, then 10 more to +10: 40 + 10 = 50 feet. 30 subtracts as if both were on the same side; 40 is only the climb to the surface; a distance is never negative." data-explanation-es="De −40 hasta 0 son 40 pies, luego 10 más hasta +10: 40 + 10 = 50 pies. 30 resta como si los dos estuvieran del mismo lado; 40 es solo la subida hasta la superficie; una distancia nunca es negativa." data-choice-feedback='[]' data-topic="number-line">
+        <div class="mc-options" data-correct="0" data-explanation="From −40 up to 0 is 40 feet, then 10 more to +10: 40 + 10 = 50 feet. 30 subtracts as if both were on the same side; 40 is only the climb to the surface; a distance is never negative." data-explanation-es="De −40 hasta 0 son 40 pies, luego 10 más hasta +10: 40 + 10 = 50 pies. 30 resta como si los dos estuvieran del mismo lado; 40 es solo la subida hasta la superficie; una distancia nunca es negativa." data-choice-feedback='[]' data-choice-feedback-es='[]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -7408,6 +7846,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Level up</span><span class="lang-es" lang="es">Reto</span> 3</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_5 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_5 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Where is 0 compared with the two readings? Between them.","es":"¿Dónde está el 0 respecto a las dos lecturas? Entre ellas.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7415,7 +7854,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">In one day a town&#039;s temperature rose from −27° to 55°. Which calculation gives the size of the swing?</span><span class="lang-es" lang="es">En un día la temperatura de un pueblo subió de −27° a 55°. ¿Qué cálculo da el tamaño del cambio?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Zero falls between −27 and 55, so the swing is the sum of the two distances: 27 + 55 = 82 degrees. Subtracting the absolute values (28) answers a same-side question; |−27 + 55| also gives 28 for the same reason; the last option is not a distance calculation." data-explanation-es="El cero queda entre −27 y 55, así que el cambio es la suma de las dos distancias: 27 + 55 = 82 grados. Restar los valores absolutos (28) responde una pregunta del mismo lado; |−27 + 55| también da 28 por la misma razón; la última opción no es un cálculo de distancia." data-choice-feedback='[]' data-topic="number-line">
+        <div class="mc-options" data-correct="0" data-explanation="Zero falls between −27 and 55, so the swing is the sum of the two distances: 27 + 55 = 82 degrees. Subtracting the absolute values (28) answers a same-side question; |−27 + 55| also gives 28 for the same reason; the last option is not a distance calculation." data-explanation-es="El cero queda entre −27 y 55, así que el cambio es la suma de las dos distancias: 27 + 55 = 82 grados. Restar los valores absolutos (28) responde una pregunta del mismo lado; |−27 + 55| también da 28 por la misma razón; la última opción no es un cálculo de distancia." data-choice-feedback='[]' data-choice-feedback-es='[]' data-topic="number-line">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -7715,7 +8154,22 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <span class="achieve-icon" aria-hidden="true">🎮</span>
           <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
         </div>
+        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
+          <span class="achieve-icon" aria-hidden="true">🔥</span>
+          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
+        </div>
       </div>
+
+      
+    <div class="kitchen-table-card card-ish">
+      <div class="kt-badge">🍽️ <span class="lang-en">5-MINUTE KITCHEN TABLE MATH</span><span class="lang-es" lang="es">MATEMÁTICAS EN LA MESA · 5 MINUTOS</span></div>
+      <h3 class="kt-title"><span class="lang-en">The number at dinner</span><span class="lang-es" lang="es">El número de la cena</span></h3>
+      <p class="kt-materials">📦 <strong><span class="lang-en">Materials:</span><span class="lang-es" lang="es">Materiales:</span></strong> <span class="lang-en">Anything on the table with a number on it.</span><span class="lang-es" lang="es">Cualquier cosa sobre la mesa que tenga un número.</span></p>
+      <ol class="kt-steps">
+        <li><span class="lang-en">Pick one number you can see: a price, a serving size, a time on the clock.</span><span class="lang-es" lang="es">Elija un número que puedan ver: un precio, una porción, la hora en el reloj.</span></li><li><span class="lang-en">Ask your student what that number is counting or measuring.</span><span class="lang-es" lang="es">Pregunte a su estudiante qué cuenta o qué mide ese número.</span></li><li><span class="lang-en">Ask for one thing that would change if the number doubled.</span><span class="lang-es" lang="es">Pregunte qué cambiaría si el número se duplicara.</span></li><li><span class="lang-en">Let your student ask you the same three questions about a different number.</span><span class="lang-es" lang="es">Deje que su estudiante le haga a usted las mismas tres preguntas sobre otro número.</span></li>
+      </ol>
+      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">Sixth graders get stronger at math by explaining what a number means, and that works at any table with any number.</span><span class="lang-es" lang="es">Los estudiantes de sexto se fortalecen en matemáticas al explicar qué significa un número, y eso funciona en cualquier mesa con cualquier número.</span></p>
+    </div>
 
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Parent Sign-off &amp; Feedback</span><span class="lang-es" lang="es">Firma del padre y comentarios</span></h3>
@@ -7751,7 +8205,15 @@ body.lang-mode-es .concept-title-es { display: inline; }
               <span class="lang-en">Note to Teacher (optional):</span>
               <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
             </label>
-            <textarea id="parent_note_input" rows="3" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+            <textarea id="parent_note_input" rows="2" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+          </div>
+
+          <div class="signoff-field textarea-field">
+            <label for="parent_reflection_input">
+              <span class="lang-en">Tonight's Math Reflection (optional):</span>
+              <span class="lang-es" lang="es">Reflexión de hoy (opcional):</span>
+            </label>
+            <textarea id="parent_reflection_input" rows="2" placeholder="e.g. What strategy or idea clicked best for your student tonight? / ¿Qué estrategia o idea se entendió mejor hoy?"></textarea>
           </div>
 
           <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
@@ -7770,9 +8232,16 @@ body.lang-mode-es .concept-title-es { display: inline; }
               </h4>
               <p class="cert-detail"><strong id="display_parent_name"></strong></p>
               <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <div id="display_family_streak_box" class="cert-streak-box">
+                <p>🔥 <strong id="display_family_streak_text"><span class="lang-en">1-Night Streak</span><span class="lang-es" lang="es">Racha de 1 noche</span></strong></p>
+              </div>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
                 <p class="cert-note-title"><strong><span class="lang-en">Note to teacher:</span><span class="lang-es" lang="es">Nota para el maestro:</span></strong></p>
                 <p id="display_parent_note" class="cert-note-content"></p>
+              </div>
+              <div id="display_parent_reflection_box" class="cert-note-box" hidden>
+                <p class="cert-note-title"><strong><span class="lang-en">Family reflection:</span><span class="lang-es" lang="es">Reflexión familiar:</span></strong></p>
+                <p id="display_parent_reflection" class="cert-note-content"></p>
               </div>
             </div>
           </div>
@@ -8453,7 +8922,12 @@ function switchHomeworkTab(tabId) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
-    if (active) idx = i + 1;
+    if (active) {
+      idx = i + 1;
+      btn.setAttribute('aria-current', 'step');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
   });
   panels.forEach(function(p) {
     p.hidden = p.dataset.tabPanel !== tabId;
@@ -8468,6 +8942,17 @@ function switchHomeworkTab(tabId) {
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   const fill = document.getElementById('tab_progress_fill');
   if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+
+  // Dynamic time remaining calculation
+  var minsLeft = 0;
+  for (var k = idx - 1; k < tabs.length; k++) {
+    minsLeft += parseInt(tabs[k].dataset.min || '5', 10);
+  }
+  var timeEl = document.getElementById('hw_time_remaining');
+  if (timeEl) {
+    timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
+  }
+
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
@@ -8563,9 +9048,55 @@ function toggleSignoffSubmitBtn() {
   }
 }
 
+function copyHomeworkLink() {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+      alert("Link copied! / ¡Enlace copiado!");
+    }).catch(function() {});
+  }
+}
+
+function printProblemsOnly() {
+  document.body.classList.add('print-problems-only');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-problems-only');
+  }, 1000);
+}
+
+function initHomeworkShareLinks() {
+  var url = encodeURIComponent(window.location.href);
+  var title = encodeURIComponent(document.title || "Family Math Homework");
+  var textBtn = document.getElementById("hw_text_link");
+  if (textBtn) textBtn.href = "sms:?&body=" + title + "%20" + url;
+  var emailBtn = document.getElementById("hw_email_link");
+  if (emailBtn) emailBtn.href = "mailto:?subject=" + title + "&body=" + title + "%0A%0A" + url;
+}
+
+function getFamilyStreakCount() {
+  try {
+    var streakKey = 'hw_family_streak_history';
+    var history = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (!history.length) return 1;
+    var streak = 1;
+    for (var i = history.length - 2; i >= 0; i--) {
+      var prev = new Date(history[i]);
+      var next = new Date(history[i + 1]);
+      var diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) streak++;
+      else if (diffDays === 0) continue;
+      else break;
+    }
+    return streak;
+  } catch(e) {
+    return 1;
+  }
+}
+
 function saveParentSignoff() {
   const nameVal = document.getElementById('parent_name_input')?.value.trim();
   const noteVal = document.getElementById('parent_note_input')?.value.trim();
+  const reflVal = document.getElementById('parent_reflection_input')?.value.trim();
   const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
   const lessonId = window.LESSON_ID || 'general';
   const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
@@ -8576,9 +9107,22 @@ function saveParentSignoff() {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
   });
   
+  // Track consecutive nights practiced
+  try {
+    var todayKey = new Date().toISOString().slice(0, 10);
+    var streakKey = 'hw_family_streak_history';
+    var streakHistory = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (streakHistory.indexOf(todayKey) === -1) {
+      streakHistory.push(todayKey);
+      streakHistory.sort();
+      localStorage.setItem(streakKey, JSON.stringify(streakHistory));
+    }
+  } catch(e) {}
+
   const payload = {
     parentName: nameVal,
     note: noteVal,
+    reflection: reflVal,
     date: signoffDate,
     lessonTitle: lessonTitle
   };
@@ -8597,6 +9141,7 @@ function saveParentSignoff() {
       lessonTitle: lessonTitle,
       parentName: nameVal,
       note: noteVal,
+      reflection: reflVal,
       date: signoffDate,
       studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
       section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
@@ -8632,6 +9177,23 @@ function updateSignoffUI(data) {
     } else {
       noteBox.hidden = true;
     }
+  }
+
+  const reflBox = document.getElementById('display_parent_reflection_box');
+  const reflEl = document.getElementById('display_parent_reflection');
+  if (reflBox && reflEl) {
+    if (data.reflection) {
+      reflEl.textContent = data.reflection;
+      reflBox.hidden = false;
+    } else {
+      reflBox.hidden = true;
+    }
+  }
+
+  const streakText = document.getElementById('display_family_streak_text');
+  if (streakText) {
+    var sc = getFamilyStreakCount();
+    streakText.innerHTML = '<span class="lang-en">' + sc + (sc === 1 ? ' Night Streak' : ' Nights Streak') + '</span><span class="lang-es" lang="es">Racha de ' + sc + (sc === 1 ? ' noche' : ' noches') + '</span>';
   }
   
   const formWrap = document.getElementById('signoff_form_wrapper');
@@ -8708,9 +9270,11 @@ function restoreParentSignoff() {
       const data = JSON.parse(saved);
       const nameInput = document.getElementById('parent_name_input');
       const noteInput = document.getElementById('parent_note_input');
+      const reflInput = document.getElementById('parent_reflection_input');
       const checkbox = document.getElementById('parent_reviewed_checkbox');
       if (nameInput) nameInput.value = data.parentName || '';
       if (noteInput) noteInput.value = data.note || '';
+      if (reflInput) reflInput.value = data.reflection || '';
       if (checkbox) checkbox.checked = true;
       toggleSignoffSubmitBtn();
       
@@ -8722,6 +9286,7 @@ function restoreParentSignoff() {
 function initHomeworkPage() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  initHomeworkShareLinks();
   // Measure again once fonts and images have settled: a reading taken mid
   // layout reported the status bar three times its rendered height, and the
   // floating launchers are positioned off that number.
@@ -9139,7 +9704,7 @@ function hwGameCheckSort() {
   }
   function values(lab){var out={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){out[input.getAttribute('data-lab-input')]=Number(input.value);});return out;}
   function update(lab){var v=values(lab),topic=lab.getAttribute('data-visual-lab')||'fallback',r=render(topic,v);lab.querySelector('[data-lab-stage]').innerHTML=r.svg;lab.querySelector('[data-lab-equation]').textContent=r.equation;lab.querySelector('[data-lab-observation]').textContent=r.observation;lab.querySelector('[data-lab-status]').textContent=r.status;lab.querySelectorAll('[data-lab-output]').forEach(function(o){o.value=v[o.getAttribute('data-lab-output')];o.textContent=v[o.getAttribute('data-lab-output')];});var mini=lab.querySelector('[data-lab-mini]');mini.innerHTML='';for(var i=0;i<r.mini;i++){var dot=document.createElement('span');dot.className='mini-dot';mini.appendChild(dot);}}
-  function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){update(lab);});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
+  function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});update(lab);});});lab.querySelectorAll('[data-preset]').forEach(function(btn){btn.addEventListener('click',function(){try{var vals=JSON.parse(btn.getAttribute('data-preset'));lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});btn.classList.add('is-active');Object.keys(vals).forEach(function(k){var inp=lab.querySelector('[data-lab-input="'+k+'"]');if(inp)inp.value=vals[k];});update(lab);}catch(e){}});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
   function initAll(){document.querySelectorAll('[data-visual-lab]').forEach(function(lab){if(lab.getAttribute('data-visual-ready')||lab.querySelector('[data-lesson-model-host]'))return;lab.setAttribute('data-visual-ready','1');init(lab);});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAll);else initAll();
 })();
@@ -9475,6 +10040,17 @@ function markVocabCardKnown(idx, known) {
   }
   try {
     localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
+    const termEl = card ? card.querySelector('.term-text') : null;
+    const term = termEl ? termEl.textContent.trim() : '';
+    if (term) {
+      let reviewDeck = JSON.parse(localStorage.getItem('hw_vocab_review_deck') || '[]');
+      if (!known) {
+        if (!reviewDeck.includes(term)) reviewDeck.push(term);
+      } else {
+        reviewDeck = reviewDeck.filter(t => t !== term);
+      }
+      localStorage.setItem('hw_vocab_review_deck', JSON.stringify(reviewDeck));
+    }
   } catch (e) {}
 }
 
@@ -10476,6 +11052,7 @@ function speakBigIdea(textEn, textEs) {
     window.speechSynthesis.speak(utter);
   } catch (e) {}
 }
+window.speakHomeworkText = speakBigIdea;
 
 // Math Talk Prompt Spinner
 const mathTalkList = [
@@ -10549,6 +11126,18 @@ function filterVocabCards(filter, btn) {
 }
 
 // In-Page Workbench Tools
+function openTogetherWorkbench(tool) {
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("together");
+  const drawer = document.querySelector(".workbench-drawer");
+  if (drawer) {
+    drawer.open = true;
+    drawer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (tool && typeof switchWorkbenchTool === "function") {
+    switchWorkbenchTool(tool);
+  }
+}
+
 function switchWorkbenchTool(tool) {
   document.querySelectorAll(".wb-tool-tab").forEach(t => t.classList.remove("is-active"));
   document.querySelectorAll(".wb-panel").forEach(p => p.hidden = true);
@@ -10582,6 +11171,23 @@ function clearFractionBars() {
   stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>';
 }
 
+function loadFractionComparison(type) {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  clearFractionBars();
+  if (type === "half") {
+    addFractionBar(2);
+    addFractionBar(4);
+  } else if (type === "third") {
+    addFractionBar(3);
+    addFractionBar(6);
+  } else if (type === "threefourths") {
+    addFractionBar(4);
+    addFractionBar(8);
+  }
+  if (typeof playMatchSound === "function") playMatchSound();
+}
+
 function drawCoordGrid() {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg || svg.dataset.drawn) return;
@@ -10598,6 +11204,27 @@ function drawCoordGrid() {
   svg.innerHTML = content;
 }
 
+function plotCoordPoint(x, y) {
+  drawCoordGrid();
+  const dot = document.getElementById("coord_plot_dot");
+  if (dot) {
+    dot.setAttribute("cx", x * 20);
+    dot.setAttribute("cy", -y * 20);
+  }
+  let quad = "Axes";
+  let quadEs = "Ejes";
+  if (x > 0 && y > 0) { quad = "Quadrant I (+, +)"; quadEs = "Cuadrante I (+, +)"; }
+  else if (x < 0 && y > 0) { quad = "Quadrant II (−, +)"; quadEs = "Cuadrante II (−, +)"; }
+  else if (x < 0 && y < 0) { quad = "Quadrant III (−, −)"; quadEs = "Cuadrante III (−, −)"; }
+  else if (x > 0 && y < 0) { quad = "Quadrant IV (+, −)"; quadEs = "Cuadrante IV (+, −)"; }
+  else if (x === 0 && y === 0) { quad = "Origin (0, 0)"; quadEs = "Origen (0, 0)"; }
+  const readout = document.getElementById("coord_readout");
+  if (readout) {
+    readout.innerHTML = "(x: " + x + ", y: " + y + ') — <span class="lang-en">' + quad + '</span><span class="lang-es" lang="es">' + quadEs + "</span>";
+  }
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
 function clickCoordGrid(e) {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg) return;
@@ -10608,20 +11235,43 @@ function clickCoordGrid(e) {
   const gridY = Math.round(-(((rawY / rect.height) * 240 - 120) / 20));
   const clampedX = Math.max(-5, Math.min(5, gridX));
   const clampedY = Math.max(-5, Math.min(5, gridY));
-  const dot = document.getElementById("coord_plot_dot");
-  if (dot) {
-    dot.setAttribute("cx", clampedX * 20);
-    dot.setAttribute("cy", -clampedY * 20);
-  }
-  let quad = "Axes / Ejes";
-  if (clampedX > 0 && clampedY > 0) quad = "Quadrant I (+, +)";
-  else if (clampedX < 0 && clampedY > 0) quad = "Quadrant II (−, +)";
-  else if (clampedX < 0 && clampedY < 0) quad = "Quadrant III (−, −)";
-  else if (clampedX > 0 && clampedY < 0) quad = "Quadrant IV (+, −)";
-  else if (clampedX === 0 && clampedY === 0) quad = "Origin (0, 0)";
-  const readout = document.getElementById("coord_readout");
-  if (readout) readout.textContent = "(x: " + clampedX + ", y: " + clampedY + ") — " + quad;
+  plotCoordPoint(clampedX, clampedY);
+}
+
+function loadRatioPreset(a, b, f) {
+  const slA = document.getElementById("tape_slider_a");
+  const slB = document.getElementById("tape_slider_b");
+  const slF = document.getElementById("tape_slider_factor");
+  if (slA) slA.value = a;
+  if (slB) slB.value = b;
+  if (slF) slF.value = f;
+  updateTapeDiagram();
   if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function loadDecimalPreset(topStr, botStr) {
+  const table = document.querySelector(".dec-grid-table tbody");
+  if (!table) return;
+  const rows = table.querySelectorAll("tr");
+  if (rows.length < 2) return;
+
+  function populateRow(row, valStr) {
+    const inputs = row.querySelectorAll("input.dg-cell");
+    inputs.forEach(inp => inp.value = "");
+    const parts = String(valStr).split(".");
+    const whole = parts[0] || "";
+    const frac = parts[1] || "";
+    if (whole.length >= 1) inputs[2].value = whole[whole.length - 1];
+    if (whole.length >= 2) inputs[1].value = whole[whole.length - 2];
+    if (whole.length >= 3) inputs[0].value = whole[whole.length - 3];
+    if (frac.length >= 1) inputs[3].value = frac[0];
+    if (frac.length >= 2) inputs[4].value = frac[1];
+    if (frac.length >= 3) inputs[5].value = frac[2];
+  }
+
+  populateRow(rows[0], topStr);
+  populateRow(rows[1], botStr);
+  if (typeof playMatchSound === "function") playMatchSound();
 }
 
 function updateTapeDiagram() {
@@ -10689,10 +11339,13 @@ function checkProblem(idx, options) {
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       let choiceFeedback = [];
+      let choiceFeedbackEs = [];
       try {
         choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+        choiceFeedbackEs = JSON.parse(container.dataset.choiceFeedbackEs || "[]");
       } catch (e) {
         choiceFeedback = [];
+        choiceFeedbackEs = [];
       }
       
       // Reset radio option styles
@@ -10724,7 +11377,9 @@ function checkProblem(idx, options) {
             const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
             if (correctLabel) correctLabel.classList.add("is-correct");
           }
-          selectedFeedback = choiceFeedback[val] || "";
+          const fbEn = choiceFeedback[val] || "";
+          const fbEs = choiceFeedbackEs[val] || "";
+          selectedFeedback = pickLangText(fbEn, fbEs);
         }
       }
 

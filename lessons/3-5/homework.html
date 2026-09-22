@@ -354,6 +354,138 @@ header.homework-header,
 }
 
 
+/* Enhancements: Share bar, Standard details, Time remaining, Kitchen table, Audio buttons */
+.hw-hero-share-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 6px 0;
+}
+.hw-share-btn {
+  font-size: 0.82rem;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.hw-share-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  text-decoration: none;
+}
+.hw-standard-details {
+  margin: 6px 0 10px 0;
+  font-size: 0.85rem;
+}
+.hw-standard-summary {
+  cursor: pointer;
+  color: var(--amber-light);
+  font-weight: 600;
+}
+.hw-standard-desc {
+  margin: 4px 0 0 0;
+  font-size: 0.8rem;
+  color: var(--teal-light);
+}
+.hw-tab-meta-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 12px 2px 12px;
+}
+.hw-time-remaining {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--amber-light);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+.btn-listen-prob {
+  background: var(--teal-light);
+  border: 1px solid var(--teal);
+  color: var(--teal-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+.btn-listen-prob:hover {
+  background: var(--teal);
+  color: #ffffff;
+}
+.kitchen-table-card {
+  margin: 20px 0;
+  padding: 18px 20px;
+  background: #fff;
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.kt-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--teal-ink);
+  margin-bottom: 6px;
+}
+.kt-title {
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
+  color: var(--navy);
+}
+.kt-materials {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0 0 10px 0;
+}
+.kt-steps {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+.kt-why {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+}
+.cert-streak-box {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--amber-light);
+  border-radius: 8px;
+  color: #78350f;
+  font-size: 0.9rem;
+}
+
+@media print {
+  body.print-problems-only [data-tab-panel]:not([data-tab-panel="check"]),
+  body.print-problems-only .hw-hero,
+  body.print-problems-only .homework-tab-chrome,
+  body.print-problems-only .hw-stuck-fab,
+  body.print-problems-only .workbench-drawer,
+  body.print-problems-only .more-practice,
+  body.print-problems-only .tab-flow-nav,
+  body.print-problems-only .problem-check-row {
+    display: none !important;
+  }
+  body.print-problems-only [data-tab-panel="check"] {
+    display: block !important;
+  }
+}
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -4240,6 +4372,227 @@ body.hw-drawer-open { overflow: hidden; }
 .workbench-drawer[open] .workbench-drawer-chevron { transform: rotate(180deg); }
 .workbench-drawer-body { padding: 4px 16px 18px; background: #fff; }
 
+/* ── Workbench and Quick Launch Styling ── */
+.workbench-quick-launch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin: 18px 0;
+}
+.wb-launch-content { display: flex; align-items: center; gap: 14px; }
+.wb-launch-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+.wb-launch-text strong { display: block; color: var(--navy); font-size: 14.5px; margin-bottom: 2px; }
+.wb-launch-text p { margin: 0; font-size: 13px; color: var(--ink); line-height: 1.4; }
+.wb-launch-btn { flex-shrink: 0; white-space: nowrap; font-weight: 700; }
+@media (max-width: 600px) {
+  .workbench-quick-launch { flex-direction: column; align-items: flex-start; }
+}
+
+.wb-tool-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0 14px;
+  border-bottom: 1.5px solid var(--line);
+  overflow-x: auto;
+}
+.wb-tool-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #f8fafc;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.wb-tool-tab:hover { background: #e2e8f0; }
+.wb-tool-tab.is-active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+.tool-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 8px 12px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+.tool-presets-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.wb-preset-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #94a3b8;
+  background: #fff;
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.wb-preset-btn:hover {
+  background: var(--teal-light);
+  border-color: var(--teal);
+  color: var(--teal-ink);
+}
+
+.fraction-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.fraction-stage-canvas {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.fraction-row {
+  display: flex;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.frac-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  border-right: 1px solid rgba(255,255,255,.4);
+  user-select: none;
+}
+.frac-tile:last-child { border-right: none; }
+.tile-1 { background: #1e293b; }
+.tile-2 { background: #0284c7; }
+.tile-3 { background: #059669; }
+.tile-4 { background: #d97706; }
+.tile-6 { background: #7c3aed; }
+.tile-8 { background: #dc2626; }
+.tile-12 { background: #db2777; }
+
+.tape-diagram-render {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.tape-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tape-label {
+  min-width: 90px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--navy);
+}
+.tape-blocks {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.tape-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 38px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  border: 2px solid rgba(0,0,0,.15);
+}
+.tape-block-a { background: #0b8f87; }
+.tape-block-b { background: #ff775f; }
+
+.dec-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.dec-grid-table th {
+  padding: 8px 6px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+.dec-grid-table th small {
+  font-weight: 500;
+  opacity: .8;
+  display: block;
+}
+.dec-grid-table td {
+  padding: 6px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+.dec-grid-table .dec-pt {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--navy);
+  width: 20px;
+  padding: 0 4px;
+}
+.dg-cell {
+  width: 38px;
+  height: 38px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  color: var(--navy);
+}
+.dg-cell:focus {
+  outline: 3px solid var(--teal);
+  border-color: var(--teal);
+}
+
 /* ============================================================
    Family Activity Corner — hands-on activity cards on the Together tab.
    ============================================================ */
@@ -4697,6 +5050,22 @@ body.hw-drawer-open { overflow: hidden; }
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
 .visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
+.visual-lab-presets{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:rgba(255,255,255,.1);border-radius:14px;border:1px solid rgba(255,255,255,.2);margin-bottom:4px}
+.presets-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--lab-sun)}
+.preset-pill-group{display:flex;flex-wrap:wrap;gap:6px}
+.preset-pill-btn{padding:5px 10px;border-radius:999px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s ease;display:inline-flex;align-items:center}
+.preset-pill-btn:hover{background:var(--lab-sun);color:var(--lab-ink);border-color:var(--lab-sun);transform:translateY(-1px)}
+.preset-pill-btn.is-active{background:var(--lab-coral);color:#fff;border-color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.preset-pill-btn:focus-visible{outline:3px solid var(--lab-sun);outline-offset:2px}
+.visual-lab-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 6px 2px}
+.legend-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:8px;background:rgba(255,255,255,.88);border:1px solid rgba(23,58,94,.18);font-size:12px;font-weight:700;color:var(--lab-ink)}
+.legend-swatch{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.25)}
+.legend-swatch.swatch-teal{background:var(--lab-teal)}
+.legend-swatch.swatch-coral{background:var(--lab-coral)}
+.legend-swatch.swatch-gold{background:var(--lab-sun)}
+.visual-coach-box{margin-top:10px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.85);border:1.5px solid rgba(23,58,94,.14)}
+.visual-coach-box strong{display:block;margin-bottom:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--lab-ink)}
+.visual-coach-q{margin:0!important;font-size:13.5px!important;font-weight:700!important;line-height:1.35!important;color:#183654!important;font-style:italic}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
 .lab-label{font:800 16px "Outfit",sans-serif;fill:#173a5e}.lab-small{font:700 12px "Hanken Grotesk",sans-serif;fill:#173a5e}.lab-big{font:800 24px "Outfit",sans-serif;fill:#173a5e}.lab-grid{stroke:#bcd7d0;stroke-width:1}.lab-axis{stroke:#173a5e;stroke-width:3}.lab-accent{fill:#ff775f;stroke:#173a5e;stroke-width:2}.lab-teal{fill:#0b8f87;stroke:#173a5e;stroke-width:2}.lab-sun{fill:#f6c94c;stroke:#173a5e;stroke-width:2}
@@ -5742,6 +6111,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <span class="hw-hero-lesson-meta">Lesson 3-5 · 6.AT.3</span>
         </p>
 
+        
+        <details class="hw-standard-details">
+          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>6.AT.3</code></span> ▾</summary>
+          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard 6.AT.3.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado 6.AT.3.</span></p>
+        </details>
+
         <p class="hw-hero-lead">
           <span class="lang-en">Use the pictures and the short steps. Ask questions — let your student do the thinking.</span>
           <span class="lang-es" lang="es">Usen los dibujos y los pasos cortos. Hagan preguntas: dejen que su estudiante piense.</span>
@@ -5752,6 +6127,13 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About 30 minutes</span><span class="lang-es" lang="es">Unos 30 minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
+
+        <div class="hw-hero-share-bar" aria-label="Share or print this homework">
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
+        </div>
 
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
@@ -5814,12 +6196,15 @@ body.lang-mode-es .concept-title-es { display: inline; }
   
     <div class="homework-tabs-shell" data-tab-count="6">
       <div class="homework-tab-chrome">
+        <div class="hw-tab-meta-row">
+          <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~30 min left</span><span class="lang-es" lang="es">~30 min restantes</span></span>
+        </div>
         <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
           
             <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
-              aria-selected="true" aria-controls="hw_panel_learn"
+              aria-selected="true" aria-current="step" aria-controls="hw_panel_learn"
               aria-label="Learn — stop 1 of 6, about 5 minutes"
-              data-tab="learn" data-stop="1" onclick="switchHomeworkTab('learn')">
+              data-tab="learn" data-stop="1" data-min="5" onclick="switchHomeworkTab('learn')">
               <span class="tab-step" aria-hidden="true">1</span>
               <span class="tab-icon" aria-hidden="true">📖</span>
               <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
@@ -5829,7 +6214,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_words"
               aria-label="Words — stop 2 of 6, about 3 minutes"
-              data-tab="words" data-stop="2" onclick="switchHomeworkTab('words')">
+              data-tab="words" data-stop="2" data-min="3" onclick="switchHomeworkTab('words')">
               <span class="tab-step" aria-hidden="true">2</span>
               <span class="tab-icon" aria-hidden="true">📚</span>
               <span class="tab-label"><span class="tab-en">Words</span><span class="tab-es" lang="es">Palabras</span></span>
@@ -5839,7 +6224,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_together"
               aria-label="Together — stop 3 of 6, about 6 minutes"
-              data-tab="together" data-stop="3" onclick="switchHomeworkTab('together')">
+              data-tab="together" data-stop="3" data-min="6" onclick="switchHomeworkTab('together')">
               <span class="tab-step" aria-hidden="true">3</span>
               <span class="tab-icon" aria-hidden="true">🤝</span>
               <span class="tab-label"><span class="tab-en">Together</span><span class="tab-es" lang="es">Juntos</span></span>
@@ -5849,7 +6234,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_check"
               aria-label="Check — stop 4 of 6, about 8 minutes"
-              data-tab="check" data-stop="4" onclick="switchHomeworkTab('check')">
+              data-tab="check" data-stop="4" data-min="8" onclick="switchHomeworkTab('check')">
               <span class="tab-step" aria-hidden="true">4</span>
               <span class="tab-icon" aria-hidden="true">✅</span>
               <span class="tab-label"><span class="tab-en">Check</span><span class="tab-es" lang="es">Repaso</span></span>
@@ -5859,7 +6244,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_play"
               aria-label="Play — stop 5 of 6, about 5 minutes"
-              data-tab="play" data-stop="5" onclick="switchHomeworkTab('play')">
+              data-tab="play" data-stop="5" data-min="5" onclick="switchHomeworkTab('play')">
               <span class="tab-step" aria-hidden="true">5</span>
               <span class="tab-icon" aria-hidden="true">🎮</span>
               <span class="tab-label"><span class="tab-en">Play</span><span class="tab-es" lang="es">Jugar</span></span>
@@ -5869,7 +6254,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
             <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_done"
               aria-label="Done — stop 6 of 6, about 3 minutes"
-              data-tab="done" data-stop="6" onclick="switchHomeworkTab('done')">
+              data-tab="done" data-stop="6" data-min="3" onclick="switchHomeworkTab('done')">
               <span class="tab-step" aria-hidden="true">6</span>
               <span class="tab-icon" aria-hidden="true">🎉</span>
               <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
@@ -6046,9 +6431,31 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
       <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">Move, type, tap, or drag in the model. Watch what changes.</span><span class="lang-es" lang="es">Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia.</span></p></article>
       <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Comparing Ratio Relationships. 1. Convert each ratio to a unit rate (e.g. price per item or miles per gallon). 2. Alternatively, scale both ratios to a common term (like a common denominator). 3. Compare the resulting unit rates to identify the better buy or faster rate</p></details></article>
+      <article class="visual-representation-card visual-representation-words">
+        <span class="representation-number">3</span>
+        <h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3>
+        <p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p>
+        <div class="visual-coach-box">
+          <strong>💬 <span class="lang-en">Family conversation:</span><span class="lang-es" lang="es">Conversación familiar:</span></strong>
+          <p class="visual-coach-q"><span class="lang-en">Ask: "Where do you see the numbers from tonight&#039;s math in this model?"</span><span class="lang-es" lang="es">Pregunta: "¿Dónde ves los números de la tarea de hoy en este modelo?"</span></p>
+        </div>
+        <details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Comparing Ratio Relationships. 1. Convert each ratio to a unit rate (e.g. price per item or miles per gallon). 2. Alternatively, scale both ratios to a common term (like a common denominator). 3. Compare the resulting unit rates to identify the better buy or faster rate</p></details>
+      </article>
     </div>
   </section>
+      <div class="workbench-quick-launch card-ish">
+        <div class="wb-launch-content">
+          <span class="wb-launch-icon" aria-hidden="true">🧮</span>
+          <div class="wb-launch-text">
+            <strong><span class="lang-en">Need hands-on math manipulatives?</span><span class="lang-es" lang="es">¿Necesitan herramientas matemáticas prácticas?</span></strong>
+            <p><span class="lang-en">Build with Fraction Strips, Coordinate Grids, and Ratio Tape in the Together tab Workbench!</span><span class="lang-es" lang="es">¡Construyan con Tiras de fracciones, Cuadrícula y Cintas de razón en la Pizarra de la pestaña Juntos!</span></p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openTogetherWorkbench()">
+          <span class="lang-en">Open Math Tools ➔</span>
+          <span class="lang-es" lang="es">Abrir Herramientas ➔</span>
+        </button>
+      </div>
       
     <details class="parent-coaching-drawer">
       <summary class="parent-coaching-summary">
@@ -6880,6 +7287,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
                 <button type="button" class="btn btn-sm btn-secondary" onclick="clearFractionBars()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
               </div>
             </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Compare:</span><span class="lang-es" lang="es">⚡ Comparar:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('half')"><span class="lang-en">1/2 = 2/4</span><span class="lang-es" lang="es">1/2 = 2/4</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('third')"><span class="lang-en">1/3 = 2/6</span><span class="lang-es" lang="es">1/3 = 2/6</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('threefourths')"><span class="lang-en">3/4 = 6/8</span><span class="lang-es" lang="es">3/4 = 6/8</span></button>
+            </div>
             <div class="fraction-stage-canvas" id="fraction_stage_canvas">
               <div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>
             </div>
@@ -6888,8 +7301,16 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <!-- 2. Coordinate Grid Tool -->
           <div class="wb-panel" id="wb_panel_coords" hidden>
             <div class="tool-controls-row">
-              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid to plot an (x, y) point and see its quadrant:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula para marcar un punto (x, y) y ver su cuadrante:</span></span>
+              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid or tap a sample point:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula o toca un punto de muestra:</span></span>
               <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — <span class="lang-en">Origin</span><span class="lang-es" lang="es">Origen</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Sample Points:</span><span class="lang-es" lang="es">⚡ Puntos muestra:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(3, 4)"><span class="lang-en">(3, 4) Quad I</span><span class="lang-es" lang="es">(3, 4) Cuad I</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-3, 2)"><span class="lang-en">(-3, 2) Quad II</span><span class="lang-es" lang="es">(-3, 2) Cuad II</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-4, -3)"><span class="lang-en">(-4, -3) Quad III</span><span class="lang-es" lang="es">(-4, -3) Cuad III</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(4, -2)"><span class="lang-en">(4, -2) Quad IV</span><span class="lang-es" lang="es">(4, -2) Cuad IV</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(0, 0)"><span class="lang-en">(0, 0) Origin</span><span class="lang-es" lang="es">(0, 0) Origen</span></button>
             </div>
             <div class="coord-canvas-wrap">
               <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
@@ -6898,6 +7319,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
 
           <!-- 3. Ratio Tape Diagram Tool -->
           <div class="wb-panel" id="wb_panel_tapes" hidden>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Quick Ratios:</span><span class="lang-es" lang="es">⚡ Razones rápidas:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(2, 3, 2)"><span class="lang-en">Paint (2 : 3 × 2)</span><span class="lang-es" lang="es">Pintura (2 : 3 × 2)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(1, 4, 3)"><span class="lang-en">Juice (1 : 4 × 3)</span><span class="lang-es" lang="es">Jugo (1 : 4 × 3)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(3, 5, 2)"><span class="lang-en">Recipe (3 : 5 × 2)</span><span class="lang-es" lang="es">Receta (3 : 5 × 2)</span></button>
+            </div>
             <div class="tool-controls-row">
               <label class="tape-slider-label">
                 <span class="lang-en">Part A (Blue):</span><span class="lang-es" lang="es">Parte A (Azul):</span>
@@ -6922,6 +7349,12 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <div class="wb-panel" id="wb_panel_decimals" hidden>
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Type numbers to align decimal points vertically:</span><span class="lang-es" lang="es">Escribe números para alinear puntos decimales:</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Examples:</span><span class="lang-es" lang="es">⚡ Ejemplos:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('25.40', '8.75')"><span class="lang-en">Add: 25.40 + 8.75</span><span class="lang-es" lang="es">Suma: 25.40 + 8.75</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('14.50', '3.25')"><span class="lang-en">Money: $14.50 + $3.25</span><span class="lang-es" lang="es">Dinero: $14.50 + $3.25</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('12.08', '12.80')"><span class="lang-en">Compare: 12.08 vs 12.80</span><span class="lang-es" lang="es">Comparar: 12.08 vs 12.80</span></button>
             </div>
             <div class="decimal-place-grid">
               <table class="dec-grid-table">
@@ -7055,6 +7488,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_0" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Warm-up</span><span class="lang-es" lang="es">Calentamiento</span> 1</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_0 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_0 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every card is settled by a unit rate or an equivalent ratio: Smoothie B is fruitier at 3 ÷ 8 = 0.375 against 2 ÷ 6 ≈ 0.333 cups of fruit per cup of water; bagels at 4 for $5 cost $1.25 each against $1.50; 6:10 and 9:15 both simplify to 3:5, so the trail mixes tie; and 3:4 rewritten as 6:8 has more oil than 5:8.","es":"Cada tarjeta se resuelve con una tasa por unidad o con razones equivalentes: el Licuado B es más frutal con 3 ÷ 8 = 0.375 contra 2 ÷ 6 ≈ 0.333 tazas de fruta por taza de agua; los bagels a 4 por $5 cuestan $1.25 cada uno contra $1.50; 6:10 y 9:15 se simplifican a 3:5, así que las mezclas de frutos secos empatan; y 3:4 reescrita como 6:8 tiene más aceite que 5:8.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7139,6 +7573,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_1" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Warm-up</span><span class="lang-es" lang="es">Calentamiento</span> 2</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_1 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_1 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The table scales BOTH recipes to 35 yellow drops so their blue drops can be compared fairly.","es":"La tabla escala AMBAS recetas a 35 gotas amarillas para poder comparar sus gotas azules de manera justa.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7242,6 +7677,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Warm-up</span><span class="lang-es" lang="es">Calentamiento</span> 3</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_2 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_2 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Row 1 shows the move: 6 oz for 2 servings became 3 oz per serving by dividing.","es":"La fila 1 muestra el movimiento: 6 oz para 2 porciones se volvió 3 oz por porción al dividir.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7357,6 +7793,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_3" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Level up</span><span class="lang-es" lang="es">Reto</span> 1</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_3 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_3 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Don&#39;t trust a card&#39;s claim — redo each comparison yourself before sorting.","es":"No confíes en lo que afirma la tarjeta: rehaz cada comparación tú mismo antes de clasificar.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7507,6 +7944,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Level up</span><span class="lang-es" lang="es">Reto</span> 2</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_4 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_4 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The stores sell different counts for different prices — compare the price of ONE mango.","es":"Las tiendas venden cantidades distintas a precios distintos: compara el precio de UN mango.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7514,7 +7952,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Store A sells 3 mangoes for $6. Store B sells 5 mangoes for $9. Which store offers a better price per mango?</span><span class="lang-es" lang="es">La tienda A vende 3 mangos por $6. La tienda B vende 5 mangos por $9. ¿Cuál tienda ofrece mejor precio por mango?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Store A: $6÷3 = $2.00 per mango. Store B: $9÷5 = $1.80 per mango. Store B has the better (lower) price per mango." data-explanation-es="Tienda A: $6÷3 = $2.00 por mango. Tienda B: $9÷5 = $1.80 por mango. La tienda B tiene el mejor precio (el más bajo) por mango." data-choice-feedback='[&quot;Not quite. Store A: $6÷3 = $2.00 per mango.&quot;,&quot;$6 for 3 and $9 for 5 do not give the same unit price. Divide each total by its number of mangoes to check.&quot;,&quot;&quot;,&quot;Both the prices and the counts are known, so a unit price can be found for each store.&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="2" data-explanation="Store A: $6÷3 = $2.00 per mango. Store B: $9÷5 = $1.80 per mango. Store B has the better (lower) price per mango." data-explanation-es="Tienda A: $6÷3 = $2.00 por mango. Tienda B: $9÷5 = $1.80 por mango. La tienda B tiene el mejor precio (el más bajo) por mango." data-choice-feedback='[&quot;Not quite. Store A: $6÷3 = $2.00 per mango.&quot;,&quot;$6 for 3 and $9 for 5 do not give the same unit price. Divide each total by its number of mangoes to check.&quot;,&quot;&quot;,&quot;Both the prices and the counts are known, so a unit price can be found for each store.&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -7585,6 +8023,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Level up</span><span class="lang-es" lang="es">Reto</span> 3</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_5 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_5 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A better deal means each single quiche costs less, not that the total price is smaller.","es":"Una mejor oferta significa que cada quiche cuesta menos, no que el precio total sea menor.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7592,7 +8031,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Chef Academy&#039;s snack bar sells 3 mini quiches for $6 or 5 mini quiches for $8. Which is the better deal per quiche?</span><span class="lang-es" lang="es">La cafetería de la Academia de Chefs vende 3 mini quiches por $6 o 5 mini quiches por $8. ¿Cuál es la mejor oferta por quiche?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="3 for $6 is $6 / 3 = $2.00 per quiche. 5 for $8 is $8 / 5 = $1.60 per quiche. $1.60 &lt; $2.00, so 5 quiches for $8 is the better deal." data-explanation-es="3 por $6 son $6 / 3 = $2.00 por quiche. 5 por $8 son $8 / 5 = $1.60 por quiche. Como $1.60 &lt; $2.00, 5 quiches por $8 es la mejor oferta." data-choice-feedback='[&quot;Not quite. 3 for $6 is $6 / 3 = $2.00 per quiche.&quot;,&quot;&quot;,&quot;The two prices do not reduce to the same cost per quiche. Divide each total by its number of quiches and compare.&quot;,&quot;Both prices and both counts are given, so a unit price can be calculated for each option.&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="1" data-explanation="3 for $6 is $6 / 3 = $2.00 per quiche. 5 for $8 is $8 / 5 = $1.60 per quiche. $1.60 &lt; $2.00, so 5 quiches for $8 is the better deal." data-explanation-es="3 por $6 son $6 / 3 = $2.00 por quiche. 5 por $8 son $8 / 5 = $1.60 por quiche. Como $1.60 &lt; $2.00, 5 quiches por $8 es la mejor oferta." data-choice-feedback='[&quot;Not quite. 3 for $6 is $6 / 3 = $2.00 per quiche.&quot;,&quot;&quot;,&quot;The two prices do not reduce to the same cost per quiche. Divide each total by its number of quiches and compare.&quot;,&quot;Both prices and both counts are given, so a unit price can be calculated for each option.&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -7674,6 +8113,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_6" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 1</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_6 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_6 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Check each chef&#39;s claim by scaling both ratios to a common second term. 5:6 = 15:18 beats 7:9 = 14:18, 2:5 = 16:40 beats 3:8 = 15:40, and 3:4 = 6:8 beats 5:8, so those three conclusions hold. The other two do not: 3:7 = 15:35 is actually stronger than 2:5 = 14:35, and 4:5 = 28:35 is stronger than 5:7 = 25:35.","es":"Revisa la afirmación de cada chef escalando las dos razones a un segundo término común. 5:6 = 15:18 supera a 7:9 = 14:18, 2:5 = 16:40 supera a 3:8 = 15:40 y 3:4 = 6:8 supera a 5:8, así que esas tres conclusiones se sostienen. Las otras dos no: 3:7 = 15:35 en realidad es más fuerte que 2:5 = 14:35, y 4:5 = 28:35 es más fuerte que 5:7 = 25:35.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7809,6 +8249,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 2</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_7 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_7 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The second numbers (4 and 8) don&#39;t match, so the ratios aren&#39;t ready to compare yet.","es":"Los segundos números (4 y 8) no coinciden, así que las razones todavía no están listas para compararse.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7816,7 +8257,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which ratio is greater: 3:4 or 5:8?</span><span class="lang-es" lang="es">¿Cuál razón es mayor: 3:4 o 5:8?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Convert to the same denominator: 3:4 = 6:8. Since 6:8 &gt; 5:8, the ratio 3:4 is greater." data-explanation-es="Convierte a un denominador común: 3:4 = 6:8. Como 6:8 &gt; 5:8, la razón 3:4 es mayor." data-choice-feedback='[&quot;Compare the ratios carefully — which one is greater?&quot;,&quot;&quot;,&quot;Rewrite both ratios with the same second number before deciding — scale the first ratio so its second term is 8, then compare.&quot;,&quot;Both ratios are exact numbers, so they can be compared. Scale one of them until the second terms match.&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="1" data-explanation="Convert to the same denominator: 3:4 = 6:8. Since 6:8 &gt; 5:8, the ratio 3:4 is greater." data-explanation-es="Convierte a un denominador común: 3:4 = 6:8. Como 6:8 &gt; 5:8, la razón 3:4 es mayor." data-choice-feedback='[&quot;Compare the ratios carefully — which one is greater?&quot;,&quot;&quot;,&quot;Rewrite both ratios with the same second number before deciding — scale the first ratio so its second term is 8, then compare.&quot;,&quot;Both ratios are exact numbers, so they can be compared. Scale one of them until the second terms match.&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -7887,6 +8328,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 3</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_8 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_8 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Better deal&#39; means the LOWER cost for one apple — not simply more apples.","es":"&#39;Mejor oferta&#39; significa el MENOR costo por una manzana, no simplemente más manzanas.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7894,7 +8336,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which is the better deal: 4 apples for $3 or 6 apples for $5?</span><span class="lang-es" lang="es">¿Cuál es la mejor oferta: 4 manzanas por $3 o 6 manzanas por $5?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Deal 1: $3÷4 = $0.75 per apple. Deal 2: $5÷6 ≈ $0.83 per apple. $0.75 &lt; $0.83, so 4 apples for $3 is the better deal." data-explanation-es="Oferta 1: $3÷4 = $0.75 por manzana. Oferta 2: $5÷6 ≈ $0.83 por manzana. Como $0.75 &lt; $0.83, 4 manzanas por $3 es la mejor oferta." data-choice-feedback='[&quot;Not quite. Deal 2: $5÷6 ≈ $0.83 per apple.&quot;,&quot;&quot;,&quot;The two deals do not work out to the same price per apple. Divide each price by its number of apples and compare.&quot;,&quot;You can compare these — just make them match. Find the cost of a single apple in each deal.&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="1" data-explanation="Deal 1: $3÷4 = $0.75 per apple. Deal 2: $5÷6 ≈ $0.83 per apple. $0.75 &lt; $0.83, so 4 apples for $3 is the better deal." data-explanation-es="Oferta 1: $3÷4 = $0.75 por manzana. Oferta 2: $5÷6 ≈ $0.83 por manzana. Como $0.75 &lt; $0.83, 4 manzanas por $3 es la mejor oferta." data-choice-feedback='[&quot;Not quite. Deal 2: $5÷6 ≈ $0.83 per apple.&quot;,&quot;&quot;,&quot;The two deals do not work out to the same price per apple. Divide each price by its number of apples and compare.&quot;,&quot;You can compare these — just make them match. Find the cost of a single apple in each deal.&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -7965,6 +8407,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 4</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_9 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_9 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Saltier per cup means more teaspoons of salt for each single cup of broth.","es":"Más salada por taza significa más cucharaditas de sal por cada taza de caldo.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -7972,7 +8415,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Two soup recipes use salt. Recipe A uses 4 tsp salt for 10 cups of broth. Recipe B uses 3 tsp salt for 8 cups of broth. Which soup is saltier per cup?</span><span class="lang-es" lang="es">Dos recetas de sopa usan sal. La receta A usa 4 cucharaditas de sal para 10 tazas de caldo. La receta B usa 3 cucharaditas de sal para 8 tazas de caldo. ¿Cuál sopa es más salada por taza?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="3" data-explanation="Recipe A: 4 / 10 = 0.4 tsp per cup. Recipe B: 3 / 8 = 0.375 tsp per cup. Since 0.4 &gt; 0.375, Recipe A is saltier per cup." data-explanation-es="Receta A: 4 / 10 = 0.4 cucharaditas por taza. Receta B: 3 / 8 = 0.375 cucharaditas por taza. Como 0.4 &gt; 0.375, la receta A es más salada por taza." data-choice-feedback='[&quot;Not quite. Recipe B: 3 / 8 = ___ tsp per cup.&quot;,&quot;The fractions 4/10 and 3/8 are not equivalent. Convert each one to salt per cup as a decimal and compare.&quot;,&quot;Both the salt and the broth amounts are given, so unit rates can settle this.&quot;,&quot;&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="3" data-explanation="Recipe A: 4 / 10 = 0.4 tsp per cup. Recipe B: 3 / 8 = 0.375 tsp per cup. Since 0.4 &gt; 0.375, Recipe A is saltier per cup." data-explanation-es="Receta A: 4 / 10 = 0.4 cucharaditas por taza. Receta B: 3 / 8 = 0.375 cucharaditas por taza. Como 0.4 &gt; 0.375, la receta A es más salada por taza." data-choice-feedback='[&quot;Not quite. Recipe B: 3 / 8 = ___ tsp per cup.&quot;,&quot;The fractions 4/10 and 3/8 are not equivalent. Convert each one to salt per cup as a decimal and compare.&quot;,&quot;Both the salt and the broth amounts are given, so unit rates can settle this.&quot;,&quot;&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -8043,6 +8486,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 5</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_10 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_10 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You can&#39;t compare 2 cups and 3 cups directly — the chefs use different numbers of crackers.","es":"No puedes comparar 2 tazas y 3 tazas directamente: los chefs usan cantidades distintas de galletas.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -8050,7 +8494,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Chef A uses 2 cups of cheese for every 8 crackers. Chef B uses 3 cups of cheese for every 9 crackers. Who uses more cheese per cracker?</span><span class="lang-es" lang="es">El chef A usa 2 tazas de queso por cada 8 galletas saladas. El chef B usa 3 tazas de queso por cada 9 galletas saladas. ¿Quién usa más queso por galleta?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Chef A: 2÷8 = 0.25 cups per cracker. Chef B: 3÷9 ≈ 0.33 cups per cracker. Chef B uses more cheese per cracker." data-explanation-es="Chef A: 2÷8 = 0.25 tazas por galleta. Chef B: 3÷9 ≈ 0.33 tazas por galleta. El chef B usa más queso por galleta." data-choice-feedback='[&quot;Not quite. Chef A: 2÷8 = ___ cups per cracker.&quot;,&quot;&quot;,&quot;The two ratios do not reduce to the same value, so they are not equal. Divide each cheese amount by its cracker count and compare the results.&quot;,&quot;You have both amounts, so a comparison is possible. Turn each ratio into cheese per cracker and the answer appears.&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="1" data-explanation="Chef A: 2÷8 = 0.25 cups per cracker. Chef B: 3÷9 ≈ 0.33 cups per cracker. Chef B uses more cheese per cracker." data-explanation-es="Chef A: 2÷8 = 0.25 tazas por galleta. Chef B: 3÷9 ≈ 0.33 tazas por galleta. El chef B usa más queso por galleta." data-choice-feedback='[&quot;Not quite. Chef A: 2÷8 = ___ cups per cracker.&quot;,&quot;&quot;,&quot;The two ratios do not reduce to the same value, so they are not equal. Divide each cheese amount by its cracker count and compare the results.&quot;,&quot;You have both amounts, so a comparison is possible. Turn each ratio into cheese per cracker and the answer appears.&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -8121,6 +8565,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 6</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_11 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_11 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"More lemon per cupcake means a greater unit rate of ounces to cupcakes.","es":"Más limón por panquecito significa una tasa por unidad mayor de onzas por panquecito.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -8128,7 +8573,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Chef Mara&#039;s lemon glaze uses 6 oz of lemon juice for 9 cupcakes. Chef Devi&#039;s uses 4 oz for 7 cupcakes. Whose glaze has more lemon per cupcake?</span><span class="lang-es" lang="es">El glaseado de limón de la chef Mara usa 6 oz de jugo de limón para 9 panquecitos. El de la chef Devi usa 4 oz para 7 panquecitos. ¿Cuál glaseado tiene más limón por panquecito?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Chef Mara: 6 / 9 = 0.666... oz per cupcake. Chef Devi: 4 / 7 = 0.571... oz per cupcake. Since 0.67 &gt; 0.57, Chef Mara&#039;s glaze has more lemon per cupcake." data-explanation-es="Chef Mara: 6 / 9 = 0.666... oz por panquecito. Chef Devi: 4 / 7 = 0.571... oz por panquecito. Como 0.67 &gt; 0.57, el glaseado de la chef Mara tiene más limón por panquecito." data-choice-feedback='[&quot;Not quite. Chef Devi: 4 / 7 = ___.&quot;,&quot;&quot;,&quot;The ratios 6/9 and 4/7 do not simplify to the same value. Divide ounces by cupcakes for each chef and compare.&quot;,&quot;Both recipes give enough information — find the ounces per cupcake for each one.&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="1" data-explanation="Chef Mara: 6 / 9 = 0.666... oz per cupcake. Chef Devi: 4 / 7 = 0.571... oz per cupcake. Since 0.67 &gt; 0.57, Chef Mara&#039;s glaze has more lemon per cupcake." data-explanation-es="Chef Mara: 6 / 9 = 0.666... oz por panquecito. Chef Devi: 4 / 7 = 0.571... oz por panquecito. Como 0.67 &gt; 0.57, el glaseado de la chef Mara tiene más limón por panquecito." data-choice-feedback='[&quot;Not quite. Chef Devi: 4 / 7 = ___.&quot;,&quot;&quot;,&quot;The ratios 6/9 and 4/7 do not simplify to the same value. Divide ounces by cupcakes for each chef and compare.&quot;,&quot;Both recipes give enough information — find the ounces per cupcake for each one.&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -8199,6 +8644,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_12" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 7</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_12 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_12 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;More notebooks&#39; and &#39;cheaper per notebook&#39; are different claims — the question asks you to test the student&#39;s shortcut.","es":"&#39;Más cuadernos&#39; y &#39;más barato por cuaderno&#39; son afirmaciones distintas: la pregunta te pide poner a prueba el atajo del estudiante.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -8271,6 +8717,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">Bonus</span><span class="lang-es" lang="es">Más</span> 8</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_13 .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_13 .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Recipe B has more lemons, but it also has more water — so compare rates, not raw counts.","es":"La receta B tiene más limones, pero también más agua, así que compara tasas, no conteos sueltos.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Stuck? Get a hint</span><span class="lang-es" lang="es">¿Atorado? Pista</span></button></div>
@@ -8278,7 +8725,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">Which lemonade recipe is more lemony? Recipe A: 2 lemons for 6 cups of water. Recipe B: 3 lemons for 7 cups of water.</span><span class="lang-es" lang="es">¿Cuál receta de limonada tiene más sabor a limón? Receta A: 2 limones por 6 tazas de agua. Receta B: 3 limones por 7 tazas de agua.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Recipe A: 2÷6 ≈ 0.33 lemons per cup. Recipe B: 3÷7 ≈ 0.43 lemons per cup. Since 0.43 &gt; 0.33, Recipe B is more lemony." data-explanation-es="Receta A: 2÷6 ≈ 0.33 limones por taza. Receta B: 3÷7 ≈ 0.43 limones por taza. Como 0.43 &gt; 0.33, la receta B tiene más sabor a limón." data-choice-feedback='[&quot;&quot;,&quot;Not quite. Recipe A: 2÷6 ≈ 0.33 lemons per cup.&quot;,&quot;The ratios 2:6 and 3:7 do not reduce to the same value. Find the lemons per cup for each recipe and compare the decimals.&quot;,&quot;Every number you need is given. Divide lemons by cups for each recipe to compare them fairly.&quot;]' data-topic="ratios">
+        <div class="mc-options" data-correct="0" data-explanation="Recipe A: 2÷6 ≈ 0.33 lemons per cup. Recipe B: 3÷7 ≈ 0.43 lemons per cup. Since 0.43 &gt; 0.33, Recipe B is more lemony." data-explanation-es="Receta A: 2÷6 ≈ 0.33 limones por taza. Receta B: 3÷7 ≈ 0.43 limones por taza. Como 0.43 &gt; 0.33, la receta B tiene más sabor a limón." data-choice-feedback='[&quot;&quot;,&quot;Not quite. Recipe A: 2÷6 ≈ 0.33 lemons per cup.&quot;,&quot;The ratios 2:6 and 3:7 do not reduce to the same value. Find the lemons per cup for each recipe and compare the decimals.&quot;,&quot;Every number you need is given. Divide lemons by cups for each recipe to compare them fairly.&quot;]' data-choice-feedback-es='[]' data-topic="ratios">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -8575,7 +9022,22 @@ body.lang-mode-es .concept-title-es { display: inline; }
           <span class="achieve-icon" aria-hidden="true">🎮</span>
           <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
         </div>
+        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
+          <span class="achieve-icon" aria-hidden="true">🔥</span>
+          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
+        </div>
       </div>
+
+      
+    <div class="kitchen-table-card card-ish">
+      <div class="kt-badge">🍽️ <span class="lang-en">5-MINUTE KITCHEN TABLE MATH</span><span class="lang-es" lang="es">MATEMÁTICAS EN LA MESA · 5 MINUTOS</span></div>
+      <h3 class="kt-title"><span class="lang-en">Which package is really cheaper?</span><span class="lang-es" lang="es">¿Qué paquete es de verdad más barato?</span></h3>
+      <p class="kt-materials">📦 <strong><span class="lang-en">Materials:</span><span class="lang-es" lang="es">Materiales:</span></strong> <span class="lang-en">Two packages from the kitchen with the price and the count on them.</span><span class="lang-es" lang="es">Dos paquetes de la cocina con el precio y la cantidad.</span></p>
+      <ol class="kt-steps">
+        <li><span class="lang-en">Put the two packages side by side and ask which looks cheaper from the price alone.</span><span class="lang-es" lang="es">Pongan los dos paquetes lado a lado y pregunten cuál se ve más barato solo por el precio.</span></li><li><span class="lang-en">Read the count on each one. Are they even the same size?</span><span class="lang-es" lang="es">Lean la cantidad de cada uno. ¿Son siquiera del mismo tamaño?</span></li><li><span class="lang-en">Divide each price by its count to get the cost of ONE. Say both numbers out loud.</span><span class="lang-es" lang="es">Dividan cada precio entre su cantidad para obtener el costo de UNO. Digan los dos números en voz alta.</span></li><li><span class="lang-en">Ask: did the cheaper-looking package stay the cheaper one?</span><span class="lang-es" lang="es">Pregunte: ¿el paquete que se veía más barato siguió siendo el más barato?</span></li>
+      </ol>
+      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">It often flips, and that surprise is the lesson: totals cannot be compared until both are written per one.</span><span class="lang-es" lang="es">Muchas veces se invierte, y esa sorpresa es la lección: los totales no se pueden comparar hasta que los dos estén escritos por uno.</span></p>
+    </div>
 
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Parent Sign-off &amp; Feedback</span><span class="lang-es" lang="es">Firma del padre y comentarios</span></h3>
@@ -8611,7 +9073,15 @@ body.lang-mode-es .concept-title-es { display: inline; }
               <span class="lang-en">Note to Teacher (optional):</span>
               <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
             </label>
-            <textarea id="parent_note_input" rows="3" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+            <textarea id="parent_note_input" rows="2" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+          </div>
+
+          <div class="signoff-field textarea-field">
+            <label for="parent_reflection_input">
+              <span class="lang-en">Tonight's Math Reflection (optional):</span>
+              <span class="lang-es" lang="es">Reflexión de hoy (opcional):</span>
+            </label>
+            <textarea id="parent_reflection_input" rows="2" placeholder="e.g. What strategy or idea clicked best for your student tonight? / ¿Qué estrategia o idea se entendió mejor hoy?"></textarea>
           </div>
 
           <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
@@ -8630,9 +9100,16 @@ body.lang-mode-es .concept-title-es { display: inline; }
               </h4>
               <p class="cert-detail"><strong id="display_parent_name"></strong></p>
               <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <div id="display_family_streak_box" class="cert-streak-box">
+                <p>🔥 <strong id="display_family_streak_text"><span class="lang-en">1-Night Streak</span><span class="lang-es" lang="es">Racha de 1 noche</span></strong></p>
+              </div>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
                 <p class="cert-note-title"><strong><span class="lang-en">Note to teacher:</span><span class="lang-es" lang="es">Nota para el maestro:</span></strong></p>
                 <p id="display_parent_note" class="cert-note-content"></p>
+              </div>
+              <div id="display_parent_reflection_box" class="cert-note-box" hidden>
+                <p class="cert-note-title"><strong><span class="lang-en">Family reflection:</span><span class="lang-es" lang="es">Reflexión familiar:</span></strong></p>
+                <p id="display_parent_reflection" class="cert-note-content"></p>
               </div>
             </div>
           </div>
@@ -9328,7 +9805,12 @@ function switchHomeworkTab(tabId) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
-    if (active) idx = i + 1;
+    if (active) {
+      idx = i + 1;
+      btn.setAttribute('aria-current', 'step');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
   });
   panels.forEach(function(p) {
     p.hidden = p.dataset.tabPanel !== tabId;
@@ -9343,6 +9825,17 @@ function switchHomeworkTab(tabId) {
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   const fill = document.getElementById('tab_progress_fill');
   if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+
+  // Dynamic time remaining calculation
+  var minsLeft = 0;
+  for (var k = idx - 1; k < tabs.length; k++) {
+    minsLeft += parseInt(tabs[k].dataset.min || '5', 10);
+  }
+  var timeEl = document.getElementById('hw_time_remaining');
+  if (timeEl) {
+    timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
+  }
+
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
@@ -9438,9 +9931,55 @@ function toggleSignoffSubmitBtn() {
   }
 }
 
+function copyHomeworkLink() {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+      alert("Link copied! / ¡Enlace copiado!");
+    }).catch(function() {});
+  }
+}
+
+function printProblemsOnly() {
+  document.body.classList.add('print-problems-only');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-problems-only');
+  }, 1000);
+}
+
+function initHomeworkShareLinks() {
+  var url = encodeURIComponent(window.location.href);
+  var title = encodeURIComponent(document.title || "Family Math Homework");
+  var textBtn = document.getElementById("hw_text_link");
+  if (textBtn) textBtn.href = "sms:?&body=" + title + "%20" + url;
+  var emailBtn = document.getElementById("hw_email_link");
+  if (emailBtn) emailBtn.href = "mailto:?subject=" + title + "&body=" + title + "%0A%0A" + url;
+}
+
+function getFamilyStreakCount() {
+  try {
+    var streakKey = 'hw_family_streak_history';
+    var history = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (!history.length) return 1;
+    var streak = 1;
+    for (var i = history.length - 2; i >= 0; i--) {
+      var prev = new Date(history[i]);
+      var next = new Date(history[i + 1]);
+      var diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) streak++;
+      else if (diffDays === 0) continue;
+      else break;
+    }
+    return streak;
+  } catch(e) {
+    return 1;
+  }
+}
+
 function saveParentSignoff() {
   const nameVal = document.getElementById('parent_name_input')?.value.trim();
   const noteVal = document.getElementById('parent_note_input')?.value.trim();
+  const reflVal = document.getElementById('parent_reflection_input')?.value.trim();
   const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
   const lessonId = window.LESSON_ID || 'general';
   const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
@@ -9451,9 +9990,22 @@ function saveParentSignoff() {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
   });
   
+  // Track consecutive nights practiced
+  try {
+    var todayKey = new Date().toISOString().slice(0, 10);
+    var streakKey = 'hw_family_streak_history';
+    var streakHistory = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (streakHistory.indexOf(todayKey) === -1) {
+      streakHistory.push(todayKey);
+      streakHistory.sort();
+      localStorage.setItem(streakKey, JSON.stringify(streakHistory));
+    }
+  } catch(e) {}
+
   const payload = {
     parentName: nameVal,
     note: noteVal,
+    reflection: reflVal,
     date: signoffDate,
     lessonTitle: lessonTitle
   };
@@ -9472,6 +10024,7 @@ function saveParentSignoff() {
       lessonTitle: lessonTitle,
       parentName: nameVal,
       note: noteVal,
+      reflection: reflVal,
       date: signoffDate,
       studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
       section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
@@ -9507,6 +10060,23 @@ function updateSignoffUI(data) {
     } else {
       noteBox.hidden = true;
     }
+  }
+
+  const reflBox = document.getElementById('display_parent_reflection_box');
+  const reflEl = document.getElementById('display_parent_reflection');
+  if (reflBox && reflEl) {
+    if (data.reflection) {
+      reflEl.textContent = data.reflection;
+      reflBox.hidden = false;
+    } else {
+      reflBox.hidden = true;
+    }
+  }
+
+  const streakText = document.getElementById('display_family_streak_text');
+  if (streakText) {
+    var sc = getFamilyStreakCount();
+    streakText.innerHTML = '<span class="lang-en">' + sc + (sc === 1 ? ' Night Streak' : ' Nights Streak') + '</span><span class="lang-es" lang="es">Racha de ' + sc + (sc === 1 ? ' noche' : ' noches') + '</span>';
   }
   
   const formWrap = document.getElementById('signoff_form_wrapper');
@@ -9583,9 +10153,11 @@ function restoreParentSignoff() {
       const data = JSON.parse(saved);
       const nameInput = document.getElementById('parent_name_input');
       const noteInput = document.getElementById('parent_note_input');
+      const reflInput = document.getElementById('parent_reflection_input');
       const checkbox = document.getElementById('parent_reviewed_checkbox');
       if (nameInput) nameInput.value = data.parentName || '';
       if (noteInput) noteInput.value = data.note || '';
+      if (reflInput) reflInput.value = data.reflection || '';
       if (checkbox) checkbox.checked = true;
       toggleSignoffSubmitBtn();
       
@@ -9597,6 +10169,7 @@ function restoreParentSignoff() {
 function initHomeworkPage() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  initHomeworkShareLinks();
   // Measure again once fonts and images have settled: a reading taken mid
   // layout reported the status bar three times its rendered height, and the
   // floating launchers are positioned off that number.
@@ -10014,7 +10587,7 @@ function hwGameCheckSort() {
   }
   function values(lab){var out={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){out[input.getAttribute('data-lab-input')]=Number(input.value);});return out;}
   function update(lab){var v=values(lab),topic=lab.getAttribute('data-visual-lab')||'fallback',r=render(topic,v);lab.querySelector('[data-lab-stage]').innerHTML=r.svg;lab.querySelector('[data-lab-equation]').textContent=r.equation;lab.querySelector('[data-lab-observation]').textContent=r.observation;lab.querySelector('[data-lab-status]').textContent=r.status;lab.querySelectorAll('[data-lab-output]').forEach(function(o){o.value=v[o.getAttribute('data-lab-output')];o.textContent=v[o.getAttribute('data-lab-output')];});var mini=lab.querySelector('[data-lab-mini]');mini.innerHTML='';for(var i=0;i<r.mini;i++){var dot=document.createElement('span');dot.className='mini-dot';mini.appendChild(dot);}}
-  function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){update(lab);});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
+  function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});update(lab);});});lab.querySelectorAll('[data-preset]').forEach(function(btn){btn.addEventListener('click',function(){try{var vals=JSON.parse(btn.getAttribute('data-preset'));lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});btn.classList.add('is-active');Object.keys(vals).forEach(function(k){var inp=lab.querySelector('[data-lab-input="'+k+'"]');if(inp)inp.value=vals[k];});update(lab);}catch(e){}});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
   function initAll(){document.querySelectorAll('[data-visual-lab]').forEach(function(lab){if(lab.getAttribute('data-visual-ready')||lab.querySelector('[data-lesson-model-host]'))return;lab.setAttribute('data-visual-ready','1');init(lab);});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAll);else initAll();
 })();
@@ -10350,6 +10923,17 @@ function markVocabCardKnown(idx, known) {
   }
   try {
     localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
+    const termEl = card ? card.querySelector('.term-text') : null;
+    const term = termEl ? termEl.textContent.trim() : '';
+    if (term) {
+      let reviewDeck = JSON.parse(localStorage.getItem('hw_vocab_review_deck') || '[]');
+      if (!known) {
+        if (!reviewDeck.includes(term)) reviewDeck.push(term);
+      } else {
+        reviewDeck = reviewDeck.filter(t => t !== term);
+      }
+      localStorage.setItem('hw_vocab_review_deck', JSON.stringify(reviewDeck));
+    }
   } catch (e) {}
 }
 
@@ -11351,6 +11935,7 @@ function speakBigIdea(textEn, textEs) {
     window.speechSynthesis.speak(utter);
   } catch (e) {}
 }
+window.speakHomeworkText = speakBigIdea;
 
 // Math Talk Prompt Spinner
 const mathTalkList = [
@@ -11424,6 +12009,18 @@ function filterVocabCards(filter, btn) {
 }
 
 // In-Page Workbench Tools
+function openTogetherWorkbench(tool) {
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("together");
+  const drawer = document.querySelector(".workbench-drawer");
+  if (drawer) {
+    drawer.open = true;
+    drawer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (tool && typeof switchWorkbenchTool === "function") {
+    switchWorkbenchTool(tool);
+  }
+}
+
 function switchWorkbenchTool(tool) {
   document.querySelectorAll(".wb-tool-tab").forEach(t => t.classList.remove("is-active"));
   document.querySelectorAll(".wb-panel").forEach(p => p.hidden = true);
@@ -11457,6 +12054,23 @@ function clearFractionBars() {
   stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>';
 }
 
+function loadFractionComparison(type) {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  clearFractionBars();
+  if (type === "half") {
+    addFractionBar(2);
+    addFractionBar(4);
+  } else if (type === "third") {
+    addFractionBar(3);
+    addFractionBar(6);
+  } else if (type === "threefourths") {
+    addFractionBar(4);
+    addFractionBar(8);
+  }
+  if (typeof playMatchSound === "function") playMatchSound();
+}
+
 function drawCoordGrid() {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg || svg.dataset.drawn) return;
@@ -11473,6 +12087,27 @@ function drawCoordGrid() {
   svg.innerHTML = content;
 }
 
+function plotCoordPoint(x, y) {
+  drawCoordGrid();
+  const dot = document.getElementById("coord_plot_dot");
+  if (dot) {
+    dot.setAttribute("cx", x * 20);
+    dot.setAttribute("cy", -y * 20);
+  }
+  let quad = "Axes";
+  let quadEs = "Ejes";
+  if (x > 0 && y > 0) { quad = "Quadrant I (+, +)"; quadEs = "Cuadrante I (+, +)"; }
+  else if (x < 0 && y > 0) { quad = "Quadrant II (−, +)"; quadEs = "Cuadrante II (−, +)"; }
+  else if (x < 0 && y < 0) { quad = "Quadrant III (−, −)"; quadEs = "Cuadrante III (−, −)"; }
+  else if (x > 0 && y < 0) { quad = "Quadrant IV (+, −)"; quadEs = "Cuadrante IV (+, −)"; }
+  else if (x === 0 && y === 0) { quad = "Origin (0, 0)"; quadEs = "Origen (0, 0)"; }
+  const readout = document.getElementById("coord_readout");
+  if (readout) {
+    readout.innerHTML = "(x: " + x + ", y: " + y + ') — <span class="lang-en">' + quad + '</span><span class="lang-es" lang="es">' + quadEs + "</span>";
+  }
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
 function clickCoordGrid(e) {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg) return;
@@ -11483,20 +12118,43 @@ function clickCoordGrid(e) {
   const gridY = Math.round(-(((rawY / rect.height) * 240 - 120) / 20));
   const clampedX = Math.max(-5, Math.min(5, gridX));
   const clampedY = Math.max(-5, Math.min(5, gridY));
-  const dot = document.getElementById("coord_plot_dot");
-  if (dot) {
-    dot.setAttribute("cx", clampedX * 20);
-    dot.setAttribute("cy", -clampedY * 20);
-  }
-  let quad = "Axes / Ejes";
-  if (clampedX > 0 && clampedY > 0) quad = "Quadrant I (+, +)";
-  else if (clampedX < 0 && clampedY > 0) quad = "Quadrant II (−, +)";
-  else if (clampedX < 0 && clampedY < 0) quad = "Quadrant III (−, −)";
-  else if (clampedX > 0 && clampedY < 0) quad = "Quadrant IV (+, −)";
-  else if (clampedX === 0 && clampedY === 0) quad = "Origin (0, 0)";
-  const readout = document.getElementById("coord_readout");
-  if (readout) readout.textContent = "(x: " + clampedX + ", y: " + clampedY + ") — " + quad;
+  plotCoordPoint(clampedX, clampedY);
+}
+
+function loadRatioPreset(a, b, f) {
+  const slA = document.getElementById("tape_slider_a");
+  const slB = document.getElementById("tape_slider_b");
+  const slF = document.getElementById("tape_slider_factor");
+  if (slA) slA.value = a;
+  if (slB) slB.value = b;
+  if (slF) slF.value = f;
+  updateTapeDiagram();
   if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function loadDecimalPreset(topStr, botStr) {
+  const table = document.querySelector(".dec-grid-table tbody");
+  if (!table) return;
+  const rows = table.querySelectorAll("tr");
+  if (rows.length < 2) return;
+
+  function populateRow(row, valStr) {
+    const inputs = row.querySelectorAll("input.dg-cell");
+    inputs.forEach(inp => inp.value = "");
+    const parts = String(valStr).split(".");
+    const whole = parts[0] || "";
+    const frac = parts[1] || "";
+    if (whole.length >= 1) inputs[2].value = whole[whole.length - 1];
+    if (whole.length >= 2) inputs[1].value = whole[whole.length - 2];
+    if (whole.length >= 3) inputs[0].value = whole[whole.length - 3];
+    if (frac.length >= 1) inputs[3].value = frac[0];
+    if (frac.length >= 2) inputs[4].value = frac[1];
+    if (frac.length >= 3) inputs[5].value = frac[2];
+  }
+
+  populateRow(rows[0], topStr);
+  populateRow(rows[1], botStr);
+  if (typeof playMatchSound === "function") playMatchSound();
 }
 
 function updateTapeDiagram() {
@@ -11564,10 +12222,13 @@ function checkProblem(idx, options) {
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       let choiceFeedback = [];
+      let choiceFeedbackEs = [];
       try {
         choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+        choiceFeedbackEs = JSON.parse(container.dataset.choiceFeedbackEs || "[]");
       } catch (e) {
         choiceFeedback = [];
+        choiceFeedbackEs = [];
       }
       
       // Reset radio option styles
@@ -11599,7 +12260,9 @@ function checkProblem(idx, options) {
             const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
             if (correctLabel) correctLabel.classList.add("is-correct");
           }
-          selectedFeedback = choiceFeedback[val] || "";
+          const fbEn = choiceFeedback[val] || "";
+          const fbEs = choiceFeedbackEs[val] || "";
+          selectedFeedback = pickLangText(fbEn, fbEs);
         }
       }
 

@@ -6,6 +6,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  DEFAULT_KITCHEN_TABLE,
+  KITCHEN_TABLE,
+  TAGS,
+} from "../curriculum/family-connections/broadcast/broadcast-content.js";
 import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 import {
   decimalOperation,
@@ -2195,6 +2200,16 @@ export function renderWelcomeBanner(config, lessonId) {
           <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}${standard ? ` · ${esc(standard)}` : ""}</span>
         </p>
 
+        ${
+          standard
+            ? `
+        <details class="hw-standard-details">
+          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>${esc(standard)}</code></span> ▾</summary>
+          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard ${esc(standard)}.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado ${esc(standard)}.</span></p>
+        </details>`
+            : ""
+        }
+
         <p class="hw-hero-lead">
           <span class="lang-en">Use the pictures and the short steps. Ask questions — let your student do the thinking.</span>
           <span class="lang-es" lang="es">Usen los dibujos y los pasos cortos. Hagan preguntas: dejen que su estudiante piense.</span>
@@ -2205,6 +2220,13 @@ export function renderWelcomeBanner(config, lessonId) {
           <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About ${HOMEWORK_TOTAL_MINUTES} minutes</span><span class="lang-es" lang="es">Unos ${HOMEWORK_TOTAL_MINUTES} minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
+
+        <div class="hw-hero-share-bar" aria-label="Share or print this homework">
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
+        </div>
 
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
@@ -2621,7 +2643,56 @@ export function renderStuckSection(config) {
     </section>`;
 }
 
-export function renderCelebration() {
+export function resolveKitchenTableActivity(config) {
+  const std = String(config?.standard || "");
+  const topic = detectVisualTopic(config);
+
+  if (std) {
+    for (const [tagId, tagDef] of Object.entries(TAGS)) {
+      if (tagDef.standards && tagDef.standards.includes(std) && KITCHEN_TABLE[tagId]) {
+        return KITCHEN_TABLE[tagId];
+      }
+    }
+  }
+
+  const topicToTag = {
+    ratios: "ratio-inverted",
+    rates: "rate-not-per-one",
+    percent: "percent-scale-off-by-100",
+    decimals: "decimal-place-value",
+    fractions: "fraction-no-reciprocal",
+    division: "division-quotient-missing-zero",
+    exponents: "exponent-as-multiplication",
+    equations: "equation-not-inverse-operation",
+    inequalities: "inequality-graph-direction",
+    area: "measure-area-perimeter-swap",
+    "surface-area": "geom-surface-area-as-volume",
+    volume: "geom-volume-added-dimensions",
+    statistics: "stat-mean-vs-median",
+    "coordinate-plane": "coord-xy-swapped",
+  };
+  if (topicToTag[topic] && KITCHEN_TABLE[topicToTag[topic]]) {
+    return KITCHEN_TABLE[topicToTag[topic]];
+  }
+
+  return DEFAULT_KITCHEN_TABLE;
+}
+
+export function renderCelebration(config = null, _lessonId = "") {
+  const kt = resolveKitchenTableActivity(config);
+  const ktHtml = kt
+    ? `
+    <div class="kitchen-table-card card-ish">
+      <div class="kt-badge">🍽️ <span class="lang-en">5-MINUTE KITCHEN TABLE MATH</span><span class="lang-es" lang="es">MATEMÁTICAS EN LA MESA · 5 MINUTOS</span></div>
+      <h3 class="kt-title"><span class="lang-en">${esc(kt.title)}</span><span class="lang-es" lang="es">${esc(kt.titleEs || kt.title)}</span></h3>
+      <p class="kt-materials">📦 <strong><span class="lang-en">Materials:</span><span class="lang-es" lang="es">Materiales:</span></strong> <span class="lang-en">${esc(kt.materials)}</span><span class="lang-es" lang="es">${esc(kt.materialsEs || kt.materials)}</span></p>
+      <ol class="kt-steps">
+        ${(kt.steps || []).map((st, i) => `<li><span class="lang-en">${esc(st)}</span><span class="lang-es" lang="es">${esc(kt.stepsEs?.[i] || st)}</span></li>`).join("")}
+      </ol>
+      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">${esc(kt.why)}</span><span class="lang-es" lang="es">${esc(kt.whyEs || kt.why)}</span></p>
+    </div>`
+    : "";
+
   return `
     <section class="guided-section card section-celebrate" aria-label="Celebration">
       <h2 class="section-title">🎉 <span class="lang-en">You did it together!</span><span class="lang-es" lang="es">¡Lo lograron juntos!</span></h2>
@@ -2659,7 +2730,13 @@ export function renderCelebration() {
           <span class="achieve-icon" aria-hidden="true">🎮</span>
           <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
         </div>
+        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
+          <span class="achieve-icon" aria-hidden="true">🔥</span>
+          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
+        </div>
       </div>
+
+      ${ktHtml}
 
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Parent Sign-off &amp; Feedback</span><span class="lang-es" lang="es">Firma del padre y comentarios</span></h3>
@@ -2695,7 +2772,15 @@ export function renderCelebration() {
               <span class="lang-en">Note to Teacher (optional):</span>
               <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
             </label>
-            <textarea id="parent_note_input" rows="3" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+            <textarea id="parent_note_input" rows="2" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+          </div>
+
+          <div class="signoff-field textarea-field">
+            <label for="parent_reflection_input">
+              <span class="lang-en">Tonight's Math Reflection (optional):</span>
+              <span class="lang-es" lang="es">Reflexión de hoy (opcional):</span>
+            </label>
+            <textarea id="parent_reflection_input" rows="2" placeholder="e.g. What strategy or idea clicked best for your student tonight? / ¿Qué estrategia o idea se entendió mejor hoy?"></textarea>
           </div>
 
           <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
@@ -2714,9 +2799,16 @@ export function renderCelebration() {
               </h4>
               <p class="cert-detail"><strong id="display_parent_name"></strong></p>
               <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <div id="display_family_streak_box" class="cert-streak-box">
+                <p>🔥 <strong id="display_family_streak_text"><span class="lang-en">1-Night Streak</span><span class="lang-es" lang="es">Racha de 1 noche</span></strong></p>
+              </div>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
                 <p class="cert-note-title"><strong><span class="lang-en">Note to teacher:</span><span class="lang-es" lang="es">Nota para el maestro:</span></strong></p>
                 <p id="display_parent_note" class="cert-note-content"></p>
+              </div>
+              <div id="display_parent_reflection_box" class="cert-note-box" hidden>
+                <p class="cert-note-title"><strong><span class="lang-en">Family reflection:</span><span class="lang-es" lang="es">Reflexión familiar:</span></strong></p>
+                <p id="display_parent_reflection" class="cert-note-content"></p>
               </div>
             </div>
           </div>
@@ -7112,6 +7204,19 @@ export function renderLearnTab(config, visualLabHtml = "") {
       ${learning}
       ${concept}
       ${visualLabHtml}
+      <div class="workbench-quick-launch card-ish">
+        <div class="wb-launch-content">
+          <span class="wb-launch-icon" aria-hidden="true">🧮</span>
+          <div class="wb-launch-text">
+            <strong><span class="lang-en">Need hands-on math manipulatives?</span><span class="lang-es" lang="es">¿Necesitan herramientas matemáticas prácticas?</span></strong>
+            <p><span class="lang-en">Build with Fraction Strips, Coordinate Grids, and Ratio Tape in the Together tab Workbench!</span><span class="lang-es" lang="es">¡Construyan con Tiras de fracciones, Cuadrícula y Cintas de razón en la Pizarra de la pestaña Juntos!</span></p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openTogetherWorkbench()">
+          <span class="lang-en">Open Math Tools ➔</span>
+          <span class="lang-es" lang="es">Abrir Herramientas ➔</span>
+        </button>
+      </div>
       ${parentDrawerHtml}
       ${powerUpHtml}
       <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
@@ -7373,6 +7478,12 @@ export function renderWorkbenchTools() {
                 <button type="button" class="btn btn-sm btn-secondary" onclick="clearFractionBars()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
               </div>
             </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Compare:</span><span class="lang-es" lang="es">⚡ Comparar:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('half')"><span class="lang-en">1/2 = 2/4</span><span class="lang-es" lang="es">1/2 = 2/4</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('third')"><span class="lang-en">1/3 = 2/6</span><span class="lang-es" lang="es">1/3 = 2/6</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('threefourths')"><span class="lang-en">3/4 = 6/8</span><span class="lang-es" lang="es">3/4 = 6/8</span></button>
+            </div>
             <div class="fraction-stage-canvas" id="fraction_stage_canvas">
               <div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>
             </div>
@@ -7381,8 +7492,16 @@ export function renderWorkbenchTools() {
           <!-- 2. Coordinate Grid Tool -->
           <div class="wb-panel" id="wb_panel_coords" hidden>
             <div class="tool-controls-row">
-              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid to plot an (x, y) point and see its quadrant:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula para marcar un punto (x, y) y ver su cuadrante:</span></span>
+              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid or tap a sample point:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula o toca un punto de muestra:</span></span>
               <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — <span class="lang-en">Origin</span><span class="lang-es" lang="es">Origen</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Sample Points:</span><span class="lang-es" lang="es">⚡ Puntos muestra:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(3, 4)"><span class="lang-en">(3, 4) Quad I</span><span class="lang-es" lang="es">(3, 4) Cuad I</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-3, 2)"><span class="lang-en">(-3, 2) Quad II</span><span class="lang-es" lang="es">(-3, 2) Cuad II</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-4, -3)"><span class="lang-en">(-4, -3) Quad III</span><span class="lang-es" lang="es">(-4, -3) Cuad III</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(4, -2)"><span class="lang-en">(4, -2) Quad IV</span><span class="lang-es" lang="es">(4, -2) Cuad IV</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(0, 0)"><span class="lang-en">(0, 0) Origin</span><span class="lang-es" lang="es">(0, 0) Origen</span></button>
             </div>
             <div class="coord-canvas-wrap">
               <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
@@ -7391,6 +7510,12 @@ export function renderWorkbenchTools() {
 
           <!-- 3. Ratio Tape Diagram Tool -->
           <div class="wb-panel" id="wb_panel_tapes" hidden>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Quick Ratios:</span><span class="lang-es" lang="es">⚡ Razones rápidas:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(2, 3, 2)"><span class="lang-en">Paint (2 : 3 × 2)</span><span class="lang-es" lang="es">Pintura (2 : 3 × 2)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(1, 4, 3)"><span class="lang-en">Juice (1 : 4 × 3)</span><span class="lang-es" lang="es">Jugo (1 : 4 × 3)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(3, 5, 2)"><span class="lang-en">Recipe (3 : 5 × 2)</span><span class="lang-es" lang="es">Receta (3 : 5 × 2)</span></button>
+            </div>
             <div class="tool-controls-row">
               <label class="tape-slider-label">
                 <span class="lang-en">Part A (Blue):</span><span class="lang-es" lang="es">Parte A (Azul):</span>
@@ -7415,6 +7540,12 @@ export function renderWorkbenchTools() {
           <div class="wb-panel" id="wb_panel_decimals" hidden>
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Type numbers to align decimal points vertically:</span><span class="lang-es" lang="es">Escribe números para alinear puntos decimales:</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Examples:</span><span class="lang-es" lang="es">⚡ Ejemplos:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('25.40', '8.75')"><span class="lang-en">Add: 25.40 + 8.75</span><span class="lang-es" lang="es">Suma: 25.40 + 8.75</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('14.50', '3.25')"><span class="lang-en">Money: $14.50 + $3.25</span><span class="lang-es" lang="es">Dinero: $14.50 + $3.25</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('12.08', '12.80')"><span class="lang-en">Compare: 12.08 vs 12.80</span><span class="lang-es" lang="es">Comparar: 12.08 vs 12.80</span></button>
             </div>
             <div class="decimal-place-grid">
               <table class="dec-grid-table">
@@ -7601,8 +7732,8 @@ export function renderProblemHintButton(problem, visual = "") {
   });
 }
 
-export function renderDoneTab() {
-  const inner = renderCelebration().replace(/<section[^>]*>|<\/section>/g, "");
+export function renderDoneTab(config = null, lessonId = "") {
+  const inner = renderCelebration(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
   return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
 }
 
@@ -7682,9 +7813,9 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
   const scratchpad = renderScratchpadHtml();
   const tabBtn = (t, i) => `
             <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
-              aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
+              aria-selected="${i === 0 ? "true" : "false"}"${i === 0 ? ' aria-current="step"' : ""} aria-controls="hw_panel_${t.id}"
               aria-label="${esc(t.en)} — stop ${i + 1} of ${tabCount}, about ${t.min} minutes"
-              data-tab="${t.id}" data-stop="${i + 1}" onclick="switchHomeworkTab('${t.id}')">
+              data-tab="${t.id}" data-stop="${i + 1}" data-min="${t.min}" onclick="switchHomeworkTab('${t.id}')">
               <span class="tab-step" aria-hidden="true">${i + 1}</span>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
@@ -7695,6 +7826,9 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
+        <div class="hw-tab-meta-row">
+          <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~${HOMEWORK_TOTAL_MINUTES} min left</span><span class="lang-es" lang="es">~${HOMEWORK_TOTAL_MINUTES} min restantes</span></span>
+        </div>
         <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
         </nav>
@@ -8251,7 +8385,12 @@ function switchHomeworkTab(tabId) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
-    if (active) idx = i + 1;
+    if (active) {
+      idx = i + 1;
+      btn.setAttribute('aria-current', 'step');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
   });
   panels.forEach(function(p) {
     p.hidden = p.dataset.tabPanel !== tabId;
@@ -8266,6 +8405,17 @@ function switchHomeworkTab(tabId) {
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   const fill = document.getElementById('tab_progress_fill');
   if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+
+  // Dynamic time remaining calculation
+  var minsLeft = 0;
+  for (var k = idx - 1; k < tabs.length; k++) {
+    minsLeft += parseInt(tabs[k].dataset.min || '5', 10);
+  }
+  var timeEl = document.getElementById('hw_time_remaining');
+  if (timeEl) {
+    timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
+  }
+
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
@@ -8361,9 +8511,55 @@ function toggleSignoffSubmitBtn() {
   }
 }
 
+function copyHomeworkLink() {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+      alert("Link copied! / ¡Enlace copiado!");
+    }).catch(function() {});
+  }
+}
+
+function printProblemsOnly() {
+  document.body.classList.add('print-problems-only');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-problems-only');
+  }, 1000);
+}
+
+function initHomeworkShareLinks() {
+  var url = encodeURIComponent(window.location.href);
+  var title = encodeURIComponent(document.title || "Family Math Homework");
+  var textBtn = document.getElementById("hw_text_link");
+  if (textBtn) textBtn.href = "sms:?&body=" + title + "%20" + url;
+  var emailBtn = document.getElementById("hw_email_link");
+  if (emailBtn) emailBtn.href = "mailto:?subject=" + title + "&body=" + title + "%0A%0A" + url;
+}
+
+function getFamilyStreakCount() {
+  try {
+    var streakKey = 'hw_family_streak_history';
+    var history = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (!history.length) return 1;
+    var streak = 1;
+    for (var i = history.length - 2; i >= 0; i--) {
+      var prev = new Date(history[i]);
+      var next = new Date(history[i + 1]);
+      var diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) streak++;
+      else if (diffDays === 0) continue;
+      else break;
+    }
+    return streak;
+  } catch(e) {
+    return 1;
+  }
+}
+
 function saveParentSignoff() {
   const nameVal = document.getElementById('parent_name_input')?.value.trim();
   const noteVal = document.getElementById('parent_note_input')?.value.trim();
+  const reflVal = document.getElementById('parent_reflection_input')?.value.trim();
   const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
   const lessonId = window.LESSON_ID || 'general';
   const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
@@ -8374,9 +8570,22 @@ function saveParentSignoff() {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
   });
   
+  // Track consecutive nights practiced
+  try {
+    var todayKey = new Date().toISOString().slice(0, 10);
+    var streakKey = 'hw_family_streak_history';
+    var streakHistory = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (streakHistory.indexOf(todayKey) === -1) {
+      streakHistory.push(todayKey);
+      streakHistory.sort();
+      localStorage.setItem(streakKey, JSON.stringify(streakHistory));
+    }
+  } catch(e) {}
+
   const payload = {
     parentName: nameVal,
     note: noteVal,
+    reflection: reflVal,
     date: signoffDate,
     lessonTitle: lessonTitle
   };
@@ -8395,6 +8604,7 @@ function saveParentSignoff() {
       lessonTitle: lessonTitle,
       parentName: nameVal,
       note: noteVal,
+      reflection: reflVal,
       date: signoffDate,
       studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
       section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
@@ -8430,6 +8640,23 @@ function updateSignoffUI(data) {
     } else {
       noteBox.hidden = true;
     }
+  }
+
+  const reflBox = document.getElementById('display_parent_reflection_box');
+  const reflEl = document.getElementById('display_parent_reflection');
+  if (reflBox && reflEl) {
+    if (data.reflection) {
+      reflEl.textContent = data.reflection;
+      reflBox.hidden = false;
+    } else {
+      reflBox.hidden = true;
+    }
+  }
+
+  const streakText = document.getElementById('display_family_streak_text');
+  if (streakText) {
+    var sc = getFamilyStreakCount();
+    streakText.innerHTML = '<span class="lang-en">' + sc + (sc === 1 ? ' Night Streak' : ' Nights Streak') + '</span><span class="lang-es" lang="es">Racha de ' + sc + (sc === 1 ? ' noche' : ' noches') + '</span>';
   }
   
   const formWrap = document.getElementById('signoff_form_wrapper');
@@ -8506,9 +8733,11 @@ function restoreParentSignoff() {
       const data = JSON.parse(saved);
       const nameInput = document.getElementById('parent_name_input');
       const noteInput = document.getElementById('parent_note_input');
+      const reflInput = document.getElementById('parent_reflection_input');
       const checkbox = document.getElementById('parent_reviewed_checkbox');
       if (nameInput) nameInput.value = data.parentName || '';
       if (noteInput) noteInput.value = data.note || '';
+      if (reflInput) reflInput.value = data.reflection || '';
       if (checkbox) checkbox.checked = true;
       toggleSignoffSubmitBtn();
       
@@ -8520,6 +8749,7 @@ function restoreParentSignoff() {
 function initHomeworkPage() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  initHomeworkShareLinks();
   // Measure again once fonts and images have settled: a reading taken mid
   // layout reported the status bar three times its rendered height, and the
   // floating launchers are positioned off that number.
@@ -11223,6 +11453,227 @@ body.hw-drawer-open { overflow: hidden; }
 .workbench-drawer-chevron { color: var(--teal-ink); transition: transform .2s ease; }
 .workbench-drawer[open] .workbench-drawer-chevron { transform: rotate(180deg); }
 .workbench-drawer-body { padding: 4px 16px 18px; background: #fff; }
+
+/* ── Workbench and Quick Launch Styling ── */
+.workbench-quick-launch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin: 18px 0;
+}
+.wb-launch-content { display: flex; align-items: center; gap: 14px; }
+.wb-launch-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+.wb-launch-text strong { display: block; color: var(--navy); font-size: 14.5px; margin-bottom: 2px; }
+.wb-launch-text p { margin: 0; font-size: 13px; color: var(--ink); line-height: 1.4; }
+.wb-launch-btn { flex-shrink: 0; white-space: nowrap; font-weight: 700; }
+@media (max-width: 600px) {
+  .workbench-quick-launch { flex-direction: column; align-items: flex-start; }
+}
+
+.wb-tool-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0 14px;
+  border-bottom: 1.5px solid var(--line);
+  overflow-x: auto;
+}
+.wb-tool-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #f8fafc;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.wb-tool-tab:hover { background: #e2e8f0; }
+.wb-tool-tab.is-active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+.tool-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 8px 12px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+.tool-presets-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.wb-preset-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #94a3b8;
+  background: #fff;
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.wb-preset-btn:hover {
+  background: var(--teal-light);
+  border-color: var(--teal);
+  color: var(--teal-ink);
+}
+
+.fraction-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.fraction-stage-canvas {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.fraction-row {
+  display: flex;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.frac-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  border-right: 1px solid rgba(255,255,255,.4);
+  user-select: none;
+}
+.frac-tile:last-child { border-right: none; }
+.tile-1 { background: #1e293b; }
+.tile-2 { background: #0284c7; }
+.tile-3 { background: #059669; }
+.tile-4 { background: #d97706; }
+.tile-6 { background: #7c3aed; }
+.tile-8 { background: #dc2626; }
+.tile-12 { background: #db2777; }
+
+.tape-diagram-render {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.tape-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tape-label {
+  min-width: 90px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--navy);
+}
+.tape-blocks {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.tape-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 38px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  border: 2px solid rgba(0,0,0,.15);
+}
+.tape-block-a { background: #0b8f87; }
+.tape-block-b { background: #ff775f; }
+
+.dec-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.dec-grid-table th {
+  padding: 8px 6px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+.dec-grid-table th small {
+  font-weight: 500;
+  opacity: .8;
+  display: block;
+}
+.dec-grid-table td {
+  padding: 6px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+.dec-grid-table .dec-pt {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--navy);
+  width: 20px;
+  padding: 0 4px;
+}
+.dg-cell {
+  width: 38px;
+  height: 38px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  color: var(--navy);
+}
+.dg-cell:focus {
+  outline: 3px solid var(--teal);
+  border-color: var(--teal);
+}
 
 /* ============================================================
    Family Activity Corner — hands-on activity cards on the Together tab.

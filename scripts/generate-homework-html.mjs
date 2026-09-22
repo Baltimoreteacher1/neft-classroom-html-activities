@@ -897,7 +897,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       <div class="problem-body">
         <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
         ${renderFamilyTip("multiple-choice")}
-        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-topic="${esc(topic)}">
+        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-choice-feedback-es='${esc(JSON.stringify(it.choiceFeedbackEs || []))}' data-topic="${esc(topic)}">
           ${choices
             .map(
               (choice, cIdx) => `
@@ -1253,6 +1253,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span> ${opts.num || pIdx + 1}</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_${pIdx} .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_${pIdx} .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         ${typeChip}
       </div>
       <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID)}</div>
@@ -1398,7 +1399,7 @@ function generateHtml(lessonId, config) {
       coreSelected.length,
     ),
     renderPlayTabPanel(config, lessonId),
-    renderDoneTab(),
+    renderDoneTab(config, lessonId),
   ].join("\n");
 
   const tabsHtml = renderHomeworkTabs(
@@ -1455,6 +1456,138 @@ ${EDITORIAL_FONT_IMPORT}
 }
 
 ${themeCss}
+
+/* Enhancements: Share bar, Standard details, Time remaining, Kitchen table, Audio buttons */
+.hw-hero-share-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 6px 0;
+}
+.hw-share-btn {
+  font-size: 0.82rem;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.hw-share-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  text-decoration: none;
+}
+.hw-standard-details {
+  margin: 6px 0 10px 0;
+  font-size: 0.85rem;
+}
+.hw-standard-summary {
+  cursor: pointer;
+  color: var(--amber-light);
+  font-weight: 600;
+}
+.hw-standard-desc {
+  margin: 4px 0 0 0;
+  font-size: 0.8rem;
+  color: var(--teal-light);
+}
+.hw-tab-meta-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 12px 2px 12px;
+}
+.hw-time-remaining {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--amber-light);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+.btn-listen-prob {
+  background: var(--teal-light);
+  border: 1px solid var(--teal);
+  color: var(--teal-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+.btn-listen-prob:hover {
+  background: var(--teal);
+  color: #ffffff;
+}
+.kitchen-table-card {
+  margin: 20px 0;
+  padding: 18px 20px;
+  background: #fff;
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.kt-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--teal-ink);
+  margin-bottom: 6px;
+}
+.kt-title {
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
+  color: var(--navy);
+}
+.kt-materials {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0 0 10px 0;
+}
+.kt-steps {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+.kt-why {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+}
+.cert-streak-box {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--amber-light);
+  border-radius: 8px;
+  color: #78350f;
+  font-size: 0.9rem;
+}
+
+@media print {
+  body.print-problems-only [data-tab-panel]:not([data-tab-panel="check"]),
+  body.print-problems-only .hw-hero,
+  body.print-problems-only .homework-tab-chrome,
+  body.print-problems-only .hw-stuck-fab,
+  body.print-problems-only .workbench-drawer,
+  body.print-problems-only .more-practice,
+  body.print-problems-only .tab-flow-nav,
+  body.print-problems-only .problem-check-row {
+    display: none !important;
+  }
+  body.print-problems-only [data-tab-panel="check"] {
+    display: block !important;
+  }
+}
 
 * { box-sizing: border-box; }
 body {
@@ -3824,6 +3957,17 @@ function markVocabCardKnown(idx, known) {
   }
   try {
     localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
+    const termEl = card ? card.querySelector('.term-text') : null;
+    const term = termEl ? termEl.textContent.trim() : '';
+    if (term) {
+      let reviewDeck = JSON.parse(localStorage.getItem('hw_vocab_review_deck') || '[]');
+      if (!known) {
+        if (!reviewDeck.includes(term)) reviewDeck.push(term);
+      } else {
+        reviewDeck = reviewDeck.filter(t => t !== term);
+      }
+      localStorage.setItem('hw_vocab_review_deck', JSON.stringify(reviewDeck));
+    }
   } catch (e) {}
 }
 
@@ -4542,6 +4686,7 @@ function speakBigIdea(textEn, textEs) {
     window.speechSynthesis.speak(utter);
   } catch (e) {}
 }
+window.speakHomeworkText = speakBigIdea;
 
 // Math Talk Prompt Spinner
 const mathTalkList = [
@@ -4615,6 +4760,18 @@ function filterVocabCards(filter, btn) {
 }
 
 // In-Page Workbench Tools
+function openTogetherWorkbench(tool) {
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("together");
+  const drawer = document.querySelector(".workbench-drawer");
+  if (drawer) {
+    drawer.open = true;
+    drawer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (tool && typeof switchWorkbenchTool === "function") {
+    switchWorkbenchTool(tool);
+  }
+}
+
 function switchWorkbenchTool(tool) {
   document.querySelectorAll(".wb-tool-tab").forEach(t => t.classList.remove("is-active"));
   document.querySelectorAll(".wb-panel").forEach(p => p.hidden = true);
@@ -4648,6 +4805,23 @@ function clearFractionBars() {
   stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>';
 }
 
+function loadFractionComparison(type) {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  clearFractionBars();
+  if (type === "half") {
+    addFractionBar(2);
+    addFractionBar(4);
+  } else if (type === "third") {
+    addFractionBar(3);
+    addFractionBar(6);
+  } else if (type === "threefourths") {
+    addFractionBar(4);
+    addFractionBar(8);
+  }
+  if (typeof playMatchSound === "function") playMatchSound();
+}
+
 function drawCoordGrid() {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg || svg.dataset.drawn) return;
@@ -4664,6 +4838,27 @@ function drawCoordGrid() {
   svg.innerHTML = content;
 }
 
+function plotCoordPoint(x, y) {
+  drawCoordGrid();
+  const dot = document.getElementById("coord_plot_dot");
+  if (dot) {
+    dot.setAttribute("cx", x * 20);
+    dot.setAttribute("cy", -y * 20);
+  }
+  let quad = "Axes";
+  let quadEs = "Ejes";
+  if (x > 0 && y > 0) { quad = "Quadrant I (+, +)"; quadEs = "Cuadrante I (+, +)"; }
+  else if (x < 0 && y > 0) { quad = "Quadrant II (−, +)"; quadEs = "Cuadrante II (−, +)"; }
+  else if (x < 0 && y < 0) { quad = "Quadrant III (−, −)"; quadEs = "Cuadrante III (−, −)"; }
+  else if (x > 0 && y < 0) { quad = "Quadrant IV (+, −)"; quadEs = "Cuadrante IV (+, −)"; }
+  else if (x === 0 && y === 0) { quad = "Origin (0, 0)"; quadEs = "Origen (0, 0)"; }
+  const readout = document.getElementById("coord_readout");
+  if (readout) {
+    readout.innerHTML = "(x: " + x + ", y: " + y + ') — <span class="lang-en">' + quad + '</span><span class="lang-es" lang="es">' + quadEs + "</span>";
+  }
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
 function clickCoordGrid(e) {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg) return;
@@ -4674,20 +4869,43 @@ function clickCoordGrid(e) {
   const gridY = Math.round(-(((rawY / rect.height) * 240 - 120) / 20));
   const clampedX = Math.max(-5, Math.min(5, gridX));
   const clampedY = Math.max(-5, Math.min(5, gridY));
-  const dot = document.getElementById("coord_plot_dot");
-  if (dot) {
-    dot.setAttribute("cx", clampedX * 20);
-    dot.setAttribute("cy", -clampedY * 20);
-  }
-  let quad = "Axes / Ejes";
-  if (clampedX > 0 && clampedY > 0) quad = "Quadrant I (+, +)";
-  else if (clampedX < 0 && clampedY > 0) quad = "Quadrant II (−, +)";
-  else if (clampedX < 0 && clampedY < 0) quad = "Quadrant III (−, −)";
-  else if (clampedX > 0 && clampedY < 0) quad = "Quadrant IV (+, −)";
-  else if (clampedX === 0 && clampedY === 0) quad = "Origin (0, 0)";
-  const readout = document.getElementById("coord_readout");
-  if (readout) readout.textContent = "(x: " + clampedX + ", y: " + clampedY + ") — " + quad;
+  plotCoordPoint(clampedX, clampedY);
+}
+
+function loadRatioPreset(a, b, f) {
+  const slA = document.getElementById("tape_slider_a");
+  const slB = document.getElementById("tape_slider_b");
+  const slF = document.getElementById("tape_slider_factor");
+  if (slA) slA.value = a;
+  if (slB) slB.value = b;
+  if (slF) slF.value = f;
+  updateTapeDiagram();
   if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function loadDecimalPreset(topStr, botStr) {
+  const table = document.querySelector(".dec-grid-table tbody");
+  if (!table) return;
+  const rows = table.querySelectorAll("tr");
+  if (rows.length < 2) return;
+
+  function populateRow(row, valStr) {
+    const inputs = row.querySelectorAll("input.dg-cell");
+    inputs.forEach(inp => inp.value = "");
+    const parts = String(valStr).split(".");
+    const whole = parts[0] || "";
+    const frac = parts[1] || "";
+    if (whole.length >= 1) inputs[2].value = whole[whole.length - 1];
+    if (whole.length >= 2) inputs[1].value = whole[whole.length - 2];
+    if (whole.length >= 3) inputs[0].value = whole[whole.length - 3];
+    if (frac.length >= 1) inputs[3].value = frac[0];
+    if (frac.length >= 2) inputs[4].value = frac[1];
+    if (frac.length >= 3) inputs[5].value = frac[2];
+  }
+
+  populateRow(rows[0], topStr);
+  populateRow(rows[1], botStr);
+  if (typeof playMatchSound === "function") playMatchSound();
 }
 
 function updateTapeDiagram() {
@@ -4755,10 +4973,13 @@ function checkProblem(idx, options) {
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       let choiceFeedback = [];
+      let choiceFeedbackEs = [];
       try {
         choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+        choiceFeedbackEs = JSON.parse(container.dataset.choiceFeedbackEs || "[]");
       } catch (e) {
         choiceFeedback = [];
+        choiceFeedbackEs = [];
       }
       
       // Reset radio option styles
@@ -4790,7 +5011,9 @@ function checkProblem(idx, options) {
             const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
             if (correctLabel) correctLabel.classList.add("is-correct");
           }
-          selectedFeedback = choiceFeedback[val] || "";
+          const fbEn = choiceFeedback[val] || "";
+          const fbEs = choiceFeedbackEs[val] || "";
+          selectedFeedback = pickLangText(fbEn, fbEs);
         }
       }
 

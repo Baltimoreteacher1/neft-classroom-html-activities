@@ -279,6 +279,7 @@ async function load() {
       : "Family resources are temporarily unavailable. Please refresh to try again.";
   }
   renderExperience();
+  renderFamilyPracticeHistory();
   // Re-apply wording now that published copy overrides have loaded.
   applyPreferences();
 }
@@ -427,9 +428,103 @@ function pickVoice(lang) {
   return voices.find((voice) => voice.lang?.toLowerCase().startsWith(lang)) ?? null;
 }
 
+function renderFamilyPracticeHistory() {
+  const section = byId("family-history");
+  if (!section) return;
+
+  const completed = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("hw_parent_signoff_")) {
+        const lessonId = key.replace("hw_parent_signoff_", "");
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          try {
+            const data = JSON.parse(raw);
+            completed.push({ lessonId, ...data });
+          } catch (e) {}
+        }
+      }
+    }
+  } catch (e) {}
+
+  if (!completed.length) {
+    section.hidden = true;
+    return;
+  }
+
+  section.hidden = false;
+  const countEl = byId("history-completed-count");
+  if (countEl) countEl.textContent = String(completed.length);
+
+  // Streak
+  let streak = 1;
+  try {
+    const streakKey = ["hw", "family", "streak", "history"].join("_");
+    const history = JSON.parse(localStorage.getItem(streakKey) || "[]");
+    if (history.length) {
+      for (let i = history.length - 2; i >= 0; i--) {
+        const prev = new Date(history[i]);
+        const next = new Date(history[i + 1]);
+        const diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) streak++;
+        else if (diffDays === 0) continue;
+        else break;
+      }
+    } else {
+      streak = completed.length > 0 ? 1 : 0;
+    }
+  } catch (e) {}
+
+  const streakEl = byId("history-streak-count");
+  if (streakEl) streakEl.textContent = String(streak);
+  const streakChip = byId("history-streak-chip");
+  if (streakChip) streakChip.textContent = `🔥 ${streak}-night streak`;
+
+  // Vocab review count
+  let reviewCount = 0;
+  try {
+    const reviewDeck = JSON.parse(localStorage.getItem("hw_vocab_review_deck") || "[]");
+    reviewCount = reviewDeck.length;
+  } catch (e) {}
+  const reviewEl = byId("history-review-count");
+  if (reviewEl) reviewEl.textContent = String(reviewCount);
+
+  // Recent practice list
+  const recentList = byId("history-recent-list");
+  if (recentList) {
+    completed.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const topRecent = completed.slice(0, 4);
+    recentList.innerHTML = topRecent
+      .map(
+        (item) => `
+        <a class="history-item-card" href="/lessons/${encodeURIComponent(item.lessonId)}/homework.html" style="display:inline-flex; flex-direction:column; padding: 8px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none; color: inherit; min-width: 140px;">
+          <div class="history-item-head" style="display:flex; justify-content:space-between; align-items:center; gap: 8px;">
+            <strong style="color: #12355b; font-size: 0.9rem;">${item.lessonTitle || `Lesson ${item.lessonId}`}</strong>
+            <span style="font-size: 0.75rem; color: #0c6f6b; font-weight: 700;">✓ Done</span>
+          </div>
+          <span style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">${item.date ? item.date.split(" at ")[0] : ""}</span>
+        </a>
+      `,
+      )
+      .join("");
+  }
+}
+
 loadPreferences();
 bindEvents();
 load();
 setInterval(refreshPublication, 30_000);
-document.addEventListener("visibilitychange", refreshPublication);
+document.addEventListener("visibilitychange", () => {
+  refreshPublication();
+  renderFamilyPracticeHistory();
+});
 if ("speechSynthesis" in window) window.speechSynthesis.getVoices();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+

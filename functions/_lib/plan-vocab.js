@@ -5112,8 +5112,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/wida-access/directions-trainer/",
+    title: "WIDA Directions & Spatial Navigation Trainer | Neft Hub",
+    category: "Practice",
+    unit: null,
+  },
+  {
     path: "/wida-access/listening/",
     title: "WIDA ACCESS Listening Practice Studio | Neft Hub",
+    category: "Practice",
+    unit: null,
+  },
+  {
+    path: "/wida-access/portfolio/",
+    title: "WIDA ACCESS Student Portfolio & Teacher Gradebook | Neft Hub",
     category: "Practice",
     unit: null,
   },
@@ -5124,8 +5136,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/wida-access/reward-shop/",
+    title: "SPARK Reward Shop & Study Buddy Studio | Neft Hub",
+    category: "Practice",
+    unit: null,
+  },
+  {
     path: "/wida-access/speaking/",
     title: "WIDA ACCESS Speaking Practice Studio | Neft Hub",
+    category: "Practice",
+    unit: null,
+  },
+  {
+    path: "/wida-access/word-builder/",
+    title: "WIDA Word Builder Quest · Morphology Lab | Neft Hub",
     category: "Practice",
     unit: null,
   },
