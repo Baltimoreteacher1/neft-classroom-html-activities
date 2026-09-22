@@ -36,6 +36,8 @@ const FETCH_CONCURRENCY = 4;
 const SIZE_WARN_BYTES = 250 * 1024 * 1024;
 /** Worksheets in one print pack past which the teacher is asked to confirm. */
 const PRINT_PACK_WARN = 40;
+/** Server-side renderer; absent on a deployment without the Browser binding. */
+const PDF_ENDPOINT = "/api/worksheet-pdf";
 
 /**
  * What the teacher gets. Every practice worksheet on this site is an HTML page,
@@ -44,10 +46,11 @@ const PRINT_PACK_WARN = 40;
  * edit a question in it. Two conversions run in the browser (assets/lib/
  * worksheet-export.js), on the files the teacher already selected:
  *
- *   pdf  — every selected worksheet stitched into ONE print-ready document and
- *          handed to the browser's own print dialog, where "Save as PDF" is the
- *          destination. Same rendering engine as the worksheet itself, so the
- *          PDF is exactly what the page looks like.
+ *   pdf  — every selected worksheet stitched into ONE document and rendered to
+ *          a real .pdf file by /api/worksheet-pdf (Browser Run), so it saves to
+ *          Downloads like the other formats. Same rendering engine as the
+ *          worksheet itself, so the PDF is exactly what the page looks like.
+ *          Falls back to the in-browser print view if that endpoint is absent.
  *   word — one editable .doc per worksheet, inside the same zip.
  *
  * Both are conversions of the HTML pages; anything already a PDF, DOCX or PPTX
@@ -62,7 +65,7 @@ const FORMATS = [
   {
     id: "pdf",
     label: "One PDF",
-    hint: "Every worksheet in one print-ready document — choose “Save as PDF”.",
+    hint: "Every worksheet in one .pdf file, saved to Downloads.",
   },
   {
     id: "word",
@@ -79,7 +82,7 @@ let exportLib = null;
 // downloader is on demand: /curriculum/ opens on a school Chromebook long
 // before anyone asks for a worksheet pack. tools/validate-download-manifest.mjs
 // pins this ?v= to the file's content hash.
-const EXPORT_URL = "/assets/lib/worksheet-export.js?v=e6e0cea8";
+const EXPORT_URL = "/assets/lib/worksheet-export.js?v=6ec16a31";
 const loadExportLib = () => (exportLib = exportLib || import(EXPORT_URL));
 
 /* ------------------------------------------------------------------ state */
@@ -559,7 +562,7 @@ function renderBar() {
   const go = dialog.querySelector('[data-act="download"]');
   go.textContent =
     format === "pdf"
-      ? "Open print view"
+      ? "Download PDF"
       : format === "word"
         ? "Download Word ZIP"
         : view === "packages"
@@ -878,28 +881,86 @@ async function startPrintPack(list) {
   const pages = list.filter(isConvertibleHtml);
   if (!pages.length) {
     window.alert(
-      "None of the selected resources is a worksheet page, so there is nothing to print.\n\n" +
+      "None of the selected resources is a worksheet page, so there is nothing to put in a PDF.\n\n" +
         "PDFs, DOCX and slide files are already documents — download them as web pages instead.",
     );
     return;
   }
 
-  // A whole unit is ~100 worksheets and ~250 printed pages. That is a legitimate
-  // thing to want, but it is also what an unwary click on "Complete Unit" would
-  // produce, and it takes a Chromebook a while — so it is confirmed, not refused.
+  // A whole unit is ~100 worksheets and ~500 printed pages. That is a legitimate
+  // thing to want, and it is also what an unwary click on "Complete Unit" would
+  // produce — so it is confirmed, not refused.
   if (pages.length > PRINT_PACK_WARN) {
     const ok = window.confirm(
-      `This will build one document with ${pages.length} worksheets in it, which may take a ` +
-        `minute and will be a long PDF. Continue?`,
+      `This will build one PDF with ${pages.length} worksheets in it — several hundred pages, ` +
+        `and up to a minute to render. Continue?`,
     );
     if (!ok) return;
   }
 
+  const unit = view === "packages" ? manifest.units.find((u) => u.unit === activeUnit) : null;
+  const title = unit ? `Unit ${unit.unit} — Practice Worksheets` : "Practice Worksheets";
+
+  busy = true;
+  cancelled = false;
+  renderBar();
+  setProgress(`Rendering ${pages.length} worksheets into one PDF…`, 1, 3);
+
+  try {
+    const response = await fetch(PDF_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        title,
+        sheets: pages.map((res) => ({
+          path: new URL(res.url, location.origin).pathname,
+          title: res.title,
+        })),
+      }),
+    });
+
+    if (!response.ok) {
+      // 503 means this deployment has no Browser binding. Everything the pack
+      // needs still works in the browser, so offer that rather than dead-end.
+      const reason = await response
+        .json()
+        .then((data) => data?.error)
+        .catch(() => null);
+      if (response.status === 503) return openPrintView(pages, title, reason);
+      throw new Error(reason || `HTTP ${response.status}`);
+    }
+
+    setProgress("Saving the PDF…", 2, 3);
+    const blob = await response.blob();
+    if (cancelled) return;
+    saveBlob(blob, `${safeName(title, "Practice-Worksheets")}.pdf`);
+  } catch (error) {
+    if (!cancelled) {
+      window.alert(
+        `The PDF could not be built: ${error?.message || error}\n\n` +
+          `Opening the print view instead — choose “Save as PDF” there.`,
+      );
+      await openPrintView(pages, title);
+    }
+  } finally {
+    busy = false;
+    endProgress();
+    renderBar();
+  }
+}
+
+/**
+ * The in-browser fallback: stitch the pack locally and hand it to the print
+ * dialog. Used when the renderer is unavailable, so a deployment without the
+ * Browser binding still gets the teacher a PDF, one dialog further away.
+ */
+async function openPrintView(pages, title, reason) {
   const tab = window.open("", "_blank");
   if (!tab) {
     window.alert(
       "The print view needs a new tab, and the browser blocked it.\n\n" +
-        "Allow pop-ups for this site, then choose “Open print view” again.",
+        "Allow pop-ups for this site and try again.",
     );
     return;
   }
@@ -909,9 +970,6 @@ async function startPrintPack(list) {
       `<p>Preparing ${pages.length} worksheet${pages.length === 1 ? "" : "s"}…</p></body></html>`,
   );
 
-  busy = true;
-  cancelled = false;
-  renderBar();
   try {
     const { printPackHtml } = await loadExportLib();
     const sheets = [];
@@ -943,10 +1001,9 @@ async function startPrintPack(list) {
     const ready = sheets.filter(Boolean);
     if (!ready.length) throw new Error("no worksheet could be loaded");
 
-    const unit = view === "packages" ? manifest.units.find((u) => u.unit === activeUnit) : null;
-    const title = unit ? `Unit ${unit.unit} — Practice worksheets` : "Practice worksheets";
     const subtitle =
-      `${ready.length} worksheet${ready.length === 1 ? "" : "s"} · one PDF` +
+      `${ready.length} worksheet${ready.length === 1 ? "" : "s"} · choose “Save as PDF”` +
+      (reason ? ` · ${reason}` : "") +
       (failures.length ? ` · ${failures.length} could not be loaded` : "");
 
     tab.document.open();
@@ -956,10 +1013,6 @@ async function startPrintPack(list) {
   } catch (error) {
     tab.close();
     window.alert(`The print view could not be built: ${error?.message || error}`);
-  } finally {
-    busy = false;
-    endProgress();
-    renderBar();
   }
 }
 

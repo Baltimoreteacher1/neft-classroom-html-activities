@@ -239,6 +239,37 @@ export const esc = (value) =>
  * @param {Document} doc  a Document to parse with (window.document in the browser)
  * @returns {{ title: string, css: string, body: string, url: string }}
  */
+/**
+ * The same split, without a DOM.
+ *
+ * `/api/worksheet-pdf` runs in a Worker, where there is no DOMParser, and it
+ * must produce the SAME pack the browser produces or the downloaded PDF would
+ * not be the document the teacher previewed. Every worksheet is generator
+ * output with one `<main>` and its styles in `<head>`, so the split is a string
+ * operation; the DOM is only needed for the element-level pruning below, which
+ * the PDF path does not need — Browser Run renders in print media, so a page's
+ * own `@media print { display: none }` hides its print button for us.
+ */
+export function splitWorksheet(html, meta = {}) {
+  const source = String(html || "");
+  const css = [...source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)]
+    .map((m) => m[1])
+    .join("\n");
+  const main = /<main\b[^>]*>([\s\S]*)<\/main>/i.exec(source);
+  const fallback = /<body\b[^>]*>([\s\S]*)<\/body>/i.exec(source);
+  const raw = (main || fallback)?.[1];
+  if (!raw) throw new Error("no printable content");
+  const body = raw
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
+  const title =
+    meta.title ||
+    (/<title\b[^>]*>([\s\S]*?)<\/title>/i.exec(source)?.[1] || "").trim() ||
+    meta.lessonTitle ||
+    "Worksheet";
+  return { title, css, body, url: meta.url || "" };
+}
+
 export function parseWorksheet(html, meta = {}, parser = new DOMParser()) {
   const parsed = parser.parseFromString(String(html || ""), "text/html");
   const css = [...parsed.querySelectorAll("style")].map((el) => el.textContent || "").join("\n");
@@ -314,7 +345,10 @@ const PACK_CHROME_CSS = `
  * "Save as PDF". Each sheet keeps its own stylesheet, scoped to its own wrapper.
  *
  * @param {Array<{title: string, css: string, body: string}>} sheets
- * @param {{ title?: string, subtitle?: string, autoPrint?: boolean }} options
+ * @param {{ title?: string, subtitle?: string, baseHref?: string, autoPrint?: boolean }} options
+ *   autoPrint:false is for the server render behind /api/worksheet-pdf — that
+ *   page is never shown to anyone, and a print dialog there would be a dialog
+ *   nobody can dismiss.
  */
 export function printPackHtml(sheets, options = {}) {
   const list = Array.isArray(sheets) ? sheets : [];
@@ -354,14 +388,18 @@ ${SHARED_STYLESHEETS.map((href) => `<link rel="stylesheet" href="${esc(href)}" /
   <button type="button" class="wsx-print" onclick="window.print()">🖨️ Save as PDF</button>
 </div>
 ${body}
-<script>
+${
+  options.autoPrint === false
+    ? ""
+    : `<script>
   window.addEventListener("load", function () {
     // Wait for the worksheet webfonts: printing before they land reflows the
     // page and pushes the last question of each sheet onto a stray page.
     var ready = document.fonts ? document.fonts.ready : Promise.resolve();
     ready.then(function () { setTimeout(function () { window.print(); }, 250); });
   });
-</script>
+</script>`
+}
 </body>
 </html>`;
 }
