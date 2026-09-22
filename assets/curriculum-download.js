@@ -79,7 +79,7 @@ let exportLib = null;
 // downloader is on demand: /curriculum/ opens on a school Chromebook long
 // before anyone asks for a worksheet pack. tools/validate-download-manifest.mjs
 // pins this ?v= to the file's content hash.
-const EXPORT_URL = "/assets/lib/worksheet-export.js?v=41ad6483";
+const EXPORT_URL = "/assets/lib/worksheet-export.js?v=e6e0cea8";
 const loadExportLib = () => (exportLib = exportLib || import(EXPORT_URL));
 
 /* ------------------------------------------------------------------ state */

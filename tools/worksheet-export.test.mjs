@@ -23,6 +23,7 @@ import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import {
   parseWorksheet,
+  printHiddenSelectors,
   printPackHtml,
   scopeCss,
   stripCssComments,
@@ -115,6 +116,29 @@ test("parseWorksheet keeps the printable main and drops runtime chrome", () => {
   assert.doesNotMatch(sheet.body, /boom|topbar/);
 });
 
+test("the page's own print rules say what must not be exported", () => {
+  const css = "@media print{.no-print{display:none}.ws-action-bar{display:none}}.x{display:none}";
+  assert.deepEqual(printHiddenSelectors(css), [".no-print", ".ws-action-bar"]);
+});
+
+test("a print rule on the page itself cannot delete the worksheet", () => {
+  // Several sheets carry `@media print { body { ... } }`; a careless reading of
+  // a display:none there would return an empty export rather than a worksheet.
+  assert.deepEqual(printHiddenSelectors("@media print{body{display:none}*{display:none}}"), []);
+});
+
+test("parseWorksheet drops what the page hides in print", () => {
+  const sheet = parseWorksheet(
+    `<html><head><style>@media print{.no-print{display:none}}</style></head>
+     <body><main><div class="no-print"><button onclick="window.print()">Print</button></div>
+     <section class="ws-page">Q1</section></main></body></html>`,
+    {},
+    parser,
+  );
+  assert.doesNotMatch(sheet.body, /no-print|window\.print/);
+  assert.match(sheet.body, /Q1/);
+});
+
 /* ------------------------------------------------------------- print pack */
 
 test("a pack gives every sheet its own wrapper and a page break between them", () => {
@@ -125,8 +149,9 @@ test("a pack gives every sheet its own wrapper and a page break between them", (
     ],
     { title: "Pack" },
   );
-  assert.match(html, /id="wsx-1"/);
-  assert.match(html, /id="wsx-2"/);
+  assert.match(html, /<section class="wsx-sheet">/);
+  assert.match(html, /<div class="wsx-body" id="wsx-1">/);
+  assert.match(html, /<div class="wsx-body" id="wsx-2">/);
   assert.match(html, /#wsx-1\{--x:1px\}/);
   assert.match(html, /#wsx-2\{--x:2px\}/);
   assert.match(html, /\.wsx-sheet \+ \.wsx-sheet \{[^}]*break-before: page/);
@@ -138,9 +163,26 @@ test("a pack escapes the titles it prints", () => {
   assert.match(html, /&lt;img src=x/);
 });
 
-test("the pack toolbar is hidden in print", () => {
+test("a worksheet's own reset cannot reach the page wrapper around it", () => {
+  // `* { margin: 0 }` scopes to `#wsx-1, #wsx-1 *`, and an id outranks the
+  // `.wsx-sheet` class — so the scope must sit INSIDE the wrapper it styles.
+  const html = printPackHtml([{ title: "A", css: "*{margin:0;padding:0}", body: "<p>a</p>" }], {});
+  const sheet = html.indexOf('<section class="wsx-sheet">');
+  const scope = html.indexOf('id="wsx-1"');
+  assert.ok(sheet !== -1 && scope > sheet, "the scoped element is inside .wsx-sheet");
+  assert.match(html, /#wsx-1, #wsx-1 \*\{margin:0;padding:0\}/);
+});
+
+test("the pack toolbar and spine labels are hidden in print", () => {
   const html = printPackHtml([{ title: "A", css: "", body: "" }], {});
-  assert.match(html, /@media print \{[\s\S]*\.wsx-toolbar \{ display: none/);
+  assert.match(html, /@media print \{[\s\S]*\.wsx-toolbar, \.wsx-label \{ display: none/);
+});
+
+test("the pack adds no padding of its own around a sheet", () => {
+  // Each worksheet's page element already carries the print margins it was
+  // designed with; a second set reflows every sheet off its own layout.
+  const html = printPackHtml([{ title: "A", css: "", body: "" }], {});
+  assert.match(html, /\.wsx-sheet \{[^}]*padding: 0;/);
 });
 
 /* -------------------------------------------------------------------- Word */

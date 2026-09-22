@@ -210,6 +210,21 @@ export function scopeCss(css, scope, { keepPageRules = false } = {}) {
 
 /* ------------------------------------------------------------- parsing */
 
+/** Selectors the worksheet's own stylesheet hides when the page is printed. */
+export function printHiddenSelectors(css) {
+  const hidden = new Set();
+  forEachStyleRule(css, (prelude, body, media) => {
+    if (!media.some((at) => /^@media\b/i.test(at) && /\bprint\b/i.test(at))) return;
+    if (!/(^|;)\s*display\s*:\s*none/i.test(body)) return;
+    for (const selector of splitSelectorList(prelude)) {
+      // Never let a print rule on the page itself delete the whole worksheet.
+      if (/^(?::root|html|body|\*)$/.test(selector.trim())) continue;
+      hidden.add(selector.trim());
+    }
+  });
+  return [...hidden];
+}
+
 export const esc = (value) =>
   String(value == null ? "" : value).replace(
     /[&<>"']/g,
@@ -231,6 +246,18 @@ export function parseWorksheet(html, meta = {}, parser = new DOMParser()) {
   const root = parsed.querySelector("main") || parsed.body;
   if (!root) throw new Error("no printable content");
   for (const el of root.querySelectorAll(CHROME_SELECTORS.join(","))) el.remove();
+  // The page already states what must not print — a "🖨️ Print" button, a
+  // screen-only hint — in its own `@media print { … display: none }` rules.
+  // Ask it, rather than keeping a list of class names beside it that goes stale.
+  for (const selector of printHiddenSelectors(css)) {
+    let matches;
+    try {
+      matches = root.querySelectorAll(selector);
+    } catch {
+      continue; // a selector this parser cannot run is not worth guessing at
+    }
+    for (const el of matches) el.remove();
+  }
 
   const title =
     meta.title ||
@@ -260,19 +287,25 @@ const PACK_CHROME_CSS = `
     padding: 10px 20px; border: 0; border-radius: 8px; background: #ffd479; color: #15487f;
   }
   .wsx-print:hover { background: #ffe1a1; }
+  /* No padding of its own: each worksheet's page element already carries the
+     print margins it was designed with, and adding more would reflow every
+     sheet away from the layout it has when printed on its own. */
   .wsx-sheet {
-    background: #fff; max-width: 8.5in; margin: 18px auto; padding: 0.45in 0.5in 0.55in;
+    background: #fff; max-width: 8.5in; margin: 18px auto; padding: 0;
     border: 1px solid #d6e0ec; box-shadow: 0 6px 24px rgba(15, 23, 42, 0.1);
   }
   .wsx-sheet + .wsx-sheet { break-before: page; page-break-before: always; }
+  /* A screen-only spine label: with 50 worksheets in one document you need to
+     see where you are while scrolling. It is not printed — every worksheet
+     already names itself in its own header band. */
   .wsx-label {
     font: 700 11px/1.4 system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase;
-    color: #56627a; margin: 0 0 10px;
+    color: #56627a; margin: 0; padding: 10px 14px 4px;
   }
   @media print {
     html, body { background: #fff; }
-    .wsx-toolbar { display: none !important; }
-    .wsx-sheet { margin: 0; padding: 0; border: 0; box-shadow: none; max-width: none; }
+    .wsx-toolbar, .wsx-label { display: none !important; }
+    .wsx-sheet { margin: 0; border: 0; box-shadow: none; max-width: none; }
   }
 `;
 
@@ -287,12 +320,17 @@ export function printPackHtml(sheets, options = {}) {
   const list = Array.isArray(sheets) ? sheets : [];
   const title = options.title || "Practice worksheets";
   const scopedCss = list.map((sheet, index) => scopeCss(sheet.css, `#wsx-${index + 1}`)).join("\n");
+  // The scope target is an INNER element on purpose. A worksheet's own
+  // `* { margin: 0; padding: 0 }` scopes to `#wsx-N, #wsx-N *`, and an id beats
+  // any class — so with the scope on the page wrapper itself, the worksheet
+  // would zero out the wrapper's own centring and padding and no ordering or
+  // extra class could win it back.
   const body = list
     .map(
       (sheet, index) => `
-      <section class="wsx-sheet" id="wsx-${index + 1}">
+      <section class="wsx-sheet">
         <p class="wsx-label">${esc(sheet.title)}</p>
-        ${sheet.body}
+        <div class="wsx-body" id="wsx-${index + 1}">${sheet.body}</div>
       </section>`,
     )
     .join("\n");
@@ -330,8 +368,13 @@ ${body}
 
 /* ----------------------------------------------------------------- Word */
 
-/** Walk top-level style rules, descending into @media/@supports blocks. */
-function forEachStyleRule(css, visit) {
+/**
+ * Walk top-level style rules, descending into @media/@supports blocks.
+ * `visit(prelude, body, media)` — `media` is the chain of at-rule preludes the
+ * rule is nested inside, which is how a print-only rule is told from a
+ * screen one.
+ */
+function forEachStyleRule(css, visit, media = []) {
   const source = stripCssComments(String(css || ""));
   let i = 0;
   while (i < source.length) {
@@ -354,9 +397,9 @@ function forEachStyleRule(css, visit) {
     }
     const body = source.slice(brace + 1, end);
     if (prelude.startsWith("@")) {
-      if (NESTING_AT_RULES.test(prelude)) forEachStyleRule(body, visit);
+      if (NESTING_AT_RULES.test(prelude)) forEachStyleRule(body, visit, [...media, prelude]);
     } else {
-      visit(prelude, body);
+      visit(prelude, body, media);
     }
     i = end + 1;
   }
