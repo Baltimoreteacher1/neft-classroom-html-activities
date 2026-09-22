@@ -558,6 +558,19 @@
             zip.</span
           >
         </button>
+        <button
+          class="curriculum-guide__action hub-teacher-only"
+          type="button"
+          data-nt-download
+          data-nt-download-preset="worksheets"
+          data-nt-download-format="pdf"
+        >
+          <strong>🖨️ Practice Worksheets — PDF or Word</strong>
+          <span
+            >Get every practice sheet in a unit at once: one print-ready PDF, editable Word
+            files, or the web pages.</span
+          >
+        </button>
         <a class="curriculum-guide__action" href="/curriculum/units/">
           <strong>Explore by unit</strong>
           <span>Choose one unit and see only the lesson and resources you need.</span>
@@ -4030,12 +4043,14 @@
             var trigger = target && target.closest && target.closest("[data-nt-download]");
             if (!trigger || window.NTCurriculumDownload) return;
             event.preventDefault();
-            loading = loading || import("/assets/curriculum-download.js?v=9cbfb6cb");
+            loading = loading || import("/assets/curriculum-download.js?v=a90b9d23");
             loading.then(function () {
               window.NTCurriculumDownload.open({
                 unit: trigger.dataset.ntDownloadUnit,
                 lesson: trigger.dataset.ntDownloadLesson,
                 view: trigger.dataset.ntDownloadView,
+                preset: trigger.dataset.ntDownloadPreset,
+                format: trigger.dataset.ntDownloadFormat,
               });
             });
           },

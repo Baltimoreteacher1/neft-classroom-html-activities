@@ -265,6 +265,18 @@ for (const { res, unit } of everyResource) {
     );
   }
 
+  // Same rule for the PDF/Word converter, which the module imports on demand.
+  const exportRef = /\/assets\/lib\/worksheet-export\.js\?v=([a-f0-9]+)/.exec(moduleSource);
+  const exportWant = stamp("assets/lib/worksheet-export.js");
+  if (!exportRef) {
+    fail("assets/curriculum-download.js does not load the worksheet exporter with a ?v= stamp");
+  } else if (exportRef[1] !== exportWant) {
+    fail(
+      `worksheet-export.js changed but curriculum-download.js still says ?v=${exportRef[1]} — ` +
+        `replace it with ?v=${exportWant}`,
+    );
+  }
+
   const jsWant = stamp("assets/curriculum-download.js");
   const pages = ["curriculum/index.html", "curriculum/units/index.html"];
   for (const page of pages) {

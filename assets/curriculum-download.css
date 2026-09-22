@@ -481,6 +481,46 @@
   gap: 0.5rem;
 }
 
+/* Format picker — which shape the selected worksheets come out in. Segmented
+   rather than a <select> so all three are visible: a teacher who never opens
+   the menu never learns the PDF and Word copies exist. */
+.ntdl__format {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ntdl__fmt {
+  min-height: 44px;
+  padding: 0.45rem 0.8rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted, #56627a);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ntdl__fmt:hover {
+  background: var(--surface-2, #f3f7fc);
+  color: var(--navy, #15487f);
+}
+
+.ntdl__fmt.is-on {
+  background: var(--navy, #15487f);
+  color: #fff;
+}
+
+.ntdl__fmt:focus-visible {
+  outline: 3px solid var(--teal, #205fa6);
+  outline-offset: 2px;
+}
+
 .ntdl__btn {
   padding: 0.6rem 1.1rem;
   border: 1px solid transparent;
@@ -609,6 +649,16 @@
 
   .ntdl__actions {
     width: 100%;
+  }
+
+  .ntdl__format {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ntdl__fmt {
+    flex: 1 1 auto;
+    padding-inline: 0.4rem;
   }
 
   .ntdl__btn {
