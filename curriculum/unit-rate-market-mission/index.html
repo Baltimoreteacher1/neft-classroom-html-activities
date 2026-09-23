@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="A Grade 6 self-paced practice mission for Lesson 3-2 — build unit rates from rates, sort rate vs. unit rate, compare better buys, work out whole-package cart costs, and reason about unit rates in a challenge zone. Progress saves on the device." />
+<title>Unit Rate Market Mission | Grade 6 Practice</title>
+<style>
+  :root{
+    --navy:#18324a;
+    --navy-2:#244a67;
+    --teal:#16838b;
+    --teal-dark:#0f6269;
+    --teal-soft:#e8f5f5;
+    --gold:#e9b44c;
+    --gold-soft:#fff7e4;
+    --paper:#ffffff;
+    --cream:#fbf8f1;
+    --page:#f3f7f8;
+    --ink:#203646;
+    --muted:#667a87;
+    --line:#d7e2e6;
+    --line-strong:#b9ccd2;
+    --good:#18724b;
+    --good-bg:#edf8f2;
+    --bad:#a5403b;
+    --bad-bg:#fff1ef;
+    --warn:#805900;
+    --warn-bg:#fff8e6;
+    --shadow-sm:0 2px 10px rgba(24,50,74,.07);
+    --shadow:0 12px 32px rgba(24,50,74,.10);
+    --shadow-lg:0 22px 55px rgba(24,50,74,.16);
+    --radius:18px;
+    --radius-lg:28px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 0%,rgba(22,131,139,.08),transparent 30%),
+      radial-gradient(circle at 100% 20%,rgba(233,180,76,.10),transparent 28%),
+      linear-gradient(180deg,#f5f9fa 0%,#ffffff 44%,#fbf8f1 100%);
+    min-height:100vh;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;z-index:-1;
+    background-image:radial-gradient(rgba(24,50,74,.16) .7px,transparent .7px);
+    background-size:18px 18px;
+    mask-image:linear-gradient(to bottom,black,transparent 68%);
+  }
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(22,131,139,.24);outline-offset:3px}
+
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(14px) saturate(1.1);
+    border-bottom:1px solid rgba(185,204,210,.75);
+    box-shadow:0 5px 20px rgba(24,50,74,.05);
+  }
+  .top-inner{max-width:1180px;margin:0 auto;padding:11px 18px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;min-width:250px}
+  .brand-mark{
+    width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,var(--teal),var(--navy));color:white;
+    display:grid;place-items:center;font-size:24px;box-shadow:0 8px 18px rgba(22,131,139,.22);border:1px solid rgba(255,255,255,.45)
+  }
+  .brand h1{font-size:1.08rem;margin:0;color:var(--navy);line-height:1.12;letter-spacing:-.01em}
+  .brand small{display:block;color:var(--muted);font-weight:700;margin-top:3px;font-size:.79rem}
+  .student-box{display:flex;align-items:center;gap:8px;background:#f7fafb;border:1px solid var(--line);padding:7px 10px;border-radius:12px;box-shadow:inset 0 1px 0 white}
+  .student-box label{font-size:.78rem;font-weight:900;color:var(--navy);text-transform:uppercase;letter-spacing:.05em}
+  .student-box input{width:155px;border:0;background:transparent;border-bottom:2px solid #a9bbc4;padding:4px 3px;color:var(--ink);font-weight:800}
+  .hud{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .pill{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:7px 11px;background:white;font-size:.83rem;font-weight:900;color:var(--navy);box-shadow:var(--shadow-sm)}
+  .coins{color:#745300;background:var(--gold-soft);border-color:#efd89c}
+  .global-progress{height:4px;background:#e9f0f2;border-top:1px solid #eef3f4;overflow:hidden}
+  .global-progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),#42a4a8,var(--gold));transition:width .35s ease;border-radius:0 999px 999px 0}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 54px}
+  .hero{
+    position:relative;overflow:hidden;border-radius:var(--radius-lg);
+    background:linear-gradient(132deg,#17324d 0%,#20506a 50%,#147e86 100%);
+    color:white;padding:34px 36px;box-shadow:var(--shadow-lg);
+    display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.72fr);gap:28px;align-items:center;
+    border:1px solid rgba(255,255,255,.12)
+  }
+  .hero::before{content:"";position:absolute;width:330px;height:330px;border-radius:50%;right:-120px;top:-170px;background:rgba(255,255,255,.08)}
+  .hero::after{content:"";position:absolute;width:250px;height:250px;border:36px solid rgba(233,180,76,.10);border-radius:50%;left:-110px;bottom:-170px}
+  .hero>div{position:relative;z-index:1}
+  .eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.16em;font-weight:950;color:#c5eef0;margin-bottom:9px}
+  .hero h2{font-size:clamp(2rem,3.5vw,3.35rem);line-height:1.02;margin:0 0 12px;letter-spacing:-.035em;max-width:760px}
+  .hero p{margin:0;max-width:760px;color:#e5f4f5;font-size:1.02rem;line-height:1.62}
+  .hero-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .hero-chip{border:1px solid rgba(255,255,255,.20);background:rgba(255,255,255,.10);color:white;padding:7px 10px;border-radius:999px;font-size:.78rem;font-weight:850;backdrop-filter:blur(4px)}
+  .formula-card{
+    position:relative;background:rgba(255,255,255,.96);color:var(--ink);border:1px solid rgba(255,255,255,.9);border-radius:18px;padding:18px 18px 19px;
+    box-shadow:0 14px 30px rgba(8,31,48,.19);transform:rotate(.35deg)
+  }
+  .formula-card::before{content:"UNIT RATE RECEIPT";display:block;font-size:.67rem;letter-spacing:.14em;font-weight:950;color:var(--teal);border-bottom:1px dashed #b8ced3;padding-bottom:8px;margin-bottom:11px}
+  .formula-card strong{display:block;color:var(--navy);margin-bottom:10px;font-size:.9rem}
+  .formula{font-size:1.05rem;font-weight:950;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+  .formula .box{background:#f5f9fa;color:var(--navy);padding:9px 10px;border-radius:10px;border:1px solid var(--line);box-shadow:inset 0 1px 0 white}
+  .formula .box:last-child{grid-column:1 / -1;background:var(--gold-soft);border-color:#ead28d;color:#6f5000}
+  .formula>span:nth-child(4){display:none}
+  .formula-note{font-size:.78rem;text-align:center;margin-top:11px;color:var(--muted);line-height:1.4}
+
+  .tabs{
+    position:sticky;top:73px;z-index:25;display:flex;gap:8px;margin:18px 0 0;overflow-x:auto;padding:7px;
+    scrollbar-width:thin;background:rgba(245,249,250,.92);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-sm)
+  }
+  .tab-btn{flex:0 0 auto;border:1px solid transparent;background:transparent;color:var(--navy);font-weight:850;padding:10px 13px;border-radius:10px;transition:.16s ease;white-space:nowrap}
+  .tab-btn:hover{background:white;border-color:var(--line);transform:translateY(-1px)}
+  .tab-btn.active{background:var(--navy);color:white;border-color:var(--navy);box-shadow:0 6px 15px rgba(24,50,74,.18)}
+  .tab-btn.done::after{content:" ✓";color:#9de3b8;font-weight:950}
+
+  .panel{display:none;margin-top:8px;animation:panelIn .28s ease both}
+  .panel.active{display:block}
+  @keyframes panelIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .section-head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin:26px 0 14px;padding:0 2px}
+  .section-head h3{display:flex;align-items:center;gap:10px;font-size:1.58rem;color:var(--navy);margin:0 0 5px;letter-spacing:-.02em}
+  .section-head h3::before{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:var(--teal-soft);border:1px solid #c4e1e3;font-size:1.05rem;flex:0 0 auto}
+  #start .section-head h3::before{content:"◎"} #sort .section-head h3::before{content:"⚡"} #build .section-head h3::before{content:"÷"} #battle .section-head h3::before{content:"🏷"} #cart .section-head h3::before{content:"🛒"} #challenge .section-head h3::before{content:"★"} #results .section-head h3::before{content:"✓"}
+  .section-head p{margin:0;color:var(--muted);line-height:1.55;max-width:760px}
+  .mini-goal{background:var(--gold-soft);color:#6e5005;border:1px solid #ecd79e;border-radius:999px;padding:8px 12px;font-size:.8rem;font-weight:900;box-shadow:0 2px 8px rgba(112,79,0,.04)}
+
+  .card{background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:21px;transition:box-shadow .18s ease,border-color .18s ease,transform .18s ease}
+  .question-card:hover{border-color:#c3d7dc;box-shadow:0 15px 36px rgba(24,50,74,.11)}
+  .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+  .vocab{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+  .vocab .v{position:relative;overflow:hidden;background:white;border:1px solid var(--line);border-radius:15px;padding:16px 14px 14px;box-shadow:var(--shadow-sm)}
+  .vocab .v::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--teal),#5baeb2)}
+  .vocab strong{color:var(--navy);display:block;margin-bottom:5px;font-size:.94rem}
+  .vocab span{font-size:.88rem;color:var(--muted);line-height:1.4}
+
+  .worked{display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);align-items:center;gap:14px;margin-top:15px}
+  .rate-box{background:linear-gradient(180deg,#fbfdfd,#f6fafb);border:1px solid var(--line);border-radius:15px;padding:18px;text-align:center;box-shadow:inset 0 1px 0 #fff}
+  .fraction{display:inline-grid;grid-template-rows:auto 2px auto;gap:5px;align-items:center;min-width:130px;font-weight:950;color:var(--navy);vertical-align:middle}
+  .fraction .bar{background:var(--navy);height:2px;width:100%}
+  .arrow{font-size:1.8rem;color:var(--teal);font-weight:950;text-align:center}
+  .tip{margin-top:15px;background:var(--warn-bg);border:1px solid #efd99f;border-left:5px solid var(--gold);border-radius:12px;padding:12px 14px;color:#684800;font-size:.9rem;line-height:1.5}
+
+  .question-card{position:relative;overflow:hidden}
+  .question-card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(var(--teal),#62afb2);opacity:.9}
+  .q-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
+  .q-num{display:inline-flex;align-items:center;gap:5px;font-size:.70rem;text-transform:uppercase;letter-spacing:.11em;font-weight:950;color:var(--teal);background:var(--teal-soft);border:1px solid #cae4e5;padding:5px 8px;border-radius:999px;margin-bottom:5px}
+  .q-title{font-size:1.06rem;line-height:1.43;margin:2px 0 0;color:var(--navy);font-weight:850}
+  .speak{min-width:38px;height:38px;border:1px solid var(--line);background:#f7fbfc;border-radius:11px;padding:0;color:var(--teal-dark);font-weight:950;box-shadow:var(--shadow-sm);transition:.15s}
+  .speak:hover{background:var(--teal-soft);transform:translateY(-1px)}
+  .choices{display:grid;gap:9px;margin-top:12px}
+  .choice{position:relative;border:2px solid #d8e5e9;background:white;border-radius:12px;padding:12px 14px;text-align:left;color:var(--ink);font-weight:780;transition:.15s;box-shadow:0 1px 0 rgba(24,50,74,.02)}
+  .choice:hover{transform:translateY(-1px);border-color:#93c3c7;background:#f8fcfc;box-shadow:var(--shadow-sm)}
+  .choice.selected{border-color:var(--teal);background:#edf9fa}
+  .choice.correct{border-color:var(--good);background:var(--good-bg);color:#0b5b38;padding-right:44px}
+  .choice.correct::after{content:"✓";position:absolute;right:13px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--good);color:white;font-weight:950}
+  .choice.wrong{border-color:var(--bad);background:var(--bad-bg);color:#7c2623}
+  .feedback{display:none;margin-top:12px;border-radius:12px;padding:12px 13px;font-size:.9rem;line-height:1.45;font-weight:720}
+  .feedback.show{display:block;animation:feedbackIn .22s ease both}
+  @keyframes feedbackIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .feedback.good{background:var(--good-bg);color:#0c6340;border:1px solid #b7dfc9}
+  .feedback.bad{background:var(--bad-bg);color:#842c29;border:1px solid #efc1be}
+  .feedback.hint{background:var(--warn-bg);color:#6d4a00;border:1px solid #ead08b}
+  .explain{font-weight:620;margin-top:5px;color:inherit;opacity:.92}
+
+  .builder-wrap{display:grid;gap:15px}
+  .builder{display:grid;grid-template-columns:1.12fr .88fr 1fr;gap:12px;align-items:stretch}
+  .builder-step{position:relative;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#fcfefe,#f7fbfb);padding:14px;min-height:112px;box-shadow:inset 0 1px 0 white}
+  .builder-step:nth-child(2){background:linear-gradient(180deg,#fffdf8,#fff8e8);border-color:#eadba9}
+  .builder-step:nth-child(3){background:linear-gradient(180deg,#fbfffc,#f0f9f4);border-color:#cde4d7}
+  .step-label{font-size:.70rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:950;margin-bottom:10px}
+  .big-rate{font-size:1.05rem;color:var(--navy);font-weight:900;line-height:1.4}
+  .inline-input{width:92px;padding:9px 10px;border:2px solid #cbd9df;border-radius:10px;text-align:center;font-weight:900;color:var(--navy);background:white;box-shadow:inset 0 1px 2px rgba(24,50,74,.04)}
+  .inline-input:focus{border-color:var(--teal)}
+  .money-input{position:relative;display:inline-flex;align-items:center}
+  .money-input::before{content:"$";position:absolute;left:10px;color:var(--muted);font-weight:900;z-index:1}
+  .money-input input{padding-left:24px}
+  .check-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:13px}
+  .btn{border:0;border-radius:11px;padding:10px 15px;font-weight:900;box-shadow:0 4px 11px rgba(24,50,74,.08);transition:.15s ease}
+  .btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 7px 16px rgba(24,50,74,.11)}
+  .btn.primary{background:linear-gradient(180deg,#198b93,#14757c);color:white}
+  .btn.primary:hover{background:linear-gradient(180deg,#147b82,#105f65)}
+  .btn.secondary{background:#f1f5f6;color:var(--navy);border:1px solid var(--line)}
+  .btn.gold{background:linear-gradient(180deg,#f2c562,#e7b046);color:#4c3500;border:1px solid #d9a23b}
+  .btn:disabled{opacity:.48;cursor:not-allowed;transform:none!important}
+
+  .store-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:13px 0}
+  .store{border:1.5px solid #d8e4e9;border-radius:14px;padding:15px;background:linear-gradient(180deg,#fdfefe,#f7fafb);position:relative;box-shadow:inset 0 1px 0 white}
+  .store .label{font-size:.69rem;text-transform:uppercase;letter-spacing:.10em;color:var(--muted);font-weight:950}
+  .store .price{font-size:1.16rem;color:var(--navy);font-weight:950;margin-top:5px}
+  .store .unit{font-size:.84rem;color:var(--muted);margin-top:5px}
+  .store.win{border-color:#7cb99a;background:linear-gradient(180deg,#f2fbf6,#e8f6ee);box-shadow:0 5px 14px rgba(24,114,75,.08)}
+  .store.win::after{content:"BEST DEAL";position:absolute;top:10px;right:10px;background:var(--good);color:white;font-size:.62rem;font-weight:950;letter-spacing:.08em;padding:4px 7px;border-radius:999px}
+
+  .mission{border-left:5px solid var(--gold)}
+  .mission::before{display:none}
+  .mission .context{font-size:1rem;line-height:1.52;color:var(--ink);font-weight:760;background:#f8fbfc;border:1px solid var(--line);padding:11px 12px;border-radius:11px}
+  .calc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:13px}
+  .calc-grid>div{background:#fbfdfd;border:1px solid #e0e9ec;border-radius:11px;padding:10px}
+  .calc-grid label{display:block;font-size:.68rem;font-weight:950;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+  .calc-grid input,.calc-grid select{width:100%;padding:10px 11px;border:2px solid #cedce1;border-radius:9px;background:white;font-weight:850;color:var(--navy)}
+  .calc-grid input:focus,.calc-grid select:focus{border-color:var(--teal)}
+  .twist{background:#f1f6fb;border:1px solid #cbdbea;border-left:4px solid #6087b3;border-radius:11px;padding:11px 12px;color:#2d4a73;font-size:.88rem;line-height:1.48;margin-top:12px}
+
+  .progress-card{display:grid;grid-template-columns:.72fr 1.28fr;gap:24px;align-items:center;padding:28px}
+  .progress-ring{--pct:0;width:164px;height:164px;border-radius:50%;background:conic-gradient(var(--teal) calc(var(--pct)*1%),#e7eef0 0);display:grid;place-items:center;margin:auto;position:relative;box-shadow:0 10px 26px rgba(22,131,139,.14)}
+  .progress-ring::before{content:"";width:122px;height:122px;border-radius:50%;background:white;position:absolute;box-shadow:inset 0 0 0 1px #edf2f3}
+  .progress-ring span{position:relative;font-size:1.72rem;font-weight:950;color:var(--navy);letter-spacing:-.03em}
+  .score-big{font-size:2.25rem;font-weight:950;color:var(--navy);margin:4px 0;letter-spacing:-.04em}
+  .badge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px}
+  .badge{border:1px solid var(--line);border-radius:13px;padding:13px 10px;text-align:center;background:#fbfdfd;opacity:.52;filter:grayscale(1);transition:.18s ease}
+  .badge.earned{opacity:1;filter:none;background:linear-gradient(180deg,#fffdf7,#fff7df);border-color:#ead18c;box-shadow:0 5px 14px rgba(113,80,4,.08);transform:translateY(-1px)}
+  .badge .icon{font-size:1.6rem;display:block;margin-bottom:5px}
+  .badge strong{font-size:.82rem;color:var(--navy)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .small{font-size:.82rem;color:var(--muted);line-height:1.5}
+  .page-footer{text-align:center;color:#7a8b95;font-size:.76rem;font-weight:700;padding:18px 8px 2px}
+
+  .celebrate{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:100}
+  .confetti{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px;animation:fall 1.5s ease-in forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.95}}
+  .shake{animation:shake .25s linear 1}
+  @keyframes shake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;padding:28px}.formula-card{max-width:520px;transform:none}
+    .vocab{grid-template-columns:repeat(2,minmax(0,1fr))}.progress-card{grid-template-columns:1fr}
+    .tabs{top:117px}
+  }
+  @media (max-width:720px){
+    .wrap{padding:16px 12px 40px}.top-inner{padding:9px 12px;gap:9px}.brand{min-width:0;flex:1}.brand small{display:none}.brand-mark{width:40px;height:40px;border-radius:12px}.brand h1{font-size:.96rem}
+    .student-box{order:3;width:100%}.student-box input{flex:1;width:auto}.hud{margin-left:auto}.pill{font-size:.75rem;padding:6px 9px}
+    .tabs{top:106px;margin-top:12px;border-radius:13px;padding:5px}.tab-btn{padding:9px 11px;font-size:.82rem}
+    .hero{border-radius:20px;padding:24px 20px}.hero h2{font-size:2rem}.hero p{font-size:.95rem}.hero-chips{margin-top:14px}
+    .grid-2,.grid-3,.vocab,.builder,.store-grid,.calc-grid,.badge-grid{grid-template-columns:1fr}
+    .worked{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}
+    .section-head{margin-top:20px}.section-head h3{font-size:1.35rem}.mini-goal{font-size:.75rem}
+    .card{padding:17px}.progress-card{padding:20px}
+  }
+  @media print{
+    .topbar,.tabs,.hero,.actions,.speak,.btn,.page-footer{display:none!important}
+    body{background:white}.panel{display:none!important}#results{display:block!important}
+    .card{box-shadow:none;border:1px solid #bbb}.wrap{max-width:100%;padding:0}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">🛒</div>
+      <div><h1>Unit Rate Market Mission</h1><small>Grade 6 • Rates, unit rates & better buys</small></div>
+    </div>
+    <div class="student-box">
+      <label for="studentName">Name</label>
+      <input id="studentName" maxlength="32" placeholder="Type your name" autocomplete="off" />
+    </div>
+    <div class="hud" aria-label="Progress">
+      <div class="pill">Progress <span id="hudProgress">0%</span></div>
+      <div class="pill coins">★ <span id="coinCount">0</span> points</div>
+    </div>
+  </div>
+  <div class="global-progress" aria-hidden="true"><span id="globalProgressFill"></span></div>
+</div>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Mission briefing</div>
+      <h2>Can you spot the best deal?</h2>
+      <p>Train your unit-rate skills through quick sorts, step-by-step builds, better-buy battles, and real shopping missions. You get two tries on most questions. Use the hints, show your thinking, and finish every tab.</p>
+      <div class="hero-chips"><span class="hero-chip">Rate vs. Unit Rate</span><span class="hero-chip">Unit Price</span><span class="hero-chip">Better Buys</span><span class="hero-chip">Whole Packages</span></div>
+    </div>
+    <div class="formula-card">
+      <strong>Unit-rate shortcut</strong>
+      <div class="formula"><span class="box">first quantity</span><span>÷</span><span class="box">second quantity</span><span>=</span><span class="box">per 1</span></div>
+      <div class="formula-note">For unit price: cost ÷ number of items = cost per 1 item</div>
+    </div>
+  </section>
+
+  <nav class="tabs" aria-label="Activity tabs">
+    <button class="tab-btn active" data-tab="start">1. Start Here</button>
+    <button class="tab-btn" data-tab="sort">2. Quick Sort</button>
+    <button class="tab-btn" data-tab="build">3. Unit Rate Builder</button>
+    <button class="tab-btn" data-tab="battle">4. Better Buy Battle</button>
+    <button class="tab-btn" data-tab="cart">5. Cart Quest</button>
+    <button class="tab-btn" data-tab="challenge">6. Challenge Zone</button>
+    <button class="tab-btn" data-tab="results">7. My Results</button>
+  </nav>
+
+  <section id="start" class="panel active">
+    <div class="section-head">
+      <div><h3>Start Here: What does “per 1” mean?</h3><p>A <strong>unit rate</strong> compares a quantity to exactly <strong>1</strong> of another quantity. The same idea works for dollars per item, miles per hour, words per minute, and more.</p></div>
+      <div class="mini-goal">Goal: understand the pattern before you play</div>
+    </div>
+
+    <div class="vocab">
+      <div class="v"><strong>Rate</strong><span>Compares two quantities with different units.</span></div>
+      <div class="v"><strong>Unit rate</strong><span>A rate with a second quantity of 1.</span></div>
+      <div class="v"><strong>Unit price</strong><span>The cost for 1 item or 1 unit.</span></div>
+      <div class="v"><strong>Better buy</strong><span>The option with the lower unit price when the products are comparable.</span></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="q-num">Worked example</div>
+      <div class="q-title">A café sells 6 fruit smoothies for $9.00. What is the cost per smoothie?</div>
+      <div class="worked">
+        <div class="rate-box">
+          <div class="step-label">Write as a rate</div>
+          <div class="fraction"><span>$9.00</span><span class="bar"></span><span>6 smoothies</span></div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="rate-box">
+          <div class="step-label">Divide both parts by 6</div>
+          <div class="fraction"><span>$1.50</span><span class="bar"></span><span>1 smoothie</span></div>
+        </div>
+      </div>
+      <div class="tip"><strong>Notice:</strong> $9.00 ÷ 6 = $1.50 and 6 ÷ 6 = 1. The unit rate is <strong>$1.50 per smoothie</strong>.</div>
+      <div class="actions">
+        <button class="btn primary" onclick="goTab('sort')">I’m ready →</button>
+        <button class="btn secondary" onclick="speak('A unit rate tells how much for one. To find a unit price, divide the total cost by the number of items.')">🔊 Read the key idea</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="sort" class="panel">
+    <div class="section-head">
+      <div><h3>Quick Sort: Rate or Unit Rate?</h3><p>Look at the <strong>second quantity</strong>. If it is 1, you have a unit rate.</p></div>
+      <div class="mini-goal">6 cards • 10 points each</div>
+    </div>
+    <div id="sortGrid" class="grid-2"></div>
+  </section>
+
+  <section id="build" class="panel">
+    <div class="section-head">
+      <div><h3>Unit Rate Builder</h3><p>Rewrite the situation as a fraction in your head. Then divide the numerator and denominator by the <strong>same number</strong> so the denominator becomes 1.</p></div>
+      <div class="mini-goal">5 builders • two tries each</div>
+    </div>
+    <div id="builderWrap" class="builder-wrap"></div>
+  </section>
+
+  <section id="battle" class="panel">
+    <div class="section-head">
+      <div><h3>Better Buy Battle</h3><p>Find each unit price, then choose the better buy. For equal products, the lower cost per 1 is the better unit price.</p></div>
+      <div class="mini-goal">5 matchups • instant feedback</div>
+    </div>
+    <div id="battleGrid" class="grid-2"></div>
+  </section>
+
+  <section id="cart" class="panel">
+    <div class="section-head">
+      <div><h3>Cart Quest: Whole-Package Decisions</h3><p>Now the shopping gets real. You cannot buy part of a package. Calculate how many whole packages are needed, the total cost, and the cheaper purchase.</p></div>
+      <div class="mini-goal">3 missions • multi-step reasoning</div>
+    </div>
+    <div id="cartWrap" class="builder-wrap"></div>
+  </section>
+
+  <section id="challenge" class="panel">
+    <div class="section-head">
+      <div><h3>Challenge Zone</h3><p>Use what you know to analyze mistakes, estimate, and explain what unit rates really tell you.</p></div>
+      <div class="mini-goal">5 reasoning challenges</div>
+    </div>
+    <div id="challengeGrid" class="grid-2"></div>
+  </section>
+
+  <section id="results" class="panel">
+    <div class="section-head">
+      <div><h3>My Results</h3><p>Your work saves automatically on this device. Finish any incomplete tab, then return here to check your progress.</p></div>
+      <div class="mini-goal">Aim for 80%+ mastery</div>
+    </div>
+    <div class="card progress-card">
+      <div>
+        <div id="progressRing" class="progress-ring"><span id="ringText">0%</span></div>
+      </div>
+      <div>
+        <div class="q-num">Mission score</div>
+        <div class="score-big"><span id="resultScore">0</span> / <span id="resultPossible">0</span></div>
+        <div id="resultMessage" class="small">Complete activities to build your score.</div>
+        <div class="badge-grid">
+          <div class="badge" id="badgeSort"><span class="icon">⚡</span><strong>Quick Sort</strong></div>
+          <div class="badge" id="badgeBuild"><span class="icon">🧩</span><strong>Unit Builder</strong></div>
+          <div class="badge" id="badgeBattle"><span class="icon">🏷️</span><strong>Better Buy</strong></div>
+          <div class="badge" id="badgeCart"><span class="icon">🛒</span><strong>Cart Quest</strong></div>
+          <div class="badge" id="badgeChallenge"><span class="icon">🏆</span><strong>Challenge</strong></div>
+          <div class="badge" id="badgeMaster"><span class="icon">⭐</span><strong>Rate Master</strong></div>
+        </div>
+        <div class="actions">
+          <button class="btn gold" onclick="window.print()">Print My Results</button>
+          <button class="btn secondary" onclick="resetAll()">Reset Activity</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="page-footer">Unit Rate Market Mission • Grade 6 Mathematics • Practice with purpose</div>
+</main>
+
+<div id="celebrate" class="celebrate" aria-hidden="true"></div>
+<div id="live" class="sr-only" aria-live="polite"></div>
+
+<script>
+const sortQs = [
+  {id:'s1', text:'$18 for 6 notebooks', answer:'rate', hint:'The second quantity is 6 notebooks, not 1.', explain:'This compares $18 to 6 notebooks, so it is a rate.'},
+  {id:'s2', text:'4 miles per 1 hour', answer:'unit', hint:'Look for a second quantity of 1.', explain:'The rate is per 1 hour, so it is a unit rate.'},
+  {id:'s3', text:'$2.25 per bottle', answer:'unit', hint:'“Per bottle” means per 1 bottle.', explain:'The cost is already written for 1 bottle.'},
+  {id:'s4', text:'36 points in 3 games', answer:'rate', hint:'Three games is more than one game.', explain:'This compares 36 points to 3 games, so it is not yet a unit rate.'},
+  {id:'s5', text:'72 words in 1 minute', answer:'unit', hint:'The second quantity is exactly 1 minute.', explain:'72 words per 1 minute is a unit rate.'},
+  {id:'s6', text:'$15 for 5 pounds of apples', answer:'rate', hint:'The second quantity is 5 pounds.', explain:'You would still need to divide by 5 to find dollars per 1 pound.'}
+];
+
+const buildQs = [
+  {id:'b1', text:'6 sports drinks cost $9.60.', top:'$9.60', bottom:'6 drinks', divisor:6, result:1.60, unit:'per drink', money:true, hint:'Divide $9.60 and 6 by 6.'},
+  {id:'b2', text:'A student reads 84 pages in 4 days.', top:'84 pages', bottom:'4 days', divisor:4, result:21, unit:'pages per day', money:false, hint:'Divide 84 and 4 by 4.'},
+  {id:'b3', text:'7 pounds of oranges cost $14.70.', top:'$14.70', bottom:'7 lb', divisor:7, result:2.10, unit:'per pound', money:true, hint:'Divide $14.70 and 7 by 7.'},
+  {id:'b4', text:'A car travels 132 miles on 4 gallons of gas.', top:'132 miles', bottom:'4 gallons', divisor:4, result:33, unit:'miles per gallon', money:false, hint:'Divide 132 and 4 by 4.'},
+  {id:'b5', text:'15 markers cost $18.75.', top:'$18.75', bottom:'15 markers', divisor:15, result:1.25, unit:'per marker', money:true, hint:'Divide $18.75 and 15 by 15.'}
+];
+
+const battleQs = [
+  {id:'bb1', item:'Juice boxes', a:'$5.40 for 12', b:'$7.20 for 18', ua:0.45, ub:0.40, answer:'B', unit:'per box'},
+  {id:'bb2', item:'Pencils', a:'$4.48 for 8', b:'$6.30 for 12', ua:0.56, ub:0.525, answer:'B', unit:'per pencil'},
+  {id:'bb3', item:'Yogurt cups', a:'$6.75 for 9', b:'$8.40 for 12', ua:0.75, ub:0.70, answer:'B', unit:'per cup'},
+  {id:'bb4', item:'Apples', a:'$7.50 for 5 lb', b:'$10.20 for 6 lb', ua:1.50, ub:1.70, answer:'A', unit:'per pound'},
+  {id:'bb5', item:'Granola bars', a:'$8.64 for 12', b:'$11.25 for 15', ua:0.72, ub:0.75, answer:'A', unit:'per bar'}
+];
+
+const cartQs = [
+  {id:'c1', title:'Art Club Supply Run', need:'The art club needs at least 48 glue sticks.', a:'Store A: 12 glue sticks for $5.04', b:'Store B: 16 glue sticks for $7.04', aPack:12, aCost:5.04, bPack:16, bCost:7.04, needN:48, unitWinner:'A', totalWinner:'A', aPacks:4, bPacks:3, aTotal:20.16, bTotal:21.12, save:0.96},
+  {id:'c2', title:'Team Hydration', need:'A team needs at least 70 water bottles.', a:'Store A: 24 bottles for $8.64', b:'Store B: 30 bottles for $11.10', aPack:24, aCost:8.64, bPack:30, bCost:11.10, needN:70, unitWinner:'A', totalWinner:'A', aPacks:3, bPacks:3, aTotal:25.92, bTotal:33.30, save:7.38},
+  {id:'c3', title:'Battery Budget Twist', need:'The theater club needs at least 20 batteries.', a:'Store A: 6 batteries for $3.00', b:'Store B: 10 batteries for $5.20', aPack:6, aCost:3.00, bPack:10, bCost:5.20, needN:20, unitWinner:'A', totalWinner:'B', aPacks:4, bPacks:2, aTotal:12.00, bTotal:10.40, save:1.60, twist:true}
+];
+
+const challengeQs = [
+  {id:'ch1', text:'Maya wants the unit price of $12 for 8 notebooks. She calculates 8 ÷ 12. What should she do instead?', options:['Divide cost by quantity: 12 ÷ 8','Multiply 12 × 8','Subtract 12 − 8','Her method is correct'], answer:0, explain:'Unit price means dollars per 1 notebook, so divide cost by the number of notebooks: $12 ÷ 8 = $1.50 per notebook.'},
+  {id:'ch2', text:'A 6-ticket pack costs $13.50. Which is the best estimate for the cost per ticket?', options:['About $0.50','About $1.00','About $2.25','About $6.00'], answer:2, explain:'$13.50 ÷ 6 = $2.25 per ticket.'},
+  {id:'ch3', text:'Store A sells 8 folders for $6.40. Store B sells 15 folders for $12.00. Which statement is true?', options:['Store A has the lower unit price','Store B has the lower unit price','They have the same unit price','There is not enough information'], answer:2, explain:'$6.40 ÷ 8 = $0.80 and $12.00 ÷ 15 = $0.80. The unit prices are equal.'},
+  {id:'ch4', text:'A student says, “The bigger package is always the better buy.” Which response is strongest?', options:['Yes, bigger always means cheaper','No. Compare the unit prices before deciding','Yes, because bigger packages have more items','No. Always choose the smaller package'], answer:1, explain:'Package size alone does not prove value. Compare cost per 1.'},
+  {id:'ch5', text:'Store A has a lower unit price, but Store B costs less for the exact number of whole packages you need. Which choice is cheapest for that purchase?', options:['Always Store A','Always Store B','Store B, because total purchase cost matters for this situation','Neither; unit rates cannot be used'], answer:2, explain:'Unit price is important, but a whole-package purchase can make a different option cheaper for a specific required quantity.'}
+];
+
+const defaultState = {name:'', score:0, completed:{}, attempts:{}, locked:{}};
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem('unitRateMarketMissionV1');
+    return raw ? Object.assign({}, defaultState, JSON.parse(raw)) : JSON.parse(JSON.stringify(defaultState));
+  }catch(e){return JSON.parse(JSON.stringify(defaultState));}
+}
+function saveState(){localStorage.setItem('unitRateMarketMissionV1',JSON.stringify(state));updateHUD();}
+function announce(msg){document.getElementById('live').textContent=msg;}
+function fmtMoney(n){return '$'+Number(n).toFixed(2)}
+function closeEnough(a,b,t=.011){return Math.abs(Number(a)-Number(b))<t}
+function cleanNum(v){return Number(String(v).replace('$','').trim())}
+function award(id, pts=10){
+  if(!state.completed[id]){state.completed[id]=true;state.score+=pts;saveState();}
+}
+function bumpAttempt(id){state.attempts[id]=(state.attempts[id]||0)+1;saveState();return state.attempts[id];}
+function done(id){return !!state.completed[id]}
+function totalQuestions(){return sortQs.length+buildQs.length+battleQs.length+cartQs.length+challengeQs.length}
+function completedCount(){return Object.keys(state.completed).filter(k=>state.completed[k]).length}
+function percent(){return Math.round((completedCount()/totalQuestions())*100)}
+
+function updateHUD(){
+  document.getElementById('hudProgress').textContent=percent()+'%';
+  document.getElementById('coinCount').textContent=state.score;
+  document.getElementById('resultScore').textContent=state.score;
+  document.getElementById('resultPossible').textContent=totalQuestions()*10;
+  document.getElementById('ringText').textContent=percent()+'%';
+  document.getElementById('progressRing').style.setProperty('--pct',percent());
+  const gp=document.getElementById('globalProgressFill'); if(gp) gp.style.width=percent()+'%';
+  const msg=document.getElementById('resultMessage');
+  if(percent()===100) msg.textContent='Mission complete. You finished every activity.';
+  else if(percent()>=80) msg.textContent='Strong progress. Finish the remaining activities for full mastery.';
+  else if(percent()>=50) msg.textContent='You are halfway there. Use hints and keep going.';
+  else msg.textContent='Complete activities to build your score.';
+  setBadge('badgeSort', sortQs.every(q=>done(q.id)));
+  setBadge('badgeBuild', buildQs.every(q=>done(q.id)));
+  setBadge('badgeBattle', battleQs.every(q=>done(q.id)));
+  setBadge('badgeCart', cartQs.every(q=>done(q.id)));
+  setBadge('badgeChallenge', challengeQs.every(q=>done(q.id)));
+  setBadge('badgeMaster', percent()===100);
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    const t=btn.dataset.tab;
+    const map={sort:sortQs,build:buildQs,battle:battleQs,cart:cartQs,challenge:challengeQs};
+    if(map[t] && map[t].every(q=>done(q.id))) btn.classList.add('done'); else btn.classList.remove('done');
+  });
+}
+function setBadge(id,on){document.getElementById(id)?.classList.toggle('earned',on)}
+
+function goTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  window.scrollTo({top:150,behavior:'smooth'});
+  updateHUD();
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.tab)));
+
+document.getElementById('studentName').value=state.name||'';
+document.getElementById('studentName').addEventListener('input',e=>{state.name=e.target.value;saveState()});
+
+function speak(text){
+  if(!('speechSynthesis' in window)){announce('Read aloud is not supported in this browser.');return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.rate=.92;u.pitch=1;speechSynthesis.speak(u);
+}
+
+function confetti(){
+  const box=document.getElementById('celebrate');
+  const colors=['#14858d','#17324d','#f2b84b','#38a169','#d65b54'];
+  for(let i=0;i<28;i++){
+    const d=document.createElement('div');d.className='confetti';
+    d.style.left=(Math.random()*100)+'vw';d.style.background=colors[i%colors.length];
+    d.style.animationDelay=(Math.random()*.35)+'s';d.style.transform='rotate('+(Math.random()*180)+'deg)';
+    box.appendChild(d);setTimeout(()=>d.remove(),1900);
+  }
+}
+
+function feedback(el,type,html){el.className='feedback show '+type;el.innerHTML=html;}
+
+function renderSort(){
+  const g=document.getElementById('sortGrid');g.innerHTML='';
+  sortQs.forEach((q,i)=>{
+    const card=document.createElement('div');card.className='card question-card';card.id='card-'+q.id;
+    card.innerHTML=`<div class="q-top"><div><div class="q-num">Card ${i+1}</div><div class="q-title">${q.text}</div></div><button class="speak" aria-label="Read question aloud">🔊</button></div>
+      <div class="choices"><button class="choice" data-a="rate">Rate</button><button class="choice" data-a="unit">Unit Rate</button></div><div class="feedback" id="fb-${q.id}"></div>`;
+    card.querySelector('.speak').onclick=()=>speak(q.text+'. Is this a rate or a unit rate?');
+    card.querySelectorAll('.choice').forEach(btn=>btn.onclick=()=>answerSort(q,btn));
+    if(done(q.id)){card.querySelectorAll('.choice').forEach(b=>{if(b.dataset.a===q.answer)b.classList.add('correct');b.disabled=true});feedback(card.querySelector('.feedback'),'good','✓ Complete. <div class="explain">'+q.explain+'</div>')}
+    g.appendChild(card);
+  });
+}
+function answerSort(q,btn){
+  if(done(q.id)) return;
+  const fb=document.getElementById('fb-'+q.id);
+  if(btn.dataset.a===q.answer){btn.classList.add('correct');document.querySelectorAll('#card-'+q.id+' .choice').forEach(b=>b.disabled=true);award(q.id);feedback(fb,'good','✓ Correct! +10 points<div class="explain">'+q.explain+'</div>');confetti();announce('Correct');}
+  else{
+    btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),650);const n=bumpAttempt(q.id);
+    if(n<2) feedback(fb,'hint','Not yet. Hint: '+q.hint);
+    else {feedback(fb,'bad','Answer revealed after two tries.<div class="explain">'+q.explain+'</div>');document.querySelectorAll('#card-'+q.id+' .choice').forEach(b=>{if(b.dataset.a===q.answer)b.classList.add('correct');b.disabled=true});award(q.id,0)}
+  }
+}
+
+function renderBuilders(){
+  const w=document.getElementById('builderWrap');w.innerHTML='';
+  buildQs.forEach((q,i)=>{
+    const card=document.createElement('div');card.className='card question-card';card.id='card-'+q.id;
+    card.innerHTML=`<div class="q-top"><div><div class="q-num">Builder ${i+1}</div><div class="q-title">${q.text}</div></div><button class="speak" aria-label="Read question aloud">🔊</button></div>
+    <div class="builder">
+      <div class="builder-step"><div class="step-label">1 • Start with the rate</div><div class="fraction"><span>${q.top}</span><span class="bar"></span><span>${q.bottom}</span></div></div>
+      <div class="builder-step"><div class="step-label">2 • Divide both parts by</div><input class="inline-input divisor" inputmode="decimal" aria-label="divisor" placeholder="?" /></div>
+      <div class="builder-step"><div class="step-label">3 • Unit rate</div><div class="money-input" style="${q.money?'':'display:none'}"><input class="inline-input result-money" inputmode="decimal" aria-label="unit rate" placeholder="0.00" /></div><input class="inline-input result-num" style="${q.money?'display:none':''}" inputmode="decimal" aria-label="unit rate" placeholder="?" /> <strong>${q.unit}</strong></div>
+    </div>
+    <div class="check-row"><button class="btn primary check">Check</button><button class="btn secondary hint-btn">Hint</button></div><div class="feedback" id="fb-${q.id}"></div>`;
+    card.querySelector('.speak').onclick=()=>speak(q.text+' Find the unit rate.');
+    card.querySelector('.hint-btn').onclick=()=>feedback(card.querySelector('.feedback'),'hint',q.hint);
+    card.querySelector('.check').onclick=()=>answerBuilder(q,card);
+    if(done(q.id)){showBuilderSolved(q,card)}
+    w.appendChild(card);
+  });
+}
+function showBuilderSolved(q,card){
+  card.querySelector('.divisor').value=q.divisor;const r=card.querySelector(q.money?'.result-money':'.result-num');r.value=q.money?q.result.toFixed(2):q.result;
+  card.querySelectorAll('input,button.check').forEach(x=>x.disabled=true);feedback(card.querySelector('.feedback'),'good','✓ Complete. The unit rate is <strong>'+(q.money?fmtMoney(q.result):q.result)+' '+q.unit+'</strong>.');
+}
+function answerBuilder(q,card){
+  if(done(q.id)) return;
+  const d=cleanNum(card.querySelector('.divisor').value);const r=cleanNum(card.querySelector(q.money?'.result-money':'.result-num').value);const fb=card.querySelector('.feedback');
+  if(closeEnough(d,q.divisor,.001)&&closeEnough(r,q.result,q.money?.011:.001)){award(q.id);feedback(fb,'good','✓ Correct! +10 points. '+q.hint+' The denominator becomes 1.');card.querySelectorAll('input,button.check').forEach(x=>x.disabled=true);confetti();}
+  else{const n=bumpAttempt(q.id);card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),300);if(n<2) feedback(fb,'hint','Try again. '+q.hint);else{feedback(fb,'bad','Answer revealed after two tries. Divide by <strong>'+q.divisor+'</strong>. The unit rate is <strong>'+(q.money?fmtMoney(q.result):q.result)+' '+q.unit+'</strong>.');award(q.id,0);showBuilderSolved(q,card)}}
+}
+
+function renderBattles(){
+  const g=document.getElementById('battleGrid');g.innerHTML='';
+  battleQs.forEach((q,i)=>{
+    const c=document.createElement('div');c.className='card question-card';c.id='card-'+q.id;
+    c.innerHTML=`<div class="q-top"><div><div class="q-num">Battle ${i+1}</div><div class="q-title">${q.item}: Which store has the better unit price?</div></div><button class="speak">🔊</button></div>
+    <div class="store-grid"><div class="store storeA"><div class="label">Store A</div><div class="price">${q.a}</div><div class="unit">Find the cost ${q.unit}.</div></div><div class="store storeB"><div class="label">Store B</div><div class="price">${q.b}</div><div class="unit">Find the cost ${q.unit}.</div></div></div>
+    <div class="choices"><button class="choice" data-a="A">Store A</button><button class="choice" data-a="B">Store B</button></div><div class="feedback"></div>`;
+    c.querySelector('.speak').onclick=()=>speak(q.item+'. Store A: '+q.a+'. Store B: '+q.b+'. Which store has the better unit price?');
+    c.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answerBattle(q,c,b));
+    if(done(q.id)) showBattleSolved(q,c);
+    g.appendChild(c);
+  });
+}
+function battleExplanation(q){
+  const a=fmtMoney(q.ua),b=fmtMoney(q.ub);const diff=Math.abs(q.ua-q.ub);
+  return `Store A: <strong>${a} ${q.unit}</strong>. Store B: <strong>${b} ${q.unit}</strong>. Store ${q.answer} is lower by about <strong>${fmtMoney(diff)} ${q.unit}</strong>.`;
+}
+function showBattleSolved(q,c){
+  c.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(b.dataset.a===q.answer)b.classList.add('correct')});c.querySelector('.store'+q.answer).classList.add('win');feedback(c.querySelector('.feedback'),'good','✓ '+battleExplanation(q));
+}
+function answerBattle(q,c,b){
+  if(done(q.id))return;
+  if(b.dataset.a===q.answer){award(q.id);showBattleSolved(q,c);confetti();}
+  else{const n=bumpAttempt(q.id);b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),650);if(n<2)feedback(c.querySelector('.feedback'),'hint','Try again. Divide each cost by its quantity, then compare the costs per 1.');else{feedback(c.querySelector('.feedback'),'bad','Answer revealed after two tries. '+battleExplanation(q));award(q.id,0);showBattleSolved(q,c)}}
+}
+
+function renderCart(){
+  const w=document.getElementById('cartWrap');w.innerHTML='';
+  cartQs.forEach((q,i)=>{
+    const c=document.createElement('div');c.className='card question-card mission';c.id='card-'+q.id;
+    c.innerHTML=`<div class="q-top"><div><div class="q-num">Mission ${i+1}</div><div class="q-title">${q.title}</div></div><button class="speak">🔊</button></div>
+      <div class="context">${q.need}</div>
+      <div class="store-grid"><div class="store"><div class="label">Option A</div><div class="price">${q.a}</div></div><div class="store"><div class="label">Option B</div><div class="price">${q.b}</div></div></div>
+      ${q.twist?'<div class="twist"><strong>Watch for the twist:</strong> the lowest unit price and the lowest whole-purchase total may not be the same choice.</div>':''}
+      <div class="calc-grid">
+        <div><label>Whole packs from A</label><input class="aPacks" inputmode="numeric" placeholder="?" /></div>
+        <div><label>Whole packs from B</label><input class="bPacks" inputmode="numeric" placeholder="?" /></div>
+        <div><label>Total cost at A</label><input class="aTotal" inputmode="decimal" placeholder="$0.00" /></div>
+        <div><label>Total cost at B</label><input class="bTotal" inputmode="decimal" placeholder="$0.00" /></div>
+        <div><label>Cheaper total purchase</label><select class="winner"><option value="">Choose</option><option value="A">Store A</option><option value="B">Store B</option></select></div>
+        <div><label>Amount saved</label><input class="save" inputmode="decimal" placeholder="$0.00" /></div>
+      </div>
+      <div class="check-row"><button class="btn primary check">Check Mission</button><button class="btn secondary hint-btn">Hint</button></div><div class="feedback"></div>`;
+    c.querySelector('.speak').onclick=()=>speak(q.need+' '+q.a+'. '+q.b+'. Find the number of whole packages needed and the cheaper total purchase.');
+    c.querySelector('.hint-btn').onclick=()=>feedback(c.querySelector('.feedback'),'hint','Whole packages only: divide the amount needed by the package size, then round <strong>up</strong> if there is any remainder. Multiply packs × package cost.');
+    c.querySelector('.check').onclick=()=>answerCart(q,c);
+    if(done(q.id)) showCartSolved(q,c);
+    w.appendChild(c);
+  });
+}
+function cartExplanation(q){
+  const ua=q.aCost/q.aPack, ub=q.bCost/q.bPack;
+  let extra=`Unit prices: A = ${fmtMoney(ua)} each; B = ${fmtMoney(ub)} each. `;
+  extra+=`For the required purchase, A needs ${q.aPacks} packs (${fmtMoney(q.aTotal)}); B needs ${q.bPacks} packs (${fmtMoney(q.bTotal)}). Store ${q.totalWinner} costs ${fmtMoney(q.save)} less.`;
+  if(q.twist) extra+=' Notice that Store A has the lower unit price, but Store B has the lower total for this exact whole-package purchase.';
+  return extra;
+}
+function showCartSolved(q,c){
+  c.querySelector('.aPacks').value=q.aPacks;c.querySelector('.bPacks').value=q.bPacks;c.querySelector('.aTotal').value=q.aTotal.toFixed(2);c.querySelector('.bTotal').value=q.bTotal.toFixed(2);c.querySelector('.winner').value=q.totalWinner;c.querySelector('.save').value=q.save.toFixed(2);
+  c.querySelectorAll('input,select,button.check').forEach(x=>x.disabled=true);feedback(c.querySelector('.feedback'),'good','✓ Mission complete. <div class="explain">'+cartExplanation(q)+'</div>');
+}
+function answerCart(q,c){
+  if(done(q.id))return;
+  const ok=closeEnough(cleanNum(c.querySelector('.aPacks').value),q.aPacks,.001)&&closeEnough(cleanNum(c.querySelector('.bPacks').value),q.bPacks,.001)&&closeEnough(cleanNum(c.querySelector('.aTotal').value),q.aTotal,.011)&&closeEnough(cleanNum(c.querySelector('.bTotal').value),q.bTotal,.011)&&c.querySelector('.winner').value===q.totalWinner&&closeEnough(cleanNum(c.querySelector('.save').value),q.save,.011);
+  if(ok){award(q.id);feedback(c.querySelector('.feedback'),'good','✓ Mission complete! +10 points<div class="explain">'+cartExplanation(q)+'</div>');c.querySelectorAll('input,select,button.check').forEach(x=>x.disabled=true);confetti();}
+  else{const n=bumpAttempt(q.id);if(n<2)feedback(c.querySelector('.feedback'),'hint','Check every box. Remember to round the number of packages <strong>up</strong>, then multiply whole packages × package price.');else{award(q.id,0);showCartSolved(q,c)}}
+}
+
+function renderChallenges(){
+  const g=document.getElementById('challengeGrid');g.innerHTML='';
+  challengeQs.forEach((q,i)=>{
+    const c=document.createElement('div');c.className='card question-card';c.id='card-'+q.id;
+    c.innerHTML=`<div class="q-top"><div><div class="q-num">Challenge ${i+1}</div><div class="q-title">${q.text}</div></div><button class="speak">🔊</button></div><div class="choices">${q.options.map((o,idx)=>`<button class="choice" data-a="${idx}">${o}</button>`).join('')}</div><div class="feedback"></div>`;
+    c.querySelector('.speak').onclick=()=>speak(q.text+' '+q.options.join('. '));
+    c.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answerChallenge(q,c,b));
+    if(done(q.id)) showChallengeSolved(q,c);
+    g.appendChild(c);
+  });
+}
+function showChallengeSolved(q,c){c.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(Number(b.dataset.a)===q.answer)b.classList.add('correct')});feedback(c.querySelector('.feedback'),'good','✓ '+q.explain)}
+function answerChallenge(q,c,b){
+  if(done(q.id))return;
+  if(Number(b.dataset.a)===q.answer){award(q.id);showChallengeSolved(q,c);confetti();}
+  else{const n=bumpAttempt(q.id);b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),650);if(n<2)feedback(c.querySelector('.feedback'),'hint','Not yet. Think about what “per 1” means and what quantity should be divided by what.');else{award(q.id,0);showChallengeSolved(q,c)}}
+}
+
+function resetAll(){
+  if(!confirm('Reset all answers, points, and saved progress for this activity?')) return;
+  const keepName=state.name||'';state=JSON.parse(JSON.stringify(defaultState));state.name=keepName;saveState();renderAll();goTab('start');
+}
+function renderAll(){renderSort();renderBuilders();renderBattles();renderCart();renderChallenges();updateHUD();}
+renderAll();
+</script>
+</body>
+</html>

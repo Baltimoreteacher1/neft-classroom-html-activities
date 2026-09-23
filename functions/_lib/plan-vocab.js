@@ -3520,6 +3520,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/unit-rate-market-mission/",
+    title: "Unit Rate Market Mission | Grade 6 Practice",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/units/",
     title: "Units & Lessons",
     category: "Hub",
