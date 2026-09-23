@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="A Grade 6 self-paced practice mission for Lesson 3-2 — build unit rates from rates, sort rate vs. unit rate, compare better buys, work out whole-package cart costs, and reason about unit rates in a challenge zone. Progress saves on the device." />
+<meta name="description" content="A Grade 6 self-paced practice mission for Lesson 3-2 — build unit rates from rates, sort rate vs. unit rate, compare better buys, run whole-package cart missions, and play the Deal Detective shelf game. Progress saves on the device." />
 <title>Unit Rate Market Mission | Grade 6 Practice</title>
 <style>
   :root{
@@ -122,7 +122,7 @@
   .section-head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin:26px 0 14px;padding:0 2px}
   .section-head h3{display:flex;align-items:center;gap:10px;font-size:1.58rem;color:var(--navy);margin:0 0 5px;letter-spacing:-.02em}
   .section-head h3::before{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:var(--teal-soft);border:1px solid #c4e1e3;font-size:1.05rem;flex:0 0 auto}
-  #start .section-head h3::before{content:"◎"} #sort .section-head h3::before{content:"⚡"} #build .section-head h3::before{content:"÷"} #battle .section-head h3::before{content:"🏷"} #cart .section-head h3::before{content:"🛒"} #challenge .section-head h3::before{content:"★"} #results .section-head h3::before{content:"✓"}
+  #start .section-head h3::before{content:"◎"} #sort .section-head h3::before{content:"⚡"} #build .section-head h3::before{content:"÷"} #battle .section-head h3::before{content:"🏷"} #cart .section-head h3::before{content:"🛒"} #challenge .section-head h3::before{content:"🔎"} #results .section-head h3::before{content:"✓"}
   .section-head p{margin:0;color:var(--muted);line-height:1.55;max-width:760px}
   .mini-goal{background:var(--gold-soft);color:#6e5005;border:1px solid #ecd79e;border-radius:999px;padding:8px 12px;font-size:.8rem;font-weight:900;box-shadow:0 2px 8px rgba(112,79,0,.04)}
 
@@ -165,6 +165,10 @@
   .feedback.hint{background:var(--warn-bg);color:#6d4a00;border:1px solid #ead08b}
   .explain{font-weight:620;margin-top:5px;color:inherit;opacity:.92}
 
+  .divisor-fraction{display:inline-grid;grid-template-rows:auto 2px auto;gap:6px;justify-items:center;align-items:center;min-width:104px}
+  .divisor-fraction .bar{background:var(--navy);height:2px;width:100%}
+  .divisor-fraction .inline-input{width:84px}
+  .divisor-note{font-size:.76rem;color:var(--muted);font-weight:850;margin-top:9px;line-height:1.4}
   .builder-wrap{display:grid;gap:15px}
   .builder{display:grid;grid-template-columns:1.12fr .88fr 1fr;gap:12px;align-items:stretch}
   .builder-step{position:relative;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#fcfefe,#f7fbfb);padding:14px;min-height:112px;box-shadow:inset 0 1px 0 white}
@@ -204,6 +208,206 @@
   .calc-grid input:focus,.calc-grid select:focus{border-color:var(--teal)}
   .twist{background:#f1f6fb;border:1px solid #cbdbea;border-left:4px solid #6087b3;border-radius:11px;padding:11px 12px;color:#2d4a73;font-size:.88rem;line-height:1.48;margin-top:12px}
 
+
+  /* ===== Cart Quest: guided mission steps ===== */
+  .mission-steps{display:grid;gap:12px;margin-top:14px}
+  .mstep{border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#fdfefe,#f8fbfc);padding:15px;transition:.22s ease}
+  .mstep.locked{opacity:.45;filter:grayscale(.6)}
+  .mstep.locked .shelf-lock{display:flex}
+  .mstep.cleared{border-color:#a9d7bf;background:linear-gradient(180deg,#f7fdfa,#eff9f3)}
+  .mstep-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:11px}
+  .mstep-num{flex:0 0 auto;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:#fff;font-size:.8rem;font-weight:950;box-shadow:0 3px 8px rgba(22,131,139,.25)}
+  .mstep.cleared .mstep-num{background:var(--good)}
+  .mstep.cleared .mstep-num::before{content:"✓"}
+  .mstep.cleared .mstep-num span{display:none}
+  .mstep-title{font-weight:950;color:var(--navy);font-size:.99rem;letter-spacing:-.01em}
+  .mstep-sub{font-size:.83rem;color:var(--muted);margin-top:2px;font-weight:760;line-height:1.4}
+  .shelf-lock{display:none;align-items:center;gap:7px;font-size:.8rem;font-weight:900;color:var(--muted)}
+  .choices.two{grid-template-columns:1fr 1fr}
+
+  .pack-lanes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .lane{border:1.5px solid #d8e4e9;border-radius:14px;background:white;padding:13px;transition:.18s ease}
+  .lane.met{border-color:#8ec9ab;background:linear-gradient(180deg,#f7fdfa,#eff9f3)}
+  .lane .lane-label{font-size:.69rem;text-transform:uppercase;letter-spacing:.10em;color:var(--muted);font-weight:950}
+  .lane .lane-sub{font-size:.85rem;color:var(--navy);font-weight:900;margin-top:4px}
+  .pack-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;min-height:40px;margin:10px 0 4px;padding:7px;border-radius:10px;background:#f4f8f9;border:1px dashed #cdddE1}
+  .pack{width:28px;height:32px;border-radius:6px;background:linear-gradient(180deg,#f7dca7,#e8b95d);border:1px solid #cd9c38;box-shadow:inset 0 1px 0 rgba(255,255,255,.65);display:grid;place-items:center;font-size:.58rem;font-weight:950;color:#5b3f00;animation:popIn .18s ease both}
+  @keyframes popIn{from{transform:scale(.45);opacity:0}to{transform:none;opacity:1}}
+  .pack-empty{font-size:.78rem;color:#93a7ae;font-weight:800;padding-left:4px}
+  .stepper{display:inline-flex;align-items:center;gap:7px;margin-top:6px}
+  .stepper button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line-strong);background:white;font-weight:950;color:var(--navy);font-size:1.15rem;line-height:1;padding:0;box-shadow:var(--shadow-sm)}
+  .stepper button:hover:not(:disabled){background:var(--teal-soft);border-color:var(--teal);transform:translateY(-1px)}
+  .stepper .count{min-width:38px;text-align:center;font-weight:950;color:var(--navy);font-size:1.12rem}
+  .stepper .units{font-size:.75rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+  .lane-meter{height:9px;border-radius:999px;background:#e7eef0;overflow:hidden;margin-top:11px;box-shadow:inset 0 1px 2px rgba(24,50,74,.07)}
+  .lane-meter>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),#54b3b7);transition:width .3s cubic-bezier(.4,1.4,.5,1);border-radius:999px}
+  .lane.met .lane-meter>span{background:linear-gradient(90deg,#2f9d68,#79cfa2)}
+  .lane-read{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.82rem;font-weight:850;color:var(--muted);margin-top:8px}
+  .lane-read b{color:var(--navy);font-weight:950}
+  .lane-read b.short{color:var(--bad)}
+  .lane-read b.ok{color:var(--good)}
+  .tface-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
+  .tface{border:1.5px solid #d8e4e9;border-radius:14px;padding:14px;text-align:center;background:linear-gradient(180deg,#fdfefe,#f6fafb)}
+  .tface .lane-label{display:block}
+  .tface .bigtot{display:block;font-size:1.5rem;font-weight:950;color:var(--navy);margin-top:6px;letter-spacing:-.03em}
+  .tface .sub{font-size:.78rem;color:var(--muted);font-weight:800;margin-top:3px}
+  .tface.win{border-color:#7cb99a;background:linear-gradient(180deg,#f2fbf6,#e7f6ee)}
+
+  /* ===== Deal Detective: arcade game (tab 6) ===== */
+  .game-shell{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-lg);background:white;position:relative}
+  .game-hud{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:13px 18px;background:linear-gradient(120deg,#12283d,#1b465f 48%,#12717a);color:white;position:relative;overflow:hidden}
+  .game-hud::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.05) 0 2px,transparent 2px 9px);pointer-events:none}
+  .hud-group{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1}
+  .hud-k{font-size:.6rem;text-transform:uppercase;letter-spacing:.15em;font-weight:950;color:#9dd3d8}
+  .hearts{display:flex;gap:4px;font-size:1.22rem;line-height:1}
+  .heart{transition:.2s ease;filter:drop-shadow(0 2px 4px rgba(0,0,0,.28))}
+  .heart.gone{opacity:.24;filter:grayscale(1);transform:scale(.82)}
+  .heart.losing{animation:heartPop .45s ease both}
+  @keyframes heartPop{0%{transform:scale(1)}35%{transform:scale(1.45) rotate(-9deg)}100%{transform:scale(.82);opacity:.24}}
+  .coin-wrap{display:flex;align-items:center;gap:6px;font-size:1.3rem;font-weight:950;letter-spacing:-.02em}
+  .coin-wrap .c{font-size:1.1rem}
+  .coin-wrap.bump{animation:coinBump .4s ease}
+  @keyframes coinBump{0%{transform:scale(1)}40%{transform:scale(1.26);color:#ffd977}100%{transform:scale(1)}}
+  .combo-wrap{min-width:132px}
+  .combo-bar{height:9px;border-radius:999px;background:rgba(255,255,255,.17);overflow:hidden;margin-top:5px;box-shadow:inset 0 1px 2px rgba(0,0,0,.2)}
+  .combo-bar>span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#f7d073,#ef8b4a);transition:width .3s cubic-bezier(.4,1.5,.5,1)}
+  .combo-bar.max>span{background:linear-gradient(90deg,#ffd166,#ff7a45,#ff4d4d);animation:comboGlow .8s ease infinite alternate}
+  @keyframes comboGlow{from{filter:brightness(1)}to{filter:brightness(1.35)}}
+  .combo-label{font-size:1.02rem;font-weight:950;letter-spacing:-.02em}
+  .combo-label .fire{opacity:0;transition:.2s}
+  .combo-label.hot .fire{opacity:1}
+  .rank-wrap{min-width:150px}
+  .rank-bar{height:9px;border-radius:999px;background:rgba(255,255,255,.17);overflow:hidden;margin-top:5px}
+  .rank-bar>span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#7fe0c4,#5bc9d8);transition:width .4s ease}
+  .rank-now{font-size:.94rem;font-weight:950;letter-spacing:-.01em}
+
+  .aisle-map{display:flex;gap:7px;align-items:stretch;padding:11px 18px;background:#f4f8f9;border-bottom:1px solid var(--line);overflow-x:auto}
+  .aisle-chip{flex:1 0 auto;min-width:126px;border:1px solid var(--line-strong);border-radius:12px;background:white;padding:8px 10px;transition:.2s ease;opacity:.62}
+  .aisle-chip.here{opacity:1;border-color:var(--navy);box-shadow:0 6px 16px rgba(24,50,74,.14);transform:translateY(-2px)}
+  .aisle-chip.clear{opacity:1;border-color:#9bd3b6;background:var(--good-bg)}
+  .aisle-chip .an{font-size:.76rem;font-weight:950;color:var(--navy);display:flex;align-items:center;gap:5px}
+  .aisle-chip .pips{display:flex;gap:4px;margin-top:6px}
+  .pip{width:14px;height:6px;border-radius:999px;background:#dde7ea}
+  .pip.hit{background:var(--good)}
+  .pip.now{background:var(--teal);animation:pipPulse .9s ease infinite alternate}
+  @keyframes pipPulse{from{opacity:.55}to{opacity:1}}
+
+  .case-body{padding:20px;position:relative}
+  .case-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .case-kind{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;font-weight:950;color:var(--teal);background:var(--teal-soft);border:1px solid #cae4e5;padding:5px 9px;border-radius:999px}
+  .case-kind.mgr{color:#6e5005;background:var(--gold-soft);border-color:#ecd79e}
+  .case-kind.boss{color:#7c2623;background:var(--bad-bg);border-color:#efc1be}
+  .case-q{font-size:1.16rem;line-height:1.4;margin:9px 0 0;color:var(--navy);font-weight:900;letter-spacing:-.015em}
+
+  .shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:8px}
+  .shelf.one{grid-template-columns:minmax(0,340px)}
+  .shelf::after{content:"";grid-column:1/-1;height:12px;border-radius:0 0 10px 10px;background:linear-gradient(180deg,#e2d3b6,#c8b183);box-shadow:0 5px 12px rgba(120,95,50,.18)}
+  .tag{position:relative;text-align:left;border:2px solid #dbe6ea;border-radius:14px;background:linear-gradient(180deg,#ffffff,#f7fbfb);padding:15px 14px 13px;transition:.16s ease;box-shadow:var(--shadow-sm);display:block;width:100%}
+  .tag::before{content:"";position:absolute;top:11px;right:11px;width:11px;height:11px;border-radius:50%;background:#eef3f4;border:1px solid #cfdde1}
+  .tag:hover:not(:disabled){transform:translateY(-4px) rotate(-.4deg);border-color:var(--teal);box-shadow:0 14px 28px rgba(22,131,139,.18)}
+  .tag .tag-name{display:block;font-size:.83rem;font-weight:950;color:var(--navy);letter-spacing:-.01em}
+  .tag .tag-pack{display:block;font-size:.78rem;color:var(--muted);font-weight:800;margin-top:3px}
+  .tag .tag-price{display:block;font-size:1.65rem;font-weight:950;color:var(--teal-dark);margin-top:9px;letter-spacing:-.035em}
+  .tag .tag-unit{display:block;margin-top:8px;font-size:.79rem;font-weight:950;color:#93a7ae;background:#f2f7f8;border:1px dashed #cddde1;border-radius:8px;padding:5px 7px;text-align:center}
+  .tag.revealed .tag-unit{color:var(--navy);background:var(--gold-soft);border:1px solid #ead28d;animation:flipIn .32s ease both}
+  @keyframes flipIn{from{transform:rotateX(-80deg);opacity:0}to{transform:none;opacity:1}}
+  .tag.best{border-color:var(--good);background:linear-gradient(180deg,#f4fcf7,#e9f7ef)}
+  .tag.best .tag-unit{background:var(--good-bg);border-color:#a9d7bf;color:#0c6340}
+  .tag.miss{border-color:var(--bad);background:var(--bad-bg)}
+  .tag.picked{border-color:var(--teal);background:#eefafb}
+  .tag .pick-order{position:absolute;top:9px;left:9px;width:24px;height:24px;border-radius:50%;background:var(--teal);color:white;display:grid;place-items:center;font-size:.76rem;font-weight:950;animation:popIn .2s ease both}
+  .tag:disabled{cursor:default}
+
+  .pricegun{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;background:linear-gradient(180deg,#fffdf7,#fff6e3);border:1px solid #ead28d;border-radius:14px;padding:14px}
+  .pricegun .pg-label{font-size:.92rem;font-weight:950;color:#6b4d00}
+  .pricegun .money-input input{width:132px;font-size:1.18rem;padding:11px 12px 11px 26px;text-align:left}
+  .pricegun .money-input::before{font-size:1.1rem;left:11px}
+
+  .scan-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px;align-items:center}
+  .scan-btn{border:1px dashed #c3d3d8;background:#f8fbfc;border-radius:10px;padding:8px 11px;font-size:.8rem;font-weight:900;color:var(--teal-dark)}
+  .scan-btn:hover:not(:disabled){background:var(--teal-soft);border-style:solid;border-color:var(--teal);transform:translateY(-1px)}
+  .scan-btn:disabled{opacity:.42;cursor:not-allowed}
+  .scan-note{font-size:.76rem;color:var(--muted);font-weight:800}
+  .shop{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;padding:11px 12px;border:1px solid #e0e9ec;border-radius:13px;background:#fbfdfd}
+  .shop .shop-k{font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;font-weight:950;color:var(--muted);margin-right:2px}
+  .power{border:1px solid var(--line-strong);background:white;border-radius:11px;padding:8px 11px;font-size:.82rem;font-weight:900;color:var(--navy);display:inline-flex;align-items:center;gap:6px}
+  .power .cost{font-size:.72rem;font-weight:950;color:#7a5a00;background:var(--gold-soft);border:1px solid #ecd79e;border-radius:999px;padding:2px 7px}
+  .power:hover:not(:disabled){border-color:var(--teal);background:var(--teal-soft);transform:translateY(-1px)}
+  .power:disabled{opacity:.42;cursor:not-allowed}
+  .case-next{margin-top:14px;display:flex;gap:9px;flex-wrap:wrap}
+  .streak-pop{display:inline-block;background:var(--gold);color:#4c3500;font-weight:950;font-size:.76rem;border-radius:999px;padding:3px 9px;margin-left:7px}
+
+  /* boss */
+  .boss-wrap{border:1px solid #efc1be;border-radius:16px;background:linear-gradient(180deg,#fffafa,#fff3f2);padding:16px;margin-top:6px}
+  .boss-head{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+  .boss-face{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:1.9rem;background:linear-gradient(145deg,#2c3f55,#4a2b2b);border:1px solid rgba(255,255,255,.2);box-shadow:0 8px 18px rgba(124,38,35,.22)}
+  .boss-face.hurt{animation:bossHurt .4s ease}
+  @keyframes bossHurt{0%{transform:none}25%{transform:translateX(-7px) rotate(-5deg)}55%{transform:translateX(7px) rotate(5deg)}100%{transform:none}}
+  .boss-name{font-size:1.06rem;font-weight:950;color:#7c2623;letter-spacing:-.02em}
+  .boss-line{font-size:.88rem;color:#8a4a46;font-weight:800;margin-top:3px;max-width:520px;line-height:1.45}
+  .boss-hp{height:13px;border-radius:999px;background:#f3d9d7;overflow:hidden;margin-top:11px;border:1px solid #eec2bf}
+  .boss-hp>span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#d65b54,#b8413b);transition:width .45s cubic-bezier(.4,1.3,.5,1)}
+  .boss-step{margin-top:13px;border:1px solid #e6d6cf;border-radius:13px;background:white;padding:13px}
+  .boss-step.locked{opacity:.42;filter:grayscale(.5);pointer-events:none}
+  .boss-step.cleared{border-color:#a9d7bf;background:var(--good-bg)}
+  .boss-step .bs-q{font-weight:900;color:var(--navy);font-size:.98rem;margin-bottom:9px}
+  .boss-step .bs-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+
+  /* level banner + coin burst */
+  .banner{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:12;background:linear-gradient(135deg,#17324d,#15818a);color:white;border-radius:18px;padding:22px 34px;text-align:center;box-shadow:0 26px 60px rgba(9,32,48,.42);border:1px solid rgba(255,255,255,.2);animation:bannerIn .45s cubic-bezier(.3,1.5,.5,1) both;pointer-events:none}
+  .banner .bt{font-size:1.62rem;font-weight:950;letter-spacing:-.03em}
+  .banner .bs{font-size:.92rem;color:#bfe6e9;font-weight:850;margin-top:5px}
+  @keyframes bannerIn{from{opacity:0;transform:translate(-50%,-50%) scale(.72)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  .banner.out{animation:bannerOut .35s ease both}
+  @keyframes bannerOut{to{opacity:0;transform:translate(-50%,-50%) scale(1.12)}}
+  .coin-fly{position:fixed;z-index:120;font-size:1.25rem;pointer-events:none;animation:coinFly .85s ease-out forwards}
+  @keyframes coinFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),-120px) scale(1.5)}}
+
+  .rank-card{text-align:center;padding:34px 22px}
+  .rank-badge{font-size:3.8rem;line-height:1;animation:popIn .35s ease both}
+  .rank-card h4{font-size:1.75rem;color:var(--navy);margin:11px 0 6px;letter-spacing:-.025em}
+  .rank-name{display:inline-block;margin-top:12px;background:linear-gradient(180deg,#fffdf7,#fff4d9);border:1px solid #ead18c;color:#6b4d00;font-weight:950;padding:9px 16px;border-radius:999px;box-shadow:0 6px 16px rgba(113,80,4,.10)}
+  .rank-stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .rank-stat{background:#f7fafb;border:1px solid var(--line);border-radius:13px;padding:12px 17px;min-width:118px}
+  .rank-stat .k{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.11em;font-weight:950;color:var(--muted)}
+  .rank-stat b{display:block;font-size:1.5rem;color:var(--navy);font-weight:950;letter-spacing:-.03em;margin-top:3px}
+
+  /* ===== Work space + Mr. Neft callout ===== */
+  .worknum{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px;background:#fffdf6;border:1px dashed #e4d29c;border-radius:10px;padding:9px 10px}
+  .worknum .wl{font-size:.86rem;font-weight:900;color:var(--navy)}
+  .worknum .inline-input{width:84px;padding:7px 9px}
+  .worknum .inline-input.ok{border-color:var(--good);background:var(--good-bg)}
+  .worknum .inline-input.no{border-color:#e6a49f;background:var(--bad-bg)}
+  .wmark{font-size:.78rem;font-weight:950;min-width:58px}
+  .wmark.ok{color:var(--good)}
+  .wmark.no{color:var(--bad)}
+
+  .scratch{margin-top:12px;border:1px solid var(--line);border-radius:13px;background:white;overflow:hidden;box-shadow:var(--shadow-sm)}
+  .scratch-head{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;padding:9px 12px;background:#f6fafb;border-bottom:1px solid var(--line)}
+  .scratch-head strong{font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);font-weight:950}
+  .scratch-head span{font-size:.78rem;color:var(--muted);font-weight:800}
+  .scratch textarea{
+    display:block;width:100%;border:0;resize:vertical;min-height:92px;padding:11px 13px;color:var(--ink);font-weight:800;line-height:30px;
+    background-image:repeating-linear-gradient(180deg,transparent,transparent 29px,#e6eef0 29px,#e6eef0 30px);
+    background-attachment:local;font-size:.95rem
+  }
+  .scratch textarea:focus{outline:none;box-shadow:inset 0 0 0 2px rgba(22,131,139,.25)}
+
+  .workbench{margin-top:13px;border:1px solid #e4d29c;border-radius:13px;background:linear-gradient(180deg,#fffdf7,#fff9ec);padding:12px 13px}
+  .workbench .wb-head{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;font-weight:950;color:#6e5005;margin-bottom:9px}
+  .wb-rows{display:grid;gap:8px}
+  .wb-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:.88rem;font-weight:900;color:var(--navy)}
+  .wb-row .wb-name{min-width:112px}
+  .wb-row .inline-input{width:82px;padding:7px 9px}
+  .wb-row .inline-input.ok{border-color:var(--good);background:var(--good-bg)}
+  .wb-row .inline-input.no{border-color:#e6a49f;background:var(--bad-bg)}
+
+  .neft-says{display:flex;gap:12px;align-items:center;margin-top:13px;background:linear-gradient(130deg,#17324d,#1d4a63 55%,#15818a);color:white;border-radius:15px;padding:13px 15px;box-shadow:0 12px 26px rgba(24,50,74,.20);border:1px solid rgba(255,255,255,.12);animation:saysIn .32s ease both}
+  @keyframes saysIn{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:none}}
+  .neft-says .avatar{flex:0 0 auto;width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);display:grid;place-items:center;font-size:.86rem;font-weight:950;letter-spacing:.02em}
+  .neft-says .k{font-size:.63rem;text-transform:uppercase;letter-spacing:.15em;font-weight:950;color:#a9d9dd}
+  .neft-says .line{font-size:1.04rem;font-weight:900;letter-spacing:-.01em;margin-top:3px;line-height:1.3}
+
   .progress-card{display:grid;grid-template-columns:.72fr 1.28fr;gap:24px;align-items:center;padding:28px}
   .progress-ring{--pct:0;width:164px;height:164px;border-radius:50%;background:conic-gradient(var(--teal) calc(var(--pct)*1%),#e7eef0 0);display:grid;place-items:center;margin:auto;position:relative;box-shadow:0 10px 26px rgba(22,131,139,.14)}
   .progress-ring::before{content:"";width:122px;height:122px;border-radius:50%;background:white;position:absolute;box-shadow:inset 0 0 0 1px #edf2f3}
@@ -235,7 +439,10 @@
     .student-box{order:3;width:100%}.student-box input{flex:1;width:auto}.hud{margin-left:auto}.pill{font-size:.75rem;padding:6px 9px}
     .tabs{top:106px;margin-top:12px;border-radius:13px;padding:5px}.tab-btn{padding:9px 11px;font-size:.82rem}
     .hero{border-radius:20px;padding:24px 20px}.hero h2{font-size:2rem}.hero p{font-size:.95rem}.hero-chips{margin-top:14px}
-    .grid-2,.grid-3,.vocab,.builder,.store-grid,.calc-grid,.badge-grid{grid-template-columns:1fr}
+    .grid-2,.grid-3,.vocab,.builder,.store-grid,.calc-grid,.badge-grid,.pack-lanes,.tface-grid,.choices.two{grid-template-columns:1fr}
+    .shelf{grid-template-columns:1fr}.case-body{padding:15px}.game-hud{padding:12px 14px;gap:11px}
+    .combo-wrap,.rank-wrap{min-width:110px}.aisle-chip{min-width:112px}.boss-face{width:48px;height:48px;font-size:1.5rem}
+    .tag .tag-price{font-size:1.36rem}
     .worked{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}
     .section-head{margin-top:20px}.section-head h3{font-size:1.35rem}.mini-goal{font-size:.75rem}
     .card{padding:17px}.progress-card{padding:20px}
@@ -271,7 +478,7 @@
     <div>
       <div class="eyebrow">Mission briefing</div>
       <h2>Can you spot the best deal?</h2>
-      <p>Train your unit-rate skills through quick sorts, step-by-step builds, better-buy battles, and real shopping missions. You get two tries on most questions. Use the hints, show your thinking, and finish every tab.</p>
+      <p>Train your unit-rate skills through quick sorts, step-by-step builds, better-buy battles, real shopping missions, and a shelf-scanning detective game. You get two tries on most questions. Use the hints, show your thinking, and finish every tab.</p>
       <div class="hero-chips"><span class="hero-chip">Rate vs. Unit Rate</span><span class="hero-chip">Unit Price</span><span class="hero-chip">Better Buys</span><span class="hero-chip">Whole Packages</span></div>
     </div>
     <div class="formula-card">
@@ -287,7 +494,7 @@
     <button class="tab-btn" data-tab="build">3. Unit Rate Builder</button>
     <button class="tab-btn" data-tab="battle">4. Better Buy Battle</button>
     <button class="tab-btn" data-tab="cart">5. Cart Quest</button>
-    <button class="tab-btn" data-tab="challenge">6. Challenge Zone</button>
+    <button class="tab-btn" data-tab="challenge">6. Deal Detective</button>
     <button class="tab-btn" data-tab="results">7. My Results</button>
   </nav>
 
@@ -352,18 +559,28 @@
 
   <section id="cart" class="panel">
     <div class="section-head">
-      <div><h3>Cart Quest: Whole-Package Decisions</h3><p>Now the shopping gets real. You cannot buy part of a package. Calculate how many whole packages are needed, the total cost, and the cheaper purchase.</p></div>
-      <div class="mini-goal">3 missions • multi-step reasoning</div>
+      <div><h3>Cart Quest: Whole-Package Decisions</h3><p>Now the shopping gets real — you cannot buy part of a package. Each mission runs in three quick rounds: scout the unit prices, pack the carts with the fewest whole packs, then make the final call.</p></div>
+      <div class="mini-goal">3 missions • 3 rounds each</div>
     </div>
     <div id="cartWrap" class="builder-wrap"></div>
   </section>
 
   <section id="challenge" class="panel">
     <div class="section-head">
-      <div><h3>Challenge Zone</h3><p>Use what you know to analyze mistakes, estimate, and explain what unit rates really tell you.</p></div>
-      <div class="mini-goal">5 reasoning challenges</div>
+      <div><h3>Deal Detective</h3><p>Work three aisles and face the Markup Manager. Spot the lowest unit price, price-gun the tags, sort the shelf, and answer the manager. Build a combo for bigger coin payouts — but three mistakes in an aisle and you work that aisle again.</p></div>
+      <div class="mini-goal">3 aisles + 1 boss • 13 cases</div>
     </div>
-    <div id="challengeGrid" class="grid-2"></div>
+
+    <div class="game-shell" id="gameShell">
+      <div class="game-hud">
+        <div class="hud-group"><span class="hud-k">Lives</span><div class="hearts" id="gHearts"></div></div>
+        <div class="hud-group"><span class="hud-k">Coins</span><div class="coin-wrap" id="gCoinWrap"><span class="c">🪙</span><span id="gCoins">0</span></div></div>
+        <div class="hud-group combo-wrap"><span class="hud-k">Combo</span><div class="combo-label" id="gComboLabel">×1 <span class="fire">🔥</span></div><div class="combo-bar" id="gComboBar"><span></span></div></div>
+        <div class="hud-group rank-wrap"><span class="hud-k">Rank</span><div class="rank-now" id="gRankNow">Trainee</div><div class="rank-bar" id="gRankBar"><span></span></div></div>
+      </div>
+      <div class="aisle-map" id="gMap"></div>
+      <div class="case-body" id="gBody"></div>
+    </div>
   </section>
 
   <section id="results" class="panel">
@@ -379,12 +596,13 @@
         <div class="q-num">Mission score</div>
         <div class="score-big"><span id="resultScore">0</span> / <span id="resultPossible">0</span></div>
         <div id="resultMessage" class="small">Complete activities to build your score.</div>
+        <div class="says-slot" id="resultSays"></div>
         <div class="badge-grid">
           <div class="badge" id="badgeSort"><span class="icon">⚡</span><strong>Quick Sort</strong></div>
           <div class="badge" id="badgeBuild"><span class="icon">🧩</span><strong>Unit Builder</strong></div>
           <div class="badge" id="badgeBattle"><span class="icon">🏷️</span><strong>Better Buy</strong></div>
           <div class="badge" id="badgeCart"><span class="icon">🛒</span><strong>Cart Quest</strong></div>
-          <div class="badge" id="badgeChallenge"><span class="icon">🏆</span><strong>Challenge</strong></div>
+          <div class="badge" id="badgeChallenge"><span class="icon">🔎</span><strong>Deal Detective</strong></div>
           <div class="badge" id="badgeMaster"><span class="icon">⭐</span><strong>Rate Master</strong></div>
         </div>
         <div class="actions">
@@ -432,15 +650,65 @@ const cartQs = [
   {id:'c3', title:'Battery Budget Twist', need:'The theater club needs at least 20 batteries.', a:'Store A: 6 batteries for $3.00', b:'Store B: 10 batteries for $5.20', aPack:6, aCost:3.00, bPack:10, bCost:5.20, needN:20, unitWinner:'A', totalWinner:'B', aPacks:4, bPacks:2, aTotal:12.00, bTotal:10.40, save:1.60, twist:true}
 ];
 
-const challengeQs = [
-  {id:'ch1', text:'Maya wants the unit price of $12 for 8 notebooks. She calculates 8 ÷ 12. What should she do instead?', options:['Divide cost by quantity: 12 ÷ 8','Multiply 12 × 8','Subtract 12 − 8','Her method is correct'], answer:0, explain:'Unit price means dollars per 1 notebook, so divide cost by the number of notebooks: $12 ÷ 8 = $1.50 per notebook.'},
-  {id:'ch2', text:'A 6-ticket pack costs $13.50. Which is the best estimate for the cost per ticket?', options:['About $0.50','About $1.00','About $2.25','About $6.00'], answer:2, explain:'$13.50 ÷ 6 = $2.25 per ticket.'},
-  {id:'ch3', text:'Store A sells 8 folders for $6.40. Store B sells 15 folders for $12.00. Which statement is true?', options:['Store A has the lower unit price','Store B has the lower unit price','They have the same unit price','There is not enough information'], answer:2, explain:'$6.40 ÷ 8 = $0.80 and $12.00 ÷ 15 = $0.80. The unit prices are equal.'},
-  {id:'ch4', text:'A student says, “The bigger package is always the better buy.” Which response is strongest?', options:['Yes, bigger always means cheaper','No. Compare the unit prices before deciding','Yes, because bigger packages have more items','No. Always choose the smaller package'], answer:1, explain:'Package size alone does not prove value. Compare cost per 1.'},
-  {id:'ch5', text:'Store A has a lower unit price, but Store B costs less for the exact number of whole packages you need. Which choice is cheapest for that purchase?', options:['Always Store A','Always Store B','Store B, because total purchase cost matters for this situation','Neither; unit rates cannot be used'], answer:2, explain:'Unit price is important, but a whole-package purchase can make a different option cheaper for a specific required quantity.'}
+const AISLES = [
+  {id:'a1', name:'Snack Street',  icon:'🍪'},
+  {id:'a2', name:'Supply Alley',  icon:'✏️'},
+  {id:'a3', name:'Fresh Market',  icon:'🍎'},
+  {id:'a4', name:'The Back Office', icon:'👔'}
 ];
 
-const defaultState = {name:'', score:0, completed:{}, attempts:{}, locked:{}};
+const gameRounds = [
+  /* ---------- Aisle 1 · Snack Street ---------- */
+  {id:'d1', aisle:0, kind:'scan', aisleName:'juice', unit:'per bottle', answer:1,
+   tags:[{n:'Berry Blast',c:4,label:'4 bottles',p:5.00},{n:'Citrus Rush',c:6,label:'6 bottles',p:6.60},{n:'Grape Wave',c:3,label:'3 bottles',p:4.05}],
+   hint:'Divide each price by the number of bottles. $5.00 ÷ 4, $6.60 ÷ 6, $4.05 ÷ 3.'},
+  {id:'p1', aisle:0, kind:'price', unit:'per bar', answer:0.70,
+   tag:{n:'Trail Chew Bars',c:12,label:'12 bars',p:8.40},
+   q:'Price-gun this tag: what does ONE bar cost?',
+   hint:'Cost ÷ number of bars. $8.40 ÷ 12.'},
+  {id:'ch1', aisle:0, kind:'mgr', text:'Maya wants the unit price of $12 for 8 notebooks. She calculates 8 ÷ 12. What should she do instead?', options:['Divide cost by quantity: 12 ÷ 8','Multiply 12 × 8','Subtract 12 − 8','Her method is correct'], answer:0, explain:'Unit price means dollars per 1 notebook, so divide cost by the number of notebooks: $12 ÷ 8 = $1.50 per notebook.', hint:'Ask yourself: which number ends up as the “1” — the dollars or the notebooks?'},
+
+  /* ---------- Aisle 2 · Supply Alley ---------- */
+  {id:'d2', aisle:1, kind:'scan', aisleName:'marker', unit:'per marker', answer:0,
+   tags:[{n:'Bright Set',c:5,label:'5 markers',p:4.25},{n:'Mega Set',c:9,label:'9 markers',p:8.10},{n:'Jumbo Set',c:12,label:'12 markers',p:11.40}],
+   hint:'The biggest box is not automatically the best buy. Work out all three costs per 1 marker.'},
+  {id:'s1', aisle:1, kind:'sort', unit:'per roll',
+   tags:[{n:'Mini Pack',c:4,label:'4 rolls',p:6.80},{n:'Twin Pack',c:6,label:'6 rolls',p:9.54},{n:'Mega Pack',c:10,label:'10 rolls',p:14.50}],
+   q:'Sort the paper-towel shelf: tap them from LOWEST unit price to HIGHEST.',
+   hint:'Find all three costs per 1 roll first, then put the smallest one first.'},
+  {id:'ch2', aisle:1, kind:'mgr', text:'A 6-ticket pack costs $13.50. Which is the best estimate for the cost per ticket?', options:['About $0.50','About $1.00','About $2.25','About $6.00'], answer:2, explain:'$13.50 ÷ 6 = $2.25 per ticket.', hint:'6 tickets for about $12 would be $2 each, so look near $2.'},
+
+  /* ---------- Aisle 3 · Fresh Market ---------- */
+  {id:'d3', aisle:2, kind:'scan', aisleName:'trail mix', unit:'per pound', answer:2,
+   tags:[{n:'Small Scoop',c:2,label:'2 pounds',p:5.10},{n:'Medium Scoop',c:3,label:'3 pounds',p:7.47},{n:'Big Scoop',c:5,label:'5 pounds',p:12.25}],
+   hint:'These are priced by weight. Divide each price by the number of pounds.'},
+  {id:'p2', aisle:2, kind:'price', unit:'per pound', answer:1.49,
+   tag:{n:'Honeycrisp Apples',c:5,label:'5 pounds',p:7.45},
+   q:'Price-gun this tag: what does ONE pound cost?',
+   hint:'$7.45 ÷ 5. Think: 5 × what gets you to $7.45?'},
+  {id:'ch3', aisle:2, kind:'mgr', text:'Store A sells 8 folders for $6.40. Store B sells 15 folders for $12.00. Which statement is true?', options:['Store A has the lower unit price','Store B has the lower unit price','They have the same unit price','There is not enough information'], answer:2, explain:'$6.40 ÷ 8 = $0.80 and $12.00 ÷ 15 = $0.80. The unit prices are equal.', hint:'Find both unit prices before you decide. Sometimes the answer is “neither is cheaper.”'},
+
+  /* ---------- Aisle 4 · The Back Office (boss stage) ---------- */
+  {id:'s2', aisle:3, kind:'sort', unit:'per pouch',
+   tags:[{n:'Snack Size',c:6,label:'6 pouches',p:4.50},{n:'Family Size',c:8,label:'8 pouches',p:5.60},{n:'Party Size',c:10,label:'10 pouches',p:6.50}],
+   q:'The manager scrambled the juice-pouch shelf. Sort it from LOWEST unit price to HIGHEST.',
+   hint:'$4.50 ÷ 6, $5.60 ÷ 8, $6.50 ÷ 10. Smallest cost per 1 goes first.'},
+  {id:'ch4', aisle:3, kind:'mgr', text:'A student says, “The bigger package is always the better buy.” Which response is strongest?', options:['Yes, bigger always means cheaper','No. Compare the unit prices before deciding','Yes, because bigger packages have more items','No. Always choose the smaller package'], answer:1, explain:'Package size alone does not prove value. Compare cost per 1.', hint:'Think about the marker shelf you scanned in Supply Alley.'},
+  {id:'ch5', aisle:3, kind:'mgr', text:'Store A has a lower unit price, but Store B costs less for the exact number of whole packages you need. Which choice is cheapest for that purchase?', options:['Always Store A','Always Store B','Store B, because total purchase cost matters for this situation','Neither; unit rates cannot be used'], answer:2, explain:'Unit price is important, but a whole-package purchase can make a different option cheaper for a specific required quantity.', hint:'Remember the battery mission in Cart Quest.'},
+  {id:'boss1', aisle:3, kind:'boss',
+   name:'The Markup Manager', face:'👔',
+   line:'“You will never beat my pencil deal, detective. The sixth grade needs 90 pencils — pick wrong and I keep the change.”',
+   need:90,
+   A:{n:'Pack Deal', c:24, p:6.00}, B:{n:'Bulk Bin', c:36, p:8.64},
+   steps:[
+     {q:'How many WHOLE Pack Deals (24 pencils, $6.00) does 90 pencils take?', type:'num', answer:4, hint:'90 ÷ 24 = 3.75. You cannot buy 0.75 of a pack, so round UP.'},
+     {q:'How many WHOLE Bulk Bins (36 pencils, $8.64) does 90 pencils take?', type:'num', answer:3, hint:'90 ÷ 36 = 2.5. Round UP to the next whole bin.'},
+     {q:'Which purchase costs LESS in total?', type:'pick', answer:'A', options:[['A','Pack Deal'],['B','Bulk Bin']], hint:'4 × $6.00 against 3 × $8.64. Compare the totals, not the unit prices.'}
+   ],
+   explain:'Unit prices: Pack Deal $0.25 each, Bulk Bin $0.24 each — the Bulk Bin looks cheaper per pencil. But whole packs decide it: 4 × $6.00 = $24.00 beats 3 × $8.64 = $25.92. The Pack Deal saves $1.92.'}
+];
+
+const defaultState = {name:'', score:0, completed:{}, attempts:{}, locked:{}, gameBest:0, gameBestStreak:0, work:{}};
 let state = loadState();
 
 function loadState(){
@@ -459,7 +727,7 @@ function award(id, pts=10){
 }
 function bumpAttempt(id){state.attempts[id]=(state.attempts[id]||0)+1;saveState();return state.attempts[id];}
 function done(id){return !!state.completed[id]}
-function totalQuestions(){return sortQs.length+buildQs.length+battleQs.length+cartQs.length+challengeQs.length}
+function totalQuestions(){return sortQs.length+buildQs.length+battleQs.length+cartQs.length+gameRounds.length}
 function completedCount(){return Object.keys(state.completed).filter(k=>state.completed[k]).length}
 function percent(){return Math.round((completedCount()/totalQuestions())*100)}
 
@@ -472,6 +740,8 @@ function updateHUD(){
   document.getElementById('progressRing').style.setProperty('--pct',percent());
   const gp=document.getElementById('globalProgressFill'); if(gp) gp.style.width=percent()+'%';
   const msg=document.getElementById('resultMessage');
+  const rs=document.getElementById('resultSays');
+  if(rs){ if(percent()===100){ if(!rs.innerHTML) saysInto(rs); } else rs.innerHTML=''; }
   if(percent()===100) msg.textContent='Mission complete. You finished every activity.';
   else if(percent()>=80) msg.textContent='Strong progress. Finish the remaining activities for full mastery.';
   else if(percent()>=50) msg.textContent='You are halfway there. Use hints and keep going.';
@@ -480,11 +750,11 @@ function updateHUD(){
   setBadge('badgeBuild', buildQs.every(q=>done(q.id)));
   setBadge('badgeBattle', battleQs.every(q=>done(q.id)));
   setBadge('badgeCart', cartQs.every(q=>done(q.id)));
-  setBadge('badgeChallenge', challengeQs.every(q=>done(q.id)));
+  setBadge('badgeChallenge', gameRounds.every(q=>done(q.id)));
   setBadge('badgeMaster', percent()===100);
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     const t=btn.dataset.tab;
-    const map={sort:sortQs,build:buildQs,battle:battleQs,cart:cartQs,challenge:challengeQs};
+    const map={sort:sortQs,build:buildQs,battle:battleQs,cart:cartQs,challenge:gameRounds};
     if(map[t] && map[t].every(q=>done(q.id))) btn.classList.add('done'); else btn.classList.remove('done');
   });
 }
@@ -518,7 +788,55 @@ function confetti(){
   }
 }
 
-function feedback(el,type,html){el.className='feedback show '+type;el.innerHTML=html;}
+const neftSays = [
+  'You ate that. Left no crumbs.',
+  'Certified deal hunter. No cap.',
+  'Lowkey elite math right there.',
+  'You understood the assignment.',
+  'Big brain energy. Keep it going.',
+  'That was clean. No notes.',
+  'W work. Take the win.',
+  'Sheeeesh. Unit rate locked in.',
+  'Goated with the division, fr.',
+  'That is the move. Every time.',
+  'Aura points: +100.',
+  'Cooked it — in the good way.',
+  'Straight fire. Run it back.',
+  'Main character energy on that shelf.'
+];
+function neftLine(){return neftSays[Math.floor(Math.random()*neftSays.length)]}
+function neftSaysHTML(){
+  return '<div class="neft-says"><span class="avatar" aria-hidden="true">MN</span><div><div class="k">Mr. Neft says</div><div class="line">'+neftLine()+'</div></div></div>';
+}
+function saysInto(el){if(el) el.innerHTML=neftSaysHTML();}
+
+function scratchHTML(key,placeholder,label){
+  return '<div class="scratch"><div class="scratch-head"><strong>✏️ My work</strong><span>'+label+'</span></div>'+
+    '<textarea class="scratch-pad" data-key="'+key+'" placeholder="'+placeholder+'" aria-label="Scratch space for my work"></textarea></div>';
+}
+function wireScratch(root){
+  root.querySelectorAll('.scratch-pad').forEach(t=>{
+    const k=t.dataset.key;
+    t.value=(state.work&&state.work[k])||'';
+    let timer;
+    t.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>{state.work=state.work||{};state.work[k]=t.value;saveState();},400);});
+  });
+}
+function wireCheckInput(input,mark,target,okLabel){
+  const run=()=>{
+    const v=String(input.value).trim();
+    if(v===''){input.classList.remove('ok','no');mark.textContent='';mark.className='wmark';return;}
+    if(closeEnough(cleanNum(v),target,.006)){input.classList.add('ok');input.classList.remove('no');mark.textContent='✓ '+okLabel;mark.className='wmark ok';}
+    else{input.classList.add('no');input.classList.remove('ok');mark.textContent='check again';mark.className='wmark no';}
+  };
+  input.addEventListener('input',run);run();
+}
+
+function feedback(el,type,html){
+  if(!el) return;
+  if(!el.dataset.baseClass) el.dataset.baseClass=el.className.replace(/\b(show|good|bad|hint)\b/g,'').replace(/\s+/g,' ').trim();
+  el.className=el.dataset.baseClass+' show '+type;el.innerHTML=html;
+}
 
 function renderSort(){
   const g=document.getElementById('sortGrid');g.innerHTML='';
@@ -550,10 +868,12 @@ function renderBuilders(){
     card.innerHTML=`<div class="q-top"><div><div class="q-num">Builder ${i+1}</div><div class="q-title">${q.text}</div></div><button class="speak" aria-label="Read question aloud">🔊</button></div>
     <div class="builder">
       <div class="builder-step"><div class="step-label">1 • Start with the rate</div><div class="fraction"><span>${q.top}</span><span class="bar"></span><span>${q.bottom}</span></div></div>
-      <div class="builder-step"><div class="step-label">2 • Divide both parts by</div><input class="inline-input divisor" inputmode="decimal" aria-label="divisor" placeholder="?" /></div>
+      <div class="builder-step"><div class="step-label">2 • Divide both parts by</div>
+        <div class="divisor-fraction"><input class="inline-input divisor-top" inputmode="decimal" aria-label="number you divide the top by" placeholder="?" /><span class="bar"></span><input class="inline-input divisor-bottom" inputmode="decimal" aria-label="number you divide the bottom by" placeholder="?" /></div>
+        <div class="divisor-note">Same number on the top and the bottom.</div></div>
       <div class="builder-step"><div class="step-label">3 • Unit rate</div><div class="money-input" style="${q.money?'':'display:none'}"><input class="inline-input result-money" inputmode="decimal" aria-label="unit rate" placeholder="0.00" /></div><input class="inline-input result-num" style="${q.money?'display:none':''}" inputmode="decimal" aria-label="unit rate" placeholder="?" /> <strong>${q.unit}</strong></div>
     </div>
-    <div class="check-row"><button class="btn primary check">Check</button><button class="btn secondary hint-btn">Hint</button></div><div class="feedback" id="fb-${q.id}"></div>`;
+    <div class="check-row"><button class="btn primary check">Check</button><button class="btn secondary hint-btn">Hint</button></div><div class="feedback" id="fb-${q.id}"></div><div class="says-slot"></div>`;
     card.querySelector('.speak').onclick=()=>speak(q.text+' Find the unit rate.');
     card.querySelector('.hint-btn').onclick=()=>feedback(card.querySelector('.feedback'),'hint',q.hint);
     card.querySelector('.check').onclick=()=>answerBuilder(q,card);
@@ -562,14 +882,27 @@ function renderBuilders(){
   });
 }
 function showBuilderSolved(q,card){
-  card.querySelector('.divisor').value=q.divisor;const r=card.querySelector(q.money?'.result-money':'.result-num');r.value=q.money?q.result.toFixed(2):q.result;
+  card.querySelector('.divisor-top').value=q.divisor;card.querySelector('.divisor-bottom').value=q.divisor;const r=card.querySelector(q.money?'.result-money':'.result-num');r.value=q.money?q.result.toFixed(2):q.result;
   card.querySelectorAll('input,button.check').forEach(x=>x.disabled=true);feedback(card.querySelector('.feedback'),'good','✓ Complete. The unit rate is <strong>'+(q.money?fmtMoney(q.result):q.result)+' '+q.unit+'</strong>.');
 }
 function answerBuilder(q,card){
   if(done(q.id)) return;
-  const d=cleanNum(card.querySelector('.divisor').value);const r=cleanNum(card.querySelector(q.money?'.result-money':'.result-num').value);const fb=card.querySelector('.feedback');
-  if(closeEnough(d,q.divisor,.001)&&closeEnough(r,q.result,q.money?.011:.001)){award(q.id);feedback(fb,'good','✓ Correct! +10 points. '+q.hint+' The denominator becomes 1.');card.querySelectorAll('input,button.check').forEach(x=>x.disabled=true);confetti();}
-  else{const n=bumpAttempt(q.id);card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),300);if(n<2) feedback(fb,'hint','Try again. '+q.hint);else{feedback(fb,'bad','Answer revealed after two tries. Divide by <strong>'+q.divisor+'</strong>. The unit rate is <strong>'+(q.money?fmtMoney(q.result):q.result)+' '+q.unit+'</strong>.');award(q.id,0);showBuilderSolved(q,card)}}
+  const topRaw=card.querySelector('.divisor-top').value, botRaw=card.querySelector('.divisor-bottom').value;
+  const dTop=cleanNum(topRaw), dBot=cleanNum(botRaw);
+  const r=cleanNum(card.querySelector(q.money?'.result-money':'.result-num').value);const fb=card.querySelector('.feedback');
+  const reveal=()=>{feedback(fb,'bad','Answer revealed after two tries. Divide the top and the bottom by <strong>'+q.divisor+'</strong>. The unit rate is <strong>'+(q.money?fmtMoney(q.result):q.result)+' '+q.unit+'</strong>.');award(q.id,0);showBuilderSolved(q,card)};
+  const shake=()=>{card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),300)};
+  if(String(topRaw).trim()!=='' && String(botRaw).trim()!=='' && !closeEnough(dTop,dBot,.001)){
+    const n0=bumpAttempt(q.id);shake();
+    if(n0<2) feedback(fb,'hint','The top and the bottom must be divided by the <strong>same</strong> number, or the rate changes. '+q.hint);
+    else reveal();
+    return;
+  }
+  if(closeEnough(dTop,q.divisor,.001)&&closeEnough(dBot,q.divisor,.001)&&closeEnough(r,q.result,q.money?.011:.001)){
+    award(q.id);feedback(fb,'good','✓ Correct! +10 points. '+q.hint+' The denominator becomes 1.');
+    card.querySelectorAll('input,button.check').forEach(x=>x.disabled=true);confetti();saysInto(card.querySelector('.says-slot'));
+  }
+  else{const n=bumpAttempt(q.id);shake();if(n<2) feedback(fb,'hint','Try again. '+q.hint);else reveal();}
 }
 
 function renderBattles(){
@@ -598,71 +931,709 @@ function answerBattle(q,c,b){
   else{const n=bumpAttempt(q.id);b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),650);if(n<2)feedback(c.querySelector('.feedback'),'hint','Try again. Divide each cost by its quantity, then compare the costs per 1.');else{feedback(c.querySelector('.feedback'),'bad','Answer revealed after two tries. '+battleExplanation(q));award(q.id,0);showBattleSolved(q,c)}}
 }
 
+/* ===== Cart Quest: three-round guided missions ===== */
+const cartRun = {};
+
+function packChips(n,size){
+  if(n<=0) return '<span class="pack-empty">Empty cart — add whole packs.</span>';
+  let h='';for(let i=0;i<n;i++) h+='<span class="pack">'+size+'</span>';
+  return h;
+}
+function laneMax(need,pack){return Math.ceil(need/pack)+2}
+function unitPrice(cost,pack){return cost/pack}
+
 function renderCart(){
   const w=document.getElementById('cartWrap');w.innerHTML='';
   cartQs.forEach((q,i)=>{
+    const aLabel=q.a.replace(/^Store A:\s*/,''), bLabel=q.b.replace(/^Store B:\s*/,'');
+    cartRun[q.id]={A:0,B:0};
     const c=document.createElement('div');c.className='card question-card mission';c.id='card-'+q.id;
-    c.innerHTML=`<div class="q-top"><div><div class="q-num">Mission ${i+1}</div><div class="q-title">${q.title}</div></div><button class="speak">🔊</button></div>
+    c.innerHTML=`
+      <div class="q-top"><div><div class="q-num">Mission ${i+1}</div><div class="q-title">${q.title}</div></div><button class="speak" aria-label="Read the mission aloud">🔊</button></div>
       <div class="context">${q.need}</div>
-      <div class="store-grid"><div class="store"><div class="label">Option A</div><div class="price">${q.a}</div></div><div class="store"><div class="label">Option B</div><div class="price">${q.b}</div></div></div>
-      ${q.twist?'<div class="twist"><strong>Watch for the twist:</strong> the lowest unit price and the lowest whole-purchase total may not be the same choice.</div>':''}
-      <div class="calc-grid">
-        <div><label>Whole packs from A</label><input class="aPacks" inputmode="numeric" placeholder="?" /></div>
-        <div><label>Whole packs from B</label><input class="bPacks" inputmode="numeric" placeholder="?" /></div>
-        <div><label>Total cost at A</label><input class="aTotal" inputmode="decimal" placeholder="$0.00" /></div>
-        <div><label>Total cost at B</label><input class="bTotal" inputmode="decimal" placeholder="$0.00" /></div>
-        <div><label>Cheaper total purchase</label><select class="winner"><option value="">Choose</option><option value="A">Store A</option><option value="B">Store B</option></select></div>
-        <div><label>Amount saved</label><input class="save" inputmode="decimal" placeholder="$0.00" /></div>
-      </div>
-      <div class="check-row"><button class="btn primary check">Check Mission</button><button class="btn secondary hint-btn">Hint</button></div><div class="feedback"></div>`;
-    c.querySelector('.speak').onclick=()=>speak(q.need+' '+q.a+'. '+q.b+'. Find the number of whole packages needed and the cheaper total purchase.');
-    c.querySelector('.hint-btn').onclick=()=>feedback(c.querySelector('.feedback'),'hint','Whole packages only: divide the amount needed by the package size, then round <strong>up</strong> if there is any remainder. Multiply packs × package cost.');
-    c.querySelector('.check').onclick=()=>answerCart(q,c);
-    if(done(q.id)) showCartSolved(q,c);
+      ${q.twist?'<div class="twist"><strong>Twist alert:</strong> the lowest unit price and the lowest total for whole packs may not be the same store. Do the math before you call it.</div>':''}
+      <div class="mission-steps">
+
+        <div class="mstep" data-step="1">
+          <div class="mstep-head"><span class="mstep-num"><span>1</span></span><div><div class="mstep-title">Round 1 · Scout the shelf</div><div class="mstep-sub">Which store charges less for <strong>one</strong> item?</div></div></div>
+          <div class="store-grid">
+            <div class="store storeA"><div class="label">Store A</div><div class="price">${aLabel}</div>
+              <div class="worknum"><span class="wl">${fmtMoney(q.aCost)} ÷ ${q.aPack} =</span><span class="money-input"><input class="inline-input uwork" data-target="${(q.aCost/q.aPack).toFixed(4)}" inputmode="decimal" placeholder="0.00" aria-label="Store A cost for one item" /></span><span class="wmark"></span></div>
+            </div>
+            <div class="store storeB"><div class="label">Store B</div><div class="price">${bLabel}</div>
+              <div class="worknum"><span class="wl">${fmtMoney(q.bCost)} ÷ ${q.bPack} =</span><span class="money-input"><input class="inline-input uwork" data-target="${(q.bCost/q.bPack).toFixed(4)}" inputmode="decimal" placeholder="0.00" aria-label="Store B cost for one item" /></span><span class="wmark"></span></div>
+            </div>
+          </div>
+          <div class="choices two"><button class="choice" data-a="A">Store A is cheaper per item</button><button class="choice" data-a="B">Store B is cheaper per item</button></div>
+          <div class="feedback fb1"></div>
+        </div>
+
+        <div class="mstep locked" data-step="2">
+          <div class="mstep-head"><span class="mstep-num"><span>2</span></span><div><div class="mstep-title">Round 2 · Pack both carts</div><div class="mstep-sub">Tap <strong>+</strong> until each cart reaches <strong>${q.needN}</strong> items. Use the <strong>fewest whole packs</strong> that get you there — you cannot open a pack.</div></div>
+          <span class="shelf-lock">🔒 Finish Round 1 first</span></div>
+          <div class="pack-lanes">
+            <div class="lane" data-lane="A">
+              <span class="lane-label">Store A cart</span>
+              <div class="lane-sub">${q.aPack} per pack · ${fmtMoney(q.aCost)} a pack</div>
+              <div class="pack-row"></div>
+              <div class="stepper"><button type="button" data-d="-1" aria-label="Remove a pack from Store A">−</button><span class="count">0</span><button type="button" data-d="1" aria-label="Add a pack from Store A">+</button><span class="units">packs</span></div>
+              <div class="lane-meter"><span></span></div>
+              <div class="lane-read"><span>Items: <b class="items">0</b> / ${q.needN}</span><span>Total: <b class="tot">$0.00</b></span></div>
+            </div>
+            <div class="lane" data-lane="B">
+              <span class="lane-label">Store B cart</span>
+              <div class="lane-sub">${q.bPack} per pack · ${fmtMoney(q.bCost)} a pack</div>
+              <div class="pack-row"></div>
+              <div class="stepper"><button type="button" data-d="-1" aria-label="Remove a pack from Store B">−</button><span class="count">0</span><button type="button" data-d="1" aria-label="Add a pack from Store B">+</button><span class="units">packs</span></div>
+              <div class="lane-meter"><span></span></div>
+              <div class="lane-read"><span>Items: <b class="items">0</b> / ${q.needN}</span><span>Total: <b class="tot">$0.00</b></span></div>
+            </div>
+          </div>
+          ${scratchHTML('cart-'+q.id,'Example: '+q.needN+' ÷ '+q.aPack+' = ...  round UP to ___ packs','Work out the packs and totals here. It saves on this device.')}
+          <div class="check-row"><button class="btn primary lock">Lock in both carts</button><button class="btn secondary hint2">Hint</button></div>
+          <div class="feedback fb2"></div>
+        </div>
+
+        <div class="mstep locked" data-step="3">
+          <div class="mstep-head"><span class="mstep-num"><span>3</span></span><div><div class="mstep-title">Round 3 · Make the call</div><div class="mstep-sub">Which store costs less for this whole purchase?</div></div>
+          <span class="shelf-lock">🔒 Finish Round 2 first</span></div>
+          <div class="tface-grid">
+            <div class="tface" data-t="A"><span class="lane-label">Store A total</span><span class="bigtot">$–.––</span><span class="sub">packs × pack price</span></div>
+            <div class="tface" data-t="B"><span class="lane-label">Store B total</span><span class="bigtot">$–.––</span><span class="sub">packs × pack price</span></div>
+          </div>
+          <div class="choices two"><button class="choice" data-a="A">Buy from Store A</button><button class="choice" data-a="B">Buy from Store B</button></div>
+          <div class="feedback fb3"></div>
+          <div class="says-slot"></div>
+        </div>
+
+      </div>`;
+
+    c.querySelector('.speak').onclick=()=>speak(q.need+' '+q.a+'. '+q.b+'. Find the fewest whole packs at each store, then decide which purchase costs less.');
+    c.querySelectorAll('.mstep[data-step="1"] .choice').forEach(btn=>btn.onclick=()=>cartStep1(q,c,btn));
+    c.querySelectorAll('.lane').forEach(lane=>{
+      lane.querySelectorAll('.stepper button').forEach(btn=>btn.onclick=()=>bumpLane(q,c,lane.dataset.lane,Number(btn.dataset.d)));
+    });
+    c.querySelector('.lock').onclick=()=>cartStep2(q,c);
+    c.querySelector('.hint2').onclick=()=>feedback(c.querySelector('.fb2'),'hint','Divide the number needed by the pack size, then round <strong>up</strong> for any remainder. Example: 50 items ÷ 12 per pack = 4.16…, so you need 5 whole packs.');
+    c.querySelectorAll('.mstep[data-step="3"] .choice').forEach(btn=>btn.onclick=()=>cartStep3(q,c,btn));
+
     w.appendChild(c);
+    wireScratch(c);
+    c.querySelectorAll('.uwork').forEach(inp=>wireCheckInput(inp,inp.closest('.worknum').querySelector('.wmark'),Number(inp.dataset.target),'per item'));
+    drawLane(q,c,'A');drawLane(q,c,'B');
+    if(done(q.id)) showCartSolved(q,c);
   });
 }
+
+function stepEl(c,n){return c.querySelector('.mstep[data-step="'+n+'"]')}
+function clearStep(c,n){const st=stepEl(c,n);st.classList.add('cleared');st.querySelectorAll('button,input,select').forEach(x=>{if(!x.classList.contains('speak'))x.disabled=true});}
+function unlockStep(c,n){stepEl(c,n).classList.remove('locked')}
+
+function cartStep1(q,c,btn){
+  const st=stepEl(c,1); if(st.classList.contains('cleared')) return;
+  const fb=c.querySelector('.fb1');
+  const ua=unitPrice(q.aCost,q.aPack), ub=unitPrice(q.bCost,q.bPack);
+  const detail='Store A: '+fmtMoney(q.aCost)+' ÷ '+q.aPack+' = <strong>'+fmtMoney(ua)+' each</strong>. Store B: '+fmtMoney(q.bCost)+' ÷ '+q.bPack+' = <strong>'+fmtMoney(ub)+' each</strong>.';
+  if(btn.dataset.a===q.unitWinner){
+    btn.classList.add('correct');
+    c.querySelector('.store'+q.unitWinner).classList.add('win');
+    feedback(fb,'good','✓ Right. '+detail+' Store '+q.unitWinner+' has the lower unit price.');
+    clearStep(c,1);unlockStep(c,2);announce('Round 1 complete.');
+  }else{
+    btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),650);
+    const n=bumpAttempt(q.id+':1');
+    if(n<2) feedback(fb,'hint','Not yet. Divide each pack price by the number of items in the pack, then compare the two costs for 1 item.');
+    else{
+      feedback(fb,'bad','Answer revealed. '+detail);
+      c.querySelectorAll('.mstep[data-step="1"] .choice').forEach(b=>{if(b.dataset.a===q.unitWinner)b.classList.add('correct')});
+      c.querySelector('.store'+q.unitWinner).classList.add('win');
+      clearStep(c,1);unlockStep(c,2);
+    }
+  }
+}
+
+function bumpLane(q,c,lane,d){
+  const run=cartRun[q.id];const pack=lane==='A'?q.aPack:q.bPack;
+  const max=laneMax(q.needN,pack);
+  run[lane]=Math.max(0,Math.min(max,run[lane]+d));
+  drawLane(q,c,lane);
+}
+function drawLane(q,c,lane){
+  const run=cartRun[q.id];const el=c.querySelector('.lane[data-lane="'+lane+'"]');
+  const pack=lane==='A'?q.aPack:q.bPack, cost=lane==='A'?q.aCost:q.bCost;
+  const packs=run[lane], items=packs*pack, total=packs*cost;
+  el.querySelector('.pack-row').innerHTML=packChips(packs,pack);
+  el.querySelector('.count').textContent=packs;
+  el.querySelector('.items').textContent=items;
+  el.querySelector('.items').className='items '+(items>=q.needN?'ok':(packs>0?'short':''));
+  el.querySelector('.tot').textContent=fmtMoney(total);
+  el.querySelector('.lane-meter>span').style.width=Math.min(100,(items/q.needN)*100)+'%';
+  el.classList.toggle('met',items>=q.needN);
+}
+
+function cartStep2(q,c){
+  const st=stepEl(c,2); if(st.classList.contains('cleared')) return;
+  const run=cartRun[q.id];const fb=c.querySelector('.fb2');
+  const aItems=run.A*q.aPack, bItems=run.B*q.bPack;
+  const problems=[];
+  if(aItems<q.needN) problems.push('Cart A is short: '+aItems+' of the '+q.needN+' needed.');
+  else if(run.A>q.aPacks) problems.push('Cart A has more than you need. Use the fewest whole packs that reach '+q.needN+'.');
+  if(bItems<q.needN) problems.push('Cart B is short: '+bItems+' of the '+q.needN+' needed.');
+  else if(run.B>q.bPacks) problems.push('Cart B has more than you need. Use the fewest whole packs that reach '+q.needN+'.');
+  if(!problems.length){
+    feedback(fb,'good','✓ Both carts are packed right. A: '+q.aPacks+' packs = '+fmtMoney(q.aTotal)+'. B: '+q.bPacks+' packs = '+fmtMoney(q.bTotal)+'.');
+    finishStep2(q,c);
+  }else{
+    const n=bumpAttempt(q.id+':2');
+    c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),300);
+    if(n<2) feedback(fb,'hint','Almost. '+problems.join(' ')+' Remember: round the number of packs <strong>up</strong>, and stop as soon as you reach '+q.needN+'.');
+    else{
+      run.A=q.aPacks;run.B=q.bPacks;drawLane(q,c,'A');drawLane(q,c,'B');
+      feedback(fb,'bad','Carts filled for you. '+q.needN+' ÷ '+q.aPack+' rounds up to <strong>'+q.aPacks+' packs</strong> at A ('+fmtMoney(q.aTotal)+'), and '+q.needN+' ÷ '+q.bPack+' rounds up to <strong>'+q.bPacks+' packs</strong> at B ('+fmtMoney(q.bTotal)+').');
+      finishStep2(q,c);
+    }
+  }
+}
+function finishStep2(q,c){
+  clearStep(c,2);unlockStep(c,3);
+  const fa=c.querySelector('.tface[data-t="A"]'), fb2=c.querySelector('.tface[data-t="B"]');
+  fa.querySelector('.bigtot').textContent=fmtMoney(q.aTotal);
+  fa.querySelector('.sub').textContent=q.aPacks+' packs × '+fmtMoney(q.aCost);
+  fb2.querySelector('.bigtot').textContent=fmtMoney(q.bTotal);
+  fb2.querySelector('.sub').textContent=q.bPacks+' packs × '+fmtMoney(q.bCost);
+  announce('Round 2 complete.');
+}
+
 function cartExplanation(q){
-  const ua=q.aCost/q.aPack, ub=q.bCost/q.bPack;
-  let extra=`Unit prices: A = ${fmtMoney(ua)} each; B = ${fmtMoney(ub)} each. `;
-  extra+=`For the required purchase, A needs ${q.aPacks} packs (${fmtMoney(q.aTotal)}); B needs ${q.bPacks} packs (${fmtMoney(q.bTotal)}). Store ${q.totalWinner} costs ${fmtMoney(q.save)} less.`;
+  const ua=unitPrice(q.aCost,q.aPack), ub=unitPrice(q.bCost,q.bPack);
+  let extra='Unit prices: A = '+fmtMoney(ua)+' each; B = '+fmtMoney(ub)+' each. ';
+  extra+='For this purchase, A needs '+q.aPacks+' packs ('+fmtMoney(q.aTotal)+'); B needs '+q.bPacks+' packs ('+fmtMoney(q.bTotal)+'). Store '+q.totalWinner+' costs '+fmtMoney(q.save)+' less.';
   if(q.twist) extra+=' Notice that Store A has the lower unit price, but Store B has the lower total for this exact whole-package purchase.';
   return extra;
 }
-function showCartSolved(q,c){
-  c.querySelector('.aPacks').value=q.aPacks;c.querySelector('.bPacks').value=q.bPacks;c.querySelector('.aTotal').value=q.aTotal.toFixed(2);c.querySelector('.bTotal').value=q.bTotal.toFixed(2);c.querySelector('.winner').value=q.totalWinner;c.querySelector('.save').value=q.save.toFixed(2);
-  c.querySelectorAll('input,select,button.check').forEach(x=>x.disabled=true);feedback(c.querySelector('.feedback'),'good','✓ Mission complete. <div class="explain">'+cartExplanation(q)+'</div>');
-}
-function answerCart(q,c){
-  if(done(q.id))return;
-  const ok=closeEnough(cleanNum(c.querySelector('.aPacks').value),q.aPacks,.001)&&closeEnough(cleanNum(c.querySelector('.bPacks').value),q.bPacks,.001)&&closeEnough(cleanNum(c.querySelector('.aTotal').value),q.aTotal,.011)&&closeEnough(cleanNum(c.querySelector('.bTotal').value),q.bTotal,.011)&&c.querySelector('.winner').value===q.totalWinner&&closeEnough(cleanNum(c.querySelector('.save').value),q.save,.011);
-  if(ok){award(q.id);feedback(c.querySelector('.feedback'),'good','✓ Mission complete! +10 points<div class="explain">'+cartExplanation(q)+'</div>');c.querySelectorAll('input,select,button.check').forEach(x=>x.disabled=true);confetti();}
-  else{const n=bumpAttempt(q.id);if(n<2)feedback(c.querySelector('.feedback'),'hint','Check every box. Remember to round the number of packages <strong>up</strong>, then multiply whole packages × package price.');else{award(q.id,0);showCartSolved(q,c)}}
+
+function cartStep3(q,c,btn){
+  const st=stepEl(c,3); if(st.classList.contains('cleared')) return;
+  const fb=c.querySelector('.fb3');
+  if(btn.dataset.a===q.totalWinner){
+    btn.classList.add('correct');
+    c.querySelector('.tface[data-t="'+q.totalWinner+'"]').classList.add('win');
+    award(q.id);
+    feedback(fb,'good','✓ Mission complete! +10 points<div class="explain">'+cartExplanation(q)+'</div>');
+    saysInto(c.querySelector('.says-slot'));
+    clearStep(c,3);confetti();announce('Mission complete.');updateHUD();
+  }else{
+    btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),650);
+    const n=bumpAttempt(q.id+':3');
+    if(n<2) feedback(fb,'hint','Compare the two totals on the cards above, not the unit prices. Which number is smaller?');
+    else{
+      c.querySelectorAll('.mstep[data-step="3"] .choice').forEach(b=>{if(b.dataset.a===q.totalWinner)b.classList.add('correct')});
+      c.querySelector('.tface[data-t="'+q.totalWinner+'"]').classList.add('win');
+      award(q.id,0);
+      feedback(fb,'bad','Answer revealed after two tries.<div class="explain">'+cartExplanation(q)+'</div>');
+      clearStep(c,3);updateHUD();
+    }
+  }
 }
 
-function renderChallenges(){
-  const g=document.getElementById('challengeGrid');g.innerHTML='';
-  challengeQs.forEach((q,i)=>{
-    const c=document.createElement('div');c.className='card question-card';c.id='card-'+q.id;
-    c.innerHTML=`<div class="q-top"><div><div class="q-num">Challenge ${i+1}</div><div class="q-title">${q.text}</div></div><button class="speak">🔊</button></div><div class="choices">${q.options.map((o,idx)=>`<button class="choice" data-a="${idx}">${o}</button>`).join('')}</div><div class="feedback"></div>`;
-    c.querySelector('.speak').onclick=()=>speak(q.text+' '+q.options.join('. '));
-    c.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answerChallenge(q,c,b));
-    if(done(q.id)) showChallengeSolved(q,c);
-    g.appendChild(c);
+function showCartSolved(q,c){
+  const run=cartRun[q.id];run.A=q.aPacks;run.B=q.bPacks;
+  c.querySelectorAll('.mstep[data-step="1"] .choice').forEach(b=>{if(b.dataset.a===q.unitWinner)b.classList.add('correct')});
+  c.querySelector('.store'+q.unitWinner).classList.add('win');
+  clearStep(c,1);unlockStep(c,2);
+  drawLane(q,c,'A');drawLane(q,c,'B');
+  finishStep2(q,c);
+  c.querySelectorAll('.mstep[data-step="3"] .choice').forEach(b=>{if(b.dataset.a===q.totalWinner)b.classList.add('correct')});
+  c.querySelector('.tface[data-t="'+q.totalWinner+'"]').classList.add('win');
+  clearStep(c,3);
+  feedback(c.querySelector('.fb3'),'good','✓ Mission complete.<div class="explain">'+cartExplanation(q)+'</div>');
+  saysInto(c.querySelector('.says-slot'));
+}
+
+/* ===== Deal Detective: arcade game (tab 6) ===== */
+const MAX_HEARTS=3, MAX_COMBO=5, PEEK_FREE=1;
+const POWERS={scan:{icon:'🔍',label:'Scanner',cost:15},hint:{icon:'💡',label:'Hint',cost:10},heart:{icon:'❤️',label:'Extra life',cost:30}};
+const RANKS=[
+  {at:0,   name:'Trainee'},
+  {at:60,  name:'Junior Detective'},
+  {at:140, name:'Deal Detective'},
+  {at:230, name:'Senior Detective'},
+  {at:330, name:'Master Deal Detective'}
+];
+
+let game=null;
+
+function newRun(startAt){
+  return {i:startAt||0, coins:0, combo:0, bestCombo:0, hearts:MAX_HEARTS, marks:[], tries:{},
+          answered:false, peeks:0, hintShown:false, picks:[], bossStep:0, aisleStart:startAt||0};
+}
+function startGame(reset){
+  const firstOpen=gameRounds.findIndex(r=>!done(r.id));
+  const at = reset ? 0 : (firstOpen===-1 ? gameRounds.length : aisleStartIndex(firstOpen));
+  game=newRun(at);
+  game.i = reset ? 0 : (firstOpen===-1 ? gameRounds.length : firstOpen);
+  game.aisleStart=aisleStartIndex(Math.min(game.i,gameRounds.length-1));
+  renderGame();
+}
+function replayGame(){game=newRun(0);renderGame();}
+function aisleStartIndex(idx){
+  const a=gameRounds[Math.min(idx,gameRounds.length-1)].aisle;
+  return gameRounds.findIndex(r=>r.aisle===a);
+}
+function comboMult(){return Math.min(1+game.combo,MAX_COMBO)}
+function caseValue(){return 10*comboMult()}
+function rankFor(c){let r=RANKS[0];RANKS.forEach(x=>{if(c>=x.at)r=x});return r}
+function nextRank(c){return RANKS.find(x=>c<x.at)||null}
+
+/* ---------- HUD ---------- */
+function drawGameHUD(){
+  const hearts=document.getElementById('gHearts');
+  if(hearts) hearts.innerHTML=Array.from({length:MAX_HEARTS},(_,k)=>
+    '<span class="heart'+(k<game.hearts?'':' gone')+'">'+(k<game.hearts?'❤️':'🤍')+'</span>').join('');
+  const coins=document.getElementById('gCoins'); if(coins) coins.textContent=game.coins;
+  const cl=document.getElementById('gComboLabel');
+  if(cl){cl.innerHTML='×'+comboMult()+' <span class="fire">🔥</span>';cl.classList.toggle('hot',game.combo>=2);}
+  const cb=document.getElementById('gComboBar');
+  if(cb){cb.querySelector('span').style.width=Math.min(100,(game.combo/(MAX_COMBO-1))*100)+'%';cb.classList.toggle('max',comboMult()>=MAX_COMBO);}
+  const rn=document.getElementById('gRankNow'), rb=document.getElementById('gRankBar');
+  const cur=rankFor(game.coins), nxt=nextRank(game.coins);
+  if(rn) rn.textContent=cur.name;
+  if(rb) rb.querySelector('span').style.width=(nxt? Math.round(((game.coins-cur.at)/(nxt.at-cur.at))*100) : 100)+'%';
+  drawMap();
+}
+function drawMap(){
+  const map=document.getElementById('gMap'); if(!map) return;
+  map.innerHTML=AISLES.map((a,ai)=>{
+    const rounds=gameRounds.filter(r=>r.aisle===ai);
+    const here=game.i<gameRounds.length && gameRounds[game.i].aisle===ai;
+    const allHit=rounds.every(r=>game.marks[gameRounds.indexOf(r)]);
+    const pips=rounds.map(r=>{
+      const idx=gameRounds.indexOf(r);
+      let c='pip';
+      if(game.marks[idx]==='hit')c+=' hit';
+      else if(idx===game.i)c+=' now';
+      return '<span class="'+c+'"></span>';
+    }).join('');
+    return '<div class="aisle-chip'+(here?' here':'')+(allHit&&!here?' clear':'')+'"><div class="an">'+a.icon+' '+a.name+'</div><div class="pips">'+pips+'</div></div>';
+  }).join('');
+}
+
+/* ---------- juice ---------- */
+function coinBurst(n){
+  const wrap=document.getElementById('gCoinWrap');
+  if(wrap){wrap.classList.remove('bump');void wrap.offsetWidth;wrap.classList.add('bump');}
+  const body=document.getElementById('gBody'); if(!body) return;
+  const box=body.getBoundingClientRect();
+  for(let k=0;k<Math.min(8,Math.ceil(n/6));k++){
+    const d=document.createElement('div');d.className='coin-fly';d.textContent='🪙';
+    d.style.left=(box.left+box.width/2+(Math.random()*160-80))+'px';
+    d.style.top=(box.top+90)+'px';
+    d.style.setProperty('--dx',(Math.random()*90-45)+'px');
+    d.style.animationDelay=(k*.06)+'s';
+    document.body.appendChild(d);setTimeout(()=>d.remove(),1000);
+  }
+}
+function banner(title,sub,ms){
+  const shell=document.getElementById('gameShell'); if(!shell) return;
+  const b=document.createElement('div');b.className='banner';
+  b.innerHTML='<div class="bt">'+title+'</div>'+(sub?'<div class="bs">'+sub+'</div>':'');
+  shell.appendChild(b);
+  setTimeout(()=>{b.classList.add('out');setTimeout(()=>b.remove(),340);},ms||1250);
+}
+function loseHeart(){
+  game.hearts=Math.max(0,game.hearts-1);game.combo=0;
+  const hearts=document.querySelectorAll('#gHearts .heart');
+  const el=hearts[game.hearts];
+  if(el){el.classList.add('losing');}
+  drawGameHUD();
+}
+
+/* ---------- render ---------- */
+function renderGame(){
+  drawGameHUD();
+  const body=document.getElementById('gBody'); if(!body) return;
+  if(game.hearts<=0){body.innerHTML=caughtHTML();wireCaught();return;}
+  if(game.i>=gameRounds.length){body.innerHTML=finaleHTML();wireFinale();return;}
+  const r=gameRounds[game.i];
+  game.answered=false;game.peeks=0;game.hintShown=false;game.picks=[];game.bossStep=0;
+  body.innerHTML = caseHTML(r);
+  wireRound(r);
+  drawGameHUD();
+}
+
+function caseTop(r){
+  const a=AISLES[r.aisle];
+  const kindLabel = r.kind==='mgr' ? 'Manager’s question'
+    : r.kind==='boss' ? 'BOSS · '+r.name
+    : r.kind==='price' ? 'Price gun'
+    : r.kind==='sort' ? 'Shelf sort' : 'Shelf scan';
+  const cls = r.kind==='mgr' ? 'mgr' : (r.kind==='boss' ? 'boss' : '');
+  let q;
+  if(r.kind==='scan') q='Which tag on the '+r.aisleName+' shelf has the <em>lowest unit price</em>?';
+  else if(r.kind==='mgr') q=r.text;
+  else if(r.kind==='boss') q='Beat the Markup Manager. Three hits and he folds.';
+  else q=r.q;
+  return '<div class="case-top"><div><span class="case-kind '+cls+'">'+a.icon+' Case '+(game.i+1)+' of '+gameRounds.length+' · '+kindLabel+'</span>'+
+    '<div class="case-q">'+q+'</div></div><button class="speak gspeak" aria-label="Read this case aloud">🔊</button></div>';
+}
+
+function tagHTML(t,idx,unit,clickable){
+  return '<button class="tag" data-i="'+idx+'"'+(clickable?'':' disabled')+'><span class="tag-name">'+t.n+'</span>'+
+    '<span class="tag-pack">'+t.label+'</span><span class="tag-price">'+fmtMoney(t.p)+'</span>'+
+    '<span class="tag-unit">? '+unit+'</span></button>';
+}
+function benchHTML(tags,unit){
+  const rows=tags.map((t,idx)=>
+    '<div class="wb-row"><span class="wb-name">'+t.n+'</span><span>'+fmtMoney(t.p)+' ÷ '+t.c+' =</span>'+
+    '<span class="money-input"><input class="inline-input uwork" data-target="'+tagUnit(t).toFixed(4)+'" inputmode="decimal" placeholder="0.00" aria-label="Unit price for '+t.n+'" /></span>'+
+    '<span class="wmark"></span></div>').join('');
+  return '<div class="workbench"><div class="wb-head">🧮 Detective worksheet — find each price for 1 '+unit.replace(/^per /,'')+'</div><div class="wb-rows">'+rows+'</div></div>';
+}
+function shopHTML(r){
+  const canScan = r.kind==='scan'||r.kind==='sort'||r.kind==='price'||r.kind==='mgr';
+  let btns='<span class="shop-k">Power-ups</span>';
+  if(canScan){
+    const label = r.kind==='price' ? 'Estimate scan' : (r.kind==='mgr' ? 'Rule one out' : POWERS.scan.label);
+    btns+='<button class="power" data-power="scan">'+POWERS.scan.icon+' '+label+'<span class="cost">free</span></button>';
+  }
+  btns+='<button class="power" data-power="hint">'+POWERS.hint.icon+' '+POWERS.hint.label+'<span class="cost">'+POWERS.hint.cost+'</span></button>';
+  btns+='<button class="power" data-power="heart">'+POWERS.heart.icon+' '+POWERS.heart.label+'<span class="cost">'+POWERS.heart.cost+'</span></button>';
+  return '<div class="shop">'+btns+'</div>';
+}
+function tagUnit(t){return t.p/t.c}
+
+function caseHTML(r){
+  let mid='';
+  if(r.kind==='scan'){
+    mid='<div class="shelf">'+r.tags.map((t,i)=>tagHTML(t,i,r.unit,true)).join('')+'</div>'+benchHTML(r.tags,r.unit);
+  }else if(r.kind==='sort'){
+    mid='<div class="shelf">'+r.tags.map((t,i)=>tagHTML(t,i,r.unit,true)).join('')+'</div>'+
+      '<div class="scan-note" id="sortState">Tap them in order: cheapest per 1 first.</div>'+benchHTML(r.tags,r.unit);
+  }else if(r.kind==='price'){
+    mid='<div class="shelf one">'+tagHTML(r.tag,0,r.unit,false)+'</div>'+
+      '<div class="pricegun"><span class="pg-label">🔫 '+fmtMoney(r.tag.p)+' ÷ '+r.tag.c+' =</span>'+
+      '<span class="money-input"><input class="inline-input pgin" inputmode="decimal" placeholder="0.00" aria-label="Unit price" /></span>'+
+      '<button class="btn primary pgcheck">Fire the price gun</button></div>';
+  }else if(r.kind==='mgr'){
+    mid='<div class="choices">'+r.options.map((o,i)=>'<button class="choice" data-i="'+i+'">'+o+'</button>').join('')+'</div>';
+  }else if(r.kind==='boss'){
+    mid=bossHTML(r);
+  }
+  return '<div class="case-card">'+caseTop(r)+mid+shopHTML(r)+
+    scratchHTML('game-'+r.id,'Show your work here...','Optional scratch space. It saves on this device.')+
+    '<div class="feedback gfb"></div><div class="says-slot"></div><div class="case-next"></div></div>';
+}
+
+function bossHTML(r){
+  const steps=r.steps.map((st,i)=>{
+    const input = st.type==='num'
+      ? '<input class="inline-input bsin" inputmode="numeric" placeholder="?" aria-label="Answer" /><button class="btn primary bscheck">Check</button>'
+      : st.options.map(o=>'<button class="choice bspick" data-a="'+o[0]+'">'+o[1]+'</button>').join('');
+    return '<div class="boss-step'+(i===0?'':' locked')+'" data-step="'+i+'">'+
+      '<div class="bs-q">Hit '+(i+1)+' · '+st.q+'</div><div class="bs-row">'+input+'</div></div>';
+  }).join('');
+  return '<div class="boss-wrap"><div class="boss-head"><div class="boss-face" id="bossFace">'+r.face+'</div>'+
+    '<div><div class="boss-name">'+r.name+'</div><div class="boss-line">'+r.line+'</div></div></div>'+
+    '<div class="boss-hp"><span id="bossHp"></span></div>'+steps+'</div>';
+}
+
+/* ---------- wiring ---------- */
+function wireRound(r){
+  const body=document.getElementById('gBody');
+  body.querySelector('.gspeak').onclick=()=>speakCase(r);
+  wireScratch(body);
+  body.querySelectorAll('.uwork').forEach(inp=>wireCheckInput(inp,inp.closest('.wb-row').querySelector('.wmark'),Number(inp.dataset.target),'nice'));
+  body.querySelectorAll('.power').forEach(btn=>btn.onclick=()=>usePower(r,btn.dataset.power,btn));
+  if(r.kind==='scan') body.querySelectorAll('.tag').forEach(t=>t.onclick=()=>answerScan(r,Number(t.dataset.i)));
+  if(r.kind==='sort') body.querySelectorAll('.tag').forEach(t=>t.onclick=()=>pickSort(r,Number(t.dataset.i),t));
+  if(r.kind==='price'){
+    const go=()=>answerPrice(r);
+    body.querySelector('.pgcheck').onclick=go;
+    body.querySelector('.pgin').addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+  }
+  if(r.kind==='mgr') body.querySelectorAll('.choice').forEach(c=>c.onclick=()=>answerMgr(r,Number(c.dataset.i),c));
+  if(r.kind==='boss') wireBoss(r);
+  refreshPowers(r);
+}
+function speakCase(r){
+  if(r.kind==='scan') speak('Shelf scan. '+r.tags.map(t=>t.n+', '+t.label+' for '+fmtMoney(t.p)).join('. ')+'. Which tag has the lowest unit price?');
+  else if(r.kind==='sort') speak(r.q+' '+r.tags.map(t=>t.n+', '+t.label+' for '+fmtMoney(t.p)).join('. '));
+  else if(r.kind==='price') speak(r.q+' '+r.tag.label+' for '+fmtMoney(r.tag.p)+'.');
+  else if(r.kind==='mgr') speak(r.text+' '+r.options.join('. '));
+  else speak(r.line+' '+r.steps.map(st=>st.q).join(' '));
+}
+function refreshPowers(r){
+  const body=document.getElementById('gBody'); if(!body) return;
+  body.querySelectorAll('.power').forEach(b=>{
+    const k=b.dataset.power;
+    if(b.dataset.spent){b.disabled=true;return;}
+    if(game.answered){b.disabled=true;return;}
+    if(k==='scan'){
+      const free=game.peeks<PEEK_FREE;
+      b.querySelector('.cost').textContent = free?'free':POWERS.scan.cost;
+      b.disabled = !free && game.coins<POWERS.scan.cost;
+    } else if(k==='hint'){ b.disabled=game.hintShown || game.coins<POWERS.hint.cost; }
+    else { b.disabled = game.hearts>=MAX_HEARTS || game.coins<POWERS.heart.cost; }
   });
 }
-function showChallengeSolved(q,c){c.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(Number(b.dataset.a)===q.answer)b.classList.add('correct')});feedback(c.querySelector('.feedback'),'good','✓ '+q.explain)}
-function answerChallenge(q,c,b){
-  if(done(q.id))return;
-  if(Number(b.dataset.a)===q.answer){award(q.id);showChallengeSolved(q,c);confetti();}
-  else{const n=bumpAttempt(q.id);b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),650);if(n<2)feedback(c.querySelector('.feedback'),'hint','Not yet. Think about what “per 1” means and what quantity should be divided by what.');else{award(q.id,0);showChallengeSolved(q,c)}}
+function usePower(r,kind,btn){
+  if(game.answered) return;
+  const body=document.getElementById('gBody');
+  if(kind==='hint'){
+    if(game.coins<POWERS.hint.cost) return;
+    game.coins-=POWERS.hint.cost;game.hintShown=true;
+    feedback(body.querySelector('.gfb'),'hint','💡 '+r.hint);
+    drawGameHUD();refreshPowers(r);return;
+  }
+  if(kind==='heart'){
+    if(game.coins<POWERS.heart.cost||game.hearts>=MAX_HEARTS) return;
+    game.coins-=POWERS.heart.cost;game.hearts++;banner('❤️ Extra life','You are back to '+game.hearts+' lives',900);
+    drawGameHUD();refreshPowers(r);return;
+  }
+  // scanner
+  const free=game.peeks<PEEK_FREE;
+  if(!free && game.coins<POWERS.scan.cost) return;
+  if(!free) game.coins-=POWERS.scan.cost;
+  game.peeks++;
+  if(r.kind==='mgr'){
+    const wrong=[...body.querySelectorAll('.choice')].filter(b=>Number(b.dataset.i)!==r.answer&&!b.disabled);
+    if(wrong.length<2){btn.dataset.spent='1';refreshPowers(r);return;}
+    const v=wrong[Math.floor(Math.random()*wrong.length)];
+    v.disabled=true;v.style.opacity='.4';v.style.textDecoration='line-through';
+    announce('One wrong answer ruled out.');
+  }else if(r.kind==='price'){
+    const lo=Math.floor(r.answer*2)/2, hi=lo+0.5;
+    const t=body.querySelector('.tag');
+    t.classList.add('revealed');
+    t.querySelector('.tag-unit').textContent='between '+fmtMoney(lo)+' and '+fmtMoney(hi)+' '+r.unit;
+    announce('The unit price is between '+fmtMoney(lo)+' and '+fmtMoney(hi)+'.');
+    btn.dataset.spent='1';
+  }else{
+    const tags=r.tags;
+    const hidden=[...body.querySelectorAll('.tag')].filter(t=>!t.classList.contains('revealed'));
+    if(!hidden.length){btn.dataset.spent='1';refreshPowers(r);return;}
+    const t=hidden[0];const idx=Number(t.dataset.i);
+    t.classList.add('revealed');
+    t.querySelector('.tag-unit').textContent=fmtMoney(tagUnit(tags[idx]))+' '+r.unit;
+    announce(tags[idx].n+' is '+fmtMoney(tagUnit(tags[idx]))+' '+r.unit);
+    if(![...body.querySelectorAll('.tag')].some(x=>!x.classList.contains('revealed'))) btn.dataset.spent='1';
+  }
+  drawGameHUD();refreshPowers(r);
+}
+
+/* ---------- answers ---------- */
+function bumpTries(r){game.tries[r.id]=(game.tries[r.id]||0)+1;return game.tries[r.id]}
+
+function win(r,extra){
+  const gained=caseValue();
+  game.coins+=gained;game.combo++;game.bestCombo=Math.max(game.bestCombo,game.combo);
+  game.marks[game.i]='hit';game.answered=true;
+  award(r.id);
+  revealCase(r);
+  const body=document.getElementById('gBody');
+  feedback(body.querySelector('.gfb'),'good','✓ '+(extra||'Correct!')+' <strong>+'+gained+' coins</strong>'+
+    (game.combo>1?'<span class="streak-pop">🔥 combo ×'+comboMult()+'</span>':'')+
+    '<div class="explain">'+caseExplain(r)+'</div>');
+  saysInto(body.querySelector('.says-slot'));
+  coinBurst(gained);confetti();
+  announce('Correct. '+gained+' coins.');
+  drawGameHUD();updateHUD();refreshPowers(r);showNext(r);
+}
+function lose(r,msg){
+  loseHeart();
+  const body=document.getElementById('gBody');
+  const card=body.querySelector('.case-card');
+  card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),300);
+  const tries=bumpTries(r);
+  if(game.hearts<=0){setTimeout(()=>renderGame(),700);return true;}
+  if(tries<2){feedback(body.querySelector('.gfb'),'hint','💔 Lost a life. '+(msg||'')+' '+r.hint);announce('Try again.');drawGameHUD();return false;}
+  game.marks[game.i]='miss';game.answered=true;
+  award(r.id,0);revealCase(r);
+  feedback(body.querySelector('.gfb'),'bad','The manager takes this one.<div class="explain">'+caseExplain(r)+'</div>');
+  drawGameHUD();updateHUD();refreshPowers(r);showNext(r);
+  return false;
+}
+
+function answerScan(r,pick){
+  if(game.answered) return;
+  const body=document.getElementById('gBody');
+  if(pick===r.answer) win(r,'Best deal spotted!');
+  else{body.querySelector('.tag[data-i="'+pick+'"]').classList.add('miss');lose(r,'That tag is not the cheapest per 1.');}
+}
+function answerPrice(r){
+  if(game.answered) return;
+  const body=document.getElementById('gBody');
+  const v=body.querySelector('.pgin').value;
+  if(String(v).trim()==='') return;
+  if(closeEnough(cleanNum(v),r.answer,.006)) win(r,'Price gun locked on!');
+  else lose(r,'That is not the price for one.');
+}
+function answerMgr(r,pick,btn){
+  if(game.answered) return;
+  if(pick===r.answer) win(r,'Case closed!');
+  else{btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),650);lose(r,'');}
+}
+function pickSort(r,idx,el){
+  if(game.answered||el.classList.contains('picked')) return;
+  game.picks.push(idx);
+  el.classList.add('picked');
+  el.insertAdjacentHTML('afterbegin','<span class="pick-order">'+game.picks.length+'</span>');
+  const state=document.getElementById('sortState');
+  if(state) state.textContent='Picked: '+game.picks.map(i=>r.tags[i].n).join(' → ');
+  if(game.picks.length===r.tags.length){
+    const correct=r.tags.map((t,i)=>i).sort((x,y)=>tagUnit(r.tags[x])-tagUnit(r.tags[y]));
+    const ok=game.picks.every((v,i)=>v===correct[i]);
+    if(ok) win(r,'Shelf sorted!');
+    else{
+      const dead=lose(r,'That order is not cheapest-to-priciest.');
+      if(!dead && !game.answered){
+        game.picks=[];
+        document.querySelectorAll('#gBody .tag').forEach(t=>{t.classList.remove('picked');const o=t.querySelector('.pick-order');if(o)o.remove();});
+        if(state) state.textContent='Tap them in order: cheapest per 1 first.';
+      }
+    }
+  }
+}
+
+/* ---------- boss ---------- */
+function wireBoss(r){
+  const body=document.getElementById('gBody');
+  body.querySelectorAll('.boss-step').forEach((st,i)=>{
+    const check=st.querySelector('.bscheck');
+    if(check) check.onclick=()=>bossAnswer(r,i,cleanNum(st.querySelector('.bsin').value));
+    const inp=st.querySelector('.bsin');
+    if(inp) inp.addEventListener('keydown',e=>{if(e.key==='Enter')bossAnswer(r,i,cleanNum(inp.value))});
+    st.querySelectorAll('.bspick').forEach(b=>b.onclick=()=>bossAnswer(r,i,b.dataset.a,b));
+  });
+  const hp=document.getElementById('bossHp'); if(hp) hp.style.width='100%';
+}
+function bossAnswer(r,stepIdx,val,btn){
+  if(game.answered||stepIdx!==game.bossStep) return;
+  const st=r.steps[stepIdx];
+  const body=document.getElementById('gBody');
+  const el=body.querySelector('.boss-step[data-step="'+stepIdx+'"]');
+  const right = st.type==='num' ? closeEnough(val,st.answer,.001) : val===st.answer;
+  if(right){
+    el.classList.add('cleared');
+    el.querySelectorAll('input,button').forEach(x=>x.disabled=true);
+    game.bossStep++;
+    const face=document.getElementById('bossFace');
+    if(face){face.classList.remove('hurt');void face.offsetWidth;face.classList.add('hurt');}
+    const hp=document.getElementById('bossHp');
+    if(hp) hp.style.width=Math.max(0,100-(game.bossStep/r.steps.length)*100)+'%';
+    if(game.bossStep>=r.steps.length){
+      banner('💥 BOSS DEFEATED','The Markup Manager hands over the savings',1500);
+      win(r,'You beat the Markup Manager!');
+    }else{
+      const nxt=body.querySelector('.boss-step[data-step="'+game.bossStep+'"]');
+      if(nxt) nxt.classList.remove('locked');
+      feedback(body.querySelector('.gfb'),'good','✓ Direct hit. '+(r.steps.length-game.bossStep)+' to go.');
+      announce('Correct. Next hit.');
+    }
+  }else{
+    if(btn){btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),650);}
+    lose(r,st.hint);
+  }
+}
+
+/* ---------- explain / reveal / next ---------- */
+function caseExplain(r){
+  if(r.kind==='mgr') return r.explain;
+  if(r.kind==='boss') return r.explain;
+  if(r.kind==='price') return fmtMoney(r.tag.p)+' ÷ '+r.tag.c+' = <strong>'+fmtMoney(r.answer)+' '+r.unit+'</strong>.';
+  const lines=r.tags.map(t=>t.n+': '+fmtMoney(t.p)+' ÷ '+t.c+' = <strong>'+fmtMoney(tagUnit(t))+' '+r.unit+'</strong>').join(' · ');
+  if(r.kind==='sort'){
+    const order=r.tags.map((t,i)=>i).sort((x,y)=>tagUnit(r.tags[x])-tagUnit(r.tags[y])).map(i=>r.tags[i].n);
+    return lines+'. Cheapest to priciest: '+order.join(' → ')+'.';
+  }
+  return lines+'. '+r.tags[r.answer].n+' is the best deal.';
+}
+function revealCase(r){
+  const body=document.getElementById('gBody');
+  body.querySelectorAll('.power,.scan-btn').forEach(b=>b.disabled=true);
+  body.querySelectorAll('.uwork,.pgin,.bsin').forEach(i=>i.readOnly=true);
+  body.querySelectorAll('.pgcheck,.bscheck,.bspick').forEach(b=>b.disabled=true);
+  if(r.kind==='scan'||r.kind==='sort'||r.kind==='price'){
+    const tags=r.kind==='price'?[r.tag]:r.tags;
+    body.querySelectorAll('.tag').forEach(t=>{
+      const idx=Number(t.dataset.i);
+      t.disabled=true;t.classList.add('revealed');
+      t.querySelector('.tag-unit').textContent=fmtMoney(tagUnit(tags[idx]))+' '+r.unit;
+      if(r.kind==='scan'&&idx===r.answer) t.classList.add('best');
+      if(r.kind==='sort'){
+        const best=r.tags.map((x,i)=>i).sort((x,y)=>tagUnit(r.tags[x])-tagUnit(r.tags[y]))[0];
+        if(idx===best) t.classList.add('best');
+      }
+    });
+  }
+  if(r.kind==='mgr') body.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(Number(b.dataset.i)===r.answer)b.classList.add('correct')});
+}
+function showNext(r){
+  const box=document.querySelector('#gBody .case-next'); if(!box) return;
+  const last=game.i>=gameRounds.length-1;
+  const aisleEnds = !last && gameRounds[game.i+1].aisle!==r.aisle;
+  box.innerHTML='<button class="btn primary nextCase">'+(last?'See my detective rank →':(aisleEnds?'Leave '+AISLES[r.aisle].name+' →':'Next case →'))+'</button>';
+  box.querySelector('.nextCase').onclick=()=>{
+    if(aisleEnds){
+      const bonus=25;game.coins+=bonus;game.hearts=MAX_HEARTS;
+      banner('✅ '+AISLES[r.aisle].name+' cleared!','+'+bonus+' coins · lives restored',1400);
+      game.i++;game.aisleStart=game.i;
+      setTimeout(()=>renderGame(),700);
+    }else{game.i++;renderGame();}
+  };
+}
+
+/* ---------- end screens ---------- */
+function caughtHTML(){
+  const a=AISLES[gameRounds[Math.min(game.aisleStart,gameRounds.length-1)].aisle];
+  return '<div class="rank-card"><div class="rank-badge">🚫</div><h4>The manager caught you</h4>'+
+    '<p class="small">Three mistakes in one aisle. Your coins are safe — walk '+a.name+' again with full lives.</p>'+
+    '<div class="rank-stats"><div class="rank-stat"><span class="k">Coins kept</span><b>'+game.coins+'</b></div>'+
+    '<div class="rank-stat"><span class="k">Best combo</span><b>×'+Math.min(1+game.bestCombo,MAX_COMBO)+'</b></div></div>'+
+    '<div class="actions" style="justify-content:center"><button class="btn gold retry">Work '+a.name+' again</button>'+
+    '<button class="btn secondary restart">Start over from Aisle 1</button></div></div>';
+}
+function wireCaught(){
+  const b=document.getElementById('gBody');
+  b.querySelector('.retry').onclick=()=>{
+    game.hearts=MAX_HEARTS;game.combo=0;game.i=game.aisleStart;game.tries={};
+    for(let k=game.aisleStart;k<gameRounds.length && gameRounds[k].aisle===gameRounds[game.aisleStart].aisle;k++) game.marks[k]=undefined;
+    banner('❤️❤️❤️','Lives restored',900);renderGame();
+  };
+  b.querySelector('.restart').onclick=replayGame;
+}
+function finaleHTML(){
+  if(game.coins>(state.gameBest||0)) state.gameBest=game.coins;
+  const bc=Math.min(1+game.bestCombo,MAX_COMBO);
+  if(bc>(state.gameBestStreak||0)) state.gameBestStreak=bc;
+  saveState();
+  const cur=rankFor(game.coins);
+  const icons={'Trainee':'🔎','Junior Detective':'🥉','Deal Detective':'🥈','Senior Detective':'🥇','Master Deal Detective':'🏆'};
+  const hits=game.marks.filter(m=>m==='hit').length;
+  const note = hits===gameRounds.length ? 'Perfect run. Nothing got past you.' :
+    (hits>=9 ? 'Strong shift. A cleaner combo is worth a lot more coins.' : 'Run it back — find each cost per 1 before you tap.');
+  return '<div class="rank-card"><div class="rank-badge">'+(icons[cur.name]||'🔎')+'</div>'+
+    '<h4>Shift over</h4><p class="small">'+note+'</p>'+
+    '<div class="rank-name">'+cur.name+'</div>'+
+    '<div class="rank-stats">'+
+      '<div class="rank-stat"><span class="k">Coins</span><b>'+game.coins+'</b></div>'+
+      '<div class="rank-stat"><span class="k">Cases won</span><b>'+hits+' / '+gameRounds.length+'</b></div>'+
+      '<div class="rank-stat"><span class="k">Best combo</span><b>×'+bc+'</b></div>'+
+      '<div class="rank-stat"><span class="k">Your best ever</span><b>'+(state.gameBest||0)+'</b></div>'+
+    '</div>'+neftSaysHTML()+
+    '<div class="actions" style="justify-content:center"><button class="btn gold replay">Play again</button><button class="btn secondary toResults">Go to my results →</button></div></div>';
+}
+function wireFinale(){
+  const b=document.getElementById('gBody');
+  b.querySelector('.replay').onclick=replayGame;
+  b.querySelector('.toResults').onclick=()=>goTab('results');
 }
 
 function resetAll(){
   if(!confirm('Reset all answers, points, and saved progress for this activity?')) return;
   const keepName=state.name||'';state=JSON.parse(JSON.stringify(defaultState));state.name=keepName;saveState();renderAll();goTab('start');
 }
-function renderAll(){renderSort();renderBuilders();renderBattles();renderCart();renderChallenges();updateHUD();}
+function renderAll(){renderSort();renderBuilders();renderBattles();renderCart();startGame(false);updateHUD();}
 renderAll();
 </script>
 </body>
