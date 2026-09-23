@@ -2600,6 +2600,13 @@ header.homework-header h1 {
   width: 100%;
   border-collapse: collapse;
   background: var(--white);
+  /* .table-responsive has carried overflow-x since it was written, and it never
+     fired: width:100% makes the table fit its container by definition, so five
+     columns on a 390px phone were squeezed until "Option" set one letter per
+     line down the cell and the comparison chart the lesson is built around was
+     unreadable. A min-width lets the table be its own size and hands the
+     overflow to the scroller that was already there. */
+  min-width: 560px;
 }
 
 .fill-table th, .fill-table td {
@@ -2607,6 +2614,10 @@ header.homework-header h1 {
   border: 1px solid var(--line);
   text-align: left;
   font-size: 14.5px;
+  /* Column headings are short labels, not prose; wrapping between their words
+     is fine, breaking inside one is what produced the vertical alphabet. */
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 
 .fill-table th {
@@ -3477,7 +3488,9 @@ body .mwb-launcher {
     display: flex;
     width: 100%;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    /* A pill outline drawn around two rows reads as a mistake. */
+    border-radius: var(--radius-md);
   }
   .hw-hero .lang-toggle-btn {
     flex: 1 1 0;
@@ -3489,9 +3502,12 @@ body .mwb-launcher {
     font-size: 12px;
     white-space: nowrap;
   }
-  /* The full "Bilingual / Bilingüe" cannot fit a third of a phone; the flag
-     pair already carries it, and the label returns above 700px. */
-  .hw-hero .lang-toggle-btn[data-lang-mode="bilingual"] span { display: none; }
+  /* "Bilingual / Bilingüe" needs ~153px and an equal third of this row is 97px,
+     so it used to be hidden and the button showed two flags and nothing else —
+     the DEFAULT mode, unlabelled. It gets its own row instead: every option is
+     now readable, at the cost of one 44px row. (Hiding it was right when the
+     selector held six languages and no arrangement helped; it holds three.) */
+  .hw-hero .lang-toggle-btn[data-lang-mode="bilingual"] { flex: 1 0 100%; }
   .hw-hero .hw-quickplan { margin-top: 14px; }
   /* The opacity difference already says which tabs are optional; the divider
      and its label cost a whole extra row at this width. */

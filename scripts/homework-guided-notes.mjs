@@ -10805,6 +10805,15 @@ body:not(.lang-mode-es) .tab-es { display: none; }
   /* Minutes are the first thing to go: the stop number, the name and the tick
      all still fit, and the hero states the total. */
   .tab-min { display: none; }
+  /* A stop's name is one word, and a sixth of a phone is narrower than the
+     longest of them: "Together" broke mid-word and set "Togeth / er" under the
+     handshake. The name shrinks to fit its column rather than splitting — it
+     is the label the family taps, so it has to read as a word. */
+  .homework-tab-btn .tab-label { white-space: nowrap; }
+  .homework-tab-btn .tab-en, .homework-tab-btn .tab-es { font-size: 10px; }
+}
+@media (max-width: 400px) {
+  .homework-tab-btn .tab-en, .homework-tab-btn .tab-es { font-size: 9.5px; }
 }
 
 .help-pop-btn {
