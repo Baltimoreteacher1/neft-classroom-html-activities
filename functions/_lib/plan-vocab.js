@@ -3490,6 +3490,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/ratio-rate-review-mission/",
+    title: "Ratio & Rate Review Mission | Grade 6 Family Homework",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/showcase/",
     title: "Student Work Gallery",
     category: "Hub",
