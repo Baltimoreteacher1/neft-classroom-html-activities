@@ -27,11 +27,26 @@ const MANIFEST = path.join(ROOT, "data", "curriculum-manifest.json");
 const OUT = path.join(ROOT, "data", "family-week-notes.json");
 const VOCAB_PER_LESSON = 3;
 
-const clean = (value, max = 320) =>
-  String(value ?? "")
+/**
+ * Normalise a curated note and fit it to the published limit.
+ *
+ * A blunt slice(0, max) cuts mid-word — 3-2-part3's parent note shipped as
+ * "...we do NOT keep the 1 in our final unit rate — w". Families read these, so
+ * an over-long note is trimmed back to the last whole word and marked with an
+ * ellipsis instead. The ellipsis is inside the budget, never added on top of it.
+ */
+const clean = (value, max = 320) => {
+  const text = String(value ?? "")
     .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, max);
+    .trim();
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max - 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  // Only honour the word boundary when it keeps most of the budget; a note made
+  // of one very long token should still be trimmed rather than returned whole.
+  const body = lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut;
+  return `${body.replace(/[\s—–-]+$/, "").replace(/[,;:]$/, "")}…`;
+};
 
 /** A bilingual pair is only usable when BOTH lanes are real. Half a pair in the
  * Spanish lane is how English ends up in front of a Spanish-reading parent. */
