@@ -42,6 +42,7 @@ import {
   renderWorkbenchTools,
   selectQuickCheckProblems,
 } from "./homework-guided-notes.mjs";
+import { MATH_INPUT_CSS, MATH_INPUT_JS, renderMathKeypad } from "./homework-math-input.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
@@ -3506,6 +3507,7 @@ body .mwb-launcher {
 ${EDITORIAL_OVERRIDES}
 ${BIG_IDEA_CSS}
 ${ARENA_CSS}
+${MATH_INPUT_CSS}
 /* ============================================================
    GLOBAL HIGH-LEGIBILITY TYPOGRAPHY SCALE (All Homeworks)
    Bigger text, comfortable reading rhythm across all family devices
@@ -3642,6 +3644,8 @@ body {
 
 ${helpModalHtml}
 
+${renderMathKeypad()}
+
 <!-- Sticky bottom actions bar. It belongs to the Check stop and only appears
      there: on Learn, Words, Play and Done it was 139px of "Progress: 0 / 6" and
      a Check All button for problems that were not on screen, over a phone
@@ -3682,6 +3686,7 @@ window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match)
 ${HOMEWORK_TABS_JS}
 ${HOMEWORK_GAME_JS}
 ${VISUAL_LABS_JS}
+${MATH_INPUT_JS}
 // Sound engine
 let soundEnabled = true;
 let audioCtx = null;

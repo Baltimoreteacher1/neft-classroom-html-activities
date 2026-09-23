@@ -16,6 +16,7 @@ import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 import {
   decimalOperation,
   detectVisualTopic,
+  ratioFocus,
   selectAlignedQuickCheckProblems,
 } from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
@@ -3173,7 +3174,11 @@ export function getRealWorldSpotlight(topic) {
   );
 }
 
-export function getTopicMisconception(topic) {
+export function getTopicMisconception(topic, config) {
+  if (topic === "ratios") {
+    const strand = RATIO_STRAND_MISCONCEPTIONS[ratioFocus(config)];
+    if (strand) return strand;
+  }
   const misconceptions = {
     exponents: {
       trapEn: "Multiplying base × exponent (thinking 3⁴ = 12 instead of 3 × 3 × 3 × 3 = 81).",
@@ -6814,8 +6819,105 @@ export const MATH_TALK_QUESTIONS = [
   },
 ];
 
+/**
+ * The Skill Power-Up for a ratio-strand lesson, chosen by what the lesson
+ * actually teaches rather than by the shared "ratios" topic. See ratioFocus()
+ * in homework-alignment.mjs for why the topic alone is not enough.
+ */
+const RATIO_STRAND_POWER_UPS = {
+  "unit-rate": {
+    qEn: "A 12-pack of juice costs $6.00 and an 8-pack costs $4.40. Which is the better buy, and how do you know?",
+    qEs: "Un paquete de 12 jugos cuesta $6.00 y uno de 8 cuesta $4.40. ¿Cuál conviene más y cómo lo sabes?",
+    choices: [
+      {
+        en: "The 12-pack — $6.00 ÷ 12 = $0.50 each, and $4.40 ÷ 8 = $0.55 each",
+        es: "El de 12 — $6.00 ÷ 12 = $0.50 cada uno, y $4.40 ÷ 8 = $0.55 cada uno",
+      },
+      {
+        en: "The 8-pack — it costs less money in total ($4.40 < $6.00)",
+        es: "El de 8 — cuesta menos dinero en total ($4.40 < $6.00)",
+      },
+      {
+        en: "The 12-pack — it has more juices, so more is always the better buy",
+        es: "El de 12 — trae más jugos, y más siempre conviene más",
+      },
+    ],
+    correctIndex: 0,
+    hintEn:
+      "Divide the price by the number of items to get the price for ONE — then the smaller unit price wins.",
+    hintEs:
+      "Divide el precio entre la cantidad para obtener el precio de UNO — gana el precio unitario menor.",
+  },
+  percent: {
+    qEn: "A jacket is $40 and is marked 25% off. How much do you SAVE?",
+    qEs: "Una chaqueta cuesta $40 y tiene 25% de descuento. ¿Cuánto AHORRAS?",
+    choices: [
+      {
+        en: "$10 — because 25% means 25 out of 100, and 1/4 of $40 is $10",
+        es: "$10 — 25% es 25 de cada 100, y 1/4 de $40 es $10",
+      },
+      { en: "$25 — because the percent is 25", es: "$25 — porque el porcentaje es 25" },
+      { en: "$15 — because $40 − 25 = $15", es: "$15 — porque $40 − 25 = $15" },
+    ],
+    correctIndex: 0,
+    hintEn: "A percent is a rate out of 100 — it is a PART of the amount, never the amount itself.",
+    hintEs:
+      "Un porcentaje es una razón por cada 100 — es una PARTE de la cantidad, nunca la cantidad misma.",
+  },
+  convert: {
+    qEn: "There are 3 feet in 1 yard. How many feet are in 7 yards?",
+    qEs: "Hay 3 pies en 1 yarda. ¿Cuántos pies hay en 7 yardas?",
+    choices: [
+      {
+        en: "21 feet — multiply by 3 because feet are smaller, so you need more of them",
+        es: "21 pies — multiplica por 3 porque los pies son más pequeños, así que necesitas más",
+      },
+      { en: "About 2.3 feet — divide 7 by 3", es: "Unos 2.3 pies — divide 7 entre 3" },
+      { en: "10 feet — add 3 to 7", es: "10 pies — suma 3 a 7" },
+    ],
+    correctIndex: 0,
+    hintEn:
+      "Going to a SMALLER unit means more of them, so multiply. Going to a bigger unit means fewer, so divide.",
+    hintEs:
+      "Ir a una unidad MÁS PEQUEÑA significa más unidades: multiplica. Ir a una más grande significa menos: divide.",
+  },
+};
+
+const RATIO_STRAND_MISCONCEPTIONS = {
+  "unit-rate": {
+    trapEn: "Picking the cheaper TOTAL price instead of dividing to compare the price for one.",
+    trapEs: "Elegir el precio TOTAL más bajo en lugar de dividir para comparar el precio de uno.",
+    coachEn:
+      "Ask: 'What does ONE of them cost in each deal? Which number do we divide by to find that?'",
+    coachEs:
+      "Pregunta: '¿Cuánto cuesta UNO en cada oferta? ¿Entre qué número dividimos para saberlo?'",
+  },
+  percent: {
+    trapEn: "Treating the percent as an amount of money — reading 25% off $40 as $25 off.",
+    trapEs: "Tratar el porcentaje como una cantidad de dinero — leer 25% de $40 como $25.",
+    coachEn:
+      "Ask: '25% of WHAT? A percent is always a part of some amount — which amount is it a part of here?'",
+    coachEs:
+      "Pregunta: '¿25% de QUÉ? Un porcentaje siempre es parte de una cantidad — ¿de cuál es parte aquí?'",
+  },
+  convert: {
+    trapEn:
+      "Multiplying when the new unit is bigger (or dividing when it is smaller), so the answer moves the wrong way.",
+    trapEs:
+      "Multiplicar cuando la nueva unidad es más grande (o dividir cuando es más pequeña), y el resultado va al revés.",
+    coachEn:
+      "Ask: 'Is the new unit bigger or smaller? Should our number end up bigger or smaller than we started?'",
+    coachEs:
+      "Pregunta: '¿La nueva unidad es más grande o más pequeña? ¿El número debe terminar mayor o menor?'",
+  },
+};
+
 export function getTopicPowerUp(topic, config) {
   const title = config?.title || "Tonight's Math";
+  if (topic === "ratios") {
+    const strand = RATIO_STRAND_POWER_UPS[ratioFocus(config)];
+    if (strand) return strand;
+  }
   const powerUps = {
     exponents: {
       qEn: "Which statement shows the true meaning of 4³?",
@@ -7289,7 +7391,7 @@ export function renderLearnTab(config, visualLabHtml = "") {
   const topic = detectVisualTopic(config);
   const powerUpHtml = renderSkillPowerUp(config, topic);
   const spotlight = getRealWorldSpotlight(topic);
-  const mis = getTopicMisconception(topic);
+  const mis = getTopicMisconception(topic, config);
 
   // Add Listen button to the Big Idea title
   const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
@@ -8793,7 +8895,9 @@ function syncHomeworkChromeHeights() {
   // "Next" button: on Together the Stuck? pill covered "Next: Try the
   // problems". Measure the tallest floating control's real top edge instead.
   var floatTop = 0;
-  document.querySelectorAll('.hw-stuck-fab, #nsr-root').forEach(function (el) {
+  // The math keypad is a bottom-fixed control like the pills, and the tallest
+  // one when it is open; left out, the last answer field on a stop sat under it.
+  document.querySelectorAll('.hw-stuck-fab, #nsr-root, .mathpad:not([hidden])').forEach(function (el) {
     var r = el.getBoundingClientRect();
     if (r.height) floatTop = Math.max(floatTop, Math.ceil(window.innerHeight - r.top));
   });

@@ -6638,6 +6638,209 @@ body.lang-mode-es .concept-title-es { display: inline; }
   }
 }
 
+
+/* ============================================================
+   MATH KEYPAD — symbol entry for answer fields
+   ============================================================ */
+.mathpad {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1200;
+  background: var(--white, #fff);
+  border-top: 2px solid var(--teal, #1fa6a2);
+  box-shadow: 0 -12px 34px rgba(18, 53, 91, 0.16);
+  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  font-family: var(--font-body, system-ui, sans-serif);
+}
+.mathpad[hidden] { display: none; }
+
+.mathpad-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.mathpad-preview-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--teal-light, #dff2ee);
+  border-radius: var(--radius-sm, 8px);
+  overflow: hidden;
+}
+.mathpad-preview-tag {
+  flex: none;
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--teal-ink, #0c6f6b);
+}
+.mathpad-preview {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy, #12355b);
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.mathpad-preview::-webkit-scrollbar { display: none; }
+.mathpad-preview:empty::before {
+  content: "…";
+  color: var(--muted, #5f6f80);
+  font-weight: 600;
+}
+.mathpad-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  line-height: 1.05;
+  font-size: .78em;
+  margin: 0 2px;
+}
+.mathpad-frac-den { border-top: 1.5px solid currentColor; padding-top: 1px; }
+
+.mathpad-top-actions { display: flex; gap: 6px; flex: none; }
+.mathpad-util {
+  min-width: 46px;
+  min-height: 42px;
+  border: 1.5px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--white, #fff);
+  color: var(--navy, #12355b);
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mathpad-util:hover { background: var(--cream, #f7f4ec); }
+.mathpad-hide { border-color: var(--coral, #d9795d); color: var(--coral-ink, #9c4326); }
+
+.mathpad-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.mathpad-tab {
+  flex: none;
+  padding: 7px 12px;
+  min-height: 38px;
+  border: 1.5px solid var(--line, #d7e2ed);
+  border-radius: 999px;
+  background: var(--white, #fff);
+  color: var(--muted, #5f6f80);
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.mathpad-tab.is-active {
+  background: var(--navy, #12355b);
+  border-color: var(--navy, #12355b);
+  color: var(--white, #fff);
+}
+
+.mathpad-keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+  gap: 6px;
+}
+.mathpad-keys[hidden] { display: none; }
+.mathpad-key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: 46px;
+  padding: 4px 6px;
+  border: 1.5px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--white, #fff);
+  color: var(--navy, #12355b);
+  cursor: pointer;
+  transition: transform .08s ease, background .12s ease;
+}
+.mathpad-key:hover { background: var(--teal-light, #dff2ee); border-color: var(--teal, #1fa6a2); }
+.mathpad-key:active { transform: scale(.94); background: var(--teal, #1fa6a2); color: var(--white, #fff); }
+.mathpad-key-glyph { font-size: 19px; font-weight: 700; line-height: 1.1; }
+.mathpad-key-wide { grid-column: span 2; }
+.mathpad-key-hint {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted, #5f6f80);
+  line-height: 1.15;
+  text-align: center;
+}
+.mathpad-key-hint .lang-en + .lang-es::before { content: none; }
+
+/* Left edge, not right: the right edge already stacks the Save/Resume launcher
+   and the "Stuck?" button, and a third pill there covers one of them. */
+.mathpad-fab {
+  position: fixed;
+  left: 14px;
+  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 14px + env(safe-area-inset-bottom, 0px));
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 46px;
+  border: none;
+  border-radius: 999px;
+  background: var(--teal, #1fa6a2);
+  color: var(--white, #fff);
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 8px 22px rgba(18, 53, 91, 0.22);
+  cursor: pointer;
+}
+.mathpad-fab[hidden] { display: none; }
+.mathpad-fab-glyph { font-size: 17px; }
+
+/* The Check stop's sticky bar, the "Stuck?" button and the Save/Resume launcher
+   all own the bottom edge; the keypad is the one the caret is in, so they step
+   up over it rather than sitting on its preview strip and its ⌫ / ✕ keys.
+   The Save/Resume launcher styles itself from a stylesheet linked after this
+   one, so the lift is stated at higher specificity rather than later. */
+body.mathpad-open .bottom-status-bar { bottom: var(--mathpad-h, 0px); }
+body.mathpad-open .hw-stuck-fab {
+  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 70px + var(--mathpad-h, 0px));
+}
+body.mathpad-open #nsr-root {
+  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 14px + var(--mathpad-h, 0px)) !important;
+}
+/* The end of the page is NOT reserved here: syncHomeworkChromeHeights() writes
+   body.style.paddingBottom inline, which no stylesheet can outrank. The keypad
+   is declared to that function instead, as one more bottom-fixed control. */
+
+/* Which field a tapped symbol lands in, stated on the field itself — the page
+   is long enough that the keypad and the answer box are rarely both in view. */
+.mathpad-active-field {
+  outline: 3px solid var(--teal, #1fa6a2);
+  outline-offset: 1px;
+}
+
+@media (max-width: 480px) {
+  .mathpad-keys { grid-template-columns: repeat(auto-fit, minmax(48px, 1fr)); }
+  .mathpad-preview-tag { display: none; }
+}
+@media print {
+  .mathpad, .mathpad-fab { display: none !important; }
+}
+
 /* ============================================================
    GLOBAL HIGH-LEGIBILITY TYPOGRAPHY SCALE (All Homeworks)
    Bigger text, comfortable reading rhythm across all family devices
@@ -10226,6 +10429,27 @@ body {
       </div>
     </div>
 
+
+<button type="button" class="mathpad-fab" id="mathpad_fab" hidden onclick="reopenMathKeypad()" aria-label="Show the math symbols keypad">
+  <span class="mathpad-fab-glyph" aria-hidden="true">√x</span>
+  <span class="mathpad-fab-text"><span class="lang-en">Math symbols</span><span class="lang-es" lang="es">Símbolos</span></span>
+</button>
+
+<div class="mathpad" id="math_keypad" role="group" aria-label="Math symbols keypad" hidden>
+  <div class="mathpad-top">
+    <div class="mathpad-preview-wrap">
+      <span class="mathpad-preview-tag"><span class="lang-en">Your answer</span><span class="lang-es" lang="es">Tu respuesta</span></span>
+      <span class="mathpad-preview" id="mathpad_preview" aria-live="polite"></span>
+    </div>
+    <div class="mathpad-top-actions">
+      <button type="button" class="mathpad-util" data-mathpad-action="backspace" aria-label="Delete the character before the cursor">⌫</button>
+      <button type="button" class="mathpad-util mathpad-hide" data-mathpad-action="hide" aria-label="Hide the math symbols keypad">✕</button>
+    </div>
+  </div>
+  <div class="mathpad-tabs" role="tablist" aria-label="Symbol groups"><button type="button" class="mathpad-tab is-active" role="tab" id="mathpad_tab_basic" aria-controls="mathpad_panel_basic" aria-selected="true" data-mathpad-group="basic"><span class="lang-en">Basic</span><span class="lang-es" lang="es">Básico</span></button><button type="button" class="mathpad-tab" role="tab" id="mathpad_tab_fractions" aria-controls="mathpad_panel_fractions" aria-selected="false" data-mathpad-group="fractions"><span class="lang-en">Fractions &amp; Powers</span><span class="lang-es" lang="es">Fracciones y potencias</span></button><button type="button" class="mathpad-tab" role="tab" id="mathpad_tab_compare" aria-controls="mathpad_panel_compare" aria-selected="false" data-mathpad-group="compare"><span class="lang-en">Compare</span><span class="lang-es" lang="es">Comparar</span></button></div>
+  <div class="mathpad-keys" role="tabpanel" id="mathpad_panel_basic" aria-labelledby="mathpad_tab_basic" data-mathpad-panel="basic"><button type="button" class="mathpad-key" data-ins="+" data-caret="0" aria-label="plus"><span class="mathpad-key-glyph">+</span></button><button type="button" class="mathpad-key" data-ins="−" data-caret="0" aria-label="minus"><span class="mathpad-key-glyph">−</span></button><button type="button" class="mathpad-key" data-ins="×" data-caret="0" aria-label="times"><span class="mathpad-key-glyph">×</span></button><button type="button" class="mathpad-key" data-ins="÷" data-caret="0" aria-label="divided by"><span class="mathpad-key-glyph">÷</span></button><button type="button" class="mathpad-key" data-ins="=" data-caret="0" aria-label="equals"><span class="mathpad-key-glyph">=</span></button><button type="button" class="mathpad-key" data-ins="." data-caret="0" aria-label="decimal point"><span class="mathpad-key-glyph">.</span></button><button type="button" class="mathpad-key" data-ins="," data-caret="0" aria-label="comma"><span class="mathpad-key-glyph">,</span></button><button type="button" class="mathpad-key" data-ins="$" data-caret="0" aria-label="dollar sign"><span class="mathpad-key-glyph">$</span></button><button type="button" class="mathpad-key" data-ins="%" data-caret="0" aria-label="percent"><span class="mathpad-key-glyph">%</span></button><button type="button" class="mathpad-key" data-ins=":" data-caret="0" aria-label="ratio colon"><span class="mathpad-key-glyph">:</span></button><button type="button" class="mathpad-key" data-ins="(" data-caret="0" aria-label="open parenthesis"><span class="mathpad-key-glyph">(</span></button><button type="button" class="mathpad-key" data-ins=")" data-caret="0" aria-label="close parenthesis"><span class="mathpad-key-glyph">)</span></button></div><div class="mathpad-keys" role="tabpanel" id="mathpad_panel_fractions" aria-labelledby="mathpad_tab_fractions" data-mathpad-panel="fractions" hidden><button type="button" class="mathpad-key mathpad-key-wide" data-ins="/" data-caret="0" aria-label="fraction bar"><span class="mathpad-key-glyph">a/b</span><span class="mathpad-key-hint"><span class="lang-en">Fraction</span><span class="lang-es" lang="es">Fracción</span></span></button><button type="button" class="mathpad-key mathpad-key-wide" data-ins=" /" data-caret="1" aria-label="mixed number"><span class="mathpad-key-glyph">a b/c</span><span class="mathpad-key-hint"><span class="lang-en">Mixed number</span><span class="lang-es" lang="es">Número mixto</span></span></button><button type="button" class="mathpad-key mathpad-key-wide" data-ins="^" data-caret="0" aria-label="exponent"><span class="mathpad-key-glyph">x^n</span><span class="mathpad-key-hint"><span class="lang-en">Power</span><span class="lang-es" lang="es">Potencia</span></span></button><button type="button" class="mathpad-key" data-ins="²" data-caret="0" aria-label="squared"><span class="mathpad-key-glyph">²</span></button><button type="button" class="mathpad-key" data-ins="³" data-caret="0" aria-label="cubed"><span class="mathpad-key-glyph">³</span></button><button type="button" class="mathpad-key" data-ins="√" data-caret="0" aria-label="square root"><span class="mathpad-key-glyph">√</span></button><button type="button" class="mathpad-key" data-ins="π" data-caret="0" aria-label="pi"><span class="mathpad-key-glyph">π</span></button><button type="button" class="mathpad-key" data-ins="≈" data-caret="0" aria-label="approximately equal to"><span class="mathpad-key-glyph">≈</span></button><button type="button" class="mathpad-key" data-ins="°" data-caret="0" aria-label="degrees"><span class="mathpad-key-glyph">°</span></button><button type="button" class="mathpad-key" data-ins="·" data-caret="0" aria-label="multiplication dot"><span class="mathpad-key-glyph">·</span></button></div><div class="mathpad-keys" role="tabpanel" id="mathpad_panel_compare" aria-labelledby="mathpad_tab_compare" data-mathpad-panel="compare" hidden><button type="button" class="mathpad-key" data-ins="&lt;" data-caret="0" aria-label="less than"><span class="mathpad-key-glyph">&lt;</span></button><button type="button" class="mathpad-key" data-ins="&gt;" data-caret="0" aria-label="greater than"><span class="mathpad-key-glyph">&gt;</span></button><button type="button" class="mathpad-key" data-ins="≤" data-caret="0" aria-label="less than or equal to"><span class="mathpad-key-glyph">≤</span></button><button type="button" class="mathpad-key" data-ins="≥" data-caret="0" aria-label="greater than or equal to"><span class="mathpad-key-glyph">≥</span></button><button type="button" class="mathpad-key" data-ins="≠" data-caret="0" aria-label="not equal to"><span class="mathpad-key-glyph">≠</span></button><button type="button" class="mathpad-key" data-ins="±" data-caret="0" aria-label="plus or minus"><span class="mathpad-key-glyph">±</span></button><button type="button" class="mathpad-key" data-ins="|" data-caret="0" aria-label="absolute value bar"><span class="mathpad-key-glyph">|</span></button><button type="button" class="mathpad-key" data-ins="→" data-caret="0" aria-label="arrow"><span class="mathpad-key-glyph">→</span></button></div>
+</div>
+
 <!-- Sticky bottom actions bar. It belongs to the Check stop and only appears
      there: on Learn, Words, Play and Done it was 139px of "Progress: 0 / 6" and
      a Check All button for problems that were not on screen, over a phone
@@ -10743,7 +10967,9 @@ function syncHomeworkChromeHeights() {
   // "Next" button: on Together the Stuck? pill covered "Next: Try the
   // problems". Measure the tallest floating control's real top edge instead.
   var floatTop = 0;
-  document.querySelectorAll('.hw-stuck-fab, #nsr-root').forEach(function (el) {
+  // The math keypad is a bottom-fixed control like the pills, and the tallest
+  // one when it is open; left out, the last answer field on a stop sat under it.
+  document.querySelectorAll('.hw-stuck-fab, #nsr-root, .mathpad:not([hidden])').forEach(function (el) {
     var r = el.getBoundingClientRect();
     if (r.height) floatTop = Math.max(floatTop, Math.ceil(window.innerHeight - r.top));
   });
@@ -12181,6 +12407,271 @@ function hwGameCheckSort() {
   function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});update(lab);});});lab.querySelectorAll('[data-preset]').forEach(function(btn){btn.addEventListener('click',function(){try{var vals=JSON.parse(btn.getAttribute('data-preset'));lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});btn.classList.add('is-active');Object.keys(vals).forEach(function(k){var inp=lab.querySelector('[data-lab-input="'+k+'"]');if(inp)inp.value=vals[k];});update(lab);}catch(e){}});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
   function initAll(){document.querySelectorAll('[data-visual-lab]').forEach(function(lab){if(lab.getAttribute('data-visual-ready')||lab.querySelector('[data-lesson-model-host]'))return;lab.setAttribute('data-visual-ready','1');init(lab);});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAll);else initAll();
+})();
+
+
+/* ── Math keypad ─────────────────────────────────────────────────────────────
+   Inserts math symbols at the caret of whichever answer field has focus. Only
+   symbols the shared answer matcher understands are offered, so nothing a
+   family can tap here can turn a correct answer red. */
+var MATHPAD_SELECTOR =
+  "input.custom-input:not([type=\"hidden\"]), input.table-input, input.ladder-input" + ", " + "textarea.custom-textarea";
+var MATHPAD_OFF_KEY = "hw_mathpad_off";
+var mathpadTarget = null;
+var mathpadDismissed = false;
+
+try {
+  mathpadDismissed = localStorage.getItem(MATHPAD_OFF_KEY) === "1";
+} catch (e) {}
+
+function mathpadEl() {
+  return document.getElementById("math_keypad");
+}
+
+function mathpadEsc(text) {
+  return String(text == null ? "" : text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/* Render the typed answer the way it is meant to read: 3/4 stacked, 2^3 as a
+   power. Display only — the field still holds the plain text that gets graded. */
+function mathpadPretty(raw) {
+  var text = String(raw == null ? "" : raw);
+  if (!text.trim()) return "";
+  var html = mathpadEsc(text);
+  html = html.replace(/(\d+(?:\.\d+)?)\s*\^\s*(-?\d+)/g, function (whole, base, power) {
+    return base + "<sup>" + power + "</sup>";
+  });
+  html = html.replace(/(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/g, function (whole, num, den) {
+    return (
+      '<span class="mathpad-frac"><span class="mathpad-frac-num">' +
+      num +
+      '</span><span class="mathpad-frac-den">' +
+      den +
+      "</span></span>"
+    );
+  });
+  return html;
+}
+
+function mathpadUpdatePreview() {
+  var preview = document.getElementById("mathpad_preview");
+  if (!preview) return;
+  preview.innerHTML = mathpadTarget ? mathpadPretty(mathpadTarget.value) : "";
+  preview.scrollLeft = preview.scrollWidth;
+}
+
+/* Keep the sticky Check bar and the end of the page clear of the open keypad. */
+function mathpadSyncHeight() {
+  var pad = mathpadEl();
+  if (!pad || pad.hidden) {
+    document.body.classList.remove("mathpad-open");
+    document.body.style.removeProperty("--mathpad-h");
+    if (typeof syncHomeworkChromeHeights === "function") syncHomeworkChromeHeights();
+    return;
+  }
+  document.body.classList.add("mathpad-open");
+  document.body.style.setProperty("--mathpad-h", pad.offsetHeight + "px");
+  if (typeof syncHomeworkChromeHeights === "function") syncHomeworkChromeHeights();
+}
+
+/* A phone's on-screen keyboard shrinks the VISUAL viewport but not the layout
+   viewport, so a bottom-fixed panel sits behind it. Lift the keypad by the
+   difference so it rides on top of the keyboard where it can be reached. */
+function mathpadSyncViewport() {
+  var pad = mathpadEl();
+  if (!pad) return;
+  var vv = window.visualViewport;
+  if (!vv) return;
+  var lift = window.innerHeight - vv.height - vv.offsetTop;
+  pad.style.transform = lift > 1 ? "translateY(" + -lift + "px)" : "";
+}
+
+function mathpadSetTarget(field) {
+  if (mathpadTarget && mathpadTarget !== field) {
+    mathpadTarget.classList.remove("mathpad-active-field");
+  }
+  mathpadTarget = field || null;
+  if (mathpadTarget) mathpadTarget.classList.add("mathpad-active-field");
+}
+
+function showMathKeypad(field) {
+  var pad = mathpadEl();
+  if (!pad) return;
+  mathpadSetTarget(field);
+  var fab = document.getElementById("mathpad_fab");
+  if (mathpadDismissed) {
+    if (fab) fab.hidden = false;
+    return;
+  }
+  if (fab) fab.hidden = true;
+  pad.hidden = false;
+  mathpadSyncHeight();
+  mathpadSyncViewport();
+  mathpadUpdatePreview();
+}
+
+function hideMathKeypad() {
+  var pad = mathpadEl();
+  if (!pad) return;
+  mathpadDismissed = true;
+  try {
+    localStorage.setItem(MATHPAD_OFF_KEY, "1");
+  } catch (e) {}
+  pad.hidden = true;
+  mathpadSyncHeight();
+  var fab = document.getElementById("mathpad_fab");
+  if (fab) fab.hidden = !mathpadTarget;
+}
+
+function reopenMathKeypad() {
+  mathpadDismissed = false;
+  try {
+    localStorage.removeItem(MATHPAD_OFF_KEY);
+  } catch (e) {}
+  var fab = document.getElementById("mathpad_fab");
+  if (fab) fab.hidden = true;
+  var pad = mathpadEl();
+  if (pad) {
+    pad.hidden = false;
+    mathpadSyncHeight();
+    mathpadSyncViewport();
+    mathpadUpdatePreview();
+  }
+  if (mathpadTarget) mathpadTarget.focus();
+}
+
+function mathpadCloseAll() {
+  var pad = mathpadEl();
+  if (pad) pad.hidden = true;
+  var fab = document.getElementById("mathpad_fab");
+  if (fab) fab.hidden = true;
+  mathpadSetTarget(null);
+  mathpadSyncHeight();
+}
+
+/* Splice text in at the caret and let the field's own oninput handlers
+   (saveState, updateProgress) run exactly as if it had been typed. */
+function mathpadInsert(text, caretBack) {
+  var field = mathpadTarget;
+  if (!field) return;
+  var start = field.selectionStart;
+  var end = field.selectionEnd;
+  if (start == null || end == null) {
+    start = field.value.length;
+    end = start;
+  }
+  field.value = field.value.slice(0, start) + text + field.value.slice(end);
+  var caret = start + text.length - (caretBack || 0);
+  field.focus();
+  try {
+    field.setSelectionRange(caret, caret);
+  } catch (e) {}
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+  mathpadUpdatePreview();
+}
+
+function mathpadBackspace() {
+  var field = mathpadTarget;
+  if (!field) return;
+  var start = field.selectionStart;
+  var end = field.selectionEnd;
+  if (start == null || end == null) {
+    start = field.value.length;
+    end = start;
+  }
+  if (start === end) {
+    if (start === 0) return;
+    start -= 1;
+  }
+  field.value = field.value.slice(0, start) + field.value.slice(end);
+  field.focus();
+  try {
+    field.setSelectionRange(start, start);
+  } catch (e) {}
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+  mathpadUpdatePreview();
+}
+
+function mathpadSelectGroup(id) {
+  var pad = mathpadEl();
+  if (!pad) return;
+  var tabs = pad.querySelectorAll(".mathpad-tab");
+  for (var i = 0; i < tabs.length; i++) {
+    var on = tabs[i].getAttribute("data-mathpad-group") === id;
+    tabs[i].classList.toggle("is-active", on);
+    tabs[i].setAttribute("aria-selected", on ? "true" : "false");
+  }
+  var panels = pad.querySelectorAll("[data-mathpad-panel]");
+  for (var j = 0; j < panels.length; j++) {
+    panels[j].hidden = panels[j].getAttribute("data-mathpad-panel") !== id;
+  }
+  mathpadSyncHeight();
+}
+
+(function initMathKeypad() {
+  function ready(fn) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fn);
+    } else {
+      fn();
+    }
+  }
+  ready(function () {
+    var pad = mathpadEl();
+    if (!pad) return;
+
+    /* Tapping a key must not move focus off the field being written into.
+       preventDefault on mousedown is enough for that on both pointer and
+       touch; cancelling touchstart would also cancel the click that follows
+       it on iOS, which would leave the keypad inert on the phones most of
+       these families use. */
+    pad.addEventListener("mousedown", function (event) {
+      if (event.target.closest(".mathpad-key, .mathpad-util, .mathpad-tab")) {
+        event.preventDefault();
+      }
+    });
+
+    pad.addEventListener("click", function (event) {
+      var tab = event.target.closest(".mathpad-tab");
+      if (tab) {
+        mathpadSelectGroup(tab.getAttribute("data-mathpad-group"));
+        return;
+      }
+      var action = event.target.closest("[data-mathpad-action]");
+      if (action) {
+        if (action.getAttribute("data-mathpad-action") === "backspace") mathpadBackspace();
+        else hideMathKeypad();
+        return;
+      }
+      var key = event.target.closest(".mathpad-key");
+      if (!key) return;
+      mathpadInsert(key.getAttribute("data-ins"), Number(key.getAttribute("data-caret")) || 0);
+    });
+
+    document.addEventListener("focusin", function (event) {
+      var node = event.target;
+      if (!node || !node.closest) return;
+      var field = node.closest(MATHPAD_SELECTOR);
+      if (field) {
+        showMathKeypad(field);
+      } else if (!node.closest(".mathpad, .mathpad-fab")) {
+        mathpadCloseAll();
+      }
+    });
+
+    document.addEventListener("input", function (event) {
+      if (mathpadTarget && event.target === mathpadTarget) mathpadUpdatePreview();
+    });
+
+    window.addEventListener("resize", mathpadSyncHeight);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", mathpadSyncViewport);
+      window.visualViewport.addEventListener("scroll", mathpadSyncViewport);
+    }
+  });
 })();
 
 // Sound engine

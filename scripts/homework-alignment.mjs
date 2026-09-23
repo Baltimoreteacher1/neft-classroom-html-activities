@@ -224,6 +224,37 @@ export function decimalOperation(config) {
   return "addsub";
 }
 
+/**
+ * Which mathematics a "ratios" lesson is actually about.
+ *
+ * `detectVisualTopic` collapses 68 lessons onto the single topic "ratios" —
+ * every lesson in units 3 and 4. That is right for a lab drawing a ratio table,
+ * and wrong the moment content STATES something, because the four strands under
+ * that one topic teach four different moves:
+ *
+ *   equivalent  6.AT.1 / 6.AT.3 / 6.AT.3a — scale BOTH parts by the same factor
+ *   unit-rate   6.AT.2                    — divide to get the per-one amount
+ *   percent     6.AT.4                    — a rate out of 100
+ *   convert     6.AT.3c                   — multiply by a conversion rate
+ *
+ * Until this existed, all 68 pages asked their families the same Skill Power-Up
+ * question — a lemonade-and-seltzer EQUIVALENT-ratio question — and coached the
+ * same equivalent-ratio misconception. 3-2 Section 3 is a worksheet on dividing
+ * to find a unit rate and choosing the better buy; its power-up asked which
+ * mixture tastes the same.
+ */
+export function ratioFocus(config) {
+  const standard = String(config?.standard || "");
+  const title = String(config?.familyNotes?.sessionTitle || config?.title || "").toLowerCase();
+  const objective = String(config?.contentObjective || "").toLowerCase();
+  const text = title + " " + objective;
+  if (standard === "6.AT.4" || /percent/.test(text)) return "percent";
+  if (standard === "6.AT.3c" || /convert|measurement unit/.test(text)) return "convert";
+  if (standard === "6.AT.2" || /unit rate|unit price|better (buy|value|deal)/.test(text))
+    return "unit-rate";
+  return "equivalent";
+}
+
 const TOPIC_KEYWORDS = {
   exponents: ["exponent", "power", "base", "evaluate", "²", "³", "multiply", "repeated"],
   expressions: ["expression", "variable", "coefficient", "term", "evaluate", "algebraic"],
