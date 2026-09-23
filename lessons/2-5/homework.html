@@ -6332,6 +6332,11 @@ body.lang-mode-es .concept-title-es { display: inline; }
 }
 
 /* ── Photobooth Studio with Math Work ─────────────────────────────────── */
+/* An author display: declaration beats the UA stylesheet's [hidden] rule, so
+   every layer in here that JS toggles with .hidden needs [hidden] to win
+   outright. Without this the countdown overlay and the review buttons render
+   on top of an idle viewfinder before a photo is ever taken. */
+.section-photobooth [hidden] { display: none !important; }
 .section-photobooth {
   padding: 24px;
   background: #ffffff;
@@ -6421,23 +6426,34 @@ body.lang-mode-es .concept-title-es { display: inline; }
   align-items: center;
   justify-content: center;
 }
+/* .card-ish is a content card: white, padded, with a bottom margin, all of it
+   !important. On the viewfinder that painted a white gutter around the picture
+   and — because the frame overlay is inset:0 against the padding box — hung the
+   live frame 28px outside the video it is supposed to be framing. */
+.pb-viewfinder.card-ish {
+  background: #0f172a !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
 #pb_video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1);
 }
+/* Mirrored for the selfie camera only. Mirroring the rear camera turns the
+   notebook page the family is photographing into backwards writing. */
+#pb_video.is-mirrored { transform: scaleX(-1); }
 #pb_captured_img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #000;
+  background: transparent;
 }
 .pb-frame-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  display: none;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
@@ -6595,6 +6611,27 @@ body.lang-mode-es .concept-title-es { display: inline; }
   0% { opacity: 0.95; }
   100% { opacity: 0; }
 }
+.pb-status {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.pb-status.is-warn {
+  border-color: #fcd34d;
+  background: #fffbeb;
+  color: #92400e;
+}
+.pb-status.is-ok {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #065f46;
+}
 .pb-controls-bar {
   display: flex;
   gap: 10px;
@@ -6617,6 +6654,41 @@ body.lang-mode-es .concept-title-es { display: inline; }
 .pb-btn-flip, .pb-btn-upload {
   flex: 1;
   font-size: 14px;
+}
+.pb-btn-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+}
+.pb-btn-snap, .pb-btn-flip {
+  justify-content: center;
+  text-align: center;
+}
+/* Phone layout. The booth is used one-handed, standing over a notebook, so at
+   this width the frame chrome gets out of the picture's way and every action
+   becomes a full-width tap target instead of a ragged wrapped row. */
+@media (max-width: 560px) {
+  .pb-frame-overlay { border-width: 8px !important; }
+  .frame-polaroid { border-bottom-width: 28px !important; }
+  .pb-frame-header,
+  .pb-frame-footer {
+    gap: 10px;
+    font-size: 11.5px;
+    padding: 5px 10px;
+  }
+  .pb-frame-lesson,
+  .pb-frame-date { flex-shrink: 0; }
+  .pb-stickers-layer { padding: 34px 14px; }
+  .pb-sticker-stamp { font-size: 28px; }
+  .pb-actions-live > *,
+  .pb-actions-review > * {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .pb-countdown-overlay { font-size: 68px; }
 }
 .pb-customizer {
   background: #f8fafc;
@@ -6673,6 +6745,11 @@ body.lang-mode-es .concept-title-es { display: inline; }
   background: #fff;
   cursor: pointer;
 }
+.pb-sticker-chip.is-selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+}
 .pb-tip-box {
   display: flex;
   gap: 10px;
@@ -6692,30 +6769,19 @@ body.lang-mode-es .concept-title-es { display: inline; }
   color: #1e40af;
   margin: 0;
 }
+.pb-print-portal { display: none; }
 @media print {
-  body.print-photobooth-only * {
-    visibility: hidden !important;
-  }
-  body.print-photobooth-only .photobooth-print-card,
-  body.print-photobooth-only .photobooth-print-card * {
-    visibility: visible !important;
-  }
-  body.print-photobooth-only .photobooth-print-card {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 24px;
-    background: #ffffff !important;
-    color: #0f172a !important;
-  }
+  /* Only the portaled sheet prints. It is a direct child of <body>, so its
+     siblings can simply be removed from the print layout. */
+  body.print-photobooth-only > * { display: none !important; }
+  body.print-photobooth-only .pb-print-portal { display: block !important; }
   body.print-photobooth-only .pb-print-inner {
     border: 3px solid #0f172a;
     border-radius: 16px;
     padding: 24px;
     text-align: center;
+    background: #ffffff;
+    color: #0f172a;
   }
   body.print-photobooth-only .pb-print-title {
     font-size: 22px;
@@ -6726,7 +6792,7 @@ body.lang-mode-es .concept-title-es { display: inline; }
     color: #475569;
     margin: 0 0 16px;
   }
-  body.print-photobooth-only .pb-print-img-wrap img {
+  body.print-photobooth-only .pb-print-img {
     max-width: 80%;
     max-height: 520px;
     border-radius: 12px;
@@ -10249,7 +10315,7 @@ body {
       </div>
     </div>
 <div class="tab-panel-inner" data-tab-panel="photobooth" id="hw_panel_photobooth" role="tabpanel" hidden>
-    <section class="guided-section card section-photobooth" aria-label="Math Work Photobooth">
+    <section class="guided-section card section-photobooth" aria-label="Math Work Photobooth" data-pb-display-id="2-5" data-pb-lesson-line="Lesson 2-5: Describe Data by Range and Interquartile Range">
       <div class="photobooth-header">
         <div class="photobooth-badge">📸 <span class="lang-en">MATH WORK PHOTOBOOTH</span><span class="lang-es" lang="es">CABINA DE FOTOS DEL TRABAJO DE MATEMÁTICAS</span></div>
         <h2 class="section-title">
@@ -10270,7 +10336,7 @@ body {
             <video id="pb_video" autoplay playsinline muted></video>
 
             <!-- Live Frame Overlay -->
-            <div class="pb-frame-overlay frame-champion" id="pb_frame_overlay">
+            <div class="pb-frame-overlay frame-champion" id="pb_frame_overlay" hidden>
               <div class="pb-frame-header">
                 <span class="pb-frame-badge">🏆 <span class="lang-en">MATH CHAMPION</span><span class="lang-es" lang="es">CAMPEÓN DE MATES</span></span>
                 <span class="pb-frame-lesson">Lesson 2-5</span>
@@ -10297,12 +10363,16 @@ body {
             <div class="pb-idle-placeholder" id="pb_idle_placeholder">
               <span class="pb-idle-icon" aria-hidden="true">📸</span>
               <p><strong><span class="lang-en">Camera Ready!</span><span class="lang-es" lang="es">¡Cámara lista!</span></strong></p>
-              <p class="pb-idle-sub"><span class="lang-en">Tap &ldquo;Start Camera&rdquo; below or upload a photo of your notebook.</span><span class="lang-es" lang="es">Toca &ldquo;Iniciar Cámara&rdquo; o sube una foto de tu cuaderno.</span></p>
-              <button type="button" class="btn btn-primary btn-lg" onclick="startPhotoboothCamera()">
+              <p class="pb-idle-sub"><span class="lang-en">Tap &ldquo;Start Camera&rdquo; to photograph tonight&rsquo;s work, or use &ldquo;Upload Work&rdquo; below. The photo stays on this device.</span><span class="lang-es" lang="es">Toca &ldquo;Iniciar Cámara&rdquo; para fotografiar el trabajo de hoy, o usa &ldquo;Subir Foto&rdquo;. La foto se queda en este dispositivo.</span></p>
+              <button type="button" class="btn btn-primary btn-lg" id="pb_start_btn" onclick="startPhotoboothCamera()">
                 📷 <span class="lang-en">Start Camera</span><span class="lang-es" lang="es">Iniciar Cámara</span>
               </button>
             </div>
           </div>
+
+          <!-- Inline status: camera errors, save hints, attach confirmations.
+               Never alert() — a blocked dialog strands the whole homework page. -->
+          <p class="pb-status" id="pb_status" role="status" aria-live="polite" hidden></p>
 
           <!-- Photobooth Controls -->
           <div class="pb-controls-bar">
@@ -10346,16 +10416,16 @@ body {
           <div class="pb-custom-section">
             <label class="pb-custom-label"><strong><span class="lang-en">Select Frame:</span><span class="lang-es" lang="es">Elegir Marco:</span></strong></label>
             <div class="pb-frame-selector" role="radiogroup" aria-label="Photobooth Frame">
-              <button type="button" class="pb-frame-btn is-selected" data-frame="champion" onclick="setPhotoboothFrame('champion', this)">
+              <button type="button" class="pb-frame-btn is-selected" role="radio" aria-checked="true" data-frame="champion" onclick="setPhotoboothFrame('champion', this)">
                 🏆 <span class="lang-en">Champion</span><span class="lang-es" lang="es">Campeón</span>
               </button>
-              <button type="button" class="pb-frame-btn" data-frame="notebook" onclick="setPhotoboothFrame('notebook', this)">
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="notebook" onclick="setPhotoboothFrame('notebook', this)">
                 📝 <span class="lang-en">Notebook</span><span class="lang-es" lang="es">Cuaderno</span>
               </button>
-              <button type="button" class="pb-frame-btn" data-frame="stars" onclick="setPhotoboothFrame('stars', this)">
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="stars" onclick="setPhotoboothFrame('stars', this)">
                 ⭐ <span class="lang-en">Gold Star</span><span class="lang-es" lang="es">Estrellas</span>
               </button>
-              <button type="button" class="pb-frame-btn" data-frame="polaroid" onclick="setPhotoboothFrame('polaroid', this)">
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="polaroid" onclick="setPhotoboothFrame('polaroid', this)">
                 🎞️ <span class="lang-en">Polaroid</span><span class="lang-es" lang="es">Polaroid</span>
               </button>
             </div>
@@ -10365,13 +10435,13 @@ body {
           <div class="pb-custom-section">
             <label class="pb-custom-label"><strong><span class="lang-en">Add Stickers:</span><span class="lang-es" lang="es">Agregar Calcomanías:</span></strong></label>
             <div class="pb-stickers-picker">
-              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('🏆')">🏆 <span class="lang-en">Trophy</span><span class="lang-es" lang="es">Trofeo</span></button>
-              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('💯')">💯 <span class="lang-en">100% Effort</span><span class="lang-es" lang="es">100%</span></button>
-              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('⭐')">⭐ <span class="lang-en">Math Star</span><span class="lang-es" lang="es">Estrella</span></button>
-              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('🧮')">🧮 <span class="lang-en">Top ÷ Bottom</span><span class="lang-es" lang="es">Arriba ÷ Abajo</span></button>
-              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('🧠')">🧠 <span class="lang-en">Big Brain</span><span class="lang-es" lang="es">Cerebro</span></button>
-              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('✋')">✋ <span class="lang-en">High Five</span><span class="lang-es" lang="es">Chócalas</span></button>
-              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('📐')">📐 <span class="lang-en">Math Tools</span><span class="lang-es" lang="es">Herramientas</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🏆" aria-pressed="false" onclick="togglePhotoboothSticker('🏆')">🏆 <span class="lang-en">Trophy</span><span class="lang-es" lang="es">Trofeo</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="💯" aria-pressed="false" onclick="togglePhotoboothSticker('💯')">💯 <span class="lang-en">100% Effort</span><span class="lang-es" lang="es">100%</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="⭐" aria-pressed="false" onclick="togglePhotoboothSticker('⭐')">⭐ <span class="lang-en">Math Star</span><span class="lang-es" lang="es">Estrella</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🧮" aria-pressed="false" onclick="togglePhotoboothSticker('🧮')">🧮 <span class="lang-en">Top ÷ Bottom</span><span class="lang-es" lang="es">Arriba ÷ Abajo</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🧠" aria-pressed="false" onclick="togglePhotoboothSticker('🧠')">🧠 <span class="lang-en">Big Brain</span><span class="lang-es" lang="es">Cerebro</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="✋" aria-pressed="false" onclick="togglePhotoboothSticker('✋')">✋ <span class="lang-en">High Five</span><span class="lang-es" lang="es">Chócalas</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="📐" aria-pressed="false" onclick="togglePhotoboothSticker('📐')">📐 <span class="lang-en">Math Tools</span><span class="lang-es" lang="es">Herramientas</span></button>
               <button type="button" class="pb-sticker-chip text-danger" onclick="clearPhotoboothStickers()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
             </div>
           </div>
@@ -10389,22 +10459,6 @@ body {
               <span class="lang-en">Holding your open notebook or paper up next to your smile makes the best shot! You can also snap a photo of just your written work.</span>
               <span class="lang-es" lang="es">¡Sostener el cuaderno abierto junto a su sonrisa crea la mejor foto! También pueden tomar la foto solo de su trabajo escrito.</span>
             </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Print-only photobooth frame layout -->
-      <div class="photobooth-print-card" id="pb_print_card" aria-hidden="true">
-        <div class="pb-print-inner">
-          <h2 class="pb-print-title">EduWonderLab Family Math Champion · Grade 6</h2>
-          <p class="pb-print-meta">Lesson 2-5: Describe Data by Range and Interquartile Range</p>
-          <div class="pb-print-img-wrap">
-            <img id="pb_print_img" alt="Student math work printout" />
-          </div>
-          <p class="pb-print-caption" id="pb_print_caption"></p>
-          <div class="pb-print-footer">
-            <span>Verified Family Practice · eduwonderlab.com</span>
-            <span class="pb-print-date" id="pb_print_date"></span>
           </div>
         </div>
       </div>
@@ -12052,6 +12106,13 @@ function initDrawCanvases() {
     window.addEventListener('resize', resize);
   });
 /* ── Photobooth Studio with Math Work ─────────────────────────────────── */
+/* This is a camera pointed at a notebook page on a family's phone, so every
+   path that can fail has to fail politely: a denied permission, a browser with
+   no getUserMedia, a tab switch mid-countdown, an iPad that will not download a
+   data: URL. Two rules keep it honest — the viewfinder's three states go
+   through one renderer (renderPhotoboothStage) rather than six call sites each
+   toggling their own flags, and nothing here ever calls alert(), because a
+   blocked dialog strands the whole homework page behind it. */
 var pbState = {
   stream: null,
   facingMode: 'user',
@@ -12059,10 +12120,83 @@ var pbState = {
   stickers: [],
   caption: '',
   capturedDataUrl: '',
+  countdownTimer: null,
+  flashTimer: null,
 };
 
+function pbEl(id) { return document.getElementById(id); }
+
+function pbSection() { return document.querySelector('.section-photobooth'); }
+
+function pbDisplayId() {
+  var sec = pbSection();
+  var id = sec ? sec.getAttribute('data-pb-display-id') : '';
+  return id || window.LESSON_ID || '';
+}
+
+function setPhotoboothStatus(en, es, tone) {
+  var box = pbEl('pb_status');
+  if (!box) return;
+  if (!en && !es) {
+    box.hidden = true;
+    box.textContent = '';
+    return;
+  }
+  box.className = 'pb-status' + (tone ? ' is-' + tone : '');
+  box.textContent = '';
+  var spanEn = document.createElement('span');
+  spanEn.className = 'lang-en';
+  spanEn.textContent = en || '';
+  var spanEs = document.createElement('span');
+  spanEs.className = 'lang-es';
+  spanEs.setAttribute('lang', 'es');
+  spanEs.textContent = es || '';
+  box.appendChild(spanEn);
+  box.appendChild(spanEs);
+  box.hidden = false;
+}
+window.setPhotoboothStatus = setPhotoboothStatus;
+
+/* The single source of truth for what the viewfinder shows: 'idle' (the
+   placeholder and its Start Camera button), 'live' (video + frame overlay,
+   shutter enabled) or 'captured' (the finished composite + review buttons). */
+function renderPhotoboothStage(mode) {
+  var isLive = mode === 'live';
+  var isShot = mode === 'captured';
+
+  var placeholder = pbEl('pb_idle_placeholder');
+  if (placeholder) placeholder.hidden = isLive || isShot;
+
+  var video = pbEl('pb_video');
+  if (video) {
+    video.hidden = !isLive;
+    // Only the selfie camera is mirrored. The rear camera reads the notebook
+    // page, and a mirrored preview of writing is unusable.
+    if (isLive && pbState.facingMode === 'user') video.classList.add('is-mirrored');
+    else video.classList.remove('is-mirrored');
+  }
+
+  var overlay = pbEl('pb_frame_overlay');
+  if (overlay) overlay.hidden = !isLive;
+
+  var shot = pbEl('pb_captured_img');
+  if (shot) shot.hidden = !isShot;
+
+  var live = pbEl('pb_actions_live');
+  if (live) live.hidden = isShot;
+
+  var review = pbEl('pb_actions_review');
+  if (review) review.hidden = !isShot;
+
+  var snapBtn = pbEl('pb_snap_btn');
+  if (snapBtn) snapBtn.disabled = !isLive;
+
+  var flipBtn = pbEl('pb_flip_btn');
+  if (flipBtn) flipBtn.disabled = !isLive;
+}
+
 function initPhotobooth() {
-  var dEl = document.getElementById('pb_frame_date');
+  var dEl = pbEl('pb_frame_date');
   if (dEl) {
     try {
       dEl.textContent = new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
@@ -12078,22 +12212,40 @@ function initPhotobooth() {
       if (parsed.student) sName = parsed.student;
     }
   } catch(e) {}
-  var capInput = document.getElementById('pb_caption_input');
+  var capInput = pbEl('pb_caption_input');
   if (capInput && !capInput.value && sName) {
     capInput.value = sName + ' · Math Champion!';
     updatePhotoboothCaption(capInput.value);
   }
+  // Re-entering the tab must not resurrect a stale state: if a photo is still
+  // held, show it; otherwise show the idle placeholder, never a dead video.
+  renderPhotoboothStage(pbState.capturedDataUrl ? 'captured' : 'idle');
 }
 window.initPhotobooth = initPhotobooth;
 
 function startPhotoboothCamera() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert('Camera not directly supported in this browser. Please use the "Upload Work" button to pick a photo from your camera roll!');
+  if (!window.isSecureContext && location.protocol !== 'file:') {
+    setPhotoboothStatus(
+      'This page needs a secure (https) connection to open the camera. Use "Upload Work" to pick a photo instead.',
+      'Esta página necesita una conexión segura (https) para abrir la cámara. Usen "Subir Foto" para elegir una foto.',
+      'warn');
     return;
   }
-  var video = document.getElementById('pb_video');
-  var placeholder = document.getElementById('pb_idle_placeholder');
-  var snapBtn = document.getElementById('pb_snap_btn');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setPhotoboothStatus(
+      'This browser cannot open the camera here. Tap "Upload Work" to pick a photo from your camera roll.',
+      'Este navegador no puede abrir la cámara aquí. Toquen "Subir Foto" para elegir una foto del carrete.',
+      'warn');
+    return;
+  }
+
+  // Starting over a running stream leaves the old camera light on, so stop
+  // first. stopPhotoboothStream() also clears any countdown still ticking.
+  stopPhotoboothStream({ keepStage: true });
+
+  var startBtn = pbEl('pb_start_btn');
+  if (startBtn) startBtn.disabled = true;
+  setPhotoboothStatus('Opening the camera…', 'Abriendo la cámara…', 'info');
 
   var constraints = {
     video: {
@@ -12107,51 +12259,86 @@ function startPhotoboothCamera() {
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
       pbState.stream = stream;
+      var video = pbEl('pb_video');
       if (video) {
         video.srcObject = stream;
-        video.play();
+        var playing = video.play();
+        if (playing && playing.catch) playing.catch(function() {});
       }
-      if (placeholder) placeholder.hidden = true;
-      if (snapBtn) snapBtn.disabled = false;
-      var liveOverlay = document.getElementById('pb_frame_overlay');
-      if (liveOverlay) liveOverlay.style.display = 'flex';
+      renderPhotoboothStage('live');
+      setPhotoboothStatus('', '', '');
+      if (startBtn) startBtn.disabled = false;
     })
     .catch(function(err) {
       console.warn('Camera access denied or unavailable:', err);
-      alert('Could not access camera. Please allow camera permissions or click "Upload Work" to choose a photo from your device.');
+      var name = (err && err.name) || '';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        setPhotoboothStatus(
+          'The camera is blocked for this site. Allow camera access in your browser settings, or tap "Upload Work" to choose a photo instead.',
+          'La cámara está bloqueada para este sitio. Permitan el acceso en la configuración del navegador, o toquen "Subir Foto" para elegir una foto.',
+          'warn');
+      } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+        setPhotoboothStatus(
+          'No camera was found on this device. Tap "Upload Work" to choose a photo of the notebook page.',
+          'No se encontró ninguna cámara en este dispositivo. Toquen "Subir Foto" para elegir una foto del cuaderno.',
+          'warn');
+      } else {
+        setPhotoboothStatus(
+          'The camera could not start. Tap "Upload Work" to choose a photo of the notebook page instead.',
+          'No se pudo iniciar la cámara. Toquen "Subir Foto" para elegir una foto del cuaderno.',
+          'warn');
+      }
+      renderPhotoboothStage(pbState.capturedDataUrl ? 'captured' : 'idle');
+      if (startBtn) startBtn.disabled = false;
     });
 }
 window.startPhotoboothCamera = startPhotoboothCamera;
 
-function stopPhotoboothStream() {
+function cancelPhotoboothCountdown() {
+  if (pbState.countdownTimer) {
+    clearInterval(pbState.countdownTimer);
+    pbState.countdownTimer = null;
+  }
+  var countdown = pbEl('pb_countdown');
+  if (countdown) countdown.hidden = true;
+}
+
+function stopPhotoboothStream(opts) {
+  cancelPhotoboothCountdown();
   if (pbState.stream) {
     try {
       pbState.stream.getTracks().forEach(function(t) { t.stop(); });
     } catch(e) {}
     pbState.stream = null;
   }
-  var snapBtn = document.getElementById('pb_snap_btn');
-  if (snapBtn) snapBtn.disabled = true;
-  var placeholder = document.getElementById('pb_idle_placeholder');
-  if (placeholder && !pbState.capturedDataUrl) placeholder.hidden = false;
+  var video = pbEl('pb_video');
+  if (video) {
+    try { video.srcObject = null; } catch(e) {}
+  }
+  if (opts && opts.keepStage) return;
+  renderPhotoboothStage(pbState.capturedDataUrl ? 'captured' : 'idle');
 }
 window.stopPhotoboothStream = stopPhotoboothStream;
 
 function flipPhotoboothCamera() {
   pbState.facingMode = (pbState.facingMode === 'user') ? 'environment' : 'user';
-  stopPhotoboothStream();
   startPhotoboothCamera();
 }
 window.flipPhotoboothCamera = flipPhotoboothCamera;
 
 function setPhotoboothFrame(frameKey, btn) {
   pbState.frame = frameKey;
-  document.querySelectorAll('.pb-frame-btn').forEach(function(b) { b.classList.remove('is-selected'); });
-  if (btn) btn.classList.add('is-selected');
+  document.querySelectorAll('.pb-frame-btn').forEach(function(b) {
+    var on = b === btn;
+    b.classList.toggle('is-selected', on);
+    b.setAttribute('aria-checked', on ? 'true' : 'false');
+  });
 
-  var overlay = document.getElementById('pb_frame_overlay');
+  var overlay = pbEl('pb_frame_overlay');
   if (overlay) {
+    var wasHidden = overlay.hidden;
     overlay.className = 'pb-frame-overlay frame-' + frameKey;
+    overlay.hidden = wasHidden;
   }
   if (pbState.capturedDataUrl) {
     renderPhotoboothComposite();
@@ -12186,93 +12373,158 @@ function clearPhotoboothStickers() {
 window.clearPhotoboothStickers = clearPhotoboothStickers;
 
 function renderPhotoboothStickers() {
-  var layer = document.getElementById('pb_stickers_layer');
-  if (!layer) return;
-  layer.innerHTML = '';
-  pbState.stickers.forEach(function(st) {
-    var span = document.createElement('span');
-    span.className = 'pb-sticker-stamp';
-    span.textContent = st;
-    layer.appendChild(span);
+  var layer = pbEl('pb_stickers_layer');
+  if (layer) {
+    layer.innerHTML = '';
+    pbState.stickers.forEach(function(st) {
+      var span = document.createElement('span');
+      span.className = 'pb-sticker-stamp';
+      span.textContent = st;
+      layer.appendChild(span);
+    });
+  }
+  document.querySelectorAll('.pb-sticker-chip[data-sticker]').forEach(function(chip) {
+    var on = pbState.stickers.indexOf(chip.getAttribute('data-sticker')) > -1;
+    chip.classList.toggle('is-selected', on);
+    chip.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 }
 
 function updatePhotoboothCaption(val) {
   pbState.caption = val;
-  var el = document.getElementById('pb_frame_title');
-  if (el) el.textContent = val || (window.LESSON_ID ? 'Lesson ' + window.LESSON_ID : "Tonight's Math Work");
+  var el = pbEl('pb_frame_title');
+  var fallback = pbDisplayId() ? 'Lesson ' + pbDisplayId() : "Tonight's Math Work";
+  if (el) el.textContent = val || fallback;
+  if (pbState.capturedDataUrl) renderPhotoboothComposite();
 }
 window.updatePhotoboothCaption = updatePhotoboothCaption;
 
 function snapPhotoboothPicture() {
-  var video = document.getElementById('pb_video');
-  var countdown = document.getElementById('pb_countdown');
-  var flash = document.getElementById('pb_flash');
-  var snapBtn = document.getElementById('pb_snap_btn');
+  var video = pbEl('pb_video');
+  if (!pbState.stream || !video) {
+    setPhotoboothStatus(
+      'Start the camera first, or tap "Upload Work" to choose a photo.',
+      'Primero inicien la cámara, o toquen "Subir Foto" para elegir una foto.',
+      'warn');
+    return;
+  }
+  if (pbState.countdownTimer) return;
+
+  var countdown = pbEl('pb_countdown');
+  var snapBtn = pbEl('pb_snap_btn');
   if (snapBtn) snapBtn.disabled = true;
+  setPhotoboothStatus('', '', '');
 
   var count = 3;
   if (countdown) {
-    countdown.hidden = false;
     countdown.textContent = String(count);
+    countdown.hidden = false;
   }
 
-  var timer = setInterval(function() {
+  pbState.countdownTimer = setInterval(function() {
     count--;
     if (count > 0) {
       if (countdown) countdown.textContent = String(count);
-    } else {
-      clearInterval(timer);
-      if (countdown) countdown.hidden = true;
-      if (flash) {
-        flash.hidden = false;
-        flash.classList.add('is-active');
-        setTimeout(function() {
-          flash.classList.remove('is-active');
-          flash.hidden = true;
-        }, 400);
-      }
-      captureFrameFromVideo(video);
+      return;
     }
+    cancelPhotoboothCountdown();
+    var flash = pbEl('pb_flash');
+    if (flash) {
+      flash.hidden = false;
+      flash.classList.add('is-active');
+      if (pbState.flashTimer) clearTimeout(pbState.flashTimer);
+      pbState.flashTimer = setTimeout(function() {
+        flash.classList.remove('is-active');
+        flash.hidden = true;
+      }, 400);
+    }
+    captureFrameFromVideo(video);
   }, 1000);
 }
 window.snapPhotoboothPicture = snapPhotoboothPicture;
 
 function captureFrameFromVideo(video) {
-  if (!video) return;
-  var canvas = document.getElementById('pb_canvas');
-  if (!canvas) return;
-  var w = video.videoWidth || 800;
-  var h = video.videoHeight || 600;
+  var canvas = pbEl('pb_canvas');
+  if (!video || !canvas) return;
+
+  var w = video.videoWidth;
+  var h = video.videoHeight;
+  // A stream that has not delivered a frame yet reports 0×0. Drawing it would
+  // bake a black rectangle and call it the student's work.
+  if (!w || !h) {
+    setPhotoboothStatus(
+      'The camera was not ready. Give it a second and tap "Take Photo" again.',
+      'La cámara no estaba lista. Esperen un segundo y toquen "Tomar Foto" otra vez.',
+      'warn');
+    var snapBtn = pbEl('pb_snap_btn');
+    if (snapBtn) snapBtn.disabled = false;
+    return;
+  }
+
   canvas.width = w;
   canvas.height = h;
   var ctx = canvas.getContext('2d');
-  
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  // The selfie preview is mirrored, so the capture is mirrored to match what
+  // the family just saw. The rear camera is not, so writing stays readable.
   if (pbState.facingMode === 'user') {
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
   }
   ctx.drawImage(video, 0, 0, w, h);
-  if (pbState.facingMode === 'user') {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
 
   pbState.capturedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
-  stopPhotoboothStream();
+  stopPhotoboothStream({ keepStage: true });
   renderPhotoboothComposite();
 }
 
 function uploadPhotoboothImage(input) {
-  if (!input.files || !input.files[0]) return;
+  if (!input || !input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.type && file.type.indexOf('image/') !== 0) {
+    setPhotoboothStatus(
+      'That file is not a photo. Choose a picture of the notebook page.',
+      'Ese archivo no es una foto. Elijan una imagen de la página del cuaderno.',
+      'warn');
+    input.value = '';
+    return;
+  }
+  setPhotoboothStatus('Loading your photo…', 'Cargando la foto…', 'info');
+
   var reader = new FileReader();
+  reader.onerror = function() {
+    setPhotoboothStatus(
+      'That photo could not be read. Try choosing it again.',
+      'No se pudo leer esa foto. Intenten elegirla de nuevo.',
+      'warn');
+    input.value = '';
+  };
   reader.onload = function(e) {
     var img = new Image();
+    img.onerror = function() {
+      setPhotoboothStatus(
+        'That photo could not be opened. Try a different picture.',
+        'No se pudo abrir esa foto. Prueben con otra imagen.',
+        'warn');
+      input.value = '';
+    };
     img.onload = function() {
-      var canvas = document.getElementById('pb_canvas');
+      var canvas = pbEl('pb_canvas');
       if (!canvas) return;
       var maxDim = 1200;
-      var w = img.width;
-      var h = img.height;
+      var w = img.naturalWidth || img.width;
+      var h = img.naturalHeight || img.height;
+      if (!w || !h) {
+        setPhotoboothStatus(
+          'That photo could not be opened. Try a different picture.',
+          'No se pudo abrir esa foto. Prueben con otra imagen.',
+          'warn');
+        input.value = '';
+        return;
+      }
       if (w > maxDim || h > maxDim) {
         if (w > h) {
           h = Math.round((h * maxDim) / w);
@@ -12285,29 +12537,48 @@ function uploadPhotoboothImage(input) {
       canvas.width = w;
       canvas.height = h;
       var ctx = canvas.getContext('2d');
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
       pbState.capturedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
-      stopPhotoboothStream();
+      stopPhotoboothStream({ keepStage: true });
       renderPhotoboothComposite();
+      // Without this, picking the same file twice fires no change event and
+      // the second upload silently does nothing.
+      input.value = '';
     };
     img.src = e.target.result;
   };
-  reader.readAsDataURL(input.files[0]);
+  reader.readAsDataURL(file);
 }
 window.uploadPhotoboothImage = uploadPhotoboothImage;
+
+/* Canvas has no text wrapping, so anything that could overflow the frame gets
+   measured and ellipsised rather than running off the edge of the photo. */
+function pbFitText(ctx, text, maxWidth) {
+  var t = String(text == null ? '' : text);
+  if (maxWidth <= 0) return '';
+  if (ctx.measureText(t).width <= maxWidth) return t;
+  while (t.length > 1 && ctx.measureText(t + '…').width > maxWidth) {
+    t = t.slice(0, -1);
+  }
+  while (t.length > 1 && t.charAt(t.length - 1) === ' ') t = t.slice(0, -1);
+  return t + '…';
+}
 
 function renderPhotoboothComposite() {
   if (!pbState.capturedDataUrl) return;
   var img = new Image();
   img.onload = function() {
-    var canvas = document.getElementById('pb_canvas');
+    var canvas = pbEl('pb_canvas');
     if (!canvas) return;
-    var w = img.width;
-    var h = img.height;
+    var w = img.naturalWidth || img.width;
+    var h = img.naturalHeight || img.height;
     canvas.width = w;
     canvas.height = h;
     var ctx = canvas.getContext('2d');
-
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, w, h);
     ctx.drawImage(img, 0, 0, w, h);
 
     var frameColor = '#f59e0b';
@@ -12320,120 +12591,246 @@ function renderPhotoboothComposite() {
     ctx.strokeStyle = frameColor;
     ctx.strokeRect(borderW / 2, borderW / 2, w - borderW, h - borderW);
 
+    var pad = borderW + 8;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+
     var bannerH = Math.max(36, Math.round(h * 0.08));
     ctx.fillStyle = frameColor;
     ctx.fillRect(0, 0, w, bannerH);
     ctx.fillStyle = (pbState.frame === 'polaroid') ? '#0f172a' : '#ffffff';
     ctx.font = 'bold ' + Math.round(bannerH * 0.5) + 'px system-ui, sans-serif';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🏆 MATH CHAMPION · ' + (window.LESSON_ID ? 'LESSON ' + window.LESSON_ID.toUpperCase() : 'EDUWONDERLAB'), borderW + 8, bannerH / 2);
+    var displayId = pbDisplayId();
+    var banner = '🏆 MATH CHAMPION' + (displayId ? ' · LESSON ' + displayId.toUpperCase() : '');
+    ctx.fillText(pbFitText(ctx, banner, w - pad * 2), pad, bannerH / 2);
 
     var footH = Math.max(44, Math.round(h * 0.1));
+    var footMid = h - footH / 2;
     ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
     ctx.fillRect(0, h - footH, w, footH);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold ' + Math.round(footH * 0.42) + 'px system-ui, sans-serif';
-    ctx.fillText(pbState.caption || "Tonight's Math Work Done Together!", borderW + 8, h - footH / 2);
 
+    // Stickers claim the right end of the footer first; the caption is then
+    // fitted to whatever is left, so the two can never overlap.
+    var stickerW = 0;
     if (pbState.stickers.length) {
-      ctx.font = Math.round(footH * 0.75) + 'px sans-serif';
-      var stX = w - borderW - 20;
+      var stickerSize = Math.round(footH * 0.6);
+      var stickerStep = Math.round(footH * 0.72);
+      ctx.font = stickerSize + 'px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+      ctx.textAlign = 'right';
+      var stX = w - pad;
       for (var s = pbState.stickers.length - 1; s >= 0; s--) {
-        ctx.textAlign = 'right';
-        ctx.fillText(pbState.stickers[s], stX, h - footH / 2);
-        stX -= Math.round(footH * 0.85);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(pbState.stickers[s], stX, footMid);
+        stX -= stickerStep;
       }
       ctx.textAlign = 'left';
+      stickerW = pbState.stickers.length * stickerStep;
     }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold ' + Math.round(footH * 0.42) + 'px system-ui, sans-serif';
+    var caption = pbState.caption || "Tonight's Math Work Done Together!";
+    ctx.fillText(pbFitText(ctx, caption, w - pad * 2 - stickerW), pad, footMid);
 
     var compositeUrl = canvas.toDataURL('image/jpeg', 0.9);
-    var resImg = document.getElementById('pb_captured_img');
-    if (resImg) {
-      resImg.src = compositeUrl;
-      resImg.hidden = false;
-    }
-    var video = document.getElementById('pb_video');
-    if (video) video.hidden = true;
-    var placeholder = document.getElementById('pb_idle_placeholder');
-    if (placeholder) placeholder.hidden = true;
-    var liveOverlay = document.getElementById('pb_frame_overlay');
-    if (liveOverlay) liveOverlay.style.display = 'none';
-
-    var actionsLive = document.getElementById('pb_actions_live');
-    var actionsReview = document.getElementById('pb_actions_review');
-    if (actionsLive) actionsLive.hidden = true;
-    if (actionsReview) actionsReview.hidden = false;
-
+    var resImg = pbEl('pb_captured_img');
+    if (resImg) resImg.src = compositeUrl;
     currentWorkPhotoData = compositeUrl;
+    renderPhotoboothStage('captured');
+    setPhotoboothStatus(
+      'Looking good! Download it, print it, or attach it to the parent sign-off.',
+      '¡Se ve muy bien! Descárguenla, imprímanla o adjúntenla a la firma del adulto.',
+      'ok');
+  };
+  img.onerror = function() {
+    setPhotoboothStatus(
+      'That photo could not be opened. Try taking or choosing it again.',
+      'No se pudo abrir esa foto. Intenten tomarla o elegirla de nuevo.',
+      'warn');
   };
   img.src = pbState.capturedDataUrl;
 }
 
 function retakePhotobooth() {
   pbState.capturedDataUrl = '';
-  var resImg = document.getElementById('pb_captured_img');
-  if (resImg) resImg.hidden = true;
-  var video = document.getElementById('pb_video');
-  if (video) video.hidden = false;
-  var actionsLive = document.getElementById('pb_actions_live');
-  var actionsReview = document.getElementById('pb_actions_review');
-  if (actionsLive) actionsLive.hidden = false;
-  if (actionsReview) actionsReview.hidden = true;
+  currentWorkPhotoData = '';
+  var resImg = pbEl('pb_captured_img');
+  if (resImg) resImg.removeAttribute('src');
+  var attachBtn = pbEl('pb_attach_btn');
+  if (attachBtn) {
+    attachBtn.innerHTML = '📎 <span class="lang-en">Attach to Parent Sign-off</span><span class="lang-es" lang="es">Adjuntar a la Firma</span>';
+    attachBtn.disabled = false;
+  }
+  setPhotoboothStatus('', '', '');
+  renderPhotoboothStage('idle');
   startPhotoboothCamera();
 }
 window.retakePhotobooth = retakePhotobooth;
 
 function downloadPhotoboothPhoto() {
-  var canvas = document.getElementById('pb_canvas');
-  if (!canvas) return;
-  var link = document.createElement('a');
-  link.download = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
-  link.href = canvas.toDataURL('image/jpeg', 0.92);
-  link.click();
+  var canvas = pbEl('pb_canvas');
+  if (!canvas || !pbState.capturedDataUrl) {
+    setPhotoboothStatus(
+      'Take or upload a photo first, then download it.',
+      'Primero tomen o suban una foto, y luego descárguenla.',
+      'warn');
+    return;
+  }
+  var name = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
+
+  var save = function(href, revoke) {
+    var link = document.createElement('a');
+    link.href = href;
+    link.download = name;
+    link.rel = 'noopener';
+    link.style.display = 'none';
+    // Firefox ignores a click on a link that is not in the document.
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(function() {
+      if (link.parentNode) link.parentNode.removeChild(link);
+      if (revoke) { try { URL.revokeObjectURL(href); } catch(e) {} }
+    }, 4000);
+    setPhotoboothStatus(
+      'Saved to your downloads. If the photo opened instead, press and hold it to save it.',
+      'Guardada en sus descargas. Si la foto se abrió en vez de guardarse, manténganla presionada para guardarla.',
+      'ok');
+  };
+
+  // A blob URL is what lets iOS and Android actually keep the file; a large
+  // data: URL is refused by several mobile browsers.
+  if (canvas.toBlob) {
+    canvas.toBlob(function(blob) {
+      if (!blob) { save(canvas.toDataURL('image/jpeg', 0.92), false); return; }
+      save(URL.createObjectURL(blob), true);
+    }, 'image/jpeg', 0.92);
+  } else {
+    save(canvas.toDataURL('image/jpeg', 0.92), false);
+  }
 }
 window.downloadPhotoboothPhoto = downloadPhotoboothPhoto;
 
 function printPhotoboothPhoto() {
-  var canvas = document.getElementById('pb_canvas');
-  if (!canvas) return;
-  var printImg = document.getElementById('pb_print_img');
-  var printCap = document.getElementById('pb_print_caption');
-  var printDate = document.getElementById('pb_print_date');
-  if (printImg) printImg.src = canvas.toDataURL('image/jpeg', 0.92);
-  if (printCap) printCap.textContent = pbState.caption || "Student Math Notebook & Family Verification";
-  if (printDate) printDate.textContent = new Date().toLocaleDateString();
+  var canvas = pbEl('pb_canvas');
+  if (!canvas || !pbState.capturedDataUrl) {
+    setPhotoboothStatus(
+      'Take or upload a photo first, then print it.',
+      'Primero tomen o suban una foto, y luego imprímanla.',
+      'warn');
+    return;
+  }
 
-  document.body.classList.add('print-photobooth-only');
-  window.print();
-  setTimeout(function() {
-    document.body.classList.remove('print-photobooth-only');
-  }, 1000);
+  // The print sheet is built now and hung directly off <body>. Built in place
+  // it would sit inside the tab panel, where "print only this" can only be
+  // expressed as visibility:hidden — which leaves every other stop of the
+  // homework occupying blank pages behind the photo.
+  var existing = pbEl('pb_print_portal');
+  if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+  var sec = pbSection();
+  var lessonLine = sec ? (sec.getAttribute('data-pb-lesson-line') || '') : '';
+
+  var portal = document.createElement('div');
+  portal.id = 'pb_print_portal';
+  portal.className = 'pb-print-portal';
+  portal.setAttribute('aria-hidden', 'true');
+
+  var inner = document.createElement('div');
+  inner.className = 'pb-print-inner';
+
+  var title = document.createElement('h2');
+  title.className = 'pb-print-title';
+  title.textContent = 'EduWonderLab Family Math Champion · Grade 6';
+
+  var meta = document.createElement('p');
+  meta.className = 'pb-print-meta';
+  meta.textContent = lessonLine;
+
+  var wrap = document.createElement('div');
+  wrap.className = 'pb-print-img-wrap';
+  var photo = document.createElement('img');
+  photo.className = 'pb-print-img';
+  photo.alt = 'Student math work printout';
+  wrap.appendChild(photo);
+
+  var cap = document.createElement('p');
+  cap.className = 'pb-print-caption';
+  cap.textContent = pbState.caption || 'Student Math Notebook & Family Verification';
+
+  var foot = document.createElement('div');
+  foot.className = 'pb-print-footer';
+  var footLeft = document.createElement('span');
+  footLeft.textContent = 'Verified Family Practice · eduwonderlab.com';
+  var footRight = document.createElement('span');
+  footRight.textContent = new Date().toLocaleDateString();
+  foot.appendChild(footLeft);
+  foot.appendChild(footRight);
+
+  inner.appendChild(title);
+  if (lessonLine) inner.appendChild(meta);
+  inner.appendChild(wrap);
+  inner.appendChild(cap);
+  inner.appendChild(foot);
+  portal.appendChild(inner);
+  document.body.appendChild(portal);
+
+  var printed = false;
+  var go = function() {
+    if (printed) return;
+    printed = true;
+    document.body.classList.add('print-photobooth-only');
+    try { window.print(); } catch(e) {}
+    setTimeout(function() {
+      document.body.classList.remove('print-photobooth-only');
+      if (portal.parentNode) portal.parentNode.removeChild(portal);
+    }, 600);
+  };
+
+  // window.print() is synchronous: fire it before the data: URL has decoded
+  // and the sheet prints with an empty box where the photo should be.
+  photo.onload = go;
+  photo.onerror = go;
+  photo.src = canvas.toDataURL('image/jpeg', 0.92);
+  setTimeout(go, 2000);
 }
 window.printPhotoboothPhoto = printPhotoboothPhoto;
 
 function attachPhotoboothToSignoff() {
-  if (!currentWorkPhotoData) return;
-  var previewImg = document.getElementById('work_photo_preview');
-  var previewWrap = document.getElementById('work_photo_preview_wrap');
+  if (!currentWorkPhotoData) {
+    setPhotoboothStatus(
+      'Take or upload a photo first, then attach it to the sign-off.',
+      'Primero tomen o suban una foto, y luego adjúntenla a la firma.',
+      'warn');
+    return;
+  }
+  var previewImg = pbEl('work_photo_preview');
+  var previewWrap = pbEl('work_photo_preview_wrap');
   if (previewImg) previewImg.src = currentWorkPhotoData;
   if (previewWrap) previewWrap.hidden = false;
 
-  var attachBtn = document.getElementById('pb_attach_btn');
+  var attachBtn = pbEl('pb_attach_btn');
   if (attachBtn) {
     attachBtn.innerHTML = '✅ <span class="lang-en">Attached!</span><span class="lang-es" lang="es">¡Adjuntado!</span>';
   }
-  var certPhoto = document.getElementById('display_family_photo');
-  var certPhotoBox = document.getElementById('display_family_photo_box');
+  var certPhoto = pbEl('display_family_photo');
+  var certPhotoBox = pbEl('display_family_photo_box');
   if (certPhoto) certPhoto.src = currentWorkPhotoData;
   if (certPhotoBox) certPhotoBox.hidden = false;
 
   setTimeout(function() {
     switchHomeworkTab('done');
-    var formEl = document.getElementById('signoff_form_wrapper');
+    var formEl = pbEl('signoff_form_wrapper');
     if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
   }, 600);
 }
 window.attachPhotoboothToSignoff = attachPhotoboothToSignoff;
+
+// Leaving the page with a live camera leaves the indicator light on. Hiding
+// the tab (backgrounding the browser on a phone) counts as leaving.
+window.addEventListener('pagehide', function() { stopPhotoboothStream({ keepStage: true }); });
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) stopPhotoboothStream({ keepStage: true });
+});
 }
 
 
