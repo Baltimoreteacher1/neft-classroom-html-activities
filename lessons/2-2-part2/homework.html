@@ -6222,6 +6222,422 @@ body.lang-mode-es .concept-title-es { display: inline; }
   }
 }
 
+/* ── Photobooth Studio with Math Work ─────────────────────────────────── */
+.section-photobooth {
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--line, #d7e2ed);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+.photobooth-header {
+  margin-bottom: 20px;
+}
+.photobooth-badge {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+.photobooth-sub {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+.next-photobooth-banner {
+  margin: 24px 0;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+.btn-next-photobooth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  text-align: left;
+}
+.pb-banner-icon {
+  font-size: 38px;
+}
+.pb-banner-labels strong {
+  display: block;
+  font-size: 18px;
+  color: #78350f;
+}
+.pb-banner-labels small {
+  display: block;
+  font-size: 13.5px;
+  color: #92400e;
+  margin-top: 2px;
+}
+.photobooth-container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .photobooth-container {
+    grid-template-columns: 1fr;
+  }
+}
+.pb-stage-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pb-viewfinder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #0f172a;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#pb_video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+#pb_captured_img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+.pb-frame-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.frame-champion {
+  border: 14px solid #f59e0b;
+}
+.frame-champion .pb-frame-header {
+  background: #f59e0b;
+  color: #fff;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-champion .pb-frame-footer {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.frame-notebook {
+  border: 14px solid #0284c7;
+}
+.frame-notebook .pb-frame-header {
+  background: #0284c7;
+  color: #fff;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-notebook .pb-frame-footer {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.frame-stars {
+  border: 14px solid #8b5cf6;
+}
+.frame-stars .pb-frame-header {
+  background: #8b5cf6;
+  color: #fff;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-stars .pb-frame-footer {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.frame-polaroid {
+  border: 16px solid #ffffff;
+  border-bottom-width: 44px;
+}
+.frame-polaroid .pb-frame-header {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-polaroid .pb-frame-footer {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 4px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.pb-stickers-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 48px 24px;
+  gap: 12px;
+}
+.pb-sticker-stamp {
+  font-size: 36px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+.pb-idle-placeholder {
+  position: absolute;
+  inset: 0;
+  background: #1e293b;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+.pb-idle-icon {
+  font-size: 54px;
+  margin-bottom: 12px;
+}
+.pb-idle-sub {
+  font-size: 13.5px;
+  color: #94a3b8;
+  max-width: 280px;
+  margin-bottom: 18px;
+}
+.pb-countdown-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  color: #ffffff;
+  font-size: 96px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: pbCountPulse 1s infinite;
+}
+@keyframes pbCountPulse {
+  0% { transform: scale(1.4); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.pb-flash-layer {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+}
+.pb-flash-layer.is-active {
+  animation: pbFlashAnim 0.4s ease-out;
+}
+@keyframes pbFlashAnim {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+.pb-controls-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pb-actions-live, .pb-actions-review {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.pb-btn-snap {
+  flex: 2;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 16px;
+  background: #0f7c4a;
+  border-color: #0f7c4a;
+}
+.pb-btn-flip, .pb-btn-upload {
+  flex: 1;
+  font-size: 14px;
+}
+.pb-customizer {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+}
+.pb-custom-title {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.pb-custom-section {
+  margin-bottom: 16px;
+}
+.pb-custom-label {
+  display: block;
+  font-size: 13px;
+  color: #334155;
+  margin-bottom: 6px;
+}
+.pb-frame-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.pb-frame-btn {
+  padding: 6px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pb-frame-btn.is-selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.pb-stickers-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pb-sticker-chip {
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+}
+.pb-tip-box {
+  display: flex;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 14px;
+}
+.pb-tip-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.pb-tip-text {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #1e40af;
+  margin: 0;
+}
+@media print {
+  body.print-photobooth-only * {
+    visibility: hidden !important;
+  }
+  body.print-photobooth-only .photobooth-print-card,
+  body.print-photobooth-only .photobooth-print-card * {
+    visibility: visible !important;
+  }
+  body.print-photobooth-only .photobooth-print-card {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 24px;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  body.print-photobooth-only .pb-print-inner {
+    border: 3px solid #0f172a;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+  }
+  body.print-photobooth-only .pb-print-title {
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+  body.print-photobooth-only .pb-print-meta {
+    font-size: 14px;
+    color: #475569;
+    margin: 0 0 16px;
+  }
+  body.print-photobooth-only .pb-print-img-wrap img {
+    max-width: 80%;
+    max-height: 520px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+  }
+  body.print-photobooth-only .pb-print-caption {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 14px 0;
+  }
+  body.print-photobooth-only .pb-print-footer {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
+    font-size: 12px;
+    color: #64748b;
+  }
+}
+
 /* ============================================================
    GLOBAL HIGH-LEGIBILITY TYPOGRAPHY SCALE (All Homeworks)
    Bigger text, comfortable reading rhythm across all family devices
@@ -6384,8 +6800,8 @@ body {
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">6 stops</span><span class="lang-es" lang="es">6 paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About 30 minutes</span><span class="lang-es" lang="es">Unos 30 minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">7 stops</span><span class="lang-es" lang="es">7 paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About 32 minutes</span><span class="lang-es" lang="es">Unos 32 minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
 
@@ -6466,16 +6882,16 @@ body {
     </header>
 
   
-    <div class="homework-tabs-shell" data-tab-count="6">
+    <div class="homework-tabs-shell" data-tab-count="7">
       <div class="homework-tab-chrome">
         <div class="hw-tab-meta-row">
-          <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~30 min left</span><span class="lang-es" lang="es">~30 min restantes</span></span>
+          <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~32 min left</span><span class="lang-es" lang="es">~32 min restantes</span></span>
         </div>
         <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
           
             <button type="button" role="tab" id="hw_tab_learn" class="homework-tab-btn is-active"
               aria-selected="true" aria-current="step" aria-controls="hw_panel_learn"
-              aria-label="Learn — stop 1 of 6, about 5 minutes"
+              aria-label="Learn — stop 1 of 7, about 5 minutes"
               data-tab="learn" data-stop="1" data-min="5" onclick="switchHomeworkTab('learn')">
               <span class="tab-step" aria-hidden="true">1</span>
               <span class="tab-icon" aria-hidden="true">📖</span>
@@ -6485,7 +6901,7 @@ body {
             </button>
             <button type="button" role="tab" id="hw_tab_words" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_words"
-              aria-label="Words — stop 2 of 6, about 3 minutes"
+              aria-label="Words — stop 2 of 7, about 3 minutes"
               data-tab="words" data-stop="2" data-min="3" onclick="switchHomeworkTab('words')">
               <span class="tab-step" aria-hidden="true">2</span>
               <span class="tab-icon" aria-hidden="true">📚</span>
@@ -6495,7 +6911,7 @@ body {
             </button>
             <button type="button" role="tab" id="hw_tab_together" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_together"
-              aria-label="Together — stop 3 of 6, about 6 minutes"
+              aria-label="Together — stop 3 of 7, about 6 minutes"
               data-tab="together" data-stop="3" data-min="6" onclick="switchHomeworkTab('together')">
               <span class="tab-step" aria-hidden="true">3</span>
               <span class="tab-icon" aria-hidden="true">🤝</span>
@@ -6505,7 +6921,7 @@ body {
             </button>
             <button type="button" role="tab" id="hw_tab_check" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_check"
-              aria-label="Check — stop 4 of 6, about 8 minutes"
+              aria-label="Check — stop 4 of 7, about 8 minutes"
               data-tab="check" data-stop="4" data-min="8" onclick="switchHomeworkTab('check')">
               <span class="tab-step" aria-hidden="true">4</span>
               <span class="tab-icon" aria-hidden="true">✅</span>
@@ -6515,7 +6931,7 @@ body {
             </button>
             <button type="button" role="tab" id="hw_tab_play" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_play"
-              aria-label="Play — stop 5 of 6, about 5 minutes"
+              aria-label="Play — stop 5 of 7, about 5 minutes"
               data-tab="play" data-stop="5" data-min="5" onclick="switchHomeworkTab('play')">
               <span class="tab-step" aria-hidden="true">5</span>
               <span class="tab-icon" aria-hidden="true">🎮</span>
@@ -6525,12 +6941,22 @@ body {
             </button>
             <button type="button" role="tab" id="hw_tab_done" class="homework-tab-btn"
               aria-selected="false" aria-controls="hw_panel_done"
-              aria-label="Done — stop 6 of 6, about 3 minutes"
+              aria-label="Done — stop 6 of 7, about 3 minutes"
               data-tab="done" data-stop="6" data-min="3" onclick="switchHomeworkTab('done')">
               <span class="tab-step" aria-hidden="true">6</span>
               <span class="tab-icon" aria-hidden="true">🎉</span>
               <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
               <span class="tab-min" aria-hidden="true">3 min</span>
+              <span class="tab-done" aria-hidden="true">✓</span>
+            </button>
+            <button type="button" role="tab" id="hw_tab_photobooth" class="homework-tab-btn"
+              aria-selected="false" aria-controls="hw_panel_photobooth"
+              aria-label="Photobooth — stop 7 of 7, about 2 minutes"
+              data-tab="photobooth" data-stop="7" data-min="2" onclick="switchHomeworkTab('photobooth')">
+              <span class="tab-step" aria-hidden="true">7</span>
+              <span class="tab-icon" aria-hidden="true">📸</span>
+              <span class="tab-label"><span class="tab-en">Photobooth</span><span class="tab-es" lang="es">Fotos</span></span>
+              <span class="tab-min" aria-hidden="true">2 min</span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>
         </nav>
@@ -8682,6 +9108,16 @@ body {
         </div>
       </div>
 
+      <div class="next-photobooth-banner card-ish">
+        <button type="button" class="btn-next-photobooth" onclick="switchHomeworkTab('photobooth')">
+          <span class="pb-banner-icon" aria-hidden="true">📸</span>
+          <div class="pb-banner-labels">
+            <strong><span class="lang-en">Final Stop: Math Work Photobooth! ➔</span><span class="lang-es" lang="es">Parada final: ¡Cabina de fotos de tu trabajo! ➔</span></strong>
+            <small><span class="lang-en">Take a celebratory photo holding your notebook or math work!</span><span class="lang-es" lang="es">¡Toma una foto divertida posando con tu cuaderno o trabajo!</span></small>
+          </div>
+        </button>
+      </div>
+
       <!-- Print-Only Certificate Layout -->
       <div class="print-only-certificate" id="print_only_certificate">
         <div class="print-cert-header">
@@ -8707,6 +9143,167 @@ body {
         </div>
       </div>
     </div>
+<div class="tab-panel-inner" data-tab-panel="photobooth" id="hw_panel_photobooth" role="tabpanel" hidden>
+    <section class="guided-section card section-photobooth" aria-label="Math Work Photobooth">
+      <div class="photobooth-header">
+        <div class="photobooth-badge">📸 <span class="lang-en">MATH WORK PHOTOBOOTH</span><span class="lang-es" lang="es">CABINA DE FOTOS DEL TRABAJO DE MATEMÁTICAS</span></div>
+        <h2 class="section-title">
+          <span class="lang-en">Celebrate &amp; Snap Your Math Work!</span>
+          <span class="lang-es" lang="es">¡Celebra y toma foto de tu trabajo matemático!</span>
+        </h2>
+        <p class="photobooth-sub bilingual-block">
+          <span class="lang-en">Pose with your student notebook, whiteboard, scratchpad, or holding up tonight's math! Choose a fun frame, add celebration stickers, and save your family math memory.</span>
+          <span class="lang-es" lang="es">¡Posen con el cuaderno, pizarra, hoja de borrador o sosteniendo el trabajo de hoy! Elijan un marco divertido, agreguen calcomanías y guarden su recuerdo matemático familiar.</span>
+        </p>
+      </div>
+
+      <div class="photobooth-container">
+        <!-- Main Stage / Viewfinder -->
+        <div class="pb-stage-wrap">
+          <div class="pb-viewfinder card-ish" id="pb_viewfinder">
+            <!-- Live Video -->
+            <video id="pb_video" autoplay playsinline muted></video>
+
+            <!-- Live Frame Overlay -->
+            <div class="pb-frame-overlay frame-champion" id="pb_frame_overlay">
+              <div class="pb-frame-header">
+                <span class="pb-frame-badge">🏆 <span class="lang-en">MATH CHAMPION</span><span class="lang-es" lang="es">CAMPEÓN DE MATES</span></span>
+                <span class="pb-frame-lesson">Lesson 2-2 · Part 2</span>
+              </div>
+              <div class="pb-frame-footer">
+                <span class="pb-frame-title" id="pb_frame_title">Describing Histogram Shape</span>
+                <span class="pb-frame-date" id="pb_frame_date">Tonight</span>
+              </div>
+              <!-- Dynamic Stickers container on the frame -->
+              <div class="pb-stickers-layer" id="pb_stickers_layer"></div>
+            </div>
+
+            <!-- Captured Preview Canvas & Img -->
+            <canvas id="pb_canvas" hidden></canvas>
+            <img id="pb_captured_img" alt="Captured math work" hidden />
+
+            <!-- Visual Countdown Overlay -->
+            <div class="pb-countdown-overlay" id="pb_countdown" hidden>3</div>
+
+            <!-- Camera Flash Effect -->
+            <div class="pb-flash-layer" id="pb_flash" hidden></div>
+
+            <!-- Camera Permissions / Idle Placeholder -->
+            <div class="pb-idle-placeholder" id="pb_idle_placeholder">
+              <span class="pb-idle-icon" aria-hidden="true">📸</span>
+              <p><strong><span class="lang-en">Camera Ready!</span><span class="lang-es" lang="es">¡Cámara lista!</span></strong></p>
+              <p class="pb-idle-sub"><span class="lang-en">Tap &ldquo;Start Camera&rdquo; below or upload a photo of your notebook.</span><span class="lang-es" lang="es">Toca &ldquo;Iniciar Cámara&rdquo; o sube una foto de tu cuaderno.</span></p>
+              <button type="button" class="btn btn-primary btn-lg" onclick="startPhotoboothCamera()">
+                📷 <span class="lang-en">Start Camera</span><span class="lang-es" lang="es">Iniciar Cámara</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Photobooth Controls -->
+          <div class="pb-controls-bar">
+            <!-- Live Mode Actions -->
+            <div class="pb-actions-live" id="pb_actions_live">
+              <button type="button" class="btn btn-primary pb-btn-snap" id="pb_snap_btn" onclick="snapPhotoboothPicture()" disabled>
+                📸 <span class="lang-en">Take Photo (3s Timer)</span><span class="lang-es" lang="es">Tomar Foto (3s)</span>
+              </button>
+              <button type="button" class="btn btn-secondary pb-btn-flip" id="pb_flip_btn" onclick="flipPhotoboothCamera()">
+                🔄 <span class="lang-en">Flip Camera</span><span class="lang-es" lang="es">Voltear Cámara</span>
+              </button>
+              <label class="btn btn-outline-secondary pb-btn-upload" title="Upload an existing photo of your notebook">
+                📁 <span class="lang-en">Upload Work</span><span class="lang-es" lang="es">Subir Foto</span>
+                <input type="file" id="pb_file_input" accept="image/*" capture="environment" onchange="uploadPhotoboothImage(this)" style="display:none;" />
+              </label>
+            </div>
+
+            <!-- Captured Mode Actions -->
+            <div class="pb-actions-review" id="pb_actions_review" hidden>
+              <button type="button" class="btn btn-secondary" onclick="retakePhotobooth()">
+                🔄 <span class="lang-en">Retake</span><span class="lang-es" lang="es">Repetir</span>
+              </button>
+              <button type="button" class="btn btn-success" onclick="downloadPhotoboothPhoto()">
+                📥 <span class="lang-en">Download Photo</span><span class="lang-es" lang="es">Descargar Foto</span>
+              </button>
+              <button type="button" class="btn btn-primary" onclick="printPhotoboothPhoto()">
+                🖨️ <span class="lang-en">Print Photo</span><span class="lang-es" lang="es">Imprimir Foto</span>
+              </button>
+              <button type="button" class="btn btn-warning" id="pb_attach_btn" onclick="attachPhotoboothToSignoff()">
+                📎 <span class="lang-en">Attach to Parent Sign-off</span><span class="lang-es" lang="es">Adjuntar a la Firma</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Studio Customizer Sidebar -->
+        <div class="pb-customizer card-ish">
+          <h3 class="pb-custom-title">🎨 <span class="lang-en">Photobooth Studio</span><span class="lang-es" lang="es">Estudio de Fotos</span></h3>
+          
+          <!-- Frame Selector -->
+          <div class="pb-custom-section">
+            <label class="pb-custom-label"><strong><span class="lang-en">Select Frame:</span><span class="lang-es" lang="es">Elegir Marco:</span></strong></label>
+            <div class="pb-frame-selector" role="radiogroup" aria-label="Photobooth Frame">
+              <button type="button" class="pb-frame-btn is-selected" data-frame="champion" onclick="setPhotoboothFrame('champion', this)">
+                🏆 <span class="lang-en">Champion</span><span class="lang-es" lang="es">Campeón</span>
+              </button>
+              <button type="button" class="pb-frame-btn" data-frame="notebook" onclick="setPhotoboothFrame('notebook', this)">
+                📝 <span class="lang-en">Notebook</span><span class="lang-es" lang="es">Cuaderno</span>
+              </button>
+              <button type="button" class="pb-frame-btn" data-frame="stars" onclick="setPhotoboothFrame('stars', this)">
+                ⭐ <span class="lang-en">Gold Star</span><span class="lang-es" lang="es">Estrellas</span>
+              </button>
+              <button type="button" class="pb-frame-btn" data-frame="polaroid" onclick="setPhotoboothFrame('polaroid', this)">
+                🎞️ <span class="lang-en">Polaroid</span><span class="lang-es" lang="es">Polaroid</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Stickers & Props -->
+          <div class="pb-custom-section">
+            <label class="pb-custom-label"><strong><span class="lang-en">Add Stickers:</span><span class="lang-es" lang="es">Agregar Calcomanías:</span></strong></label>
+            <div class="pb-stickers-picker">
+              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('🏆')">🏆 <span class="lang-en">Trophy</span><span class="lang-es" lang="es">Trofeo</span></button>
+              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('💯')">💯 <span class="lang-en">100% Effort</span><span class="lang-es" lang="es">100%</span></button>
+              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('⭐')">⭐ <span class="lang-en">Math Star</span><span class="lang-es" lang="es">Estrella</span></button>
+              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('🧮')">🧮 <span class="lang-en">Top ÷ Bottom</span><span class="lang-es" lang="es">Arriba ÷ Abajo</span></button>
+              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('🧠')">🧠 <span class="lang-en">Big Brain</span><span class="lang-es" lang="es">Cerebro</span></button>
+              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('✋')">✋ <span class="lang-en">High Five</span><span class="lang-es" lang="es">Chócalas</span></button>
+              <button type="button" class="pb-sticker-chip" onclick="togglePhotoboothSticker('📐')">📐 <span class="lang-en">Math Tools</span><span class="lang-es" lang="es">Herramientas</span></button>
+              <button type="button" class="pb-sticker-chip text-danger" onclick="clearPhotoboothStickers()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+            </div>
+          </div>
+
+          <!-- Family Shout-Out Caption -->
+          <div class="pb-custom-section">
+            <label for="pb_caption_input" class="pb-custom-label"><strong><span class="lang-en">Add Message or Names:</span><span class="lang-es" lang="es">Mensaje o nombres:</span></strong></label>
+            <input type="text" id="pb_caption_input" class="form-control" placeholder="e.g. Alex &amp; Mom - We crushed unit rates!" oninput="updatePhotoboothCaption(this.value)" />
+          </div>
+
+          <!-- Helpful Tip -->
+          <div class="pb-tip-box">
+            <span class="pb-tip-icon" aria-hidden="true">💡</span>
+            <p class="pb-tip-text">
+              <span class="lang-en">Holding your open notebook or paper up next to your smile makes the best shot! You can also snap a photo of just your written work.</span>
+              <span class="lang-es" lang="es">¡Sostener el cuaderno abierto junto a su sonrisa crea la mejor foto! También pueden tomar la foto solo de su trabajo escrito.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print-only photobooth frame layout -->
+      <div class="photobooth-print-card" id="pb_print_card" aria-hidden="true">
+        <div class="pb-print-inner">
+          <h2 class="pb-print-title">EduWonderLab Family Math Champion · Grade 6</h2>
+          <p class="pb-print-meta">Lesson 2-2 · Part 2: Describing Histogram Shape</p>
+          <div class="pb-print-img-wrap">
+            <img id="pb_print_img" alt="Student math work printout" />
+          </div>
+          <p class="pb-print-caption" id="pb_print_caption"></p>
+          <div class="pb-print-footer">
+            <span>Verified Family Practice · eduwonderlab.com</span>
+            <span class="pb-print-date" id="pb_print_date"></span>
+          </div>
+        </div>
+      </div>
+    </section></div>
       </div>
     </div>
     
@@ -9455,6 +10052,11 @@ function switchHomeworkTab(tabId) {
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
+  }
+  if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
+    initPhotobooth();
+  } else if (typeof stopPhotoboothStream === 'function') {
+    stopPhotoboothStream();
   }
   const activeBtn = document.getElementById('hw_tab_' + tabId);
   if (activeBtn) {
@@ -10297,6 +10899,389 @@ function initDrawCanvases() {
     resize();
     window.addEventListener('resize', resize);
   });
+/* ── Photobooth Studio with Math Work ─────────────────────────────────── */
+var pbState = {
+  stream: null,
+  facingMode: 'user',
+  frame: 'champion',
+  stickers: [],
+  caption: '',
+  capturedDataUrl: '',
+};
+
+function initPhotobooth() {
+  var dEl = document.getElementById('pb_frame_date');
+  if (dEl) {
+    try {
+      dEl.textContent = new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch(e) {
+      dEl.textContent = 'Tonight';
+    }
+  }
+  var sName = '';
+  try {
+    var stored = localStorage.getItem('hw_signoff_' + (window.LESSON_ID || location.pathname));
+    if (stored) {
+      var parsed = JSON.parse(stored);
+      if (parsed.student) sName = parsed.student;
+    }
+  } catch(e) {}
+  var capInput = document.getElementById('pb_caption_input');
+  if (capInput && !capInput.value && sName) {
+    capInput.value = sName + ' · Math Champion!';
+    updatePhotoboothCaption(capInput.value);
+  }
+}
+window.initPhotobooth = initPhotobooth;
+
+function startPhotoboothCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Camera not directly supported in this browser. Please use the "Upload Work" button to pick a photo from your camera roll!');
+    return;
+  }
+  var video = document.getElementById('pb_video');
+  var placeholder = document.getElementById('pb_idle_placeholder');
+  var snapBtn = document.getElementById('pb_snap_btn');
+
+  var constraints = {
+    video: {
+      facingMode: pbState.facingMode,
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
+    },
+    audio: false,
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(function(stream) {
+      pbState.stream = stream;
+      if (video) {
+        video.srcObject = stream;
+        video.play();
+      }
+      if (placeholder) placeholder.hidden = true;
+      if (snapBtn) snapBtn.disabled = false;
+      var liveOverlay = document.getElementById('pb_frame_overlay');
+      if (liveOverlay) liveOverlay.style.display = 'flex';
+    })
+    .catch(function(err) {
+      console.warn('Camera access denied or unavailable:', err);
+      alert('Could not access camera. Please allow camera permissions or click "Upload Work" to choose a photo from your device.');
+    });
+}
+window.startPhotoboothCamera = startPhotoboothCamera;
+
+function stopPhotoboothStream() {
+  if (pbState.stream) {
+    try {
+      pbState.stream.getTracks().forEach(function(t) { t.stop(); });
+    } catch(e) {}
+    pbState.stream = null;
+  }
+  var snapBtn = document.getElementById('pb_snap_btn');
+  if (snapBtn) snapBtn.disabled = true;
+  var placeholder = document.getElementById('pb_idle_placeholder');
+  if (placeholder && !pbState.capturedDataUrl) placeholder.hidden = false;
+}
+window.stopPhotoboothStream = stopPhotoboothStream;
+
+function flipPhotoboothCamera() {
+  pbState.facingMode = (pbState.facingMode === 'user') ? 'environment' : 'user';
+  stopPhotoboothStream();
+  startPhotoboothCamera();
+}
+window.flipPhotoboothCamera = flipPhotoboothCamera;
+
+function setPhotoboothFrame(frameKey, btn) {
+  pbState.frame = frameKey;
+  document.querySelectorAll('.pb-frame-btn').forEach(function(b) { b.classList.remove('is-selected'); });
+  if (btn) btn.classList.add('is-selected');
+
+  var overlay = document.getElementById('pb_frame_overlay');
+  if (overlay) {
+    overlay.className = 'pb-frame-overlay frame-' + frameKey;
+  }
+  if (pbState.capturedDataUrl) {
+    renderPhotoboothComposite();
+  }
+}
+window.setPhotoboothFrame = setPhotoboothFrame;
+
+function togglePhotoboothSticker(emoji) {
+  var idx = pbState.stickers.indexOf(emoji);
+  if (idx > -1) {
+    pbState.stickers.splice(idx, 1);
+  } else {
+    if (pbState.stickers.length >= 6) {
+      pbState.stickers.shift();
+    }
+    pbState.stickers.push(emoji);
+  }
+  renderPhotoboothStickers();
+  if (pbState.capturedDataUrl) {
+    renderPhotoboothComposite();
+  }
+}
+window.togglePhotoboothSticker = togglePhotoboothSticker;
+
+function clearPhotoboothStickers() {
+  pbState.stickers = [];
+  renderPhotoboothStickers();
+  if (pbState.capturedDataUrl) {
+    renderPhotoboothComposite();
+  }
+}
+window.clearPhotoboothStickers = clearPhotoboothStickers;
+
+function renderPhotoboothStickers() {
+  var layer = document.getElementById('pb_stickers_layer');
+  if (!layer) return;
+  layer.innerHTML = '';
+  pbState.stickers.forEach(function(st) {
+    var span = document.createElement('span');
+    span.className = 'pb-sticker-stamp';
+    span.textContent = st;
+    layer.appendChild(span);
+  });
+}
+
+function updatePhotoboothCaption(val) {
+  pbState.caption = val;
+  var el = document.getElementById('pb_frame_title');
+  if (el) el.textContent = val || (window.LESSON_ID ? 'Lesson ' + window.LESSON_ID : "Tonight's Math Work");
+}
+window.updatePhotoboothCaption = updatePhotoboothCaption;
+
+function snapPhotoboothPicture() {
+  var video = document.getElementById('pb_video');
+  var countdown = document.getElementById('pb_countdown');
+  var flash = document.getElementById('pb_flash');
+  var snapBtn = document.getElementById('pb_snap_btn');
+  if (snapBtn) snapBtn.disabled = true;
+
+  var count = 3;
+  if (countdown) {
+    countdown.hidden = false;
+    countdown.textContent = String(count);
+  }
+
+  var timer = setInterval(function() {
+    count--;
+    if (count > 0) {
+      if (countdown) countdown.textContent = String(count);
+    } else {
+      clearInterval(timer);
+      if (countdown) countdown.hidden = true;
+      if (flash) {
+        flash.hidden = false;
+        flash.classList.add('is-active');
+        setTimeout(function() {
+          flash.classList.remove('is-active');
+          flash.hidden = true;
+        }, 400);
+      }
+      captureFrameFromVideo(video);
+    }
+  }, 1000);
+}
+window.snapPhotoboothPicture = snapPhotoboothPicture;
+
+function captureFrameFromVideo(video) {
+  if (!video) return;
+  var canvas = document.getElementById('pb_canvas');
+  if (!canvas) return;
+  var w = video.videoWidth || 800;
+  var h = video.videoHeight || 600;
+  canvas.width = w;
+  canvas.height = h;
+  var ctx = canvas.getContext('2d');
+  
+  if (pbState.facingMode === 'user') {
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(video, 0, 0, w, h);
+  if (pbState.facingMode === 'user') {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  pbState.capturedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+  stopPhotoboothStream();
+  renderPhotoboothComposite();
+}
+
+function uploadPhotoboothImage(input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.getElementById('pb_canvas');
+      if (!canvas) return;
+      var maxDim = 1200;
+      var w = img.width;
+      var h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      pbState.capturedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      stopPhotoboothStream();
+      renderPhotoboothComposite();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+window.uploadPhotoboothImage = uploadPhotoboothImage;
+
+function renderPhotoboothComposite() {
+  if (!pbState.capturedDataUrl) return;
+  var img = new Image();
+  img.onload = function() {
+    var canvas = document.getElementById('pb_canvas');
+    if (!canvas) return;
+    var w = img.width;
+    var h = img.height;
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext('2d');
+
+    ctx.drawImage(img, 0, 0, w, h);
+
+    var frameColor = '#f59e0b';
+    if (pbState.frame === 'notebook') frameColor = '#0284c7';
+    else if (pbState.frame === 'stars') frameColor = '#8b5cf6';
+    else if (pbState.frame === 'polaroid') frameColor = '#ffffff';
+
+    var borderW = Math.max(12, Math.round(w * 0.025));
+    ctx.lineWidth = borderW;
+    ctx.strokeStyle = frameColor;
+    ctx.strokeRect(borderW / 2, borderW / 2, w - borderW, h - borderW);
+
+    var bannerH = Math.max(36, Math.round(h * 0.08));
+    ctx.fillStyle = frameColor;
+    ctx.fillRect(0, 0, w, bannerH);
+    ctx.fillStyle = (pbState.frame === 'polaroid') ? '#0f172a' : '#ffffff';
+    ctx.font = 'bold ' + Math.round(bannerH * 0.5) + 'px system-ui, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏆 MATH CHAMPION · ' + (window.LESSON_ID ? 'LESSON ' + window.LESSON_ID.toUpperCase() : 'EDUWONDERLAB'), borderW + 8, bannerH / 2);
+
+    var footH = Math.max(44, Math.round(h * 0.1));
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    ctx.fillRect(0, h - footH, w, footH);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold ' + Math.round(footH * 0.42) + 'px system-ui, sans-serif';
+    ctx.fillText(pbState.caption || "Tonight's Math Work Done Together!", borderW + 8, h - footH / 2);
+
+    if (pbState.stickers.length) {
+      ctx.font = Math.round(footH * 0.75) + 'px sans-serif';
+      var stX = w - borderW - 20;
+      for (var s = pbState.stickers.length - 1; s >= 0; s--) {
+        ctx.textAlign = 'right';
+        ctx.fillText(pbState.stickers[s], stX, h - footH / 2);
+        stX -= Math.round(footH * 0.85);
+      }
+      ctx.textAlign = 'left';
+    }
+
+    var compositeUrl = canvas.toDataURL('image/jpeg', 0.9);
+    var resImg = document.getElementById('pb_captured_img');
+    if (resImg) {
+      resImg.src = compositeUrl;
+      resImg.hidden = false;
+    }
+    var video = document.getElementById('pb_video');
+    if (video) video.hidden = true;
+    var placeholder = document.getElementById('pb_idle_placeholder');
+    if (placeholder) placeholder.hidden = true;
+    var liveOverlay = document.getElementById('pb_frame_overlay');
+    if (liveOverlay) liveOverlay.style.display = 'none';
+
+    var actionsLive = document.getElementById('pb_actions_live');
+    var actionsReview = document.getElementById('pb_actions_review');
+    if (actionsLive) actionsLive.hidden = true;
+    if (actionsReview) actionsReview.hidden = false;
+
+    currentWorkPhotoData = compositeUrl;
+  };
+  img.src = pbState.capturedDataUrl;
+}
+
+function retakePhotobooth() {
+  pbState.capturedDataUrl = '';
+  var resImg = document.getElementById('pb_captured_img');
+  if (resImg) resImg.hidden = true;
+  var video = document.getElementById('pb_video');
+  if (video) video.hidden = false;
+  var actionsLive = document.getElementById('pb_actions_live');
+  var actionsReview = document.getElementById('pb_actions_review');
+  if (actionsLive) actionsLive.hidden = false;
+  if (actionsReview) actionsReview.hidden = true;
+  startPhotoboothCamera();
+}
+window.retakePhotobooth = retakePhotobooth;
+
+function downloadPhotoboothPhoto() {
+  var canvas = document.getElementById('pb_canvas');
+  if (!canvas) return;
+  var link = document.createElement('a');
+  link.download = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
+  link.href = canvas.toDataURL('image/jpeg', 0.92);
+  link.click();
+}
+window.downloadPhotoboothPhoto = downloadPhotoboothPhoto;
+
+function printPhotoboothPhoto() {
+  var canvas = document.getElementById('pb_canvas');
+  if (!canvas) return;
+  var printImg = document.getElementById('pb_print_img');
+  var printCap = document.getElementById('pb_print_caption');
+  var printDate = document.getElementById('pb_print_date');
+  if (printImg) printImg.src = canvas.toDataURL('image/jpeg', 0.92);
+  if (printCap) printCap.textContent = pbState.caption || "Student Math Notebook & Family Verification";
+  if (printDate) printDate.textContent = new Date().toLocaleDateString();
+
+  document.body.classList.add('print-photobooth-only');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-photobooth-only');
+  }, 1000);
+}
+window.printPhotoboothPhoto = printPhotoboothPhoto;
+
+function attachPhotoboothToSignoff() {
+  if (!currentWorkPhotoData) return;
+  var previewImg = document.getElementById('work_photo_preview');
+  var previewWrap = document.getElementById('work_photo_preview_wrap');
+  if (previewImg) previewImg.src = currentWorkPhotoData;
+  if (previewWrap) previewWrap.hidden = false;
+
+  var attachBtn = document.getElementById('pb_attach_btn');
+  if (attachBtn) {
+    attachBtn.innerHTML = '✅ <span class="lang-en">Attached!</span><span class="lang-es" lang="es">¡Adjuntado!</span>';
+  }
+  var certPhoto = document.getElementById('display_family_photo');
+  var certPhotoBox = document.getElementById('display_family_photo_box');
+  if (certPhoto) certPhoto.src = currentWorkPhotoData;
+  if (certPhotoBox) certPhotoBox.hidden = false;
+
+  setTimeout(function() {
+    switchHomeworkTab('done');
+    var formEl = document.getElementById('signoff_form_wrapper');
+    if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+  }, 600);
+}
+window.attachPhotoboothToSignoff = attachPhotoboothToSignoff;
 }
 
 

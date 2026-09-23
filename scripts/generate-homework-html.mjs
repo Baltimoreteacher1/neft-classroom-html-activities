@@ -31,6 +31,7 @@ import {
   renderHomeworkTabs,
   renderLearnTab,
   renderMoreContent,
+  renderPhotoboothTab,
   renderPlayTabPanel,
   renderProblemHintButton,
   renderQuickCheckIntro,
@@ -1401,6 +1402,7 @@ function generateHtml(lessonId, config) {
     ),
     renderPlayTabPanel(config, lessonId),
     renderDoneTab(config, lessonId),
+    renderPhotoboothTab(config, lessonId),
   ].join("\n");
 
   const tabsHtml = renderHomeworkTabs(

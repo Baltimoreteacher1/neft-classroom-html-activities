@@ -2671,6 +2671,70 @@
     return bodyEl;
   }
 
+  function openFamilyHwQrModal(href, title) {
+    var modal = document.getElementById("hw_quick_qr_modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "hw_quick_qr_modal";
+      modal.className = "hw-quick-qr-modal";
+      modal.style.cssText =
+        "position:fixed;inset:0;background:rgba(15,23,42,0.65);display:flex;align-items:center;justify-content:center;z-index:99999;padding:16px;";
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal || e.target.classList.contains("hw-qr-close")) {
+          modal.hidden = true;
+        }
+      });
+      document.body.appendChild(modal);
+    }
+    var fullUrl = location.origin + href;
+    var qrApi =
+      "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+      encodeURIComponent(fullUrl);
+    modal.innerHTML =
+      '<div class="hw-qr-sheet" style="background:#fff;border-radius:16px;max-width:380px;width:100%;padding:20px;box-shadow:0 12px 32px rgba(0,0,0,0.2);position:relative;text-align:center;">' +
+      '<div class="hw-qr-head" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:10px;margin-bottom:14px;">' +
+      '<h3 style="margin:0;font-size:16px;color:#0f172a;">📱 ' +
+      (title || "Family Homework") +
+      "</h3>" +
+      '<button type="button" class="hw-qr-close" aria-label="Close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;padding:4px;">✕</button>' +
+      "</div>" +
+      '<div class="hw-qr-body">' +
+      '<p style="font-size:13px;color:#475569;margin:0 0 12px;">Scan with your phone camera or project for families:</p>' +
+      '<div style="background:#f8fafc;border-radius:12px;padding:12px;display:inline-block;border:1px solid #e2e8f0;margin-bottom:12px;">' +
+      '<img src="' +
+      qrApi +
+      '" alt="QR Code" width="220" height="220" style="display:block;border-radius:8px;" />' +
+      "</div>" +
+      '<p style="font-size:11.5px;color:#64748b;word-break:break-all;margin:0 0 14px;"><a href="' +
+      href +
+      '" target="_blank" style="color:#0284c7;">' +
+      fullUrl +
+      "</a></p>" +
+      '<div style="display:flex;gap:8px;justify-content:center;">' +
+      '<button type="button" class="btn btn-sm btn-primary hw-qr-copy-btn" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12.5px;background:#0284c7;color:#fff;border:none;cursor:pointer;">📋 Copy Link</button>' +
+      '<a href="' +
+      href +
+      '" target="_blank" class="btn btn-sm btn-outline-secondary" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12.5px;border:1px solid #cbd5e1;color:#334155;text-decoration:none;background:#f8fafc;">🚀 Open Homework</a>' +
+      "</div>" +
+      "</div>" +
+      "</div>";
+    var copyBtn = modal.querySelector(".hw-qr-copy-btn");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function () {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(fullUrl).then(function () {
+            copyBtn.textContent = "✅ Copied!";
+            setTimeout(function () {
+              copyBtn.textContent = "📋 Copy Link";
+            }, 2000);
+          });
+        }
+      });
+    }
+    modal.hidden = false;
+  }
+  window.openFamilyHwQrModal = openFamilyHwQrModal;
+
   function makeOutlineItem(act, isProject, scormTitlePrefix) {
     var li = document.createElement("li");
     li.className = "lesson-outline-item";
@@ -2684,6 +2748,22 @@
     }
     a.innerHTML = outlineItemIcon(act, isProject) + " " + act.text;
     li.appendChild(a);
+    if (act.isFamilyHomework) {
+      var qrBtn = document.createElement("button");
+      qrBtn.type = "button";
+      qrBtn.className = "btn-hw-quick-qr";
+      qrBtn.style.cssText =
+        "margin-left:6px;padding:1px 6px;font-size:11px;font-weight:700;border-radius:6px;background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;cursor:pointer;vertical-align:middle;";
+      qrBtn.title = "Show QR Code for families";
+      qrBtn.setAttribute("aria-label", "Show QR Code for " + act.text);
+      qrBtn.textContent = "📱 QR";
+      qrBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openFamilyHwQrModal(act.href, act.text);
+      });
+      li.appendChild(qrBtn);
+    }
     if (canPackageForScorm(act.href)) {
       ensureOutlineMore(li).appendChild(
         makeScormLink(
