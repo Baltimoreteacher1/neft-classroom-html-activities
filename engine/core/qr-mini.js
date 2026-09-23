@@ -10,47 +10,51 @@ const ECC_L = 1;
 const PAD0 = 0xec;
 const PAD1 = 0x11;
 
-const EXP_TABLE = new Array(256);
+const EXP_TABLE = new Array(512);
 const LOG_TABLE = new Array(256);
-for (let i = 0; i < 8; i++) EXP_TABLE[i] = 1 << i;
-for (let i = 8; i < 256; i++)
-  EXP_TABLE[i] = EXP_TABLE[i - 4] ^ EXP_TABLE[i - 5] ^ EXP_TABLE[i - 6] ^ EXP_TABLE[i - 8];
-for (let i = 0; i < 255; i++) LOG_TABLE[EXP_TABLE[i]] = i;
-
-function gexp(n) {
-  while (n < 0) n += 255;
-  while (n >= 256) n -= 255;
-  return EXP_TABLE[n];
+for (let i = 0, x = 1; i < 255; i++) {
+  EXP_TABLE[i] = x;
+  EXP_TABLE[i + 255] = x;
+  LOG_TABLE[x] = i;
+  x <<= 1;
+  if (x & 256) x ^= 0x11d;
 }
 
-function glog(n) {
-  if (n < 1) throw new Error("glog");
-  return LOG_TABLE[n];
+function gmul(a, b) {
+  if (a === 0 || b === 0) return 0;
+  return EXP_TABLE[LOG_TABLE[a] + LOG_TABLE[b]];
 }
 
-function createPolynomial(num, shift) {
-  let offset = 0;
-  while (offset < num.length && num[offset] === 0) offset++;
-  const res = new Array(num.length - offset + shift);
-  for (let i = 0; i < num.length - offset; i++) res[i] = num[i + offset];
-  return res;
-}
-
-function modPolynomial(num, e) {
-  if (num.length - e.length < 0) return num;
-  const ratio = glog(num[0]) - glog(e[0]);
-  const res = num.slice();
-  for (let i = 0; i < e.length; i++) res[i] ^= gexp(glog(e[i]) + ratio);
-  return modPolynomial(res, e);
-}
-
-function getErrorCorrectPolynomial(ecLength) {
-  let e = [1];
-  for (let i = 0; i < ecLength; i++) {
-    e = createPolynomial(e, 1);
-    e[e.length - 1] ^= gexp(i);
+function polyMul(p1, p2) {
+  const result = new Array(p1.length + p2.length - 1).fill(0);
+  for (let i = 0; i < p1.length; i++) {
+    for (let j = 0; j < p2.length; j++) {
+      result[i + j] ^= gmul(p1[i], p2[j]);
+    }
   }
-  return e;
+  return result;
+}
+
+function getGeneratorPoly(numEcBytes) {
+  let g = [1];
+  for (let i = 0; i < numEcBytes; i++) {
+    g = polyMul(g, [1, EXP_TABLE[i]]);
+  }
+  return g;
+}
+
+function polyRemainder(data, numEcBytes) {
+  const gen = getGeneratorPoly(numEcBytes);
+  const msg = data.concat(new Array(numEcBytes).fill(0));
+  for (let i = 0; i < data.length; i++) {
+    const coef = msg[i];
+    if (coef !== 0) {
+      for (let j = 0; j < gen.length; j++) {
+        msg[i + j] ^= gmul(gen[j], coef);
+      }
+    }
+  }
+  return msg.slice(data.length);
 }
 
 function getBCHTypeInfo(data) {
@@ -121,12 +125,7 @@ function createData(version, data) {
       const dataCount = totalCount - 10;
       const chunk = buffer.slice(offset, offset + dataCount);
       offset += dataCount;
-      const rsPoly = getErrorCorrectPolynomial(10);
-      let mod = createPolynomial(chunk, 10);
-      for (let j = 0; j < chunk.length; j++) {
-        mod = modPolynomial(mod, rsPoly);
-      }
-      const ecChunk = mod.slice(-10);
+      const ecChunk = polyRemainder(chunk, 10);
       dcdata.push(chunk);
       ecdata.push(ecChunk);
     }

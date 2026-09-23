@@ -85,14 +85,20 @@ export function renderUnitRateBuilder(container, cfg = {}) {
 
     result.innerHTML =
       `<div class="urlab-card urlab-card-main">` +
-      `<div class="urlab-big">${fmt(rateAB)} ${esc(unitA)} per ${esc(unitBsing)}</div>` +
-      `<div class="urlab-work">${a} ${esc(unitA)} ÷ ${b} ${esc(unitB)} = ${fmt(rateAB)} ${esc(unitA)} per 1 ${esc(unitBsing)}</div>` +
+      `<div class="urlab-step"><span class="urlab-badge">Step 1</span> <strong>Ratio as Fraction:</strong> <span class="urlab-frac"><span class="urlab-frac-top">Top (Cost): $${a}</span><span class="urlab-frac-bottom">Bottom (Amount): ${b} ${esc(unitB)}</span></span></div>` +
+      `<div class="urlab-step"><span class="urlab-badge">Step 2</span> <strong>Divide Top ÷ Bottom:</strong> $${a} ÷ ${b} = <strong>$${fmt(rateAB)}</strong></div>` +
+      `<div class="urlab-step"><span class="urlab-badge">Step 3</span> <strong>Originally over 1:</strong> $${fmt(rateAB)} / 1 ${esc(unitBsing)} ($${fmt(rateAB)} for 1 ${esc(unitBsing)})</div>` +
+      `<div class="urlab-step urlab-step-highlight"><span class="urlab-badge urlab-badge-gold">Step 4</span> <strong>Drop the 1 (we don't keep the 1):</strong>` +
+      `<div class="urlab-big">$${fmt(rateAB)} per ${esc(unitBsing)}</div>` +
+      `<div class="urlab-subnote">★ We do NOT keep the 1 in our final unit rate!</div></div>` +
       `</div>` +
       `<div class="urlab-card">` +
+      `<div class="urlab-step"><span class="urlab-badge">Comparison</span> <strong>Items per Dollar:</strong></div>` +
+      `<div class="urlab-step">Divide ${b} ÷ ${a} = <strong>${fmt(rateBA)} / 1</strong></div>` +
       `<div class="urlab-big urlab-alt">${fmt(rateBA)} ${esc(unitB)} per ${esc(unitAsing)}</div>` +
-      `<div class="urlab-work">${b} ${esc(unitB)} ÷ ${a} ${esc(unitA)} = ${fmt(rateBA)} ${esc(unitB)} per 1 ${esc(unitAsing)}</div>` +
+      `<div class="urlab-work">${b} ${esc(unitB)} ÷ ${a} ${esc(unitA)}</div>` +
       `</div>` +
-      `<p class="urlab-explain">To get "per 1," divide by the quantity you want to reduce to 1.</p>`;
+      `<p class="urlab-explain"><strong>Top ÷ Bottom rule:</strong> Put total cost on top and amount on bottom. Divide Top ÷ Bottom to get the rate over 1, then drop the 1 to state the final unit rate!</p>`;
   }
 
   root.querySelector(".urlab-go").addEventListener("click", compute);
@@ -127,27 +133,35 @@ function injectStyles() {
   const s = document.createElement("style");
   s.id = "urlab-styles";
   s.textContent = `
-  .urlab{max-width:600px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .urlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
-  .urlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.4;}
+  .urlab{max-width:640px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:18px 18px 20px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
+  .urlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.15rem;}
+  .urlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.95rem;line-height:1.5;}
   .urlab-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;}
-  .urlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;}
-  .urlab-field input{width:96px;padding:8px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
+  .urlab-field{display:flex;flex-direction:column;gap:3px;font-size:.78rem;font-weight:700;color:${C.muted};text-transform:uppercase;}
+  .urlab-field input{width:104px;padding:8px 10px;font-size:1.15rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
   .urlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .urlab-per{align-self:center;padding-bottom:9px;font-weight:600;color:${C.muted};font-size:.9rem;}
-  .urlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
-  .urlab-go:hover{filter:brightness(1.08);}
+  .urlab-per{align-self:center;padding-bottom:9px;font-weight:700;color:${C.muted};font-size:.95rem;}
+  .urlab-go{padding:10px 18px;font-size:1rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#1d4ed8,#0d7a76);border:0;border-radius:10px;cursor:pointer;transition:transform 0.15s ease;}
+  .urlab-go:hover{filter:brightness(1.08);transform:translateY(-1px);}
   .urlab-go:focus-visible,.urlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
-  .urlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;}
-  .urlab-chip{padding:5px 12px;font-size:.85rem;font-weight:600;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
+  .urlab-presets{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 0;}
+  .urlab-chip{padding:6px 14px;font-size:.9rem;font-weight:700;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;transition:all 0.15s ease;}
   .urlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
-  .urlab-result{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
-  .urlab-card{flex:1 1 240px;min-width:220px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;padding:12px 14px;text-align:center;}
-  .urlab-card-main{border-color:${C.teal};background:#f2fcfa;}
-  .urlab-big{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.2rem;color:${C.teal};}
+  .urlab-result{margin-top:16px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+  .urlab-card{flex:1 1 280px;min-width:260px;background:#f8fbff;border:1.5px solid ${C.line};border-radius:14px;padding:16px;text-align:left;}
+  .urlab-card-main{border-color:${C.teal};background:#f0faf8;}
+  .urlab-step{margin-bottom:8px;font-size:.95rem;line-height:1.45;color:${C.ink};}
+  .urlab-badge{display:inline-block;padding:2px 8px;font-size:.75rem;font-weight:800;border-radius:999px;background:#e0f2fe;color:#0369a1;margin-right:6px;}
+  .urlab-badge-gold{background:#fef3c7;color:#b45309;}
+  .urlab-frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-weight:700;margin:0 4px;font-size:.9rem;}
+  .urlab-frac-top{border-bottom:2px solid ${C.ink};padding:0 4px;}
+  .urlab-frac-bottom{padding:0 4px;}
+  .urlab-step-highlight{background:#ffffff;border:1.5px solid #0d7a76;border-radius:10px;padding:10px 12px;margin-top:10px;text-align:center;}
+  .urlab-big{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.35rem;color:${C.teal};margin-top:4px;}
+  .urlab-subnote{font-size:.85rem;font-weight:700;color:#b45309;margin-top:2px;}
   .urlab-alt{color:${C.accent};}
-  .urlab-work{margin-top:4px;color:${C.muted};font-size:.85rem;}
-  .urlab-explain{flex-basis:100%;margin:2px auto 0;max-width:520px;color:${C.ink};font-size:.9rem;line-height:1.5;text-align:center;}
+  .urlab-work{margin-top:4px;color:${C.muted};font-size:.88rem;}
+  .urlab-explain{flex-basis:100%;margin:6px auto 0;max-width:560px;color:${C.ink};font-size:.95rem;line-height:1.55;text-align:center;}
   `;
   document.head.appendChild(s);
 }

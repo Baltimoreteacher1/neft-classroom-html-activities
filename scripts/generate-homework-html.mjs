@@ -34,6 +34,7 @@ import {
   renderPlayTabPanel,
   renderProblemHintButton,
   renderQuickCheckIntro,
+  renderRefrigeratorSheet,
   renderTogetherTab,
   renderWelcomeBanner,
   renderWordsTab,
@@ -1407,6 +1408,7 @@ function generateHtml(lessonId, config) {
     renderHelpDrawer(renderHelpContent(config), renderMoreContent(config, lessonId)),
   );
   const helpModalHtml = renderHelpModal();
+  const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
 
   return `<!doctype html>
 <html lang="en">
@@ -3043,14 +3045,12 @@ ${VISUAL_LABS_CSS}
    Polish layer — premium, TpT-quality finish (loads last).
    Refines shared content surfaces without changing structure.
    ============================================================ */
-body { font-size: 15px; line-height: 1.58; }
-.container { max-width: 840px; padding: 28px 18px 40px; }
+body { font-size: 18px; line-height: 1.65; }
+.container { max-width: 960px; padding: 28px 20px 44px; }
 
-/* On a laptop the 840px column left half the viewport empty while single
-   problem cards ran thousands of pixels tall. Give the reading column more
-   room — and keep the sticky bar's inner column locked to it. */
+/* On a laptop give the reading column more room — and keep the sticky bar's inner column locked to it. */
 @media (min-width: 1180px) {
-  .container, .status-bar-wrapper { max-width: 1000px; }
+  .container, .status-bar-wrapper { max-width: 1080px; }
 }
 
 /* Section headings get a clear accent + stronger hierarchy */
@@ -3504,6 +3504,59 @@ body .mwb-launcher {
 ${EDITORIAL_OVERRIDES}
 ${BIG_IDEA_CSS}
 ${ARENA_CSS}
+/* ============================================================
+   GLOBAL HIGH-LEGIBILITY TYPOGRAPHY SCALE (All Homeworks)
+   Bigger text, comfortable reading rhythm across all family devices
+   ============================================================ */
+body {
+  font-size: 18px !important;
+  line-height: 1.65 !important;
+}
+.problem-stem {
+  font-size: 20px !important;
+  line-height: 1.55 !important;
+  font-weight: 700 !important;
+}
+.problem-number-badge {
+  font-size: 20px !important;
+}
+.mc-option-label, .choice-text {
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+}
+.learning-big {
+  font-size: 20px !important;
+  line-height: 1.55 !important;
+}
+.bilingual-col, .worked-step, .welcome-lead, .watch-for-list, .watch-for, .hw-steps {
+  font-size: 17.5px !important;
+  line-height: 1.6 !important;
+}
+.hw-step-guide > summary {
+  font-size: 17px !important;
+}
+.step-label {
+  font-size: 17.5px !important;
+  line-height: 1.55 !important;
+}
+.custom-input, .custom-textarea {
+  font-size: 18px !important;
+}
+.btn-primary, .btn-secondary, .btn-check-one {
+  font-size: 17.5px !important;
+}
+.feedback-box, .explanation-box {
+  font-size: 17.5px !important;
+  line-height: 1.55 !important;
+}
+.math-talk-bubble {
+  font-size: 18.5px !important;
+  line-height: 1.55 !important;
+}
+.obj-popup-def {
+  font-size: 18px !important;
+  line-height: 1.6 !important;
+}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -3581,6 +3634,7 @@ ${ARENA_CSS}
   ${welcomeHtml}
 
   ${tabsHtml}
+  ${refrigeratorSheetHtml}
 
 </div>
 
@@ -3646,7 +3700,7 @@ let currentStreak = 0;
 const problemAttempts = {};
 const revealForced = {};
 function revealIsDue(idx) {
-  return (problemAttempts[idx] || 0) >= 2 || revealForced[idx] === true;
+  return (problemAttempts[idx] || 0) >= 3 || revealForced[idx] === true;
 }
 function forceReveal(idx) {
   revealForced[idx] = true;
@@ -5021,33 +5075,83 @@ function checkProblem(idx, options) {
       if (selected) {
         const expDiv = document.createElement("div");
         expDiv.className = "visual-explanation-card explanation-box";
-        if (firstMiss) {
-          // Coach, do not answer: the trap written for THIS choice, a way back
-          // in, and an explicit door to the full walkthrough for a family that
-          // would rather be shown than keep guessing.
-          expDiv.classList.add("is-nudge");
-          let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Not yet — here is a nudge", "Todavía no — aquí va una pista") + '</span></div>';
-          if (selectedFeedback) {
-            html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        if (isProblemCorrect) {
+          let html = '<div class="exp-header"><span>✅ ' + pickLangText("Solved! How to understand it", "¡Resuelto! Por qué funciona") + '</span></div>';
+          if (explanation) {
+            html += '<div class="exp-why"><strong>💡 ' + pickLangText("Key Step:", "Paso clave:") + '</strong> ' + explanation + '</div>';
           }
-          html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> ' +
+          html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
             pickLangText(
-              'Ask your student: <em>“What is this problem asking you to compare?”</em> Then let them pick again.',
-              'Pregunta a tu estudiante: <em>“¿Qué te pide comparar este problema?”</em> Luego deja que elija otra vez.'
+              'Ask your student: <em>“In your own words, why does this choice make mathematical sense?”</em>',
+              'Pregunta a tu estudiante: <em>“En tus propias palabras, ¿por qué esta opción tiene sentido matemático?”</em>'
             ) + '</div>';
-          html += '<div class="exp-retry"><button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
-            '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button></div>';
           expDiv.innerHTML = html;
         } else {
-          let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
-          if (!isProblemCorrect && selectedFeedback) {
-            html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+          const attempts = problemAttempts[idx] || 1;
+          const tier = revealForced[idx] ? 3 : Math.min(3, attempts);
+
+          if (tier === 1) {
+            // Tier 1: Clarify & Trap
+            expDiv.classList.add("is-nudge");
+            let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Hint 1 of 3 — Spot the Trap", "Pista 1 de 3 — Identifica la trampa") + '</span></div>';
+            if (selectedFeedback) {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Common Trap:", "Trampa común:") + '</strong> ' + selectedFeedback + '</div>';
+            } else {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Clarify:", "Aclaración:") + '</strong> ' +
+                pickLangText("Check what quantity the question asks for and look at your units carefully.", "Revisa qué cantidad pide la pregunta y observa las unidades con atención.") + '</div>';
+            }
+            html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+              pickLangText(
+                'Ask your student: <em>“What is this problem asking you to find or compare?”</em> Then try another choice.',
+                'Pregunta a tu estudiante: <em>“¿Qué te pide hallar o comparar este problema?”</em> Luego intenta otra opción.'
+              ) + '</div>';
+            html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
+              '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
+              '🧮 <span class="lang-en">Try with Math Tools</span><span class="lang-es" lang="es">Probar con herramientas</span></button></div>';
+            expDiv.innerHTML = html;
+          } else if (tier === 2) {
+            // Tier 2: Strategy Clue & Model
+            expDiv.classList.add("is-nudge");
+            let html = '<div class="exp-header"><span>💡 ' + pickLangText("Hint 2 of 3 — Strategy & Math Clue", "Pista 2 de 3 — Estrategia y pista matemática") + '</span></div>';
+            if (selectedFeedback) {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Remember:", "Recuerda:") + '</strong> ' + selectedFeedback + '</div>';
+            }
+            html += '<div class="exp-why"><strong>🎯 ' + pickLangText("Strategy Clue:", "Pista de estrategia:") + '</strong> ' +
+              pickLangText(
+                'Look at the relationship between the quantities. Can you write a fraction or divide Top ÷ Bottom to test the numbers?',
+                'Observa la relación entre las cantidades. ¿Puedes escribir una fracción o dividir Arriba ÷ Abajo para probar los números?'
+              ) + '</div>';
+            html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+              pickLangText(
+                'Ask: <em>“Which number goes on top, and which goes on bottom?”</em> or use the Math Tools workbench below.',
+                'Pregunta: <em>“¿Qué número va arriba y cuál va abajo?”</em> o usa las herramientas de matemáticas abajo.'
+              ) + '</div>';
+            html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
+              '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
+              '🧮 <span class="lang-en">Open Math Tools</span><span class="lang-es" lang="es">Abrir herramientas</span></button></div>';
+            expDiv.innerHTML = html;
+          } else {
+            // Tier 3: Full Step-by-Step Walkthrough
+            let html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step-by-Step Walkthrough", "Pista 3 de 3 — Repaso visual paso a paso") + '</span></div>';
+            if (selectedFeedback) {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Trap to avoid:", "Trampa a evitar:") + '</strong> ' + selectedFeedback + '</div>';
+            }
+            if (explanation) {
+              html += '<div class="exp-why"><strong>💡 ' + pickLangText("Key Step & Solution:", "Paso clave y solución:") + '</strong> ' + explanation + '</div>';
+            }
+            html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+              pickLangText(
+                'Ask your student: <em>“In your own words, how does the highlighted green answer solve the problem?”</em>',
+                'Pregunta a tu estudiante: <em>“En tus propias palabras, ¿cómo la respuesta verde destacada resuelve el problema?”</em>'
+              ) + '</div>';
+            html += '<div class="exp-tool" style="margin-top:8px;"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
+              '🧮 <span class="lang-en">Model with Math Tools</span><span class="lang-es" lang="es">Modelar con herramientas</span></button></div>';
+            expDiv.innerHTML = html;
           }
-          if (explanation) {
-            html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
-          }
-          html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
-          expDiv.innerHTML = html;
         }
         container.appendChild(expDiv);
       }
@@ -5253,13 +5357,15 @@ function checkProblem(idx, options) {
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = "Choose an answer, then check again.";
       } else if (!revealIsDue(idx)) {
-        // Nothing is green yet, so the message must not say anything is.
-        feedbackMessage = pickLangText(
-          "Not yet — read the nudge above and try one more time.",
-          "Todavía no: lee la pista de arriba e inténtalo una vez más.",
-        );
+        const att = problemAttempts[idx] || 1;
+        feedbackMessage = att === 1
+          ? pickLangText("Not quite — check Hint 1 above and give it another shot!", "Todavía no: lee la Pista 1 arriba e inténtalo de nuevo.")
+          : pickLangText("Still tricky — review Hint 2 above and test with Math Tools.", "Casi: revisa la Pista 2 arriba y prueba con las herramientas.");
       } else {
-        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
+        feedbackMessage = pickLangText(
+          "Review complete — the correct choice is highlighted in green. Review the visual walkthrough above!",
+          "Repaso completo: la opción correcta está resaltada en verde. ¡Revisa la solución paso a paso arriba!"
+        );
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");

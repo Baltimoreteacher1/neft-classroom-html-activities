@@ -6,6 +6,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { qrSvg } from "@eduwonderlab/engine/core/qr-mini.js";
 import {
   DEFAULT_KITCHEN_TABLE,
   KITCHEN_TABLE,
@@ -2226,6 +2227,8 @@ export function renderWelcomeBanner(config, lessonId) {
           <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
           <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printRefrigeratorSheet()">📄 <span class="lang-en">1-Page Sheet</span><span class="lang-es" lang="es">Hoja de 1 pág.</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="saveForOfflineCarRide()">🚗 <span class="lang-en">Car Ride Mode</span><span class="lang-es" lang="es">Modo sin internet</span></button>
         </div>
 
         <div class="hw-hero-controls">
@@ -2240,6 +2243,15 @@ export function renderWelcomeBanner(config, lessonId) {
               </button>
               <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
                 🇪🇸 <span>Español</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="ht" onclick="setLanguageMode('ht')" aria-pressed="false">
+                🇭🇹 <span>Kreyòl</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="pt" onclick="setLanguageMode('pt')" aria-pressed="false">
+                🇧🇷 <span>Português</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="ar" onclick="setLanguageMode('ar')" aria-pressed="false">
+                🇸🇦 <span>العربية</span>
               </button>
             </div>
           </div>
@@ -2333,7 +2345,10 @@ export function renderLearningTonight(config) {
 
   return `
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
-      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h2 class="section-title" style="margin:0;">📖 <span class="lang-en">What we're learning tonight</span><span class="lang-es" lang="es">Qué aprendemos hoy</span></h2>
+        <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(en)}', '${escAttr(es)}')" title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+      </div>
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
@@ -2370,14 +2385,19 @@ export function renderConceptExplainer(config) {
 
   return `
     <section class="guided-section card section-visual" aria-label="Visual concept explainer">
-      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
       <!-- renderLearnTab() strips the <section> wrapper, so the oversized
            "big idea" type scale hangs off this inner div, not off
            .section-visual (which never reaches the page). -->
       <div class="big-idea">
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
-        <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div>
+            <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
+            <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+          </div>
+          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen / Escuchar" aria-label="Listen to big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+        </div>
       </div>
       <figure class="concept-visual-wrap">${visual.svg}${caption}</figure>
       <div class="concept-quick-wrap">
@@ -2780,7 +2800,55 @@ export function renderCelebration(config = null, _lessonId = "") {
               <span class="lang-en">Tonight's Math Reflection (optional):</span>
               <span class="lang-es" lang="es">Reflexión de hoy (opcional):</span>
             </label>
-            <textarea id="parent_reflection_input" rows="2" placeholder="e.g. What strategy or idea clicked best for your student tonight? / ¿Qué estrategia o idea se entendió mejor hoy?"></textarea>
+            <textarea id="parent_reflection_input" rows="2" placeholder="What strategy or idea clicked best for your student tonight?"></textarea>
+          </div>
+
+          <div class="signoff-field feeling-pulse-field" style="margin:12px 0;">
+            <label class="feeling-pulse-label" style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+              <span class="lang-en">How did tonight's math feel?</span>
+              <span class="lang-es" lang="es">¿Cómo se sintió la matemática de hoy?</span>
+            </label>
+            <div class="feeling-options" role="radiogroup" aria-label="Tonight feeling" style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn-feeling is-selected" data-feeling="smooth" onclick="selectFeeling(this, 'smooth')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+                <span class="feeling-icon">🟢</span> <span class="lang-en">Smooth sailing</span><span class="lang-es" lang="es">¡Muy bien!</span>
+              </button>
+              <button type="button" class="btn-feeling" data-feeling="discussion" onclick="selectFeeling(this, 'discussion')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+                <span class="feeling-icon">🟡</span> <span class="lang-en">Needed discussion</span><span class="lang-es" lang="es">Con algo de ayuda</span>
+              </button>
+              <button type="button" class="btn-feeling" data-feeling="challenge" onclick="selectFeeling(this, 'challenge')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+                <span class="feeling-icon">🔴</span> <span class="lang-en">Tough battle</span><span class="lang-es" lang="es">Nos costó trabajo</span>
+              </button>
+            </div>
+            <input type="hidden" id="family_feeling_input" value="smooth" />
+          </div>
+
+          <div class="signoff-field photo-upload-field" style="margin:12px 0;">
+            <label for="student_work_photo_input" style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+              <span class="lang-en">📸 Snap photo of student notebook or work (optional):</span>
+              <span class="lang-es" lang="es">📸 Foto del cuaderno o trabajo (opcional):</span>
+            </label>
+            <input type="file" id="student_work_photo_input" accept="image/*" capture="environment" onchange="previewWorkPhoto(this)" style="font-size:12px;" />
+            <div id="work_photo_preview_wrap" class="work-photo-preview-wrap" hidden style="margin-top:6px;">
+              <img id="work_photo_preview" alt="Student work preview" style="max-height:120px;border-radius:8px;border:1px solid #cbd5e1;display:block;" />
+              <button type="button" class="btn btn-sm btn-link text-danger" onclick="clearWorkPhoto()" style="border:none;background:none;color:#dc2626;cursor:pointer;padding:4px 0;font-size:12px;"><span class="lang-en">✕ Remove</span><span class="lang-es" lang="es">✕ Quitar</span></button>
+            </div>
+          </div>
+
+          <div class="signoff-field voice-memo-field" style="margin:12px 0;">
+            <label style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+              <span class="lang-en">🎙️ 20-Second Math Strategy Voice Memo (optional):</span>
+              <span class="lang-es" lang="es">🎙️ Nota de voz de 20 seg. explicando tu estrategia (opcional):</span>
+            </label>
+            <div class="voice-memo-controls" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <button type="button" id="btn_record_voice" class="btn btn-sm btn-outline-danger" onclick="toggleVoiceRecording()" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12.5px;cursor:pointer;background:#fef2f2;border:1.5px solid #f87171;color:#b91c1c;">
+                <span id="record_voice_icon">🎙️</span> <span id="record_voice_label"><span class="lang-en">Record Strategy</span><span class="lang-es" lang="es">Grabar explicación</span></span>
+              </button>
+              <span id="voice_timer" style="font-family:monospace;font-size:13px;font-weight:700;color:#dc2626;display:none;">0:00</span>
+              <div id="voice_player_wrap" style="display:none;align-items:center;gap:8px;">
+                <audio id="voice_audio_player" controls style="height:32px;max-width:220px;"></audio>
+                <button type="button" class="btn btn-sm text-danger" onclick="deleteVoiceRecording()" style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:12px;"><span class="lang-en">✕ Delete</span><span class="lang-es" lang="es">✕ Borrar</span></button>
+              </div>
+            </div>
           </div>
 
           <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
@@ -2802,6 +2870,9 @@ export function renderCelebration(config = null, _lessonId = "") {
               <div id="display_family_streak_box" class="cert-streak-box">
                 <p>🔥 <strong id="display_family_streak_text"><span class="lang-en">1-Night Streak</span><span class="lang-es" lang="es">Racha de 1 noche</span></strong></p>
               </div>
+              <div id="display_family_feeling_box" class="cert-feeling-box" style="margin:6px 0;">
+                <span id="display_family_feeling_badge" class="badge-feeling" style="display:inline-block;padding:3px 8px;border-radius:6px;background:#f1f5f9;font-size:12px;font-weight:700;"></span>
+              </div>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
                 <p class="cert-note-title"><strong><span class="lang-en">Note to teacher:</span><span class="lang-es" lang="es">Nota para el maestro:</span></strong></p>
                 <p id="display_parent_note" class="cert-note-content"></p>
@@ -2810,11 +2881,22 @@ export function renderCelebration(config = null, _lessonId = "") {
                 <p class="cert-note-title"><strong><span class="lang-en">Family reflection:</span><span class="lang-es" lang="es">Reflexión familiar:</span></strong></p>
                 <p id="display_parent_reflection" class="cert-note-content"></p>
               </div>
+              <div id="display_family_photo_box" class="cert-photo-box" hidden style="margin-top:8px;">
+                <p class="cert-note-title"><strong><span class="lang-en">Student Work Photo:</span><span class="lang-es" lang="es">Foto del trabajo:</span></strong></p>
+                <img id="display_family_photo" alt="Student notebook work" style="max-width:180px;border-radius:8px;border:1.5px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+              </div>
+              <div id="display_family_voice_box" class="cert-voice-box" hidden style="margin-top:8px;">
+                <p class="cert-note-title"><strong><span class="lang-en">Student Voice Memo:</span><span class="lang-es" lang="es">Nota de voz del estudiante:</span></strong></p>
+                <audio id="display_family_voice_player" controls style="height:32px;max-width:220px;margin-top:4px;"></audio>
+              </div>
             </div>
           </div>
           <div class="cert-actions">
             <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
               <span class="lang-en">🖨️ Print Certificate</span><span class="lang-es" lang="es">🖨️ Imprimir certificado</span>
+            </button>
+            <button type="button" class="btn btn-outline-secondary print-cert-btn" onclick="printRefrigeratorSheet()">
+              <span class="lang-en">📄 1-Page Refrigerator Sheet</span><span class="lang-es" lang="es">📄 Hoja familiar (1 pág.)</span>
             </button>
             <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
               <span class="lang-en">Edit sign-off</span><span class="lang-es" lang="es">Editar firma</span>
@@ -7698,6 +7780,24 @@ export function renderPlayTabPanel(config, lessonId = "") {
         <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
         <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
       </p>
+      <div class="coop-mode-banner" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:12px 16px;margin:12px 0 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:24px;">👥</span>
+          <div>
+            <strong style="font-size:13.5px;color:#15803d;display:block;">
+              <span class="lang-en">Pass-the-Phone Co-Op Mode</span>
+              <span class="lang-es" lang="es">Modo Cooperativo: Pasa el Teléfono</span>
+            </strong>
+            <small style="font-size:12px;color:#166534;">
+              <span class="lang-en">Turn 1: Parent sets or guesses · Turn 2: Student solves · Turn 3: Reveal together!</span>
+              <span class="lang-es" lang="es">Turno 1: Padre propone · Turno 2: Estudiante resuelve · Turno 3: ¡Celebren juntos!</span>
+            </small>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-success" id="btn_toggle_coop" onclick="toggleCoOpMode()" style="font-weight:700;padding:6px 14px;border-radius:8px;cursor:pointer;background:#ffffff;border:1.5px solid #22c55e;color:#15803d;">
+          <span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>
+        </button>
+      </div>
       ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('done')">
@@ -7735,6 +7835,89 @@ export function renderProblemHintButton(problem, visual = "") {
 export function renderDoneTab(config = null, lessonId = "") {
   const inner = renderCelebration(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
   return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
+}
+
+export function renderRefrigeratorSheet(config = {}, lessonId = "") {
+  const displayId = displayLessonId(lessonId);
+  const title = config.familyNotes?.sessionTitle || config.title || "Lesson Practice";
+  const keyEn = keyIdea(config);
+  const keyEs = keyIdeaEs(config);
+  const watchCues = watchForCues(config).slice(0, 3);
+  const quickChecks = (config.practice?.approaching || config.practice?.onLevel || []).slice(0, 2);
+
+  const origin = "https://eduwonderlab.com";
+  const hwUrl = `${origin}/lessons/${lessonId}/homework.html`;
+  const qr = qrSvg(hwUrl, { size: 90, margin: 1, fg: "#0f172a" });
+
+  return `
+    <div class="refrigerator-sheet-print-container" aria-hidden="true">
+      <div class="rf-header">
+        <div class="rf-title-group">
+          <span class="rf-kicker">EduWonderLab Mathematics · Grade 6 Core Program</span>
+          <h1 class="rf-title">Lesson ${esc(displayId)}: ${esc(title)}</h1>
+          <p class="rf-sub">🏠 <strong><span class="lang-en">Family Math Night Companion</span><span class="lang-es" lang="es">Hoja Familiar de Matemáticas</span></strong></p>
+        </div>
+        <div class="rf-qr-box">
+          ${qr}
+          <span class="rf-qr-label"><span class="lang-en">Scan for interactive practice &amp; games</span><span class="lang-es" lang="es">Escanea para jugar</span></span>
+        </div>
+      </div>
+
+      <div class="rf-grid">
+        <div class="rf-col-left">
+          <div class="rf-card rf-card-bigidea">
+            <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
+            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> ${esc(completeSentence(keyEn))}</p>
+            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+          </div>
+
+          <div class="rf-card rf-card-dinner">
+            <h3>💬 <span class="lang-en">Dinner Table Talk</span><span class="lang-es" lang="es">Preguntas para la cena</span></h3>
+            <p class="rf-dinner-intro"><span class="lang-en">Ask your student — let them explain the thinking:</span><span class="lang-es" lang="es">Pregunta a tu estudiante — deja que explique su razonamiento:</span></p>
+            <ul class="rf-dinner-list">
+              ${watchCues.map((c) => `<li>${c.icon} <span>${esc(c.en)}</span><br/><small lang="es">${esc(c.es)}</small></li>`).join("")}
+            </ul>
+          </div>
+        </div>
+
+        <div class="rf-col-right">
+          <div class="rf-card rf-card-practice">
+            <h3>✏️ <span class="lang-en">Quick Paper Practice</span><span class="lang-es" lang="es">Práctica rápida en papel</span></h3>
+            ${quickChecks
+              .map(
+                (q, idx) => `
+              <div class="rf-prob">
+                <p class="rf-prob-stem"><strong>#${idx + 1}:</strong> ${esc(q.stem || q.question || "")}</p>
+                <div class="rf-workspace">
+                  <span class="rf-ws-label"><span class="lang-en">Student Work &amp; Thinking:</span><span class="lang-es" lang="es">Espacio de trabajo del estudiante:</span></span>
+                </div>
+              </div>
+            `,
+              )
+              .join("")}
+          </div>
+        </div>
+      </div>
+
+      <div class="rf-slip">
+        <div class="rf-slip-head">
+          <span>✂️ <em><span class="lang-en">Tear off or keep on refrigerator</span><span class="lang-es" lang="es">Desprende o cuelga en el refrigerador</span></em></span>
+          <strong><span class="lang-en">Family Sign-Off Slip</span><span class="lang-es" lang="es">Tira de confirmación familiar</span></strong>
+        </div>
+        <div class="rf-slip-fields">
+          <span><span class="lang-en">Student:</span><span class="lang-es" lang="es">Estudiante:</span> ______________________</span>
+          <span><span class="lang-en">Parent/Guardian:</span><span class="lang-es" lang="es">Firma:</span> ______________________</span>
+          <span><span class="lang-en">Date:</span><span class="lang-es" lang="es">Fecha:</span> __________</span>
+        </div>
+        <div class="rf-slip-mood">
+          <span><span class="lang-en">Tonight's math felt:</span><span class="lang-es" lang="es">La matemática de hoy se sintió:</span></span>
+          <span>[ &nbsp; ] 🟢 <span class="lang-en">Smooth</span><span class="lang-es" lang="es">Bien</span></span>
+          <span>[ &nbsp; ] 🟡 <span class="lang-en">Needed help</span><span class="lang-es" lang="es">Con ayuda</span></span>
+          <span>[ &nbsp; ] 🔴 <span class="lang-en">Tough</span><span class="lang-es" lang="es">Difícil</span></span>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 /**
@@ -8492,8 +8675,9 @@ function syncDocumentLanguage(mode) {
 
 function setLanguageMode(mode) {
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
-  document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
+  document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es', 'lang-mode-ht', 'lang-mode-pt', 'lang-mode-ar');
   document.body.classList.add('lang-mode-' + mode);
+  document.documentElement.dir = (mode === 'ar') ? 'rtl' : 'ltr';
   syncDocumentLanguage(mode);
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
@@ -8501,6 +8685,130 @@ function setLanguageMode(mode) {
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
 }
+
+function toggleCoOpMode() {
+  var active = document.body.classList.toggle('coop-mode-active');
+  var btn = document.getElementById('btn_toggle_coop');
+  if (btn) {
+    btn.innerHTML = active
+      ? '<span class="lang-en">✓ Co-Op Active (2-Player)</span><span class="lang-es" lang="es">✓ Co-Op Activo (2 Jugadores)</span>'
+      : '<span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>';
+    if (active) {
+      btn.style.background = '#22c55e';
+      btn.style.color = '#ffffff';
+    } else {
+      btn.style.background = '#ffffff';
+      btn.style.color = '#15803d';
+    }
+  }
+}
+window.toggleCoOpMode = toggleCoOpMode;
+
+function saveForOfflineCarRide() {
+  try {
+    var key = 'hw_offline_pack_' + (window.LESSON_ID || 'current');
+    localStorage.setItem(key, JSON.stringify({
+      savedAt: new Date().toISOString(),
+      lessonId: window.LESSON_ID,
+      title: window.LESSON_TITLE
+    }));
+    var btn = document.getElementById('hw_offline_btn');
+    if (btn) {
+      btn.innerHTML = '✓ <span class="lang-en">Saved for Car Ride!</span><span class="lang-es" lang="es">¡Guardado para el viaje!</span>';
+    }
+    alert("✓ Saved for Offline Practice! You can now finish this homework on the bus, in the car, or without internet. / ¡Guardado para practicar sin internet!");
+  } catch(e) {
+    alert("Saved for offline practice on this device.");
+  }
+}
+window.saveForOfflineCarRide = saveForOfflineCarRide;
+
+var currentVoiceMemoData = '';
+var voiceMediaRecorder = null;
+var voiceAudioChunks = [];
+var voiceRecordTimer = null;
+var voiceRecordSeconds = 0;
+
+function toggleVoiceRecording() {
+  if (voiceMediaRecorder && voiceMediaRecorder.state === 'recording') {
+    voiceMediaRecorder.stop();
+    return;
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Audio recording is not supported in this browser. / La grabación no es compatible en este navegador.");
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    voiceAudioChunks = [];
+    voiceMediaRecorder = new MediaRecorder(stream);
+    voiceMediaRecorder.ondataavailable = function(e) {
+      if (e.data && e.data.size > 0) voiceAudioChunks.push(e.data);
+    };
+    voiceMediaRecorder.onstop = function() {
+      clearInterval(voiceRecordTimer);
+      var timerEl = document.getElementById('voice_timer');
+      if (timerEl) timerEl.style.display = 'none';
+      var labelEl = document.getElementById('record_voice_label');
+      if (labelEl) labelEl.innerHTML = '<span class="lang-en">Record Again</span><span class="lang-es" lang="es">Grabar otra vez</span>';
+      var iconEl = document.getElementById('record_voice_icon');
+      if (iconEl) iconEl.textContent = '🎙️';
+      stream.getTracks().forEach(function(t) { t.stop(); });
+
+      var blob = new Blob(voiceAudioChunks, { type: 'audio/webm' });
+      var reader = new FileReader();
+      reader.onload = function(evt) {
+        currentVoiceMemoData = evt.target.result;
+        var player = document.getElementById('voice_audio_player');
+        var wrap = document.getElementById('voice_player_wrap');
+        if (player && wrap) {
+          player.src = currentVoiceMemoData;
+          wrap.style.display = 'inline-flex';
+        }
+      };
+      reader.readAsDataURL(blob);
+    };
+
+    voiceMediaRecorder.start();
+    voiceRecordSeconds = 0;
+    var timerEl = document.getElementById('voice_timer');
+    if (timerEl) {
+      timerEl.textContent = '0:00';
+      timerEl.style.display = 'inline';
+    }
+    var labelEl = document.getElementById('record_voice_label');
+    if (labelEl) labelEl.innerHTML = '<span class="lang-en">Stop (Recording...)</span><span class="lang-es" lang="es">Detener (Grabando...)</span>';
+    var iconEl = document.getElementById('record_voice_icon');
+    if (iconEl) iconEl.textContent = '⏹️';
+
+    voiceRecordTimer = setInterval(function() {
+      voiceRecordSeconds++;
+      if (timerEl) {
+        var m = Math.floor(voiceRecordSeconds / 60);
+        var s = voiceRecordSeconds % 60;
+        timerEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }
+      if (voiceRecordSeconds >= 30) {
+        if (voiceMediaRecorder && voiceMediaRecorder.state === 'recording') {
+          voiceMediaRecorder.stop();
+        }
+      }
+    }, 1000);
+  }).catch(function() {
+    alert("Microphone access was blocked. Please allow mic permissions to record. / Se bloqueó el acceso al micrófono.");
+  });
+}
+window.toggleVoiceRecording = toggleVoiceRecording;
+
+function deleteVoiceRecording() {
+  currentVoiceMemoData = '';
+  var player = document.getElementById('voice_audio_player');
+  var wrap = document.getElementById('voice_player_wrap');
+  if (player && wrap) {
+    player.src = '';
+    wrap.style.display = 'none';
+  }
+}
+window.deleteVoiceRecording = deleteVoiceRecording;
 
 function toggleSignoffSubmitBtn() {
   const checkbox = document.getElementById('parent_reviewed_checkbox');
@@ -8526,6 +8834,92 @@ function printProblemsOnly() {
     document.body.classList.remove('print-problems-only');
   }, 1000);
 }
+
+function printRefrigeratorSheet() {
+  document.body.classList.add('print-refrigerator-sheet');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-refrigerator-sheet');
+  }, 1000);
+}
+window.printRefrigeratorSheet = printRefrigeratorSheet;
+
+function speakHomeworkText(enText, esText) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    var isEs = document.body.classList.contains('lang-mode-es') || document.documentElement.lang === 'es';
+    var text = (isEs && esText) ? esText : (enText || esText);
+    var lang = (isEs && esText) ? 'es-US' : 'en-US';
+    if (!text || !text.trim()) return;
+    var utter = new SpeechSynthesisUtterance(text.trim());
+    utter.lang = lang;
+    utter.rate = 0.95;
+    window.speechSynthesis.speak(utter);
+  } catch(e) {}
+}
+window.speakHomeworkText = speakHomeworkText;
+window.speakSectionText = speakHomeworkText;
+
+function selectFeeling(btn, feeling) {
+  document.querySelectorAll('.btn-feeling').forEach(function(b) { b.classList.remove('is-selected'); });
+  btn.classList.add('is-selected');
+  var input = document.getElementById('family_feeling_input');
+  if (input) input.value = feeling;
+}
+window.selectFeeling = selectFeeling;
+
+var currentWorkPhotoData = '';
+function previewWorkPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        var maxDim = 800;
+        var w = img.width;
+        var h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        currentWorkPhotoData = canvas.toDataURL('image/jpeg', 0.75);
+      } catch (err) {
+        currentWorkPhotoData = e.target.result;
+      }
+      var preview = document.getElementById('work_photo_preview');
+      var wrap = document.getElementById('work_photo_preview_wrap');
+      if (preview && wrap) {
+        preview.src = currentWorkPhotoData;
+        wrap.hidden = false;
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+window.previewWorkPhoto = previewWorkPhoto;
+
+function clearWorkPhoto() {
+  currentWorkPhotoData = '';
+  var input = document.getElementById('student_work_photo_input');
+  if (input) input.value = '';
+  var wrap = document.getElementById('work_photo_preview_wrap');
+  if (wrap) wrap.hidden = true;
+}
+window.clearWorkPhoto = clearWorkPhoto;
 
 function initHomeworkShareLinks() {
   var url = encodeURIComponent(window.location.href);
@@ -8561,6 +8955,7 @@ function saveParentSignoff() {
   const noteVal = document.getElementById('parent_note_input')?.value.trim();
   const reflVal = document.getElementById('parent_reflection_input')?.value.trim();
   const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
+  const feelingVal = document.getElementById('family_feeling_input')?.value || 'smooth';
   const lessonId = window.LESSON_ID || 'general';
   const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
   
@@ -8586,6 +8981,10 @@ function saveParentSignoff() {
     parentName: nameVal,
     note: noteVal,
     reflection: reflVal,
+    feeling: feelingVal,
+    photo: currentWorkPhotoData ? 'present' : '',
+    photoData: currentWorkPhotoData || '',
+    voiceMemoData: currentVoiceMemoData || '',
     date: signoffDate,
     lessonTitle: lessonTitle
   };
@@ -8605,6 +9004,7 @@ function saveParentSignoff() {
       parentName: nameVal,
       note: noteVal,
       reflection: reflVal,
+      feeling: feelingVal,
       date: signoffDate,
       studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
       section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
@@ -8653,6 +9053,47 @@ function updateSignoffUI(data) {
     }
   }
 
+  const feelingBadge = document.getElementById('display_family_feeling_badge');
+  const feelingBox = document.getElementById('display_family_feeling_box');
+  if (feelingBadge && feelingBox) {
+    if (data.feeling === 'challenge') {
+      feelingBadge.innerHTML = '<span class="lang-en">🔴 Tough battle tonight</span><span class="lang-es" lang="es">🔴 Nos costó trabajo hoy</span>';
+      feelingBox.hidden = false;
+    } else if (data.feeling === 'discussion') {
+      feelingBadge.innerHTML = '<span class="lang-en">🟡 Needed some discussion</span><span class="lang-es" lang="es">🟡 Con algo de ayuda</span>';
+      feelingBox.hidden = false;
+    } else if (data.feeling === 'smooth') {
+      feelingBadge.innerHTML = '<span class="lang-en">🟢 Smooth sailing tonight</span><span class="lang-es" lang="es">🟢 ¡Muy bien hoy!</span>';
+      feelingBox.hidden = false;
+    } else {
+      feelingBox.hidden = true;
+    }
+  }
+
+  const photoBox = document.getElementById('display_family_photo_box');
+  const photoEl = document.getElementById('display_family_photo');
+  if (photoBox && photoEl) {
+    var photoSrc = data.photoData || currentWorkPhotoData;
+    if (photoSrc) {
+      photoEl.src = photoSrc;
+      photoBox.hidden = false;
+    } else {
+      photoBox.hidden = true;
+    }
+  }
+
+  const voiceBox = document.getElementById('display_family_voice_box');
+  const voicePlayer = document.getElementById('display_family_voice_player');
+  if (voiceBox && voicePlayer) {
+    var voiceSrc = data.voiceMemoData || currentVoiceMemoData;
+    if (voiceSrc) {
+      voicePlayer.src = voiceSrc;
+      voiceBox.hidden = false;
+    } else {
+      voiceBox.hidden = true;
+    }
+  }
+
   const streakText = document.getElementById('display_family_streak_text');
   if (streakText) {
     var sc = getFamilyStreakCount();
@@ -8698,27 +9139,19 @@ function editParentSignoff() {
   if (printCert) printCert.classList.remove('is-signed');
 }
 
-/* THE DEFAULT IS ONE LANGUAGE, NOT TWO.
-   Bilingual was the default, so every family read every sentence twice — the
-   single largest reason this page felt long and technical. It is not a
-   translation cost: on lesson 6-1 the six panels hold ~9,240 words, and roughly
-   half of them are the other language's copy of the half you can read. A
-   Spanish-speaking family loses nothing, because a browser set to Spanish now
-   OPENS in Spanish instead of having to find a toggle; bilingual survives as a
-   choice for families who want to read both, which is a real audience and a
-   minority of it. Whatever a family last chose still wins over both. */
 function preferredLanguageMode() {
   try {
     const saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
+    if (saved === 'en' || saved === 'es' || saved === 'bilingual' || saved === 'ht' || saved === 'pt' || saved === 'ar') return saved;
   } catch (e) {}
   try {
     const langs = navigator.languages && navigator.languages.length
       ? navigator.languages
       : [navigator.language || ''];
-    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) {
-      return 'es';
-    }
+    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) return 'es';
+    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('ht') === 0; })) return 'ht';
+    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('pt') === 0; })) return 'pt';
+    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('ar') === 0; })) return 'ar';
   } catch (e) {}
   return 'en';
 }
@@ -9140,7 +9573,7 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
 .step-badge .lang-en, .step-badge .lang-es { color: inherit; }
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
-.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-big { font-size: 20px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.5; }
 .learning-words { margin-top: 12px; }
 .learning-words-label {
   display: block;
@@ -12585,5 +13018,215 @@ export const ARENA_CSS = `
   .hw-hero::before, .hw-hero::after { content: none; }
   .btn, .btn-primary { box-shadow: none !important; }
   .bottom-status-bar { display: none !important; }
+}
+
+/* ── Upgrades: Read-aloud, Feeling pulse, Work photo, Refrigerator Sheet ──── */
+.btn-read-aloud {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--teal-light, #dff2ee);
+  color: var(--teal-ink, #0c6f6b);
+  border: 1px solid rgba(31, 166, 162, 0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all 0.15s ease;
+}
+.btn-read-aloud:hover {
+  background: var(--teal, #1fa6a2);
+  color: #fff;
+}
+.btn-read-aloud.is-speaking {
+  background: var(--coral, #d9795d);
+  color: #fff;
+  animation: pulseSpeaking 1.5s infinite;
+}
+@keyframes pulseSpeaking {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.feeling-options .btn-feeling {
+  transition: all 0.15s ease;
+}
+.feeling-options .btn-feeling:hover {
+  border-color: #94a3b8;
+}
+.feeling-options .btn-feeling.is-selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.work-photo-preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.refrigerator-sheet-print-container {
+  display: none;
+}
+
+@media print {
+  body.print-refrigerator-sheet * {
+    visibility: hidden !important;
+  }
+  body.print-refrigerator-sheet .refrigerator-sheet-print-container,
+  body.print-refrigerator-sheet .refrigerator-sheet-print-container * {
+    visibility: visible !important;
+  }
+  body.print-refrigerator-sheet .refrigerator-sheet-print-container {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  body.print-refrigerator-sheet .rf-sheet-page {
+    border: 2px dashed #0284c7;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  body.print-refrigerator-sheet .rf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-title-area h2 {
+    font-size: 18px;
+    margin: 0;
+    color: #0f172a;
+  }
+  body.print-refrigerator-sheet .rf-title-area p {
+    font-size: 13px;
+    margin: 2px 0 0;
+    color: #475569;
+  }
+  body.print-refrigerator-sheet .rf-qr-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  body.print-refrigerator-sheet .rf-qr-box svg {
+    width: 68px;
+    height: 68px;
+  }
+  body.print-refrigerator-sheet .rf-qr-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #475569;
+    margin-top: 2px;
+  }
+  body.print-refrigerator-sheet .rf-big-idea-box {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-section-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #0369a1;
+    margin-bottom: 4px;
+  }
+  body.print-refrigerator-sheet .rf-big-idea-text {
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+    color: #0c4a6e;
+  }
+  body.print-refrigerator-sheet .rf-table-talk-box {
+    background: #fdf4ff;
+    border: 1px solid #f5d0fe;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-talk-prompts {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    font-size: 11.5px;
+    line-height: 1.35;
+    color: #581c87;
+  }
+  body.print-refrigerator-sheet .rf-practice-section {
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-practice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  body.print-refrigerator-sheet .rf-prob-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #ffffff;
+  }
+  body.print-refrigerator-sheet .rf-prob-head {
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 4px;
+  }
+  body.print-refrigerator-sheet .rf-prob-stem {
+    font-size: 11.5px;
+    line-height: 1.35;
+    margin: 0 0 6px;
+    color: #0f172a;
+  }
+  body.print-refrigerator-sheet .rf-work-box {
+    height: 70px;
+    border: 1px dashed #94a3b8;
+    border-radius: 6px;
+    background: #fafafa;
+    position: relative;
+  }
+  body.print-refrigerator-sheet .rf-work-box-label {
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    font-size: 9px;
+    color: #94a3b8;
+  }
+  body.print-refrigerator-sheet .rf-signoff-strip {
+    border-top: 2px dashed #cbd5e1;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+  }
+  body.print-refrigerator-sheet .rf-sig-lines {
+    display: flex;
+    gap: 16px;
+  }
+  body.print-refrigerator-sheet .rf-sig-line {
+    border-bottom: 1px solid #0f172a;
+    width: 140px;
+    height: 16px;
+    display: inline-block;
+  }
 }
 `;

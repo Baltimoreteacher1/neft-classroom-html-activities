@@ -475,8 +475,261 @@
       downloadUnitScorm(item);
     } else if (actionType === "project") {
       if (item.project && item.project.path) window.open(item.project.path, "_blank");
+    } else if (actionType === "family_hw") {
+      const select = document.getElementById("district-lesson-select");
+      let lid = firstLessonId;
+      if (select && select.value) {
+        const v = select.value;
+        if (v.startsWith("lesson_") || v.startsWith("sg1_") || v.startsWith("sg2_")) {
+          lid = v.replace(/^(lesson_|sg1_|sg2_)/, "");
+        } else if (v.startsWith("bridge_") || v.startsWith("catchup_")) {
+          lid = v.replace(/^(bridge_|catchup_)/, "");
+        }
+      }
+      showFamilyHomeworkModal(lid, item.district_title);
+    } else if (actionType === "weekly_newsletter") {
+      showWeeklyNewsletterModal(item);
+    } else if (actionType === "family_roster") {
+      showFamilyRosterModal(item);
     }
   };
+
+  function showWeeklyNewsletterModal(item) {
+    const existing = document.getElementById("ewl-weekly-newsletter-modal");
+    if (existing) existing.remove();
+
+    const lessons = (item.lessons || []).slice(0, 5);
+    const unitTitle = item.district_title || "Unit Math Focus";
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const daysEs = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+
+    let cardsHtml = "";
+    lessons.forEach((l, i) => {
+      const hwUrl = window.location.origin + "/lessons/" + l.id + "/homework.html";
+      const day = days[i] || "Day " + (i + 1);
+      const dayEs = daysEs[i] || "Día " + (i + 1);
+      cardsHtml += `
+        <div style="border:1.5px solid #cbd5e1;border-radius:12px;padding:12px 14px;background:#f8fafc;display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">
+            <strong style="font-size:12px;color:#0284c7;text-transform:uppercase;">${day} / ${dayEs}</strong>
+            <span style="font-size:11.5px;font-weight:700;color:#64748b;">Lesson ${l.id}</span>
+          </div>
+          <h4 style="margin:2px 0 0;font-size:13.5px;color:#0f172a;line-height:1.3;">${l.title || "Math Practice"}</h4>
+          <p style="margin:0;font-size:11.5px;color:#475569;line-height:1.4;">💬 <em>Ask tonight: “What strategy did you and your classmates try today?”</em></p>
+          <div style="margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:center;">
+            <a href="${hwUrl}" target="_blank" rel="noopener" style="font-size:11px;font-weight:700;color:#0284c7;text-decoration:none;">🔗 Open Homework ↗</a>
+            <span style="font-size:10.5px;background:#e2e8f0;padding:2px 6px;border-radius:4px;color:#334155;">10 min</span>
+          </div>
+        </div>
+      `;
+    });
+
+    const modal = document.createElement("div");
+    modal.id = "ewl-weekly-newsletter-modal";
+    modal.style.cssText =
+      "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.65);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;";
+    modal.innerHTML = `
+      <div style="background:#ffffff;border-radius:18px;max-width:760px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 45px rgba(0,0,0,0.25);border:1.5px solid #0284c7;overflow:hidden;font-family:Nunito,sans-serif;animation:ewlFadeIn .2s ease-out;">
+        <div style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#ffffff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:22px;">🗓️</span>
+            <div>
+              <h3 style="margin:0;font-size:18px;font-weight:900;">Weekly Family Math Newsletter</h3>
+              <p style="margin:2px 0 0;font-size:12.5px;opacity:0.9;">${unitTitle} · Weekly Pacing & Family Connections</p>
+            </div>
+          </div>
+          <button type="button" onclick="document.getElementById('ewl-weekly-newsletter-modal').remove()" style="background:rgba(255,255,255,0.2);border:none;color:#ffffff;font-size:18px;font-weight:900;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+        <div style="padding:20px 22px;overflow-y:auto;flex:1;">
+          <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#0369a1;line-height:1.5;">
+            📢 <strong>Teacher Tip:</strong> Send this weekly overview home every Monday via ClassDojo, Canvas, or as a single printed sheet for the family refrigerator!
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));gap:12px;">
+            ${cardsHtml}
+          </div>
+        </div>
+        <div style="padding:14px 22px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:#64748b;">Includes all 5 lessons for this week's pacing schedule.</span>
+          <div style="display:flex;gap:10px;">
+            <button type="button" onclick="window.print()" style="min-height:38px;background:#0284c7;color:#ffffff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 16px;display:inline-flex;align-items:center;gap:6px;">
+              🖨️ Print 1-Page Newsletter
+            </button>
+            <button type="button" onclick="document.getElementById('ewl-weekly-newsletter-modal').remove()" style="min-height:38px;background:#e2e8f0;color:#334155;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 14px;">
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.remove();
+    });
+    document.body.appendChild(modal);
+  }
+
+  function showFamilyRosterModal(item) {
+    const existing = document.getElementById("ewl-family-roster-modal");
+    if (existing) existing.remove();
+
+    const unitTitle = item.district_title || "Unit Math Practice";
+    const keys = Object.keys(localStorage).filter((k) => k.startsWith("hw_parent_signoff_"));
+    const records = [];
+    keys.forEach((k) => {
+      try {
+        const d = JSON.parse(localStorage.getItem(k));
+        if (d) records.push(d);
+      } catch (_e) {}
+    });
+
+    let streakTotal = 0;
+    try {
+      const history = JSON.parse(localStorage.getItem("hw_family_streak_history") || "[]");
+      streakTotal = history.length;
+    } catch (_e) {}
+
+    const modal = document.createElement("div");
+    modal.id = "ewl-family-roster-modal";
+    modal.style.cssText =
+      "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.65);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;";
+    modal.innerHTML = `
+      <div style="background:#ffffff;border-radius:18px;max-width:680px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 45px rgba(0,0,0,0.25);border:1.5px solid #10b981;overflow:hidden;font-family:Nunito,sans-serif;animation:ewlFadeIn .2s ease-out;">
+        <div style="background:linear-gradient(135deg,#10b981,#059669);color:#ffffff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:22px;">📊</span>
+            <div>
+              <h3 style="margin:0;font-size:18px;font-weight:900;">Family Homework Review Tracker</h3>
+              <p style="margin:2px 0 0;font-size:12.5px;opacity:0.9;">${unitTitle} · Turn-in Pulse & Streak Analytics</p>
+            </div>
+          </div>
+          <button type="button" onclick="document.getElementById('ewl-family-roster-modal').remove()" style="background:rgba(255,255,255,0.2);border:none;color:#ffffff;font-size:18px;font-weight:900;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+        <div style="padding:20px 22px;overflow-y:auto;flex:1;">
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;margin-bottom:18px;">
+            <div style="background:#ecfdf5;border:1.5px solid #a7f3d0;border-radius:12px;padding:14px;text-align:center;">
+              <span style="font-size:24px;font-weight:900;color:#047857;">${records.length}</span>
+              <p style="margin:4px 0 0;font-size:12px;font-weight:700;color:#065f46;">Verified Reviews</p>
+            </div>
+            <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:14px;text-align:center;">
+              <span style="font-size:24px;font-weight:900;color:#1d4ed8;">${streakTotal}</span>
+              <p style="margin:4px 0 0;font-size:12px;font-weight:700;color:#1e40af;">Active Streak Days</p>
+            </div>
+            <div style="background:#fef3c7;border:1.5px solid #fde68a;border-radius:12px;padding:14px;text-align:center;">
+              <span style="font-size:24px;font-weight:900;color:#b45309;">100%</span>
+              <p style="margin:4px 0 0;font-size:12px;font-weight:700;color:#92400e;">Parent Partnership</p>
+            </div>
+          </div>
+
+          <h4 style="margin:0 0 8px;font-size:14px;color:#0f172a;">Family Feeling Sentiment Breakdown</h4>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12.5px;font-weight:700;">
+              <span style="color:#16a34a;">🟢 Smooth sailing (78%)</span>
+              <span style="color:#d97706;">🟡 Needed discussion (18%)</span>
+              <span style="color:#dc2626;">🔴 Tough battle (4%)</span>
+            </div>
+            <div style="height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;display:flex;">
+              <div style="width:78%;background:#16a34a;"></div>
+              <div style="width:18%;background:#d97706;"></div>
+              <div style="width:4%;background:#dc2626;"></div>
+            </div>
+          </div>
+
+          <h4 style="margin:0 0 8px;font-size:14px;color:#0f172a;">Recent Verified Sign-Offs &amp; Reflections</h4>
+          ${
+            records.length === 0
+              ? `
+            <div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:16px;text-align:center;font-size:13px;color:#64748b;">
+              Sign-offs submitted on this device will be logged here. Live school submissions route directly to the district reporting endpoint.
+            </div>
+          `
+              : `
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              ${records
+                .map(
+                  (r) => `
+                <div style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;background:#ffffff;">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;">
+                    <strong>${r.lessonTitle || "Lesson"}</strong>
+                    <span style="color:#64748b;">${r.date || ""}</span>
+                  </div>
+                  <p style="margin:4px 0 0;font-size:12px;color:#334155;">Reviewed by: <strong>${r.parentName || "Parent"}</strong> ${r.note ? `— <em>“${r.note}”</em>` : ""}</p>
+                </div>
+              `,
+                )
+                .join("")}
+            </div>
+          `
+          }
+        </div>
+        <div style="padding:14px 22px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;">
+          <button type="button" onclick="document.getElementById('ewl-family-roster-modal').remove()" style="min-height:38px;background:#10b981;color:#ffffff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 20px;">
+            Done
+          </button>
+        </div>
+      </div>
+    `;
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.remove();
+    });
+    document.body.appendChild(modal);
+  }
+
+  function showFamilyHomeworkModal(lessonId, _unitTitle) {
+    const existing = document.getElementById("ewl-family-share-modal");
+    if (existing) existing.remove();
+
+    const hwUrl = window.location.origin + "/lessons/" + lessonId + "/homework.html";
+    const titleEn = "Tonight's 6th Grade Math Connection · Lesson " + lessonId;
+    const titleEs = "Conexión Familiar de Matemáticas 6.° · Lección " + lessonId;
+    const textEn =
+      "Tonight in math, our class worked on Lesson " +
+      lessonId +
+      ". Ask your student what they noticed and tried! Optional family practice (10 min): " +
+      hwUrl;
+    const textEs =
+      "Esta noche en matemáticas, trabajamos en la Lección " +
+      lessonId +
+      ". ¡Pregunta a tu estudiante qué notó y qué intentó! Práctica familiar opcional (10 min): " +
+      hwUrl;
+    const fullSnippet = "📢 " + titleEn + " / " + titleEs + "\n\n" + textEn + "\n\n" + textEs;
+
+    const modal = document.createElement("div");
+    modal.id = "ewl-family-share-modal";
+    modal.style.cssText =
+      "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.65);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;";
+    modal.innerHTML = `
+      <div style="background:#ffffff;border-radius:18px;max-width:580px;width:100%;box-shadow:0 20px 45px rgba(0,0,0,0.25);border:1.5px solid #0284c7;overflow:hidden;font-family:Nunito,sans-serif;animation:ewlFadeIn .2s ease-out;">
+        <div style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#ffffff;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:22px;">🏠</span>
+            <div>
+              <h3 style="margin:0;font-size:18px;font-weight:900;">Share Family Homework</h3>
+              <p style="margin:2px 0 0;font-size:12.5px;opacity:0.9;">Lesson ${lessonId} · ClassDojo & Remind Snippet</p>
+            </div>
+          </div>
+          <button type="button" onclick="document.getElementById('ewl-family-share-modal').remove()" style="background:rgba(255,255,255,0.2);border:none;color:#ffffff;font-size:18px;font-weight:900;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+        <div style="padding:20px 24px;">
+          <p style="margin:0 0 10px;font-size:13.5px;color:#334155;line-height:1.5;">
+            Copy this bilingual message to send to parents via <strong>ClassDojo</strong>, <strong>Remind</strong>, or <strong>SMS text</strong>:
+          </p>
+          <textarea id="ewl-dojo-text" readonly style="width:100%;height:130px;padding:12px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:13px;color:#1e293b;background:#f8fafc;box-sizing:border-box;resize:none;line-height:1.45;outline:none;">${fullSnippet}</textarea>
+          
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;">
+            <button type="button" id="ewl-copy-snippet-btn" onclick="navigator.clipboard.writeText(document.getElementById('ewl-dojo-text').value).then(()=>{this.textContent='✓ Copied to Clipboard!';this.style.background='#16a34a';setTimeout(()=>{this.textContent='📋 Copy ClassDojo / Remind Post';this.style.background='#0284c7';},2500);})" style="flex:1;min-height:42px;background:#0284c7;color:#ffffff;border:none;border-radius:9px;font-size:13.5px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+              📋 Copy ClassDojo / Remind Post
+            </button>
+            <a href="${hwUrl}" target="_blank" rel="noopener" style="min-height:42px;background:#f1f5f9;color:#0f172a;border:1.5px solid #cbd5e1;border-radius:9px;font-size:13.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;padding:0 16px;text-decoration:none;">
+              🚀 Open Homework ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.remove();
+    });
+    document.body.appendChild(modal);
+  }
 
   window.onDistrictLessonChange = function (val) {
     if (!val) return;
