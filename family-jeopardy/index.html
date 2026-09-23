@@ -1186,6 +1186,354 @@
         .cell { min-height: 60px; }
         .cell .g { display: none; }
       }
+    
+      /* Projector Font Resizer & Master Volume */
+      :root {
+        --font-scale: 1;
+      }
+      body {
+        font-size: calc(1rem * var(--font-scale));
+      }
+      .zoom-seg {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        padding: 2px;
+      }
+      .zoom-seg button {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-family: var(--display);
+        transition: color 0.1s, background 0.1s;
+      }
+      .zoom-seg button:hover {
+        color: var(--gold);
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .zoom-seg button.active {
+        background: var(--gold);
+        color: #1a1200;
+      }
+
+      .volume-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 0.85rem;
+      }
+      .volume-box input[type="range"] {
+        width: 55px;
+        height: 5px;
+        accent-color: var(--mint);
+        cursor: pointer;
+      }
+
+      /* Buzzer Pad on Clue Card */
+      .buzzer-box {
+        margin: 10px auto 12px;
+        max-width: 780px;
+        background: rgba(7, 15, 43, 0.65);
+        border: 2px solid rgba(255, 255, 255, 0.16);
+        border-radius: 18px;
+        padding: 10px 14px;
+        text-align: center;
+      }
+      .buzzer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .buzzer-header .buzzer-kbd-hint {
+        font-size: 0.8rem;
+        opacity: 0.8;
+      }
+      .buzzer-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+      .buzzer-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid var(--c);
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 800;
+        transition: transform 0.1s, background 0.1s;
+      }
+      .buzzer-btn:not(:disabled):hover {
+        background: var(--c);
+        color: #04102a;
+        transform: translateY(-2px);
+      }
+      .buzzer-btn.active-buzz {
+        background: var(--c);
+        color: #04102a;
+        box-shadow: 0 0 20px var(--c);
+        animation: pulseBuzz 0.4s infinite alternate;
+      }
+      @keyframes pulseBuzz {
+        from { transform: scale(1); }
+        to { transform: scale(1.06); }
+      }
+      .buzzer-btn.locked-out {
+        opacity: 0.35;
+        cursor: not-allowed;
+        border-style: dashed;
+        filter: grayscale(0.8);
+      }
+      .buzz-badge {
+        background: rgba(0, 0, 0, 0.35);
+        color: #fff;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: grid;
+        place-items: center;
+        font-family: var(--display);
+        font-size: 0.85rem;
+      }
+      .active-buzz .buzz-badge {
+        background: #04102a;
+        color: #fff;
+      }
+      .buzz-alert-bar {
+        margin: 10px auto 2px;
+        padding: 8px 18px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #ff5c7a, #ff9f1c);
+        color: #fff;
+        font-family: var(--display);
+        font-size: 1.15rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 4px 14px rgba(255, 92, 122, 0.4);
+        animation: pop 0.25s cubic-bezier(0.2, 1.4, 0.4, 1);
+      }
+      .buzz-alert-bar .pass-btn {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.88rem;
+        font-family: var(--body);
+        font-weight: 800;
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .buzz-alert-bar .pass-btn:hover {
+        background: rgba(0, 0, 0, 0.6);
+      }
+
+      /* Multiple Choice Kid Scaffolds */
+      .mc-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin: 10px auto 4px;
+        max-width: 640px;
+      }
+      .mc-pill {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: 0.95rem;
+        color: #fff;
+      }
+
+      /* Certificate Modal & Print Styling */
+      .cert-card {
+        width: min(920px, 96vw);
+        background: #fff;
+        color: #0c1a40;
+        border-radius: 20px;
+        padding: clamp(16px, 2.5vw, 32px);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+        animation: pop 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+        position: relative;
+        margin: auto;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .cert-sheet {
+        border: 6px double #d4af37;
+        outline: 2px solid #b38728;
+        outline-offset: -12px;
+        padding: clamp(16px, 2.5vw, 32px);
+        text-align: center;
+        background: radial-gradient(circle at 50% 50%, #fffef8, #fbf7ee);
+        box-shadow: inset 0 0 25px rgba(212, 175, 55, 0.15);
+        position: relative;
+        margin-bottom: 16px;
+      }
+      .cert-seal {
+        font-size: 3.2rem;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      .cert-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.4rem, 3vw, 2.4rem);
+        font-weight: 900;
+        letter-spacing: 2px;
+        color: #8c6d1f;
+        margin: 0 0 4px;
+        text-transform: uppercase;
+      }
+      .cert-subtitle {
+        font-size: 0.95rem;
+        color: #665220;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+      .cert-awarded {
+        font-size: 1.05rem;
+        font-style: italic;
+        color: #555;
+        margin: 10px 0 4px;
+      }
+      .cert-name-input {
+        font-family: Georgia, cursive, serif;
+        font-size: clamp(1.6rem, 3.5vw, 2.7rem);
+        font-weight: 900;
+        color: #0b1a52;
+        text-align: center;
+        border: none;
+        border-bottom: 2px solid #d4af37;
+        background: transparent;
+        width: 90%;
+        max-width: 580px;
+        padding: 4px;
+        margin: 0 auto 10px;
+        outline: none;
+      }
+      .cert-reason {
+        max-width: 660px;
+        margin: 8px auto;
+        font-size: 1.02rem;
+        line-height: 1.45;
+        color: #243360;
+      }
+      .cert-score-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f7df8b, #d4af37);
+        color: #1a1200;
+        font-family: var(--display);
+        font-size: 1.25rem;
+        padding: 4px 18px;
+        border-radius: 999px;
+        margin: 8px 0 16px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      }
+      .cert-footer-row {
+        display: flex;
+        justify-content: space-around;
+        gap: 16px;
+        margin-top: 24px;
+        padding-top: 10px;
+        flex-wrap: wrap;
+      }
+      .cert-sig-block {
+        flex: 1;
+        min-width: 170px;
+        text-align: center;
+      }
+      .cert-sig-line {
+        border-top: 2px solid #444;
+        margin: 22px auto 4px;
+        width: 80%;
+      }
+      .cert-sig-label {
+        font-size: 0.88rem;
+        color: #444;
+        font-weight: 800;
+      }
+      .cert-meta-input {
+        font-family: inherit;
+        font-size: 0.92rem;
+        text-align: center;
+        border: none;
+        border-bottom: 1px dashed #aaa;
+        background: transparent;
+        width: 100%;
+        color: #222;
+        font-weight: 700;
+      }
+      .cert-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        padding: 8px;
+        flex-wrap: wrap;
+      }
+
+      @media print {
+        body {
+          background: #fff !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          color: #000 !important;
+        }
+        .topbar, main, #clue, #final, #winner, #shortcutsModal, #toast, #confetti, .cert-actions, .close-x {
+          display: none !important;
+        }
+        #certificateModal {
+          display: block !important;
+          position: static !important;
+          background: none !important;
+          padding: 0 !important;
+          width: 100% !important;
+          height: auto !important;
+        }
+        .cert-card {
+          box-shadow: none !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          max-height: none !important;
+          overflow: visible !important;
+        }
+        .cert-sheet {
+          outline: 2px solid #000 !important;
+          border: 6px double #b38728 !important;
+          page-break-after: always;
+          margin: 0 !important;
+          padding: 24px !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .cert-name-input, .cert-meta-input {
+          border-bottom: none !important;
+        }
+        @page {
+          size: landscape;
+          margin: 0.4in;
+        }
+      }
+
     </style>
   </head>
   <body>
@@ -1202,9 +1550,18 @@
           ><button data-lang="es">Español</button
           ><button data-lang="both">Both · Ambos</button>
         </div>
-        <button class="icon-btn" id="soundBtn" aria-pressed="true">
-          🔊 <span id="soundTxt">Sound</span>
+        <div class="zoom-seg" role="group" aria-label="Text Size / Tamaño de texto">
+          <button id="zoomOutBtn" title="Smaller text (A−)">A−</button
+          ><button id="zoomResetBtn" title="Default text size (A)" class="active">A</button
+          ><button id="zoomInBtn" title="Larger text (A+)">A+</button>
+        </div>
+        <button class="icon-btn" id="undoBtn" title="Undo / Deshacer (Ctrl+Z)" disabled>
+          ↩️ <span class="undo-txt">Undo</span>
         </button>
+        <div class="volume-box" title="Master Volume / Volumen principal">
+          <button id="soundBtn" style="background:transparent;padding:0;font-size:1rem" aria-label="Mute / Silenciar">🔊</button>
+          <input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
+        </div>
         <button class="icon-btn" id="fsBtn" title="Fullscreen / Pantalla completa">
           ⛶
         </button>
@@ -1223,6 +1580,7 @@
     <div id="final" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="finalTitle"></div>
     <div id="winner" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="winTitle"></div>
     <div id="shortcutsModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="scTitle"></div>
+    <div id="certificateModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="certTitle"></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
@@ -1681,7 +2039,136 @@
             ]),
           ],
         },
-      ];
+      
+        {
+          id: "math_olympics",
+          emoji: "🧮",
+          name: { en: "Math Olympics & Logic", es: "Olimpiadas Matemáticas y Lógica" },
+          blurb: {
+            en: "Clocks, money, fractions, shapes, patterns, and speedy mental math for every grade level!",
+            es: "Relojes, dinero, fracciones, figuras, patrones y cálculo mental veloz para todos los grados.",
+          },
+          final: {
+            q: {
+              en: "If a car travels at a steady speed of 60 miles per hour, how many minutes does it take to travel 45 miles?",
+              es: "Si un automóvil viaja a una velocidad constante de 60 millas por hora, ¿cuántos minutos tarda en recorrer 45 millas?",
+            },
+            a: {
+              en: "45 minutes (at 60 mph, you travel exactly 1 mile per minute)",
+              es: "45 minutos (a 60 mph, recorres exactamente 1 milla por minuto)",
+            },
+          },
+          cats: [
+            cat("⏰", "Time & Money", "Tiempo y Dinero", [
+              ["Which US coin is worth 10 cents: a nickel, a dime, or a quarter?", "¿Qué moneda de EE. UU. vale 10 centavos: un níquel (nickel), una de diez (dime) o un cuarto (quarter)?", "Dime (10 cents)", "Dime (10 centavos)", "It is the smallest coin in size! 🪙", "¡Es la moneda más pequeña de tamaño! 🪙"],
+              ["If a clock's minute hand points to 6 and the hour hand is between 3 and 4, what time is it?", "Si el minutero apunta al 6 y la manecilla corta está entre el 3 y el 4, ¿qué hora es?", "3:30 (half past 3)", "3:30 (tres y media)", "Count by 5s to the 6: 6 × 5 = 30 minutes! 🕒", "¡Cuenta de 5 en 5 hasta el 6: 6 × 5 = 30 minutos! 🕒"],
+              ["You buy a school backpack for $14.25 and pay with a $20 bill. What is your exact change?", "Compras una mochila por $14.25 y pagas con un billete de $20. ¿Cuánto es tu cambio exacto?", "$5.75", "$5.75", "Add 75¢ to make $15.00, then $5.00 more! 💵", "¡Suma 75¢ para llegar a $15.00, luego $5.00 más! 💵"],
+              ["A soccer match starts at 4:45 PM and lasts 2 hours and 25 minutes. What time does it end?", "Un partido de fútbol empieza a las 4:45 PM y dura 2 horas y 25 minutos. ¿A qué hora termina?", "7:10 PM", "7:10 PM", "Add 2 hours to get 6:45 PM, then add 25 minutes! ⚽", "¡Suma 2 horas para llegar a 6:45 PM y luego 25 minutos más! ⚽"],
+              ["A warm jacket costs $80. It is on sale for 25% off. What is the final sale price?", "Una chaqueta cuesta $80. Tiene un 25% de descuento. ¿Cuál es el precio de oferta?", "$60 (discount is $20)", "$60 (descuento de $20)", "25% is one quarter (1/4): 80 ÷ 4 = $20 off! 🏷️", "¡El 25% es la cuarta parte (1/4): 80 ÷ 4 = $20 de descuento! 🏷️"],
+            ]),
+            cat("🍕", "Fractions & Feasts", "Fracciones y Banquetes", [
+              ["If you cut an orange into 2 equal parts to share with a friend, what is each part called?", "Si cortas una naranja en 2 partes iguales para compartir, ¿cómo se llama cada parte?", "A half (1/2)", "Una mitad (un medio / 1/2)", "Two halves make a whole orange! 🍊", "¡Dos mitades forman una naranja entera! 🍊"],
+              ["A birthday pizza has 8 slices. If your family eats 4 slices, what fraction did you eat?", "Una pizza tiene 8 rebanadas. Si tu familia come 4 rebanadas, ¿qué fracción comieron?", "1/2 (or 4/8)", "1/2 (la mitad / 4/8)", "4 is exactly half of 8! 🍕", "¡4 es exactamente la mitad de 8! 🍕"],
+              ["Which fraction is greater: 1/3 or 1/5?", "¿Qué fracción es mayor: 1/3 o 1/5?", "1/3", "1/3", "Imagine sharing a cake: is your slice bigger with 3 friends or 5 friends? 🎂", "Imagina un pastel: ¿te toca más con 3 amigos o con 5 amigos? 🎂"],
+              ["What is 2/3 + 1/6? Give your answer in simplest form.", "¿Cuánto es 2/3 + 1/6? Da tu respuesta en su forma más simple.", "5/6", "5/6", "Convert 2/3 into sixths: 2/3 = 4/6. Now add 4/6 + 1/6! ✏️", "¡Convierte 2/3 a sextos: 2/3 = 4/6. Luego suma 4/6 + 1/6! ✏️"],
+              ["What is 3/4 divided by 2/3? (Give your answer as a simplified fraction or mixed number)", "¿Cuánto es 3/4 dividido entre 2/3? (Responde como fracción simplificada o número mixto)", "9/8 (or 1 1/8)", "9/8 (o 1 y 1/8)", "Multiply by the reciprocal: 3/4 × 3/2 = 9/8! 📐", "¡Multiplica por la fracción invertida: 3/4 × 3/2 = 9/8! 📐"],
+            ]),
+            cat("📐", "Shapes & Geometry", "Formas y Geometría", [
+              ["How many sides does a triangle have?", "¿Cuántos lados tiene un triángulo?", "3 sides", "3 lados", "Count them: 1, 2, 3! Like a nacho chip! 🔺", "¡Cuéntalos: 1, 2, 3! ¡Como un totopo de nacho! 🔺"],
+              ["What 4-sided shape has all four sides equal in length and 4 square corners?", "¿Qué figura de 4 lados tiene todos sus lados iguales y 4 esquinas rectas?", "A square", "Un cuadrado", "All four sides are identical twins! 🟩", "¡Los cuatro lados son hermanitos gemelos! 🟩"],
+              ["A rectangular school garden is 6 feet wide and 9 feet long. What is its perimeter?", "Un jardín escolar rectangular mide 6 pies de ancho y 9 pies de largo. ¿Cuál es su perímetro?", "30 feet (6+9+6+9)", "30 pies (6+9+6+9)", "Add all 4 outer sides: 6 + 9 + 6 + 9! 🌿", "¡Suma los 4 lados de alrededor: 6 + 9 + 6 + 9! 🌿"],
+              ["What is the sum of all three interior angles in any triangle?", "¿Cuánto suman los tres ángulos interiores de cualquier triángulo?", "180 degrees", "180 grados", "Same as a perfectly straight flat line! 📏", "¡Lo mismo que una línea completamente recta y plana! 📏"],
+              ["In a right-angled triangle, if the two shorter legs are 3 cm and 4 cm, how long is the hypotenuse?", "En un triángulo rectángulo, si los dos catetos miden 3 cm y 4 cm, ¿cuánto mide la hipotenusa?", "5 cm", "5 cm", "Pythagorean Theorem: 3² + 4² = 9 + 16 = 25 (√25 = 5)! 📐", "¡Teorema de Pitágoras: 3² + 4² = 9 + 16 = 25 (la raíz de 25 es 5)! 📐"],
+            ]),
+            cat("🧩", "Patterns & Logic", "Patrones y Lógica", [
+              ["Complete the color pattern: Red, Yellow, Red, Yellow, Red, ___?", "Completa el patrón: Rojo, Amarillo, Rojo, Amarillo, Rojo, ___?", "Yellow", "Amarillo", "Which bright sunny color comes next? 🟡", "¿Qué color brillante sigue en la fila? 🟡"],
+              ["Skip-count by tens: 10, 20, 30, 40, 50, ___?", "Cuenta de 10 en 10: 10, 20, 30, 40, 50, ___?", "60", "60", "Add 10 more to 50! 🔟", "¡Suma 10 más a 50! 🔟"],
+              ["I am an odd number between 20 and 30. The sum of my two digits is 9. What number am I?", "Soy un número impar entre 20 y 30. La suma de mis dos dígitos es 9. ¿Qué número soy?", "27", "27", "The first digit is 2. What plus 2 equals 9? (2 + 7 = 9) 🕵️", "El primer dígito es 2. ¿Qué número más 2 da 9? (2 + 7 = 9) 🕵️"],
+              ["What is the next number in the famous Fibonacci sequence: 1, 1, 2, 3, 5, 8, 13, ___?", "¿Cuál es el siguiente número en la secuencia de Fibonacci: 1, 1, 2, 3, 5, 8, 13, ___?", "21", "21", "Add the previous two numbers together: 8 + 13! 🌀", "¡Suma los dos números anteriores: 8 + 13! 🌀"],
+              ["If you roll two standard six-sided dice, what sum has the highest probability of appearing?", "Si lanzas dos dados comunes de seis caras, ¿qué suma tiene mayor probabilidad de salir?", "7 (six combinations: 1+6, 2+5, 3+4, etc.)", "7 (seis combinaciones: 1+6, 2+5, 3+4, etc.)", "There are 6 ways out of 36 to roll this lucky number! 🎲", "¡Hay 6 formas de 36 de sacar este afortunado número! 🎲"],
+            ]),
+            cat("⚡", "Mental Math Sprint", "Cálculo Mental Veloz", [
+              ["What is 5 + 5?", "¿Cuánto es 5 + 5?", "10", "10", "Count all the fingers on both of your hands! 🖐️🖐️", "¡Cuenta todos los dedos de tus dos manos! 🖐️🖐️"],
+              ["What is 25 + 25?", "¿Cuánto es 25 + 25?", "50", "50", "Two quarters make 50 cents! 🪙🪙", "¡Dos monedas de 25 centavos hacen 50 centavos! 🪙🪙"],
+              ["What is 12 × 4?", "¿Cuánto es 12 × 4?", "48", "48", "Double 12 is 24; double 24 is 48! ⚡", "¡El doble de 12 es 24; el doble de 24 es 48! ⚡"],
+              ["How much is a 15% tip on a $40 family dinner bill?", "¿Cuánto es una propina del 15% en una cuenta familiar de $40?", "$6.00", "$6.00", "10% of $40 is $4; 5% is half of that ($2). $4 + $2 = $6! 🍽️", "¡El 10% de $40 es $4; el 5% es la mitad ($2). ¡$4 + $2 = $6! 🍽️"],
+              ["What is 15 squared (15 × 15)?", "¿Cuánto es 15 al cuadrado (15 × 15)?", "225", "225", "Break it down: 10 × 15 = 150, and 5 × 15 = 75. 150 + 75 = 225! 🧠", "Descomponlo: 10 × 15 = 150 y 5 × 15 = 75. ¡150 + 75 = 225! 🧠"],
+            ]),
+            cat("📊", "Data & Everyday Math", "Datos y Vida Diaria", [
+              ["If you have 3 red apples and 2 green apples in a fruit bowl, how many apples do you have in all?", "Si tienes 3 manzanas rojas y 2 manzanas verdes en un tazón, ¿cuántas manzanas tienes en total?", "5 apples", "5 manzanas", "Count: 3... then 4, 5! 🍎🍏", "¡Cuenta: 3... luego 4, 5! 🍎🍏"],
+              ["In a picture graph where each ⭐️ symbol equals 2 books read, how many books do 4 stars show?", "En una gráfica donde cada ⭐️ vale 2 libros leídos, ¿cuántos libros representan 4 estrellas?", "8 books", "8 libros", "Count by twos: 2, 4, 6, 8! 📚", "¡Cuenta de dos en dos: 2, 4, 6, 8! 📚"],
+              ["What is the average (mean) of the numbers 6, 8, and 10?", "¿Cuál es el promedio (media) de los números 6, 8 y 10?", "8", "8", "Add them up (24) and divide by 3: 24 ÷ 3 = 8! 📊", "¡Súmalos (24) y divide entre 3: 24 ÷ 3 = 8! 📊"],
+              ["If a survey of 100 students shows 35% love soccer and 45% love basketball, how many like other sports?", "Si una encuesta de 100 alumnos muestra que 35% ama el fútbol y 45% el baloncesto, ¿cuántos prefieren otros deportes?", "20 students", "20 estudiantes", "35% + 45% = 80%. 100% − 80% = 20%! ⚽🏀", "¡35% + 45% = 80%. 100% − 80% = 20%! ⚽🏀"],
+              ["In a bag of 5 red, 3 blue, and 2 green marbles (10 total), what is the probability of picking a blue marble?", "En una bolsa con 5 canicas rojas, 3 azules y 2 verdes (10 en total), ¿cuál es la probabilidad de sacar una azul?", "30% (3 out of 10)", "30% (3 de 10)", "3 out of 10 is 3/10 = 30%! 🔮", "¡3 de 10 es 3/10 = 30%! 🔮"],
+            ]),
+
+          ],
+        },
+        {
+          id: "nature_animals",
+          emoji: "🦁",
+          name: { en: "Animal Kingdom & Planet Earth", es: "Reino Animal y Planeta Tierra" },
+          blurb: {
+            en: "Animal superpowers, deep ocean creatures, prehistoric dinosaurs, wild habitats, and Earth wonders!",
+            es: "Superpoderes animales, criaturas del fondo del mar, dinosaurios, selvas y maravillas terrestres.",
+          },
+          final: {
+            q: {
+              en: "Which bird is the only bird in the entire world capable of flying backwards and upside down?",
+              es: "¿Cuál es la única ave en todo el mundo capaz de volar hacia atrás y boca abajo?",
+            },
+            a: {
+              en: "The Hummingbird (Colibrí)",
+              es: "El colibrí (hummingbird)",
+            },
+          },
+          cats: [
+            cat("🦸", "Animal Superpowers", "Superpoderes Animales", [
+              ["Which colorful reptile can change the color of its skin to hide and blend into trees?", "¿Qué reptil colorido puede cambiar el color de su piel para camuflarse en los árboles?", "Chameleon", "Camaleón", "It has independent 360° eyes and a super-stretchy tongue! 🦎", "¡Tiene ojos independientes de 360° y una lengua súper elástica! 🦎"],
+              ["What is the fastest running land animal on planet Earth?", "¿Cuál es el animal terrestre más veloz de la Tierra?", "Cheetah", "Guepardo (chita)", "It has black spots and sprints up to 70 miles per hour! 🐆", "¡Tiene manchas negras y corre hasta 70 millas por hora! 🐆"],
+              ["Bats can fly and hunt in complete darkness using sound echoes. What is this ability called?", "Los murciélagos vuelan y cazan en total oscuridad usando ecos de sonido. ¿Cómo se llama?", "Echolocation", "Ecolocalización", "Echo (sound bounce) + Location! 🦇", "¡Eco (rebote de sonido) + Localización! 🦇"],
+              ["Which famous Mexican aquatic salamander can regenerate lost limbs, its tail, and even parts of its heart?", "¿Qué famosa salamandra de México puede regenerar extremidades perdidas, su cola y partes de su corazón?", "Axolotl", "Ajolote (Axolotl)", "Native to Lake Xochimilco with feathery pink external gills! 🌊", "¡Originario de los canales de Xochimilco con branquias rosadas en forma de plumas! 🌊"],
+              ["Which microscopic 8-legged water creature can survive outer space, radiation, and extreme freezing?", "¿Qué diminuta criatura acuática de 8 patas puede sobrevivir al espacio, radiación y congelación extrema?", "Tardigrade (Water Bear)", "Tardígrado (Osito de agua)", "Also affectionately called a 'water bear' or moss piglet! 🔬", "¡También conocido cariñosamente como el 'osito de agua'! 🔬"],
+            ]),
+            cat("🌊", "Deep Ocean Wonders", "Maravillas del Océano", [
+              ["What is the largest animal ever known to live on planet Earth?", "¿Cuál es el animal más grande que jamás haya existido en el planeta Tierra?", "Blue Whale", "Ballena azul", "It lives in the ocean and its tongue can weigh as much as an elephant! 🐋", "¡Vive en el océano y su lengua puede pesar tanto como un elefante! 🐋"],
+              ["A coral reef looks like colorful underwater stone, but is coral a plant, a rock, or an animal?", "Un arrecife de coral parece piedra marina de colores, pero ¿el coral es planta, roca o animal?", "An animal (marine invertebrates / coral polyps)", "Un animal (invertebrado marino / pólipos de coral)", "Tiny soft-bodied animals called polyps build hard limestone homes! 🪸", "¡Diminutos animales llamados pólipos construyen casitas de roca caliza! 🪸"],
+              ["How many hearts does an octopus have inside its body?", "¿Cuántos corazones tiene un pulpo dentro de su cuerpo?", "3 hearts", "3 corazones", "Two pump blood to the gills, and one pumps to the rest of the body! 🐙", "¡Dos bombean sangre a las branquias y uno al resto del cuerpo! 🐙"],
+              ["What scientific term describes living creatures, like anglerfish and fireflies, that produce their own light?", "¿Qué término científico describe a los seres vivos que producen su propia luz, como el rape y las luciérnagas?", "Bioluminescence", "Bioluminiscencia", "Bio (life) + Luminescence (light)! ✨", "¡Bio (vida) + Luminiscencia (luz brillante)! ✨"],
+              ["What is the deepest known trench in the world's oceans, plunging almost 36,000 feet down?", "¿Cuál es la fosa marina más profunda conocida del mundo, que desciende casi 36,000 pies?", "Mariana Trench", "La Fosa de las Marianas", "Located in the western Pacific Ocean near Guam. 🌊", "Ubicada en el Océano Pacífico occidental cerca de Guam. 🌊"],
+            ]),
+            cat("🦖", "Dinosaur Discoveries", "Dinosaurios Asombrosos", [
+              ["Did the famous Tyrannosaurus Rex eat plants or meat?", "¿El famoso T-Rex comía plantas o carne?", "Meat (Carnivore)", "Carne (Carnívoro)", "It had massive, razor-sharp 8-inch serrated teeth! 🥩", "¡Tenía dientes filosos y gigantescos de 8 pulgadas! 🥩"],
+              ["What do we call the ancient bones, footprints, and shells preserved inside hardened rock?", "¿Cómo se llaman los huesos, huellas y conchas antiguas conservadas en rocas duras?", "Fossils", "Fósiles", "Paleontologists use tiny brushes and chisels to uncover them! 🦴", "¡Los paleontólogos usan brochas y cinceles para descubrirlos! 🦴"],
+              ["Which massive herbivore dinosaur had three large horns on its face and a giant bony neck frill?", "¿Qué gran dinosaurio herbívoro tenía tres cuernos en la cara y una gran cresta ósea en el cuello?", "Triceratops", "Triceratops", "The prefix 'Tri-' means three (three horns)! 🦏", "¡El prefijo 'Tri-' significa tres (¡tres cuernos!)! 🦏"],
+              ["Which group of living animals today evolved directly from two-legged theropod dinosaurs?", "¿Qué grupo de animales que viven hoy en día evolucionó directamente de los dinosaurios terópodos?", "Birds (Aves)", "Las aves (pájaros)", "They have feathers, hollow bones, and lay hard-shelled eggs! 🦅", "¡Tienen plumas, huesos huecos y ponen huevos con cascarón! 🦅"],
+              ["Approximately how many million years ago did the giant asteroid impact Earth, ending the age of dinosaurs?", "¿Hace aproximadamente cuántos millones de años un asteroide gigante impactó la Tierra y extinguió a los dinosaurios?", "66 million years ago", "Hace 66 millones de años", "The crater is buried beneath the Yucatán Peninsula in Mexico! ☄️", "¡El cráter está bajo la península de Yucatán en México! ☄️"],
+            ]),
+            cat("🌿", "Wild Habitats", "Hábitats Salvajes", [
+              ["Which slow-moving furry animal spends almost its entire life hanging upside down in rainforest trees?", "¿Qué animal peludo y lento pasa casi toda su vida colgado boca abajo en los árboles de la selva?", "Sloth", "Perezoso", "It moves so slowly that green algae actually grows on its coat! 🦥", "¡Se mueve tan despacio que hasta le crecen algas verdes en su pelaje! 🦥"],
+              ["Which tropical bird is famous for its enormous, lightweight bill with brilliant rainbow colors?", "¿Qué ave tropical es famosa por su enorme pico ligero con brillantes colores del arcoíris?", "Toucan", "Tucán", "It loves eating tropical fruits, nuts, and berries! 🦜", "¡Le encanta comer frutas tropicales, nueces y semillas! 🦜"],
+              ["In a tropical rainforest, what do scientists call the high, leafy roof formed by the tops of the tallest trees?", "En una selva tropical, ¿cómo llaman los científicos al techo verde formado por la copa de los árboles más altos?", "The Canopy", "El dosel (o cubierta forestal)", "It acts like a giant green umbrella protecting the forest floor! 🌳", "¡Actúa como un paraguas verde gigante que protege el suelo! 🌳"],
+              ["Which mighty South American river discharges more fresh water into the sea than any other river on Earth?", "¿Qué imponente río de Sudamérica desemboca más agua dulce al mar que cualquier otro río de la Tierra?", "The Amazon River", "El Río Amazonas", "It winds through the largest tropical rainforest in the world! 🌊", "¡Serpentea a través de la selva tropical más grande del mundo! 🌊"],
+              ["During photosynthesis, trees absorb carbon dioxide from the air and release what vital gas for us to breathe?", "Durante la fotosíntesis, los árboles absorben dióxido de carbono y liberan ¿qué gas vital para respirar?", "Oxygen (O₂)", "Oxígeno (O₂)", "Every living human and mammal breathes this every single minute! 🍃", "¡Todos los seres humanos y mamíferos lo respiramos a cada segundo! 🍃"],
+            ]),
+            cat("🌋", "Extreme Earth", "Tierra Extrema", [
+              ["What is the fiery, red-hot melted rock called once it flows out of an erupting volcano?", "¿Cómo se llama la roca derretida y ardiente cuando sale de un volcán en erupción?", "Lava", "Lava", "Inside the volcano underground it is magma; outside it is lava! 🌋", "¡Bajo tierra se llama magma; cuando sale al aire se llama lava! 🌋"],
+              ["In autumn, why do deciduous tree leaves lose their green color and turn orange, yellow, and red?", "En otoño, ¿por qué las hojas pierden el color verde y se vuelven anaranjadas, amarillas y rojas?", "Loss of chlorophyll (less sunlight)", "Pérdida de clorofila (por menos luz solar)", "As daylight shortens, green chlorophyll breaks down, revealing hidden colors! 🍂", "¡Al haber menos horas de sol, la clorofila verde descansa y revela otros pigmentos! 🍂"],
+              ["What is the quiet, calm center inside a swirling hurricane called?", "¿Cómo se llama el centro tranquilo y en calma dentro de un huracán giratorio?", "The Eye of the hurricane", "El ojo del huracán", "It shares its name with the part of your face you see with! 👁️", "¡Lleva el mismo nombre que el órgano con el que miras! 👁️"],
+              ["What do geologists call the giant puzzle-like slabs of Earth's crust that move and cause earthquakes?", "¿Cómo llaman los geólogos a las gigantescas placas de la corteza terrestre que se mueven y causan sismos?", "Tectonic Plates", "Placas tectónicas", "When they rub or collide, mountains rise and earthquakes shake! 🌍", "¡Cuando chocan o rozan, se forman cordilleras y tiembla la tierra! 🌍"],
+              ["What is the famous horseshoe-shaped region around the Pacific Ocean basin known for intense volcanic activity?", "¿Cómo se llama la famosa franja en forma de herradura del Océano Pacífico con gran actividad volcánica y sísmica?", "The Ring of Fire", "El Cinturón de Fuego (Anillo de Fuego)", "Home to about 75% of the world's active volcanoes! 🔥", "¡Alberga cerca del 75% de los volcanes activos de todo el planeta! 🔥"],
+            ]),
+            cat("🐾", "Creature Families", "Familias de Animales", [
+              ["What is a baby dog called?", "¿Cómo se llama el bebé de un perro?", "A puppy", "Un cachorro (perrito)", "A cute little wagging puppy! 🐶", "¡Un tierno perrito con colita inquieta! 🐶"],
+              ["What is a baby frog called when it hatches from an egg and swims with a little tail?", "¿Cómo se llama la cría de una rana cuando sale del huevo y nada en el agua?", "A tadpole", "Un renacuajo", "It grows back legs first, then front legs! 🐸", "¡Primero le crecen las patitas traseras y luego las delanteras! 🐸"],
+              ["What do we call a family group of lions that lives and hunts together?", "¿Cómo se llama un grupo familiar de leones que vive y caza junto?", "A pride (manada)", "Una manada de leones (pride)", "Lions live in a strong family group called a pride! 🦁", "¡Los leones viven en un grupo muy unido llamado manada (pride)! 🦁"],
+              ["Which unique Australian mammal lays eggs instead of giving live birth to babies?", "¿Qué mamífero único de Australia pone huevos en lugar de dar a luz crías vivas?", "Platypus (or Echidna)", "El ornitorrinco (o el equidna)", "It has a duck bill and a beaver tail! 🦆", "¡Tiene pico de pato y cola de castor! 🦆"],
+              ["What biological term describes animals whose body temperature changes with the environment, like snakes and lizards?", "¿Qué término biológico describe a los animales cuya temperatura cambia según el ambiente, como serpientes y lagartijas?", "Ectothermic (Cold-blooded)", "Ectotérmicos (de sangre fría)", "Ecto (outside) + Thermic (heat)! 🦎", "¡Ecto (exterior) + Térmico (calor)! 🦎"],
+            ]),
+
+          ],
+        },
+];
 
       const UI = {
         title: { en: "Family Jeopardy", es: "Jeopardy en familia" },
@@ -1779,6 +2266,28 @@
         scoreboard: { en: "Scoreboard", es: "Marcador" },
         setup: { en: "Setup", es: "Configuración" },
         shortcuts: { en: "Keyboard Shortcuts", es: "Atajos de teclado" },
+        undo: { en: "Undo", es: "Deshacer" },
+        undoToast: { en: "Action undone ↩️", es: "Acción deshecha ↩️" },
+        buzzerPad: { en: "Family Buzzer Pad", es: "Timbres de las familias" },
+        buzzedInMsg: { en: "buzzed in first!", es: "¡tocó el timbre primero!" },
+        passBuzzer: { en: "Pass ⏭️", es: "Pasar ⏭️" },
+        lockedOut: { en: "Locked out", es: "Bloqueado" },
+        printCert: { en: "📜 Print Champion Certificate", es: "📜 Imprimir certificado del campeón" },
+        printAllCerts: { en: "📜 Print All Families", es: "📜 Certificados para todas las familias" },
+        certTitle: { en: "Certificate of Excellence", es: "Certificado de Excelencia" },
+        certSubtitle: { en: "Family Academic Jeopardy Championship", es: "Campeonato Familiar de Jeopardy Académico" },
+        certAwarded: { en: "Presented with great pride and admiration to:", es: "Otorgado con gran orgullo y admiración a:" },
+        certReason: {
+          en: "For outstanding academic enthusiasm, brilliant teamwork, curiosity, and joyful participation in Family Jeopardy Night.",
+          es: "Por su destacado entusiasmo académico, brillante trabajo en equipo, curiosidad y alegre participación en la Noche Familiar de Jeopardy.",
+        },
+        certScore: { en: "Final Score", es: "Puntuación final" },
+        certSchool: { en: "School / Organization", es: "Escuela / Organización" },
+        certPrincipal: { en: "Principal / Coordinator", es: "Director(a) / Coordinador(a)" },
+        certTeacher: { en: "Teacher / Host", es: "Maestro(a) / Anfitrión" },
+        printNow: { en: "🖨️ Print Now (Landscape)", es: "🖨️ Imprimir ahora (Horizontal)" },
+        zoom: { en: "Text Size", es: "Tamaño" },
+        volume: { en: "Volume", es: "Volumen" },
       };
 
       const TEAM_COLORS = [
@@ -1793,7 +2302,7 @@
       ];
 
       /* ============================== STATE ============================== */
-      const KEY = "familyJeopardy.v3";
+      const KEY = "familyJeopardy.v4";
       const $ = (s) => document.querySelector(s);
       const esc = (s) =>
         String(s).replace(
@@ -1812,6 +2321,8 @@
         inGame: false,
         lang: "both",
         sound: true,
+        volume: 0.8,
+        zoom: 1.0,
         penalty: false,
         timerSec: 30,
         autoSpeech: false,
@@ -1863,13 +2374,67 @@
 
       const cellKey = (c, r) => c + "-" + r;
 
-      /* ============================== AUDIO & EFFECTS ============================== */
+      /* ============================== UNDO SYSTEM & AUDIO ============================== */
+      const undoStack = [];
+      function pushUndoState() {
+        undoStack.push({
+          teams: S.teams.map((t) => ({ name: t.name, score: t.score })),
+          used: { ...S.used },
+          currentTurn: S.currentTurn,
+          boardId: S.boardId,
+          finalDone: S.finalDone,
+        });
+        if (undoStack.length > 35) undoStack.shift();
+        updateUndoUI();
+      }
+
+      function undo() {
+        if (!undoStack.length) return;
+        const prev = undoStack.pop();
+        S.teams = prev.teams;
+        S.used = prev.used;
+        S.currentTurn = prev.currentTurn;
+        S.boardId = prev.boardId;
+        S.finalDone = prev.finalDone;
+        save();
+        updateUndoUI();
+        SFX.open();
+        toast(t("undoToast"));
+        renderAll();
+      }
+
+      function updateUndoUI() {
+        const ub = $("#undoBtn");
+        if (ub) {
+          ub.disabled = undoStack.length === 0;
+          ub.style.opacity = undoStack.length === 0 ? "0.45" : "1";
+        }
+        const gub = $("#gameUndoBtn");
+        if (gub) {
+          gub.disabled = undoStack.length === 0;
+          gub.style.opacity = undoStack.length === 0 ? "0.45" : "1";
+        }
+      }
+
       let AC;
+      let masterGainNode;
+      function getMasterGain() {
+        if (!AC) return null;
+        if (!masterGainNode) {
+          masterGainNode = AC.createGain();
+          masterGainNode.connect(AC.destination);
+        }
+        const vol = S.sound ? (S.volume !== undefined ? S.volume : 0.8) : 0;
+        masterGainNode.gain.setValueAtTime(vol, AC.currentTime);
+        return masterGainNode;
+      }
+
       function beep(seq) {
-        if (!S.sound) return;
+        if (!S.sound || (S.volume !== undefined && S.volume <= 0)) return;
         try {
           AC = AC || new (window.AudioContext || window.webkitAudioContext)();
           if (AC.state === "suspended") AC.resume();
+          const master = getMasterGain();
           let at = AC.currentTime;
           for (const [f, d, type, gainPeak] of seq) {
             const o = AC.createOscillator(),
@@ -1880,7 +2445,7 @@
             g.gain.setValueAtTime(0.0001, at);
             g.gain.exponentialRampToValueAtTime(peak, at + 0.01);
             g.gain.exponentialRampToValueAtTime(0.0001, at + d);
-            o.connect(g).connect(AC.destination);
+            o.connect(g).connect(master || AC.destination);
             o.start(at);
             o.stop(at + d + 0.02);
             at += d;
@@ -2039,8 +2604,19 @@
           .forEach((b) =>
             b.setAttribute("aria-pressed", b.dataset.lang === S.lang),
           );
-        $("#soundBtn").setAttribute("aria-pressed", S.sound);
-        $("#soundTxt").innerHTML = S.sound ? "Sound" : "Muted";
+        const sb = $("#soundBtn");
+        if (sb) {
+          sb.setAttribute("aria-pressed", S.sound);
+          sb.textContent = !S.sound || S.volume === 0 ? "🔇" : S.volume < 0.4 ? "🔈" : S.volume < 0.75 ? "🔉" : "🔊";
+        }
+        const st = $("#soundTxt");
+        if (st) st.innerHTML = S.sound ? "Sound" : "Muted";
+        const ub = $("#undoBtn");
+        if (ub) {
+          const ut = ub.querySelector(".undo-txt");
+          if (ut) ut.innerHTML = t("undo");
+        }
+        updateUndoUI();
       }
 
       /* ============================== RENDER: SETUP ============================== */
@@ -2206,6 +2782,7 @@
   <div class="gamebar">
     <div class="bname">${b.emoji} ${L(b.name)}<small>${t("board")} · ${L(UI.subtitle)}</small></div>
     <div class="actions">
+      <button class="btn btn-ghost btn-sm" id="gameUndoBtn" title="${esc(t("undo"))} (Ctrl+Z)">↩️ ${t("undo")}</button>
       <button class="btn btn-ghost btn-sm" id="randomBtn">🎲 ${t("random")}</button>
       <button class="btn btn-mint btn-sm" id="finalBtn">🏆 ${t("finalBtn")}</button>
       <button class="btn btn-ghost btn-sm" id="setupBtn">⚙️ ${t("setup")}</button>
@@ -2250,6 +2827,13 @@
           renderGame();
           SFX.open();
         };
+
+        const gub = $("#gameUndoBtn");
+        if (gub) {
+          gub.disabled = undoStack.length === 0;
+          gub.style.opacity = undoStack.length === 0 ? "0.45" : "1";
+          gub.onclick = undo;
+        }
 
         $("#randomBtn").onclick = () => {
           const free = [...document.querySelectorAll(".cell:not(.used)")];
@@ -2325,12 +2909,18 @@
       let timerLeft = 0;
       let timerPaused = false;
       let buzzedTeam = null;
+      let clueStartTime = 0;
+      let lockedOutTeams = new Set();
+      let buzzElapsed = null;
 
       function openClue(c, r) {
         const k = cellKey(c, r);
         const isDbl = S.doubles.includes(k);
         const played = !!S.used[k];
         buzzedTeam = null;
+        lockedOutTeams = new Set();
+        buzzElapsed = null;
+        clueStartTime = performance.now();
 
         open = {
           c,
@@ -2502,27 +3092,44 @@
 
     ${open.dbl ? `<div class="dbl">${t("double")}</div>` : ""}
 
+    <div class="status-bar">
+      ${
+        S.timerSec > 0 && !open.revealed
+          ? `<div id="timerBox" class="timer-box ${timerLeft <= 5 ? "urgent" : ""}">
+          <span id="timerNum">⏱️ ${timerLeft}s</span>
+          <button class="timer-btn" id="pauseTimerBtn">${timerPaused ? "▶️" : "⏸️"}</button>
+          <button class="timer-btn" id="addTimerBtn">+10s</button>
+        </div>`
+          : ""
+      }
+    </div>
+
     ${
-      (S.timerSec > 0 && !open.revealed) || buzzedTeam !== null
-        ? `<div class="status-bar">
-        ${
-          S.timerSec > 0 && !open.revealed
-            ? `<div id="timerBox" class="timer-box ${timerLeft <= 5 ? "urgent" : ""}">
-            <span id="timerNum">⏱️ ${timerLeft}s</span>
-            <button class="timer-btn" id="pauseTimerBtn">${timerPaused ? "▶️" : "⏸️"}</button>
-            <button class="timer-btn" id="addTimerBtn">+10s</button>
-          </div>`
-            : ""
-        }
+      !open.revealed
+        ? `<div class="buzzer-box">
+        <div class="buzzer-header">
+          <span>🔔 <b>${t("buzzerPad")}</b></span>
+          <span class="buzzer-kbd-hint">(⌨️ 1–${S.teams.length})</span>
+        </div>
+        <div class="buzzer-grid">
+          ${S.teams.map((tm, i) => {
+            const isBuzz = buzzedTeam === i;
+            const isLock = lockedOutTeams.has(i);
+            const dis = isLock || (buzzedTeam !== null && !isBuzz);
+            return `<button class="buzzer-btn ${isBuzz ? "active-buzz" : ""} ${isLock ? "locked-out" : ""}" style="--c:${TEAM_COLORS[i]}" data-buzz-team="${i}" ${dis ? "disabled" : ""}>
+              <span class="buzz-badge">${i + 1}</span>
+              <span>${esc(tm.name)}</span>
+              ${isLock ? `<small>(${t("lockedOut")})</small>` : ""}
+            </button>`;
+          }).join("")}
+        </div>
         ${
           buzzedTeam !== null
-            ? `<div class="buzz-pill" style="--c:${TEAM_COLORS[buzzedTeam]}">
-            🔔 ${esc(S.teams[buzzedTeam].name)} ${t("buzzedIn")}
-            <button class="buzz-x" id="clearBuzzBtn">✕</button>
+            ? `<div class="buzz-alert-bar">
+            <span>⚡ <b>${esc(S.teams[buzzedTeam].name)}</b> ${t("buzzedInMsg")} ${buzzElapsed ? `(+${buzzElapsed}s)` : ""}</span>
+            <button class="pass-btn" id="passBuzzBtn" title="Lock out this team and reopen buzzers for others">${t("passBuzzer")}</button>
           </div>`
-            : !open.revealed
-              ? `<button class="buzz-action-btn" id="buzzBtn">🚨 ${t("buzzIn")}</button>`
-              : ""
+            : ""
         }
       </div>`
         : ""
@@ -2616,21 +3223,30 @@
           };
         }
 
-        const bz = $("#buzzBtn");
-        if (bz) {
-          bz.onclick = () => {
-            buzzedTeam = S.currentTurn % S.teams.length;
+        document.querySelectorAll("[data-buzz-team]").forEach((btn) => {
+          btn.onclick = () => {
+            const teamIdx = +btn.dataset.buzzTeam;
+            if (lockedOutTeams.has(teamIdx)) return;
+            buzzedTeam = teamIdx;
+            buzzElapsed = ((performance.now() - clueStartTime) / 1000).toFixed(2);
             timerPaused = true;
+            stopThinkGroove();
             SFX.buzz();
             renderClue();
           };
-        }
+        });
 
-        const clrBz = $("#clearBuzzBtn");
-        if (clrBz) {
-          clrBz.onclick = () => {
+        const passBtn = $("#passBuzzBtn");
+        if (passBtn) {
+          passBtn.onclick = () => {
+            if (buzzedTeam !== null) {
+              lockedOutTeams.add(buzzedTeam);
+            }
             buzzedTeam = null;
+            buzzElapsed = null;
             timerPaused = false;
+            startThinkGroove();
+            SFX.open();
             renderClue();
           };
         }
@@ -2656,7 +3272,8 @@
                 return;
               }
               const winnerIdx = +bt.dataset.win;
-              addScore(winnerIdx, val);
+              pushUndoState();
+              S.teams[winnerIdx].score += val;
               S.used[open.k] = "won";
               S.currentTurn = (winnerIdx + 1) % S.teams.length;
               save();
@@ -2669,6 +3286,7 @@
         const nb = $("#nobodyBtn");
         if (nb) {
           nb.onclick = () => {
+            pushUndoState();
             S.used[open.k] = "miss";
             S.currentTurn = (S.currentTurn + 1) % S.teams.length;
             save();
@@ -2797,6 +3415,70 @@
           };
       }
 
+      
+      /* ============================== CERTIFICATE PRINT SYSTEM ============================== */
+      function openCertificateModal(champion, allTeams) {
+        const teamsToPrint = allTeams || (champion ? [champion] : S.teams);
+        const todayStr = new Date().toLocaleDateString(S.lang === "es" ? "es-US" : "en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+        const sheetsHtml = teamsToPrint.map((tm, idx) => `
+          <div class="cert-sheet">
+            <div class="cert-seal">🎓</div>
+            <div class="cert-title">${t("certTitle")}</div>
+            <div class="cert-subtitle">${t("certSubtitle")}</div>
+            <div class="cert-awarded">${t("certAwarded")}</div>
+            <input type="text" class="cert-name-input" value="${esc(tm.name)}" aria-label="Team Name">
+            <p class="cert-reason">${t("certReason")}</p>
+            <div class="cert-score-badge">⭐ ${t("certScore")}: <b>${tm.score} ${t("points")}</b> ${idx === 0 ? (S.lang === "es" ? "· 🏆 1.er Lugar · Campeón" : S.lang === "en" ? "· 🏆 1st Place · Champion" : "· 🏆 1st Place · 1.er Lugar") : (S.lang === "es" ? "· Mención de Honor" : S.lang === "en" ? "· Honor Award" : "· Honor Award · Mención de Honor")} ⭐</div>
+            <div class="cert-footer-row">
+              <div class="cert-sig-block">
+                <input type="text" class="cert-meta-input" value="School Community Family Night · Noche Familiar" aria-label="School or Organization">
+                <div class="cert-sig-line"></div>
+                <div class="cert-sig-label">${t("certSchool")}</div>
+              </div>
+              <div class="cert-sig-block">
+                <input type="text" class="cert-meta-input" value="${todayStr}" aria-label="Date">
+                <div class="cert-sig-line"></div>
+                <div class="cert-sig-label">${S.lang === "es" ? "Fecha" : "Date"}</div>
+              </div>
+              <div class="cert-sig-block">
+                <div style="height:20px"></div>
+                <div class="cert-sig-line"></div>
+                <div class="cert-sig-label">${t("certPrincipal")}</div>
+              </div>
+              <div class="cert-sig-block">
+                <div style="height:20px"></div>
+                <div class="cert-sig-line"></div>
+                <div class="cert-sig-label">${t("certTeacher")}</div>
+              </div>
+            </div>
+          </div>
+        `).join("");
+
+        $("#certificateModal").innerHTML = `
+          <div class="cert-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span class="chip val-chip" style="font-size:1rem">📜 ${t("certTitle")}</span>
+              <button class="close-x" id="certCloseBtn" aria-label="${esc(UI.close.en)}">✕</button>
+            </div>
+            ${sheetsHtml}
+            <div class="cert-actions">
+              <button class="btn btn-mint" id="printDocBtn">${t("printNow")}</button>
+              <button class="btn btn-ghost" id="certDoneBtn">${t("close")}</button>
+            </div>
+          </div>
+        `;
+
+        $("#certificateModal").hidden = false;
+        $("#certCloseBtn").onclick = () => { $("#certificateModal").hidden = true; };
+        $("#certDoneBtn").onclick = () => { $("#certificateModal").hidden = true; };
+        $("#printDocBtn").onclick = () => { window.print(); };
+      }
+
       function showWinner() {
         const sorted = S.teams
           .map((tm, i) => ({ ...tm, i }))
@@ -2813,6 +3495,8 @@
     </div>
     <div class="cta-row">
       <button class="btn btn-ghost" id="winBack">${t("backToBoard")}</button>
+      <button class="btn btn-mint" id="winCertBtn">${t("printCert")}</button>
+      <button class="btn btn-purple" id="winAllCertsBtn">${t("printAllCerts")}</button>
       <button class="btn btn-gold" id="winAgain">🔁 ${t("playAgain")}</button>
     </div>
   </div>`;
@@ -2821,6 +3505,9 @@
         SFX.fanfare();
         confetti(300);
         setTimeout(() => confetti(180), 800);
+
+        $("#winCertBtn").onclick = () => openCertificateModal(sorted[0]);
+        $("#winAllCertsBtn").onclick = () => openCertificateModal(null, sorted);
 
         $("#winBack").onclick = () => {
           $("#winner").hidden = true;
@@ -2847,11 +3534,12 @@
           </div>
           <div class="shortcuts-list">
             <div class="sc-item"><kbd>Space</kbd> <span>${t("showAnswer")}</span></div>
-            <div class="sc-item"><kbd>1 – 8</kbd> <span>${t("buzzIn")} / Award Points</span></div>
+            <div class="sc-item"><kbd>1 – 8</kbd> <span>${t("buzzIn")} (Before) / Award (After)</span></div>
+            <div class="sc-item"><kbd>P</kbd> <span>Pass Buzzer to Next Team</span></div>
+            <div class="sc-item"><kbd>Ctrl+Z / U</kbd> <span>${t("undo")} (Previous Turn/Score)</span></div>
             <div class="sc-item"><kbd>0 / N</kbd> <span>${t("nobody")}</span></div>
             <div class="sc-item"><kbd>T</kbd> <span>Pause / Resume Timer</span></div>
             <div class="sc-item"><kbd>+</kbd> <span>+10s More Time</span></div>
-            <div class="sc-item"><kbd>R</kbd> <span>${t("random")}</span></div>
             <div class="sc-item"><kbd>F</kbd> <span>Fullscreen</span></div>
             <div class="sc-item"><kbd>Esc</kbd> <span>${t("close")}</span></div>
           </div>
@@ -2885,11 +3573,58 @@
 
       $("#soundBtn").onclick = () => {
         S.sound = !S.sound;
+        if (S.sound && (S.volume === undefined || S.volume === 0)) {
+          S.volume = 0.8;
+          if ($("#volSlider")) $("#volSlider").value = 0.8;
+        }
+        getMasterGain();
         save();
         renderShell();
         if (!$("#setup").hidden) renderSetup();
         SFX.open();
       };
+
+      
+      /* Projector Font Scaling */
+      function setFontScale(scale) {
+        S.zoom = scale;
+        document.documentElement.style.setProperty("--font-scale", scale);
+        document.querySelectorAll(".zoom-seg button").forEach((btn) => btn.classList.remove("active"));
+        if (scale < 0.95 && $("#zoomOutBtn")) $("#zoomOutBtn").classList.add("active");
+        else if (scale > 1.05 && $("#zoomInBtn")) $("#zoomInBtn").classList.add("active");
+        else if ($("#zoomResetBtn")) $("#zoomResetBtn").classList.add("active");
+        save();
+      }
+
+      const zoBtn = $("#zoomOutBtn");
+      if (zoBtn) zoBtn.onclick = () => setFontScale(0.85);
+      const zrBtn = $("#zoomResetBtn");
+      if (zrBtn) zrBtn.onclick = () => setFontScale(1.0);
+      const ziBtn = $("#zoomInBtn");
+      if (ziBtn) ziBtn.onclick = () => setFontScale(1.2);
+
+      if (S.zoom) {
+        setFontScale(S.zoom);
+      }
+
+      /* Master Volume Slider */
+      const volSlider = $("#volSlider");
+      if (volSlider) {
+        volSlider.value = S.volume !== undefined ? S.volume : 0.8;
+        volSlider.oninput = (e) => {
+          S.volume = parseFloat(e.target.value);
+          if (S.volume > 0) S.sound = true;
+          getMasterGain();
+          const ic = $("#soundBtn");
+          if (ic) ic.textContent = S.volume === 0 ? "🔇" : S.volume < 0.4 ? "🔈" : S.volume < 0.75 ? "🔉" : "🔊";
+          save();
+        };
+      }
+
+      const ub = $("#undoBtn");
+      if (ub) {
+        ub.onclick = undo;
+      }
 
       $("#fsBtn").onclick = toggleFullscreen;
       $("#scBtn").onclick = openShortcuts;
@@ -2899,7 +3634,9 @@
         if (tag === "input" || tag === "select" || tag === "textarea") return;
 
         if (e.key === "Escape") {
-          if (!$("#shortcutsModal").hidden) {
+          if (!$("#certificateModal").hidden) {
+            $("#certificateModal").hidden = true;
+          } else if (!$("#shortcutsModal").hidden) {
             $("#shortcutsModal").hidden = true;
           } else if (!$("#clue").hidden) {
             closeClue();
@@ -2910,6 +3647,17 @@
             $("#winner").hidden = true;
             renderGame();
           }
+          return;
+        }
+
+        if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z")) {
+          e.preventDefault();
+          undo();
+          return;
+        }
+
+        if (e.key === "u" || e.key === "U") {
+          undo();
           return;
         }
 
@@ -2948,16 +3696,31 @@
             return;
           }
 
+          if ((e.key === "p" || e.key === "P") && buzzedTeam !== null && !open.revealed) {
+            lockedOutTeams.add(buzzedTeam);
+            buzzedTeam = null;
+            buzzElapsed = null;
+            timerPaused = false;
+            startThinkGroove();
+            SFX.open();
+            renderClue();
+            return;
+          }
+
           const num = parseInt(e.key, 10);
           if (num >= 1 && num <= S.teams.length) {
             const teamIdx = num - 1;
             if (!open.revealed) {
+              if (lockedOutTeams.has(teamIdx)) return;
               buzzedTeam = teamIdx;
+              buzzElapsed = ((performance.now() - clueStartTime) / 1000).toFixed(2);
               timerPaused = true;
+              stopThinkGroove();
               SFX.buzz();
               renderClue();
             } else if (open.revealed && !open.played) {
-              addScore(teamIdx, open.wager);
+              pushUndoState();
+              S.teams[teamIdx].score += open.wager;
               S.used[open.k] = "won";
               S.currentTurn = (teamIdx + 1) % S.teams.length;
               save();
