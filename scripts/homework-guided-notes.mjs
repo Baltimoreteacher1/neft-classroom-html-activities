@@ -2305,15 +2305,6 @@ export function renderWelcomeBanner(config, lessonId) {
               <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
                 🇪🇸 <span>Español</span>
               </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="ht" onclick="setLanguageMode('ht')" aria-pressed="false">
-                🇭🇹 <span>Kreyòl</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="pt" onclick="setLanguageMode('pt')" aria-pressed="false">
-                🇧🇷 <span>Português</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="ar" onclick="setLanguageMode('ar')" aria-pressed="false">
-                🇸🇦 <span>العربية</span>
-              </button>
             </div>
           </div>
         </div>
@@ -2970,8 +2961,8 @@ export function renderCelebration(config = null, _lessonId = "") {
         <button type="button" class="btn-next-photobooth" onclick="switchHomeworkTab('photobooth')">
           <span class="pb-banner-icon" aria-hidden="true">📸</span>
           <div class="pb-banner-labels">
-            <strong><span class="lang-en">Final Stop: Math Work Photobooth! ➔</span><span class="lang-es" lang="es">Parada final: ¡Cabina de fotos de tu trabajo! ➔</span></strong>
-            <small><span class="lang-en">Take a celebratory photo holding your notebook or math work!</span><span class="lang-es" lang="es">¡Toma una foto divertida posando con tu cuaderno o trabajo!</span></small>
+            <strong><span class="lang-en">Open the Math Work Photobooth ➔</span><span class="lang-es" lang="es">Abre la cabina de fotos del trabajo ➔</span></strong>
+            <small><span class="lang-en">Optional. Photograph tonight's notebook page, scratchpad or whiteboard — add a frame and stickers, then download or print it.</span><span class="lang-es" lang="es">Opcional. Tomen una foto de la página del cuaderno, del borrador o de la pizarra: agreguen un marco y calcomanías, y descárguenla o imprímanla.</span></small>
           </div>
         </button>
       </div>
@@ -8022,8 +8013,8 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
           <span class="lang-es" lang="es">¡Celebra y toma foto de tu trabajo matemático!</span>
         </h2>
         <p class="photobooth-sub bilingual-block">
-          <span class="lang-en">Pose with your student notebook, whiteboard, scratchpad, or holding up tonight's math! Choose a fun frame, add celebration stickers, and save your family math memory.</span>
-          <span class="lang-es" lang="es">¡Posen con el cuaderno, pizarra, hoja de borrador o sosteniendo el trabajo de hoy! Elijan un marco divertido, agreguen calcomanías y guarden su recuerdo matemático familiar.</span>
+          <span class="lang-en">Use this as a photobooth for the work itself: point the camera at tonight's notebook page, the scratchpad or the whiteboard and take the picture — or pose holding it up. Choose a frame, add stickers, then download it, print it, or attach it to the parent sign-off. The photo is never uploaded; it stays on this device.</span>
+          <span class="lang-es" lang="es">Úsenla como cabina de fotos del trabajo: apunten la cámara a la página del cuaderno, al borrador o a la pizarra y tomen la foto, o posen sosteniéndola. Elijan un marco, agreguen calcomanías y luego descárguenla, imprímanla o adjúntenla a la firma del adulto. La foto nunca se sube a internet; se queda en este dispositivo.</span>
         </p>
       </div>
 
@@ -8288,7 +8279,29 @@ const HOMEWORK_TABS = [
   { id: "check", icon: "✅", en: "Check", es: "Repaso", min: 8 },
   { id: "play", icon: "🎮", en: "Play", es: "Jugar", min: 5 },
   { id: "done", icon: "🎉", en: "Done", es: "Listo", min: 3 },
-  { id: "photobooth", icon: "📸", en: "Photobooth", es: "Fotos", min: 2 },
+];
+
+/**
+ * Stops that are NOT part of tonight's path.
+ *
+ * The photobooth used to be stop 7 of 7 — numbered, budgeted at two minutes,
+ * and sitting AFTER the stop called "Done", which told a family the homework
+ * was not finished until they had taken a photo. It is a tool, not an
+ * assignment: a camera with frames and stickers for photographing the work in
+ * the notebook, the scratchpad or the whiteboard, whenever they want it. So it
+ * keeps its place beside Done and loses its number, its minutes and its claim
+ * on the progress track.
+ */
+const HOMEWORK_EXTRA_TABS = [
+  {
+    id: "photobooth",
+    icon: "📸",
+    en: "Photobooth",
+    es: "Fotos",
+    blurbEn: "Optional — snap a picture of tonight's math work",
+    blurbEs: "Opcional: toma una foto del trabajo de matemáticas de hoy",
+    ariaEn: "Photobooth — optional. Take a picture of your math work with fun frames and stickers.",
+  },
 ];
 
 /** Minutes the hero advertises. Derived, so the two can never disagree. */
@@ -8347,6 +8360,15 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
               <span class="tab-min" aria-hidden="true">${t.min} min</span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>`;
+  const extraBtn = (t) => `
+            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-extra"
+              aria-selected="false" aria-controls="hw_panel_${t.id}"
+              aria-label="${esc(t.ariaEn)}" title="${esc(t.ariaEn)}"
+              data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
+              <span class="tab-icon" aria-hidden="true">${t.icon}</span>
+              <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
+              <span class="tab-extra-blurb"><span class="lang-en">${esc(t.blurbEn)}</span><span class="lang-es" lang="es">${esc(t.blurbEs)}</span></span>
+            </button>`;
 
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
@@ -8356,7 +8378,13 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
         </div>
         <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
+          ${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}
         </nav>
+        <p class="homework-tab-extra-note">
+          <span aria-hidden="true">📸</span>
+          <span class="lang-en">The <strong>Photobooth</strong> is a camera you can open any time — photograph the notebook page, the scratchpad or the whiteboard, add a frame and stickers, then download or print it. It is optional, and the photo stays on this device.</span>
+          <span class="lang-es" lang="es">La <strong>cabina de fotos</strong> es una cámara que pueden abrir cuando quieran: fotografíen la página del cuaderno, el borrador o la pizarra, agreguen un marco y calcomanías, y descárguenla o imprímanla. Es opcional, y la foto se queda en este dispositivo.</span>
+        </p>
         <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
@@ -8906,8 +8934,14 @@ function syncHomeworkChromeHeights() {
 
 function switchHomeworkTab(tabId) {
   const tabs = document.querySelectorAll('.homework-tab-btn');
+  const extras = document.querySelectorAll('.homework-tab-extra');
   const panels = document.querySelectorAll('[data-tab-panel]');
   let idx = 0;
+  extras.forEach(function(btn) {
+    const active = btn.dataset.tab === tabId;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
   tabs.forEach(function(btn, i) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
@@ -8926,21 +8960,27 @@ function switchHomeworkTab(tabId) {
   // The bottom bar exists on one stop, so its height changes as you move
   // between them, and the floating controls are positioned off that height.
   if (typeof syncHomeworkChromeHeights === 'function') syncHomeworkChromeHeights();
-  const prog = document.getElementById('hw_tab_progress');
-  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount
-    || String(tabs.length);
-  if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
-  const fill = document.getElementById('tab_progress_fill');
-  if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+  // "3 of 6" and the minutes left describe tonight's PATH. An extra stop is not
+  // on it, so idx is 0 and both readings are left showing the last numbered
+  // stop the family was on, rather than reporting "0 of 6" and reading
+  // tabs[-1].dataset for the time sum.
+  if (idx > 0) {
+    const prog = document.getElementById('hw_tab_progress');
+    const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount
+      || String(tabs.length);
+    if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
+    const fill = document.getElementById('tab_progress_fill');
+    if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
 
-  // Dynamic time remaining calculation
-  var minsLeft = 0;
-  for (var k = idx - 1; k < tabs.length; k++) {
-    minsLeft += parseInt(tabs[k].dataset.min || '5', 10);
-  }
-  var timeEl = document.getElementById('hw_time_remaining');
-  if (timeEl) {
-    timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
+    // Dynamic time remaining calculation
+    var minsLeft = 0;
+    for (var k = idx - 1; k < tabs.length; k++) {
+      minsLeft += parseInt(tabs[k].dataset.min || '5', 10);
+    }
+    var timeEl = document.getElementById('hw_time_remaining');
+    if (timeEl) {
+      timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
+    }
   }
 
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
@@ -9022,11 +9062,18 @@ function syncDocumentLanguage(mode) {
   document.documentElement.lang = mode === 'es' ? 'es' : 'en';
 }
 
+/* English and Spanish are the languages this page is WRITTEN in — every string
+   on it is a .lang-en / .lang-es pair. Kreyol, Portugues and Arabic were also
+   offered, and picking one set a body class no stylesheet reads: the page
+   stayed bilingual, so the buttons promised a translation that does not exist.
+   Arabic additionally flipped the document to RTL, mirroring the layout of a
+   page still written left-to-right. Removed rather than stubbed, because an
+   offer a family cannot use is worse than no offer. */
 function setLanguageMode(mode) {
+  if (mode !== 'en' && mode !== 'es') mode = 'bilingual';
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
-  document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es', 'lang-mode-ht', 'lang-mode-pt', 'lang-mode-ar');
+  document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
-  document.documentElement.dir = (mode === 'ar') ? 'rtl' : 'ltr';
   syncDocumentLanguage(mode);
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
@@ -9491,16 +9538,13 @@ function editParentSignoff() {
 function preferredLanguageMode() {
   try {
     const saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual' || saved === 'ht' || saved === 'pt' || saved === 'ar') return saved;
+    if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
   } catch (e) {}
   try {
     const langs = navigator.languages && navigator.languages.length
       ? navigator.languages
       : [navigator.language || ''];
     if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) return 'es';
-    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('ht') === 0; })) return 'ht';
-    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('pt') === 0; })) return 'pt';
-    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('ar') === 0; })) return 'ar';
   } catch (e) {}
   return 'en';
 }
@@ -10596,9 +10640,93 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
    grid and never scrolls, wraps or hides a stop behind a fade. */
 .homework-tab-bar {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* Six numbered stops, then the photobooth sized to its own content — it is
+     beside Done, not one more equal share of tonight's path. */
+  grid-template-columns: repeat(6, minmax(0, 1fr)) auto;
   gap: 4px;
   padding: 0 0 8px;
+}
+.homework-tab-extra {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 62px;
+  padding: 7px 10px 6px;
+  margin-left: 6px;
+  border: 1.5px dashed var(--teal);
+  border-radius: var(--radius-sm);
+  background: var(--teal-light);
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--teal-ink);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+/* A rule between the path and the tool, so the camera does not read as stop 7. */
+.homework-tab-extra::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 10px;
+  bottom: 10px;
+  border-left: 1px solid var(--line);
+}
+.homework-tab-extra:hover { background: var(--white); }
+.homework-tab-extra:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.homework-tab-extra.is-active {
+  background: var(--teal);
+  border-style: solid;
+  border-color: var(--teal);
+  color: var(--white);
+}
+.tab-extra-blurb {
+  display: block;
+  max-width: 132px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  opacity: .85;
+}
+.tab-extra-blurb .lang-en + .lang-es::before { content: none; }
+.homework-tab-extra-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0 0 8px;
+  padding: 7px 10px;
+  border-left: 3px solid var(--teal);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--teal-light);
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.homework-tab-extra-note strong { color: var(--teal-ink); }
+
+@media (max-width: 720px) {
+  /* The camera gets its own full-width row rather than a 40px sliver next to
+     six stops. Still beside Done — directly under it, and out of the numbers. */
+  .homework-tab-bar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .homework-tab-extra {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+  .homework-tab-extra::before { display: none; }
+  /* In the row layout the label is a shrinkable flex item, and at 390px it
+     shrank until "Photobooth" broke mid-word ("Photobo / oth"). */
+  .homework-tab-extra .tab-label { flex: none; white-space: nowrap; }
+  .tab-extra-blurb { max-width: none; text-align: left; }
 }
 .homework-tab-btn {
   position: relative;
