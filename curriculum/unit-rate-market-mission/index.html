@@ -242,10 +242,12 @@
   .lane-meter{height:9px;border-radius:999px;background:#e7eef0;overflow:hidden;margin-top:11px;box-shadow:inset 0 1px 2px rgba(24,50,74,.07)}
   .lane-meter>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),#54b3b7);transition:width .3s cubic-bezier(.4,1.4,.5,1);border-radius:999px}
   .lane.met .lane-meter>span{background:linear-gradient(90deg,#2f9d68,#79cfa2)}
-  .lane-read{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.82rem;font-weight:850;color:var(--muted);margin-top:8px}
-  .lane-read b{color:var(--navy);font-weight:950}
-  .lane-read b.short{color:var(--bad)}
-  .lane-read b.ok{color:var(--good)}
+  .lane-math{margin-top:10px;display:grid;gap:8px}
+  .lm-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:.84rem;font-weight:900;color:var(--navy)}
+  .lm-l{color:var(--muted);font-weight:900}
+  .lm-l b{color:var(--navy);font-weight:950}
+  .lm-in{width:78px;padding:7px 8px}
+  .lm-goal{font-size:.78rem;font-weight:850;color:var(--muted)}
   .tface-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
   .tface{border:1.5px solid #d8e4e9;border-radius:14px;padding:14px;text-align:center;background:linear-gradient(180deg,#fdfefe,#f6fafb)}
   .tface .lane-label{display:block}
@@ -373,14 +375,6 @@
   .rank-stat b{display:block;font-size:1.5rem;color:var(--navy);font-weight:950;letter-spacing:-.03em;margin-top:3px}
 
   /* ===== Work space + Mr. Neft callout ===== */
-  .worknum{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px;background:#fffdf6;border:1px dashed #e4d29c;border-radius:10px;padding:9px 10px}
-  .worknum .wl{font-size:.86rem;font-weight:900;color:var(--navy)}
-  .worknum .inline-input{width:84px;padding:7px 9px}
-  .worknum .inline-input.ok{border-color:var(--good);background:var(--good-bg)}
-  .worknum .inline-input.no{border-color:#e6a49f;background:var(--bad-bg)}
-  .wmark{font-size:.78rem;font-weight:950;min-width:58px}
-  .wmark.ok{color:var(--good)}
-  .wmark.no{color:var(--bad)}
 
   .scratch{margin-top:12px;border:1px solid var(--line);border-radius:13px;background:white;overflow:hidden;box-shadow:var(--shadow-sm)}
   .scratch-head{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;padding:9px 12px;background:#f6fafb;border-bottom:1px solid var(--line)}
@@ -393,14 +387,44 @@
   }
   .scratch textarea:focus{outline:none;box-shadow:inset 0 0 0 2px rgba(22,131,139,.25)}
 
-  .workbench{margin-top:13px;border:1px solid #e4d29c;border-radius:13px;background:linear-gradient(180deg,#fffdf7,#fff9ec);padding:12px 13px}
-  .workbench .wb-head{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;font-weight:950;color:#6e5005;margin-bottom:9px}
-  .wb-rows{display:grid;gap:8px}
-  .wb-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:.88rem;font-weight:900;color:var(--navy)}
-  .wb-row .wb-name{min-width:112px}
-  .wb-row .inline-input{width:82px;padding:7px 9px}
-  .wb-row .inline-input.ok{border-color:var(--good);background:var(--good-bg)}
-  .wb-row .inline-input.no{border-color:#e6a49f;background:var(--bad-bg)}
+  .rack{margin-top:14px;border:1px solid #e4d29c;border-radius:15px;background:linear-gradient(180deg,#fffdf8,#fff9ec);padding:14px}
+  .rack-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+  .rack-head .rh{font-size:.73rem;text-transform:uppercase;letter-spacing:.11em;font-weight:950;color:#6e5005}
+  .rack-head .rs{font-size:.78rem;font-weight:850;color:#8a6a1c}
+  .srows{display:grid;gap:10px}
+  .srow{border:1px solid #ecdcb4;border-radius:13px;background:white;padding:12px 13px;transition:.2s ease}
+  .srow.solved{border-color:#a9d7bf;background:linear-gradient(180deg,#f8fdfa,#eff9f3)}
+  .srow-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .srow-name{font-size:.9rem;font-weight:950;color:var(--navy)}
+  .srow-info{font-size:.84rem;font-weight:850;color:var(--muted);background:#f4f8f9;border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+  .srow-help{margin-left:auto;width:28px;height:28px;border-radius:50%;border:1px solid var(--line-strong);background:white;color:var(--teal-dark);font-weight:950;font-size:.88rem;padding:0;line-height:1}
+  .srow-help:hover:not(:disabled){background:var(--teal-soft);border-color:var(--teal)}
+  .srow-help:disabled{opacity:.35;cursor:not-allowed}
+  .srow-tick{display:none;font-size:.78rem;font-weight:950;color:var(--good)}
+  .srow.solved .srow-tick{display:inline}
+  .srow-steps{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .sstep,.sop-col{display:flex;flex-direction:column;align-items:center;transition:.22s ease}
+  .sstep.locked{opacity:.3;filter:grayscale(.7);pointer-events:none}
+  .sstep.cleared .sl{color:var(--good)}
+  .sbody{display:flex;align-items:center;justify-content:center;min-height:88px}
+  .sl{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.09em;font-weight:950;color:var(--muted);margin-bottom:6px;min-height:14px;text-align:center;white-space:nowrap}
+  .sfrac{display:inline-grid;grid-template-rows:auto 2px auto;gap:5px;justify-items:center;align-items:center;min-width:104px}
+  .sfrac .bar{background:var(--navy);height:3px;width:100%;border-radius:2px}
+  .fin{width:92px;padding:8px 9px;border:2px solid #cbd9df;border-radius:9px;text-align:center;font-weight:900;color:var(--navy);background:white}
+  .fin:focus{border-color:var(--teal);outline:none}
+  .fin.ok{border-color:var(--good);background:var(--good-bg)}
+  .fin.no{border-color:#e6a49f;background:var(--bad-bg)}
+  .fin[readonly]{background:#f6f9fa;color:var(--muted)}
+  .sop{font-size:1.4rem;font-weight:950;color:var(--teal)}
+  .sres{display:flex;align-items:center;gap:7px}
+  .sres b{font-size:.82rem;color:var(--navy)}
+  .srow-note{margin-top:9px;font-size:.82rem;font-weight:850;line-height:1.45;display:none}
+  .srow-note.show{display:block}
+  .srow-note.bad{color:var(--bad)}
+  .srow-note.good{color:var(--good)}
+  .shelf-gate{margin-top:12px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:.86rem;font-weight:900;color:#6e5005;background:var(--gold-soft);border:1px solid #ecd79e;border-radius:12px;padding:10px 12px}
+  .shelf-gate.open{color:var(--good);background:var(--good-bg);border-color:#a9d7bf}
+  .tag.gated{opacity:.55;filter:grayscale(.45)}
 
   .neft-says{display:flex;gap:12px;align-items:center;margin-top:13px;background:linear-gradient(130deg,#17324d,#1d4a63 55%,#15818a);color:white;border-radius:15px;padding:13px 15px;box-shadow:0 12px 26px rgba(24,50,74,.20);border:1px solid rgba(255,255,255,.12);animation:saysIn .32s ease both}
   @keyframes saysIn{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:none}}
@@ -822,14 +846,121 @@ function wireScratch(root){
     t.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>{state.work=state.work||{};state.work[k]=t.value;saveState();},400);});
   });
 }
-function wireCheckInput(input,mark,target,okLabel){
-  const run=()=>{
-    const v=String(input.value).trim();
-    if(v===''){input.classList.remove('ok','no');mark.textContent='';mark.className='wmark';return;}
-    if(closeEnough(cleanNum(v),target,.006)){input.classList.add('ok');input.classList.remove('no');mark.textContent='✓ '+okLabel;mark.className='wmark ok';}
-    else{input.classList.add('no');input.classList.remove('ok');mark.textContent='check again';mark.className='wmark no';}
+/* ===== Solve rack: set up the ratio from the problem, then solve it in steps =====
+   Nothing is pre-filled and no division is printed for the student. Each row asks
+   them to build cost-over-quantity themselves, then divide both parts, then state
+   the unit rate. A row only reveals its next step once the current one is right. */
+function rackRowHTML(it,unit,i){
+  return '<div class="srow" data-r="'+i+'" data-stage="0">'+
+    '<div class="srow-top"><span class="srow-name">'+it.n+'</span>'+
+      '<span class="srow-info">'+it.label+' for '+fmtMoney(it.p)+'</span>'+
+      '<span class="srow-tick">✓ solved</span>'+
+      '<button class="srow-help" title="Show me this step" aria-label="Show me this step">?</button></div>'+
+    '<div class="srow-steps">'+
+      '<div class="sstep" data-s="0"><span class="sl">1 · Set up the ratio</span>'+
+        '<div class="sbody"><div class="sfrac"><span class="money-input"><input class="fin" data-f="num" inputmode="decimal" placeholder="?" aria-label="total cost" /></span>'+
+        '<span class="bar"></span><input class="fin" data-f="den" inputmode="decimal" placeholder="?" aria-label="how many" /></div></div></div>'+
+      '<div class="sop-col" aria-hidden="true"><span class="sl">&nbsp;</span><div class="sbody"><span class="sop">÷</span></div></div>'+
+      '<div class="sstep locked" data-s="1"><span class="sl">2 · Divide both parts by</span>'+
+        '<div class="sbody"><div class="sfrac"><input class="fin" data-f="dtop" inputmode="decimal" placeholder="?" aria-label="divide the top by" />'+
+        '<span class="bar"></span><input class="fin" data-f="dbot" inputmode="decimal" placeholder="?" aria-label="divide the bottom by" /></div></div></div>'+
+      '<div class="sop-col" aria-hidden="true"><span class="sl">&nbsp;</span><div class="sbody"><span class="sop">=</span></div></div>'+
+      '<div class="sstep locked" data-s="2"><span class="sl">3 · Unit rate</span>'+
+        '<div class="sbody"><div class="sres"><span class="money-input"><input class="fin" data-f="res" inputmode="decimal" placeholder="?" aria-label="unit rate" /></span><b>'+unit+'</b></div></div></div>'+
+    '</div><div class="srow-note"></div></div>';
+}
+function rackNoun(unit,noun){return noun || (unit.replace(/^per /,'')+'s')}
+function rackHTML(items,unit,headline){
+  return '<div class="rack"><div class="rack-head"><span class="rh">🧮 '+(headline||'Build each ratio, then solve it')+'</span>'+
+    '<span class="rs"><span class="rack-count">0</span> of '+items.length+' solved</span></div>'+
+    '<div class="srows">'+items.map((it,i)=>rackRowHTML(it,unit,i)).join('')+'</div></div>';
+}
+
+function wireRack(root,items,unit,onRow,onAllSolved,noun){
+  const rack=root.querySelector('.rack'); if(!rack) return null;
+  const state=items.map(()=>({stage:0,helped:false,solved:false}));
+  const rows=[...rack.querySelectorAll('.srow')];
+
+  function note(row,kind,msg){
+    const n=row.querySelector('.srow-note');
+    n.className='srow-note show '+kind;n.textContent=msg;
+  }
+  function clearNote(row){row.querySelector('.srow-note').className='srow-note';}
+  function field(row,f){return row.querySelector('[data-f="'+f+'"]')}
+  function val(row,f){return String(field(row,f).value).trim()}
+  function num(row,f){return cleanNum(val(row,f))}
+  function mark(el,ok){el.classList.toggle('ok',ok===true);el.classList.toggle('no',ok===false)}
+
+  function advance(row,i,toStage){
+    const st=state[i];
+    row.querySelector('.sstep[data-s="'+st.stage+'"]').classList.add('cleared');
+    st.stage=toStage;row.dataset.stage=toStage;
+    const nxt=row.querySelector('.sstep[data-s="'+toStage+'"]');
+    if(nxt){nxt.classList.remove('locked');const f=nxt.querySelector('.fin');if(f)setTimeout(()=>f.focus(),60);}
+  }
+  function solveRow(row,i){
+    const st=state[i];if(st.solved)return;
+    st.solved=true;row.classList.add('solved');
+    row.querySelector('.sstep[data-s="2"]').classList.add('cleared');
+    row.querySelector('.srow-help').disabled=true;
+    clearNote(row);
+    rack.querySelector('.rack-count').textContent=state.filter(x=>x.solved).length;
+    if(onRow) onRow(i,st.helped);
+    if(state.every(x=>x.solved) && onAllSolved) onAllSolved();
+  }
+  function evaluate(row,i){
+    const st=state[i];if(st.solved)return;
+    const it=items[i];
+    if(st.stage===0){
+      const n=val(row,'num'), d=val(row,'den');
+      if(n==='' || d===''){mark(field(row,'num'),null);mark(field(row,'den'),null);clearNote(row);return;}
+      const okN=closeEnough(cleanNum(n),it.p,.006), okD=closeEnough(cleanNum(d),it.c,.001);
+      mark(field(row,'num'),okN);mark(field(row,'den'),okD);
+      if(okN&&okD){clearNote(row);advance(row,i,1);return;}
+      if(closeEnough(cleanNum(n),it.c,.001) && closeEnough(cleanNum(d),it.p,.006))
+        note(row,'bad','Flipped. A unit price is dollars for ONE item, so the cost goes on top and the amount goes on the bottom.');
+      else note(row,'bad','Read the information: the total cost goes on top, the number of '+rackNoun(unit,noun)+' goes on the bottom.');
+    } else if(st.stage===1){
+      const t=val(row,'dtop'), b=val(row,'dbot');
+      if(t===''||b===''){mark(field(row,'dtop'),null);mark(field(row,'dbot'),null);clearNote(row);return;}
+      const tv=cleanNum(t), bv=cleanNum(b);
+      if(!closeEnough(tv,bv,.001)){mark(field(row,'dtop'),false);mark(field(row,'dbot'),false);
+        note(row,'bad','The top and the bottom must be divided by the same number, or the rate changes.');return;}
+      const ok=closeEnough(tv,it.c,.001);
+      mark(field(row,'dtop'),ok);mark(field(row,'dbot'),ok);
+      if(ok){clearNote(row);advance(row,i,2);return;}
+      note(row,'bad','Pick the number that turns the bottom into 1. What is '+it.c+' divided by itself?');
+    } else {
+      const v=val(row,'res');
+      if(v===''){mark(field(row,'res'),null);clearNote(row);return;}
+      const ok=closeEnough(cleanNum(v),it.p/it.c,.006);
+      mark(field(row,'res'),ok);
+      if(ok) solveRow(row,i);
+      else note(row,'bad','Not yet. '+fmtMoney(it.p)+' divided by '+it.c+' — work it out on paper if you need to.');
+    }
+  }
+  function showStep(i,all){
+    const row=rows[i], st=state[i], it=items[i];
+    if(st.solved) return;
+    st.helped=true;
+    const fill=(f,v)=>{const el=field(row,f);el.value=v;mark(el,true);};
+    do{
+      if(st.stage===0){fill('num',it.p.toFixed(2));fill('den',it.c);clearNote(row);advance(row,i,1);}
+      else if(st.stage===1){fill('dtop',it.c);fill('dbot',it.c);clearNote(row);advance(row,i,2);}
+      else {fill('res',(it.p/it.c).toFixed(2));solveRow(row,i);}
+    } while(all && !st.solved);
+  }
+
+  rows.forEach((row,i)=>{
+    row.querySelectorAll('.fin').forEach(inp=>inp.addEventListener('input',()=>evaluate(row,i)));
+    row.querySelector('.srow-help').onclick=()=>showStep(i,false);
+  });
+  return {
+    solveAll(){rows.forEach((row,i)=>showStep(i,true))},
+    revealRow(){const i=state.findIndex(x=>!x.solved);if(i<0)return false;showStep(i,true);return true;},
+    lock(){rack.querySelectorAll('.fin').forEach(f=>f.readOnly=true);rack.querySelectorAll('.srow-help').forEach(b=>b.disabled=true);},
+    allSolved(){return state.every(x=>x.solved)}
   };
-  input.addEventListener('input',run);run();
 }
 
 function feedback(el,type,html){
@@ -932,7 +1063,7 @@ function answerBattle(q,c,b){
 }
 
 /* ===== Cart Quest: three-round guided missions ===== */
-const cartRun = {};
+const cartRun = {}, cartRacks = {};
 
 function packChips(n,size){
   if(n<=0) return '<span class="pack-empty">Empty cart — add whole packs.</span>';
@@ -946,6 +1077,7 @@ function renderCart(){
   const w=document.getElementById('cartWrap');w.innerHTML='';
   cartQs.forEach((q,i)=>{
     const aLabel=q.a.replace(/^Store A:\s*/,''), bLabel=q.b.replace(/^Store B:\s*/,'');
+    const aPlain=aLabel.replace(/\s+for\s+\$[\d.]+$/,''), bPlain=bLabel.replace(/\s+for\s+\$[\d.]+$/,'');
     cartRun[q.id]={A:0,B:0};
     const c=document.createElement('div');c.className='card question-card mission';c.id='card-'+q.id;
     c.innerHTML=`
@@ -957,19 +1089,17 @@ function renderCart(){
         <div class="mstep" data-step="1">
           <div class="mstep-head"><span class="mstep-num"><span>1</span></span><div><div class="mstep-title">Round 1 · Scout the shelf</div><div class="mstep-sub">Which store charges less for <strong>one</strong> item?</div></div></div>
           <div class="store-grid">
-            <div class="store storeA"><div class="label">Store A</div><div class="price">${aLabel}</div>
-              <div class="worknum"><span class="wl">${fmtMoney(q.aCost)} ÷ ${q.aPack} =</span><span class="money-input"><input class="inline-input uwork" data-target="${(q.aCost/q.aPack).toFixed(4)}" inputmode="decimal" placeholder="0.00" aria-label="Store A cost for one item" /></span><span class="wmark"></span></div>
-            </div>
-            <div class="store storeB"><div class="label">Store B</div><div class="price">${bLabel}</div>
-              <div class="worknum"><span class="wl">${fmtMoney(q.bCost)} ÷ ${q.bPack} =</span><span class="money-input"><input class="inline-input uwork" data-target="${(q.bCost/q.bPack).toFixed(4)}" inputmode="decimal" placeholder="0.00" aria-label="Store B cost for one item" /></span><span class="wmark"></span></div>
-            </div>
+            <div class="store storeA"><div class="label">Store A</div><div class="price">${aLabel}</div></div>
+            <div class="store storeB"><div class="label">Store B</div><div class="price">${bLabel}</div></div>
           </div>
-          <div class="choices two"><button class="choice" data-a="A">Store A is cheaper per item</button><button class="choice" data-a="B">Store B is cheaper per item</button></div>
+          ${rackHTML([{n:'Store A',label:aPlain,c:q.aPack,p:q.aCost},{n:'Store B',label:bPlain,c:q.bPack,p:q.bCost}],'each','Build each store as a ratio, then solve it')}
+          <div class="shelf-gate">🔒 <span class="gate-msg">Solve both stores to unlock the choice.</span></div>
+          <div class="choices two"><button class="choice" data-a="A" disabled>Store A is cheaper per item</button><button class="choice" data-a="B" disabled>Store B is cheaper per item</button></div>
           <div class="feedback fb1"></div>
         </div>
 
         <div class="mstep locked" data-step="2">
-          <div class="mstep-head"><span class="mstep-num"><span>2</span></span><div><div class="mstep-title">Round 2 · Pack both carts</div><div class="mstep-sub">Tap <strong>+</strong> until each cart reaches <strong>${q.needN}</strong> items. Use the <strong>fewest whole packs</strong> that get you there — you cannot open a pack.</div></div>
+          <div class="mstep-head"><span class="mstep-num"><span>2</span></span><div><div class="mstep-title">Round 2 · Pack both carts</div><div class="mstep-sub">Add packs until each cart reaches <strong>${q.needN}</strong> items — you cannot open a pack, so use the <strong>fewest whole packs</strong> that get you there. Work out the items and the cost yourself.</div></div>
           <span class="shelf-lock">🔒 Finish Round 1 first</span></div>
           <div class="pack-lanes">
             <div class="lane" data-lane="A">
@@ -978,7 +1108,10 @@ function renderCart(){
               <div class="pack-row"></div>
               <div class="stepper"><button type="button" data-d="-1" aria-label="Remove a pack from Store A">−</button><span class="count">0</span><button type="button" data-d="1" aria-label="Add a pack from Store A">+</button><span class="units">packs</span></div>
               <div class="lane-meter"><span></span></div>
-              <div class="lane-read"><span>Items: <b class="items">0</b> / ${q.needN}</span><span>Total: <b class="tot">$0.00</b></span></div>
+              <div class="lane-math">
+                <div class="lm-row"><span class="lm-l">Items: <b class="mult">0</b> × ${q.aPack} =</span><input class="fin lm-in" data-k="items" inputmode="numeric" placeholder="?" aria-label="items in cart A" /><span class="lm-goal">of ${q.needN}</span></div>
+                <div class="lm-row"><span class="lm-l">Cost: <b class="mult">0</b> × ${fmtMoney(q.aCost)} =</span><span class="money-input"><input class="fin lm-in" data-k="tot" inputmode="decimal" placeholder="?" aria-label="total cost at A" /></span></div>
+              </div>
             </div>
             <div class="lane" data-lane="B">
               <span class="lane-label">Store B cart</span>
@@ -986,7 +1119,10 @@ function renderCart(){
               <div class="pack-row"></div>
               <div class="stepper"><button type="button" data-d="-1" aria-label="Remove a pack from Store B">−</button><span class="count">0</span><button type="button" data-d="1" aria-label="Add a pack from Store B">+</button><span class="units">packs</span></div>
               <div class="lane-meter"><span></span></div>
-              <div class="lane-read"><span>Items: <b class="items">0</b> / ${q.needN}</span><span>Total: <b class="tot">$0.00</b></span></div>
+              <div class="lane-math">
+                <div class="lm-row"><span class="lm-l">Items: <b class="mult">0</b> × ${q.bPack} =</span><input class="fin lm-in" data-k="items" inputmode="numeric" placeholder="?" aria-label="items in cart B" /><span class="lm-goal">of ${q.needN}</span></div>
+                <div class="lm-row"><span class="lm-l">Cost: <b class="mult">0</b> × ${fmtMoney(q.bCost)} =</span><span class="money-input"><input class="fin lm-in" data-k="tot" inputmode="decimal" placeholder="?" aria-label="total cost at B" /></span></div>
+              </div>
             </div>
           </div>
           ${scratchHTML('cart-'+q.id,'Example: '+q.needN+' ÷ '+q.aPack+' = ...  round UP to ___ packs','Work out the packs and totals here. It saves on this device.')}
@@ -1014,17 +1150,43 @@ function renderCart(){
       lane.querySelectorAll('.stepper button').forEach(btn=>btn.onclick=()=>bumpLane(q,c,lane.dataset.lane,Number(btn.dataset.d)));
     });
     c.querySelector('.lock').onclick=()=>cartStep2(q,c);
-    c.querySelector('.hint2').onclick=()=>feedback(c.querySelector('.fb2'),'hint','Divide the number needed by the pack size, then round <strong>up</strong> for any remainder. Example: 50 items ÷ 12 per pack = 4.16…, so you need 5 whole packs.');
+    c.querySelector('.hint2').onclick=()=>feedback(c.querySelector('.fb2'),'hint','Divide the number needed by the pack size, then round <strong>up</strong> for any remainder — 50 items ÷ 12 per pack = 4.16…, so 5 whole packs. Then items = packs × pack size, and cost = packs × pack price.');
     c.querySelectorAll('.mstep[data-step="3"] .choice').forEach(btn=>btn.onclick=()=>cartStep3(q,c,btn));
 
     w.appendChild(c);
     wireScratch(c);
-    c.querySelectorAll('.uwork').forEach(inp=>wireCheckInput(inp,inp.closest('.worknum').querySelector('.wmark'),Number(inp.dataset.target),'per item'));
+    cartRacks[q.id]=wireRack(c,
+      [{n:'Store A',label:aPlain,c:q.aPack,p:q.aCost},{n:'Store B',label:bPlain,c:q.bPack,p:q.bCost}],
+      'each', null, ()=>unlockCartChoice(c), 'items');
+    c.querySelectorAll('.lane .lm-in').forEach(inp=>inp.addEventListener('input',()=>checkLaneMath(q,c,inp.closest('.lane').dataset.lane)));
     drawLane(q,c,'A');drawLane(q,c,'B');
     if(done(q.id)) showCartSolved(q,c);
   });
 }
 
+function unlockCartChoice(c){
+  const gate=c.querySelector('.mstep[data-step="1"] .shelf-gate');
+  c.querySelectorAll('.mstep[data-step="1"] .choice').forEach(b=>b.disabled=false);
+  if(gate){gate.classList.add('open');gate.innerHTML='🔓 <span class="gate-msg">Both ratios solved — now call the lower unit price.</span>';}
+  announce('Choice unlocked.');
+}
+function laneMathOK(q,c,lane){
+  const el=c.querySelector('.lane[data-lane="'+lane+'"]');
+  const packs=cartRun[q.id][lane];
+  const size=lane==='A'?q.aPack:q.bPack, cost=lane==='A'?q.aCost:q.bCost;
+  const iIn=el.querySelector('.lm-in[data-k="items"]'), tIn=el.querySelector('.lm-in[data-k="tot"]');
+  const iv=String(iIn.value).trim(), tv=String(tIn.value).trim();
+  const okI = iv!=='' && closeEnough(cleanNum(iv),packs*size,.001);
+  const okT = tv!=='' && closeEnough(cleanNum(tv),packs*cost,.011);
+  return {okI,okT,filled:iv!==''&&tv!=='',iIn,tIn};
+}
+function checkLaneMath(q,c,lane){
+  const r=laneMathOK(q,c,lane);
+  [[r.iIn,r.okI],[r.tIn,r.okT]].forEach(([el,ok])=>{
+    if(String(el.value).trim()===''){el.classList.remove('ok','no');return;}
+    el.classList.toggle('ok',ok);el.classList.toggle('no',!ok);
+  });
+}
 function stepEl(c,n){return c.querySelector('.mstep[data-step="'+n+'"]')}
 function clearStep(c,n){const st=stepEl(c,n);st.classList.add('cleared');st.querySelectorAll('button,input,select').forEach(x=>{if(!x.classList.contains('speak'))x.disabled=true});}
 function unlockStep(c,n){stepEl(c,n).classList.remove('locked')}
@@ -1060,26 +1222,31 @@ function bumpLane(q,c,lane,d){
 }
 function drawLane(q,c,lane){
   const run=cartRun[q.id];const el=c.querySelector('.lane[data-lane="'+lane+'"]');
-  const pack=lane==='A'?q.aPack:q.bPack, cost=lane==='A'?q.aCost:q.bCost;
-  const packs=run[lane], items=packs*pack, total=packs*cost;
+  const pack=lane==='A'?q.aPack:q.bPack;
+  const packs=run[lane], items=packs*pack;
   el.querySelector('.pack-row').innerHTML=packChips(packs,pack);
   el.querySelector('.count').textContent=packs;
-  el.querySelector('.items').textContent=items;
-  el.querySelector('.items').className='items '+(items>=q.needN?'ok':(packs>0?'short':''));
-  el.querySelector('.tot').textContent=fmtMoney(total);
+  el.querySelectorAll('.lane-math .mult').forEach(m=>m.textContent=packs);
   el.querySelector('.lane-meter>span').style.width=Math.min(100,(items/q.needN)*100)+'%';
   el.classList.toggle('met',items>=q.needN);
+  if(!stepEl(c,2).classList.contains('cleared')) checkLaneMath(q,c,lane);
 }
 
 function cartStep2(q,c){
   const st=stepEl(c,2); if(st.classList.contains('cleared')) return;
   const run=cartRun[q.id];const fb=c.querySelector('.fb2');
   const aItems=run.A*q.aPack, bItems=run.B*q.bPack;
+  const mA=laneMathOK(q,c,'A'), mB=laneMathOK(q,c,'B');
   const problems=[];
   if(aItems<q.needN) problems.push('Cart A is short: '+aItems+' of the '+q.needN+' needed.');
   else if(run.A>q.aPacks) problems.push('Cart A has more than you need. Use the fewest whole packs that reach '+q.needN+'.');
   if(bItems<q.needN) problems.push('Cart B is short: '+bItems+' of the '+q.needN+' needed.');
   else if(run.B>q.bPacks) problems.push('Cart B has more than you need. Use the fewest whole packs that reach '+q.needN+'.');
+  if(!mA.filled||!mB.filled) problems.push('Work out the items and the cost for both carts.');
+  else{
+    if(!mA.okI||!mA.okT) problems.push('Check your multiplication for Cart A.');
+    if(!mB.okI||!mB.okT) problems.push('Check your multiplication for Cart B.');
+  }
   if(!problems.length){
     feedback(fb,'good','✓ Both carts are packed right. A: '+q.aPacks+' packs = '+fmtMoney(q.aTotal)+'. B: '+q.bPacks+' packs = '+fmtMoney(q.bTotal)+'.');
     finishStep2(q,c);
@@ -1088,11 +1255,20 @@ function cartStep2(q,c){
     c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),300);
     if(n<2) feedback(fb,'hint','Almost. '+problems.join(' ')+' Remember: round the number of packs <strong>up</strong>, and stop as soon as you reach '+q.needN+'.');
     else{
-      run.A=q.aPacks;run.B=q.bPacks;drawLane(q,c,'A');drawLane(q,c,'B');
+      run.A=q.aPacks;run.B=q.bPacks;drawLane(q,c,'A');drawLane(q,c,'B');fillLaneMath(q,c);
       feedback(fb,'bad','Carts filled for you. '+q.needN+' ÷ '+q.aPack+' rounds up to <strong>'+q.aPacks+' packs</strong> at A ('+fmtMoney(q.aTotal)+'), and '+q.needN+' ÷ '+q.bPack+' rounds up to <strong>'+q.bPacks+' packs</strong> at B ('+fmtMoney(q.bTotal)+').');
       finishStep2(q,c);
     }
   }
+}
+function fillLaneMath(q,c){
+  const set=(lane,items,tot)=>{
+    const el=c.querySelector('.lane[data-lane="'+lane+'"]');
+    const i=el.querySelector('.lm-in[data-k="items"]'), t=el.querySelector('.lm-in[data-k="tot"]');
+    i.value=items;t.value=tot.toFixed(2);
+    [i,t].forEach(x=>{x.classList.add('ok');x.classList.remove('no')});
+  };
+  set('A',q.aPacks*q.aPack,q.aTotal);set('B',q.bPacks*q.bPack,q.bTotal);
 }
 function finishStep2(q,c){
   clearStep(c,2);unlockStep(c,3);
@@ -1138,10 +1314,11 @@ function cartStep3(q,c,btn){
 
 function showCartSolved(q,c){
   const run=cartRun[q.id];run.A=q.aPacks;run.B=q.bPacks;
+  if(cartRacks[q.id]) cartRacks[q.id].solveAll();
   c.querySelectorAll('.mstep[data-step="1"] .choice').forEach(b=>{if(b.dataset.a===q.unitWinner)b.classList.add('correct')});
   c.querySelector('.store'+q.unitWinner).classList.add('win');
   clearStep(c,1);unlockStep(c,2);
-  drawLane(q,c,'A');drawLane(q,c,'B');
+  drawLane(q,c,'A');drawLane(q,c,'B');fillLaneMath(q,c);
   finishStep2(q,c);
   c.querySelectorAll('.mstep[data-step="3"] .choice').forEach(b=>{if(b.dataset.a===q.totalWinner)b.classList.add('correct')});
   c.querySelector('.tface[data-t="'+q.totalWinner+'"]').classList.add('win');
@@ -1151,7 +1328,7 @@ function showCartSolved(q,c){
 }
 
 /* ===== Deal Detective: arcade game (tab 6) ===== */
-const MAX_HEARTS=3, MAX_COMBO=5, PEEK_FREE=1;
+const MAX_HEARTS=3, MAX_COMBO=5, PEEK_FREE=1, SOLVE_BONUS=3;
 const POWERS={scan:{icon:'🔍',label:'Scanner',cost:15},hint:{icon:'💡',label:'Hint',cost:10},heart:{icon:'❤️',label:'Extra life',cost:30}};
 const RANKS=[
   {at:0,   name:'Trainee'},
@@ -1165,7 +1342,7 @@ let game=null;
 
 function newRun(startAt){
   return {i:startAt||0, coins:0, combo:0, bestCombo:0, hearts:MAX_HEARTS, marks:[], tries:{},
-          answered:false, peeks:0, hintShown:false, picks:[], bossStep:0, aisleStart:startAt||0};
+          answered:false, peeks:0, hintShown:false, picks:[], bossStep:0, aisleStart:startAt||0, rack:null};
 }
 function startGame(reset){
   const firstOpen=gameRounds.findIndex(r=>!done(r.id));
@@ -1282,13 +1459,7 @@ function tagHTML(t,idx,unit,clickable){
     '<span class="tag-pack">'+t.label+'</span><span class="tag-price">'+fmtMoney(t.p)+'</span>'+
     '<span class="tag-unit">? '+unit+'</span></button>';
 }
-function benchHTML(tags,unit){
-  const rows=tags.map((t,idx)=>
-    '<div class="wb-row"><span class="wb-name">'+t.n+'</span><span>'+fmtMoney(t.p)+' ÷ '+t.c+' =</span>'+
-    '<span class="money-input"><input class="inline-input uwork" data-target="'+tagUnit(t).toFixed(4)+'" inputmode="decimal" placeholder="0.00" aria-label="Unit price for '+t.n+'" /></span>'+
-    '<span class="wmark"></span></div>').join('');
-  return '<div class="workbench"><div class="wb-head">🧮 Detective worksheet — find each price for 1 '+unit.replace(/^per /,'')+'</div><div class="wb-rows">'+rows+'</div></div>';
-}
+function gateHTML(msg){return '<div class="shelf-gate">🔒 <span class="gate-msg">'+msg+'</span></div>'}
 function shopHTML(r){
   const canScan = r.kind==='scan'||r.kind==='sort'||r.kind==='price'||r.kind==='mgr';
   let btns='<span class="shop-k">Power-ups</span>';
@@ -1305,15 +1476,21 @@ function tagUnit(t){return t.p/t.c}
 function caseHTML(r){
   let mid='';
   if(r.kind==='scan'){
-    mid='<div class="shelf">'+r.tags.map((t,i)=>tagHTML(t,i,r.unit,true)).join('')+'</div>'+benchHTML(r.tags,r.unit);
+    mid='<div class="shelf">'+r.tags.map((t,i)=>tagHTML(t,i,r.unit,false)).join('')+'</div>'+
+      rackHTML(r.tags,r.unit,'Build each ratio from the tag, then solve it')+
+      gateHTML('Solve all '+r.tags.length+' tags to unlock the shelf, then tap the lowest unit price.');
   }else if(r.kind==='sort'){
-    mid='<div class="shelf">'+r.tags.map((t,i)=>tagHTML(t,i,r.unit,true)).join('')+'</div>'+
-      '<div class="scan-note" id="sortState">Tap them in order: cheapest per 1 first.</div>'+benchHTML(r.tags,r.unit);
+    mid='<div class="shelf">'+r.tags.map((t,i)=>tagHTML(t,i,r.unit,false)).join('')+'</div>'+
+      '<div class="scan-note" id="sortState">Solve every tag first, then tap them cheapest-first.</div>'+
+      rackHTML(r.tags,r.unit,'Build each ratio from the tag, then solve it')+
+      gateHTML('Solve all '+r.tags.length+' tags to unlock the shelf, then order them cheapest to priciest.');
   }else if(r.kind==='price'){
     mid='<div class="shelf one">'+tagHTML(r.tag,0,r.unit,false)+'</div>'+
-      '<div class="pricegun"><span class="pg-label">🔫 '+fmtMoney(r.tag.p)+' ÷ '+r.tag.c+' =</span>'+
-      '<span class="money-input"><input class="inline-input pgin" inputmode="decimal" placeholder="0.00" aria-label="Unit price" /></span>'+
-      '<button class="btn primary pgcheck">Fire the price gun</button></div>';
+      rackHTML([r.tag],r.unit,'Build the ratio from the tag, then solve it')+
+      '<div class="pricegun"><span class="pg-label">🔫 Price to log:</span>'+
+      '<span class="money-input"><input class="inline-input pgin" inputmode="decimal" placeholder="0.00" aria-label="Unit price" disabled /></span>'+
+      '<button class="btn primary pgcheck" disabled>Fire the price gun</button>'+
+      '<span class="scan-note pg-note">Solve the ratio above to load the price gun.</span></div>';
   }else if(r.kind==='mgr'){
     mid='<div class="choices">'+r.options.map((o,i)=>'<button class="choice" data-i="'+i+'">'+o+'</button>').join('')+'</div>';
   }else if(r.kind==='boss'){
@@ -1342,8 +1519,19 @@ function wireRound(r){
   const body=document.getElementById('gBody');
   body.querySelector('.gspeak').onclick=()=>speakCase(r);
   wireScratch(body);
-  body.querySelectorAll('.uwork').forEach(inp=>wireCheckInput(inp,inp.closest('.wb-row').querySelector('.wmark'),Number(inp.dataset.target),'nice'));
   body.querySelectorAll('.power').forEach(btn=>btn.onclick=()=>usePower(r,btn.dataset.power,btn));
+
+  const rackItems = r.kind==='price' ? [r.tag] : (r.kind==='scan'||r.kind==='sort' ? r.tags : null);
+  if(rackItems){
+    body.querySelectorAll('.tag').forEach(t=>t.classList.add('gated'));
+    game.rack=wireRack(body,rackItems,r.unit,
+      (i,helped)=>{
+        if(!helped){game.coins+=SOLVE_BONUS;coinBurst(SOLVE_BONUS);announce('Solved. Plus '+SOLVE_BONUS+' coins.');}
+        drawGameHUD();refreshPowers(r);
+      },
+      ()=>unlockShelf(r));
+  } else game.rack=null;
+
   if(r.kind==='scan') body.querySelectorAll('.tag').forEach(t=>t.onclick=()=>answerScan(r,Number(t.dataset.i)));
   if(r.kind==='sort') body.querySelectorAll('.tag').forEach(t=>t.onclick=()=>pickSort(r,Number(t.dataset.i),t));
   if(r.kind==='price'){
@@ -1362,6 +1550,23 @@ function speakCase(r){
   else if(r.kind==='mgr') speak(r.text+' '+r.options.join('. '));
   else speak(r.line+' '+r.steps.map(st=>st.q).join(' '));
 }
+function unlockShelf(r){
+  const body=document.getElementById('gBody'); if(!body) return;
+  const gate=body.querySelector('.shelf-gate');
+  if(r.kind==='price'){
+    const pg=body.querySelector('.pgin'), btn=body.querySelector('.pgcheck'), note=body.querySelector('.pg-note');
+    if(pg){pg.disabled=false;pg.focus();}
+    if(btn) btn.disabled=false;
+    if(note) note.textContent='Price gun loaded — log the unit rate you found.';
+    banner('🔫 Price gun loaded','Log your answer',900);
+  }else{
+    body.querySelectorAll('.tag').forEach(t=>{t.classList.remove('gated');t.disabled=false});
+    if(gate){gate.classList.add('open');gate.innerHTML='🔓 <span class="gate-msg">Shelf cracked — now make the call.</span>';}
+    banner('🔓 Shelf cracked','Every ratio solved',1000);
+  }
+  announce('Shelf unlocked.');
+}
+
 function refreshPowers(r){
   const body=document.getElementById('gBody'); if(!body) return;
   body.querySelectorAll('.power').forEach(b=>{
@@ -1393,6 +1598,13 @@ function usePower(r,kind,btn){
   // scanner
   const free=game.peeks<PEEK_FREE;
   if(!free && game.coins<POWERS.scan.cost) return;
+  if(game.rack){
+    if(!game.rack.revealRow()){btn.dataset.spent='1';refreshPowers(r);return;}
+    if(!free) game.coins-=POWERS.scan.cost;
+    game.peeks++;
+    if(game.rack.allSolved()) btn.dataset.spent='1';
+    drawGameHUD();refreshPowers(r);return;
+  }
   if(!free) game.coins-=POWERS.scan.cost;
   game.peeks++;
   if(r.kind==='mgr'){
@@ -1551,7 +1763,8 @@ function caseExplain(r){
 function revealCase(r){
   const body=document.getElementById('gBody');
   body.querySelectorAll('.power,.scan-btn').forEach(b=>b.disabled=true);
-  body.querySelectorAll('.uwork,.pgin,.bsin').forEach(i=>i.readOnly=true);
+  body.querySelectorAll('.pgin,.bsin').forEach(i=>i.readOnly=true);
+  if(game.rack) game.rack.lock();
   body.querySelectorAll('.pgcheck,.bscheck,.bspick').forEach(b=>b.disabled=true);
   if(r.kind==='scan'||r.kind==='sort'||r.kind==='price'){
     const tags=r.kind==='price'?[r.tag]:r.tags;
