@@ -845,6 +845,60 @@ function conceptCard(x, y, w, h, extra = "") {
   return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" ${extra}/>`;
 }
 
+/**
+ * One pack card for the 3-2 unit-rate comparison, worked in four LABELLED
+ * steps inside its own boxes.
+ *
+ * The old card jumped from "$3.00 for 5 pencils" straight to "$0.60 per
+ * pencil" with a single "$3.00 / 5 pencils =" line between them. The division
+ * that produces the unit rate — and which number is the cost and which is the
+ * amount — was left implicit, which is exactly the step a family at the
+ * kitchen table needs to see. Each step is now its own box, the fraction is
+ * written with its numerator and denominator named, and the denominator
+ * division is shown before the 1 is dropped.
+ */
+function unitRatePack({ x, y, name, badgeFill, cost, count, noun, rate, best }) {
+  const cx = x + 16;
+  const w = 244;
+  const money = (n) => `$${n.toFixed(2)}`;
+  const box = (by, bh, fill = "#f8fafc", stroke = "#cbd5e1") =>
+    `<rect x="${cx}" y="${by}" width="${w}" height="${bh}" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  const step = (by, n, label) =>
+    `<text x="${cx + 10}" y="${by + 18}" font-size="12" font-weight="800" fill="#0f766e">STEP ${n} · ${label}</text>`;
+
+  const fracX = cx + 62;
+  return `
+        ${conceptCard(x, y, 276, 392)}
+        <rect x="${cx}" y="${y + 14}" width="90" height="24" rx="6" fill="${badgeFill}"/>
+        <text x="${cx + 45}" y="${y + 31}" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">${name}</text>
+        <text x="${cx}" y="${y + 62}" font-size="18" font-weight="800" fill="#12355b">${money(cost)} for ${count} ${noun}s</text>
+
+        ${box(y + 76, 92)}
+        ${step(y + 76, 1, "Write it as a fraction")}
+        <text x="${fracX}" y="${y + 120}" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">${money(cost)}</text>
+        <line x1="${cx + 18}" y1="${y + 128}" x2="${cx + 106}" y2="${y + 128}" stroke="#12355b" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 152}" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">${count} ${noun}s</text>
+        <text x="${cx + 116}" y="${y + 118}" font-size="11" font-weight="700" fill="#5f6f80">← total cost</text>
+        <text x="${cx + 116}" y="${y + 131}" font-size="10" font-weight="700" fill="#94a3b8">(numerator / top)</text>
+        <text x="${cx + 116}" y="${y + 150}" font-size="11" font-weight="700" fill="#5f6f80">← how many</text>
+        <text x="${cx + 116}" y="${y + 163}" font-size="10" font-weight="700" fill="#94a3b8">(denominator / bottom)</text>
+
+        ${box(y + 174, 52)}
+        ${step(y + 174, 2, "Divide by the denominator")}
+        <text x="${cx + 10}" y="${y + 216}" font-size="17" font-weight="800" fill="#12355b">${money(cost)} ÷ ${count} = ${money(rate)}</text>
+
+        ${box(y + 232, 52)}
+        ${step(y + 232, 3, "That is the rate for 1")}
+        <text x="${cx + 10}" y="${y + 274}" font-size="17" font-weight="800" fill="#12355b">${money(rate)} for 1 ${noun}</text>
+
+        ${box(y + 290, 56, best ? "#dcfce7" : "#f1f5f9", best ? "#16a34a" : "#94a3b8")}
+        ${step(y + 290, 4, "Unit rate — drop the 1")}
+        <text x="${cx + 10}" y="${y + 336}" font-size="21" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">${money(rate)} per ${noun}</text>
+
+        <rect x="${cx}" y="${y + 352}" width="${w}" height="26" rx="8" fill="${best ? "#dcfce7" : "#f1f5f9"}" stroke="${best ? "#16a34a" : "#94a3b8"}" stroke-width="1.5"/>
+        <text x="${cx + w / 2}" y="${y + 370}" text-anchor="middle" font-size="13" font-weight="800" fill="${best ? "#15803d" : "#64748b"}">${best ? "★ LOWER unit rate = BETTER BUY!" : "Higher cost for 1"}</text>`;
+}
+
 /** One numbered "do this" row inside a visual. */
 function conceptRow(y, n, text, color = "#12355b") {
   return `${conceptCard(34, y, 572, 62)}
@@ -1001,37 +1055,43 @@ function conceptVisual(config) {
   if (baseLesson === "3-2") {
     return {
       svg: conceptFrame({
-        label: "Rates and Unit Rates: Finding price per 1 pencil to find the better buy",
+        label:
+          "Rates and Unit Rates: each pack worked step by step — write the fraction, divide by the denominator, drop the 1",
         tone: "amber",
-        height: 410,
+        height: 640,
         title: "Rates & Unit Rates / Tasa y tasa unitaria",
         body: `
-        <!-- Pack A -->
-        ${conceptCard(34, 68, 276, 186)}
-        <rect x="50" y="82" width="90" height="24" rx="6" fill="#0f766e"/>
-        <text x="95" y="99" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">PACK A</text>
-        <text x="50" y="132" font-size="20" font-weight="800" fill="#12355b">$3.00 for 5 pencils</text>
-        <text x="50" y="162" font-size="16" font-weight="700" fill="#5f6f80">$3.00 ÷ 5 pencils =</text>
-        <text x="50" y="198" font-size="28" font-weight="800" fill="#0f766e">$0.60 per pencil</text>
-        <rect x="50" y="214" width="134" height="28" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
-        <text x="117" y="233" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">★ BETTER BUY!</text>
-
-        <!-- Pack B -->
-        ${conceptCard(330, 68, 276, 186)}
-        <rect x="346" y="82" width="90" height="24" rx="6" fill="#64748b"/>
-        <text x="391" y="99" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">PACK B</text>
-        <text x="346" y="132" font-size="20" font-weight="800" fill="#12355b">$5.20 for 8 pencils</text>
-        <text x="346" y="162" font-size="16" font-weight="700" fill="#5f6f80">$5.20 ÷ 8 pencils =</text>
-        <text x="346" y="198" font-size="28" font-weight="800" fill="#12355b">$0.65 per pencil</text>
-        <rect x="346" y="214" width="134" height="28" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-        <text x="413" y="233" text-anchor="middle" font-size="14" font-weight="800" fill="#64748b">Higher cost for 1</text>
+        <!-- Each pack worked in four labelled steps; see unitRatePack(). -->
+        ${unitRatePack({
+          x: 34,
+          y: 68,
+          name: "PACK A",
+          badgeFill: "#0f766e",
+          cost: 3.0,
+          count: 5,
+          noun: "pencil",
+          rate: 0.6,
+          best: true,
+        })}
+        ${unitRatePack({
+          x: 330,
+          y: 68,
+          name: "PACK B",
+          badgeFill: "#64748b",
+          cost: 5.2,
+          count: 8,
+          noun: "pencil",
+          rate: 0.65,
+          best: false,
+        })}
 
         <!-- Formula Rule Card -->
-        <rect x="34" y="268" width="572" height="122" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="320" y="298" text-anchor="middle" font-size="19" font-weight="800" fill="#0f766e">Unit Rate Formula: Total Cost ÷ Number of Units</text>
-        <line x1="60" y1="312" x2="580" y2="312" stroke="#99f6e4" stroke-width="2"/>
-        <text x="320" y="340" text-anchor="middle" font-size="17" font-weight="700" fill="#12355b">A unit rate is a ratio that compares a quantity to exactly 1 unit.</text>
-        <text x="320" y="368" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">Comparing unit rates ($/pencil) tells you which option gives more value!</text>`,
+        <rect x="34" y="476" width="572" height="140" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="320" y="506" text-anchor="middle" font-size="19" font-weight="800" fill="#0f766e">Unit Rate = Total Cost ÷ Number of Units</text>
+        <line x1="60" y1="520" x2="580" y2="520" stroke="#99f6e4" stroke-width="2"/>
+        <text x="320" y="548" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">Put the cost on TOP, the amount on the BOTTOM, then divide top ÷ bottom.</text>
+        <text x="320" y="574" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">That gives the cost of exactly 1 — we drop the 1 and say "per pencil".</text>
+        <text x="320" y="602" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">$0.60 &lt; $0.65, so Pack A wins. Compare the price of ONE, never the total price.</text>`,
       }),
       capEn:
         "A unit rate is a ratio that compares a quantity to 1 unit. Divide the total cost by the quantity to find the price for 1.",
