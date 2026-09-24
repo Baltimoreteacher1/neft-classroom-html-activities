@@ -16,6 +16,7 @@ import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 import {
   decimalOperation,
   detectVisualTopic,
+  homeworkWorkbenchTool,
   ratioFocus,
   selectAlignedQuickCheckProblems,
 } from "./homework-alignment.mjs";
@@ -1105,7 +1106,7 @@ function conceptVisual(config) {
     return {
       svg: conceptFrame({
         label:
-          "Ratio Table Scaling: Multiplying both columns creates equivalent ratios, adding breaks the ratio",
+          "Ratio Table Scaling: apply the same scale factor to each quantity to create an equivalent ratio",
         tone: "teal",
         height: 420,
         title: "Ratio Table Scaling / Tabla de razones",
@@ -1157,10 +1158,10 @@ function conceptVisual(config) {
         <g transform="translate(394, 68)">
           <!-- Multiply Rule -->
           <rect x="0" y="0" width="212" height="114" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
-          <text x="16" y="28" font-size="14" font-weight="800" fill="#047857">✔ MULTIPLY BOTH (×):</text>
-          <text x="16" y="56" font-size="15" font-weight="700" fill="#12355b">Row 1 × 2  →  4 : 6</text>
-          <text x="16" y="80" font-size="15" font-weight="700" fill="#12355b">Row 1 × 3  →  6 : 9</text>
-          <text x="16" y="102" font-size="13" font-weight="700" fill="#047857">Ratio stays in balance!</text>
+          <text x="16" y="27" font-size="14" font-weight="800" fill="#047857">✔ USE THE SAME FACTOR: ×2</text>
+          <text x="16" y="54" font-size="15" font-weight="700" fill="#12355b">Mix:  2 × 2 = 4</text>
+          <text x="16" y="78" font-size="15" font-weight="700" fill="#12355b">Milk: 3 × 2 = 6</text>
+          <text x="16" y="101" font-size="13" font-weight="700" fill="#047857">Both quantities use ×2.</text>
 
           <!-- Add Contrast Bug -->
           <rect x="0" y="128" width="212" height="114" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
@@ -2278,8 +2279,8 @@ export function renderWelcomeBanner(config, lessonId) {
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">${HOMEWORK_STOP_COUNT} stops</span><span class="lang-es" lang="es">${HOMEWORK_STOP_COUNT} paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About ${HOMEWORK_TOTAL_MINUTES} minutes</span><span class="lang-es" lang="es">Unos ${HOMEWORK_TOTAL_MINUTES} minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">${HOMEWORK_STOP_COUNT}</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">${HOMEWORK_STOP_COUNT}</span> paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">${HOMEWORK_TOTAL_MINUTES}</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">${HOMEWORK_TOTAL_MINUTES}</span> minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
 
@@ -2318,69 +2319,39 @@ export function renderWelcomeBanner(config, lessonId) {
    needs to see it before they scroll, and it used to sit in a second nav card
    that competed with the tab bar for the same job. */
 export function renderQuickPlan() {
-  /* Each line is a BUTTON that goes there, not a sentence telling you where to
-     go. The plan itself is good advice and was measured to be exactly right at
-     30 minutes of content — but as prose it asked the one family with no time
-     to read three instructions, remember them, then find the Big Idea, the
-     first Try Together step and the Warm-up tier across three different stops.
-     That is the most navigation on the page handed to the family least able to
-     spend it. gotoQuickPlanStep() switches the stop, scrolls to the exact
-     element and flashes it, so the plan runs itself. Nothing is hidden or
-     skipped: this is a route through the page, not a reduced version of it. */
-  const steps = [
-    {
-      min: "2",
-      en: "Read the Big Idea out loud.",
-      es: "Lean en voz alta la idea principal.",
-      whereEn: "Learn",
-      whereEs: "Aprender",
-    },
-    {
-      min: "3",
-      en: "Do just the FIRST Try Together step.",
-      es: "Hagan solo el PRIMER paso de Intentar Juntos.",
-      whereEn: "Together",
-      whereEs: "Juntos",
-    },
-    {
-      min: "5",
-      en: "Answer the 3 Warm-up problems.",
-      es: "Contesten los 3 problemas de calentamiento.",
-      whereEn: "Check",
-      whereEs: "Repaso",
-    },
-  ];
-
-  const rows = steps
-    .map(
-      (s, i) => `
-          <li>
-            <button type="button" class="hw-quickplan-step" onclick="gotoQuickPlanStep(${i + 1})">
-              <span class="hw-quickplan-min">${s.min} min</span>
-              <span class="hw-quickplan-what"><span class="lang-en">${s.en}</span><span class="lang-es" lang="es">${s.es}</span></span>
-              <span class="hw-quickplan-go"><span class="lang-en">Take me there · ${s.whereEn}</span><span class="lang-es" lang="es">Llévame ahí · ${s.whereEs}</span> →</span>
-            </button>
-          </li>`,
-    )
-    .join("");
-
+  /* One decision before the family starts: how much time is realistic tonight?
+     The old 10-minute disclosure still left the entire 30-minute path active,
+     so every Next button immediately returned the family to the long route.
+     These are real modes: tabs, practice count, time remaining, and flow all
+     agree. Full stays the default so an existing family loses nothing. */
   return `
-      <details class="hw-quickplan">
-        <summary class="hw-quickplan-summary">
-          <span class="hw-quickplan-icon" aria-hidden="true">⏰</span>
-          <strong><span class="lang-en">Only have 10 minutes tonight?</span><span class="lang-es" lang="es">¿Solo tienen 10 minutos hoy?</span></strong>
-          <span class="hw-quickplan-chevron" aria-hidden="true">▾</span>
-        </summary>
-        <p class="hw-quickplan-lead">
-          <span class="lang-en">Tap a step and we will take you straight to it.</span>
-          <span class="lang-es" lang="es">Toquen un paso y los llevamos directo ahí.</span>
+      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
+        <div class="hw-route-heading">
+          <span class="hw-route-icon" aria-hidden="true">🧭</span>
+          <div>
+            <h2 id="hw_route_title"><span class="lang-en">Choose tonight's route</span><span class="lang-es" lang="es">Elijan la ruta de hoy</span></h2>
+            <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
+          </div>
+        </div>
+        <div class="hw-route-options" role="group" aria-label="Choose homework time">
+          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
+            <span class="hw-route-time">10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Essentials</span><span class="lang-es" lang="es">Lo esencial</span></strong><small><span class="lang-en">Big idea · 1 guided step · 2 warm-ups</span><span class="lang-es" lang="es">Idea principal · 1 paso · 2 ejercicios</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
+            <span class="hw-route-time">20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
+            <span class="hw-route-time">30 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
+          </button>
+        </div>
+        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
+          <span class="lang-en">Full route selected: all 6 stops, about 30 minutes.</span>
+          <span class="lang-es" lang="es">Ruta completa: 6 paradas, unos 30 minutos.</span>
         </p>
-        <ol class="hw-quickplan-steps">${rows}</ol>
-        <p class="hw-quickplan-note">
-          <span class="lang-en">💛 Short and calm beats long and stressful. Ten focused minutes tonight is a win.</span>
-          <span class="lang-es" lang="es">💛 Corto y tranquilo vale más que largo y estresante. Diez minutos concentrados hoy ya son un logro.</span>
-        </p>
-      </details>`;
+      </section>`;
 }
 
 export function renderLearningTonight(config) {
@@ -2806,6 +2777,10 @@ export function renderCelebration(config = null, _lessonId = "") {
           <span class="achieve-icon" aria-hidden="true">🔥</span>
           <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
         </div>
+        <div class="achievement-badge badge-mission" id="badge_achieve_mission">
+          <span class="achieve-icon" aria-hidden="true">🏡</span>
+          <span class="achieve-name"><span class="lang-en">Home Explorer</span><span class="lang-es" lang="es">Explorador del Hogar</span></span>
+        </div>
       </div>
 
       ${ktHtml}
@@ -3012,8 +2987,8 @@ export function renderQuickCheckIntro(coreCount = 6, hasMore = true) {
     <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">⏱️ About <strong>${mins} minutes</strong> for the ${coreCount} problems below.${extraEn}</span>
-        <span class="lang-es" lang="es">⏱️ Unos <strong>${mins} minutos</strong> para los ${coreCount} problemas de abajo.${extraEs}</span>
+        <span class="lang-en">⏱️ About <strong><span id="hw_check_minutes">${mins}</span> minutes</strong> for the <span id="hw_check_problem_count">${coreCount}</span> problems below.<span class="quick-check-extra-copy">${extraEn}</span></span>
+        <span class="lang-es" lang="es">⏱️ Unos <strong><span id="hw_check_minutes_es">${mins}</span> minutos</strong> para los <span id="hw_check_problem_count_es">${coreCount}</span> problemas de abajo.<span class="quick-check-extra-copy">${extraEs}</span></span>
       </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
@@ -4606,7 +4581,7 @@ function renderFamilyActivityCard(act, idx) {
     .join("");
 
   return `
-    <details class="fam-act-card"${idx === 0 ? " open" : ""}>
+    <details class="fam-act-card" data-family-activity="${idx}"${idx === 0 ? " open" : ""}>
       <summary class="fam-act-summary">
         <span class="fam-act-icon" aria-hidden="true">${act.icon}</span>
         <span class="fam-act-titles">
@@ -4625,6 +4600,10 @@ function renderFamilyActivityCard(act, idx) {
           <span class="lang-en">${esc(act.talkEn)}</span>
           <span class="lang-es" lang="es">${esc(act.talkEs)}</span>
         </div>
+        <button type="button" class="fam-mission-complete" data-mission-complete="${idx}" aria-pressed="false" onclick="completeFamilyMission(${idx})">
+          <span class="fam-mission-check" aria-hidden="true">✓</span>
+          <span class="lang-en">We did this mission</span><span class="lang-es" lang="es">Completamos esta misión</span>
+        </button>
       </div>
     </details>`;
 }
@@ -4638,12 +4617,20 @@ export function renderFamilyActivityCorner(topic) {
   return `
     <div class="fam-act-corner card-ish" aria-label="Family activity corner">
       <div class="fam-act-head">
-        <span class="fam-act-badge">🏡 <span class="lang-en">FAMILY ACTIVITY CORNER</span><span class="lang-es" lang="es">RINCÓN DE ACTIVIDADES</span></span>
-        <p class="fam-act-lead">
-          <span class="lang-en">No screens needed — three quick activities with things already in your home. Pick ONE tonight!</span>
-          <span class="lang-es" lang="es">Sin pantallas: tres actividades rápidas con cosas que ya tienen en casa. ¡Escojan UNA hoy!</span>
-        </p>
+        <div>
+          <span class="fam-act-badge">🏡 <span class="lang-en">FAMILY ACTIVITY CORNER</span><span class="lang-es" lang="es">RINCÓN DE ACTIVIDADES</span></span>
+          <p class="fam-act-lead">
+            <span class="lang-en">No screens needed — pick one quick mission with things already in your home.</span>
+            <span class="lang-es" lang="es">Sin pantallas: elijan una misión rápida con cosas que ya tienen en casa.</span>
+          </p>
+        </div>
+        <button type="button" class="family-mission-picker" onclick="pickFamilyMission()">
+          🎲 <span class="lang-en">Pick for us</span><span class="lang-es" lang="es">Elige por nosotros</span>
+        </button>
       </div>
+      <p class="family-mission-status" id="family_mission_status" aria-live="polite">
+        <span class="lang-en">Choose a mission below, or let us pick one.</span><span class="lang-es" lang="es">Elijan una misión o dejen que escojamos una.</span>
+      </p>
       ${acts.map((a, i) => renderFamilyActivityCard(a, i)).join("")}
     </div>`;
 }
@@ -7362,9 +7349,9 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
           .join("")}
       </div>
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('together')">
-          <span class="lang-en">Next: Try Together ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Intentar Juntos ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('words')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </section>`;
@@ -7374,12 +7361,49 @@ function tabPanelAttrs(id, hidden = false) {
   return `class="tab-panel-inner" data-tab-panel="${id}" id="hw_panel_${id}" role="tabpanel"${hidden ? " hidden" : ""}`;
 }
 
+const WORKBENCH_TOOL_COPY = {
+  fractions: {
+    icon: "📏",
+    en: "Fraction Strips",
+    es: "Tiras de fracciones",
+    actionEn: "Build and compare fraction pieces for tonight's fraction-division work.",
+    actionEs: "Construyan y comparen partes para la división de fracciones de hoy.",
+  },
+  coords: {
+    icon: "🧭",
+    en: "Coordinate Grid",
+    es: "Cuadrícula de coordenadas",
+    actionEn: "Plot ordered pairs on the same coordinate grid used in tonight's lesson.",
+    actionEs: "Ubiquen pares ordenados en la cuadrícula de la lección de hoy.",
+  },
+  tapes: {
+    icon: "📊",
+    en: "Ratio Tape",
+    es: "Cinta de razones",
+    actionEn: "Scale both parts together to model tonight's equivalent-ratio work.",
+    actionEs: "Escalen ambas partes juntas para modelar las razones equivalentes de hoy.",
+  },
+  decimals: {
+    icon: "🔢",
+    en: "Decimal Columns",
+    es: "Columnas decimales",
+    actionEn: "Line up place values for tonight's decimal addition and subtraction.",
+    actionEs: "Alineen los valores posicionales para sumar y restar decimales hoy.",
+  },
+};
+
+function workbenchSpec(config) {
+  const id = homeworkWorkbenchTool(config);
+  return id ? { id, ...WORKBENCH_TOOL_COPY[id] } : null;
+}
+
 export function renderLearnTab(config, visualLabHtml = "") {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   let concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
   const topic = detectVisualTopic(config);
+  const workbench = workbenchSpec(config);
   const powerUpHtml = renderSkillPowerUp(config, topic);
   const spotlight = getRealWorldSpotlight(topic);
   const mis = getTopicMisconception(topic, config);
@@ -7444,31 +7468,34 @@ export function renderLearnTab(config, visualLabHtml = "") {
       </div>
     </details>`;
 
-  return `
-    <div ${tabPanelAttrs("learn")}>
-      ${learning}
-      ${concept}
-      ${visualLabHtml}
-      <div class="workbench-quick-launch card-ish">
+  const workbenchLaunchHtml = workbench
+    ? `<div class="workbench-quick-launch card-ish learn-extended-block">
         <div class="wb-launch-content">
-          <span class="wb-launch-icon" aria-hidden="true">🧮</span>
+          <span class="wb-launch-icon" aria-hidden="true">${workbench.icon}</span>
           <div class="wb-launch-text">
-            <strong><span class="lang-en">Need hands-on math manipulatives?</span><span class="lang-es" lang="es">¿Necesitan herramientas matemáticas prácticas?</span></strong>
-            <p><span class="lang-en">Build with Fraction Strips, Coordinate Grids, and Ratio Tape in the Together tab Workbench!</span><span class="lang-es" lang="es">¡Construyan con Tiras de fracciones, Cuadrícula y Cintas de razón en la Pizarra de la pestaña Juntos!</span></p>
+            <strong><span class="lang-en">Tonight's math tool: ${workbench.en}</span><span class="lang-es" lang="es">Herramienta de hoy: ${workbench.es}</span></strong>
+            <p><span class="lang-en">${workbench.actionEn}</span><span class="lang-es" lang="es">${workbench.actionEs}</span></p>
           </div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openTogetherWorkbench()">
-          <span class="lang-en">Open Math Tools ➔</span>
-          <span class="lang-es" lang="es">Abrir Herramientas ➔</span>
+        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openTogetherWorkbench('${workbench.id}')">
+          <span class="lang-en">Open ${workbench.en} ➔</span>
+          <span class="lang-es" lang="es">Abrir ${workbench.es} ➔</span>
         </button>
-      </div>
-      ${parentDrawerHtml}
-      ${powerUpHtml}
-      <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
+      </div>`
+    : "";
+
+  return `
+    <div ${tabPanelAttrs("learn")}>
+      <div class="learn-summary-block">${learning}</div>
+      <div class="learn-big-idea-block">${concept}</div>
+      <div class="learn-extended-block">${visualLabHtml}</div>
+${workbenchLaunchHtml}
+      <div class="learn-extended-block">${parentDrawerHtml}${powerUpHtml}</div>
+      <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('words')">
-          <span class="lang-en">Next: Review Words ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Repasar Palabras ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </div>`;
@@ -7512,11 +7539,11 @@ export function renderTogetherTab(config, lessonId = "", workbenchHtml = "") {
           ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
         </button>
       </div>
-      ${workbenchHtml}
+${workbenchHtml}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('check')">
-          <span class="lang-en">Next: Try the problems ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Resolver los problemas ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('together')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </div>`;
@@ -7540,8 +7567,8 @@ export function renderCheckTab(
       <div class="stars-to-win-title">
         <span>⭐</span>
         <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the ${coreCount} problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los ${coreCount} problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
+          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">${coreCount}</span> problems below. Stop any time — your work saves itself.</span>
+          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">${coreCount}</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
         </div>
       </div>
       <div class="stars-milestone-chips" aria-hidden="true">
@@ -7645,9 +7672,9 @@ export function renderCheckTab(
 
   const flowNext = `
     <div class="tab-flow-nav">
-      <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('play')">
-        <span class="lang-en">Next: Play Tonight's Math Game ➔</span>
-        <span class="lang-es" lang="es">Siguiente: Jugar el Juego Matemático ➔</span>
+      <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('check')">
+        <span class="lang-en">Continue ➔</span>
+        <span class="lang-es" lang="es">Continuar ➔</span>
       </button>
     </div>`;
 
@@ -7673,43 +7700,67 @@ export function renderCheckTab(
  * interrupting the one sequence the page is trying to get a family to walk.
  * Closed by default: a family that needs fraction strips opens them.
  */
-export function renderWorkbenchTools() {
+export function renderWorkbenchTools(config) {
+  const tool = workbenchSpec(config);
+  if (!tool) return "";
   return `
-    <details class="workbench-drawer">
+    <details class="workbench-drawer" data-workbench-tool="${tool.id}">
       <summary class="workbench-drawer-summary">
         <span class="workbench-drawer-icon" aria-hidden="true">🧮</span>
         <span class="workbench-drawer-text">
-          <strong><span class="lang-en">Need to build it? Open the math tools</span><span class="lang-es" lang="es">¿Necesitan construirlo? Abran las herramientas</span></strong>
-          <small><span class="lang-en">Fraction strips, a coordinate grid, ratio tape and decimal columns</span><span class="lang-es" lang="es">Fracciones, cuadrícula, cintas de razón y columnas decimales</span></small>
+          <strong><span class="lang-en">Need to build it? Open ${tool.en}</span><span class="lang-es" lang="es">¿Necesitan construirlo? Abran ${tool.es}</span></strong>
+          <small><span class="lang-en">Only the tool for tonight's lesson is included.</span><span class="lang-es" lang="es">Solo se incluye la herramienta de la lección de hoy.</span></small>
         </span>
         <span class="workbench-drawer-chevron" aria-hidden="true">▾</span>
       </summary>
       <div class="workbench-drawer-body">
 
         <!-- Tool Selection Tabs -->
-        <div class="wb-tool-bar" role="tablist" aria-label="Workbench tools">
+        <div class="wb-tool-bar" aria-label="Lesson math tool">
+          ${
+            tool.id === "fractions"
+              ? `
           <button type="button" class="wb-tool-tab is-active" id="wb_tab_fractions" onclick="switchWorkbenchTool('fractions')">
             <span class="tool-icon">📏</span>
             <span class="tool-name"><span class="lang-en">Fraction Strips</span><span class="lang-es" lang="es">Fracciones</span></span>
-          </button>
-          <button type="button" class="wb-tool-tab" id="wb_tab_coords" onclick="switchWorkbenchTool('coords')">
+          </button>`
+              : ""
+          }
+          ${
+            tool.id === "coords"
+              ? `
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_coords" onclick="switchWorkbenchTool('coords')">
             <span class="tool-icon">🧭</span>
             <span class="tool-name"><span class="lang-en">Coordinate Grid</span><span class="lang-es" lang="es">Coordenadas</span></span>
-          </button>
-          <button type="button" class="wb-tool-tab" id="wb_tab_tapes" onclick="switchWorkbenchTool('tapes')">
+          </button>`
+              : ""
+          }
+          ${
+            tool.id === "tapes"
+              ? `
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_tapes" onclick="switchWorkbenchTool('tapes')">
             <span class="tool-icon">📊</span>
             <span class="tool-name"><span class="lang-en">Ratio Tape</span><span class="lang-es" lang="es">Cintas de razón</span></span>
-          </button>
-          <button type="button" class="wb-tool-tab" id="wb_tab_decimals" onclick="switchWorkbenchTool('decimals')">
+          </button>`
+              : ""
+          }
+          ${
+            tool.id === "decimals"
+              ? `
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_decimals" onclick="switchWorkbenchTool('decimals')">
             <span class="tool-icon">🔢</span>
             <span class="tool-name"><span class="lang-en">Decimal Columns</span><span class="lang-es" lang="es">Columnas decimales</span></span>
-          </button>
+          </button>`
+              : ""
+          }
         </div>
 
         <!-- Tool Stage -->
         <div class="wb-tool-stage card-ish">
           <!-- 1. Fraction Strips Tool -->
-          <div class="wb-panel" id="wb_panel_fractions">
+          ${
+            tool.id === "fractions"
+              ? `<div class="wb-panel" id="wb_panel_fractions">
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Tap fraction tiles to add bars and compare lengths:</span><span class="lang-es" lang="es">Toca fichas para añadir barras y comparar longitudes:</span></span>
               <div class="fraction-button-group">
@@ -7732,10 +7783,14 @@ export function renderWorkbenchTools() {
             <div class="fraction-stage-canvas" id="fraction_stage_canvas">
               <div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>
             </div>
-          </div>
+          </div>`
+              : ""
+          }
 
           <!-- 2. Coordinate Grid Tool -->
-          <div class="wb-panel" id="wb_panel_coords" hidden>
+          ${
+            tool.id === "coords"
+              ? `<div class="wb-panel" id="wb_panel_coords">
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Click anywhere on the grid or tap a sample point:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula o toca un punto de muestra:</span></span>
               <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — <span class="lang-en">Origin</span><span class="lang-es" lang="es">Origen</span></span>
@@ -7751,10 +7806,14 @@ export function renderWorkbenchTools() {
             <div class="coord-canvas-wrap">
               <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
             </div>
-          </div>
+          </div>`
+              : ""
+          }
 
           <!-- 3. Ratio Tape Diagram Tool -->
-          <div class="wb-panel" id="wb_panel_tapes" hidden>
+          ${
+            tool.id === "tapes"
+              ? `<div class="wb-panel" id="wb_panel_tapes">
             <div class="tool-presets-row">
               <span class="tool-presets-label"><span class="lang-en">⚡ Quick Ratios:</span><span class="lang-es" lang="es">⚡ Razones rápidas:</span></span>
               <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(2, 3, 2)"><span class="lang-en">Paint (2 : 3 × 2)</span><span class="lang-es" lang="es">Pintura (2 : 3 × 2)</span></button>
@@ -7779,10 +7838,14 @@ export function renderWorkbenchTools() {
               </label>
             </div>
             <div class="tape-diagram-render" id="tape_diagram_render"></div>
-          </div>
+          </div>`
+              : ""
+          }
 
           <!-- 4. Decimal Place Value Tool -->
-          <div class="wb-panel" id="wb_panel_decimals" hidden>
+          ${
+            tool.id === "decimals"
+              ? `<div class="wb-panel" id="wb_panel_decimals">
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Type numbers to align decimal points vertically:</span><span class="lang-es" lang="es">Escribe números para alinear puntos decimales:</span></span>
             </div>
@@ -7819,7 +7882,9 @@ export function renderWorkbenchTools() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>`
+              : ""
+          }
         </div>
 
         <!-- Family Investigation Prompt -->
@@ -7827,18 +7892,11 @@ export function renderWorkbenchTools() {
           <span class="investigation-icon" aria-hidden="true">💡</span>
           <div class="investigation-content">
             <strong><span class="lang-en">Family Investigation Challenge:</span><span class="lang-es" lang="es">Desafío de investigación familiar:</span></strong>
-            <p><span class="lang-en">Choose one tool above that matches tonight's homework. Try creating an example together before solving the practice problems!</span><span class="lang-es" lang="es">Elijan una herramienta arriba que coincida con la tarea de hoy. ¡Intenten crear un ejemplo juntos antes de resolver los problemas de práctica!</span></p>
+            <p><span class="lang-en">Use ${tool.en} to create one example together before solving the practice problems.</span><span class="lang-es" lang="es">Usen ${tool.es} para crear un ejemplo juntos antes de resolver los problemas.</span></p>
           </div>
         </div>
-
-        <p class="workbench-openrow">
-          <a class="btn btn-secondary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
-            <span class="lang-en">🧮 Open the full Math Workbench ↗</span>
-            <span class="lang-es" lang="es">🧮 Abrir la Pizarra completa ↗</span>
-          </a>
-        </p>
       </div>
-    </details>`;
+    </details>`.replace(/^[ \t]+$/gm, "");
 }
 
 /** The body of the "Stuck?" drawer. No longer a tab — see renderHelpDrawer. */
@@ -7895,14 +7953,7 @@ export function renderMoreContent(config, lessonId) {
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
         </a>
-        <a href="/curriculum/math-workbench/" target="_blank" rel="noopener" class="ai-lab-cta workbench-cta">
-          <span class="ai-lab-emoji" aria-hidden="true">📝</span>
-          <span class="ai-lab-text">
-            <span class="lang-en"><strong>Open the Math Workbench</strong> — a digital whiteboard to draw, write, and work out problems together.</span>
-            <span class="lang-es" lang="es"><strong>Abre la Pizarra de matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
-          </span>
-          <span class="ai-lab-arrow" aria-hidden="true">→</span>
-        </a>${offlineCta}
+${offlineCta}
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
           <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
@@ -7963,36 +8014,78 @@ export function renderPlayTabPanel(config, lessonId = "") {
       </div>
       ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('done')">
-          <span class="lang-en">Next: Finish up ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Terminar ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('play')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </div>`;
 }
 
-export function renderProblemHintButton(problem, visual = "") {
-  const hintEn =
-    problem.hints?.[0] ||
-    problem.explanation ||
-    "Read the question aloud. What do you notice? What operation or idea fits?";
-  /* This used to be one fixed Spanish sentence for every problem on the page —
-     the English hint was problem-specific, the Spanish one never was. Use the
-     curated Spanish hint when the config has one, and only fall back to the
-     generic prompt when it genuinely has none. */
-  const hintEs =
-    problem.hintsEs?.[0] ||
-    problem.explanationEs ||
-    "Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?";
-  return helpButton("💡 Stuck? Get a hint / ¿Atorado? Pista", {
-    titleEn: "Hint before you check",
-    titleEs: "Pista antes de revisar",
-    en: hintEn,
-    es: hintEs,
-    visual,
-    frameEn: "Draw it first, then solve. Try saying: “This problem is asking me to…”",
-    frameEs: "Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”",
-  });
+export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
+  /* A single hint forced two bad choices: make it so vague it did not help, or
+     make it so specific it leaked the answer. The ladder gives one useful move
+     at a time and never uses the worked explanation or correct answer. */
+  const steps = [
+    {
+      labelEn: "Notice",
+      labelEs: "Observa",
+      en:
+        coach.noticeEn ||
+        "Say the question in your own words. Circle what you know and underline what you need to find.",
+      es:
+        coach.noticeEs ||
+        "Explica la pregunta con tus propias palabras. Encierra lo que sabes y subraya lo que debes hallar.",
+    },
+    {
+      labelEn: "Choose a strategy",
+      labelEs: "Elige una estrategia",
+      en:
+        coach.strategyEn ||
+        "Ask: What picture, table, number line, or equation could show what is happening?",
+      es:
+        coach.strategyEs ||
+        "Pregunta: ¿Qué dibujo, tabla, recta numérica o ecuación puede mostrar lo que pasa?",
+    },
+    {
+      labelEn: "Start the first step",
+      labelEs: "Empieza el primer paso",
+      en:
+        coach.startEn ||
+        "Draw the model first. Label it with the numbers from the question, then write only the first calculation.",
+      es:
+        coach.startEs ||
+        "Dibuja primero el modelo. Rotúlalo con los números de la pregunta y escribe solo el primer cálculo.",
+    },
+  ];
+  return `
+    <details class="problem-coach-ladder">
+      <summary>
+        <span>🪜 <span class="lang-en">Coach me step by step</span><span class="lang-es" lang="es">Guíame paso a paso</span></span>
+        <small><span class="lang-en">No answer spoilers</span><span class="lang-es" lang="es">Sin revelar la respuesta</span></small>
+      </summary>
+      <ol class="coach-ladder-list">${steps
+        .map(
+          (step, index) => `
+          <li class="coach-ladder-step">
+            <button type="button" aria-expanded="false" onclick="revealCoachStep(this)">
+              <span class="coach-step-number">${index + 1}</span>
+              <span class="lang-en">${esc(step.labelEn)}</span><span class="lang-es" lang="es">${esc(step.labelEs)}</span>
+            </button>
+            <div class="coach-step-help" hidden>
+              <p class="lang-en">${esc(step.en)}</p>
+              <p class="lang-es" lang="es">${esc(step.es)}</p>${
+                index === 2
+                  ? `
+              <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`
+                  : ""
+              }
+            </div>
+          </li>`,
+        )
+        .join("")}
+      </ol>
+    </details>`;
 }
 
 export function renderDoneTab(config = null, lessonId = "") {
@@ -8814,13 +8907,245 @@ function initFamilyGames() {
   resetWyrGame();
 }
 
+/* ── Family route chooser ───────────────────────────────────────────────
+   A route is a real contract, not decorative copy: it controls which stops
+   are in the path, how many practice problems count, the remaining-time
+   display, and every Continue button. */
+var HOMEWORK_ROUTES = {
+  quick: { tabs: ['learn', 'together', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 2, together: 3, check: 4, done: 1 } },
+  core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
+  full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
+};
+
+function routeStorageKey() {
+  return 'hw_route_' + (window.LESSON_ID || location.pathname);
+}
+
+function activeHomeworkRoute() {
+  var id = document.body.dataset.homeworkRoute || 'full';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.full;
+}
+
+function setHomeworkRoute(mode, options) {
+  options = options || {};
+  if (!HOMEWORK_ROUTES[mode]) mode = 'full';
+  var route = HOMEWORK_ROUTES[mode];
+  document.body.dataset.homeworkRoute = mode;
+
+  document.querySelectorAll('[data-route-mode]').forEach(function (btn) {
+    var active = btn.dataset.routeMode === mode;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  var visibleIndex = 0;
+  document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
+    var included = route.tabs.indexOf(btn.dataset.tab) !== -1;
+    btn.hidden = !included;
+    if (!included) {
+      btn.setAttribute('aria-selected', 'false');
+      btn.removeAttribute('aria-current');
+      return;
+    }
+    visibleIndex++;
+    var step = btn.querySelector('.tab-step');
+    if (step) step.textContent = String(visibleIndex);
+    var label = btn.querySelector('.tab-en');
+    btn.setAttribute(
+      'aria-label',
+      (label ? label.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length,
+    );
+  });
+  document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
+    btn.hidden = mode !== 'full';
+  });
+  var shell = document.querySelector('.homework-tabs-shell');
+  if (shell) shell.dataset.tabCount = String(route.tabs.length);
+  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.tabs.length);
+  });
+  ['hw_hero_minutes', 'hw_hero_minutes_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.total);
+  });
+
+  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
+  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
+  var challenge = document.querySelector('.practice-tier-challenge');
+  if (challenge) challenge.hidden = mode === 'quick';
+  var more = document.querySelector('.more-practice');
+  if (more) more.hidden = mode === 'quick';
+  ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.problemLimit);
+  });
+  ['hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.problemLimit);
+  });
+  ['hw_check_minutes', 'hw_check_minutes_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.minutes.check);
+  });
+  var progress = document.getElementById('progress_text');
+  if (progress) {
+    var completed = Array.from(document.querySelectorAll('.problem-section.correct'))
+      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); })
+      .length;
+    progress.textContent = completed + ' / ' + route.problemLimit;
+  }
+  if (typeof updateProgress === 'function') updateProgress();
+
+  var note = document.getElementById('hw_route_note');
+  if (note) {
+    var copy = {
+      quick: ['Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.', 'Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.'],
+      core: ['Learn & practice selected: 4 focused stops and all 6 core problems, about 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
+      full: ['Full route selected: all 6 stops, about 30 minutes.', 'Ruta completa: 6 paradas, unos 30 minutos.']
+    }[mode];
+    setBiText(note, copy[0], copy[1]);
+  }
+
+  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
+
+  var current = document.body.dataset.activeTab;
+  if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) {
+    switchHomeworkTab(route.tabs[0]);
+  } else if (current) {
+    switchHomeworkTab(current);
+  } else {
+    updateHomeworkRouteTime(route.total);
+  }
+  if (!options.silent) {
+    var chooser = document.querySelector('.hw-route-chooser');
+    if (chooser) chooser.classList.add('route-just-changed');
+    setTimeout(function () { if (chooser) chooser.classList.remove('route-just-changed'); }, 500);
+  }
+}
+
+function updateHomeworkRouteTime(minutes) {
+  var timeEl = document.getElementById('hw_time_remaining');
+  if (!timeEl) return;
+  timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minutes + ' min left</span><span class="lang-es" lang="es">~' + minutes + ' min restantes</span>';
+}
+
+function restoreHomeworkRoute() {
+  var mode = 'full';
+  try { mode = localStorage.getItem(routeStorageKey()) || 'full'; } catch (e) {}
+  setHomeworkRoute(mode, { silent: true, keepTab: true });
+}
+
+function goNextHomeworkStop(current) {
+  var tabs = activeHomeworkRoute().tabs;
+  var index = tabs.indexOf(current);
+  var next = tabs[Math.min(index + 1, tabs.length - 1)] || tabs[0];
+  switchHomeworkTab(next);
+}
+
+/* Reveal the requested rung and every earlier rung. A family cannot jump to
+   the strongest nudge without also seeing the noticing and strategy prompts. */
+function revealCoachStep(btn) {
+  var step = btn.closest('.coach-ladder-step');
+  var list = step && step.parentElement;
+  if (!step || !list) return;
+  var steps = Array.from(list.querySelectorAll('.coach-ladder-step'));
+  var stop = steps.indexOf(step);
+  steps.forEach(function (item, index) {
+    if (index > stop) return;
+    item.classList.add('is-revealed');
+    var help = item.querySelector('.coach-step-help');
+    var trigger = item.querySelector('button');
+    if (help) help.hidden = false;
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+  });
+  var help = step.querySelector('.coach-step-help');
+  if (help) help.focus && help.focus();
+}
+
+/* ── Trackable hands-on mission ───────────────────────────────────────── */
+function familyMissionStorageKey() {
+  return 'hw_family_mission_' + (window.LESSON_ID || location.pathname);
+}
+
+function showFamilyMissionState(index, celebrate) {
+  var cards = Array.from(document.querySelectorAll('[data-family-activity]'));
+  cards.forEach(function (card, cardIndex) {
+    var done = cardIndex === index;
+    card.classList.toggle('is-mission-complete', done);
+    var btn = card.querySelector('[data-mission-complete]');
+    if (btn) {
+      btn.classList.toggle('is-complete', done);
+      btn.setAttribute('aria-pressed', done ? 'true' : 'false');
+    }
+  });
+  var badge = document.getElementById('badge_achieve_mission');
+  if (badge) badge.classList.toggle('is-unlocked', index >= 0);
+  var status = document.getElementById('family_mission_status');
+  if (status && index >= 0 && cards[index]) {
+    var titleEn = cards[index].querySelector('.fam-act-titles .lang-en');
+    var titleEs = cards[index].querySelector('.fam-act-titles .lang-es');
+    setBiText(
+      status,
+      'Mission complete: ' + (titleEn ? titleEn.textContent : 'family activity') + '. Home Explorer badge unlocked!',
+      'Misión completada: ' + (titleEs ? titleEs.textContent : 'actividad familiar') + '. ¡Insignia de Explorador del Hogar desbloqueada!',
+    );
+  }
+  if (celebrate && index >= 0) {
+    if (typeof triggerConfettiBurst === 'function') triggerConfettiBurst(null, null, 45);
+    if (typeof playSuccessArpeggio === 'function') playSuccessArpeggio();
+  }
+}
+
+function pickFamilyMission() {
+  var cards = Array.from(document.querySelectorAll('[data-family-activity]'));
+  if (!cards.length) return;
+  var index = Math.floor(Math.random() * cards.length);
+  cards.forEach(function (card, cardIndex) {
+    card.open = cardIndex === index;
+    card.classList.toggle('is-mission-picked', cardIndex === index);
+  });
+  var titleEn = cards[index].querySelector('.fam-act-titles .lang-en');
+  var titleEs = cards[index].querySelector('.fam-act-titles .lang-es');
+  setBiText(
+    document.getElementById('family_mission_status'),
+    "Tonight's mission: " + (titleEn ? titleEn.textContent : 'family activity') + '.',
+    'Misión de hoy: ' + (titleEs ? titleEs.textContent : 'actividad familiar') + '.',
+  );
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  cards[index].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+}
+
+function completeFamilyMission(index) {
+  var current = -1;
+  try {
+    var saved = localStorage.getItem(familyMissionStorageKey());
+    if (saved !== null) current = Number(saved);
+  } catch (e) {}
+  var next = current === index ? -1 : index;
+  try {
+    if (next >= 0) localStorage.setItem(familyMissionStorageKey(), String(next));
+    else localStorage.removeItem(familyMissionStorageKey());
+  } catch (e) {}
+  showFamilyMissionState(next, next >= 0);
+}
+
+function restoreFamilyMission() {
+  var index = -1;
+  try {
+    var saved = localStorage.getItem(familyMissionStorageKey());
+    if (saved !== null) index = Number(saved);
+  } catch (e) {}
+  showFamilyMissionState(Number.isInteger(index) ? index : -1, false);
+}
+
 /* Tonight's Path roadmap: light up the current stop, keep a persistent check
    on every stop the family has visited for THIS lesson. */
 /* Progress lives ON the tab bar now, not on a second rail underneath it: each
    tab gets a tick once it has been opened, and the hairline under the bar fills
    to the furthest stop reached. One control, one answer to "where are we". */
 function updateJourneyMap(tabId) {
-  const tabs = document.querySelectorAll('.homework-tab-btn');
+  const tabs = Array.from(document.querySelectorAll('.homework-tab-btn')).filter(function (btn) { return !btn.hidden; });
   if (!tabs.length) return;
   let visited = {};
   try { visited = JSON.parse(localStorage.getItem(journeyStorageKey()) || '{}') || {}; } catch (e) {}
@@ -8840,38 +9165,6 @@ function updateJourneyMap(tabId) {
     const pct = furthest <= 0 ? 0 : (furthest / (tabs.length - 1)) * 100;
     fill.style.width = pct + '%';
   }
-}
-
-/* The 10-minute plan, as navigation rather than instructions. Each step names a
-   stop and ONE element on it; we switch the stop, wait a frame for the panel to
-   be laid out (scrollIntoView on a panel that is still hidden scrolls nowhere),
-   then centre the target and flash it so a family can see what they were sent
-   to look at. Falls back to the stop itself if the element is missing, because
-   arriving on the right stop is still most of the value. */
-var QUICK_PLAN_STOPS = [
-  { tab: 'learn', sel: '.key-idea-banner' },
-  { tab: 'together', sel: '.together-steps > li' },
-  { tab: 'check', sel: '.practice-tier-warmup' },
-];
-
-function gotoQuickPlanStep(n) {
-  var stop = QUICK_PLAN_STOPS[n - 1];
-  if (!stop) return;
-  switchHomeworkTab(stop.tab);
-  var plan = document.querySelector('.hw-quickplan');
-  if (plan) plan.open = false;
-  requestAnimationFrame(function () {
-    var panel = document.querySelector('[data-tab-panel="' + stop.tab + '"]');
-    var target = (panel && panel.querySelector(stop.sel)) || panel;
-    if (!target) return;
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-    target.classList.remove('hw-quickplan-flash');
-    // Reading offsetWidth restarts the animation when the same step is tapped twice.
-    void target.offsetWidth;
-    target.classList.add('hw-quickplan-flash');
-    setTimeout(function () { target.classList.remove('hw-quickplan-flash'); }, 2600);
-  });
 }
 
 /* Help is a drawer over the current stop, not a place you travel to. Opening it
@@ -8921,7 +9214,8 @@ function syncHomeworkChromeHeights() {
 }
 
 function switchHomeworkTab(tabId) {
-  const tabs = document.querySelectorAll('.homework-tab-btn');
+  const allTabs = document.querySelectorAll('.homework-tab-btn');
+  const tabs = Array.from(allTabs).filter(function (btn) { return !btn.hidden; });
   const extras = document.querySelectorAll('.homework-tab-extra');
   const panels = document.querySelectorAll('[data-tab-panel]');
   let idx = 0;
@@ -8929,6 +9223,12 @@ function switchHomeworkTab(tabId) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  allTabs.forEach(function(btn) {
+    if (!btn.hidden) return;
+    btn.classList.remove('is-active');
+    btn.setAttribute('aria-selected', 'false');
+    btn.removeAttribute('aria-current');
   });
   tabs.forEach(function(btn, i) {
     const active = btn.dataset.tab === tabId;
@@ -8945,6 +9245,10 @@ function switchHomeworkTab(tabId) {
     p.hidden = p.dataset.tabPanel !== tabId;
   });
   document.body.dataset.activeTab = tabId;
+  // Practice is inside the Check panel. Recalculate only after that panel is
+  // visible so route-aware scoring sees the two or six active core problems
+  // instead of treating every problem as hidden behind its tab panel.
+  if (tabId === 'check' && typeof updateProgress === 'function') updateProgress();
   // The bottom bar exists on one stop, so its height changes as you move
   // between them, and the floating controls are positioned off that height.
   if (typeof syncHomeworkChromeHeights === 'function') syncHomeworkChromeHeights();
@@ -8962,8 +9266,9 @@ function switchHomeworkTab(tabId) {
 
     // Dynamic time remaining calculation
     var minsLeft = 0;
+    var route = activeHomeworkRoute();
     for (var k = idx - 1; k < tabs.length; k++) {
-      minsLeft += parseInt(tabs[k].dataset.min || '5', 10);
+      minsLeft += route.minutes[tabs[k].dataset.tab] || parseInt(tabs[k].dataset.min || '5', 10);
     }
     var timeEl = document.getElementById('hw_time_remaining');
     if (timeEl) {
@@ -9571,13 +9876,16 @@ function initHomeworkPage() {
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
+  restoreHomeworkRoute();
   try {
     localStorage.removeItem('hw_last_tab');
     const last = localStorage.getItem(lastTabStorageKey());
-    if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
+    const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
+    if (lastBtn && !lastBtn.hidden) switchHomeworkTab(last);
     else switchHomeworkTab('learn');
   } catch(e) {}
   restoreParentSignoff();
+  restoreFamilyMission();
   initDrawCanvases();
   initHomeworkVocabPopups();
   initFamilyGames();
@@ -14910,5 +15218,223 @@ export const ARENA_CSS = `
     font-size: 12px;
     color: #64748b;
   }
+}
+
+/* ============================================================
+   Family Homework 2026 — route, coach ladder, and home mission.
+   One strong navigation decision, then quiet instructional support.
+   ============================================================ */
+html [hidden] { display: none !important; }
+.hw-route-chooser {
+  margin-top: 16px;
+  padding: 16px;
+  color: #102a43;
+  background: #f8fbff;
+  border: 1px solid #bfd7ee;
+  border-radius: 16px;
+}
+.hw-route-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.hw-route-icon { font-size: 25px; line-height: 1; }
+.hw-route-heading h2 { margin: 0 0 2px; font-size: 18px; color: #12355b; }
+.hw-route-heading p { margin: 0; color: #486581; font-size: 13.5px; }
+.hw-route-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.hw-route-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 76px;
+  padding: 10px 12px;
+  text-align: left;
+  color: #243b53;
+  background: #fff;
+  border: 1.5px solid #b8c9d9;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.hw-route-option:hover { border-color: #1fa6a2; background: #f0fdfa; }
+.hw-route-option:focus-visible,
+.family-mission-picker:focus-visible,
+.fam-mission-complete:focus-visible,
+.coach-ladder-step > button:focus-visible,
+.coach-scratchpad-btn:focus-visible {
+  outline: 3px solid #f2c15b;
+  outline-offset: 2px;
+}
+.hw-route-option.is-active {
+  color: #0f4f4d;
+  background: #e7f7f3;
+  border-color: #138a86;
+  box-shadow: inset 0 0 0 1px #138a86;
+}
+.hw-route-time {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 48px;
+  min-height: 48px;
+  font: 800 22px/1 var(--font-display);
+  color: #fff;
+  background: #12355b;
+  border-radius: 50%;
+}
+.hw-route-option.is-active .hw-route-time { background: #0f766e; }
+.hw-route-time small { display: block; margin-top: 2px; font-size: 9px; font-weight: 700; }
+.hw-route-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.hw-route-copy strong { font: 800 14px/1.2 var(--font-display); }
+.hw-route-copy small { color: #5d7285; font-size: 11.5px; line-height: 1.3; }
+.hw-route-note { margin: 10px 2px 0; font-size: 12.5px; color: #486581; }
+.hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.2); }
+
+/* The 10-minute route is genuinely shorter, not the full page with a shorter
+   promise. The essential idea, first guided step, two warm-ups, and sign-off
+   remain; all hidden material returns immediately when another route is picked. */
+body[data-homework-route="quick"] .learn-summary-block,
+body[data-homework-route="quick"] .learn-extended-block,
+body[data-homework-route="quick"] .learn-big-idea-block .guided-steps,
+body[data-homework-route="quick"] .learn-big-idea-block .watch-for-list,
+body[data-homework-route="quick"] #hw_panel_together .huddle-hook-banner,
+body[data-homework-route="quick"] #hw_panel_together .parent-coach-prompt,
+body[data-homework-route="quick"] #hw_panel_together .try-scenario,
+body[data-homework-route="quick"] #hw_panel_together .try-together-note,
+body[data-homework-route="quick"] #hw_panel_together .together-steps > li:nth-child(n+2),
+body[data-homework-route="quick"] #hw_panel_together .together-ladder,
+body[data-homework-route="quick"] #hw_panel_together .math-talk-hub,
+body[data-homework-route="quick"] #hw_panel_together .fam-act-corner,
+body[data-homework-route="quick"] #hw_panel_together .scratchpad-inline-toggle,
+body[data-homework-route="quick"] #hw_panel_together .workbench-drawer {
+  display: none !important;
+}
+body[data-homework-route="quick"] .quick-check-extra-copy { display: none !important; }
+body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-note {
+  display: none !important;
+}
+.homework-tab-btn[hidden],
+.homework-tab-extra[hidden],
+.problem-section[hidden],
+.practice-tier[hidden],
+.more-practice[hidden] { display: none !important; }
+
+/* Graduated coaching: three short nudges, each stronger than the last. */
+.problem-coach-ladder {
+  width: 100%;
+  border: 1px solid #b9d6d3;
+  border-radius: 12px;
+  background: #f4fbfa;
+  overflow: hidden;
+}
+.problem-coach-ladder > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px;
+  color: #0f5f5b;
+  cursor: pointer;
+  font-weight: 800;
+  list-style: none;
+}
+.problem-coach-ladder > summary::-webkit-details-marker { display: none; }
+.problem-coach-ladder > summary small { color: #557a78; font-size: 11px; font-weight: 600; }
+.coach-ladder-list { margin: 0; padding: 0 12px 12px; list-style: none; }
+.coach-ladder-step { border-top: 1px solid #d6e9e7; }
+.coach-ladder-step > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  padding: 7px 0;
+  text-align: left;
+  color: #244e4b;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-weight: 750;
+}
+.coach-step-number {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  color: #fff;
+  background: #0f766e;
+  border-radius: 50%;
+  font-size: 12px;
+}
+.coach-step-help { padding: 0 0 11px 33px; color: #243b53; }
+.coach-step-help p { margin: 0; font-size: 14px; line-height: 1.5; }
+.coach-ladder-step.is-revealed > button { color: #0f766e; }
+.coach-scratchpad-btn {
+  margin-top: 8px;
+  padding: 7px 10px;
+  color: #12355b;
+  background: #fff;
+  border: 1px solid #9fb3c8;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* Hands-on activities become a shared mission with a visible finish. */
+.fam-act-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.family-mission-picker,
+.fam-mission-complete {
+  min-height: 42px;
+  padding: 8px 12px;
+  color: #0f5f5b;
+  background: #fff;
+  border: 1.5px solid #138a86;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.family-mission-picker { flex: 0 0 auto; }
+.family-mission-status {
+  margin: -4px 0 12px;
+  padding: 8px 10px;
+  color: #486581;
+  background: #f6f9fc;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+.fam-mission-complete { margin-top: 12px; }
+.fam-mission-check { margin-right: 5px; }
+.fam-act-card.is-mission-picked { box-shadow: 0 0 0 3px rgba(31,166,162,.2); }
+.fam-act-card.is-mission-complete { border-color: #15803d; background: #f0fdf4; }
+.fam-mission-complete.is-complete { color: #fff; background: #15803d; border-color: #15803d; }
+.achievement-shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+@media (max-width: 760px) {
+  .hw-route-options { grid-template-columns: 1fr; }
+  .hw-route-option { min-height: 64px; }
+  .fam-act-head { display: block; }
+  .family-mission-picker { width: 100%; margin-top: 12px; }
+  .achievement-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hw-route-chooser.route-just-changed { box-shadow: 0 0 0 3px #1fa6a2; }
+}
+@media print {
+  .hw-route-chooser,
+  .problem-coach-ladder,
+  .family-mission-picker,
+  .fam-mission-complete,
+  .family-mission-status { display: none !important; }
 }
 `;

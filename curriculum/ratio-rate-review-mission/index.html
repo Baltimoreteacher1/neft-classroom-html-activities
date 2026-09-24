@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="A Grade 6 family homework review of everything covered so far in Unit 3 — writing ratios, part-to-part and part-to-whole, equivalent ratios and scale factor, rates, unit rates, and choosing the better buy. Includes a family note, a worked example for every skill, and a mixed review. Progress saves on the device." />
+<meta name="theme-color" content="#18324a" />
+<link rel="canonical" href="https://eduwonderlab.com/curriculum/ratio-rate-review-mission/" />
 <title>Ratio &amp; Rate Review Mission | Grade 6 Family Homework</title>
 <style>
   :root{
@@ -110,6 +112,19 @@
   .recap li{display:flex;gap:8px;align-items:flex-start;font-size:.86rem;font-weight:800;color:var(--navy);line-height:1.38}
   .recap li::before{content:"✓";flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:var(--good-bg);color:var(--good);display:grid;place-items:center;font-size:.7rem;font-weight:950;margin-top:1px}
   .formula-note{font-size:.78rem;text-align:center;margin-top:12px;color:var(--muted);line-height:1.4}
+
+  .route-chooser{margin:18px 0 0;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+  .route-chooser-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:13px}
+  .route-chooser-head h3{margin:0 0 4px;color:var(--navy);font-size:1.15rem;letter-spacing:-.01em}
+  .route-chooser-head p{margin:0;color:var(--muted);font-size:.88rem;line-height:1.45}
+  .route-current{font-size:.74rem;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-dark);background:var(--teal-soft);border:1px solid #bfe0e2;border-radius:999px;padding:7px 10px}
+  .route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .route-card{border:2px solid var(--line);background:#fbfdfd;border-radius:14px;padding:13px 14px;text-align:left;color:var(--ink);box-shadow:none;transition:.16s ease}
+  .route-card:hover{border-color:#8fc7cb;transform:translateY(-1px)}
+  .route-card.active{border-color:var(--teal);background:linear-gradient(180deg,#f0fbfb,#e8f5f5);box-shadow:0 6px 16px rgba(22,131,139,.10)}
+  .route-card strong{display:block;color:var(--navy);font-size:.95rem;margin-bottom:3px}
+  .route-card span{display:block;color:var(--muted);font-size:.79rem;line-height:1.4;font-weight:720}
+  .route-card .route-time{display:inline-block;color:var(--teal-dark);font-weight:950;margin-bottom:4px}
 
   .tabs{
     position:sticky;top:73px;z-index:25;display:flex;gap:8px;margin:18px 0 0;overflow-x:auto;padding:7px;
@@ -335,6 +350,12 @@
   .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
   .small{font-size:.82rem;color:var(--muted);line-height:1.5}
   .page-footer{text-align:center;color:#7a8b95;font-size:.76rem;font-weight:700;padding:18px 8px 2px}
+  .mission-flow-nav{position:sticky;bottom:12px;z-index:24;margin:22px auto 4px;max-width:720px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:10px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 32px rgba(24,50,74,.16)}
+  .mission-flow-nav .btn{margin:0}
+  .flow-status{text-align:center;color:var(--muted);font-size:.78rem;font-weight:850;line-height:1.3}
+  .family-mission-status{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;border-top:1px dashed #d9c47f;padding-top:13px}
+  .family-mission-status strong{color:#5e4306;font-size:.88rem}
+  .family-mission-status.done strong{color:var(--good)}
 
   .celebrate{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:100}
   .confetti{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px;animation:fall 1.5s ease-in forwards}
@@ -354,13 +375,13 @@
     .student-box{order:3;width:100%}.student-box input{flex:1;width:auto}.hud{margin-left:auto}.pill{font-size:.75rem;padding:6px 9px}
     .tabs{top:106px;margin-top:12px;border-radius:13px;padding:5px}.tab-btn{padding:9px 11px;font-size:.82rem}
     .hero{border-radius:20px;padding:24px 20px}.hero h2{font-size:2rem}.hero p{font-size:.95rem}.hero-chips{margin-top:14px}
-    .grid-2,.vocab,.builder,.store-grid,.badge-grid,.covered,.choices.two,.sign-lines{grid-template-columns:1fr}
+    .grid-2,.vocab,.builder,.store-grid,.badge-grid,.covered,.choices.two,.sign-lines,.route-grid{grid-template-columns:1fr}
     .worked{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}
     .section-head{margin-top:20px}.section-head h3{font-size:1.35rem}.mini-goal{font-size:.75rem}
-    .card{padding:17px}.progress-card{padding:20px}.fam-lede{padding:17px 18px}
+    .card{padding:17px}.progress-card{padding:20px}.fam-lede{padding:17px 18px}.mission-flow-nav{bottom:7px;grid-template-columns:auto 1fr auto}.mission-flow-nav .btn{padding:9px 11px;font-size:.78rem}
   }
   @media print{
-    .topbar,.tabs,.hero,.actions,.speak,.btn,.page-footer{display:none!important}
+    .topbar,.tabs,.hero,.route-chooser,.mission-flow-nav,.actions,.speak,.btn,.page-footer{display:none!important}
     body{background:white}.panel{display:none!important}#results{display:block!important}
     .card{box-shadow:none;border:1px solid #bbb}.wrap{max-width:100%;padding:0}
   }
@@ -404,6 +425,33 @@
         <li>Lesson 3-2 · Comparing Unit Rates (Best Value)</li>
       </ul>
       <div class="formula-note">Work saves on this device. Close the page and come back any time.</div>
+    </div>
+  </section>
+
+  <section class="route-chooser" aria-labelledby="routeTitle">
+    <div class="route-chooser-head">
+      <div>
+        <h3 id="routeTitle">Choose tonight's path</h3>
+        <p>The math stays the same. Pick a path that fits your family's time, and switch any time.</p>
+      </div>
+      <div class="route-current" id="routeCurrent">Core path · about 20 minutes</div>
+    </div>
+    <div class="route-grid" role="group" aria-label="Review length">
+      <button type="button" class="route-card" data-route="quick" aria-pressed="false" onclick="setReviewRoute('quick')">
+        <span class="route-time">About 10 minutes</span>
+        <strong>Quick confidence check</strong>
+        <span>Family note, ratios, unit rates, and results · 4 focused questions</span>
+      </button>
+      <button type="button" class="route-card active" data-route="core" aria-pressed="true" onclick="setReviewRoute('core')">
+        <span class="route-time">About 20 minutes</span>
+        <strong>Core family review</strong>
+        <span>Every taught skill · 3 questions from each section</span>
+      </button>
+      <button type="button" class="route-card" data-route="full" aria-pressed="false" onclick="setReviewRoute('full')">
+        <span class="route-time">About 30 minutes</span>
+        <strong>Full review mission</strong>
+        <span>All six sections, every question, and the mixed review</span>
+      </button>
     </div>
   </section>
 
@@ -473,6 +521,10 @@
       <div class="q-title">Find a real ratio and a real unit price in your kitchen.</div>
       <p class="q-ask">Pick any two things you can count — forks and spoons, apples and oranges, cans and boxes. Have your student write the ratio out loud in both directions ("4 to 6" and "6 to 4") and say which is which. Then pick up any package with a price and a count on it, and ask: <strong>what does one of these cost?</strong> That single question is the whole unit-rate lesson.</p>
       <div class="tip"><strong>Sin costo:</strong> puede hacer esta actividad en español. Lo importante es que su estudiante explique su razonamiento en voz alta, en el idioma que prefiera.</div>
+      <div class="family-mission-status" id="familyMissionStatus">
+        <strong id="familyMissionText">Kitchen mission ready · complete it together when you can.</strong>
+        <button class="btn gold" id="familyMissionButton" type="button" onclick="completeFamilyMission()">We did it together ✓</button>
+      </div>
     </div>
 
     <div class="vocab">
@@ -667,6 +719,11 @@
       </div>
     </div>
   </section>
+  <div class="mission-flow-nav" aria-label="Review navigation">
+    <button class="btn secondary" id="flowBack" type="button" onclick="moveReviewStep(-1)">← Back</button>
+    <div class="flow-status" id="flowStatus" aria-live="polite">Stop 1 of 7 · Family Note</div>
+    <button class="btn primary" id="flowNext" type="button" onclick="moveReviewStep(1)">Continue →</button>
+  </div>
   <div class="page-footer">Ratio &amp; Rate Review Mission • Grade 6 Mathematics • A review of everything covered so far</div>
 </main>
 
@@ -806,13 +863,26 @@ const mixedQs = [
 
 /* ===== State ============================================================== */
 const STORE_KEY = 'ratioRateReviewMissionV1';
-const defaultState = {name:'', score:0, completed:{}, attempts:{}, work:{}};
+const REVIEW_ROUTES = {
+  quick:{label:'Quick path', time:'about 10 minutes', tabs:['family','ratios','unit','results'], limit:2},
+  core:{label:'Core path', time:'about 20 minutes', tabs:['family','ratios','equiv','rates','unit','value','mixed','results'], limit:3},
+  full:{label:'Full path', time:'about 30 minutes', tabs:['family','ratios','equiv','rates','unit','value','mixed','results'], limit:Infinity}
+};
+const defaultState = {name:'', route:'core', missionDone:false, score:0, points:{}, completed:{}, attempts:{}, work:{}};
 let state = loadState();
 
 function loadState(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
-    return raw ? Object.assign({}, defaultState, JSON.parse(raw)) : JSON.parse(JSON.stringify(defaultState));
+    if(!raw) return JSON.parse(JSON.stringify(defaultState));
+    const saved=JSON.parse(raw);
+    const next={...JSON.parse(JSON.stringify(defaultState)),...saved};
+    next.route=REVIEW_ROUTES[next.route]?next.route:'core';
+    next.points={...(saved.points||{})};
+    next.completed={...(saved.completed||{})};
+    next.attempts={...(saved.attempts||{})};
+    next.work={...(saved.work||{})};
+    return next;
   }catch(e){return JSON.parse(JSON.stringify(defaultState));}
 }
 function saveState(){
@@ -824,7 +894,15 @@ function fmtMoney(n){return '$' + Number(n).toFixed(2)}
 function closeEnough(a,b,t=.011){return Math.abs(Number(a)-Number(b)) < t}
 function cleanNum(v){return Number(String(v).replace(/[$,\s]/g,''))}
 function filled(v){return String(v).trim() !== ''}
-function award(id, pts=10){ if(!state.completed[id]){state.completed[id]=true;state.score+=pts;saveState();} }
+function award(id, pts=10){
+  if(!state.completed[id]){
+    state.completed[id]=true;
+    state.points=state.points||{};
+    state.points[id]=pts;
+    state.score=Object.values(state.points).reduce((sum,n)=>sum+Number(n||0),0);
+    saveState();
+  }
+}
 function bumpAttempt(id){state.attempts[id]=(state.attempts[id]||0)+1;saveState();return state.attempts[id];}
 function done(id){return !!state.completed[id]}
 
@@ -836,15 +914,70 @@ const SECTIONS = [
   {tab:'value',  badge:'badgeValue',  label:'Part 5 · Best Value',                  bank:valueQs},
   {tab:'mixed',  badge:'badgeMixed',  label:'Part 6 · Mixed Review',                bank:mixedQs}
 ];
-function totalQuestions(){return SECTIONS.reduce((n,s)=>n+s.bank.length,0)}
-function completedCount(){return SECTIONS.reduce((n,s)=>n+s.bank.filter(q=>done(q.id)).length,0)}
+function currentRoute(){return REVIEW_ROUTES[state.route] || REVIEW_ROUTES.core}
+function routeBank(tab,bank){
+  const route = currentRoute();
+  if(!route.tabs.includes(tab)) return [];
+  return Number.isFinite(route.limit) ? bank.slice(0,route.limit) : bank;
+}
+function activeSections(){return SECTIONS.filter(s=>currentRoute().tabs.includes(s.tab))}
+function totalQuestions(){return activeSections().reduce((n,s)=>n+routeBank(s.tab,s.bank).length,0)}
+function completedCount(){return activeSections().reduce((n,s)=>n+routeBank(s.tab,s.bank).filter(q=>done(q.id)).length,0)}
 function percent(){return Math.round((completedCount()/totalQuestions())*100)}
+function routeScore(){
+  return activeSections().reduce((sum,s)=>sum+routeBank(s.tab,s.bank).reduce((part,q)=>{
+    if(state.points && Object.prototype.hasOwnProperty.call(state.points,q.id)) return part+Number(state.points[q.id]||0);
+    return part+(done(q.id)?10:0);
+  },0),0);
+}
+
+function updateRouteChrome(){
+  const route = currentRoute();
+  document.body.dataset.reviewRoute = state.route;
+  document.querySelectorAll('.route-card').forEach(btn=>{
+    const active = btn.dataset.route===state.route;
+    btn.classList.toggle('active',active);
+    btn.setAttribute('aria-pressed',String(active));
+  });
+  const current = document.getElementById('routeCurrent');
+  if(current) current.textContent = route.label+' · '+route.time;
+  document.querySelectorAll('.tab-btn').forEach(btn=>{btn.hidden=!route.tabs.includes(btn.dataset.tab)});
+  updateFlowNav();
+}
+
+function setReviewRoute(route){
+  if(!REVIEW_ROUTES[route]) return;
+  state.route=route;
+  saveState();
+  renderAll();
+  goTab('family');
+  announce(REVIEW_ROUTES[route].label+' selected.');
+}
+
+function completeFamilyMission(){
+  state.missionDone=true;
+  saveState();
+  updateFamilyMission();
+  confetti();
+  announce('Kitchen family mission complete.');
+}
+
+function updateFamilyMission(){
+  const wrap=document.getElementById('familyMissionStatus');
+  const text=document.getElementById('familyMissionText');
+  const button=document.getElementById('familyMissionButton');
+  if(!wrap||!text||!button) return;
+  wrap.classList.toggle('done',!!state.missionDone);
+  text.textContent=state.missionDone?'Kitchen mission complete · you explored ratios and unit price together!':'Kitchen mission ready · complete it together when you can.';
+  button.textContent=state.missionDone?'Completed together ✓':'We did it together ✓';
+  button.disabled=!!state.missionDone;
+}
 
 function updateHUD(){
   const pct = percent();
   document.getElementById('hudProgress').textContent = pct+'%';
-  document.getElementById('coinCount').textContent = state.score;
-  document.getElementById('resultScore').textContent = state.score;
+  document.getElementById('coinCount').textContent = routeScore();
+  document.getElementById('resultScore').textContent = routeScore();
   document.getElementById('resultPossible').textContent = totalQuestions()*10;
   document.getElementById('ringText').textContent = pct+'%';
   document.getElementById('progressRing').style.setProperty('--pct', pct);
@@ -860,25 +993,51 @@ function updateHUD(){
 
   const todo = document.getElementById('todoList');
   if(todo){
-    const open = SECTIONS.filter(s=>!s.bank.every(q=>done(q.id)));
+    const open = activeSections().filter(s=>!routeBank(s.tab,s.bank).every(q=>done(q.id)));
     todo.innerHTML = open.length
-      ? open.map(s=>'<li>'+s.label+' — '+s.bank.filter(q=>!done(q.id)).length+' left</li>').join('')
+      ? open.map(s=>'<li>'+s.label+' — '+routeBank(s.tab,s.bank).filter(q=>!done(q.id)).length+' left</li>').join('')
       : '<li>Nothing left. Every section is finished. 🎉</li>';
   }
 
   SECTIONS.forEach(s=>{
-    const all = s.bank.every(q=>done(q.id));
-    document.getElementById(s.badge)?.classList.toggle('earned', all);
+    const active=currentRoute().tabs.includes(s.tab);
+    const bank=routeBank(s.tab,s.bank);
+    const all = active && bank.length>0 && bank.every(q=>done(q.id));
+    const badge=document.getElementById(s.badge);
+    if(badge){badge.hidden=!active;badge.classList.toggle('earned',all);}
     const btn = document.querySelector('.tab-btn[data-tab="'+s.tab+'"]');
     if(btn) btn.classList.toggle('done', all);
   });
+  updateRouteChrome();
+  updateFamilyMission();
 }
 
 function goTab(id){
+  if(!currentRoute().tabs.includes(id)) id='family';
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id===id));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
   window.scrollTo({top:150, behavior:'smooth'});
   updateHUD();
+}
+
+function updateFlowNav(){
+  const tabs=currentRoute().tabs;
+  const active=document.querySelector('.panel.active')?.id||tabs[0];
+  const index=Math.max(0,tabs.indexOf(active));
+  const labels={family:'Family Note',ratios:'Ratios',equiv:'Equivalent Ratios',rates:'Rates',unit:'Unit Rates',value:'Best Value',mixed:'Mixed Review',results:'My Results'};
+  const back=document.getElementById('flowBack');
+  const next=document.getElementById('flowNext');
+  const status=document.getElementById('flowStatus');
+  if(back) back.disabled=index===0;
+  if(next){next.disabled=index===tabs.length-1;next.textContent=index===tabs.length-2?'See results →':'Continue →';}
+  if(status) status.textContent='Stop '+(index+1)+' of '+tabs.length+' · '+(labels[active]||active);
+}
+
+function moveReviewStep(direction){
+  const tabs=currentRoute().tabs;
+  const active=document.querySelector('.panel.active')?.id||tabs[0];
+  const next=Math.max(0,Math.min(tabs.length-1,tabs.indexOf(active)+direction));
+  goTab(tabs[next]);
 }
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.tab)));
 
@@ -949,7 +1108,7 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 /* ===== Part 1 · Writing ratios ============================================ */
 function renderRatios(){
   const w = document.getElementById('ratioWrap'); w.innerHTML='';
-  ratioQs.forEach((q,i)=>{
+  routeBank('ratios',ratioQs).forEach((q,i)=>{
     const card = document.createElement('div');
     card.className='card question-card'; card.id='card-'+q.id;
     card.innerHTML = `<div class="q-top"><div><div class="q-num">Ratio ${i+1}</div><div class="q-title">${esc(q.ctx)}</div><p class="q-ask">${esc(q.ask)}</p></div><button class="speak" type="button" aria-label="Read this question aloud">🔊</button></div>
@@ -1025,7 +1184,7 @@ function checkRatio(q,card){
 /* ===== Part 2 · Equivalent ratios and scale factor ======================== */
 function renderEquiv(){
   const w = document.getElementById('equivWrap'); w.innerHTML='';
-  equivQs.forEach((q,i)=>{
+  routeBank('equiv',equivQs).forEach((q,i)=>{
     const card = document.createElement('div');
     card.className='card question-card'; card.id='card-'+q.id;
     card.innerHTML = `<div class="q-top"><div><div class="q-num">Builder ${i+1}</div><div class="q-title">${esc(q.ctx)}</div><p class="q-ask">How much ${esc(q.bName)} is needed?</p></div><button class="speak" type="button" aria-label="Read this question aloud">🔊</button></div>
@@ -1096,7 +1255,7 @@ function checkEquiv(q,card){
 /* ===== Part 3 · Rates and count-up models ================================= */
 function renderRates(){
   const w = document.getElementById('rateWrap'); w.innerHTML='';
-  rateQs.forEach((q,i)=>{
+  routeBank('rates',rateQs).forEach((q,i)=>{
     const card = document.createElement('div');
     card.className='card question-card'; card.id='card-'+q.id;
     const topCells = q.top.map((v,ci)=> ci===0
@@ -1193,16 +1352,17 @@ function rackRowHTML(it,i){
 }
 function renderUnit(){
   const w = document.getElementById('unitWrap');
+  const bank = routeBank('unit',unitQs);
   w.innerHTML =
     '<div class="rack"><div class="rack-head"><span class="rh">🧮 Build each ratio, then solve it</span>'+
-      '<span class="rs"><span class="rack-count">0</span> of '+unitQs.length+' solved</span></div>'+
-      '<div class="srows">'+unitQs.map((it,i)=>rackRowHTML(it,i)).join('')+'</div></div>'+
+      '<span class="rs"><span class="rack-count">0</span> of '+bank.length+' solved</span></div>'+
+      '<div class="srows">'+bank.map((it,i)=>rackRowHTML(it,i)).join('')+'</div></div>'+
     scratchHTML('unit-rack','Show your division here. Example: 6.00 divided by 8 equals...');
   wireScratch(w);
 
   const rack = w.querySelector('.rack');
   const rows = [...rack.querySelectorAll('.srow')];
-  const rowState = unitQs.map(q=>({stage:0, helped:false, solved:false}));
+  const rowState = bank.map(q=>({stage:0, helped:false, solved:false}));
 
   const note = (row,kind,msg)=>{const n=row.querySelector('.srow-note');n.className='srow-note show '+kind;n.textContent=msg;};
   const clearNote = row=>{row.querySelector('.srow-note').className='srow-note';};
@@ -1224,12 +1384,12 @@ function renderUnit(){
     row.querySelectorAll('.fin').forEach(f=>{f.readOnly=true});
     row.querySelector('.srow-help').disabled = true;
     clearNote(row); countUp();
-    award(unitQs[i].id, st.helped ? 0 : 10);
+    award(bank[i].id, st.helped ? 0 : 10);
     if(!silent && !st.helped){confetti();announce('Correct');}
   }
   function evaluate(row,i){
     const st = rowState[i]; if(st.solved) return;
-    const it = unitQs[i];
+    const it = bank[i];
     if(st.stage===0){
       const n = val(row,'num'), d = val(row,'den');
       if(!filled(n) || !filled(d)){mark(field(row,'num'),null);mark(field(row,'den'),null);clearNote(row);return;}
@@ -1262,7 +1422,7 @@ function renderUnit(){
     }
   }
   function showStep(i,all){
-    const row = rows[i], st = rowState[i], it = unitQs[i];
+    const row = rows[i], st = rowState[i], it = bank[i];
     if(st.solved) return;
     st.helped = true;
     const fill = (f,v)=>{const el=field(row,f);el.value=v;mark(el,true);};
@@ -1276,8 +1436,8 @@ function renderUnit(){
   rows.forEach((row,i)=>{
     row.querySelectorAll('.fin').forEach(inp=>inp.addEventListener('input',()=>evaluate(row,i)));
     row.querySelector('.srow-help').onclick = ()=>showStep(i,false);
-    if(done(unitQs[i].id)){
-      const it = unitQs[i];
+    if(done(bank[i].id)){
+      const it = bank[i];
       field(row,'num').value = it.p.toFixed(2);
       field(row,'den').value = it.c;
       field(row,'dtop').value = it.c;
@@ -1302,7 +1462,7 @@ function valueAnswer(q){
 }
 function renderValue(){
   const w = document.getElementById('valueWrap'); w.innerHTML='';
-  valueQs.forEach((q,i)=>{
+  routeBank('value',valueQs).forEach((q,i)=>{
     const card = document.createElement('div');
     card.className='card question-card'; card.id='card-'+q.id;
     card.innerHTML = `<div class="q-top"><div><div class="q-num">Matchup ${i+1}</div><div class="q-title">${esc(q.item)}: which is the better buy?</div><p class="q-ask">Find each unit price first, then decide. Round to the nearest cent.</p></div><button class="speak" type="button" aria-label="Read this question aloud">🔊</button></div>
@@ -1376,7 +1536,7 @@ function checkValue(q,card,btn){
 /* ===== Part 6 · Mixed review ============================================= */
 function renderMixed(){
   const w = document.getElementById('mixedWrap'); w.innerHTML='';
-  mixedQs.forEach((q,i)=>{
+  routeBank('mixed',mixedQs).forEach((q,i)=>{
     const card = document.createElement('div');
     card.className='card question-card'; card.id='card-'+q.id;
     card.innerHTML = `<div class="q-top"><div><div class="q-num skill">Question ${i+1}</div><div class="q-title">${esc(q.q)}</div></div><button class="speak" type="button" aria-label="Read this question aloud">🔊</button></div>
@@ -1420,8 +1580,10 @@ function checkMixed(q,card,btn){
 function resetAll(){
   if(!confirm('Clear all of your answers and start this review over?')) return;
   const keepName = state.name || '';
+  const keepRoute = state.route || 'core';
   state = JSON.parse(JSON.stringify(defaultState));
   state.name = keepName;
+  state.route = keepRoute;
   saveState();
   renderAll();
   goTab('family');

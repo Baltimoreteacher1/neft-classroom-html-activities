@@ -1252,6 +1252,13 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     "open-response",
   ].includes(type);
   const scaffold = renderStepGuide(topic) + (computational ? renderWorkspace(topic, pIdx) : "");
+  const guide = topicGuide(topic);
+  const coachLadder = {
+    strategyEn: guide.coach,
+    strategyEs: guide.coachEs,
+    startEn: guide.draw ? `Start here: ${guide.draw}` : "",
+    startEs: guide.drawEs ? `Empieza aquí: ${guide.drawEs}` : "",
+  };
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
@@ -1259,7 +1266,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_${pIdx} .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_${pIdx} .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         ${typeChip}
       </div>
-      <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID)}</div>
+      <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID, coachLadder)}</div>
       ${content}
       ${scaffold}
       <div class="problem-check-row">
@@ -1393,7 +1400,7 @@ function generateHtml(lessonId, config) {
   const tabPanels = [
     renderLearnTab(config, renderVisualMathLab(topic, config, lessonModel)),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
-    renderTogetherTab(config, lessonId, renderWorkbenchTools()),
+    renderTogetherTab(config, lessonId, renderWorkbenchTools(config)),
     renderCheckTab(
       quickCheckIntroHtml,
       warmupHtml,
@@ -1461,6 +1468,11 @@ ${EDITORIAL_FONT_IMPORT}
 }
 
 ${themeCss}
+
+/* Save/Resume normally adds a shortcut to the site-wide workbench. Family
+   homework owns a stricter contract: only the lesson-matched manipulative may
+   appear, so the general all-tools shortcut stays out of this experience. */
+#nsr-workbench { display: none !important; }
 
 /* Enhancements: Share bar, Standard details, Time remaining, Kitchen table, Audio buttons */
 .hw-hero-share-bar {
@@ -4159,25 +4171,33 @@ function triggerHighFive() {
 
 function updateCelebrationTab() {
   const problems = Array.from(document.querySelectorAll(".problem-section")).filter(
-    (s) => !s.closest(".more-practice"),
+    (s) => !s.closest(".more-practice") && !s.hidden && !s.closest("[hidden]"),
   );
   const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
+  const practiceGoal = Math.min(
+    3,
+    typeof activeHomeworkRoute === "function" ? activeHomeworkRoute().problemLimit : 3,
+  );
 
   const bLearn = document.getElementById("badge_achieve_learn");
   const bVocab = document.getElementById("badge_achieve_vocab");
   const bPractice = document.getElementById("badge_achieve_practice");
   const bArcade = document.getElementById("badge_achieve_arcade");
+  const bMission = document.getElementById("badge_achieve_mission");
 
   if (bLearn) bLearn.classList.add("is-unlocked");
   if (bArcade) bArcade.classList.add("is-unlocked");
-  if (bPractice && correctCount >= 3) bPractice.classList.add("is-unlocked");
+  if (bPractice && correctCount >= practiceGoal) bPractice.classList.add("is-unlocked");
   try {
     if (bVocab && localStorage.getItem(STORAGE_KEY + "_vocab_won")) {
       bVocab.classList.add("is-unlocked");
     }
+    if (bMission && localStorage.getItem("hw_family_mission_" + (window.LESSON_ID || location.pathname)) !== null) {
+      bMission.classList.add("is-unlocked");
+    }
   } catch (e) {}
 
-  if (correctCount >= 3) {
+  if (correctCount >= practiceGoal) {
     if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 60);
   }
 }
@@ -4645,9 +4665,23 @@ function loadState() {
 
 ${ANSWER_MATCH_JS}
 
+function activeCoreProblems() {
+  return Array.from(document.querySelectorAll(".problem-section")).filter(
+    (section) =>
+      !section.closest(".more-practice") &&
+      !section.hidden &&
+      !section.closest("[hidden]"),
+  );
+}
+
+function activeHomeworkGoal() {
+  return typeof activeHomeworkRoute === "function"
+    ? activeHomeworkRoute().problemLimit
+    : window.HW_CORE_COUNT || activeCoreProblems().length;
+}
+
 function updateProgress() {
-  const problems = Array.from(document.querySelectorAll(".problem-section"))
-    .filter((s) => !s.closest(".more-practice"));
+  const problems = activeCoreProblems();
   let completedCount = 0;
 
   problems.forEach((section, idx) => {
@@ -4840,13 +4874,21 @@ function filterVocabCards(filter, btn) {
 function openTogetherWorkbench(tool) {
   if (typeof switchHomeworkTab === "function") switchHomeworkTab("together");
   const drawer = document.querySelector(".workbench-drawer");
+  if (!drawer) return;
   if (drawer) {
     drawer.open = true;
     drawer.scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  if (tool && typeof switchWorkbenchTool === "function") {
-    switchWorkbenchTool(tool);
+  const lessonTool = tool || drawer.dataset.workbenchTool || "";
+  if (lessonTool && typeof switchWorkbenchTool === "function") {
+    switchWorkbenchTool(lessonTool);
   }
+}
+
+function workbenchActionButton(labelEn, labelEs) {
+  if (!document.querySelector(".workbench-drawer")) return "";
+  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
+    '🧮 <span class="lang-en">' + labelEn + '</span><span class="lang-es" lang="es">' + labelEs + '</span></button>';
 }
 
 function switchWorkbenchTool(tool) {
@@ -5131,8 +5173,7 @@ function checkProblem(idx, options) {
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
               '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
               '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
-              '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
-              '🧮 <span class="lang-en">Try with Math Tools</span><span class="lang-es" lang="es">Probar con herramientas</span></button></div>';
+              workbenchActionButton("Try with tonight's tool", "Probar con la herramienta de hoy") + '</div>';
             expDiv.innerHTML = html;
           } else if (tier === 2) {
             // Tier 2: Strategy Clue & Model
@@ -5154,8 +5195,7 @@ function checkProblem(idx, options) {
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
               '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
               '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
-              '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
-              '🧮 <span class="lang-en">Open Math Tools</span><span class="lang-es" lang="es">Abrir herramientas</span></button></div>';
+              workbenchActionButton("Open tonight's tool", "Abrir la herramienta de hoy") + '</div>';
             expDiv.innerHTML = html;
           } else {
             // Tier 3: Full Step-by-Step Walkthrough
@@ -5171,8 +5211,8 @@ function checkProblem(idx, options) {
                 'Ask your student: <em>“In your own words, how does the highlighted green answer solve the problem?”</em>',
                 'Pregunta a tu estudiante: <em>“En tus propias palabras, ¿cómo la respuesta verde destacada resuelve el problema?”</em>'
               ) + '</div>';
-            html += '<div class="exp-tool" style="margin-top:8px;"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
-              '🧮 <span class="lang-en">Model with Math Tools</span><span class="lang-es" lang="es">Modelar con herramientas</span></button></div>';
+            const workbenchButton = workbenchActionButton("Model with tonight's tool", "Modelar con la herramienta de hoy");
+            if (workbenchButton) html += '<div class="exp-tool" style="margin-top:8px;">' + workbenchButton + '</div>';
             expDiv.innerHTML = html;
           }
         }
@@ -5466,8 +5506,7 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = Array.from(document.querySelectorAll(".problem-section"))
-    .filter((s) => !s.closest(".more-practice"));
+  const problems = activeCoreProblems();
   const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
   const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
@@ -5479,7 +5518,7 @@ function updateScoreSummary() {
   }
 
   // Goal milestone — the number the page states, not a hardcoded 3.
-  if (correctCount >= (window.HW_CORE_COUNT || total)) {
+  if (correctCount >= activeHomeworkGoal()) {
     const goalBanner = document.getElementById("goal_reached_banner");
     if (goalBanner && goalBanner.hidden) {
       goalBanner.hidden = false;
@@ -5492,22 +5531,21 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = Array.from(document.querySelectorAll(".problem-section"));
+  const problems = activeCoreProblems();
   let correctCount = 0;
 
   problems.forEach((section) => {
     const idx = parseInt((section.id || "").replace("problem_", ""), 10);
     if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    // Only core (non-optional) problems count toward the worksheet score.
-    if (result.correct && !section.closest(".more-practice")) correctCount++;
+    if (result.correct) correctCount++;
   });
 
-  const total = problems.filter((s) => !s.closest(".more-practice")).length;
+  const total = problems.length;
   document.getElementById("progress_text").textContent = correctCount + " / " + total;
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 
-  if (correctCount >= (window.HW_CORE_COUNT || total)) {
+  if (correctCount >= activeHomeworkGoal()) {
     const goalBanner = document.getElementById("goal_reached_banner");
     if (goalBanner && goalBanner.hidden) {
       goalBanner.hidden = false;
@@ -5911,8 +5949,8 @@ window.onload = function() {
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>
   <!-- canvas-bridge-injected:end -->
-<!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
+<!-- mwb-injected:begin (lesson-matched tools only — family homework opt-out) -->
+  <!-- The family page embeds only the manipulative selected for this lesson. -->
   <!-- mwb-injected:end -->
 </body>
 </html>

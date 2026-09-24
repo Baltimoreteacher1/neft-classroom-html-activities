@@ -9,6 +9,7 @@ import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 import {
   detectVisualMismatch,
   findNoteOwnershipConflicts,
+  homeworkWorkbenchTool,
   scoreHomeworkAlignment,
 } from "./homework-alignment.mjs";
 
@@ -55,9 +56,29 @@ const REQUIRED_MARKERS = [
       h.includes("stuck-heading"),
   },
   {
-    // The manipulatives moved into Together rather than disappearing.
-    id: "workbench-reachable",
-    test: (h) => h.includes("workbench-drawer") && h.includes("switchWorkbenchTool"),
+    // A lesson gets exactly one matching manipulative, or none when the shared
+    // workbench has no honest model for tonight's move. Every page still has
+    // its lesson-specific visual and scratchpad.
+    id: "topic-workbench-only",
+    test: (h, config) => {
+      const wanted = homeworkWorkbenchTool(config);
+      const toolIds = ["fractions", "coords", "tapes", "decimals"];
+      if (!wanted) {
+        return (
+          !h.includes('class="workbench-drawer"') &&
+          toolIds.every((id) => !h.includes(`id="wb_panel_${id}"`))
+        );
+      }
+      return (
+        h.includes(`data-workbench-tool="${wanted}"`) &&
+        h.includes(`id="wb_panel_${wanted}"`) &&
+        toolIds.filter((id) => id !== wanted).every((id) => !h.includes(`id="wb_panel_${id}"`))
+      );
+    },
+  },
+  {
+    id: "global-workbench-hidden",
+    test: (h) => h.includes("#nsr-workbench { display: none !important; }"),
   },
   {
     // Every game lives in one arcade on the Play stop: the four family games
@@ -79,12 +100,36 @@ const REQUIRED_MARKERS = [
     id: "help-modal",
     test: (h) => h.includes("help_modal_overlay") && h.includes("openHelpModalFromBtn"),
   },
+  {
+    id: "family-route",
+    test: (h) =>
+      h.includes('class="hw-route-chooser"') &&
+      ["quick", "core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
+      h.includes("setHomeworkRoute") &&
+      h.includes("goNextHomeworkStop"),
+  },
+  {
+    id: "graduated-coaching",
+    test: (h) =>
+      h.includes('class="problem-coach-ladder"') &&
+      h.includes("No answer spoilers") &&
+      h.includes("revealCoachStep"),
+  },
+  {
+    id: "hands-on-mission",
+    test: (h) =>
+      h.includes('class="family-mission-picker"') &&
+      h.includes("pickFamilyMission") &&
+      h.includes("completeFamilyMission") &&
+      h.includes('id="badge_achieve_mission"'),
+  },
   { id: "bilingual", test: (h) => h.includes('lang="es"') && h.includes("Ayuda a tu estudiante") },
   {
     id: "no-curriculum",
     test: (h) => {
-      // Allow student practice tools (AI Learning Lab + Math Workbench).
-      const stripped = h.replace(/\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi, "");
+      // Allow the AI Learning Lab. The general Math Workbench is intentionally
+      // excluded because this page embeds only its lesson-matched tool.
+      const stripped = h.replace(/\/curriculum\/ai-hub\/[^"'\s]*/gi, "");
       return (
         !/\/curriculum\//i.test(stripped) &&
         !/Back to curriculum/i.test(h) &&
@@ -184,7 +229,7 @@ for (const { id, config, html } of lessons) {
   const lessonFails = [];
 
   for (const marker of REQUIRED_MARKERS) {
-    if (!marker.test(html)) {
+    if (!marker.test(html, config)) {
       lessonFails.push(marker.id);
     }
   }
@@ -247,7 +292,7 @@ const alignedCount = alignmentRows.filter((r) => r.aligned).length;
 
 console.log("Structure & policy checks:");
 for (const marker of REQUIRED_MARKERS) {
-  const ok = lessons.filter((l) => marker.test(l.html)).length;
+  const ok = lessons.filter((l) => marker.test(l.html, l.config)).length;
   console.log(`  ${ok === lessons.length ? "✓" : "✗"} ${marker.id}: ${ok}/${lessons.length}`);
 }
 

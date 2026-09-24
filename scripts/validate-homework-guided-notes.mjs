@@ -7,6 +7,9 @@ import { join } from "node:path";
 import vm from "node:vm";
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+import { homeworkWorkbenchTool } from "./homework-alignment.mjs";
+
+const root = join(lessonsDir, "..");
 
 // Every page the homework generator writes, not every core lesson: a bridge or
 // review lesson that opted in ships a homework.html too, and a page nobody
@@ -141,9 +144,7 @@ const REQUIRED_MARKERS = [
   "TOUCH &amp; TRY",
   "TOCA Y PRUEBA",
   'data-tab-panel="play"',
-  // The workbench is a drawer inside Together now, not a tab of its own.
-  "workbench-drawer",
-  "Math Workbench",
+  "#nsr-workbench { display: none !important; }",
   // Help is a drawer that floats over every stop rather than tab 8 of 10.
   'id="hw_help_drawer"',
   "toggleHelpDrawer",
@@ -156,6 +157,21 @@ const REQUIRED_MARKERS = [
   "initHomeworkGame",
   "Learn more online",
   "Play together",
+  // 2026 family experience: time choice must change the real path, hints must
+  // be graduated without revealing answers, and the no-device activity must
+  // be pickable and trackable on every generated page.
+  'class="hw-route-chooser"',
+  'data-route-mode="quick"',
+  'data-route-mode="core"',
+  'data-route-mode="full"',
+  "setHomeworkRoute",
+  "goNextHomeworkStop",
+  'class="problem-coach-ladder"',
+  "revealCoachStep",
+  'class="family-mission-picker"',
+  "pickFamilyMission",
+  "completeFamilyMission",
+  'id="badge_achieve_mission"',
 ];
 
 const BAD_SPANISH = [
@@ -273,11 +289,41 @@ let issues = [];
 for (const id of lessonIds) {
   const path = join(lessonsDir, id, "homework.html");
   const html = readFileSync(path, "utf8");
+  const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
+  const notesPath = join(root, "data", "family-homework-notes", `${id}.json`);
+  if (existsSync(notesPath)) {
+    config.familyNotes = {
+      ...JSON.parse(readFileSync(notesPath, "utf8")),
+      ...(config.familyNotes || {}),
+    };
+  }
 
   for (const marker of REQUIRED_MARKERS) {
     if (!html.includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
     }
+  }
+
+  const wantedWorkbench = homeworkWorkbenchTool(config);
+  const workbenchIds = ["fractions", "coords", "tapes", "decimals"];
+  const presentWorkbenchIds = workbenchIds.filter((tool) => html.includes(`id="wb_panel_${tool}"`));
+  if (
+    (wantedWorkbench &&
+      (presentWorkbenchIds.length !== 1 || presentWorkbenchIds[0] !== wantedWorkbench)) ||
+    (!wantedWorkbench && presentWorkbenchIds.length !== 0)
+  ) {
+    issues.push({
+      id,
+      level: "CRITICAL",
+      msg: `Math tools do not match lesson: expected ${wantedWorkbench || "none"}, found ${presentWorkbenchIds.join(", ") || "none"}`,
+    });
+  }
+  if (html.includes("/assets/math-workbench-launcher.js")) {
+    issues.push({
+      id,
+      level: "CRITICAL",
+      msg: "Global Math Workbench launcher exposes unrelated tools",
+    });
   }
 
   const quickChecks = countQuickChecks(html);
@@ -288,8 +334,9 @@ for (const id of lessonIds) {
     issues.push({ id, level: "HIGH", msg: "No quick check problems" });
   }
 
-  // Student practice tools (AI Learning Lab + Math Workbench) are allowed links.
-  const htmlNoAiHub = html.replace(/\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi, "");
+  // The AI Learning Lab is an allowed student-practice link. The general Math
+  // Workbench is intentionally not: each homework embeds only its matched tool.
+  const htmlNoAiHub = html.replace(/\/curriculum\/ai-hub\/[^"'\s]*/gi, "");
   if (
     /\/curriculum\//i.test(htmlNoAiHub) ||
     /Curriculum Hub/i.test(html) ||

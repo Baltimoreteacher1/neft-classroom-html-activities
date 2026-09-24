@@ -255,6 +255,29 @@ export function ratioFocus(config) {
   return "equivalent";
 }
 
+/**
+ * The one in-page manipulative that genuinely matches this lesson, or null.
+ *
+ * The family pages used to ship the same four-tool workbench everywhere. That
+ * put fraction strips in statistics homework, coordinate grids in decimal
+ * homework, and an addition-oriented place-value chart in decimal multiply /
+ * divide lessons. A closed drawer is still part of the lesson's interface, so
+ * unrelated tools are not harmless clutter: they suggest the wrong model to a
+ * family that opened the drawer because the student was already stuck.
+ *
+ * Keep this deliberately narrow. Every page still has its lesson-specific
+ * visual model and a blank scratchpad; the drawer appears only when one of its
+ * purpose-built manipulatives teaches tonight's exact move.
+ */
+export function homeworkWorkbenchTool(config) {
+  const topic = detectVisualTopic(config);
+  if (topic === "fractions") return "fractions";
+  if (topic === "coordinate-plane") return "coords";
+  if (topic === "ratios" && ratioFocus(config) === "equivalent") return "tapes";
+  if (topic === "decimals" && decimalOperation(config) === "addsub") return "decimals";
+  return null;
+}
+
 const TOPIC_KEYWORDS = {
   exponents: ["exponent", "power", "base", "evaluate", "²", "³", "multiply", "repeated"],
   expressions: ["expression", "variable", "coefficient", "term", "evaluate", "algebraic"],
