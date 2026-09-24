@@ -1902,7 +1902,15 @@ function renderNoticeAndWonder(host, config, state) {
 // nothing about them changes. All fields persist via the lesson's canonical
 // save/resume API on phaseId 0 (Launch) with stable keys.
 function renderShowYourWork(host, config, state) {
-  const get = (k) => (state && state.getResponse && state.getResponse(0, k)) || "";
+  const get = (k) => {
+    if (k === "know") {
+      const kn = (state && state.getResponse && state.getResponse(0, "know")) || "";
+      const fn = (state && state.getResponse && state.getResponse(0, "find")) || "";
+      if (kn && fn && !kn.includes(fn)) return kn + "\n" + fn;
+      return kn || fn || "";
+    }
+    return (state && state.getResponse && state.getResponse(0, k)) || "";
+  };
   const set = (k, v) => state && state.saveResponse && state.saveResponse(0, k, v);
   // The scenario the student can actually see on this screen — the same
   // `config.launch.narrative` the card above prints. This is what the Socratic
@@ -1971,18 +1979,15 @@ function renderShowYourWork(host, config, state) {
   const steps = document.createElement("div");
   steps.className = "syw-steps";
   steps.append(
-    field("know", "1 · What I know", "facts and numbers from the problem", {
-      placeholder: "I know that…",
+    field("know", "1 · What I know & need to find", "key facts and question goal", {
+      placeholder: "I know that… and I need to find…",
     }),
-    field("find", "2 · What I need to find", "", {
-      placeholder: "I need to find…",
-    }),
-    field("work", "3 · My work", "show each step", {
+    field("work", "2 · My work", "show each step", {
       rows: 5,
       minWords: 15,
       placeholder: "Step 1…\nStep 2…",
     }),
-    field("answer", "4 · My answer", "label your units", {
+    field("answer", "3 · My answer", "label your units", {
       single: true,
       placeholder: "My answer is…",
     }),

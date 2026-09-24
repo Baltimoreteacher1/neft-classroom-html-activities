@@ -874,27 +874,27 @@ function unitRatePack({ x, y, name, badgeFill, cost, count, noun, rate, best }) 
         <text x="${cx + 45}" y="${y + 31}" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">${name}</text>
         <text x="${cx}" y="${y + 62}" font-size="18" font-weight="800" fill="#12355b">${money(cost)} for ${count} ${noun}s</text>
 
-        ${box(y + 76, 92)}
-        ${step(y + 76, 1, "Write it as a fraction")}
-        <text x="${fracX}" y="${y + 120}" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">${money(cost)}</text>
-        <line x1="${cx + 18}" y1="${y + 128}" x2="${cx + 106}" y2="${y + 128}" stroke="#12355b" stroke-width="2.5"/>
-        <text x="${fracX}" y="${y + 152}" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">${count} ${noun}s</text>
-        <text x="${cx + 116}" y="${y + 118}" font-size="11" font-weight="700" fill="#5f6f80">← total cost</text>
-        <text x="${cx + 116}" y="${y + 131}" font-size="10" font-weight="700" fill="#94a3b8">(numerator / top)</text>
-        <text x="${cx + 116}" y="${y + 150}" font-size="11" font-weight="700" fill="#5f6f80">← how many</text>
-        <text x="${cx + 116}" y="${y + 163}" font-size="10" font-weight="700" fill="#94a3b8">(denominator / bottom)</text>
+        ${box(y + 76, 82)}
+        ${step(y + 76, 1, "Rate as a fraction")}
+        <text x="${fracX}" y="${y + 114}" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">${money(cost)}</text>
+        <line x1="${cx + 18}" y1="${y + 122}" x2="${cx + 106}" y2="${y + 122}" stroke="#12355b" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 144}" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">${count} ${noun}s</text>
+        <text x="${cx + 116}" y="${y + 114}" font-size="11" font-weight="700" fill="#5f6f80">← cost (top)</text>
+        <text x="${cx + 116}" y="${y + 144}" font-size="11" font-weight="700" fill="#5f6f80">← units (bottom)</text>
 
-        ${box(y + 174, 52)}
-        ${step(y + 174, 2, "Divide by the denominator")}
-        <text x="${cx + 10}" y="${y + 216}" font-size="17" font-weight="800" fill="#12355b">${money(cost)} ÷ ${count} = ${money(rate)}</text>
+        ${box(y + 164, 82)}
+        ${step(y + 164, 2, "Divide both by " + count)}
+        <text x="${fracX}" y="${y + 202}" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">${money(cost)} ÷ ${count}</text>
+        <line x1="${cx + 18}" y1="${y + 210}" x2="${cx + 106}" y2="${y + 210}" stroke="#0f766e" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 232}" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">${count} ÷ ${count}</text>
+        <text x="${cx + 116}" y="${y + 218}" font-size="11" font-weight="700" fill="#0f766e">divide both</text>
 
-        ${box(y + 232, 52)}
-        ${step(y + 232, 3, "That is the rate for 1")}
-        <text x="${cx + 10}" y="${y + 274}" font-size="17" font-weight="800" fill="#12355b">${money(rate)} for 1 ${noun}</text>
-
-        ${box(y + 290, 56, best ? "#dcfce7" : "#f1f5f9", best ? "#16a34a" : "#94a3b8")}
-        ${step(y + 290, 4, "Unit rate — drop the 1")}
-        <text x="${cx + 10}" y="${y + 336}" font-size="21" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">${money(rate)} per ${noun}</text>
+        ${box(y + 252, 92, best ? "#dcfce7" : "#f1f5f9", best ? "#16a34a" : "#94a3b8")}
+        ${step(y + 252, 3, "Unit rate: fraction over 1")}
+        <text x="${fracX}" y="${y + 290}" text-anchor="middle" font-size="17" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">${money(rate)}</text>
+        <line x1="${cx + 18}" y1="${y + 298}" x2="${cx + 106}" y2="${y + 298}" stroke="${best ? "#15803d" : "#12355b"}" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 318}" text-anchor="middle" font-size="16" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">1 ${noun}</text>
+        <text x="${cx + 116}" y="${y + 306}" font-size="13" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">= ${money(rate)}/${noun}</text>
 
         <rect x="${cx}" y="${y + 352}" width="${w}" height="26" rx="8" fill="${best ? "#dcfce7" : "#f1f5f9"}" stroke="${best ? "#16a34a" : "#94a3b8"}" stroke-width="1.5"/>
         <text x="${cx + w / 2}" y="${y + 370}" text-anchor="middle" font-size="13" font-weight="800" fill="${best ? "#15803d" : "#64748b"}">${best ? "★ LOWER unit rate = BETTER BUY!" : "Higher cost for 1"}</text>`;
@@ -1057,12 +1057,12 @@ function conceptVisual(config) {
     return {
       svg: conceptFrame({
         label:
-          "Rates and Unit Rates: each pack worked step by step — write the fraction, divide by the denominator, drop the 1",
+          "Rates and Unit Rates: each pack worked step by step — rate as a fraction, divide both by bottom number, unit rate as fraction over 1",
         tone: "amber",
         height: 640,
         title: "Rates & Unit Rates / Tasa y tasa unitaria",
         body: `
-        <!-- Each pack worked in four labelled steps; see unitRatePack(). -->
+        <!-- Each pack worked in three labelled steps; see unitRatePack(). -->
         ${unitRatePack({
           x: 34,
           y: 68,
@@ -1088,16 +1088,16 @@ function conceptVisual(config) {
 
         <!-- Formula Rule Card -->
         <rect x="34" y="476" width="572" height="140" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="320" y="506" text-anchor="middle" font-size="19" font-weight="800" fill="#0f766e">Unit Rate = Total Cost ÷ Number of Units</text>
+        <text x="320" y="506" text-anchor="middle" font-size="19" font-weight="800" fill="#0f766e">Unit Rate = Rate written as a fraction over 1</text>
         <line x1="60" y1="520" x2="580" y2="520" stroke="#99f6e4" stroke-width="2"/>
-        <text x="320" y="548" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">Put the cost on TOP, the amount on the BOTTOM, then divide top ÷ bottom.</text>
-        <text x="320" y="574" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">That gives the cost of exactly 1 — we drop the 1 and say "per pencil".</text>
-        <text x="320" y="602" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">$0.60 &lt; $0.65, so Pack A wins. Compare the price of ONE, never the total price.</text>`,
+        <text x="320" y="546" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">1. Write rate as fraction: Cost on TOP, Units on BOTTOM.</text>
+        <text x="320" y="572" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">2. Divide BOTH parts by the bottom number.</text>
+        <text x="320" y="598" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">3. Unit rate is in fraction form over 1: ($0.60 / 1 pencil = $0.60 per pencil).</text>`,
       }),
       capEn:
-        "A unit rate is a ratio that compares a quantity to 1 unit. Divide the total cost by the quantity to find the price for 1.",
+        "A unit rate is a ratio that compares a quantity to 1 unit. Write the rate as a fraction and divide both parts by the bottom number to get a fraction over 1.",
       capEs:
-        "Una tasa unitaria es una razón que compara una cantidad con 1 unidad. Divide el costo entre la cantidad para hallar el precio de 1.",
+        "Una tasa unitaria es una razón que compara una cantidad con 1 unidad. Escribe la tasa como fracción y divide ambas partes entre el número de abajo para obtener una fracción sobre 1.",
     };
   }
 

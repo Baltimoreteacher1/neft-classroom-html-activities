@@ -1022,6 +1022,14 @@
           row.appendChild(p2a);
         }
 
+        if (lesson.id === "3-2") {
+          var simBtn = document.createElement("a");
+          simBtn.className = "tws-btn ghost";
+          simBtn.href = "/lessons/3-2-simulator/";
+          simBtn.textContent = "Open Part · Simulator";
+          row.appendChild(simBtn);
+        }
+
         if (isLesson) {
           var supports = document.createElement("a");
           supports.className = "tws-btn ghost";

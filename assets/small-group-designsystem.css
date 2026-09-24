@@ -171,15 +171,17 @@
 }
 
 .prob {
-  padding: 22px;
-  margin-bottom: 16px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  border-radius: var(--sg-radius-lg);
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
 /* The problem a student is on. Given the pathway accent along its leading edge
    so that, mid-scroll on a page of near-identical cards, the live one is
    findable without reading any of them. */
 .prob:not([hidden]) {
-  border-left: 4px solid color-mix(in srgb, var(--sg-pop) 70%, var(--sg-card));
+  border-left: 5px solid var(--sg);
 }
 
 .sg-map {
@@ -580,9 +582,84 @@
 }
 
 .q {
-  font-size: 17.5px;
-  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 0 0 18px;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--sg-ink);
 }
+
+.pn {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--sg);
+  font-weight: 800;
+  font-size: 15px;
+  margin-top: 1px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.choices {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.fillline,
+.stepline,
+.gs-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 12px 18px;
+  background: color-mix(in srgb, var(--sg-card) 94%, var(--sg-soft));
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius-sm);
+}
+
+.fillin,
+.stepfill {
+  min-height: 44px;
+  min-width: 140px;
+  padding: 8px 14px;
+  border: 2px solid var(--sg-line);
+  border-radius: 8px;
+  background: var(--sg-card);
+  color: var(--sg-ink);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.fillin:focus,
+.stepfill:focus {
+  outline: none;
+  border-color: var(--sg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sg) 25%, transparent);
+}
+
+.filllab {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--sg-ink);
+}
+
+.fillunit {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--sg-muted);
+}
+
 
 /* ---------------------------------------------------------------------------
    9 · MATH FIGURES + MANIPULATIVES

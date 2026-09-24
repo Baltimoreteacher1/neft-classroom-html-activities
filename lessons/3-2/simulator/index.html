@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f0df" />
+    <meta
+      name="description"
+      content="A guided unit-rate simulator that helps students turn rates into fractions, divide, and choose the best buy."
+    />
+    <title>Unit Rate Market — Best Buy Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fjalla+One&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Skip to the simulator</a>
+
+    <header class="site-header">
+      <a class="brand" href="/lessons/3-2/" aria-label="Back to Lesson 3-2">
+        <span class="brand-mark" aria-hidden="true">←</span>
+        <span>
+          <strong>LESSON 3.2</strong>
+          <small>SIMULATOR</small>
+        </span>
+      </a>
+
+      <nav class="mode-switch" aria-label="Learning mode">
+        <button class="mode-button" data-mode="learn" type="button">Learn</button>
+        <button class="mode-button active" data-mode="practice" type="button">Practice</button>
+        <button class="mode-button" data-mode="challenge" type="button">Challenge</button>
+      </nav>
+
+      <button class="icon-button" id="openHelp" type="button" aria-label="Open help">
+        <span aria-hidden="true">?</span>
+      </button>
+    </header>
+
+    <main id="workspace" tabindex="-1">
+      <section class="intro-strip" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">COMPARE SMARTER</p>
+          <h1 id="pageTitle">Which one is really the <em>best buy?</em></h1>
+        </div>
+        <p class="intro-copy">
+          Turn each rate into a price for <strong>1 unit</strong>. Then the better deal becomes easy to see.
+        </p>
+      </section>
+
+      <section class="control-bar" aria-label="Problem controls">
+        <div class="category-control">
+          <span class="control-label">Shop aisle</span>
+          <div class="category-list" id="categoryList"></div>
+        </div>
+        <div class="control-actions">
+          <button class="text-button" id="customProblemButton" type="button">
+            <span aria-hidden="true">＋</span> Build my own
+          </button>
+          <button class="primary-button" id="newProblemButton" type="button">
+            New problem <span aria-hidden="true">↻</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="learn-panel" id="learnPanel" hidden aria-labelledby="learnTitle">
+        <div class="learn-copy">
+          <p class="section-kicker">THE UNIT RATE RECIPE</p>
+          <h2 id="learnTitle">One denominator. One clear comparison.</h2>
+          <p>
+            A rate compares two quantities. A <strong>unit rate</strong> compares a quantity to exactly 1 of
+            another quantity—like dollars per ounce or miles per hour.
+          </p>
+        </div>
+        <ol class="recipe-steps">
+          <li><b>01</b><span>Write the rate as a fraction.</span></li>
+          <li><b>02</b><span>Divide both parts by the bottom number.</span></li>
+          <li><b>03</b><span>State unit rate as a fraction over 1.</span></li>
+          <li><b>04</b><span>Compare unit rates for the best buy.</span></li>
+        </ol>
+        <div class="worked-example">
+          <span class="receipt-label">EXAMPLE</span>
+          <div class="worked-math" aria-label="Six dollars for eight notebooks equals six divided by eight over eight divided by eight, giving seventy-five cents over one notebook, or seventy-five cents per notebook">
+            <span class="fraction"><span>$6</span><span>8 notebooks</span></span>
+            <span>=</span>
+            <span class="fraction"><span>$6 ÷ 8</span><span>8 ÷ 8</span></span>
+            <span>=</span>
+            <span class="fraction"><span>$0.75</span><span>1 notebook</span></span>
+            <span>=</span><strong>$0.75</strong><span>per notebook</span>
+          </div>
+        </div>
+        <button class="primary-button start-practice" type="button">Try one with a coach →</button>
+      </section>
+
+      <section class="simulator-layout" id="simulatorLayout">
+        <div class="problem-column">
+          <div class="problem-heading">
+            <div>
+              <p class="section-kicker" id="problemCounter">PRACTICE • PROBLEM 1</p>
+              <h2 id="problemTitle">Compare the two choices.</h2>
+            </div>
+            <button class="listen-button" id="listenButton" type="button">
+              <span aria-hidden="true">◖</span> Read aloud
+            </button>
+          </div>
+
+          <p class="problem-story" id="problemStory"></p>
+
+          <div class="product-comparison" id="productComparison" aria-label="Products to compare"></div>
+
+          <aside class="coach-note" id="coachNote" aria-live="polite">
+            <span class="coach-avatar" aria-hidden="true">✦</span>
+            <div>
+              <strong id="coachTitle">Coach tip</strong>
+              <p id="coachText">Start by writing each price over its quantity.</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="work-column">
+          <div class="stepper" aria-label="Problem progress">
+            <button class="step-marker active" data-step="1" type="button" aria-current="step">
+              <span>1</span><small>Fraction</small>
+            </button>
+            <i aria-hidden="true"></i>
+            <button class="step-marker" data-step="2" type="button" disabled>
+              <span>2</span><small>Divide</small>
+            </button>
+            <i aria-hidden="true"></i>
+            <button class="step-marker" data-step="3" type="button" disabled>
+              <span>3</span><small>Unit rate</small>
+            </button>
+            <i aria-hidden="true"></i>
+            <button class="step-marker" data-step="4" type="button" disabled>
+              <span>4</span><small>Best buy</small>
+            </button>
+          </div>
+
+          <form id="workForm" novalidate>
+            <section class="work-step active" data-step-panel="1" aria-labelledby="step1Title">
+              <p class="step-number">STEP 1 OF 4</p>
+              <h2 id="step1Title">Make each rate a fraction.</h2>
+              <p class="step-instruction">Put the price on top and the product quantity on the bottom.</p>
+              <div class="answer-grid" id="fractionInputs"></div>
+            </section>
+
+            <section class="work-step" data-step-panel="2" aria-labelledby="step2Title" hidden>
+              <p class="step-number">STEP 2 OF 4</p>
+              <h2 id="step2Title">Turn each fraction into division.</h2>
+              <p class="step-instruction">A fraction bar means divide: numerator ÷ denominator.</p>
+              <div class="answer-grid" id="divisionInputs"></div>
+            </section>
+
+            <section class="work-step" data-step-panel="3" aria-labelledby="step3Title" hidden>
+              <p class="step-number">STEP 3 OF 4</p>
+              <h2 id="step3Title">Find each unit rate.</h2>
+              <p class="step-instruction" id="unitRateInstruction">Divide and round money to the nearest cent.</p>
+              <div class="answer-grid" id="unitRateInputs"></div>
+            </section>
+
+            <section class="work-step" data-step-panel="4" aria-labelledby="step4Title" hidden>
+              <p class="step-number">STEP 4 OF 4</p>
+              <h2 id="step4Title">Choose the best buy.</h2>
+              <p class="step-instruction">For prices, the lower cost per unit is the better deal.</p>
+              <fieldset class="best-buy-options" id="bestBuyOptions">
+                <legend class="sr-only">Select the product with the lower unit price</legend>
+              </fieldset>
+              <label class="reason-field" for="reasonInput">
+                <span>Explain your choice <small>(one sentence)</small></span>
+                <textarea id="reasonInput" rows="3" placeholder="I chose… because…"></textarea>
+              </label>
+            </section>
+
+            <div class="feedback" id="feedback" aria-live="assertive" hidden></div>
+
+            <div class="form-actions">
+              <button class="hint-button" id="hintButton" type="button">
+                <span aria-hidden="true">◎</span> Hint
+              </button>
+              <button class="check-button" id="checkButton" type="submit">Check my work →</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="success-panel" id="successPanel" hidden aria-labelledby="successTitle">
+        <div class="success-seal" aria-hidden="true">✓</div>
+        <p class="section-kicker">SMART SHOPPER STATUS</p>
+        <h2 id="successTitle">You found the best buy!</h2>
+        <p id="successSummary"></p>
+        <div class="savings-callout" id="savingsCallout"></div>
+        <div class="success-actions">
+          <button class="primary-button" id="nextProblemButton" type="button">Next problem →</button>
+          <button class="text-button" id="reviewWorkButton" type="button">Review my work</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>UNIT RATE MARKET</span>
+      <p>Compare equal amounts. Choose with evidence.</p>
+      <span id="sessionScore">0 SOLVED</span>
+    </footer>
+
+    <dialog id="helpDialog" class="modal">
+      <div class="modal-heading">
+        <div><p class="section-kicker">QUICK GUIDE</p><h2>How unit rates work</h2></div>
+        <button class="close-button" type="button" data-close-dialog aria-label="Close help">×</button>
+      </div>
+      <div class="help-grid">
+        <article><span>1</span><h3>Write the rate</h3><p>Put the amount being paid on top and the amount received on the bottom.</p></article>
+        <article><span>2</span><h3>Divide</h3><p>The fraction bar tells you to divide the top number by the bottom number.</p></article>
+        <article><span>3</span><h3>Name “per 1”</h3><p>Your quotient tells the cost for exactly one item, ounce, sheet, or other unit.</p></article>
+        <article><span>4</span><h3>Compare fairly</h3><p>When units match, the lower unit price is the best buy.</p></article>
+      </div>
+      <button class="primary-button" type="button" data-close-dialog>Got it</button>
+    </dialog>
+
+    <dialog id="hintDialog" class="modal hint-modal">
+      <div class="modal-heading">
+        <div><p class="section-kicker">COACH CLUE</p><h2 id="hintTitle">Try this</h2></div>
+        <button class="close-button" type="button" data-close-dialog aria-label="Close hint">×</button>
+      </div>
+      <div id="hintContent"></div>
+      <button class="primary-button" type="button" data-close-dialog>Back to my work</button>
+    </dialog>
+
+    <dialog id="customDialog" class="modal custom-modal">
+      <div class="modal-heading">
+        <div><p class="section-kicker">MAKE A PROBLEM</p><h2>Build your own best-buy challenge</h2></div>
+        <button class="close-button" type="button" data-close-dialog aria-label="Close builder">×</button>
+      </div>
+      <form id="customForm">
+        <label>What are you shopping for?<input name="item" required maxlength="30" placeholder="Markers" /></label>
+        <label>Unit name<input name="unit" required maxlength="20" placeholder="marker" /></label>
+        <div class="custom-products">
+          <fieldset><legend>Choice A</legend><label>Name<input name="nameA" required value="Value Pack" /></label><label>Price ($)<input name="priceA" type="number" required min="0.01" step="0.01" value="6.00" /></label><label>Quantity<input name="qtyA" type="number" required min="0.01" step="0.01" value="8" /></label></fieldset>
+          <fieldset><legend>Choice B</legend><label>Name<input name="nameB" required value="Mega Pack" /></label><label>Price ($)<input name="priceB" type="number" required min="0.01" step="0.01" value="8.40" /></label><label>Quantity<input name="qtyB" type="number" required min="0.01" step="0.01" value="12" /></label></fieldset>
+        </div>
+        <button class="primary-button" type="submit">Use this problem →</button>
+      </form>
+    </dialog>
+
+    <script src="script.js"></script>
+  </body>
+</html>
