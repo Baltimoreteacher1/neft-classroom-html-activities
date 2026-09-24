@@ -1217,7 +1217,10 @@
     if (document.querySelector(".tws")) return null;
     var ws = document.createElement("section");
     ws.className = "tws hub-teacher-only";
-    ws.setAttribute("aria-label", "Teacher workspace");
+    // Labelled by a real heading rather than aria-label: the three cards below
+    // used to be three <h2>s competing with every page section in a flat
+    // 48-heading outline. They are now <h3>s under this one.
+    ws.setAttribute("aria-labelledby", "tws-title");
 
     // "Continue Lesson 5-3" beats any description we could write — but only if
     // the resume strip actually resolved one. No invention.
@@ -1226,9 +1229,10 @@
     var resumeText = resumeLink && resumeLink.textContent.replace(/\s+/g, " ").trim();
 
     ws.innerHTML =
+      '<h2 class="tws-sr" id="tws-title">Teacher workspace</h2>' +
       '<div class="tws-lead">' +
       '<p class="tws-kicker">Teach</p>' +
-      "<h2>Lessons</h2>" +
+      "<h3>Lessons</h3>" +
       '<p class="tws-sub">Choose your class, unit, and lesson.</p>' +
       // Three native <select>s. Native because a teacher gets their platform's
       // own picker — including the phone one — keyboard support, screen-reader
@@ -1259,13 +1263,13 @@
       '<div class="tws-pair">' +
       '<div class="tws-card">' +
       '<p class="tws-kicker">Plan</p>' +
-      "<h2>Math Planner</h2>" +
+      "<h3>Math Planner</h3>" +
       '<p class="tws-sub">Today, this week, the whole year. Move a lesson and see what shifts, and record what you actually taught.</p>' +
       '<p class="tws-actions"><a class="tws-btn" href="/curriculum/planning/">Open the planner</a></p>' +
       "</div>" +
       '<div class="tws-card">' +
       '<p class="tws-kicker">Support students</p>' +
-      "<h2>Student Supports</h2>" +
+      "<h3>Student Supports</h3>" +
       '<p class="tws-sub">Choose the supports a lesson needs, see exactly what they change, and apply them — the interactive lesson and its small-group versions open with them already in place.</p>' +
       '<p class="tws-actions"><a class="tws-btn" href="/curriculum/student-supports/">Open supports</a></p>' +
       "</div>" +
