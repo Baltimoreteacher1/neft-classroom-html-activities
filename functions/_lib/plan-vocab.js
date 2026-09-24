@@ -3556,6 +3556,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/fluency-lab/",
+    title: "Math Fluency Lab · Grades 1–8",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/math/games/",
     title: "Lesson Games",
     category: "Hub",

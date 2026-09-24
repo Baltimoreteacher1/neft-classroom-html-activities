@@ -411,6 +411,7 @@ const MATH_HUBS = new Set([
   "catch-up",
   "my-path",
   "number-talks",
+  "fluency-lab",
   "unit-map",
   "games",
   "finder",

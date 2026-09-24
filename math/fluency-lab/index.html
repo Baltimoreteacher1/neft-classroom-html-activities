@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17345f" />
+    <meta
+      name="description"
+      content="Free Grade 1–8 math fluency practice with learning refreshers, unlimited drills, timed sprints, mixed review, saved progress, and printable practice."
+    />
+    <link rel="canonical" href="https://eduwonderlab.com/math/fluency-lab/" />
+    <title>Math Fluency Lab · Grades 1–8 | EduWonderLab</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to practice</a>
+
+    <header class="site-header">
+      <a class="brand" href="/math/" aria-label="EduWonderLab math home">
+        <span class="brand-mark" aria-hidden="true">8×</span>
+        <span><strong>Math Fluency Lab</strong><small>EduWonderLab</small></span>
+      </a>
+      <nav aria-label="Page controls">
+        <button id="text-size" class="quiet-button" type="button" aria-pressed="false">
+          Text size: Standard
+        </button>
+        <a class="quiet-button" href="/math/">Math home</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <p class="plain-label">Grades 1–8 · Practice at your pace</p>
+          <h1 id="page-title">Practice makes patterns.</h1>
+          <p>
+            Learn a useful strategy, work through five examples with coaching, practice without a
+            timer, or build speed in a short sprint. Every skill makes new problems, so there is
+            always another set ready.
+          </p>
+          <div id="overall-stats" class="overall-stats" aria-label="Saved practice progress"></div>
+        </div>
+        <aside class="daily-card" aria-labelledby="daily-title">
+          <span class="paper-number" aria-hidden="true">10</span>
+          <div>
+            <h2 id="daily-title">Today’s 10</h2>
+            <p>A balanced set from the grade you choose. Untimed, focused, and different each day.</p>
+            <button id="daily-ten" class="primary-action" type="button">Start today’s 10</button>
+          </div>
+        </aside>
+      </section>
+
+      <section class="grade-rail" aria-labelledby="choose-grade">
+        <div class="grade-rail-heading">
+          <h2 id="choose-grade">Choose a grade</h2>
+          <p>You can switch at any time.</p>
+        </div>
+        <div id="grade-tabs" class="grade-tabs" role="tablist" aria-label="Grade level"></div>
+      </section>
+
+      <section id="library-view" class="library" aria-labelledby="grade-heading">
+        <div class="library-heading">
+          <div>
+            <p class="plain-label">Skill library</p>
+            <h2 id="grade-heading">Grade 1</h2>
+            <p id="grade-promise"></p>
+          </div>
+          <div id="grade-summary" class="grade-summary" aria-label="Grade progress"></div>
+        </div>
+
+        <div class="library-actions">
+          <div id="strand-filters" class="strand-filters" aria-label="Filter skills by strand"></div>
+          <button id="mixed-review" class="outline-action" type="button">Mix all skills</button>
+        </div>
+
+        <div id="skill-grid" class="skill-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="workspace-view" class="workspace" aria-labelledby="workspace-title" hidden>
+        <button id="back-library" class="back-button" type="button">← Back to skill library</button>
+
+        <header class="workspace-heading">
+          <div>
+            <p id="workspace-grade" class="plain-label"></p>
+            <h2 id="workspace-title"></h2>
+            <p id="workspace-standard"></p>
+          </div>
+          <div class="mastery-box">
+            <label for="mastery-meter">Saved mastery</label>
+            <progress id="mastery-meter" max="100" value="0"></progress>
+            <span id="mastery-label">New</span>
+          </div>
+        </header>
+
+        <div id="mode-tabs" class="mode-tabs" role="tablist" aria-label="Practice mode"></div>
+
+        <section id="learn-panel" class="learn-panel" aria-label="Learn this skill"></section>
+
+        <section id="drill-panel" class="drill-panel" aria-label="Fluency practice" hidden>
+          <div class="session-header">
+            <div>
+              <p id="session-type" class="session-type">Practice 10</p>
+              <span id="session-count">0 completed</span>
+              <span id="session-accuracy">0% accurate</span>
+            </div>
+            <div id="timer-wrap" class="timer-wrap" hidden>
+              <span>Time</span><strong id="timer">1:00</strong>
+            </div>
+          </div>
+          <div class="progress-track" aria-hidden="true"><span id="session-progress"></span></div>
+
+          <div class="problem-stage">
+            <section id="guided-coach" class="guided-coach" aria-labelledby="guided-coach-title" hidden>
+              <div class="guided-coach-heading">
+                <div>
+                  <p class="section-label">Work it with me</p>
+                  <h3 id="guided-coach-title">One helpful step at a time</h3>
+                </div>
+                <span id="guided-step-count">1 of 3 steps open</span>
+              </div>
+              <ol id="guided-steps" class="guided-steps"></ol>
+              <button id="guided-next-step" class="outline-action" type="button">
+                Show the next step
+              </button>
+            </section>
+
+            <div class="problem-meta">
+              <span id="problem-number">Problem 1 of 10</span>
+              <button id="hear-problem" class="icon-button" type="button" aria-label="Read the problem aloud">
+                🔊 Read aloud
+              </button>
+            </div>
+            <p id="question" class="question"></p>
+
+            <form id="answer-form" novalidate>
+              <label class="answer-label" for="answer-input">Your answer</label>
+              <input
+                id="answer-input"
+                class="answer-input"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                required
+              />
+              <div id="choice-answers" class="choice-answers" hidden></div>
+              <div class="answer-actions">
+                <button id="check-answer" class="primary-action" type="submit">Check answer</button>
+                <button id="show-hint" class="outline-action" type="button">Show a strategy hint</button>
+                <button id="next-problem" class="primary-action" type="button" hidden>Next problem</button>
+              </div>
+            </form>
+
+            <div id="feedback" class="feedback" role="status" aria-live="polite" hidden>
+              <strong id="feedback-title"></strong>
+              <p id="feedback-copy"></p>
+            </div>
+
+            <details class="scratchpad-wrap">
+              <summary>Open a scratchpad</summary>
+              <label for="scratchpad">Work area — this stays on this page only</label>
+              <textarea id="scratchpad" rows="5" placeholder="Write a step, draw with keyboard symbols, or keep track of partial work."></textarea>
+            </details>
+          </div>
+
+          <section id="session-summary" class="session-summary" aria-live="polite" hidden>
+            <p class="plain-label">Set complete</p>
+            <h3 id="summary-title">Practice complete</h3>
+            <p id="summary-copy"></p>
+            <div id="summary-stats" class="summary-stats"></div>
+            <div class="summary-actions">
+              <button id="retry-missed" class="primary-action" type="button">Practice missed skills</button>
+              <button id="independent-practice" class="primary-action" type="button" hidden>
+                Continue to Practice 10
+              </button>
+              <button id="reset-session" class="outline-action" type="button">Start another set</button>
+              <button id="print-set" class="outline-action" type="button">Print a 24-problem set</button>
+            </div>
+          </section>
+        </section>
+
+        <div class="workspace-footer-actions">
+          <button id="print-set-secondary" class="outline-action" type="button">
+            Print practice
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p><strong>Your progress stays on this device.</strong> No account, name, or student information is required.</p>
+      <p>Accuracy first. Speed comes after the strategy makes sense.</p>
+    </footer>
+
+    <section id="print-sheet" class="print-sheet" aria-hidden="true"></section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>
