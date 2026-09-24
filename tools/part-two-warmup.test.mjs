@@ -431,13 +431,13 @@ await waitFor(
   "the Today's Problem phase to render",
 );
 
-const SOLVE_ORDER = ["know", "need", "plan", "work", "answer", "why"];
+const SOLVE_ORDER = ["know", "work", "answer"];
 
-t("the six guided moves are children of one .p2-solve-steps grid, in order", () => {
+t("the compacted guided moves are children of one .p2-solve-steps grid, in order", () => {
   const grid = p2.doc.querySelector(".p2-solve-steps");
   assert.ok(
     grid,
-    "no .p2-solve-steps container on Today's Problem — the six moves are stacked down the " +
+    "no .p2-solve-steps container on Today's Problem — the moves are stacked down the " +
       "page again (Joel: the steps should line up next to each other horizontally)",
   );
   const keys = [...grid.children].map((child) => {
@@ -447,8 +447,8 @@ t("the six guided moves are children of one .p2-solve-steps grid, in order", () 
   assert.deepEqual(
     keys,
     SOLVE_ORDER,
-    `the grid holds [${keys.join(", ")}] — all six moves must be its direct children, in ` +
-      "know → need → plan → work → answer → why order",
+    `the grid holds [${keys.join(", ")}] — all compacted moves must be its direct children, in ` +
+      "know → work → answer order",
   );
 });
 

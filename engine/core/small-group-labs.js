@@ -594,11 +594,7 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
   );
 
   understand.appendChild(
-    el(
-      "p",
-      "block-lab",
-      "Which move(s) will you try first? Tap ⓘ to see what a move means.",
-    ),
+    el("p", "block-lab", "Which move(s) will you try first? Tap ⓘ to see what a move means."),
   );
   const moves = el("div", "sg-planrow");
   PLAN_MOVES.forEach(([emoji, label, what, example]) => {
