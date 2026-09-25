@@ -1,7 +1,6 @@
 const step = (prompt, answer, hint, explanation, kind = "number", choices = null) => ({ prompt, answers: [String(answer)], kind, choices, hint, explanation });
 const lesson = (title, idea, model, steps) => ({ title, idea, model, steps });
 const num = (value) => Number(value.toFixed(6));
-const chart = (labels, values, caption) => ({ type: "bars", labels, values, caption });
 
 // Every visual lesson uses an explicit model and checked intermediate steps.
 // Variants change the quantities while keeping each model mathematically exact.
@@ -30,9 +29,9 @@ export function createLesson(skill, variant = 0) {
     }
     if (op === "sub") {
       const large = grade >= 2 && config.max > 10;
-      const a = large ? 63 + k : 9;
-      const b = large ? 28 : 4 + k % 3;
-      const part = large ? 20 : 1;
+      const a = config.min >= 1000 ? 5263 + k : large ? 63 + k : config.maxResult === 20 ? 14 + k : 9;
+      const b = config.min >= 1000 ? 1287 : large ? 28 : config.maxResult === 20 ? 6 + k : 4 + k % 3;
+      const part = config.min >= 1000 ? 1000 : large ? 20 : config.maxResult === 20 ? a - 10 : 1;
       return lesson("Subtract in friendly jumps", "Take away one part at a time, then use addition to check.", { type: "numberline", start: a, jumps: [-part, -(b - part)], caption: `${a} − ${b}` }, [step(`First take away ${part} from ${a}. Where do you land?`, a - part, "Move left for subtraction.", `${a} − ${part} = ${a - part}.`), step(`Take away the remaining ${b - part}. Where do you land?`, a - b, "Continue from your first landing point.", `${a - part} − ${b - part} = ${a - b}.`), step(`Check: ${a - b} + ${b} = ?`, a, "Add back what you took away.", `You return to ${a}, so the difference is ${a - b}.`)]);
     }
     if (grade <= 2 && config.max <= 10) {
@@ -40,9 +39,12 @@ export function createLesson(skill, variant = 0) {
       const toTen = Math.min(b, 10 - a);
       return lesson("Make a ten you can see", "Tap empty spaces to add counters. A full ten-frame is an anchor you can use.", { type: "counters", total: 20, filled: a, target: a + b, caption: `${a} + ${b}` }, [step(`How many spaces complete the first ten-frame of ${a}?`, 10 - a, "Count the empty spaces in the first frame.", `${a} + ${10 - a} = 10.`), step(`Use ${toTen} of the ${b} new counters. How many are left?`, b - toTen, "Subtract the counters you already used.", `${b} − ${toTen} = ${b - toTen}.`), step(`What is ${a} + ${b}?`, a + b, "Combine the filled frame and any leftover counters.", `${a} + ${b} = ${a + b}.`)]);
     }
-    const a = grade >= 3 ? 247 + k : 38 + k; const b = grade >= 3 ? 135 : 27;
-    const part = Math.floor(b / 10) * 10;
-    return lesson("Add by place value", "Break an addend into tens and ones. Each jump keeps the total in view.", { type: "numberline", start: a, jumps: [part, b - part], caption: `${a} + ${b}` }, [step(`How much is the tens part of ${b}?`, part, "Keep the tens and replace the ones with zero.", `${b} = ${part} + ${b - part}.`), step(`Add ${part} to ${a}.`, a + part, "Add tens to tens.", `${a} + ${part} = ${a + part}.`), step(`Add the remaining ${b - part}. What is the total?`, a + b, "Continue from the last total.", `${a + part} + ${b - part} = ${a + b}.`)]);
+    const a = config.min >= 1000 ? 2476 + k : config.min >= 100 ? 247 + k : 38 + k;
+    const b = config.min >= 1000 ? 1358 : config.min >= 100 ? 135 : 27;
+    const place = config.min >= 1000 ? 1000 : config.min >= 100 ? 100 : 10;
+    const placeName = place === 1000 ? "thousands" : place === 100 ? "hundreds" : "tens";
+    const part = Math.floor(b / place) * place;
+    return lesson("Add by place value", `Break an addend into ${placeName} and the remaining amount. Each jump keeps the total in view.`, { type: "numberline", start: a, jumps: [part, b - part], caption: `${a} + ${b}` }, [step(`How much is the ${placeName} part of ${b}?`, part, `Keep the ${placeName} and replace the smaller places with zero.`, `${b} = ${part} + ${b - part}.`), step(`Add ${part} to ${a}.`, a + part, `Add the ${placeName} first.`, `${a} + ${part} = ${a + part}.`), step(`Add the remaining ${b - part}. What is the total?`, a + b, "Continue from the last total.", `${a + part} + ${b - part} = ${a + b}.`)]);
   }
   if (["makeTarget", "missingAddend"].includes(gen)) {
     const total = gen === "makeTarget" ? config.target : 12 + k;

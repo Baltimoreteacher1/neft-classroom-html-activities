@@ -152,16 +152,6 @@ function accuracy(record) {
   return record.attempts ? Math.round((record.correct / record.attempts) * 100) : 0;
 }
 
-function mastery(record) {
-  if (record.attempts < 5) {
-    return record.guidedProblems >= 5 ? { label: "Guided", level: 1 } : { label: "New", level: 0 };
-  }
-  const score = accuracy(record);
-  if (score >= 90 && record.correct >= 15) return { label: "Fluent", level: 3 };
-  if (score >= 75) return { label: "Growing", level: 2 };
-  return { label: "Practicing", level: 1 };
-}
-
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -320,7 +310,9 @@ function openMixed({ daily = false } = {}) {
 function renderMastery() {
   const status = evidence(state.tutor, state.skill);
   els.masteryMeter.value = status.score ?? 0;
-  els.masteryLabel.textContent = status.label;
+  els.masteryLabel.textContent = status.independent
+    ? `${status.successes} of ${status.independent} recent checks correct · ${status.label}`
+    : status.label;
 }
 
 function renderModeTabs(mixed = false) {

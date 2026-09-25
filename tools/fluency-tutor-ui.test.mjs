@@ -139,6 +139,10 @@ for (let i = 0; i < 5; i++) {
 }
 assert.equal($("#session-summary").hidden, false, "Assignments reach a real completion state");
 assert.equal(savedSession(), null, "Completed sessions do not remain resumable");
+click('[data-view="library"]');
+click('[data-skill="division"]');
+assert.equal($("label[for='mastery-meter']").textContent, "Recent independent accuracy");
+assert.match($("#mastery-label").textContent, /of \d+ recent checks correct/);
 
 click('[data-view="library"]');
 const recordsBefore = JSON.stringify(savedTutor().records);

@@ -43,7 +43,7 @@ export function evidence(tutor, skill, now = Date.now()) {
   const due = Boolean(record.dueAt && record.dueAt <= now);
   let label = "Not checked yet";
   if (record.lessonCompleted && !recent.length) label = "Lesson explored";
-  if (recent.length) label = independent.length >= 4 && ratio >= 0.75 ? "Building confidence" : "Learning with support";
+  if (recent.length) label = independent.length >= 4 && ratio >= 0.75 ? "Building confidence" : recent.some((entry) => !entry.independent) ? "Learning with support" : "Getting started";
   if (secure) label = due ? "Ready for a refresh" : "Remembered independently";
   return { ...record, recent, independent: independent.length, successes, ratio, secure, due, label, score: independent.length ? Math.round(ratio * 100) : null };
 }

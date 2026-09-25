@@ -43,6 +43,21 @@ const check = (condition, message) => {
 const skill = findSkill("4:division");
 const now = new Date(2026, 8, 24, 12).getTime();
 const tutor = emptyTutor();
+const firstTry = emptyTutor();
+recordAnswer(firstTry, skill, { correct: true, independent: true, level: 1 }, now);
+check(
+  evidence(firstTry, skill).label === "Getting started",
+  "One independent answer is not mastery or coached work",
+);
+for (const key of ["2:add-1000", "4:add-large", "4:subtract-large"]) {
+  const current = findSkill(key);
+  const model = createLesson(current).model;
+  check(model.start >= current.config.min, `${key}: visual model uses the skill's number size`);
+}
+check(
+  createLesson(findSkill("1:subtract-20")).model.start > 10,
+  "Subtraction within 20 models crossing ten",
+);
 for (let i = 0; i < 10; i++)
   recordAnswer(tutor, skill, { correct: true, independent: false, level: 1 }, now + i);
 check(!evidence(tutor, skill, now).secure, "Coached answers cannot establish independent mastery");
