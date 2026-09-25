@@ -123,7 +123,10 @@ const REQUIRED_MARKERS = [
       h.includes("completeFamilyMission") &&
       h.includes('id="badge_achieve_mission"'),
   },
-  { id: "bilingual", test: (h) => h.includes('lang="es"') && h.includes("Ayuda a tu estudiante") },
+  {
+    id: "bilingual",
+    test: (h) => h.includes('lang="es"') && h.includes("Tarea de matemáticas en familia"),
+  },
   {
     id: "no-curriculum",
     test: (h) => {

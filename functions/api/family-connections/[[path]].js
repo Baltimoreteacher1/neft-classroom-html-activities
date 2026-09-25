@@ -70,7 +70,8 @@ export function createMemoryStore() {
       state.draft = { ...structuredClone(snapshot), revision: expectedRevision + 1 };
       return structuredClone(state.draft);
     },
-    async publish() {
+    async publish(expectedRevision) {
+      if (expectedRevision !== undefined && state.draft.revision !== expectedRevision) return null;
       const previous = structuredClone(state.published);
       const nextRevision = Math.max(state.draft.revision, state.published.revision) + 1;
       state.published = {
@@ -143,33 +144,37 @@ function createD1Store(db) {
         .run();
       return result.meta?.changes === 1 ? next : null;
     },
-    async publish() {
+    async publish(expectedRevision) {
       const state = await this.read();
+      if (expectedRevision !== undefined && state.draft.revision !== expectedRevision) return null;
+      const revision = state.draft.revision;
       const nextRevision = Math.max(state.draft.revision, state.published.revision) + 1;
       const published = {
         ...state.draft,
         revision: nextRevision,
         publishedAt: new Date().toISOString(),
       };
-      await db.batch([
+      const results = await db.batch([
         db
           .prepare(
-            "INSERT OR REPLACE INTO family_connections_history (revision, snapshot_json, published_at) VALUES (?, ?, ?)",
+            "INSERT OR REPLACE INTO family_connections_history (revision, snapshot_json, published_at) SELECT ?, ?, ? WHERE EXISTS (SELECT 1 FROM family_connections_state WHERE id = 1 AND revision = ?)",
           )
           .bind(
             state.published.revision,
             JSON.stringify(state.published),
             state.published.publishedAt ?? new Date(0).toISOString(),
+            revision,
           ),
         db
           .prepare(
-            "UPDATE family_connections_state SET draft_json = ?, published_json = ?, revision = ?, updated_at = ? WHERE id = 1",
+            "UPDATE family_connections_state SET draft_json = ?, published_json = ?, revision = ?, updated_at = ? WHERE id = 1 AND revision = ?",
           )
           .bind(
             JSON.stringify(published),
             JSON.stringify(published),
             nextRevision,
             published.publishedAt,
+            revision,
           ),
         db.prepare(
           `DELETE FROM family_connections_history WHERE revision NOT IN (
@@ -177,7 +182,7 @@ function createD1Store(db) {
           )`,
         ),
       ]);
-      return published;
+      return results[1].meta?.changes === 1 ? published : null;
     },
   };
 }
@@ -248,7 +253,19 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
     }
   }
   if (path === "publish" && method === "POST") {
-    return json({ ok: true, published: await store.publish() });
+    try {
+      const body = request.headers.get("content-type")?.includes("application/json")
+        ? await readBody(request)
+        : {};
+      if (body.expectedRevision !== undefined && !Number.isInteger(body.expectedRevision))
+        return json({ ok: false, error: "invalid-revision" }, 400);
+      const published = await store.publish(body.expectedRevision);
+      return published
+        ? json({ ok: true, published })
+        : json({ ok: false, error: "revision-conflict" }, 409);
+    } catch (error) {
+      return json({ ok: false, error: error.message }, error.status || 400);
+    }
   }
   return json({ ok: false, error: "method-not-allowed" }, 405);
 }

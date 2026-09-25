@@ -24,10 +24,13 @@ function esc(s) {
   );
 }
 
-function fmt(n) {
-  const r = Math.round(n * 100) / 100;
-  return Number.isInteger(r) ? String(r) : r.toFixed(2).replace(/0$/, "");
+export function formatUnitRate(n) {
+  // Keep terminating rates such as 3/120 = 0.025 exact. Label repeating
+  // decimals rather than silently changing their mathematical value.
+  const rounded = Number(n.toFixed(8));
+  return `${Math.abs(rounded - n) > 1e-12 ? "≈ " : ""}${rounded}`;
 }
+const fmt = formatUnitRate;
 
 export function renderUnitRateBuilder(container, cfg = {}) {
   const unitA = cfg.unitA || "miles";

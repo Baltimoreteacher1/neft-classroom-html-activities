@@ -7,11 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { qrSvg } from "@eduwonderlab/engine/core/qr-mini.js";
-import {
-  DEFAULT_KITCHEN_TABLE,
-  KITCHEN_TABLE,
-  TAGS,
-} from "../curriculum/family-connections/broadcast/broadcast-content.js";
+import { DEFAULT_KITCHEN_TABLE } from "../curriculum/family-connections/broadcast/broadcast-content.js";
 import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 import {
   decimalOperation,
@@ -21,6 +17,12 @@ import {
   selectAlignedQuickCheckProblems,
 } from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
+import {
+  exactConceptVisual,
+  exactFamilyMission,
+  exactFamilyPowerUp,
+  exactFamilySupport,
+} from "./homework-family-support.mjs";
 import { buildHomeworkGame, renderPlayTab } from "./homework-games.mjs";
 import {
   plainObjective,
@@ -35,6 +37,9 @@ import { getUnitTheme } from "./homework-themes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
+const familyTitlesEs = JSON.parse(
+  readFileSync(join(_root, "data/family-homework-titles-es.json"), "utf8"),
+);
 
 export function esc(s) {
   return String(s ?? "")
@@ -105,6 +110,8 @@ function conceptIntro(config) {
 }
 
 function keyIdea(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact) return exact.capEn;
   if (config.familyNotes?.bigIdea?.en) return config.familyNotes.bigIdea.en;
   const intro = conceptIntro(config);
   if (intro?.keyIdea) return intro.keyIdea;
@@ -114,6 +121,8 @@ function keyIdea(config) {
 }
 
 function keyIdeaEs(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact) return exact.capEs;
   if (config.familyNotes?.bigIdea?.es) return config.familyNotes.bigIdea.es;
   return spanishKeyIdea(config);
 }
@@ -187,6 +196,8 @@ function _languageTonightEs(config) {
 }
 
 function buildConceptSteps(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact) return exact.steps.map((step, i) => ({ ...step, stepNum: i + 1 }));
   const intro = conceptIntro(config);
   const custom = config.familyNotes?.conceptSteps;
   if (Array.isArray(custom) && custom.length) return custom;
@@ -303,6 +314,15 @@ function togetherStepHints(config, isLast) {
 }
 
 function tryTogetherActivity(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact)
+    return {
+      titleEn: exact.titleEn,
+      titleEs: exact.titleEs,
+      scenarioEn: "Use the small example below, then try the practice questions.",
+      scenarioEs: "Usa el ejemplo de abajo; luego intenta las preguntas de práctica.",
+      steps: exact.steps.map((step) => ({ ...step, hint: exact.capEn, hintEs: exact.capEs })),
+    };
   const custom = config.familyNotes?.tryTogether;
   if (custom) return custom;
 
@@ -445,6 +465,17 @@ export function buildTogetherLadder(config = {}) {
 }
 
 function stuckTips(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact)
+    return {
+      say: [{ en: exact.capEn, es: exact.capEs }, ...exact.steps.slice(0, 2)],
+      dontSay: [
+        {
+          en: "Use a rule before checking what this question asks.",
+          es: "Usa una regla sin revisar qué pide esta pregunta.",
+        },
+      ],
+    };
   const custom = config.familyNotes?.stuckTips;
   if (custom) return custom;
 
@@ -910,6 +941,8 @@ function conceptRow(y, n, text, color = "#12355b") {
 }
 
 function conceptVisual(config) {
+  const exact = exactConceptVisual(config || {});
+  if (exact) return exact;
   const topic = detectVisualTopic(config);
   const lessonId = String(config.lessonId || config.id || "").replace(/^lesson-/, "");
   const baseLesson = lessonId.replace(/-(?:part\d|group\d|catchup)$/, "");
@@ -2032,9 +2065,9 @@ function conceptVisual(config) {
         ${conceptRow(348, 3, "Multiply across:  12/1 = 12", "#d97706")}`,
       }),
       capEn:
-        "Dividing by a fraction asks how many of that small piece fit inside. The answer gets BIGGER.",
+        "Dividing by a fraction asks how many of that small piece fit inside. For a positive amount, dividing by a fraction between 0 and 1 makes the result larger.",
       capEs:
-        "Dividir entre una fracción pregunta cuántas piezas pequeñas caben adentro. La respuesta se hace MÁS GRANDE.",
+        "Dividir entre una fracción pregunta cuántas piezas pequeñas caben adentro. Para una cantidad positiva, dividir entre una fracción entre 0 y 1 aumenta el resultado.",
     };
   }
 
@@ -2253,13 +2286,12 @@ export function renderWelcomeBanner(config, lessonId) {
         <div class="hw-hero-head">
           <span class="hw-hero-emoji" aria-hidden="true">${esc(themeEmoji)}</span>
           <div class="hw-hero-titles">
-            <h1 class="welcome-title-en">Family Math Night</h1>
-            <p class="welcome-title-es" lang="es">Ayuda a tu estudiante</p>
+            <h1><span class="welcome-title-en lang-en">Family Math Homework</span><span class="welcome-title-es lang-es" lang="es">Tarea de matemáticas en familia</span></h1>
           </div>
         </div>
 
         <p class="hw-hero-lesson">
-          <span class="hw-hero-lesson-title">${esc(title)}</span>
+          <span class="hw-hero-lesson-title"><span class="lang-en">${esc(title)}</span><span class="lang-es" lang="es">${esc(familyTitlesEs[lessonId] || title)}</span></span>
           <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}${standard ? ` · ${esc(standard)}` : ""}</span>
         </p>
 
@@ -2274,29 +2306,32 @@ export function renderWelcomeBanner(config, lessonId) {
         }
 
         <p class="hw-hero-lead">
-          <span class="lang-en">Use the pictures and the short steps. Ask questions — let your student do the thinking.</span>
-          <span class="lang-es" lang="es">Usen los dibujos y los pasos cortos. Hagan preguntas: dejen que su estudiante piense.</span>
+          <span class="lang-en">Start with 10 minutes. Explain one idea, practice two problems, and finish. Work with a partner or on your own.</span>
+          <span class="lang-es" lang="es">Empieza con 10 minutos. Explica una idea, practica dos problemas y termina. Trabaja con alguien o por tu cuenta.</span>
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">${HOMEWORK_STOP_COUNT}</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">${HOMEWORK_STOP_COUNT}</span> paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">${HOMEWORK_TOTAL_MINUTES}</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">${HOMEWORK_TOTAL_MINUTES}</span> minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">4</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">4</span> paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">10</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">10</span> minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
 
-        <div class="hw-hero-share-bar" aria-label="Share or print this homework">
+        <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
+        <div class="hw-hero-share-bar">
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
           <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
           <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printRefrigeratorSheet()">📄 <span class="lang-en">1-Page Sheet</span><span class="lang-es" lang="es">Hoja de 1 pág.</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="saveForOfflineCarRide()">🚗 <span class="lang-en">Car Ride Mode</span><span class="lang-es" lang="es">Modo sin internet</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="preparePaperPractice()">📄 <span class="lang-en">Prepare paper practice</span><span class="lang-es" lang="es">Preparar práctica en papel</span></button>
         </div>
+
+        </details>
 
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
             <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
               <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
                 🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
               </button>
@@ -2323,18 +2358,18 @@ export function renderQuickPlan() {
      The old 10-minute disclosure still left the entire 30-minute path active,
      so every Next button immediately returned the family to the long route.
      These are real modes: tabs, practice count, time remaining, and flow all
-     agree. Full stays the default so an existing family loses nothing. */
+     agree. The short route is the default; saved choices and explicit links still win. */
   return `
       <section class="hw-route-chooser" aria-labelledby="hw_route_title">
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose tonight's route</span><span class="lang-es" lang="es">Elijan la ruta de hoy</span></h2>
+            <h2 id="hw_route_title"><span class="lang-en">Tonight: the essentials</span><span class="lang-es" lang="es">Hoy: lo esencial</span></h2>
             <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose homework time">
-          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
+        <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
+          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
             <span class="hw-route-time">10 <small>min</small></span>
             <span class="hw-route-copy"><strong><span class="lang-en">Essentials</span><span class="lang-es" lang="es">Lo esencial</span></strong><small><span class="lang-en">Big idea · 1 guided step · 2 warm-ups</span><span class="lang-es" lang="es">Idea principal · 1 paso · 2 ejercicios</span></small></span>
           </button>
@@ -2342,15 +2377,16 @@ export function renderQuickPlan() {
             <span class="hw-route-time">20 <small>min</small></span>
             <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
           </button>
-          <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
             <span class="hw-route-time">30 <small>min</small></span>
             <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Full route selected: all 6 stops, about 30 minutes.</span>
-          <span class="lang-es" lang="es">Ruta completa: 6 paradas, unos 30 minutos.</span>
+          <span class="lang-en">Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.</span>
+          <span class="lang-es" lang="es">Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.</span>
         </p>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
       </section>`;
 }
 
@@ -2419,7 +2455,7 @@ export function renderConceptExplainer(config) {
             <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
             <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen / Escuchar" aria-label="Listen to big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         </div>
       </div>
       <figure class="concept-visual-wrap">${visual.svg}${caption}</figure>
@@ -2481,48 +2517,49 @@ export function renderTryTogether(config, lessonId = "") {
       <div class="huddle-hook-banner hook-debate">
         <span class="huddle-hook-icon" aria-hidden="true">🗣️</span>
         <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Would You Rather? · Family Math Debate</span><span class="lang-es" lang="es">¿Qué prefieres? · Debate Matemático</span></strong>
-          <span><span class="lang-en">Choose a side with your student and defend your mathematical thinking!</span><span class="lang-es" lang="es">¡Elige una opción con tu estudiante y defiende tu razonamiento matemático!</span></span>
+          <strong><span class="lang-en">Show Your Reasoning</span><span class="lang-es" lang="es">Muestra tu razonamiento</span></strong>
+          <span><span class="lang-en">Student: explain your first step. Partner: ask why it makes sense, then switch roles.</span><span class="lang-es" lang="es">Estudiante: explica tu primer paso. Acompañante: pregunta por qué tiene sentido; luego cambien de rol.</span></span>
         </div>
       </div>
       <div class="parent-coach-prompt">
         <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
-        <span class="lang-en">Ask: "Which option makes more sense or is the better deal, and why? Show me with numbers or pictures."</span>
-        <span class="lang-es" lang="es">Pregunta: "¿Qué opción tiene más sentido o es mejor opción, y por qué? Muéstramelo con números o dibujos."</span>
+        <span class="lang-en">Ask: "How do your numbers match your picture or explanation?"</span>
+        <span class="lang-es" lang="es">Pregunta: "¿Cómo corresponden los números a tu dibujo o explicación?"</span>
       </div>`;
   } else if (hookIndex === 1) {
     hookBanner = `
       <div class="huddle-hook-banner hook-detective">
         <span class="huddle-hook-icon" aria-hidden="true">🕵️‍♂️</span>
         <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Spot the Slip · Math Detective</span><span class="lang-es" lang="es">Encuentra el error · Detective Matemático</span></strong>
-          <span><span class="lang-en">A student solved a problem and made a common slip. Can you find where they went off track?</span><span class="lang-es" lang="es">Alguien cometió un error común al resolver. ¿Pueden encontrar en qué paso falló?</span></span>
+          <strong><span class="lang-en">Check Your Strategy</span><span class="lang-es" lang="es">Revisa tu estrategia</span></strong>
+          <span><span class="lang-en">Solve the task below. Then check one step using a picture, an estimate, or the original question.</span><span class="lang-es" lang="es">Resuelve la actividad de abajo. Luego revisa un paso con un dibujo, una estimación o la pregunta original.</span></span>
         </div>
       </div>
       <div class="parent-coach-prompt">
         <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
-        <span class="lang-en">Ask: "Look at the steps closely. What is the one thing they forgot to check?"</span>
-        <span class="lang-es" lang="es">Pregunta: "Mira los pasos con atención. ¿Qué fue lo que olvidó revisar?"</span>
+        <span class="lang-en">Ask: "Which step can you verify another way?"</span>
+        <span class="lang-es" lang="es">Pregunta: "¿Qué paso puedes comprobar de otra manera?"</span>
       </div>`;
   } else {
     hookBanner = `
       <div class="huddle-hook-banner hook-teacher">
         <span class="huddle-hook-icon" aria-hidden="true">🎓</span>
         <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Student-as-Teacher · 60-Second Challenge</span><span class="lang-es" lang="es">Estudiante como profe · Reto de 60 segundos</span></strong>
-          <span><span class="lang-en">Student challenge: Teach your family this concept in under 60 seconds!</span><span class="lang-es" lang="es">Reto para el estudiante: ¡Explica este concepto a tu familia en menos de 60 segundos!</span></span>
+          <strong><span class="lang-en">Student as Teacher</span><span class="lang-es" lang="es">Estudiante como profe</span></strong>
+          <span><span class="lang-en">Student: explain one idea. Partner: ask for an example, then switch roles.</span><span class="lang-es" lang="es">Estudiante: explica una idea. Acompañante: pide un ejemplo; luego cambien de rol.</span></span>
         </div>
       </div>
       <div class="parent-coach-prompt">
         <strong>💬 <span class="lang-en">Family role:</span><span class="lang-es" lang="es">Rol de la familia:</span></strong>
-        <span class="lang-en">Listen without interrupting for 1 minute, then ask: "Can you show me one quick example?"</span>
-        <span class="lang-es" lang="es">Escuchen sin interrumpir por 1 minuto, luego pregunten: "¿Puedes mostrarme un ejemplo rápido?"</span>
+        <span class="lang-en">Listen, then ask: "Can you show me one example?"</span>
+        <span class="lang-es" lang="es">Escuchen y luego pregunten: "¿Puedes mostrarme un ejemplo?"</span>
       </div>`;
   }
 
   return `
     <section class="guided-section card section-together" aria-label="Try this together">
       <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="family-roles"><span class="lang-en">Student: explain. Partner: ask “How do you know?” Then switch. Working solo? Say or write your explanation; bring a question to a trusted adult at school.</span><span class="lang-es" lang="es">Estudiante: explica. Acompañante: pregunta «¿Cómo lo sabes?» Luego cambien. ¿Trabajas a solas? Di o escribe tu explicación; lleva una pregunta a un adulto de confianza en la escuela.</span></p>
       ${hookBanner}
       ${
         activity.scenarioEn
@@ -2653,7 +2690,7 @@ export function renderStuckSection(config) {
   const tips = stuckTips(config);
 
   return `
-    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck" data-aria-en="If your student gets stuck" data-aria-es="Ayuda si te atoras">
       <h2 class="section-title">💬 <span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atora</span></h2>
       <div class="stuck-grid">
         <div class="stuck-panel stuck-say">
@@ -2687,38 +2724,18 @@ export function renderStuckSection(config) {
 }
 
 export function resolveKitchenTableActivity(config) {
-  const std = String(config?.standard || "");
-  const topic = detectVisualTopic(config);
-
-  if (std) {
-    for (const [tagId, tagDef] of Object.entries(TAGS)) {
-      if (tagDef.standards && tagDef.standards.includes(std) && KITCHEN_TABLE[tagId]) {
-        return KITCHEN_TABLE[tagId];
-      }
-    }
-  }
-
-  const topicToTag = {
-    ratios: "ratio-inverted",
-    rates: "rate-not-per-one",
-    percent: "percent-scale-off-by-100",
-    decimals: "decimal-place-value",
-    fractions: "fraction-no-reciprocal",
-    division: "division-quotient-missing-zero",
-    exponents: "exponent-as-multiplication",
-    equations: "equation-not-inverse-operation",
-    inequalities: "inequality-graph-direction",
-    area: "measure-area-perimeter-swap",
-    "surface-area": "geom-surface-area-as-volume",
-    volume: "geom-volume-added-dimensions",
-    statistics: "stat-mean-vs-median",
-    "coordinate-plane": "coord-xy-swapped",
+  if (!config) return DEFAULT_KITCHEN_TABLE;
+  const activity = getFamilyActivities(config)[0];
+  return {
+    title: activity.titleEn,
+    titleEs: activity.titleEs,
+    materials: activity.materialsEn,
+    materialsEs: activity.materialsEs,
+    steps: activity.steps.map((step) => step.en),
+    stepsEs: activity.steps.map((step) => step.es),
+    why: activity.talkEn,
+    whyEs: activity.talkEs,
   };
-  if (topicToTag[topic] && KITCHEN_TABLE[topicToTag[topic]]) {
-    return KITCHEN_TABLE[topicToTag[topic]];
-  }
-
-  return DEFAULT_KITCHEN_TABLE;
 }
 
 export function renderCelebration(config = null, _lessonId = "") {
@@ -2738,14 +2755,21 @@ export function renderCelebration(config = null, _lessonId = "") {
 
   return `
     <section class="guided-section card section-celebrate" aria-label="Celebration">
-      <h2 class="section-title">🎉 <span class="lang-en">You did it together!</span><span class="lang-es" lang="es">¡Lo lograron juntos!</span></h2>
-      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
-      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
+      <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
+      <p class="celebrate-text lang-es" lang="es">Di una estrategia que te ayudó o una pregunta para la próxima vez. Puedes terminar aquí; no necesitas la firma de un adulto.</p>
       <p class="celebrate-sub bilingual-block">
         <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+      <div class="homework-message-action">
+        <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+      </div>
+      <details class="homework-optional-extras"><summary><span class="lang-en">Optional: more practice, photos &amp; a local reflection</span><span class="lang-es" lang="es">Opcional: más práctica, fotos y una reflexión local</span></summary>
+      <p><span class="lang-en">These extras are not required. Photos, recordings and reflections stay on this device. To send anything to Mr. Neft, use ClassDojo.</span><span class="lang-es" lang="es">Estos extras no son obligatorios. Las fotos, grabaciones y reflexiones quedan en este dispositivo. Para enviar algo al Sr. Neft, usa ClassDojo.</span></p>
+      <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">Open optional photobooth</span><span class="lang-es" lang="es">Abrir cabina de fotos opcional</span></button>
       <div class="high-five-banner">
         <button type="button" class="btn-high-five" onclick="triggerHighFive()">
           <span class="high-five-emoji" aria-hidden="true">✋</span>
@@ -2786,15 +2810,15 @@ export function renderCelebration(config = null, _lessonId = "") {
       ${ktHtml}
 
       <div class="parent-signoff-container card-ish">
-        <h3 class="signoff-title">✍️ <span class="lang-en">Parent Sign-off &amp; Feedback</span><span class="lang-es" lang="es">Firma del padre y comentarios</span></h3>
+        <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
         
         <!-- Active Form -->
         <div id="signoff_form_wrapper">
           <div class="signoff-field checkbox-field">
             <label class="checkbox-label">
               <input type="checkbox" id="parent_reviewed_checkbox" onchange="toggleSignoffSubmitBtn()" />
-              <span class="lang-en">I reviewed this homework with my student tonight.</span>
-              <span class="lang-es" lang="es">Revisé esta tarea con mi estudiante esta noche.</span>
+              <span class="lang-en">I practiced or discussed an idea from this homework.</span>
+              <span class="lang-es" lang="es">Practiqué o comenté una idea de esta tarea.</span>
             </label>
           </div>
           
@@ -2808,16 +2832,16 @@ export function renderCelebration(config = null, _lessonId = "") {
 
           <div class="signoff-field text-field">
             <label for="parent_name_input">
-              <span class="lang-en">Parent/Guardian Name:</span>
-              <span class="lang-es" lang="es">Nombre del padre/tutor:</span>
+              <span class="lang-en">Partner name (optional):</span>
+              <span class="lang-es" lang="es">Nombre del acompañante (opcional):</span>
             </label>
             <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" oninput="toggleSignoffSubmitBtn()" />
           </div>
 
           <div class="signoff-field textarea-field">
             <label for="parent_note_input">
-              <span class="lang-en">Note to Teacher (optional):</span>
-              <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
+              <span class="lang-en">Draft a question for ClassDojo (optional; not sent):</span>
+              <span class="lang-es" lang="es">Borrador para ClassDojo (opcional; no se envía):</span>
             </label>
             <textarea id="parent_note_input" rows="2" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
           </div>
@@ -2878,8 +2902,8 @@ export function renderCelebration(config = null, _lessonId = "") {
             </div>
           </div>
 
-          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
-            <span class="lang-en">Confirm &amp; Save</span><span class="lang-es" lang="es">Confirmar y guardar</span>
+          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" onclick="saveParentSignoff()">
+            <span class="lang-en">Save reflection on this device</span><span class="lang-es" lang="es">Guardar reflexión en este dispositivo</span>
           </button>
         </div>
 
@@ -2889,11 +2913,11 @@ export function renderCelebration(config = null, _lessonId = "") {
             <div class="cert-check">🏆</div>
             <div class="cert-info">
               <h4 class="cert-header">
-                <span class="lang-en">Homework Review Verified!</span>
-                <span class="lang-es" lang="es">¡Revisión de tarea verificada!</span>
+                <span class="lang-en">Reflection saved on this device</span>
+                <span class="lang-es" lang="es">Reflexión guardada en este dispositivo</span>
               </h4>
               <p class="cert-detail"><strong id="display_parent_name"></strong></p>
-              <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <p class="cert-date"><span class="lang-en">Saved on:</span><span class="lang-es" lang="es">Guardado el:</span> <span id="display_signoff_date"></span></p>
               <div id="display_family_streak_box" class="cert-streak-box">
                 <p>🔥 <strong id="display_family_streak_text"><span class="lang-en">1-Night Streak</span><span class="lang-es" lang="es">Racha de 1 noche</span></strong></p>
               </div>
@@ -2901,7 +2925,7 @@ export function renderCelebration(config = null, _lessonId = "") {
                 <span id="display_family_feeling_badge" class="badge-feeling" style="display:inline-block;padding:3px 8px;border-radius:6px;background:#f1f5f9;font-size:12px;font-weight:700;"></span>
               </div>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
-                <p class="cert-note-title"><strong><span class="lang-en">Note to teacher:</span><span class="lang-es" lang="es">Nota para el maestro:</span></strong></p>
+                <p class="cert-note-title"><strong><span class="lang-en">Question draft (not sent):</span><span class="lang-es" lang="es">Borrador de pregunta (no enviado):</span></strong></p>
                 <p id="display_parent_note" class="cert-note-content"></p>
               </div>
               <div id="display_parent_reflection_box" class="cert-note-box" hidden>
@@ -2926,7 +2950,7 @@ export function renderCelebration(config = null, _lessonId = "") {
               <span class="lang-en">📄 1-Page Refrigerator Sheet</span><span class="lang-es" lang="es">📄 Hoja familiar (1 pág.)</span>
             </button>
             <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
-              <span class="lang-en">Edit sign-off</span><span class="lang-es" lang="es">Editar firma</span>
+              <span class="lang-en">Edit reflection</span><span class="lang-es" lang="es">Editar reflexión</span>
             </button>
           </div>
         </div>
@@ -2942,18 +2966,20 @@ export function renderCelebration(config = null, _lessonId = "") {
         </button>
       </div>
 
+      </details>
+
       <!-- Print-Only Certificate Layout -->
       <div class="print-only-certificate" id="print_only_certificate">
         <div class="print-cert-header">
           <h2>EDU WONDERLAB MATH</h2>
-          <h3>Family Math Night Completion Certificate</h3>
+          <h3>Family Math Practice Record</h3>
         </div>
         <div class="print-cert-body">
-          <p>This certifies that the homework for <strong><span id="print_lesson_title"></span></strong> was completed and reviewed collaboratively.</p>
+          <p>A personal record of practice for <strong><span id="print_lesson_title"></span></strong>. Saved on this device; not submitted to the teacher.</p>
           <div class="print-cert-signatures">
             <div class="print-sig-block">
               <p class="sig-line" id="print_parent_name"></p>
-              <p class="sig-label">Parent/Guardian Signature</p>
+              <p class="sig-label">Practice partner (optional)</p>
             </div>
             <div class="print-sig-block">
               <p class="sig-line" id="print_signoff_date"></p>
@@ -2961,7 +2987,7 @@ export function renderCelebration(config = null, _lessonId = "") {
             </div>
           </div>
           <div class="print-cert-note" id="print_parent_note_wrapper" style="display:none;">
-            <p class="note-heading"><strong>Parent Note to Teacher:</strong></p>
+            <p class="note-heading"><strong>Question draft (not sent):</strong></p>
             <p id="print_parent_note" class="note-body"></p>
           </div>
         </div>
@@ -3141,6 +3167,14 @@ export function getRealWorldSpotlight(topic) {
 }
 
 export function getTopicMisconception(topic, config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact)
+    return {
+      trapEn: "Using a familiar rule before identifying what this question asks.",
+      trapEs: "Usar una regla conocida sin identificar qué pide esta pregunta.",
+      coachEn: exact.capEn,
+      coachEs: exact.capEs,
+    };
   if (topic === "ratios") {
     const strand = RATIO_STRAND_MISCONCEPTIONS[ratioFocus(config)];
     if (strand) return strand;
@@ -4561,7 +4595,33 @@ const FAMILY_ACTIVITIES = {
   ],
 };
 
-export function getFamilyActivities(topic) {
+export function getFamilyActivities(topicOrConfig) {
+  const config = typeof topicOrConfig === "object" ? topicOrConfig : null;
+  const exact = config && exactFamilyMission(config);
+  if (exact)
+    return [
+      exact,
+      {
+        ...exact,
+        titleEn: "Try your own numbers",
+        titleEs: "Prueba tus propios números",
+        steps: [
+          {
+            en: "Use the recommended activity above as your model. Choose a new set of sensible numbers for the same situation.",
+            es: "Usa la actividad recomendada como modelo. Elige otros números razonables para la misma situación.",
+          },
+          {
+            en: "Solve with the same representation. Keep labels, units, and the meaning of each number clear.",
+            es: "Resuelve con la misma representación. Mantén claras las etiquetas, unidades y el significado de cada número.",
+          },
+          {
+            en: "Partner: ask how the answer changes. Working solo: write one sentence comparing the two examples.",
+            es: "Acompañante: pregunta cómo cambia la respuesta. A solas: escribe una oración que compare los dos ejemplos.",
+          },
+        ],
+      },
+    ];
+  const topic = config ? detectVisualTopic(config) : topicOrConfig;
   return FAMILY_ACTIVITIES[topic] || FAMILY_ACTIVITIES.fallback;
 }
 
@@ -4615,23 +4675,27 @@ function renderFamilyActivityCard(act, idx) {
 export function renderFamilyActivityCorner(topic) {
   const acts = getFamilyActivities(topic);
   return `
-    <div class="fam-act-corner card-ish" aria-label="Family activity corner">
+    <div class="fam-act-corner card-ish" aria-label="Family activity corner" data-aria-en="Family activity corner" data-aria-es="Actividades familiares">
       <div class="fam-act-head">
         <div>
           <span class="fam-act-badge">🏡 <span class="lang-en">FAMILY ACTIVITY CORNER</span><span class="lang-es" lang="es">RINCÓN DE ACTIVIDADES</span></span>
           <p class="fam-act-lead">
-            <span class="lang-en">No screens needed — pick one quick mission with things already in your home.</span>
-            <span class="lang-es" lang="es">Sin pantallas: elijan una misión rápida con cosas que ya tienen en casa.</span>
+            <span class="lang-en">Try the recommended mission. Student: explain; partner: ask one question, then switch. Paper drawings work for every object.</span>
+            <span class="lang-es" lang="es">Prueba la misión recomendada. Estudiante: explica; acompañante: haz una pregunta, luego cambien. Puedes dibujar los objetos en papel.</span>
           </p>
         </div>
         <button type="button" class="family-mission-picker" onclick="pickFamilyMission()">
-          🎲 <span class="lang-en">Pick for us</span><span class="lang-es" lang="es">Elige por nosotros</span>
+          🎲 <span class="lang-en">Pick an alternative</span><span class="lang-es" lang="es">Elegir una alternativa</span>
         </button>
       </div>
       <p class="family-mission-status" id="family_mission_status" aria-live="polite">
-        <span class="lang-en">Choose a mission below, or let us pick one.</span><span class="lang-es" lang="es">Elijan una misión o dejen que escojamos una.</span>
+        <span class="lang-en">One mission is enough. You can also work solo and explain in writing.</span><span class="lang-es" lang="es">Una misión es suficiente. También puedes trabajar a solas y explicar por escrito.</span>
       </p>
-      ${acts.map((a, i) => renderFamilyActivityCard(a, i)).join("")}
+      ${renderFamilyActivityCard(acts[0], 0)}
+      <details class="family-mission-alternatives"><summary><span class="lang-en">Optional alternatives</span><span class="lang-es" lang="es">Alternativas opcionales</span></summary>${acts
+        .slice(1)
+        .map((a, i) => renderFamilyActivityCard(a, i + 1))
+        .join("")}</details>
     </div>`;
 }
 
@@ -6529,6 +6593,141 @@ const FAMILY_WYR = {
  * family has already been taught, never what is still coming. That asymmetry is
  * what tools/validate-family-games.mjs enforces.
  */
+// The same strand can contain different operations: these two banks deliberately
+// override topic-wide fraction division and one-variable equation games.
+FAMILY_GAME_PAIRS["fraction-multiply"] = [
+  { a: "½ × 12", b: "6" },
+  { a: "¾ × 20", b: "15" },
+  { a: "⅔ × 12", b: "8" },
+  { a: "⅗ × 20", b: "12" },
+  { a: "6/5 × 20", b: "24" },
+  { a: "5/3 × 12", b: "20" },
+];
+FAMILY_TF_QUESTIONS["fraction-multiply"] = [
+  {
+    en: "¾ of 20 is 15.",
+    es: "¾ de 20 es 15.",
+    answer: true,
+    whyEn: "20 ÷ 4 × 3 = 15.",
+    whyEs: "20 ÷ 4 × 3 = 15.",
+  },
+  {
+    en: "Multiplying a positive number by 6/5 makes it larger.",
+    es: "Multiplicar un número positivo por 6/5 lo aumenta.",
+    answer: true,
+    whyEn: "6/5 is greater than 1.",
+    whyEs: "6/5 es mayor que 1.",
+  },
+  {
+    en: "To find ⅔ of 12, divide by ⅔.",
+    es: "Para hallar ⅔ de 12, divide entre ⅔.",
+    answer: false,
+    whyEn: "Multiply: ⅔ × 12 = 8.",
+    whyEs: "Multiplica: ⅔ × 12 = 8.",
+  },
+  {
+    en: "A fraction factor is always less than 1.",
+    es: "Un factor fraccionario siempre es menor que 1.",
+    answer: false,
+    whyEn: "6/5 is a fraction greater than 1.",
+    whyEs: "6/5 es una fracción mayor que 1.",
+  },
+];
+FAMILY_SORT_GAMES["fraction-multiply"] = {
+  a: { en: "Product less than 12", es: "Producto menor que 12" },
+  b: { en: "Product greater than 12", es: "Producto mayor que 12" },
+  cards: [
+    ["½ × 12", 0],
+    ["¾ × 12", 0],
+    ["⅔ × 12", 0],
+    ["3/2 × 12", 1],
+    ["5/4 × 12", 1],
+    ["4/3 × 12", 1],
+  ].map(([t, bucket]) => ({
+    t,
+    bucket,
+    en: bucket ? "The factor is greater than 1." : "The factor is between 0 and 1.",
+    es: bucket ? "El factor es mayor que 1." : "El factor está entre 0 y 1.",
+  })),
+};
+FAMILY_WYR["fraction-multiply"] = [
+  {
+    a: { en: "¾ of 20 tokens", es: "¾ de 20 fichas" },
+    b: { en: "½ of 24 tokens", es: "½ de 24 fichas" },
+    en: "The first gives 15; the second gives 12. Choose and explain with equal groups.",
+    es: "La primera da 15; la segunda da 12. Elige y explica con grupos iguales.",
+  },
+  {
+    a: { en: "6/5 of 10 tokens", es: "6/5 de 10 fichas" },
+    b: { en: "⅔ of 15 tokens", es: "⅔ de 15 fichas" },
+    en: "The first gives 12; the second gives 10. A factor above 1 can enlarge the starting amount.",
+    es: "La primera da 12; la segunda da 10. Un factor mayor que 1 puede aumentar la cantidad inicial.",
+  },
+];
+FAMILY_GAME_PAIRS["two-variables"] = [
+  { a: "y=2x; x=1", b: "y=2" },
+  { a: "y=2x; x=3", b: "y=6" },
+  { a: "y=x+5; x=2", b: "y=7" },
+  { a: "y=3x; x=4", b: "y=12" },
+  { a: "y=2x+1; x=4", b: "y=9" },
+  { a: "y=x+4; x=1", b: "y=5" },
+];
+FAMILY_TF_QUESTIONS["two-variables"] = [
+  {
+    en: "For y=3x, the pair (2,6) fits.",
+    es: "Para y=3x, el par (2,6) cumple.",
+    answer: true,
+    whyEn: "6 = 3 × 2.",
+    whyEs: "6 = 3 × 2.",
+  },
+  {
+    en: "For y=x+4, doubling x always doubles y.",
+    es: "Para y=x+4, duplicar x siempre duplica y.",
+    answer: false,
+    whyEn: "x=2 gives y=6; x=4 gives y=8, not 12.",
+    whyEs: "x=2 da y=6; x=4 da y=8, no 12.",
+  },
+  {
+    en: "An ordered pair records both an input and an output.",
+    es: "Un par ordenado registra una entrada y una salida.",
+    answer: true,
+    whyEn: "(x,y) keeps the quantities in order.",
+    whyEs: "(x,y) mantiene las cantidades en orden.",
+  },
+  {
+    en: "For y=2x+1, input 3 gives output 6.",
+    es: "Para y=2x+1, la entrada 3 da la salida 6.",
+    answer: false,
+    whyEn: "2 × 3 + 1 = 7.",
+    whyEs: "2 × 3 + 1 = 7.",
+  },
+];
+FAMILY_SORT_GAMES["two-variables"] = {
+  a: { en: "Fits y=3x", es: "Cumple y=3x" },
+  b: { en: "Does not fit y=3x", es: "No cumple y=3x" },
+  cards: [
+    ["(1,3)", 0],
+    ["(2,6)", 0],
+    ["(0,0)", 0],
+    ["(3,6)", 1],
+    ["(2,5)", 1],
+    ["(4,7)", 1],
+  ].map(([t, bucket]) => ({
+    t,
+    bucket,
+    en: "Multiply the first coordinate by 3 and compare with the second.",
+    es: "Multiplica la primera coordenada por 3 y compárala con la segunda.",
+  })),
+};
+FAMILY_WYR["two-variables"] = [
+  {
+    a: { en: "Pay y=3x dollars for x rides", es: "Pagar y=3x dólares por x viajes" },
+    b: { en: "Pay y=2x+5 dollars for x rides", es: "Pagar y=2x+5 dólares por x viajes" },
+    en: "For 2 rides, A costs $6 and B costs $9. For 8 rides, A costs $24 and B costs $21. The better choice depends on x.",
+    es: "Para 2 viajes, A cuesta $6 y B $9. Para 8 viajes, A cuesta $24 y B $21. La mejor opción depende de x.",
+  },
+];
+
 const FAMILY_GAME_STANDARD_KEYS = {
   "6.AT.1": "ratios-understand",
   "6.AT.2": "ratios-rate",
@@ -6536,6 +6735,9 @@ const FAMILY_GAME_STANDARD_KEYS = {
 };
 
 export function familyGameKey(config) {
+  const id = String(config.lessonId || config.id || "");
+  if (id === "1-2") return "fraction-multiply";
+  if (/^9-[1-4]$/.test(id)) return "two-variables";
   const topic = detectVisualTopic(config);
   if (topic !== "ratios") return topic;
   return FAMILY_GAME_STANDARD_KEYS[String(config.standard || "")] || topic;
@@ -6891,6 +7093,8 @@ const RATIO_STRAND_MISCONCEPTIONS = {
 };
 
 export function getTopicPowerUp(topic, config) {
+  const exact = exactFamilyPowerUp(config || {});
+  if (exact) return exact;
   const title = config?.title || "Tonight's Math";
   if (topic === "ratios") {
     const strand = RATIO_STRAND_POWER_UPS[ratioFocus(config)];
@@ -7366,8 +7570,8 @@ const WORKBENCH_TOOL_COPY = {
     icon: "📏",
     en: "Fraction Strips",
     es: "Tiras de fracciones",
-    actionEn: "Build and compare fraction pieces for tonight's fraction-division work.",
-    actionEs: "Construyan y comparen partes para la división de fracciones de hoy.",
+    actionEn: "Build and compare fraction pieces to represent tonight's question.",
+    actionEs: "Construyan y comparen partes para representar la pregunta de hoy.",
   },
   coords: {
     icon: "🧭",
@@ -7405,7 +7609,16 @@ export function renderLearnTab(config, visualLabHtml = "") {
   const topic = detectVisualTopic(config);
   const workbench = workbenchSpec(config);
   const powerUpHtml = renderSkillPowerUp(config, topic);
-  const spotlight = getRealWorldSpotlight(topic);
+  const support = exactFamilySupport(config);
+  const spotlight = support
+    ? {
+        titleEn: support.titleEn,
+        titleEs: support.titleEs,
+        factEn: support.steps[0].en,
+        factEs: support.steps[0].es,
+        icon: "🏡",
+      }
+    : getRealWorldSpotlight(topic);
   const mis = getTopicMisconception(topic, config);
 
   // Add Listen button to the Big Idea title
@@ -7533,7 +7746,7 @@ export function renderTogetherTab(config, lessonId = "", workbenchHtml = "") {
     <div ${tabPanelAttrs("together", true)}>
       ${inner}
       ${mathTalkHtml}
-      ${renderFamilyActivityCorner(detectVisualTopic(config))}
+      ${renderFamilyActivityCorner(config)}
       <div class="scratchpad-inline-toggle">
         <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
           ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
@@ -7601,8 +7814,8 @@ export function renderCheckTab(
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p>${
           moreHtml
-            ? `<span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to celebrate and sign off.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para celebrar y firmar.</span>`
-            : `<span class="lang-en">Great work. Head to <strong>Done</strong> to celebrate and sign off.</span><span class="lang-es" lang="es">Buen trabajo. Vayan a <strong>Listo</strong> para celebrar y firmar.</span>`
+            ? `<span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span>`
+            : `<span class="lang-en">Great work. Head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span>`
         }</p>
       </div>
       <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
@@ -8454,10 +8667,10 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
-        <div class="hw-tab-meta-row">
+        <div class="hw-tab-meta-row"><div id="hw_utility_controls" class="hw-utility-controls"></div>
           <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~${HOMEWORK_TOTAL_MINUTES} min left</span><span class="lang-es" lang="es">~${HOMEWORK_TOTAL_MINUTES} min restantes</span></span>
         </div>
-        <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
+        <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
           ${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}
         </nav>
@@ -8491,12 +8704,12 @@ export function renderHelpDrawer(stuckHtml, moreHtml) {
       <span class="hw-stuck-fab-label"><span class="lang-en">Stuck?</span><span class="lang-es" lang="es">¿Atorados?</span></span>
     </button>
     <div class="hw-help-drawer" id="hw_help_drawer" role="dialog" aria-modal="true"
-      aria-label="If your student gets stuck" hidden>
+      aria-label="If your student gets stuck" data-aria-en="If your student gets stuck" data-aria-es="Ayuda si te atoras" hidden>
       <div class="hw-help-drawer-scrim" onclick="toggleHelpDrawer()"></div>
       <div class="hw-help-drawer-sheet">
         <div class="hw-help-drawer-head">
           <strong><span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atoran</span></strong>
-          <button type="button" class="hw-help-drawer-close" onclick="toggleHelpDrawer()" aria-label="Close help">✕</button>
+          <button type="button" class="hw-help-drawer-close" onclick="toggleHelpDrawer()" aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
         </div>
         <div class="hw-help-drawer-body">
           ${stuckHtml}
@@ -8510,7 +8723,7 @@ export function renderHelpModal() {
   return `
     <div class="help-modal-overlay" id="help_modal_overlay" hidden onclick="closeHelpModal(event)">
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
-        <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
+        <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
         <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
@@ -8922,13 +9135,13 @@ function routeStorageKey() {
 }
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'full';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.full;
+  var id = document.body.dataset.homeworkRoute || 'quick';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.quick;
 }
 
 function setHomeworkRoute(mode, options) {
   options = options || {};
-  if (!HOMEWORK_ROUTES[mode]) mode = 'full';
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'quick';
   var route = HOMEWORK_ROUTES[mode];
   document.body.dataset.homeworkRoute = mode;
 
@@ -8951,10 +9164,10 @@ function setHomeworkRoute(mode, options) {
     var step = btn.querySelector('.tab-step');
     if (step) step.textContent = String(visibleIndex);
     var label = btn.querySelector('.tab-en');
-    btn.setAttribute(
-      'aria-label',
-      (label ? label.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length,
-    );
+    var labelEs = btn.querySelector('.tab-es');
+    btn.dataset.ariaEn = (label ? label.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length;
+    btn.dataset.ariaEs = (labelEs ? labelEs.textContent : btn.dataset.tab) + ' — parada ' + visibleIndex + ' de ' + route.tabs.length;
+    btn.setAttribute('aria-label', document.documentElement.lang === 'es' ? btn.dataset.ariaEs : btn.dataset.ariaEn);
   });
   document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
     btn.hidden = mode !== 'full';
@@ -9008,6 +9221,7 @@ function setHomeworkRoute(mode, options) {
   }
 
   try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
+  initHomeworkShareLinks();
 
   var current = document.body.dataset.activeTab;
   if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) {
@@ -9031,8 +9245,10 @@ function updateHomeworkRouteTime(minutes) {
 }
 
 function restoreHomeworkRoute() {
-  var mode = 'full';
-  try { mode = localStorage.getItem(routeStorageKey()) || 'full'; } catch (e) {}
+  var mode = 'quick';
+  try { mode = localStorage.getItem(routeStorageKey()) || 'quick'; } catch (e) {}
+  var requested = new URLSearchParams(location.search).get('route');
+  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
   setHomeworkRoute(mode, { silent: true, keepTab: true });
 }
 
@@ -9104,6 +9320,7 @@ function pickFamilyMission() {
   cards.forEach(function (card, cardIndex) {
     card.open = cardIndex === index;
     card.classList.toggle('is-mission-picked', cardIndex === index);
+    if (cardIndex === index) { var alternatives = card.closest('.family-mission-alternatives'); if (alternatives) alternatives.open = true; }
   });
   var titleEn = cards[index].querySelector('.fam-act-titles .lang-en');
   var titleEs = cards[index].querySelector('.fam-act-titles .lang-es');
@@ -9207,6 +9424,7 @@ function syncHomeworkChromeHeights() {
   // The math keypad is a bottom-fixed control like the pills, and the tallest
   // one when it is open; left out, the last answer field on a stop sat under it.
   document.querySelectorAll('.hw-stuck-fab, #nsr-root, .mathpad:not([hidden])').forEach(function (el) {
+    if (window.getComputedStyle(el).position !== 'fixed') return;
     var r = el.getBoundingClientRect();
     if (r.height) floatTop = Math.max(floatTop, Math.ceil(window.innerHeight - r.top));
   });
@@ -9368,6 +9586,9 @@ function setLanguageMode(mode) {
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
   syncDocumentLanguage(mode);
+  document.body.dataset.homeworkLanguage = mode;
+  initHomeworkShareLinks();
+  document.querySelectorAll('[data-aria-en]').forEach(function (el) { el.setAttribute('aria-label', mode === 'es' ? el.dataset.ariaEs : el.dataset.ariaEn); });
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
     btn.classList.toggle('active', active);
@@ -9393,24 +9614,11 @@ function toggleCoOpMode() {
 }
 window.toggleCoOpMode = toggleCoOpMode;
 
-function saveForOfflineCarRide() {
-  try {
-    var key = 'hw_offline_pack_' + (window.LESSON_ID || 'current');
-    localStorage.setItem(key, JSON.stringify({
-      savedAt: new Date().toISOString(),
-      lessonId: window.LESSON_ID,
-      title: window.LESSON_TITLE
-    }));
-    var btn = document.getElementById('hw_offline_btn');
-    if (btn) {
-      btn.innerHTML = '✓ <span class="lang-en">Saved for Car Ride!</span><span class="lang-es" lang="es">¡Guardado para el viaje!</span>';
-    }
-    alert("✓ Saved for Offline Practice! You can now finish this homework on the bus, in the car, or without internet. / ¡Guardado para practicar sin internet!");
-  } catch(e) {
-    alert("Saved for offline practice on this device.");
-  }
+function preparePaperPractice() {
+  alert("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.");
+  printProblemsOnly();
 }
-window.saveForOfflineCarRide = saveForOfflineCarRide;
+window.preparePaperPractice = preparePaperPractice;
 
 var currentVoiceMemoData = '';
 var voiceMediaRecorder = null;
@@ -9500,20 +9708,31 @@ function deleteVoiceRecording() {
 window.deleteVoiceRecording = deleteVoiceRecording;
 
 function toggleSignoffSubmitBtn() {
-  const checkbox = document.getElementById('parent_reviewed_checkbox');
-  const nameInput = document.getElementById('parent_name_input');
-  const submitBtn = document.getElementById('submit_signoff_btn');
-  if (checkbox && nameInput && submitBtn) {
-    submitBtn.disabled = !(checkbox.checked && nameInput.value.trim().length > 0);
-  }
+  var submitBtn = document.getElementById('submit_signoff_btn');
+  if (submitBtn) submitBtn.disabled = false;
+}
+
+function homeworkShareUrl() {
+  var url = new URL(window.location.href);
+  var route = document.body.dataset.homeworkRoute || 'quick';
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'quick');
+  url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
+  return url.href;
 }
 
 function copyHomeworkLink() {
+  var url = homeworkShareUrl();
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(window.location.href).then(function() {
-      alert("Link copied! / ¡Enlace copiado!");
-    }).catch(function() {});
-  }
+    navigator.clipboard.writeText(url).then(function() {
+      alert("Link copied with your route and language. / Enlace copiado con tu ruta e idioma.");
+    }).catch(function() { window.prompt('Copy this link / Copia este enlace:', url); });
+  } else window.prompt('Copy this link / Copia este enlace:', url);
+}
+
+function startHomework() {
+  var last = document.body.dataset.activeTab || 'learn';
+  switchHomeworkTab(last);
+  document.getElementById('hw_panel_' + last)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
 function printProblemsOnly() {
@@ -9611,7 +9830,7 @@ function clearWorkPhoto() {
 window.clearWorkPhoto = clearWorkPhoto;
 
 function initHomeworkShareLinks() {
-  var url = encodeURIComponent(window.location.href);
+  var url = encodeURIComponent(homeworkShareUrl());
   var title = encodeURIComponent(document.title || "Family Math Homework");
   var textBtn = document.getElementById("hw_text_link");
   if (textBtn) textBtn.href = "sms:?&body=" + title + "%20" + url;
@@ -9643,12 +9862,10 @@ function saveParentSignoff() {
   const nameVal = document.getElementById('parent_name_input')?.value.trim();
   const noteVal = document.getElementById('parent_note_input')?.value.trim();
   const reflVal = document.getElementById('parent_reflection_input')?.value.trim();
-  const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
   const feelingVal = document.getElementById('family_feeling_input')?.value || 'smooth';
   const lessonId = window.LESSON_ID || 'general';
   const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
   
-  if (!checked || !nameVal) return;
   
   const signoffDate = new Date().toLocaleDateString(undefined, { 
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
@@ -9680,35 +9897,10 @@ function saveParentSignoff() {
   
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
-  } catch(e) {}
-
-  /* localStorage stays the source of truth for what this page displays, but a
-     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
-     the endpoint always answers 204, and any failure here is swallowed so a
-     family on a bad connection still gets their confirmation. */
-  try {
-    var signoffBody = JSON.stringify({
-      lessonId: lessonId,
-      lessonTitle: lessonTitle,
-      parentName: nameVal,
-      note: noteVal,
-      reflection: reflVal,
-      feeling: feelingVal,
-      date: signoffDate,
-      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
-      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
-    });
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
-    } else {
-      fetch('/api/progress/family-signoff', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: signoffBody,
-        keepalive: true
-      }).catch(function() {});
-    }
-  } catch(e) {}
+  } catch(e) {
+    alert('This reflection could not be saved on this device. Copy it before leaving. / No se pudo guardar esta reflexión. Cópiala antes de salir.');
+    return;
+  }
 
   updateSignoffUI(payload);
 }
@@ -9829,6 +10021,8 @@ function editParentSignoff() {
 }
 
 function preferredLanguageMode() {
+  var requested = new URLSearchParams(location.search).get('lang');
+  if (['en', 'es', 'bilingual'].indexOf(requested) !== -1) return requested;
   try {
     const saved = localStorage.getItem('hw_lang_mode');
     if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
@@ -9866,12 +10060,28 @@ function restoreParentSignoff() {
 }
 
 function initHomeworkPage() {
+  var utilities = document.getElementById("hw_utility_controls");
+  var help = document.getElementById("hw_stuck_fab");
+  if (utilities && help) utilities.appendChild(help);
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
   initHomeworkShareLinks();
   // Measure again once fonts and images have settled: a reading taken mid
   // layout reported the status bar three times its rendered height, and the
   // floating launchers are positioned off that number.
+  function placeSaveControl() {
+    var save = document.getElementById('nsr-root');
+    if (!utilities || !save) return false;
+    utilities.appendChild(save);
+    syncHomeworkChromeHeights();
+    return true;
+  }
+  if (!placeSaveControl()) {
+    var saveObserver = new MutationObserver(function () {
+      if (document.getElementById('nsr-root')) { saveObserver.disconnect(); placeSaveControl(); }
+    });
+    saveObserver.observe(document.body, { childList: true, subtree: true });
+  }
   window.addEventListener('load', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
@@ -9885,6 +10095,9 @@ function initHomeworkPage() {
     else switchHomeworkTab('learn');
   } catch(e) {}
   restoreParentSignoff();
+  initHomeworkShareLinks();
+  var start = document.getElementById('hw_start_button');
+  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue homework', 'Continuar la tarea');
   restoreFamilyMission();
   initDrawCanvases();
   initHomeworkVocabPopups();
@@ -15437,4 +15650,20 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
   .fam-mission-complete,
   .family-mission-status { display: none !important; }
 }
+
+/* A short finish and tools that stay out of the reading column. */
+.hw-tools-menu { margin: 14px 0; }
+.hw-tools-menu > summary, .homework-optional-extras > summary, .family-mission-alternatives > summary { cursor:pointer; min-height:44px; padding:10px 0; font-size:16px; font-weight:750; }
+.hw-hero-titles h1 { margin:0; font-size:clamp(26px,5vw,44px); }
+.hw-hero-titles h1 .welcome-title-es { font-size:inherit; }
+.homework-message-action { margin:16px 0; }
+.homework-message-action p, .homework-optional-extras > p, .family-roles { font-size:16px; line-height:1.55; }
+.homework-optional-extras { margin-top:24px; border-top:1px solid #cbd5e1; }
+.hw-utility-controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.hw-utility-controls .hw-stuck-fab { position:static; margin:0; box-shadow:none; min-height:44px; }
+.hw-utility-controls #nsr-root { position:static !important; inset:auto !important; margin:0 !important; }
+.hw-utility-controls #nsr-launcher, .hw-utility-controls #nsr-workbench { min-height:44px; font-size:14px; }
+.hw-utility-controls #nsr-panel { position:fixed; top:16px; bottom:auto; right:16px; max-height:calc(100dvh - 32px); }
+@media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
+@media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
 `;

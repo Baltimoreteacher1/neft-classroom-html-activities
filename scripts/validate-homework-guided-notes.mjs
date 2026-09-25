@@ -108,7 +108,7 @@ selfTestCountQuickChecks();
 
 const REQUIRED_MARKERS = [
   "Family Math Night",
-  "Ayuda a tu estudiante",
+  "Tarea de matemáticas en familia",
   "What we're learning tonight",
   "Qué aprendemos hoy",
   "The big idea",
@@ -125,8 +125,8 @@ const REQUIRED_MARKERS = [
   "Si se atora",
   "Quick check",
   "Repaso rápido",
-  "You did it together",
-  "Lo lograron juntos",
+  "Finished for today",
+  "Terminaste por hoy",
   "Check This Problem",
   "NTAnswerMatch",
   'class="homework-tab-bar"',

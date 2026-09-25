@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const root = new URL("./", import.meta.url);
-const html = await readFile(new URL("index.html", root), "utf8");
+const html = await readFile(new URL("advanced.html", root), "utf8");
 for (const expected of [
   'id="meeting-scheduler-tools"',
   'id="teacher-slot-form"',

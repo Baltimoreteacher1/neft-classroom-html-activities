@@ -52,6 +52,50 @@ function gameMeta(config) {
 /** @returns {{ type: string, html: string, initScript: string }} */
 export function buildHomeworkGame(config) {
   const { topic, vocab, title } = gameMeta(config);
+  if (String(config.lessonId || config.id) === "1-2") {
+    return mcSpeedGame(
+      "fraction-multiply",
+      title,
+      "Scale a quantity",
+      "Escala una cantidad",
+      [
+        { q: "3/4 × 20 = ?", choices: ["15", "60", "5", "80/3"], correct: 0, hint: "20 ÷ 4 × 3" },
+        { q: "6/5 × 20 = ?", choices: ["24", "16", "120", "4"], correct: 0, hint: "20 ÷ 5 × 6" },
+        { q: "1/2 × 18 = ?", choices: ["9", "36", "18", "17"], correct: 0 },
+        { q: "5/3 × 12 = ?", choices: ["20", "4", "60", "7.2"], correct: 0 },
+        { q: "2/3 × 9 = ?", choices: ["6", "3", "13.5", "18"], correct: 0 },
+        { q: "4/4 × 7 = ?", choices: ["7", "28", "0", "1"], correct: 0 },
+      ],
+      {
+        en: "Divide the quantity into the number of equal parts named by the denominator, then take the number of parts named by the numerator. Factors above one can make a larger product.",
+        es: "Divide la cantidad en tantas partes iguales como indica el denominador y toma las que indica el numerador. Un factor mayor que uno puede aumentar el producto.",
+      },
+    );
+  }
+  if (/^9-[1-4]$/.test(String(config.lessonId || config.id))) {
+    return mcSpeedGame(
+      "two-variables",
+      title,
+      "Input and output",
+      "Entrada y salida",
+      [
+        { q: "y = 3x; x = 4 → y = ?", choices: ["12", "7", "1", "3"], correct: 0 },
+        { q: "y = x + 5; x = 2 → y = ?", choices: ["7", "10", "3", "5"], correct: 0 },
+        { q: "y = 2x + 1; x = 3 → y = ?", choices: ["7", "6", "9", "5"], correct: 0 },
+        { q: "y = 4x; y = 20 → x = ?", choices: ["5", "16", "80", "24"], correct: 0 },
+        { q: "y = 3x; (x, y) = ?", choices: ["(2, 6)", "(6, 2)", "(2, 5)", "(3, 3)"], correct: 0 },
+        {
+          q: "y = x + 4; (x, y) = ?",
+          choices: ["(3, 7)", "(7, 3)", "(3, 12)", "(4, 4)"],
+          correct: 0,
+        },
+      ],
+      {
+        en: "Name the input x and the output y. Check each ordered pair against the same rule.",
+        es: "Nombra la entrada x y la salida y. Comprueba cada par ordenado con la misma regla.",
+      },
+    );
+  }
   const builders = {
     exponents: buildExponentGame,
     ratios: buildRatioGame,

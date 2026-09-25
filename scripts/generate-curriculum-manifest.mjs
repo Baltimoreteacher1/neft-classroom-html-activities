@@ -21,6 +21,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const lessonsDir = join(root, "lessons");
 const dataDir = join(root, "data");
+const familyTitlesEs = JSON.parse(
+  readFileSync(join(dataDir, "family-homework-titles-es.json"), "utf8"),
+);
 
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -259,6 +262,7 @@ function buildEntry(id, cfg) {
     unit,
     lesson,
     title: cfg.title || id,
+    titleEs: familyTitlesEs[id] || cfg.titleEs || "",
     flagship: id.endsWith("-flagship"),
     standard: standard || "Needs Review",
     topic: cfg.theme || "",

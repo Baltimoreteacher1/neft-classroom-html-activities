@@ -18,6 +18,52 @@ const EXPORTED = ["norm", "numberOf", "stripLabel", "numericValue", "isRight", "
 
 const source = readFileSync(ANSWER_MATCH_SOURCE_PATH, "utf8").replace(/^export\s+/gm, "");
 
+// Homework tables may show both equivalent numeric forms (5/2 = 2 1/2)
+// or ask for an inequality. Preserve the shared matcher's other contracts,
+// including refusing an incomplete bare number for an inequality.
+const HOMEWORK_EQUIVALENCES = String.raw`
+const sharedIsRight = isRight;
+const comparisonSymbols = (value) => String(value ?? "")
+  .replace(/>=/g, "≥").replace(/<=/g, "≤");
+function simpleComparison(value) {
+  const text = norm(comparisonSymbols(value));
+  const parts = text.match(/^(.+?)([<>≤≥])(.+)$/);
+  if (!parts) return null;
+  const [, left, operator, right] = parts;
+  const variable = /^[a-z][a-z0-9]?$/;
+  const leftNumber = numericValue(left), rightNumber = numericValue(right);
+  if (variable.test(left) && rightNumber != null) {
+    return { variable: left, operator, boundary: rightNumber };
+  }
+  if (variable.test(right) && leftNumber != null) {
+    return { variable: right, operator: {">":"<", "<":">", "≥":"≤", "≤":"≥"}[operator], boundary: leftNumber };
+  }
+  return null;
+}
+function equivalentHomeworkAnswer(input, answer) {
+  const typed = comparisonSymbols(input), target = comparisonSymbols(answer);
+  if (sharedIsRight(typed, target)) return true;
+  const typedComparison = simpleComparison(typed), targetComparison = simpleComparison(target);
+  if (typedComparison && targetComparison) {
+    return typedComparison.variable === targetComparison.variable &&
+      typedComparison.operator === targetComparison.operator &&
+      Math.abs(typedComparison.boundary - targetComparison.boundary) < 1e-9;
+  }
+  // Only treat an authored equality as a numeric equivalence when every
+  // side is numeric and equal. Never split or repair the student's input.
+  if (!target.includes("=")) return false;
+  const values = target.split("=").map((part) => numericValue(stripLabel(part.trim())));
+  if (values.length < 2 || values.some((value) => value == null || Math.abs(value - values[0]) >= 1e-9)) return false;
+  const studentValue = numericValue(stripLabel(typed));
+  return studentValue != null && Math.abs(studentValue - values[0]) < 1e-9;
+}
+isRight = (input, answer) => {
+  if (answer == null || !String(input ?? "").trim()) return false;
+  return (Array.isArray(answer) ? answer : [answer]).some((value) =>
+    value != null && equivalentHomeworkAnswer(input, value));
+};
+`;
+
 // A backtick or "${" in the module would break the generator's template
 // literals downstream; fail loudly rather than emit a corrupted page.
 if (/[`]|\$\{/.test(source)) {
@@ -45,9 +91,9 @@ if (AUDIT_TOPIC_SIGNALS.test(source)) {
 // it inside an IIFE (2). Getting this right matters because the host file is
 // then formatted by Biome, and a mis-indented generated block fails
 // `npm run check`.
-export function answerMatchBlock(indent = 0) {
+export function answerMatchBlock(indent = 0, includeHomework = true) {
   const pad = " ".repeat(indent);
-  const body = source
+  const body = (includeHomework ? source + "\n" + HOMEWORK_EQUIVALENCES : source)
     .split("\n")
     .map((line) => (line ? `${pad}  ${line}` : line))
     .join("\n");
@@ -62,3 +108,6 @@ export function answerMatchBlock(indent = 0) {
 }
 
 export const ANSWER_MATCH_JS = answerMatchBlock(0);
+
+// Other consumers keep the shared engine contract without homework-only extensions.
+export const CORE_ANSWER_MATCH_JS = answerMatchBlock(0, false);

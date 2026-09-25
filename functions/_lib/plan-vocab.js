@@ -1570,6 +1570,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/family-connections/meetings/",
+    title: "Family meetings",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/student-digital-mailbox/teacher/",
     title: "Teacher Setup: Student Digital Mailbox",
     category: "Activity",
@@ -3419,7 +3425,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/curriculum/family-connections/",
-    title: "Family Connections",
+    title: "Family homework",
     category: "Hub",
     unit: null,
   },
