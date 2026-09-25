@@ -19,6 +19,13 @@
         background: var(--bg);
         border-bottom: 1px solid var(--line);
       }
+      /* The catalog arrives asynchronously. Keep the changing filter layout
+         out of the first paint, then reveal the completed controls together. */
+      .directory-loading .dir-sticky,
+      .directory-loading #dirResults,
+      .directory-loading .site-footer {
+        visibility: hidden;
+      }
       .dir-search input {
         width: 100%;
         min-height: 52px;
@@ -214,7 +221,7 @@
     <!-- mobile-access-injected:end -->
   </head>
   <body>
-    <main class="page-shell">
+    <main class="page-shell directory-loading" aria-busy="true">
       <nav class="breadcrumb" aria-label="Breadcrumb">
         <a href="/">Home</a><span>/</span><span>Find Anything</span>
       </nav>
@@ -227,6 +234,8 @@
           by who it is for. Start typing, or pick a lane.
         </p>
       </section>
+
+      <p id="dirLoading" role="status">Loading directory…</p>
 
       <div class="dir-sticky">
         <div class="dir-search">
@@ -567,10 +576,16 @@
           readUrl();
           buildFilters();
           render();
+          document.getElementById("dirLoading").hidden = true;
+          document.querySelector("main").classList.remove("directory-loading");
+          document.querySelector("main").setAttribute("aria-busy", "false");
         })
         .catch(() => {
           document.getElementById("dirResults").innerHTML =
             '<p class="dir-empty">Could not load the catalog. Run <code>npm run generate-catalog</code> to rebuild <code>data/catalog.json</code>.</p>';
+          document.getElementById("dirLoading").hidden = true;
+          document.querySelector("main").classList.remove("directory-loading");
+          document.querySelector("main").setAttribute("aria-busy", "false");
         });
     </script>
     <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
