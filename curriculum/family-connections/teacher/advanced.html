@@ -28,11 +28,12 @@
           <a class="back-link" href="/curriculum/family-connections/" target="_blank" rel="noopener"
             >View live family page ↗</a
           >
+          <a class="back-link" href="./">Post weekly family homework</a>
         </nav>
         <p class="eyebrow">EduWonderLab · Teacher Mode</p>
-        <h1>Edit Family Connections</h1>
+        <h1>Family homework &amp; practice</h1>
         <p class="header-note">
-          Sign-in protected · Changes reach families only after Preview and Publish live
+          Sign-in protected · Customize lesson practice here, then preview and publish changes.
         </p>
       </div>
       <div class="publish-panel">
@@ -57,6 +58,8 @@
           class="editor-section primary-editor"
           id="weekly-plan"
           aria-labelledby="weekly-title"
+          hidden
+          inert
         >
           <div class="section-heading">
             <div>
@@ -66,10 +69,6 @@
                 Choose a class, add the week note, and set each day. Your changes stay in draft
                 until you publish.
               </p>
-            </div>
-            <div class="section-actions">
-              <label for="section-editor">Editing section</label>
-              <select id="section-editor"></select>
             </div>
           </div>
 
@@ -167,45 +166,7 @@
           <div class="weekday-editors" id="weekday-editors"></div>
         </section>
 
-        <details class="tool-disclosure" id="family-response-tools">
-          <summary>
-            <span
-              ><strong>How families used this week</strong
-              ><small>Practice opens by entry point, and who signed off</small></span
-            >
-            <span aria-hidden="true">+</span>
-          </summary>
-          <section class="tool-body" aria-labelledby="family-response-title">
-            <div class="tool-intro">
-              <p class="step-label">Reporting</p>
-              <h2 id="family-response-title">Did posting the week change anything?</h2>
-              <p>
-                Practice opens are counted per lesson and per entry point, never per family.
-                Sign-offs are what families typed on the homework page.
-              </p>
-            </div>
-            <div class="fr-controls">
-              <label>
-                Teacher key
-                <input id="family-response-key" type="password" autocomplete="off" />
-              </label>
-              <label>
-                Window
-                <select id="family-response-days">
-                  <option value="7">Last 7 days</option>
-                  <option value="28" selected>Last 28 days</option>
-                  <option value="90">Last 90 days</option>
-                </select>
-              </label>
-              <button class="button button-secondary" id="family-response-load" type="button">
-                Show family activity
-              </button>
-            </div>
-            <div class="fr-report" id="family-response-report" aria-live="polite"></div>
-          </section>
-        </details>
-
-        <details class="tool-disclosure" id="homework-tools">
+        <details class="tool-disclosure" id="homework-tools" open>
           <summary>
             <span
               ><strong>Customize optional family practice</strong
@@ -215,12 +176,16 @@
           </summary>
           <section class="tool-body" id="homework-plan" aria-labelledby="homework-editor-title">
             <div class="tool-intro">
-              <p class="step-label">Optional tool</p>
+              <p class="step-label">Family practice</p>
               <h2 id="homework-editor-title">Optional family practice</h2>
               <p>
-                This is separate from regular homework. Families may use it to review or practice
-                together, and it is never graded.
+                Choose a lesson to adjust its family practice details. Families can review or
+                practice together, and this work is never graded.
               </p>
+            </div>
+            <div class="section-actions practice-section-select">
+              <label for="section-editor">Preview class</label>
+              <select id="section-editor"></select>
             </div>
             <div class="homework-workbench">
               <div class="lesson-picker">
@@ -302,6 +267,44 @@
                 </button>
               </form>
             </div>
+          </section>
+        </details>
+
+        <details class="tool-disclosure" id="family-response-tools">
+          <summary>
+            <span
+              ><strong>How families used this week</strong
+              ><small>Practice opens by entry point, and who signed off</small></span
+            >
+            <span aria-hidden="true">+</span>
+          </summary>
+          <section class="tool-body" aria-labelledby="family-response-title">
+            <div class="tool-intro">
+              <p class="step-label">Reporting</p>
+              <h2 id="family-response-title">Did posting the week change anything?</h2>
+              <p>
+                Practice opens are counted per lesson and per entry point, never per family.
+                Sign-offs are what families typed on the homework page.
+              </p>
+            </div>
+            <div class="fr-controls">
+              <label>
+                Teacher key
+                <input id="family-response-key" type="password" autocomplete="off" />
+              </label>
+              <label>
+                Window
+                <select id="family-response-days">
+                  <option value="7">Last 7 days</option>
+                  <option value="28" selected>Last 28 days</option>
+                  <option value="90">Last 90 days</option>
+                </select>
+              </label>
+              <button class="button button-secondary" id="family-response-load" type="button">
+                Show family activity
+              </button>
+            </div>
+            <div class="fr-report" id="family-response-report" aria-live="polite"></div>
           </section>
         </details>
 
@@ -781,9 +784,9 @@
         <section class="editor-section" id="preview-plan" aria-labelledby="preview-title">
           <div class="section-heading">
             <div>
-              <p class="step-label">2 · Check the family view</p>
-              <h2 id="preview-title">See what families will see.</h2>
-              <p>Preview is not live. Use the header buttons to save, preview, and publish.</p>
+              <p class="step-label">Check the family view</p>
+              <h2 id="preview-title">Preview family homework</h2>
+              <p>See the current family page for the selected class before publishing.</p>
             </div>
           </div>
           <div class="preview-banner">Preview — not live</div>
