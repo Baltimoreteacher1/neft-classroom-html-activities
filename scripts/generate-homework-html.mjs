@@ -620,9 +620,17 @@ function lessonConfigs() {
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
 // Visual model + "show your work" space. Persists (saveState) and prints with lines.
-function renderWorkspace(pIdx, g) {
+function renderWorkspace(pIdx, g, topic) {
   const visual = SVG_GRID;
-  const itype = null;
+  // Restore the graphing surfaces while keeping the corrected question-specific
+  // coaching. Do not use number lines for fraction division or statistics.
+  const itype =
+    {
+      "number-line": "number-line",
+      inequalities: "number-line",
+      "coordinate-plane": "coordinate-plane",
+      area: "grid",
+    }[topic] || null;
 
   // Interactive graphing topics (number line, coordinate plane, grid): the static
   // SVG is hydrated into a tap-to-graph widget by NeftGraph. A hidden input lets
@@ -1012,7 +1020,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     "open-response",
   ].includes(type);
   const guide = questionGuide(it);
-  const scaffold = computational ? renderWorkspace(pIdx, guide) : "";
+  const scaffold = computational ? renderWorkspace(pIdx, guide, topic) : "";
   const coachLadder = {
     strategyEn: guide.coach,
     strategyEs: guide.coachEs,
@@ -2325,10 +2333,12 @@ header.homework-header h1 {
 }
 
 .mobile-cat-select {
-  display: none;
+  display: block;
   font-family: inherit;
-  font-size: 11px;
-  padding: 2px 4px;
+  font-size: 16px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 6px 8px;
   border-radius: 4px;
   border: 1px solid var(--line);
   outline: none;
@@ -5450,29 +5460,51 @@ var NeftGraph = (function () {
     return b;
   }
 
+  function graphNumberInput(container, label, value) {
+    var wrap = document.createElement("label");
+    wrap.innerHTML = label + " ";
+    var input = document.createElement("input");
+    input.type = "number"; input.step = "any"; input.value = value;
+    input.style.width = "6em"; input.style.minHeight = "44px";
+    wrap.appendChild(input); container.appendChild(wrap);
+    return input;
+  }
+  function graphHit(node, label, action) {
+    node.setAttribute("role", "button"); node.setAttribute("tabindex", "0");
+    node.setAttribute("aria-label", label);
+    node.addEventListener("click", action);
+    node.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); action(); }
+    });
+  }
+
   // ----- Number line: tap a tick to set the boundary, toggle open/closed, shade a ray -----
   function initNumberLine(frame) {
     var MIN = -5, MAX = 5, x0 = 24, x1 = 320, y = 46;
     var stepX = (x1 - x0) / (MAX - MIN);
     var state = readState(frame) || { v: null, closed: true, dir: null };
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive number line" });
-    var rayLayer = el("g"), pointLayer = el("g");
+    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive number line" });
+    var tickLayer = el("g"), rayLayer = el("g"), pointLayer = el("g");
+    svg.appendChild(tickLayer);
     svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "#12355b", "stroke-width": 2 }));
     svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "#12355b" }));
     svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "#12355b" }));
     function xFor(v) { return x0 + (v - MIN) * stepX; }
-    for (var v = MIN; v <= MAX; v++) {
-      var x = xFor(v);
-      svg.appendChild(el("line", { x1: x, y1: y - 6, x2: x, y2: y + 6, stroke: "#12355b", "stroke-width": 1.5 }));
-      var lbl = el("text", { x: x, y: y + 22, "text-anchor": "middle", "class": "ng-tick-lbl" });
-      lbl.textContent = String(v);
-      svg.appendChild(lbl);
-      (function (val, cx) {
-        var hit = el("rect", { x: cx - stepX / 2, y: 6, width: stepX, height: 60, "class": "ng-hit" });
-        hit.addEventListener("click", function () { state.v = val; render(); });
-        svg.appendChild(hit);
-      })(v, x);
+    function drawTicks() {
+      tickLayer.replaceChildren();
+      var tickStep = Math.max(1, Math.ceil(MAX / 5));
+      for (var v = MIN; v <= MAX; v += tickStep) {
+        var x = xFor(v);
+        tickLayer.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"#12355b" }));
+        var lbl = el("text", { x:x, y:y+22, "text-anchor":"middle", "class":"ng-tick-lbl" });
+        lbl.textContent = String(v); tickLayer.appendChild(lbl);
+        (function(val, cx) {
+          var hit = el("rect", { x:cx-stepX*tickStep/2, y:6, width:stepX*tickStep, height:60, "class":"ng-hit" });
+          graphHit(hit, "Plot / Marcar " + val, function() { state.v=val; render(); });
+          tickLayer.appendChild(hit);
+        })(v,x);
+      }
     }
     svg.appendChild(rayLayer);
     svg.appendChild(pointLayer);
@@ -5480,12 +5512,22 @@ var NeftGraph = (function () {
 
     var controls = frame.querySelector("[data-graph-controls]");
     controls.innerHTML = "";
+    var boundary = graphNumberInput(controls, bi("Boundary", "Límite"), state.v ?? "");
+    boundary.addEventListener("change", function() {
+      if (boundary.value === "") { state.v = null; render(); return; }
+      var value = Number(boundary.value);
+      if (Number.isFinite(value)) { state.v = value; render(); }
+    });
     var bCircle = makeBtn("", function () { state.closed = !state.closed; render(); });
     var bLeft = makeBtn(bi("◀ Shade left", "◀ Sombrear izq."), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
     var bRight = makeBtn(bi("Shade right ▶", "Sombrear der. ▶"), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
     controls.appendChild(bCircle); controls.appendChild(bLeft); controls.appendChild(bRight);
 
     function render() {
+      MAX = Math.max(5, Math.ceil(Math.abs(state.v || 0) / 5) * 5);
+      MIN = -MAX; stepX = (x1-x0)/(MAX-MIN);
+      boundary.value = state.v ?? "";
+      drawTicks();
       while (rayLayer.firstChild) rayLayer.removeChild(rayLayer.firstChild);
       while (pointLayer.firstChild) pointLayer.removeChild(pointLayer.firstChild);
       bCircle.innerHTML = state.closed ? bi("● Closed", "● Cerrado") : bi("○ Open", "○ Abierto");
@@ -5520,7 +5562,7 @@ var NeftGraph = (function () {
     var MIN = -5, MAX = 5, O = 120, STEP = 20; // origin at (120,120); 5*20=100 -> 20..220
     var state = readState(frame) || { pts: [] };
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive coordinate plane" });
+    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive coordinate plane" });
     function sx(x) { return O + x * STEP; }
     function sy(yv) { return O - yv * STEP; }
     for (var i = MIN; i <= MAX; i++) {
@@ -5531,19 +5573,47 @@ var NeftGraph = (function () {
     svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
     var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
     var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
-    var plotLayer = el("g");
-    for (var gx = MIN; gx <= MAX; gx++) {
-      for (var gy = MIN; gy <= MAX; gy++) {
-        (function (px, py) {
-          var hit = el("circle", { cx: sx(px), cy: sy(py), r: 9, "class": "ng-hit" });
-          hit.addEventListener("click", function () { toggle(px, py); });
-          svg.appendChild(hit);
-        })(gx, gy);
-      }
-    }
+    var plotLayer = el("g"), hitLayer = el("g");
+    svg.appendChild(hitLayer);
     svg.appendChild(plotLayer);
     oldSvg.parentNode.replaceChild(svg, oldSvg);
 
+    var controls = frame.querySelector("[data-graph-controls]");
+    var xInput = graphNumberInput(controls, "x", 0);
+    var yInput = graphNumberInput(controls, "y", 0);
+    controls.appendChild(makeBtn(bi("Plot / remove point", "Marcar / quitar punto"), function() {
+      if (xInput.value === "" || yInput.value === "") return;
+      var x = Number(xInput.value), y = Number(yInput.value);
+      if (Number.isFinite(x) && Number.isFinite(y)) toggle(x,y);
+    }));
+    function drawGrid() {
+      MAX = Math.max(5, ...state.pts.flat().map(function(v) { return Math.ceil(Math.abs(v)/5)*5; }));
+      MIN = -MAX; STEP = 100/MAX;
+      // Remove the old fixed grid and labels, keeping the plot and hit layers.
+      Array.from(svg.children).forEach(function(child) {
+        if (child !== plotLayer && child !== hitLayer) child.remove();
+      });
+      hitLayer.replaceChildren();
+      var tickStep = Math.max(1, Math.ceil(MAX/5));
+      for (var i=MIN; i<=MAX; i+=tickStep) {
+        var shade = i === 0 ? "#12355b" : "#d6e2ee";
+        svg.insertBefore(el("line", {x1:sx(i),y1:sy(MAX),x2:sx(i),y2:sy(MIN),stroke:shade}), hitLayer);
+        svg.insertBefore(el("line", {x1:sx(MIN),y1:sy(i),x2:sx(MAX),y2:sy(i),stroke:shade}), hitLayer);
+        var label = el("text", {x:sx(i), y:O+14, "class":"ng-tick-lbl", "text-anchor":"middle"});
+        label.textContent = i; svg.insertBefore(label,hitLayer);
+        if (i) {
+          var yLabel = el("text", {x:O+4,y:sy(i)-3,"class":"ng-tick-lbl"});
+          yLabel.textContent=i; svg.insertBefore(yLabel,hitLayer);
+        }
+        for (var j=MIN; j<=MAX; j+=tickStep) {
+          (function(x,y) {
+            var hit = el("circle", {cx:sx(x),cy:sy(y),r:8,"class":"ng-hit"});
+            graphHit(hit,"Plot / Marcar ("+x+", "+y+")",function(){toggle(x,y);});
+            hitLayer.appendChild(hit);
+          })(i,j);
+        }
+      }
+    }
     function toggle(x, y) {
       var idx = -1;
       for (var i = 0; i < state.pts.length; i++) { if (state.pts[i][0] === x && state.pts[i][1] === y) { idx = i; break; } }
@@ -5551,6 +5621,7 @@ var NeftGraph = (function () {
       render();
     }
     function render() {
+      drawGrid();
       while (plotLayer.firstChild) plotLayer.removeChild(plotLayer.firstChild);
       var parts = [];
       for (var i = 0; i < state.pts.length; i++) {
@@ -5576,7 +5647,7 @@ var NeftGraph = (function () {
     var state = readState(frame) || { cells: [] };
     var on = {}; for (var i = 0; i < state.cells.length; i++) on[state.cells[i]] = true;
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "img", "aria-label": "Interactive grid" });
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "group", "aria-label": "Interactive grid" });
     svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "#ffffff", stroke: "#12355b", "stroke-width": 1.5 }));
     var cellLayer = el("g");
     svg.appendChild(cellLayer);
@@ -5587,7 +5658,7 @@ var NeftGraph = (function () {
         (function (row, col) {
           var key = row + "," + col;
           var rect = el("rect", { x: PAD + col * CELL, y: PAD + row * CELL, width: CELL, height: CELL, "class": "ng-cell" + (on[key] ? " is-on" : "") });
-          rect.addEventListener("click", function () {
+          graphHit(rect, "Square / Cuadro " + (row+1) + ", " + (col+1), function () {
             if (on[key]) { delete on[key]; rect.setAttribute("class", "ng-cell"); }
             else { on[key] = true; rect.setAttribute("class", "ng-cell is-on"); }
             commit();
@@ -5657,6 +5728,7 @@ window.onload = function() {
   document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
       if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
+      e.stopPropagation();
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
@@ -5669,10 +5741,12 @@ window.onload = function() {
   });
 
   document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
-    zone.addEventListener("click", function() {
+    zone.addEventListener("click", function(e) {
       if (!selectedDragCard) return;
+      if (e.target.closest('.drag-card')) return;
       const probIdx = selectedDragCard.id.split("_")[1];
-      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+      if (this.closest('.drag-sort-workspace') !== selectedDragCard.closest('.drag-sort-workspace')) return;
+      e.stopPropagation();
 
       let targetContainer = null;
       let categoryId = "";

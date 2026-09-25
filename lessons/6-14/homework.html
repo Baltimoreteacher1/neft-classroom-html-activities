@@ -1445,10 +1445,12 @@ header.homework-header h1 {
 }
 
 .mobile-cat-select {
-  display: none;
+  display: block;
   font-family: inherit;
-  font-size: 11px;
-  padding: 2px 4px;
+  font-size: 16px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 6px 8px;
   border-radius: 4px;
   border: 1px solid var(--line);
   outline: none;
@@ -10778,9 +10780,9 @@ body {
               <button type="button" class="btn btn-secondary" onclick="retakePhotobooth()">
                 🔄 <span class="lang-en">Retake</span><span class="lang-es" lang="es">Repetir</span>
               </button>
-              <button type="button" class="btn btn-success" onclick="downloadPhotoboothPhoto()">
+              <a class="btn btn-success" id="pb_download_link" download="Math-Work-Photobooth.jpg">
                 📥 <span class="lang-en">Download Photo</span><span class="lang-es" lang="es">Descargar Foto</span>
-              </button>
+              </a>
               <button type="button" class="btn btn-primary" onclick="printPhotoboothPhoto()">
                 🖨️ <span class="lang-en">Print Photo</span><span class="lang-es" lang="es">Imprimir Foto</span>
               </button>
@@ -12663,17 +12665,26 @@ function initDrawCanvases() {
     function resize() {
       const r = frame.getBoundingClientRect();
       if (!r.width) return;
-      const prev = canvas.toDataURL && canvas.width ? canvas.toDataURL() : null;
-      canvas.width = Math.round(r.width); canvas.height = Math.round(r.height);
+      const width = Math.round(r.width), height = Math.round(r.height);
+      if (!width || !height || (canvas.width === width && canvas.height === height)) return;
+      const prev = document.createElement('canvas');
+      prev.width = canvas.width; prev.height = canvas.height;
+      prev.getContext('2d').drawImage(canvas, 0, 0);
+      canvas.width = width; canvas.height = height;
       ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
-      if (prev) { const img = new Image(); img.onload = function(){ ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src = prev; }
+      ctx.drawImage(prev, 0, 0, width, height);
     }
     function pos(e) {
       const r = canvas.getBoundingClientRect();
       const t = e.touches ? e.touches[0] : e;
-      return { x: t.clientX - r.left, y: t.clientY - r.top };
+      return { x: (t.clientX - r.left) * canvas.width / r.width,
+        y: (t.clientY - r.top) * canvas.height / r.height };
     }
-    function start(e) { drawing = true; last = pos(e); e.preventDefault(); }
+    function start(e) {
+      resize();
+      drawing = true; last = pos(e); e.preventDefault();
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    }
     function move(e) {
       if (!drawing) return;
       const p = pos(e);
@@ -12684,11 +12695,16 @@ function initDrawCanvases() {
     canvas.addEventListener('pointerdown', start);
     canvas.addEventListener('pointermove', move);
     window.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('lostpointercapture', end);
     const clearBtn = frame.querySelector('[data-draw-clear]');
     if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
     resize();
     window.addEventListener('resize', resize);
+    if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
   });
+}
+
 /* ── Photobooth Studio with Math Work ─────────────────────────────────── */
 /* This is a camera pointed at a notebook page on a family's phone, so every
    path that can fail has to fail politely: a denied permission, a browser with
@@ -12706,6 +12722,9 @@ var pbState = {
   capturedDataUrl: '',
   countdownTimer: null,
   flashTimer: null,
+  cameraRequestId: 0,
+  downloadUrl: '',
+  exportRequestId: 0,
 };
 
 function pbEl(id) { return document.getElementById(id); }
@@ -12826,6 +12845,7 @@ function startPhotoboothCamera() {
   // Starting over a running stream leaves the old camera light on, so stop
   // first. stopPhotoboothStream() also clears any countdown still ticking.
   stopPhotoboothStream({ keepStage: true });
+  var requestId = pbState.cameraRequestId;
 
   var startBtn = pbEl('pb_start_btn');
   if (startBtn) startBtn.disabled = true;
@@ -12842,6 +12862,10 @@ function startPhotoboothCamera() {
 
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
+      if (requestId !== pbState.cameraRequestId) {
+        stream.getTracks().forEach(function(track) { track.stop(); });
+        return;
+      }
       pbState.stream = stream;
       var video = pbEl('pb_video');
       if (video) {
@@ -12854,6 +12878,7 @@ function startPhotoboothCamera() {
       if (startBtn) startBtn.disabled = false;
     })
     .catch(function(err) {
+      if (requestId !== pbState.cameraRequestId) return;
       console.warn('Camera access denied or unavailable:', err);
       var name = (err && err.name) || '';
       if (name === 'NotAllowedError' || name === 'SecurityError') {
@@ -12888,6 +12913,9 @@ function cancelPhotoboothCountdown() {
 }
 
 function stopPhotoboothStream(opts) {
+  pbState.cameraRequestId++;
+  var startBtn = pbEl('pb_start_btn');
+  if (startBtn) startBtn.disabled = false;
   cancelPhotoboothCountdown();
   if (pbState.stream) {
     try {
@@ -13220,6 +13248,7 @@ function renderPhotoboothComposite() {
     var resImg = pbEl('pb_captured_img');
     if (resImg) resImg.src = compositeUrl;
     currentWorkPhotoData = compositeUrl;
+    preparePhotoboothDownload(canvas, compositeUrl);
     renderPhotoboothStage('captured');
     setPhotoboothStatus(
       'Looking good! Download it, print it, or attach it to the parent sign-off.',
@@ -13236,6 +13265,11 @@ function renderPhotoboothComposite() {
 }
 
 function retakePhotobooth() {
+  pbState.exportRequestId++;
+  if (pbState.downloadUrl) URL.revokeObjectURL(pbState.downloadUrl);
+  pbState.downloadUrl = '';
+  var downloadLink = pbEl('pb_download_link');
+  if (downloadLink) downloadLink.removeAttribute('href');
   pbState.capturedDataUrl = '';
   currentWorkPhotoData = '';
   var resImg = pbEl('pb_captured_img');
@@ -13251,46 +13285,28 @@ function retakePhotobooth() {
 }
 window.retakePhotobooth = retakePhotobooth;
 
-function downloadPhotoboothPhoto() {
-  var canvas = pbEl('pb_canvas');
-  if (!canvas || !pbState.capturedDataUrl) {
-    setPhotoboothStatus(
-      'Take or upload a photo first, then download it.',
-      'Primero tomen o suban una foto, y luego descárguenla.',
-      'warn');
-    return;
-  }
-  var name = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
-
-  var save = function(href, revoke) {
-    var link = document.createElement('a');
-    link.href = href;
-    link.download = name;
-    link.rel = 'noopener';
-    link.style.display = 'none';
-    // Firefox ignores a click on a link that is not in the document.
-    document.body.appendChild(link);
-    link.click();
-    setTimeout(function() {
-      if (link.parentNode) link.parentNode.removeChild(link);
-      if (revoke) { try { URL.revokeObjectURL(href); } catch(e) {} }
-    }, 4000);
-    setPhotoboothStatus(
-      'Saved to your downloads. If the photo opened instead, press and hold it to save it.',
-      'Guardada en sus descargas. Si la foto se abrió en vez de guardarse, manténganla presionada para guardarla.',
-      'ok');
-  };
-
-  // A blob URL is what lets iOS and Android actually keep the file; a large
-  // data: URL is refused by several mobile browsers.
-  if (canvas.toBlob) {
+// Prepare the file before the tap. A synthetic click inside toBlob's async
+// callback loses the browser's user gesture and is blocked by some webviews.
+function preparePhotoboothDownload(canvas, fallbackUrl) {
+  var link = pbEl('pb_download_link');
+  if (!link) return;
+  var requestId = ++pbState.exportRequestId;
+  if (pbState.downloadUrl) URL.revokeObjectURL(pbState.downloadUrl);
+  pbState.downloadUrl = '';
+  link.href = fallbackUrl;
+  link.download = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
+  if (canvas.toBlob && URL.createObjectURL) {
     canvas.toBlob(function(blob) {
-      if (!blob) { save(canvas.toDataURL('image/jpeg', 0.92), false); return; }
-      save(URL.createObjectURL(blob), true);
+      if (!blob || requestId !== pbState.exportRequestId) return;
+      pbState.downloadUrl = URL.createObjectURL(blob);
+      link.href = pbState.downloadUrl;
     }, 'image/jpeg', 0.92);
-  } else {
-    save(canvas.toDataURL('image/jpeg', 0.92), false);
   }
+}
+
+function downloadPhotoboothPhoto() {
+  var link = pbEl('pb_download_link');
+  if (link && link.getAttribute('href')) link.click();
 }
 window.downloadPhotoboothPhoto = downloadPhotoboothPhoto;
 
@@ -13404,7 +13420,12 @@ function attachPhotoboothToSignoff() {
   setTimeout(function() {
     switchHomeworkTab('done');
     var formEl = pbEl('signoff_form_wrapper');
-    if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+    if (formEl) {
+      var extras = formEl.closest('details');
+      if (extras) extras.open = true;
+      editParentSignoff();
+      formEl.scrollIntoView({ behavior: 'smooth' });
+    }
   }, 600);
 }
 window.attachPhotoboothToSignoff = attachPhotoboothToSignoff;
@@ -13415,7 +13436,6 @@ window.addEventListener('pagehide', function() { stopPhotoboothStream({ keepStag
 document.addEventListener('visibilitychange', function() {
   if (document.hidden) stopPhotoboothStream({ keepStage: true });
 });
-}
 
 
 let hwGameRound = 0;
@@ -16135,29 +16155,51 @@ var NeftGraph = (function () {
     return b;
   }
 
+  function graphNumberInput(container, label, value) {
+    var wrap = document.createElement("label");
+    wrap.innerHTML = label + " ";
+    var input = document.createElement("input");
+    input.type = "number"; input.step = "any"; input.value = value;
+    input.style.width = "6em"; input.style.minHeight = "44px";
+    wrap.appendChild(input); container.appendChild(wrap);
+    return input;
+  }
+  function graphHit(node, label, action) {
+    node.setAttribute("role", "button"); node.setAttribute("tabindex", "0");
+    node.setAttribute("aria-label", label);
+    node.addEventListener("click", action);
+    node.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); action(); }
+    });
+  }
+
   // ----- Number line: tap a tick to set the boundary, toggle open/closed, shade a ray -----
   function initNumberLine(frame) {
     var MIN = -5, MAX = 5, x0 = 24, x1 = 320, y = 46;
     var stepX = (x1 - x0) / (MAX - MIN);
     var state = readState(frame) || { v: null, closed: true, dir: null };
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive number line" });
-    var rayLayer = el("g"), pointLayer = el("g");
+    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive number line" });
+    var tickLayer = el("g"), rayLayer = el("g"), pointLayer = el("g");
+    svg.appendChild(tickLayer);
     svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "#12355b", "stroke-width": 2 }));
     svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "#12355b" }));
     svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "#12355b" }));
     function xFor(v) { return x0 + (v - MIN) * stepX; }
-    for (var v = MIN; v <= MAX; v++) {
-      var x = xFor(v);
-      svg.appendChild(el("line", { x1: x, y1: y - 6, x2: x, y2: y + 6, stroke: "#12355b", "stroke-width": 1.5 }));
-      var lbl = el("text", { x: x, y: y + 22, "text-anchor": "middle", "class": "ng-tick-lbl" });
-      lbl.textContent = String(v);
-      svg.appendChild(lbl);
-      (function (val, cx) {
-        var hit = el("rect", { x: cx - stepX / 2, y: 6, width: stepX, height: 60, "class": "ng-hit" });
-        hit.addEventListener("click", function () { state.v = val; render(); });
-        svg.appendChild(hit);
-      })(v, x);
+    function drawTicks() {
+      tickLayer.replaceChildren();
+      var tickStep = Math.max(1, Math.ceil(MAX / 5));
+      for (var v = MIN; v <= MAX; v += tickStep) {
+        var x = xFor(v);
+        tickLayer.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"#12355b" }));
+        var lbl = el("text", { x:x, y:y+22, "text-anchor":"middle", "class":"ng-tick-lbl" });
+        lbl.textContent = String(v); tickLayer.appendChild(lbl);
+        (function(val, cx) {
+          var hit = el("rect", { x:cx-stepX*tickStep/2, y:6, width:stepX*tickStep, height:60, "class":"ng-hit" });
+          graphHit(hit, "Plot / Marcar " + val, function() { state.v=val; render(); });
+          tickLayer.appendChild(hit);
+        })(v,x);
+      }
     }
     svg.appendChild(rayLayer);
     svg.appendChild(pointLayer);
@@ -16165,12 +16207,22 @@ var NeftGraph = (function () {
 
     var controls = frame.querySelector("[data-graph-controls]");
     controls.innerHTML = "";
+    var boundary = graphNumberInput(controls, bi("Boundary", "Límite"), state.v ?? "");
+    boundary.addEventListener("change", function() {
+      if (boundary.value === "") { state.v = null; render(); return; }
+      var value = Number(boundary.value);
+      if (Number.isFinite(value)) { state.v = value; render(); }
+    });
     var bCircle = makeBtn("", function () { state.closed = !state.closed; render(); });
     var bLeft = makeBtn(bi("◀ Shade left", "◀ Sombrear izq."), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
     var bRight = makeBtn(bi("Shade right ▶", "Sombrear der. ▶"), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
     controls.appendChild(bCircle); controls.appendChild(bLeft); controls.appendChild(bRight);
 
     function render() {
+      MAX = Math.max(5, Math.ceil(Math.abs(state.v || 0) / 5) * 5);
+      MIN = -MAX; stepX = (x1-x0)/(MAX-MIN);
+      boundary.value = state.v ?? "";
+      drawTicks();
       while (rayLayer.firstChild) rayLayer.removeChild(rayLayer.firstChild);
       while (pointLayer.firstChild) pointLayer.removeChild(pointLayer.firstChild);
       bCircle.innerHTML = state.closed ? bi("● Closed", "● Cerrado") : bi("○ Open", "○ Abierto");
@@ -16205,7 +16257,7 @@ var NeftGraph = (function () {
     var MIN = -5, MAX = 5, O = 120, STEP = 20; // origin at (120,120); 5*20=100 -> 20..220
     var state = readState(frame) || { pts: [] };
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive coordinate plane" });
+    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive coordinate plane" });
     function sx(x) { return O + x * STEP; }
     function sy(yv) { return O - yv * STEP; }
     for (var i = MIN; i <= MAX; i++) {
@@ -16216,19 +16268,47 @@ var NeftGraph = (function () {
     svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
     var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
     var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
-    var plotLayer = el("g");
-    for (var gx = MIN; gx <= MAX; gx++) {
-      for (var gy = MIN; gy <= MAX; gy++) {
-        (function (px, py) {
-          var hit = el("circle", { cx: sx(px), cy: sy(py), r: 9, "class": "ng-hit" });
-          hit.addEventListener("click", function () { toggle(px, py); });
-          svg.appendChild(hit);
-        })(gx, gy);
-      }
-    }
+    var plotLayer = el("g"), hitLayer = el("g");
+    svg.appendChild(hitLayer);
     svg.appendChild(plotLayer);
     oldSvg.parentNode.replaceChild(svg, oldSvg);
 
+    var controls = frame.querySelector("[data-graph-controls]");
+    var xInput = graphNumberInput(controls, "x", 0);
+    var yInput = graphNumberInput(controls, "y", 0);
+    controls.appendChild(makeBtn(bi("Plot / remove point", "Marcar / quitar punto"), function() {
+      if (xInput.value === "" || yInput.value === "") return;
+      var x = Number(xInput.value), y = Number(yInput.value);
+      if (Number.isFinite(x) && Number.isFinite(y)) toggle(x,y);
+    }));
+    function drawGrid() {
+      MAX = Math.max(5, ...state.pts.flat().map(function(v) { return Math.ceil(Math.abs(v)/5)*5; }));
+      MIN = -MAX; STEP = 100/MAX;
+      // Remove the old fixed grid and labels, keeping the plot and hit layers.
+      Array.from(svg.children).forEach(function(child) {
+        if (child !== plotLayer && child !== hitLayer) child.remove();
+      });
+      hitLayer.replaceChildren();
+      var tickStep = Math.max(1, Math.ceil(MAX/5));
+      for (var i=MIN; i<=MAX; i+=tickStep) {
+        var shade = i === 0 ? "#12355b" : "#d6e2ee";
+        svg.insertBefore(el("line", {x1:sx(i),y1:sy(MAX),x2:sx(i),y2:sy(MIN),stroke:shade}), hitLayer);
+        svg.insertBefore(el("line", {x1:sx(MIN),y1:sy(i),x2:sx(MAX),y2:sy(i),stroke:shade}), hitLayer);
+        var label = el("text", {x:sx(i), y:O+14, "class":"ng-tick-lbl", "text-anchor":"middle"});
+        label.textContent = i; svg.insertBefore(label,hitLayer);
+        if (i) {
+          var yLabel = el("text", {x:O+4,y:sy(i)-3,"class":"ng-tick-lbl"});
+          yLabel.textContent=i; svg.insertBefore(yLabel,hitLayer);
+        }
+        for (var j=MIN; j<=MAX; j+=tickStep) {
+          (function(x,y) {
+            var hit = el("circle", {cx:sx(x),cy:sy(y),r:8,"class":"ng-hit"});
+            graphHit(hit,"Plot / Marcar ("+x+", "+y+")",function(){toggle(x,y);});
+            hitLayer.appendChild(hit);
+          })(i,j);
+        }
+      }
+    }
     function toggle(x, y) {
       var idx = -1;
       for (var i = 0; i < state.pts.length; i++) { if (state.pts[i][0] === x && state.pts[i][1] === y) { idx = i; break; } }
@@ -16236,6 +16316,7 @@ var NeftGraph = (function () {
       render();
     }
     function render() {
+      drawGrid();
       while (plotLayer.firstChild) plotLayer.removeChild(plotLayer.firstChild);
       var parts = [];
       for (var i = 0; i < state.pts.length; i++) {
@@ -16261,7 +16342,7 @@ var NeftGraph = (function () {
     var state = readState(frame) || { cells: [] };
     var on = {}; for (var i = 0; i < state.cells.length; i++) on[state.cells[i]] = true;
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "img", "aria-label": "Interactive grid" });
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "group", "aria-label": "Interactive grid" });
     svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "#ffffff", stroke: "#12355b", "stroke-width": 1.5 }));
     var cellLayer = el("g");
     svg.appendChild(cellLayer);
@@ -16272,7 +16353,7 @@ var NeftGraph = (function () {
         (function (row, col) {
           var key = row + "," + col;
           var rect = el("rect", { x: PAD + col * CELL, y: PAD + row * CELL, width: CELL, height: CELL, "class": "ng-cell" + (on[key] ? " is-on" : "") });
-          rect.addEventListener("click", function () {
+          graphHit(rect, "Square / Cuadro " + (row+1) + ", " + (col+1), function () {
             if (on[key]) { delete on[key]; rect.setAttribute("class", "ng-cell"); }
             else { on[key] = true; rect.setAttribute("class", "ng-cell is-on"); }
             commit();
@@ -16342,6 +16423,7 @@ window.onload = function() {
   document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
       if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
+      e.stopPropagation();
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
@@ -16354,10 +16436,12 @@ window.onload = function() {
   });
 
   document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
-    zone.addEventListener("click", function() {
+    zone.addEventListener("click", function(e) {
       if (!selectedDragCard) return;
+      if (e.target.closest('.drag-card')) return;
       const probIdx = selectedDragCard.id.split("_")[1];
-      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+      if (this.closest('.drag-sort-workspace') !== selectedDragCard.closest('.drag-sort-workspace')) return;
+      e.stopPropagation();
 
       let targetContainer = null;
       let categoryId = "";

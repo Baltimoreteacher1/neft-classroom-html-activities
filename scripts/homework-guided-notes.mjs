@@ -8391,9 +8391,9 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
               <button type="button" class="btn btn-secondary" onclick="retakePhotobooth()">
                 🔄 <span class="lang-en">Retake</span><span class="lang-es" lang="es">Repetir</span>
               </button>
-              <button type="button" class="btn btn-success" onclick="downloadPhotoboothPhoto()">
+              <a class="btn btn-success" id="pb_download_link" download="Math-Work-Photobooth.jpg">
                 📥 <span class="lang-en">Download Photo</span><span class="lang-es" lang="es">Descargar Foto</span>
-              </button>
+              </a>
               <button type="button" class="btn btn-primary" onclick="printPhotoboothPhoto()">
                 🖨️ <span class="lang-en">Print Photo</span><span class="lang-es" lang="es">Imprimir Foto</span>
               </button>
@@ -10321,17 +10321,26 @@ function initDrawCanvases() {
     function resize() {
       const r = frame.getBoundingClientRect();
       if (!r.width) return;
-      const prev = canvas.toDataURL && canvas.width ? canvas.toDataURL() : null;
-      canvas.width = Math.round(r.width); canvas.height = Math.round(r.height);
+      const width = Math.round(r.width), height = Math.round(r.height);
+      if (!width || !height || (canvas.width === width && canvas.height === height)) return;
+      const prev = document.createElement('canvas');
+      prev.width = canvas.width; prev.height = canvas.height;
+      prev.getContext('2d').drawImage(canvas, 0, 0);
+      canvas.width = width; canvas.height = height;
       ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
-      if (prev) { const img = new Image(); img.onload = function(){ ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src = prev; }
+      ctx.drawImage(prev, 0, 0, width, height);
     }
     function pos(e) {
       const r = canvas.getBoundingClientRect();
       const t = e.touches ? e.touches[0] : e;
-      return { x: t.clientX - r.left, y: t.clientY - r.top };
+      return { x: (t.clientX - r.left) * canvas.width / r.width,
+        y: (t.clientY - r.top) * canvas.height / r.height };
     }
-    function start(e) { drawing = true; last = pos(e); e.preventDefault(); }
+    function start(e) {
+      resize();
+      drawing = true; last = pos(e); e.preventDefault();
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    }
     function move(e) {
       if (!drawing) return;
       const p = pos(e);
@@ -10342,11 +10351,16 @@ function initDrawCanvases() {
     canvas.addEventListener('pointerdown', start);
     canvas.addEventListener('pointermove', move);
     window.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('lostpointercapture', end);
     const clearBtn = frame.querySelector('[data-draw-clear]');
     if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
     resize();
     window.addEventListener('resize', resize);
+    if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
   });
+}
+
 /* ── Photobooth Studio with Math Work ─────────────────────────────────── */
 /* This is a camera pointed at a notebook page on a family's phone, so every
    path that can fail has to fail politely: a denied permission, a browser with
@@ -10364,6 +10378,9 @@ var pbState = {
   capturedDataUrl: '',
   countdownTimer: null,
   flashTimer: null,
+  cameraRequestId: 0,
+  downloadUrl: '',
+  exportRequestId: 0,
 };
 
 function pbEl(id) { return document.getElementById(id); }
@@ -10484,6 +10501,7 @@ function startPhotoboothCamera() {
   // Starting over a running stream leaves the old camera light on, so stop
   // first. stopPhotoboothStream() also clears any countdown still ticking.
   stopPhotoboothStream({ keepStage: true });
+  var requestId = pbState.cameraRequestId;
 
   var startBtn = pbEl('pb_start_btn');
   if (startBtn) startBtn.disabled = true;
@@ -10500,6 +10518,10 @@ function startPhotoboothCamera() {
 
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
+      if (requestId !== pbState.cameraRequestId) {
+        stream.getTracks().forEach(function(track) { track.stop(); });
+        return;
+      }
       pbState.stream = stream;
       var video = pbEl('pb_video');
       if (video) {
@@ -10512,6 +10534,7 @@ function startPhotoboothCamera() {
       if (startBtn) startBtn.disabled = false;
     })
     .catch(function(err) {
+      if (requestId !== pbState.cameraRequestId) return;
       console.warn('Camera access denied or unavailable:', err);
       var name = (err && err.name) || '';
       if (name === 'NotAllowedError' || name === 'SecurityError') {
@@ -10546,6 +10569,9 @@ function cancelPhotoboothCountdown() {
 }
 
 function stopPhotoboothStream(opts) {
+  pbState.cameraRequestId++;
+  var startBtn = pbEl('pb_start_btn');
+  if (startBtn) startBtn.disabled = false;
   cancelPhotoboothCountdown();
   if (pbState.stream) {
     try {
@@ -10878,6 +10904,7 @@ function renderPhotoboothComposite() {
     var resImg = pbEl('pb_captured_img');
     if (resImg) resImg.src = compositeUrl;
     currentWorkPhotoData = compositeUrl;
+    preparePhotoboothDownload(canvas, compositeUrl);
     renderPhotoboothStage('captured');
     setPhotoboothStatus(
       'Looking good! Download it, print it, or attach it to the parent sign-off.',
@@ -10894,6 +10921,11 @@ function renderPhotoboothComposite() {
 }
 
 function retakePhotobooth() {
+  pbState.exportRequestId++;
+  if (pbState.downloadUrl) URL.revokeObjectURL(pbState.downloadUrl);
+  pbState.downloadUrl = '';
+  var downloadLink = pbEl('pb_download_link');
+  if (downloadLink) downloadLink.removeAttribute('href');
   pbState.capturedDataUrl = '';
   currentWorkPhotoData = '';
   var resImg = pbEl('pb_captured_img');
@@ -10909,46 +10941,28 @@ function retakePhotobooth() {
 }
 window.retakePhotobooth = retakePhotobooth;
 
-function downloadPhotoboothPhoto() {
-  var canvas = pbEl('pb_canvas');
-  if (!canvas || !pbState.capturedDataUrl) {
-    setPhotoboothStatus(
-      'Take or upload a photo first, then download it.',
-      'Primero tomen o suban una foto, y luego descárguenla.',
-      'warn');
-    return;
-  }
-  var name = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
-
-  var save = function(href, revoke) {
-    var link = document.createElement('a');
-    link.href = href;
-    link.download = name;
-    link.rel = 'noopener';
-    link.style.display = 'none';
-    // Firefox ignores a click on a link that is not in the document.
-    document.body.appendChild(link);
-    link.click();
-    setTimeout(function() {
-      if (link.parentNode) link.parentNode.removeChild(link);
-      if (revoke) { try { URL.revokeObjectURL(href); } catch(e) {} }
-    }, 4000);
-    setPhotoboothStatus(
-      'Saved to your downloads. If the photo opened instead, press and hold it to save it.',
-      'Guardada en sus descargas. Si la foto se abrió en vez de guardarse, manténganla presionada para guardarla.',
-      'ok');
-  };
-
-  // A blob URL is what lets iOS and Android actually keep the file; a large
-  // data: URL is refused by several mobile browsers.
-  if (canvas.toBlob) {
+// Prepare the file before the tap. A synthetic click inside toBlob's async
+// callback loses the browser's user gesture and is blocked by some webviews.
+function preparePhotoboothDownload(canvas, fallbackUrl) {
+  var link = pbEl('pb_download_link');
+  if (!link) return;
+  var requestId = ++pbState.exportRequestId;
+  if (pbState.downloadUrl) URL.revokeObjectURL(pbState.downloadUrl);
+  pbState.downloadUrl = '';
+  link.href = fallbackUrl;
+  link.download = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
+  if (canvas.toBlob && URL.createObjectURL) {
     canvas.toBlob(function(blob) {
-      if (!blob) { save(canvas.toDataURL('image/jpeg', 0.92), false); return; }
-      save(URL.createObjectURL(blob), true);
+      if (!blob || requestId !== pbState.exportRequestId) return;
+      pbState.downloadUrl = URL.createObjectURL(blob);
+      link.href = pbState.downloadUrl;
     }, 'image/jpeg', 0.92);
-  } else {
-    save(canvas.toDataURL('image/jpeg', 0.92), false);
   }
+}
+
+function downloadPhotoboothPhoto() {
+  var link = pbEl('pb_download_link');
+  if (link && link.getAttribute('href')) link.click();
 }
 window.downloadPhotoboothPhoto = downloadPhotoboothPhoto;
 
@@ -11062,7 +11076,12 @@ function attachPhotoboothToSignoff() {
   setTimeout(function() {
     switchHomeworkTab('done');
     var formEl = pbEl('signoff_form_wrapper');
-    if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+    if (formEl) {
+      var extras = formEl.closest('details');
+      if (extras) extras.open = true;
+      editParentSignoff();
+      formEl.scrollIntoView({ behavior: 'smooth' });
+    }
   }, 600);
 }
 window.attachPhotoboothToSignoff = attachPhotoboothToSignoff;
@@ -11073,7 +11092,6 @@ window.addEventListener('pagehide', function() { stopPhotoboothStream({ keepStag
 document.addEventListener('visibilitychange', function() {
   if (document.hidden) stopPhotoboothStream({ keepStage: true });
 });
-}
 `;
 
 export const GUIDED_NOTES_CSS = `
