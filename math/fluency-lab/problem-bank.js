@@ -130,7 +130,7 @@ const generators = {
     const askValue = config.askValue ?? rng() > 0.5;
     return problem(
       askValue
-        ? `What is the value of the ${digit} in ${whole.format(n)}?`
+        ? `What is the value of the digit in the ${placeName} place of ${whole.format(n)}?`
         : `What digit is in the ${placeName} place of ${whole.format(n)}?`,
       askValue ? digit * place : digit,
       {
@@ -173,7 +173,7 @@ const generators = {
   },
 
   timeAdd(config, rng) {
-    const start = randInt(1, 11, rng) * 60 + pick([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], rng);
+    const start = randInt(1, 11, rng) * 60 + pick(config.startMinutes || [0, 30], rng);
     const elapsed = pick(config.elapsed || [15, 20, 25, 30, 35, 45, 60], rng);
     return problem(`What time is ${elapsed} minutes after ${timeText(start)}?`, timeText(start + elapsed), {
       kind: "text",
@@ -287,7 +287,7 @@ const generators = {
     const scale = 10 ** places;
     const n = randInt(1, scale * 10 - 1, rng) / scale;
     const place = randInt(1, places, rng);
-    const digit = Math.floor(n * 10 ** place) % 10;
+    const digit = Number(n.toFixed(places).split(".")[1][place - 1]);
     const names = ["tenths", "hundredths", "thousandths"];
     return problem(`What digit is in the ${names[place - 1]} place of ${n.toFixed(places)}?`, digit, {
       hint: "The first digit after the decimal is tenths, then hundredths, then thousandths.",
@@ -834,6 +834,8 @@ export const GRADES = [
   },
 ];
 
+for (const grade of GRADES) for (const skill of grade.skills) skill.grade = grade.grade;
+
 export const ALL_SKILLS = GRADES.flatMap((grade) =>
   grade.skills.map((skill) => ({ ...skill, grade: grade.grade, gradeLabel: grade.label, color: grade.color })),
 );
@@ -856,6 +858,7 @@ const compact = (value) => String(value).trim().toLowerCase().replace(/\s+/g, ""
 const parseFraction = (value) => {
   const cleaned = compact(value).replace("−", "-");
   if (cleaned.includes("/")) {
+    if (!/^[+-]?\d+(?:\.\d+)?\/[+-]?\d+(?:\.\d+)?$/.test(cleaned)) return NaN;
     const [n, d] = cleaned.split("/").map(Number);
     return Number.isFinite(n) && Number.isFinite(d) && d !== 0 ? n / d : NaN;
   }

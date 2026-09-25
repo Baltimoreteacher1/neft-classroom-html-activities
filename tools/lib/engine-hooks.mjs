@@ -25,8 +25,11 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", ".
 const ENGINE = path.join(ROOT, "engine");
 
 export function resolve(specifier, context, nextResolve) {
-  if (specifier.startsWith("@engine/")) {
-    const target = path.join(ENGINE, specifier.slice("@engine/".length));
+  // Worktrees can share node_modules. Resolve the workspace package against
+  // this checkout too, rather than following its link into a different tree.
+  const prefix = ["@engine/", "@eduwonderlab/engine/"].find((value) => specifier.startsWith(value));
+  if (prefix) {
+    const target = path.join(ENGINE, specifier.slice(prefix.length));
     return { url: pathToFileURL(target).href, shortCircuit: true };
   }
   return nextResolve(specifier, context);
