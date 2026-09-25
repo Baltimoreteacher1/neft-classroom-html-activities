@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { JSDOM } from "jsdom";
 import { createDefaultSnapshot } from "./shared/model.js";
+import { isTeacherSurface } from "../../functions/_lib/teacher-surface.js";
 import {
   weekPhase,
   schoolDate,
@@ -30,6 +31,17 @@ test("family entry has only homework and messaging; legacy meetings keep their p
   const app = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
   assert.match(app, /query\.get\(["']section["']\) \|\| preferences\.sectionId/);
   assert.match(app, /location\.replace/);
+});
+test("teacher access returns to an inline editor behind the existing teacher gate", async () => {
+  const app = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
+  const login = await readFile(new URL("./teacher/login.html", import.meta.url), "utf8");
+  assert.match(html, /id="teacher-inline"[^>]*hidden/);
+  assert.match(html, /id="inline-days"/);
+  assert.match(html, /Teacher Login \/ Edit/);
+  assert.match(app, /if \(editRequested\) \{\s*try \{\s*editDraft = await loadDraft\(\)/);
+  assert.match(login, /destination\.searchParams\.set\("edit", "1"\)/);
+  assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/login.html"), true);
+  assert.equal(isTeacherSurface("/curriculum/family-connections/"), false);
 });
 test("freshness uses school date, handles missing/stale/future weeks and Sunday boundary", () => {
   assert.equal(schoolDate(new Date("2026-09-28T01:00:00Z")), "2026-09-27");
@@ -115,6 +127,7 @@ test("family homework keeps all five weekdays in order, including repeated lesso
       "", "",
     ]);
     assert.match(cards[3].textContent, /No homework posted/);
+    assert.equal(cards[0].querySelector(".day-work h4")?.textContent, "Unit rates");
     renderHomeworkHub(root, snapshot, lessons, "all-families", "es", {
       now: new Date("2026-09-24T12:00:00Z"),
     });

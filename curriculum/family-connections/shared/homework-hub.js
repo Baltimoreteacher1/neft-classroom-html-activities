@@ -144,12 +144,14 @@ export function renderHomeworkHub(
       const item = byDay.get(day);
       const card = el("article", undefined, "homework-card");
       card.append(el("h3", t(day, { Monday: "Lunes", Tuesday: "Martes", Wednesday: "Miércoles", Thursday: "Jueves", Friday: "Viernes" }[day])));
+      const content = el("div", undefined, "day-work");
       if (!item) {
-        card.append(el("p", t("No homework posted for this day.", "No hay tarea publicada para este día."), "quiet"));
+        content.append(el("p", t("No homework posted for this day.", "No hay tarea publicada para este día."), "quiet"));
+        card.append(content);
         list.append(card);
         continue;
       }
-      card.append(
+      content.append(
         el(
           "p",
           `${t("Lesson", "Lección")} ${item.id} · ${t("About 10 minutes", "Unos 10 minutos")}`,
@@ -157,15 +159,15 @@ export function renderHomeworkHub(
         ),
       );
       const override = snapshot.homeworkOverrides?.[item.id];
-      card.append(el("h4", pickLang(override?.title || item.title, override?.titleEs || item.titleEs, lang)));
+      content.append(el("h4", pickLang(override?.title || item.title, override?.titleEs || item.titleEs, lang)));
       const noteText = pickLang(item.entry.note, item.entry.noteEs, lang);
-      if (noteText) card.append(el("p", noteText));
+      if (noteText) content.append(el("p", noteText));
       if (
         item.entry.dueDate &&
         /^\d{4}-\d{2}-\d{2}$/.test(item.entry.dueDate) &&
         addDays(item.entry.dueDate, 0) === item.entry.dueDate
       )
-        card.append(el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"));
+        content.append(el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"));
       const link = el("a", t("Open homework", "Abrir tarea"), "button");
       const path = /^\/lessons\/\d{1,2}-\d{1,2}(?:-flagship)?\/homework(?:\.html)?\/?$/.test(
         item.homeworkPath,
@@ -173,7 +175,7 @@ export function renderHomeworkHub(
         ? item.homeworkPath
         : `/lessons/${item.id}/homework.html`;
       link.href = `${path}?route=quick&lang=${lang}`;
-      card.append(link);
+      card.append(content, link);
       list.append(card);
     }
     week.append(list);

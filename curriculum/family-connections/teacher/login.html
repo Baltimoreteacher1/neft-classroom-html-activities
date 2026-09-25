@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Teacher Login · Family homework</title></head>
+<body><p>Opening the family homework editor…</p>
+<script>
+  const destination = new URL("/curriculum/family-connections/", location.origin);
+  const incoming = new URLSearchParams(location.search);
+  destination.searchParams.set("edit", "1");
+  const section = incoming.get("section");
+  if (section && /^[a-z0-9-]{1,80}$/i.test(section)) destination.searchParams.set("section", section);
+  if (incoming.get("lang") === "es") destination.searchParams.set("lang", "es");
+  location.replace(destination);
+</script></body></html>
