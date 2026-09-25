@@ -85,30 +85,41 @@ function renderDays() {
       link.rel = "noopener noreferrer";
       card.append(link);
     }
-    const label = node("label", `Find family homework for ${day}`);
-    const search = node("input");
-    search.type = "search";
-    search.id = `lesson-search-${index}`;
-    search.placeholder = "Lesson number or title, e.g. 3-2";
-    search.autocomplete = "off";
-    label.htmlFor = search.id;
-    const results = node("div");
-    results.className = "lesson-results";
-    results.id = `lesson-results-${index}`;
-    search.setAttribute("aria-controls", results.id);
-    search.addEventListener("input", () => renderLessons(day, search.value, results));
-    card.append(label, search, results);
-    if (entry.status === "lesson") {
-      const remove = node("button", `Clear ${day} homework`);
-      remove.type = "button";
-      remove.className = "button-secondary";
-      remove.addEventListener("click", () => {
-        Object.assign(entry, { status: "no-class", lessonId: "", dueDate: "", note: "", noteEs: "" });
-        markDirty();
-        renderDays();
-      });
-      card.append(remove);
+    const label = node("label", `Family homework for ${day}`);
+    const select = node("select");
+    select.id = `lesson-select-${index}`;
+    select.append(new Option("No homework", ""));
+    let currentUnit = null;
+    let group = null;
+    for (const lesson of lessons) {
+      if (lesson.unit !== currentUnit) {
+        currentUnit = lesson.unit;
+        group = node("optgroup");
+        group.label = `Unit ${currentUnit}`;
+        select.append(group);
+      }
+      group.append(new Option(`Lesson ${lesson.id} · ${lesson.title}`, lesson.id));
     }
+    select.value = entry.status === "lesson" ? entry.lessonId : "";
+    label.htmlFor = select.id;
+    select.addEventListener("change", () => {
+      const lessonId = select.value;
+      if (lessonId === entry.lessonId && entry.status === (lessonId ? "lesson" : "no-class")) return;
+      Object.assign(entry, {
+        status: lessonId ? "lesson" : "no-class",
+        lessonId,
+        dueDate: "",
+        note: "",
+        noteEs: "",
+      });
+      markDirty();
+      renderDays();
+      byId(`lesson-select-${index}`).focus();
+      notify(lessonId
+        ? `Lesson ${lessonId} assigned to ${day}. Its family homework link was added automatically.`
+        : `${day} homework cleared.`);
+    });
+    card.append(label, select);
     if (entry.status === "lesson") {
       const due = node("label", "Due date (optional)");
       const input = node("input");
@@ -142,28 +153,6 @@ function renderDays() {
     }
     byId("weekday-editors").append(card);
   }
-}
-function renderLessons(day, searchText, results) {
-  const query = searchText.trim().toLowerCase();
-  results.replaceChildren();
-  if (!query) return;
-  const matches = lessons.filter((item) =>
-    `${item.id} ${item.title}`.toLowerCase().includes(query),
-  ).slice(0, 8);
-  for (const item of matches) {
-    const button = node("button", `Assign Lesson ${item.id} · ${item.title} to ${day}`);
-    button.type = "button";
-    button.addEventListener("click", () => {
-      const entry = section().week.days.find((item) => item.day === day);
-      Object.assign(entry, { status: "lesson", lessonId: item.id });
-      markDirty();
-      renderDays();
-      byId(`lesson-search-${DAYS.indexOf(day)}`).focus();
-      notify(`Lesson ${item.id} assigned to ${day}. Its family homework link was added automatically.`);
-    });
-    results.append(button);
-  }
-  if (!matches.length) results.append(node("p", "No homework lessons match that search."));
 }
 function renderEditor() {
   byId("section-editor").replaceChildren(
