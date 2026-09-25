@@ -8,7 +8,9 @@
 //      has no CSS loader.
 //
 // These hooks close both gaps for TESTS ONLY: `@engine/` resolves to the repo's
-// engine/ directory, and any `.css` import loads as an empty module (the tests
+// engine/ directory, as do @eduwonderlab/engine subpath imports. Worktrees may
+// share node_modules, whose workspace symlink otherwise points to a DIFFERENT
+// checkout's engine. Any `.css` import loads as an empty module (the tests
 // assert behavior, not styling; jsdom pages carry no stylesheets anyway).
 //
 // Usage in a test file (hooks affect DYNAMIC imports registered after them):

@@ -203,6 +203,16 @@ function unitResources(unit) {
 // Build the resource pills for a single lesson, stat-checking each file.
 function lessonResources(id) {
   const pills = [];
+  // Supplementary labs are authored independently and attached to every core
+  // lesson in their one- or two-lesson band. Keep generated hubs connected too.
+  const labManifest = join(root, "data", "learning-labs.json");
+  if (existsSync(labManifest)) {
+    const labs = JSON.parse(readFileSync(labManifest, "utf8")).labs || [];
+    const lab = labs.find((item) => item.lessons.includes(id));
+    if (lab && has("curriculum", "learning-labs", lab.id, "index.html")) {
+      pills.push(resLink(`Interactive Learning Lab: ${lab.title}`, lab.href, true));
+    }
+  }
 
   // Lesson-specific graphic novels first, so families see the novel that matches
   // this exact lesson (the per-unit novels stay up top under "Unit resources").

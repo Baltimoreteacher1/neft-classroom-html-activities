@@ -691,6 +691,7 @@ if (existsSync(resolve(TT_DIR, "index.html"))) {
 
 // Student-facing surfaces that live under /curriculum/ but are not teacher tools.
 const CURRICULUM_STUDENT = new Set([
+  "learning-labs",
   "my-progress",
   "student-launch",
   "student-digital-mailbox",
@@ -716,7 +717,13 @@ if (existsSync(curriculumDir)) {
         ? "student"
         : "teacher";
     const section =
-      audience === "family" ? "family" : audience === "student" ? "math-tools" : "curriculum";
+      d.name === "learning-labs"
+        ? "labs"
+        : audience === "family"
+          ? "family"
+          : audience === "student"
+            ? "math-tools"
+            : "curriculum";
     add({
       title: titleFromHtml(idx, titleCase(d.name)),
       path: `/curriculum/${d.name}/`,

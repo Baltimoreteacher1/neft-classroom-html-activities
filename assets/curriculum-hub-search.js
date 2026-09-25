@@ -2516,6 +2516,10 @@
       keywords: ["notes", "handout"],
     },
     {
+      title: "🔬 Interactive Learning Labs",
+      keywords: ["interactive learning lab"],
+    },
+    {
       title: "🏠 At Home · Continue",
       keywords: ["homework", "family", "forms"],
     },

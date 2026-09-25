@@ -57,6 +57,7 @@
   ];
 
   var FILTER_RULES = {
+    learninglabs: /interactive learning lab|\/curriculum\/learning-labs\//i,
     lessons: /interactive lesson|slides\.html|handout\.html|\/lessons\/[^/]+\/?$/i,
     homework: /homework|family homework/i,
     games: /game|graphic novel|3d|project|bonus|arcade|lab|odyssey|netfold/i,
@@ -696,6 +697,7 @@
     [
       { id: FILTER_ALL, label: "All" },
       { id: "lessons", label: "Lessons" },
+      { id: "learninglabs", label: "Learning Labs" },
       { id: "smallgroup", label: "💡 Small-Group" },
       { id: "homework", label: "Homework" },
       { id: "games", label: "Games" },

@@ -98,6 +98,7 @@ const GATE = [
   "validate:homework",
   "validate:practice",
   "validate:lesson-boot",
+  "validate:learning-labs-browser",
   "audit",
   "audit:curriculum",
   "audit:homework",
@@ -137,6 +138,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
   "validate:lesson-boot",
+  "validate:learning-labs-browser",
   "smoke:injection",
   "validate:visibility",
   // `validate:flow-walk` joined them on 2026-08-28. It is the heaviest browser
