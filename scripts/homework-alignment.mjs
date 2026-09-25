@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 /**
  * Shared topic detection and alignment scoring for family homework.
  */
@@ -46,15 +48,94 @@ function keyIdea(config) {
   return intro?.keyIdea || intro?.intro || config.contentObjective || config.title || "";
 }
 
+/** The topics scripts/homework-visual-labs.mjs actually ships a lab for. A
+ *  declared topic with no lab is no better than the fallback. */
+const LAB_TOPICS = new Set([
+  "exponents",
+  "ratios",
+  "equations",
+  "inequalities",
+  "properties",
+  "expressions",
+  "area",
+  "volume",
+  "surface-area",
+  "statistics",
+  "coordinate-plane",
+  "number-line",
+  "fractions",
+  "division",
+  "decimals",
+  "factors",
+]);
+
+/* The curriculum already DECLARES each standard's topic in
+   data/ccss-standards.json, and those ids are the same vocabulary the labs use
+   ("coordinate-plane", "number-line", …). Consulted only after every rule below
+   has failed, so it changes nothing that already resolves — it just stops a
+   lesson falling back to a generic lab when its own standard says what it is
+   about. `validate:interactive-alignment` reads the same field for the same
+   reason: the standard is read, never inferred from a title. */
+let standardTopics = null;
+function topicFromStandard(code) {
+  if (!code) return null;
+  if (!standardTopics) {
+    standardTopics = new Map();
+    try {
+      const url = new URL("../data/ccss-standards.json", import.meta.url);
+      const raw = JSON.parse(readFileSync(url, "utf8"));
+      /* The registry nests the codes under `standards`; the top level is
+         $schema/description/domains/standards. Reading the top level yielded
+         one entry called "standards" and every lookup missed. */
+      const table = raw && typeof raw === "object" && raw.standards ? raw.standards : raw;
+      const entries = Array.isArray(table) ? table : Object.entries(table);
+      for (const entry of entries) {
+        const [id, value] = Array.isArray(entry) ? entry : [entry.code || entry.id, entry];
+        if (id && value && typeof value.topic === "string") standardTopics.set(id, value.topic);
+      }
+    } catch {
+      /* No standards file is not a reason to fail generation; the rules above
+         still decide, and the result is the same fallback as before. */
+    }
+  }
+  return standardTopics.get(code) || null;
+}
+
 /** Topic id used for visuals, anti-keywords, and alignment. */
 export function detectVisualTopic(config) {
   const standard = String(config.standard || "");
-  const title = String(config.title || "").toLowerCase();
+  /* A Part 2's own title is "7.1 · Part II" — no mathematics in it at all — so
+     every title-driven rule below fell through and the lesson got the generic
+     fallback lab. Core 7-1 "Explore Integers and Their Opposites" resolves to
+     number-line and 7-5 to coordinate-plane; all seven Unit 7 Part 2 pages
+     resolved to `fallback` while those labs sat unused. What session two
+     teaches is the sidecar's `sessionTitle` ("Reflecting Points Across the
+     Axes"), which is present on all 77 Part 2 notes and on none of the 87 core
+     ones — the same discriminator extractLessonKeywords already uses, applied
+     to the other half of the problem. */
+  const title = String(config.familyNotes?.sessionTitle || config.title || "").toLowerCase();
   const unit = Number(config.unit) || 0;
+
+  /* A lesson whose mathematics no title or standard can name — 10-4 "Math is
+     Ingenuity" is gear RATIOS under an MPP standard — may declare its topic in
+     the family-note sidecar. Only a topic the labs actually draw counts. */
+  const declaredTopic = String(config.familyNotes?.visualTopic || "").trim();
+  if (declaredTopic && LAB_TOPICS.has(declaredTopic)) return declaredTopic;
 
   if (standard === "6.AT.5" || /exponent|power/i.test(title)) return "exponents";
   if (/inequal/i.test(title) || standard === "6.AT.9") return "inequalities";
-  if (/equation/i.test(title) || standard === "6.AT.8") return "equations";
+  /* Percent stays percent. 4-5's second session is titled "Solving for the
+     Whole with an EQUATION", and the equation rule below handed it a balance
+     scale and NASA-fuel spotlight in a percent lesson whose model is a percent
+     bar; 6.AT.4 is the percent standard and belongs with the ratio strand. */
+  if (standard === "6.AT.4") return "ratios";
+  /* Unit 9 (6.AT.11, two-variable relationships) is equations — y = 2x + 4 in
+     a table, on a graph, in words. The 6.AT catch-all further down read it as
+     ratios, so 9-1's "Tables of Values" and 9-4's Part 2 drew a ratio table
+     captioned "multiply BOTH columns by the same number", which is false for
+     every relationship in the unit that has a constant term. */
+  if (/equation/i.test(title) || standard === "6.AT.8" || standard === "6.AT.11")
+    return "equations";
   // A graphing lesson (e.g. "Graph Ratio Tables") is about plotting on the plane,
   // so the coordinate-plane visual fits better than a ratio table — check before ratios.
   if (/graph/i.test(title) && /ratio|coordinate|plane|plot|ordered pair/i.test(title))
@@ -88,9 +169,17 @@ export function detectVisualTopic(config) {
   // and percent lesson by standard, so nothing depends on the loose prefix.
   if (standard.startsWith("6.AT") || /\bratios?\b|unit rate|\brate\b|percent/i.test(title))
     return "ratios";
-  if (unit === 5 || standard === "6.GR.1") return "area";
+  /* Volume and surface area are claimed BEFORE the unit-5 catch-all. Read the
+     other way round, `unit === 5` swallowed the whole geometry unit: 5-5 and
+     5-10 ("Volume of Rectangular Prisms", 6.GR.2) and 5-6 through 5-8 (surface
+     area, 6.GR.4) all resolved to "area" — ten lessons whose family lab taught
+     a different measurement than the lesson. 5-10 is the lesson this repo
+     already caught shipping an open-top SURFACE-AREA readout in a volume
+     lesson; the topic was wrong underneath it the whole time. 6.GR.1 is the
+     genuine area standard and still claims the rest of the unit. */
   if (standard === "6.GR.2" || /volume/i.test(title)) return "volume";
-  if (standard === "6.GR.4" || /surface/i.test(title)) return "surface-area";
+  if (standard === "6.GR.4" || /surface|net\b|pyramid/i.test(title)) return "surface-area";
+  if (unit === 5 || standard === "6.GR.1") return "area";
   if (
     standard.startsWith("6.DS") ||
     /box plot|dot plot|histogram|display data|data distribution/i.test(title)
@@ -103,6 +192,8 @@ export function detectVisualTopic(config) {
     return "division";
   if (standard === "6.NOS.3" || /decimal/i.test(title)) return "decimals";
   if (standard === "6.NOS.4" || /prime|factor|lcm|gcf|multiple/i.test(title)) return "factors";
+  const declared = topicFromStandard(standard);
+  if (declared && LAB_TOPICS.has(declared)) return declared;
   return "fallback";
 }
 
@@ -131,6 +222,60 @@ export function decimalOperation(config) {
   if (/divid/.test(title)) return "divide";
   if (/multipl/.test(title)) return "multiply";
   return "addsub";
+}
+
+/**
+ * Which mathematics a "ratios" lesson is actually about.
+ *
+ * `detectVisualTopic` collapses 68 lessons onto the single topic "ratios" —
+ * every lesson in units 3 and 4. That is right for a lab drawing a ratio table,
+ * and wrong the moment content STATES something, because the four strands under
+ * that one topic teach four different moves:
+ *
+ *   equivalent  6.AT.1 / 6.AT.3 / 6.AT.3a — scale BOTH parts by the same factor
+ *   unit-rate   6.AT.2                    — divide to get the per-one amount
+ *   percent     6.AT.4                    — a rate out of 100
+ *   convert     6.AT.3c                   — multiply by a conversion rate
+ *
+ * Until this existed, all 68 pages asked their families the same Skill Power-Up
+ * question — a lemonade-and-seltzer EQUIVALENT-ratio question — and coached the
+ * same equivalent-ratio misconception. 3-2 Section 3 is a worksheet on dividing
+ * to find a unit rate and choosing the better buy; its power-up asked which
+ * mixture tastes the same.
+ */
+export function ratioFocus(config) {
+  const standard = String(config?.standard || "");
+  const title = String(config?.familyNotes?.sessionTitle || config?.title || "").toLowerCase();
+  const objective = String(config?.contentObjective || "").toLowerCase();
+  const text = title + " " + objective;
+  if (standard === "6.AT.4" || /percent/.test(text)) return "percent";
+  if (standard === "6.AT.3c" || /convert|measurement unit/.test(text)) return "convert";
+  if (standard === "6.AT.2" || /unit rate|unit price|better (buy|value|deal)/.test(text))
+    return "unit-rate";
+  return "equivalent";
+}
+
+/**
+ * The one in-page manipulative that genuinely matches this lesson, or null.
+ *
+ * The family pages used to ship the same four-tool workbench everywhere. That
+ * put fraction strips in statistics homework, coordinate grids in decimal
+ * homework, and an addition-oriented place-value chart in decimal multiply /
+ * divide lessons. A closed drawer is still part of the lesson's interface, so
+ * unrelated tools are not harmless clutter: they suggest the wrong model to a
+ * family that opened the drawer because the student was already stuck.
+ *
+ * Keep this deliberately narrow. Every page still has its lesson-specific
+ * visual model and a blank scratchpad; the drawer appears only when one of its
+ * purpose-built manipulatives teaches tonight's exact move.
+ */
+export function homeworkWorkbenchTool(config) {
+  const topic = detectVisualTopic(config);
+  if (topic === "fractions") return "fractions";
+  if (topic === "coordinate-plane") return "coords";
+  if (topic === "ratios" && ratioFocus(config) === "equivalent") return "tapes";
+  if (topic === "decimals" && decimalOperation(config) === "addsub") return "decimals";
+  return null;
 }
 
 const TOPIC_KEYWORDS = {
@@ -217,6 +362,21 @@ export function extractLessonKeywords(config) {
   tokenize(keyIdea(config)).forEach((t) => words.add(t));
   tokenize(config.contentObjective).forEach((t) => words.add(t));
   tokenize(config.title).forEach((t) => words.add(t));
+
+  /* A Part 2 config describes the OTHER session. Its `title` is "6.8 · Part II"
+     — no mathematics in it at all — and its objective and vocabulary are
+     inherited from day one, so ranking a Part 2's problems on them ranks them
+     against the wrong lesson: 6-8-part2 teaches expanding and factoring and was
+     scored on commutative/associative properties. What session two actually
+     teaches is authored in the family-note sidecar, and `sessionTitle` is
+     present on all 77 Part 2 notes and on none of the 87 core ones, so reading
+     it here changes nothing for a core lesson. */
+  const session = config.familyNotes || {};
+  if (session.sessionTitle) {
+    for (const part of [session.sessionTitle, session.learningTonight?.en, session.bigIdea?.en]) {
+      tokenize(part).forEach((t) => words.add(t));
+    }
+  }
 
   return {
     topic,
@@ -462,6 +622,16 @@ export function detectVisualMismatch(config, html) {
    neighbours, not the vocabulary the whole unit shares. Built from the title and
    the vocabulary terms with the generic mathematical scaffolding removed. */
 const GENERIC_SIGNATURE = new Set([
+  /* A bridge lesson is titled for its ROLE, not its mathematics — "6.1–6.2 ·
+     Extra Practice" reduces to exactly these two words. Left in, they are a
+     signature a correct note can never satisfy, and `6-1-6-2-practice` was
+     reported as belonging to `6-2-part2` while its note names Lessons 6.1 and
+     6.2 and Keep-Change-Flip, which is precisely its own objective. Out, the
+     title yields no signature and the detector's existing opt-out for
+     topic-free titles takes over. */
+  "extra",
+  "practice",
+  "review",
   "determine",
   "describe",
   "understand",
@@ -557,6 +727,11 @@ function stemWord(word) {
    "must name its own title" rule produced 19 false alarms.
 
    `lessons` is [{ id, config }] with config.familyNotes already merged. */
+/** The lesson a variant belongs to: `6-8-part2` and `6-8-flagship` are both `6-8`. */
+function baseLessonOf(id) {
+  return String(id || "").replace(/-(?:part2|flagship|group[12]|catchup)$/, "");
+}
+
 export function findNoteOwnershipConflicts(lessons) {
   const metas = lessons.map(({ id, config }) => ({
     id,
@@ -581,7 +756,16 @@ export function findNoteOwnershipConflicts(lessons) {
        conditions are required because either alone is noisy — sibling lessons
        legitimately share vocabulary (3-6 and 3-10 are both unit conversion),
        and plenty of good notes phrase a title's topic in student words. */
+    /* A lesson's own Part 2 is not a rival owner — it is the same lesson, day
+       two, and it scores well against day one's note for exactly that reason.
+       The gap of 10 below was calibrated on a corpus of core lessons alone;
+       once the 76 Part 2 pages joined the sweep, 1-4, 3-5 and 6-15 were each
+       reported as belonging to their OWN twin. Rivals are compared by base id
+       so the detector keeps asking the question it exists for: is this note
+       pasted onto a DIFFERENT lesson? */
+    const ownBase = baseLessonOf(id);
     const scored = metas
+      .filter((l) => l.id === id || baseLessonOf(l.id) !== ownBase)
       .map((l) => ({ id: l.id, score: scoreTextAlignment(text, l.meta) }))
       .sort((a, b) => b.score - a.score);
     const own = scored.find((s) => s.id === id).score;

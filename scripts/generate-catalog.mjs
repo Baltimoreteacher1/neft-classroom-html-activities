@@ -344,6 +344,30 @@ if (existsSync(lessonsDir)) {
     if (!cfg && !existsSync(idx)) continue; // not navigable
 
     const base = cfg?.title || titleFromHtml(idx, titleCase(name));
+
+    // A lesson folder with no launcher is not a student lesson — it is a config
+    // that exists so a generator can emit ONE family page (the Unit 1 practice
+    // test is the first). Cataloguing it at `/lessons/<name>/` would publish a
+    // URL that 404s, so the row names the page that is actually on disk, in the
+    // section whose audience it is written for.
+    if (!existsSync(idx)) {
+      const familyHomework = resolve(lessonsDir, name, "homework.html");
+      if (!existsSync(familyHomework)) continue; // nothing navigable to name
+      add({
+        title: `${name} ${base} — Family Homework`,
+        path: `/lessons/${name}/homework.html`,
+        section: "family",
+        category: "Homework",
+        audience: "family",
+        unit: cfg?.unit ?? null,
+        standard: cfg?.standard ?? null,
+        lesson: name,
+        variant: "family",
+        keywords: `family homework ${name} ${base} ${cfg?.standard || ""}`,
+      });
+      continue;
+    }
+
     const suffix = VARIANT_LABEL[variant];
     const title = suffix ? `${lesson || name} ${base} — ${suffix}` : `${lesson || name} ${base}`;
 
@@ -387,6 +411,7 @@ const MATH_HUBS = new Set([
   "catch-up",
   "my-path",
   "number-talks",
+  "fluency-lab",
   "unit-map",
   "games",
   "finder",
@@ -423,6 +448,23 @@ function unitFromName(name) {
   return m ? Number(m[1]) : null;
 }
 
+/**
+ * Build output, at any depth. `TOP_SKIP` already holds these names, but it is
+ * only tested against the TOP-LEVEL scan, and a sub-project keeps its build
+ * where it builds it. `neft-math-lab-studio/dist/index.html` was catalogued as
+ * a real page that way: root `.gitignore` lists `dist` and `node_modules` with
+ * no leading slash, so git ignores them at every depth and Cloudflare — which
+ * builds from a fresh clone — never sees that directory at all. The catalog is
+ * the canonical index of NAVIGABLE pages, so an entry nothing ships is a dead
+ * route, and the page that does ship is the tracked `/neft-math-lab-studio/`.
+ *
+ * It also failed locally and only locally: the directory is untracked, so
+ * `validate:catalog` went red on whichever checkout had run that sub-project's
+ * build and stayed green in CI. That gate is inside `qa:loop`, so the machine
+ * with the build directory was the machine that could not push.
+ */
+const BUILD_DIRS = new Set(["dist", "node_modules"]);
+
 /** Recursively collect index.html directories under `dir`, up to `maxDepth`. */
 function collectIndexDirs(dir, maxDepth, depth = 0) {
   const out = [];
@@ -435,6 +477,7 @@ function collectIndexDirs(dir, maxDepth, depth = 0) {
   }
   for (const it of items) {
     if (!it.isDirectory() || it.name.startsWith(".") || it.name.startsWith("_")) continue;
+    if (BUILD_DIRS.has(it.name)) continue;
     const sub = resolve(dir, it.name);
     if (existsSync(resolve(sub, "index.html"))) out.push({ name: it.name, dir: sub, depth });
     out.push(...collectIndexDirs(sub, maxDepth, depth + 1));
@@ -648,6 +691,7 @@ if (existsSync(resolve(TT_DIR, "index.html"))) {
 
 // Student-facing surfaces that live under /curriculum/ but are not teacher tools.
 const CURRICULUM_STUDENT = new Set([
+  "learning-labs",
   "my-progress",
   "student-launch",
   "student-digital-mailbox",
@@ -673,7 +717,13 @@ if (existsSync(curriculumDir)) {
         ? "student"
         : "teacher";
     const section =
-      audience === "family" ? "family" : audience === "student" ? "math-tools" : "curriculum";
+      d.name === "learning-labs"
+        ? "labs"
+        : audience === "family"
+          ? "family"
+          : audience === "student"
+            ? "math-tools"
+            : "curriculum";
     add({
       title: titleFromHtml(idx, titleCase(d.name)),
       path: `/curriculum/${d.name}/`,

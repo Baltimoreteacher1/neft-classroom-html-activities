@@ -13,12 +13,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { computeTeachL4Evidence } from "@eduwonderlab/engine/core/uifr.js";
 import { targets } from "./inject-uifr.js";
+import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
 import { assertSweptEnough } from "./lib/sweep-guard.mjs";
-
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-
-import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
 let total = 0;
 const failures = [];

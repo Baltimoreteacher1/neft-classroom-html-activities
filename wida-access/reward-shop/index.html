@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="WIDA ACCESS SPARK Reward Shop & Study Buddy Studio. Spend earned SPARK XP to unlock study buddy voices, portal themes, and achievement trophies."
+    />
+    <title>SPARK Reward Shop &amp; Study Buddy Studio | Neft Hub</title>
+
+    <link
+      href="/assets/fonts/outfit-space-grotesk-095d49.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+
+    <style>
+      :root {
+        --primary: #f59e0b; /* Amber / Gold for Reward Shop */
+        --primary-dark: #d97706;
+        --primary-light: #fef3c7;
+        --teal: #0d9488;
+        --purple: #7c3aed;
+        --indigo: #4f46e5;
+        --navy-deep: #78350f;
+        --navy: #0f172a;
+        --bg-canvas: #f8fafc;
+        --bg-studio: #f1f5f9;
+        --white: #ffffff;
+        --line-muted: #e2e8f0;
+        --slate-ink: #0f172a;
+        --slate-muted: #64748b;
+        --radius-card: 16px;
+        --radius-sm: 8px;
+        --radius-pill: 9999px;
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 10px 25px rgba(245, 158, 11, 0.15);
+        --font-outfit: "Outfit", system-ui, sans-serif;
+        --font-space: "Space Grotesk", system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-outfit);
+        background: linear-gradient(180deg, #fffbeb 0%, #f8fafc 50%, #f1f5f9 100%);
+        color: var(--slate-ink);
+        min-height: 100vh;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Top Bar ── */
+      .top-nav {
+        background: #ffffff;
+        border-bottom: 1px solid var(--line-muted);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .nav-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--slate-muted);
+      }
+      .breadcrumbs a {
+        color: var(--slate-muted);
+        text-decoration: none;
+      }
+      .breadcrumbs a:hover {
+        color: var(--primary-dark);
+      }
+      .breadcrumbs .curr {
+        color: var(--slate-ink);
+        font-weight: 700;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-outfit);
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: var(--line-muted);
+        color: var(--slate-ink);
+      }
+      .btn-secondary:hover {
+        border-color: var(--primary-dark);
+        color: var(--primary-dark);
+      }
+      .btn-pill {
+        border-radius: var(--radius-pill);
+      }
+
+      .shell {
+        max-width: 1400px;
+        margin: 24px auto 80px;
+        padding: 0 24px;
+      }
+
+      /* ── Hero Banner ── */
+      .hero-card {
+        background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%);
+        border-radius: var(--radius-card);
+        padding: 32px 36px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-md);
+      }
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        right: -60px;
+        top: -60px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(251, 191, 36, 0.25) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: var(--radius-pill);
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #fef3c7;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-family: var(--font-space);
+        font-size: 2.1rem;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-desc {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+        max-width: 700px;
+        line-height: 1.5;
+      }
+
+      .hero-stats-row {
+        display: flex;
+        gap: 20px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+      .hero-stat {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 12px;
+        padding: 10px 18px;
+        text-align: center;
+      }
+      .stat-val {
+        font-family: var(--font-space);
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+      }
+      .stat-lbl {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #fde68a;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-card);
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 24px;
+      }
+      .card-title {
+        font-family: var(--font-space);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-sub {
+        font-size: 0.86rem;
+        color: var(--slate-muted);
+        margin-bottom: 20px;
+        line-height: 1.45;
+      }
+
+      /* ── Study Buddy Grid ── */
+      .buddy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 18px;
+      }
+      .buddy-card {
+        border: 2px solid var(--line-muted);
+        border-radius: 14px;
+        padding: 20px;
+        background: #ffffff;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .buddy-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 6px 18px rgba(245, 158, 11, 0.15);
+      }
+      .buddy-card.equipped {
+        border-color: var(--primary);
+        background: #fffbeb;
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);
+      }
+      .buddy-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 12px;
+      }
+      .buddy-avatar {
+        font-size: 2.2rem;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #fef3c7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .buddy-info strong {
+        font-family: var(--font-space);
+        font-size: 1.15rem;
+        color: #0f172a;
+        display: block;
+      }
+      .buddy-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--primary-dark);
+      }
+      .buddy-quote {
+        font-size: 0.88rem;
+        font-style: italic;
+        color: #475569;
+        margin: 10px 0 16px;
+        line-height: 1.45;
+        background: #f8fafc;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border-left: 3px solid var(--primary);
+      }
+
+      /* ── Themes Grid ── */
+      .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .theme-card {
+        border: 2px solid var(--line-muted);
+        border-radius: 12px;
+        padding: 16px;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .theme-card:hover {
+        border-color: var(--primary);
+      }
+      .theme-card.active {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+      }
+      .theme-swatch {
+        height: 50px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+      }
+
+      /* ── Trophy Case Grid ── */
+      .trophy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .trophy-card {
+        border: 1px solid var(--line-muted);
+        border-radius: 12px;
+        padding: 16px;
+        background: #ffffff;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .trophy-card.locked {
+        opacity: 0.55;
+        background: #f8fafc;
+      }
+      .trophy-icon {
+        font-size: 2rem;
+        min-width: 44px;
+        text-align: center;
+      }
+      .trophy-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #0f172a;
+      }
+      .trophy-desc {
+        font-size: 0.78rem;
+        color: var(--slate-muted);
+        margin-top: 2px;
+        line-height: 1.4;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- ── Top Nav ── -->
+    <header class="top-nav">
+      <div class="nav-inner">
+        <div class="breadcrumbs">
+          <a href="/">Neft Hub</a>
+          <span style="opacity:0.5;">/</span>
+          <a href="/wida-access/">WIDA Center</a>
+          <span style="opacity:0.5;">/</span>
+          <span class="curr">SPARK Reward Shop &amp; Study Buddy</span>
+        </div>
+        <div>
+          <a href="/wida-access/" class="btn btn-secondary">
+            &larr; WIDA Prep Hub
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <!-- ── Hero Banner ── -->
+      <section class="hero-card">
+        <div class="hero-tag">
+          <span>🏆 SPARK XP Economy &amp; Personalization</span>
+        </div>
+        <h1 class="hero-title">SPARK Reward Shop &amp; Study Buddy Studio</h1>
+        <p class="hero-desc">
+          Spend your earned SPARK XP points from completing Speaking, Listening, Reading, and Writing tasks. Choose your favorite voice study buddy, customize portal appearance themes, and unlock achievement trophies!
+        </p>
+
+        <div class="hero-stats-row">
+          <div class="hero-stat">
+            <div class="stat-val" id="statSparkXP">0</div>
+            <div class="stat-lbl">Available SPARK XP</div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-val" id="statEquippedBuddy">Maya</div>
+            <div class="stat-lbl">Active Study Buddy</div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-val" id="statTrophies">0 / 6</div>
+            <div class="stat-lbl">Trophies Unlocked</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Study Buddies Section ── -->
+      <div class="card">
+        <div class="card-title">
+          <span>🤖 Choose Your WIDA Study Buddy</span>
+          <span style="font-size: 0.8rem; color: var(--primary-dark); font-weight: 700;">Free with XP</span>
+        </div>
+        <p class="card-sub">
+          Your study buddy cheers you on and speaks during listening exercises and pronunciation coaching across Neft Hub.
+        </p>
+
+        <div class="buddy-grid" id="buddyGrid">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- ── Theme Customizer Section ── -->
+      <div class="card">
+        <div class="card-title">
+          <span>🎨 Portal Theme Customizer</span>
+          <span style="font-size: 0.8rem; color: var(--primary-dark); font-weight: 700;">Unlockable with SPARK XP</span>
+        </div>
+        <p class="card-sub">
+          Unlock high-contrast, energizing, or nighttime color palettes for your WIDA ACCESS preparation sessions.
+        </p>
+
+        <div class="theme-grid" id="themeGrid">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- ── Trophy Case ── -->
+      <div class="card">
+        <div class="card-title">
+          <span>🏅 ACCESS Achievement Trophy Case</span>
+          <span id="trophyCounterBadge" style="font-size: 0.78rem; background: var(--primary-light); color: var(--primary-dark); padding: 4px 10px; border-radius: 999px; font-weight: 700;">0 of 6 Unlocked</span>
+        </div>
+        <p class="card-sub">
+          Badges earned through consistent practice, multi-clause drafting, and listening navigation mastery.
+        </p>
+
+        <div class="trophy-grid" id="trophyGrid">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // ══════════════════════════════════════════════════════════
+      // REWARD SHOP STATE & DATA
+      // ══════════════════════════════════════════════════════════
+
+      const BUDDIES = [
+        {
+          id: "maya",
+          name: "Maya",
+          avatar: "👩‍🔬",
+          badge: "Science & Clarity Specialist",
+          quote: "Let's break down that academic sentence step by step! Remember to look for causes and effects.",
+          voicePitch: 1.1,
+          voiceRate: 0.95
+        },
+        {
+          id: "harris",
+          name: "Mr. Harris",
+          avatar: "👨‍🏫",
+          badge: "Writing & Discourse Coach",
+          quote: "State your central claim clearly, and support it with specific evidence from the passage.",
+          voicePitch: 0.85,
+          voiceRate: 0.9
+        },
+        {
+          id: "elena",
+          name: "Elena",
+          avatar: "🌟",
+          badge: "Bilingual Cognate Champion",
+          quote: "¡Tu bilingüismo es tu superpoder! Look for Latin roots and cognates between English and Spanish.",
+          voicePitch: 1.05,
+          voiceRate: 1.0
+        },
+        {
+          id: "kai",
+          name: "Kai",
+          avatar: "🚀",
+          badge: "Math & Coordinate Navigator",
+          quote: "Check your axes and count each unit carefully. We've got this mission solved in no time!",
+          voicePitch: 1.15,
+          voiceRate: 1.0
+        }
+      ];
+
+      const THEMES = [
+        { id: "emerald", name: "Modern Emerald (Default)", cost: 0, gradient: "linear-gradient(135deg, #0d9488, #10b981)" },
+        { id: "aurora", name: "Cyber Aurora", cost: 150, gradient: "linear-gradient(135deg, #3b82f6, #8b5cf6)" },
+        { id: "sunset", name: "Solar Sunset", cost: 300, gradient: "linear-gradient(135deg, #f59e0b, #ef4444)" },
+        { id: "midnight", name: "Midnight Obsidian", cost: 500, gradient: "linear-gradient(135deg, #0f172a, #334155)" }
+      ];
+
+      const TROPHIES = [
+        { id: "word_smith", icon: "🧬", title: "Word Alchemist", desc: "Forged 5 academic words in the Morphology Lab." },
+        { id: "navigator", icon: "🧭", title: "Master Navigator", desc: "Solved 3 spatial directions listening missions." },
+        { id: "orator", icon: "🎙️", title: "Master Orator", desc: "Recorded an oral response in the Speaking Studio." },
+        { id: "author", icon: "✍️", title: "Linguistic Architect", desc: "Composed a Level 3 or 4 complex draft in Writing." },
+        { id: "polyglot", icon: "🌐", title: "Polyglot Scholar", desc: "Practiced across all 4 ACCESS language domains." },
+        { id: "streak", icon: "🔥", title: "Consistency Champion", desc: "Achieved a 3-day practice streak." }
+      ];
+
+      let equippedBuddy = localStorage.getItem("widaStudyBuddy") || "maya";
+      let activeTheme = localStorage.getItem("widaTheme") || "emerald";
+
+      function renderBuddies() {
+        const grid = document.getElementById("buddyGrid");
+        grid.innerHTML = BUDDIES.map(b => {
+          const isEquipped = b.id === equippedBuddy;
+          return `
+            <div class="buddy-card ${isEquipped ? 'equipped' : ''}">
+              <div>
+                <div class="buddy-head">
+                  <div class="buddy-avatar">${b.avatar}</div>
+                  <div class="buddy-info">
+                    <strong>${b.name}</strong>
+                    <span class="buddy-badge">${b.badge}</span>
+                  </div>
+                </div>
+                <div class="buddy-quote">"${b.quote}"</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" onclick="previewBuddyVoice('${b.id}')" style="flex: 1; font-size: 0.78rem;">
+                  🔊 Hear Voice
+                </button>
+                <button class="btn ${isEquipped ? 'btn-secondary' : 'btn-primary'}" onclick="equipBuddy('${b.id}')" style="flex: 1; font-size: 0.78rem;">
+                  ${isEquipped ? '✓ Equipped' : 'Equip Buddy'}
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function previewBuddyVoice(id) {
+        const b = BUDDIES.find(x => x.id === id);
+        if (!b) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(`Hello! I'm ${b.name}. ${b.quote}`);
+        u.pitch = b.voicePitch;
+        u.rate = b.voiceRate;
+        window.speechSynthesis.speak(u);
+      }
+
+      function equipBuddy(id) {
+        equippedBuddy = id;
+        localStorage.setItem("widaStudyBuddy", id);
+        const b = BUDDIES.find(x => x.id === id);
+        document.getElementById("statEquippedBuddy").textContent = b.name;
+        renderBuddies();
+        previewBuddyVoice(id);
+      }
+
+      function renderThemes() {
+        const grid = document.getElementById("themeGrid");
+        const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
+
+        grid.innerHTML = THEMES.map(t => {
+          const isActive = t.id === activeTheme;
+          const isUnlocked = t.cost === 0 || xp >= t.cost;
+          return `
+            <div class="theme-card ${isActive ? 'active' : ''}" onclick="selectTheme('${t.id}', ${t.cost})">
+              <div class="theme-swatch" style="background: ${t.gradient};"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-size: 0.88rem;">${t.name}</strong>
+                ${isActive ? '<span style="color: var(--primary-dark); font-weight: 700; font-size: 0.75rem;">Active</span>' : ''}
+              </div>
+              <div style="font-size: 0.75rem; color: var(--slate-muted); margin-top: 4px;">
+                ${t.cost === 0 ? 'Unlocked (Free)' : (isUnlocked ? 'Unlocked' : `Requires ${t.cost} XP`)}
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function selectTheme(id, cost) {
+        const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
+        if (cost > 0 && xp < cost) {
+          alert(`⚠️ This theme requires ${cost} SPARK XP. You currently have ${xp} XP. Keep practicing to unlock!`);
+          return;
+        }
+        activeTheme = id;
+        localStorage.setItem("widaTheme", id);
+        renderThemes();
+      }
+
+      function renderTrophies() {
+        const grid = document.getElementById("trophyGrid");
+        const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
+        const streak = parseInt(localStorage.getItem("widaStreak") || "0", 10);
+        const speakArr = JSON.parse(localStorage.getItem("widaCompletedSpeaking") || "[]");
+        const listenArr = JSON.parse(localStorage.getItem("widaCompletedListening") || "[]");
+        const drafts = JSON.parse(localStorage.getItem("widaWritingDrafts_v1") || "{}");
+        const vaultWords = JSON.parse(localStorage.getItem("widaVaultWords") || "[]");
+
+        let unlockedCount = 0;
+
+        grid.innerHTML = TROPHIES.map(t => {
+          let unlocked = false;
+          if (t.id === "word_smith" && vaultWords.length >= 2) unlocked = true;
+          if (t.id === "navigator" && listenArr.length >= 2) unlocked = true;
+          if (t.id === "orator" && speakArr.length >= 1) unlocked = true;
+          if (t.id === "author" && Object.keys(drafts).length >= 1) unlocked = true;
+          if (t.id === "polyglot" && xp >= 200) unlocked = true;
+          if (t.id === "streak" && streak >= 1) unlocked = true;
+
+          if (unlocked) unlockedCount++;
+
+          return `
+            <div class="trophy-card ${unlocked ? '' : 'locked'}">
+              <div class="trophy-icon">${unlocked ? t.icon : '🔒'}</div>
+              <div>
+                <div class="trophy-title">${t.title}</div>
+                <div class="trophy-desc">${t.desc}</div>
+                <div style="font-size: 0.72rem; font-weight: 700; margin-top: 4px; color: ${unlocked ? 'var(--primary-dark)' : 'var(--slate-muted)'};">
+                  ${unlocked ? '✓ UNLOCKED' : 'LOCKED'}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        document.getElementById("statTrophies").textContent = `${unlockedCount} / ${TROPHIES.length}`;
+        document.getElementById("trophyCounterBadge").textContent = `${unlockedCount} of ${TROPHIES.length} Unlocked`;
+      }
+
+      // Initial boot
+      window.addEventListener("DOMContentLoaded", () => {
+        const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
+        document.getElementById("statSparkXP").textContent = xp.toLocaleString();
+
+        const b = BUDDIES.find(x => x.id === equippedBuddy);
+        if (b) document.getElementById("statEquippedBuddy").textContent = b.name;
+
+        renderBuddies();
+        renderThemes();
+        renderTrophies();
+      });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

@@ -84,12 +84,6 @@ export const STANDARDS = Object.freeze({
     family: "putting a number in place of a letter and finishing the math",
     familyEs: "poner un número en lugar de una letra y terminar la operación",
   },
-  "6.DS.4": {
-    label: "Average and spread",
-    labelEs: "Promedio y dispersión",
-    family: "describing a whole set of numbers with one fair number",
-    familyEs: "describir todo un conjunto de números con un solo número justo",
-  },
   "6.GR.4": {
     label: "Surface area & nets",
     labelEs: "Área total y plantillas",
@@ -287,18 +281,6 @@ export const ASSETS = Object.freeze({
       path: "/lessons/6-4/readiness/",
     },
   ],
-  "6.DS.4": [
-    {
-      title: "8-2 Mean, Median, and Mode",
-      titleEs: "8-2 Media, mediana y moda",
-      path: "/lessons/2-3/",
-    },
-    {
-      title: "Unit 8 Culminating Projects",
-      titleEs: "Proyectos finales de la Unidad 8",
-      path: "/math/unit-8/projects/",
-    },
-  ],
   "6.GR.4": [
     {
       title: "10-3 Surface Area Using Nets",
@@ -408,6 +390,16 @@ export const ASSETS = Object.freeze({
       title: "2-3 Describe the Data Using the Median",
       titleEs: "2-3 Describir los datos con la mediana",
       path: "/lessons/2-3/",
+    },
+    {
+      title: "8-2 Mean, Median, and Mode",
+      titleEs: "8-2 Media, mediana y moda",
+      path: "/lessons/2-3/",
+    },
+    {
+      title: "Unit 8 Culminating Projects",
+      titleEs: "Proyectos finales de la Unidad 8",
+      path: "/math/unit-8/projects/",
     },
   ],
   "6.DS.5": [
@@ -522,7 +514,6 @@ export const BRIDGES = Object.freeze({
     from: "6.NOS.6",
     en: "Naming a point in one quadrant is the same skill as naming it in any of the four.",
     es: "Nombrar un punto en un cuadrante es la misma destreza que nombrarlo en cualquiera de los cuatro.",
-    es: "Los opuestos son una afirmación sobre distancias iguales a cada lado del cero.",
   },
 });
 

@@ -9,6 +9,7 @@ import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 import {
   detectVisualMismatch,
   findNoteOwnershipConflicts,
+  homeworkWorkbenchTool,
   scoreHomeworkAlignment,
 } from "./homework-alignment.mjs";
 
@@ -16,7 +17,16 @@ const root = join(import.meta.dirname, "..");
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
+/* THE SUBJECT IS EVERY PAGE THAT EXISTS, not every page whose name was
+   anticipated. This used to be `/^(\d+)-(\d+)(-flagship)?$/`, and a name-shaped
+   filter silently shrinks: the 76 `-part2` homeworks shipped outside it and were
+   ranked against the OTHER session's mathematics with every gate green, and
+   widening it by hand to `-part2` STILL missed four more — the bridge lessons
+   `1-practice`, `1-review`, `6-1-6-2-practice` and `6-1-6-2-practice-part2`, all
+   four live and returning 200. Discovery is now "the directory ships a
+   homework.html", which is the thing this audit is named for and cannot be
+   outgrown by the next id shape somebody invents. */
+const ORDER_RE = /^(\d+)-(\d+)/;
 
 const REQUIRED_MARKERS = [
   {
@@ -46,9 +56,29 @@ const REQUIRED_MARKERS = [
       h.includes("stuck-heading"),
   },
   {
-    // The manipulatives moved into Together rather than disappearing.
-    id: "workbench-reachable",
-    test: (h) => h.includes("workbench-drawer") && h.includes("switchWorkbenchTool"),
+    // A lesson gets exactly one matching manipulative, or none when the shared
+    // workbench has no honest model for tonight's move. Every page still has
+    // its lesson-specific visual and scratchpad.
+    id: "topic-workbench-only",
+    test: (h, config) => {
+      const wanted = homeworkWorkbenchTool(config);
+      const toolIds = ["fractions", "coords", "tapes", "decimals"];
+      if (!wanted) {
+        return (
+          !h.includes('class="workbench-drawer"') &&
+          toolIds.every((id) => !h.includes(`id="wb_panel_${id}"`))
+        );
+      }
+      return (
+        h.includes(`data-workbench-tool="${wanted}"`) &&
+        h.includes(`id="wb_panel_${wanted}"`) &&
+        toolIds.filter((id) => id !== wanted).every((id) => !h.includes(`id="wb_panel_${id}"`))
+      );
+    },
+  },
+  {
+    id: "global-workbench-hidden",
+    test: (h) => h.includes("#nsr-workbench { display: none !important; }"),
   },
   {
     // Every game lives in one arcade on the Play stop: the four family games
@@ -70,12 +100,39 @@ const REQUIRED_MARKERS = [
     id: "help-modal",
     test: (h) => h.includes("help_modal_overlay") && h.includes("openHelpModalFromBtn"),
   },
-  { id: "bilingual", test: (h) => h.includes('lang="es"') && h.includes("Ayuda a tu estudiante") },
+  {
+    id: "family-route",
+    test: (h) =>
+      h.includes('class="hw-route-chooser"') &&
+      ["quick", "core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
+      h.includes("setHomeworkRoute") &&
+      h.includes("goNextHomeworkStop"),
+  },
+  {
+    id: "graduated-coaching",
+    test: (h) =>
+      h.includes('class="problem-coach-ladder"') &&
+      h.includes("No answer spoilers") &&
+      h.includes("revealCoachStep"),
+  },
+  {
+    id: "hands-on-mission",
+    test: (h) =>
+      h.includes('class="family-mission-picker"') &&
+      h.includes("pickFamilyMission") &&
+      h.includes("completeFamilyMission") &&
+      h.includes('id="badge_achieve_mission"'),
+  },
+  {
+    id: "bilingual",
+    test: (h) => h.includes('lang="es"') && h.includes("Tarea de matemáticas en familia"),
+  },
   {
     id: "no-curriculum",
     test: (h) => {
-      // Allow student practice tools (AI Learning Lab + Math Workbench).
-      const stripped = h.replace(/\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi, "");
+      // Allow the AI Learning Lab. The general Math Workbench is intentionally
+      // excluded because this page embeds only its lesson-matched tool.
+      const stripped = h.replace(/\/curriculum\/ai-hub\/[^"'\s]*/gi, "");
       return (
         !/\/curriculum\//i.test(stripped) &&
         !/Back to curriculum/i.test(h) &&
@@ -87,11 +144,19 @@ const REQUIRED_MARKERS = [
 
 function loadLessons() {
   return readdirSync(lessonsDir)
-    .filter((d) => LESSON_DIR_RE.test(d) && existsSync(join(lessonsDir, d, "config.json")))
+    .filter(
+      (d) =>
+        existsSync(join(lessonsDir, d, "config.json")) &&
+        existsSync(join(lessonsDir, d, "homework.html")),
+    )
     .sort((a, b) => {
-      const [, u1, l1] = a.match(LESSON_DIR_RE);
-      const [, u2, l2] = b.match(LESSON_DIR_RE);
-      return Number(u1) - Number(u2) || Number(l1) - Number(l2);
+      /* Unit/lesson order where the id carries one; a bridge id like
+         `6-1-6-2-practice` still leads with its unit, and anything with no
+         leading number sorts by name rather than being dropped. */
+      const m1 = a.match(ORDER_RE);
+      const m2 = b.match(ORDER_RE);
+      if (!m1 || !m2) return m1 ? -1 : m2 ? 1 : a.localeCompare(b);
+      return Number(m1[1]) - Number(m2[1]) || Number(m1[2]) - Number(m2[2]) || a.localeCompare(b);
     })
     .map((id) => {
       const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
@@ -114,8 +179,10 @@ const lessons = loadLessons();
 /* One entry per lesson directory that ships family homework. Pinned so a lesson
    that silently stops generating homework fails here instead of shrinking the
    denominator and still reporting "all compliant". Was 74 until the book-TOC
-   renumber brought the curriculum to 84. */
-const expectedCount = 84;
+   renumber brought the curriculum to 84, and 164 until lesson 9-4 gained its
+   Apply Day on 2026-09-20. 166 since 2026-09-22, when lesson 3-2 — the one
+   lesson taught over three sections — gained its Section 3 page. */
+const expectedCount = 166;
 const failures = [];
 const alignmentRows = [];
 
@@ -165,7 +232,7 @@ for (const { id, config, html } of lessons) {
   const lessonFails = [];
 
   for (const marker of REQUIRED_MARKERS) {
-    if (!marker.test(html)) {
+    if (!marker.test(html, config)) {
       lessonFails.push(marker.id);
     }
   }
@@ -186,12 +253,49 @@ for (const { id, config, html } of lessons) {
   }
 }
 
+/* Findings a human has read. Held to the same standard as the tree: a reason
+   under 40 characters is rejected, and an entry whose finding no longer fires
+   must be deleted rather than left behind as a stale absolution. */
+const REVIEW_PATH = join(root, "data", "homework-alignment-review.json");
+const reviewed = existsSync(REVIEW_PATH)
+  ? JSON.parse(readFileSync(REVIEW_PATH, "utf8")).reviewed || []
+  : [];
+for (const entry of reviewed) {
+  if (!entry.id || !entry.kind || String(entry.reason || "").length < 40) {
+    failures.push(
+      `homework-alignment-review: ${entry.id || "(no id)"} needs an id, a kind and a reason of at least 40 characters`,
+    );
+  }
+}
+const isReviewed = (id, kind) => reviewed.some((e) => e.id === id && e.kind === kind);
+const clearedAlignment = new Set();
+for (let i = failures.length - 1; i >= 0; i--) {
+  const f = failures[i];
+  if (typeof f === "string") continue;
+  const rest = f.fails.filter(
+    (t) => !(t.startsWith("alignment(") && isReviewed(f.id, "alignment")),
+  );
+  if (rest.length === f.fails.length) continue;
+  clearedAlignment.add(f.id);
+  if (rest.length) failures[i] = { id: f.id, fails: rest };
+  else failures.splice(i, 1);
+}
+/* A reviewed entry the audit no longer flags is stale and must go. */
+for (const entry of reviewed) {
+  if (entry.kind !== "alignment") continue;
+  if (!clearedAlignment.has(entry.id)) {
+    failures.push(
+      `homework-alignment-review: ${entry.id} no longer fires an alignment finding — delete the entry`,
+    );
+  }
+}
+
 const passCount = lessons.length - failures.length;
 const alignedCount = alignmentRows.filter((r) => r.aligned).length;
 
 console.log("Structure & policy checks:");
 for (const marker of REQUIRED_MARKERS) {
-  const ok = lessons.filter((l) => marker.test(l.html)).length;
+  const ok = lessons.filter((l) => marker.test(l.html, l.config)).length;
   console.log(`  ${ok === lessons.length ? "✓" : "✗"} ${marker.id}: ${ok}/${lessons.length}`);
 }
 
@@ -200,9 +304,18 @@ for (const marker of REQUIRED_MARKERS) {
    pre-renumber lesson ids while this audit reported "84/84 fully compliant". */
 const ownership = findNoteOwnershipConflicts(lessons);
 for (const c of ownership) {
+  if (isReviewed(c.id, "note-ownership")) continue;
   failures.push(
     `${c.id}: family note looks like ${c.suspectedOwner}'s lesson (score ${c.bestScore} vs ${c.ownScore}) — "${c.text}…"`,
   );
+}
+for (const entry of reviewed) {
+  if (entry.kind !== "note-ownership") continue;
+  if (!ownership.some((c) => c.id === entry.id)) {
+    failures.push(
+      `homework-alignment-review: ${entry.id} no longer fires a note-ownership finding — delete the entry`,
+    );
+  }
 }
 console.log(
   `Family notes: ${lessons.length - ownership.length}/${lessons.length} on the right lesson`,
@@ -214,8 +327,12 @@ console.log(
 
 if (failures.length) {
   console.log(`\n❌ FAIL — ${passCount}/${lessons.length} pass\n`);
+  /* `failures` holds two shapes — a per-lesson {id, fails} and a plain string
+     from the lesson-count and note-ownership checks. Printing only the first
+     shape crashed the reporter on the string, so the run that FOUND a problem
+     was the run that died before naming it. */
   for (const f of failures.slice(0, 20)) {
-    console.log(`  ${f.id}: ${f.fails.join(", ")}`);
+    console.log(typeof f === "string" ? `  ${f}` : `  ${f.id}: ${f.fails.join(", ")}`);
   }
   if (failures.length > 20) {
     console.log(`  … and ${failures.length - 20} more`);

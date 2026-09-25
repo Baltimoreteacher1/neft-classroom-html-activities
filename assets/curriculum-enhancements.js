@@ -57,6 +57,7 @@
   ];
 
   var FILTER_RULES = {
+    learninglabs: /interactive learning lab|\/curriculum\/learning-labs\//i,
     lessons: /interactive lesson|slides\.html|handout\.html|\/lessons\/[^/]+\/?$/i,
     homework: /homework|family homework/i,
     games: /game|graphic novel|3d|project|bonus|arcade|lab|odyssey|netfold/i,
@@ -65,8 +66,11 @@
   };
 
   var realWorldMap = {};
-  var googleSlidesLegacyUrls = {};
   var lessonStandards = {};
+  // lesson id -> true when data/curriculum-manifest.json says the Get Ready
+  // pre-lesson exists on disk. 20 of 84 lessons have none, and the hub used to
+  // link every lesson to /lessons/<id>/readiness/ regardless — 24 dead links.
+  var lessonReadiness = {};
   var searchIndex = null;
   var _searchDocsById = {};
   var activeFilter = FILTER_ALL;
@@ -214,7 +218,7 @@
     form.innerHTML =
       '<div style="font-size:36px; margin-bottom:8px;">👩‍🏫</div>' +
       '<h3 style="margin:0 0 6px; font-family:Nunito,sans-serif; font-size:20px; font-weight:800; color:#0f172a;">Teacher Mode Access</h3>' +
-      '<p style="margin:0 0 18px; font-size:13.5px; color:#64748b;">Enter your teacher PIN to unlock answer keys, lesson plans, IEP accommodations, and teacher tools.</p>' +
+      '<p style="margin:0 0 18px; font-size:13.5px; color:#64748b;">Enter your teacher PIN to unlock answer keys, lesson plans, learning supports, and teacher tools.</p>' +
       '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" style="display:none;" />' +
       '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter teacher password" aria-label="Enter teacher password" style="width:100%; min-height:46px; padding:0 16px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:15px; margin-bottom:14px; outline:none;" />' +
       '<div style="display:flex; gap:10px;">' +
@@ -501,9 +505,18 @@
     return loadJson("/data/curriculum-manifest.json").then(function (data) {
       if (!data || !Array.isArray(data.lessons)) return;
       data.lessons.forEach(function (l) {
-        if (l.id && l.standard) lessonStandards[l.id] = l.standard;
+        if (!l.id) return;
+        if (l.standard) lessonStandards[l.id] = l.standard;
+        var ready = l.resources && l.resources.readiness;
+        lessonReadiness[l.id] = !!(ready && ready.exists);
       });
     });
+  }
+
+  function hasReadiness(lessonId) {
+    if (!lessonId) return false;
+    var base = lessonId.replace("-flagship", "");
+    return lessonReadiness[lessonId] === true || lessonReadiness[base] === true;
   }
 
   function standardForLesson(lessonId) {
@@ -532,6 +545,18 @@
     var obj = infoBlock.querySelector(".lesson-info-obj");
     if (obj) infoBlock.insertBefore(badge, obj);
     else infoBlock.insertBefore(badge, infoBlock.firstChild);
+  }
+
+  // /curriculum/ stopped hosting the units-and-lessons browser on 2026-08-11
+  // (it is /curriculum/units/ now) but kept #curr-search, which the hub gate
+  // pins. With nothing to filter, the toolbar rendered "0 lessons · 0
+  // pathways", six chips that did nothing and a 0% progress line. When the
+  // page has no browser, the box becomes a real search that lands on the units
+  // browser with the query pre-filled (that page already honours ?q=), and the
+  // browser-only controls are not built at all.
+  function hubHasBrowser() {
+    if (document.getElementById("interactive-hub")) return true;
+    return !!(hubApi && hubApi.unitsData && hubApi.unitsData.length);
   }
 
   function buildControls() {
@@ -599,19 +624,28 @@
     // which is indistinguishable from a broken site or a deploy that never
     // landed. This states the view at the top, before any of that confusion.
     // It reuses requestTeacher() rather than duplicating the PIN gate.
+    // The hub ships this banner statically (see curriculum/index.html) so the
+    // header does not reflow after load; other pages that load this file
+    // still get it built here.
     var header = document.querySelector(".curriculum-guide");
     var h1 = header && header.querySelector("h1");
-    if (h1) {
+    var bannerBtn = document.getElementById("hub-mode-banner-switch");
+    if (!bannerBtn && h1) {
       var banner = document.createElement("p");
       banner.id = "hub-mode-banner";
       banner.className = "hub-mode-banner hub-student-only";
       var bannerText = document.createElement("span");
       bannerText.textContent = "🎒 You're in Student view — teacher tools are hidden. ";
-      var bannerBtn = document.createElement("button");
+      bannerBtn = document.createElement("button");
       bannerBtn.type = "button";
       bannerBtn.className = "hub-hint-link";
       bannerBtn.id = "hub-mode-banner-switch";
       bannerBtn.textContent = "Switch to Teacher view";
+      banner.append(bannerText, bannerBtn);
+      h1.parentNode.insertBefore(banner, h1.nextSibling);
+    }
+    if (bannerBtn && !bannerBtn.dataset.bound) {
+      bannerBtn.dataset.bound = "1";
       bannerBtn.addEventListener("click", function () {
         requestTeacher(function (role) {
           teacherMode = true;
@@ -620,12 +654,41 @@
           updateProgressSummary();
         });
       });
-      banner.append(bannerText, bannerBtn);
-      h1.parentNode.insertBefore(banner, h1.nextSibling);
     }
 
     controls.parentNode.insertBefore(bar, controls.nextSibling);
 
+    var chips = null;
+    var summary = null;
+    if (hubHasBrowser()) {
+      chips = buildFilterChips();
+      controls.parentNode.insertBefore(chips, bar.nextSibling);
+
+      summary = document.createElement("p");
+      summary.id = "hub-progress-summary";
+      summary.className = "hub-progress-summary";
+      summary.setAttribute("role", "status");
+      chips.parentNode.insertBefore(summary, chips.nextSibling);
+    }
+
+    var sticky = document.getElementById("hub-toolbar-sticky");
+    if (!sticky) {
+      sticky = document.createElement("div");
+      sticky.id = "hub-toolbar-sticky";
+      sticky.className = "hub-toolbar-sticky";
+      var anchor = document.getElementById("hub-student-hint") || controls;
+      anchor.parentNode.insertBefore(sticky, anchor);
+    }
+    [document.getElementById("hub-student-hint"), controls, bar, chips, summary].forEach(
+      function (el) {
+        if (el && el.parentNode !== sticky) {
+          sticky.appendChild(el);
+        }
+      },
+    );
+  }
+
+  function buildFilterChips() {
     var chips = document.createElement("div");
     chips.className = "hub-filter-chips";
     chips.setAttribute("role", "group");
@@ -634,6 +697,7 @@
     [
       { id: FILTER_ALL, label: "All" },
       { id: "lessons", label: "Lessons" },
+      { id: "learninglabs", label: "Learning Labs" },
       { id: "smallgroup", label: "💡 Small-Group" },
       { id: "homework", label: "Homework" },
       { id: "games", label: "Games" },
@@ -654,30 +718,7 @@
       });
       chips.appendChild(btn);
     });
-
-    controls.parentNode.insertBefore(chips, bar.nextSibling);
-
-    var summary = document.createElement("p");
-    summary.id = "hub-progress-summary";
-    summary.className = "hub-progress-summary";
-    summary.setAttribute("role", "status");
-    chips.parentNode.insertBefore(summary, chips.nextSibling);
-
-    var sticky = document.getElementById("hub-toolbar-sticky");
-    if (!sticky) {
-      sticky = document.createElement("div");
-      sticky.id = "hub-toolbar-sticky";
-      sticky.className = "hub-toolbar-sticky";
-      var anchor = document.getElementById("hub-student-hint") || controls;
-      anchor.parentNode.insertBefore(sticky, anchor);
-    }
-    [document.getElementById("hub-student-hint"), controls, bar, chips, summary].forEach(
-      function (el) {
-        if (el && el.parentNode !== sticky) {
-          sticky.appendChild(el);
-        }
-      },
-    );
+    return chips;
   }
 
   function updateProgressSummary() {
@@ -697,9 +738,11 @@
       {
         "@type": "AlignmentObject",
         alignmentType: "educationalSubject",
-        educationalFramework: "Common Core State Standards for Mathematics",
+        // Lesson codes are Maryland 2025 MCCRS (6.AT.1, 6.DS.4 …), not CCSS
+        // ids, and corestandards.org 404s for every one of them — so no
+        // targetUrl. The CCSS crosswalk lives in data/standards-crosswalk-2025.json.
+        educationalFramework: "Maryland College and Career Ready Standards for Mathematics (2025)",
         targetName: code,
-        targetUrl: "http://corestandards.org/Math/Content/" + code.replace(".", "/"),
       },
     ];
   }
@@ -1521,6 +1564,10 @@
   function updateResultCount() {
     var el = document.getElementById("result-count");
     if (!el || !hubApi || !hubApi.unitsData) return;
+    if (!hubHasBrowser()) {
+      el.textContent = "";
+      return;
+    }
     var q = (hubApi.searchBox && hubApi.searchBox.value) || "";
     var coreTotal = 0;
     var pathwayTotal = 0;
@@ -1620,13 +1667,11 @@
     return /^google slides$/i.test((act.text || "").replace(/\s+/g, " ").trim());
   }
 
-  function legacyDriveUrlForLesson(lessonId) {
-    return googleSlidesLegacyUrls[lessonId] || "";
-  }
-
   /**
    * Point curriculum "Google Slides" at reference-matched HTML decks.
-   * Legacy Drive URLs stay as a secondary teacher-only link when available.
+   * The old Drive decks used to ride along as a secondary "Google Drive copy
+   * (legacy)" link; on 2026-09-20 every one of those 53 URLs answered 410 Gone
+   * at Google, so they are no longer offered.
    * Idempotent — safe to run before every hub render.
    */
   function upgradeGoogleSlidesLinks() {
@@ -1637,36 +1682,8 @@
         if (!lessonId) return;
 
         var slidesHref = "/lessons/" + lessonId + "/slides.html";
-        var activities = lesson.activities || (lesson.activities = []);
-        var legacyInserts = [];
-        var legacyUrl = legacyDriveUrlForLesson(lessonId);
-
-        for (var i = 0; i < activities.length; i++) {
-          var act = activities[i];
-          if (!isGoogleSlidesActivity(act)) continue;
-
-          var currentHref = act.href || "";
-          var isExternal = /docs\.google\.com/i.test(currentHref);
-          if (isExternal) {
-            legacyUrl = legacyUrl || currentHref;
-          }
-          act.href = slidesHref;
-
-          if (legacyUrl && legacyUrl !== slidesHref) {
-            legacyInserts.push({ index: i + 1, href: legacyUrl });
-          }
-        }
-
-        legacyInserts.reverse().forEach(function (entry) {
-          var dup = activities.some(function (a) {
-            return a.href === entry.href && /legacy|drive copy/i.test(a.text || "");
-          });
-          if (dup) return;
-          activities.splice(entry.index, 0, {
-            text: "↗ Google Drive copy (legacy)",
-            href: entry.href,
-          });
-          lesson.dataSearch += " google drive legacy";
+        (lesson.activities || []).forEach(function (act) {
+          if (isGoogleSlidesActivity(act)) act.href = slidesHref;
         });
       });
     });
@@ -1685,28 +1702,7 @@
 
       lessonEl.querySelectorAll(".lesson-body .res").forEach(function (a) {
         if (!isGoogleSlidesActivity({ text: a.textContent })) return;
-
-        var legacyUrl = a.getAttribute("href") || "";
-        if (!/docs\.google\.com/i.test(legacyUrl)) {
-          legacyUrl = legacyDriveUrlForLesson(lessonId) || legacyUrl;
-        }
         a.setAttribute("href", slidesHref);
-
-        if (!/docs\.google\.com/i.test(legacyUrl) || legacyUrl === slidesHref) return;
-        var row = a.parentNode;
-        if (!row) return;
-        var already = Array.prototype.some.call(row.querySelectorAll(".res"), function (link) {
-          return link !== a && link.getAttribute("href") === legacyUrl;
-        });
-        if (already) return;
-
-        var legacy = document.createElement("a");
-        legacy.className = "res teacher-only";
-        legacy.href = legacyUrl;
-        legacy.target = "_blank";
-        legacy.rel = "noopener";
-        legacy.textContent = "↗ Google Drive copy (legacy)";
-        a.insertAdjacentElement("afterend", legacy);
       });
     });
   }
@@ -1723,6 +1719,7 @@
       if (!match) return;
 
       var lessonId = match[1];
+      if (!hasReadiness(lessonId)) return;
       var href = "/lessons/" + lessonId + "/readiness/";
       var row = lessonEl.querySelector(".lesson-body .res-row");
       if (!row) return;
@@ -1753,7 +1750,7 @@
         var hasReady = (lesson.activities || []).some(function (a) {
           return a.href === readyHref;
         });
-        if (!hasReady) {
+        if (!hasReady && hasReadiness(lessonId)) {
           var readyActs = lesson.activities || (lesson.activities = []);
           readyActs.unshift({
             text: "🚀 Get Ready (Pre-Lesson)",
@@ -1818,6 +1815,56 @@
     hubApi._slidesUpgradeWrapped = true;
   }
 
+  // The hub has no lesson rows to filter, so Enter (or the Search button)
+  // opens /curriculum/units/?q=<term>, where the same box filters all 84
+  // lessons and 214 pathways in place.
+  function buildHandoffSearch(box, search, qParam) {
+    if (document.getElementById("curr-search-go")) return;
+    var target = function () {
+      var q = (box.value || "").trim();
+      return "/curriculum/units/" + (q ? "?q=" + encodeURIComponent(q) : "");
+    };
+    box.placeholder = "Search lessons, standards, or topics…";
+    box.setAttribute("aria-label", "Search all lessons by title, standard, or topic");
+
+    var go = document.createElement("a");
+    go.id = "curr-search-go";
+    go.className = "curr-search-go";
+    go.href = target();
+    go.textContent = "Search";
+    go.addEventListener("click", function () {
+      go.href = target();
+    });
+    if (search) search.appendChild(go);
+
+    box.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      location.assign(target());
+    });
+    box.addEventListener("input", function () {
+      go.href = target();
+    });
+
+    var hint = document.createElement("p");
+    hint.id = "hub-search-hint";
+    hint.className = "hub-search-hint";
+    if (qParam) {
+      hint.innerHTML =
+        "Results open in the units browser: " +
+        '<a href="' +
+        target() +
+        '">see lessons matching “' +
+        escapeHtml(qParam) +
+        "” →</a>";
+    } else {
+      hint.textContent =
+        "Press Enter to search every unit, lesson, and pathway in the units browser.";
+    }
+    var controls = search && search.closest(".controls");
+    (controls || search).insertAdjacentElement("afterend", hint);
+  }
+
   function buildSearchUX() {
     var box = hubApi && hubApi.searchBox;
     if (!box || document.getElementById("curr-search-clear")) return;
@@ -1842,14 +1889,18 @@
       clearBtn.hidden = !box.value;
     });
 
-    // Deep-link search: /curriculum/?q=<term> pre-fills and runs the search.
-    // My Progress "Practise this" links rely on this to land students on the
-    // matching lessons instead of the unfiltered hub.
+    // Deep-link search: ?q=<term> pre-fills and runs the search on the units
+    // browser. My Progress "Practise this" links rely on this to land students
+    // on the matching lessons instead of the unfiltered page.
     var qParam = new URLSearchParams(location.search).get("q");
     if (qParam && !box.value) {
       box.value = qParam;
       box.dispatchEvent(new Event("input", { bubbles: true }));
       clearBtn.hidden = false;
+    }
+
+    if (!hubHasBrowser()) {
+      buildHandoffSearch(box, search, qParam);
     }
 
     // Press "/" anywhere to jump to search; Esc clears it.
@@ -2360,9 +2411,7 @@
     setupPrintView();
     wrapHubRenderers();
     upgradeGoogleSlidesLinks();
-    injectSupplementalActivities();
     patchStaticGoogleSlidesLinks();
-    injectReadinessLinks();
     markTeacherLinksInSource();
     enhancePrintFallbackAria();
     wrapRenderSearchResults();
@@ -2370,7 +2419,12 @@
     injectJsonLd();
 
     loadLessonStandards().then(function () {
-      scheduleEnhance();
+      // Both readers of lessonReadiness — the activity model and the static
+      // rows — run only after the manifest has answered, then re-render so
+      // the dropdowns pick up the added entries.
+      injectSupplementalActivities();
+      injectReadinessLinks();
+      refreshHub();
     });
     loadSearchIndex();
 
@@ -2417,17 +2471,6 @@
     loadJson("/assets/curriculum-real-world.json").then(function (data) {
       realWorldMap = data || {};
       if (hubApi) {
-        refreshHub();
-      }
-    });
-    loadJson("/data/google-slides-urls.json").then(function (data) {
-      if (data && typeof data === "object") {
-        googleSlidesLegacyUrls = data;
-        delete googleSlidesLegacyUrls._note;
-      }
-      if (hubApi) {
-        upgradeGoogleSlidesLinks();
-        patchStaticGoogleSlidesLinks();
         refreshHub();
       }
     });

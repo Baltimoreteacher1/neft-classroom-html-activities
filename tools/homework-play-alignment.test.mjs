@@ -31,8 +31,6 @@ import { join } from "node:path";
 import { detectVisualTopic } from "../scripts/homework-alignment.mjs";
 import { buildHomeworkGame } from "../scripts/homework-games.mjs";
 
-const root = join(import.meta.dirname, "..");
-
 import { LESSONS_DIR as lessonsDir } from "./lib/curriculum-source.mjs";
 
 const ids = readdirSync(lessonsDir, { withFileTypes: true })

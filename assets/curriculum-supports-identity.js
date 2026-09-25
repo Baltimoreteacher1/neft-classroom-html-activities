@@ -47,6 +47,11 @@
   var API = "/api/supports";
   var MANAGER_URL = "/teacher-tools/learning-supports-manager/";
   var TEACHER_MODE_KEY = "nt-teacher-mode"; // shared with curriculum-enhancements.js
+  // The teacher setup card is the one state with no way out: a teacher who has
+  // not built a roster saw the same full-width prompt above the fold on every
+  // single visit. "Never nag" (see renderCard) has to hold here too, so the
+  // dismissal is remembered until a roster actually exists.
+  var SETUP_DISMISSED_KEY = "nt-supports-setup-dismissed";
   var LESSON_HREF_RE = /\/lessons\/(\d+-\d+(?:-group[12]|-catchup)?)\/?(?:[?#]|$)/;
 
   // Passive accommodations that make sense on a browse page. Interactive tools
@@ -369,6 +374,23 @@
     if (card && card.parentNode) card.parentNode.removeChild(card);
   }
 
+  function setupDismissed() {
+    try {
+      return localStorage.getItem(SETUP_DISMISSED_KEY) === "1";
+    } catch (_e) {
+      return false;
+    }
+  }
+
+  function dismissSetup() {
+    try {
+      localStorage.setItem(SETUP_DISMISSED_KEY, "1");
+    } catch (_e) {
+      /* private mode — the card simply returns next load */
+    }
+    unmount();
+  }
+
   // ---- the card -------------------------------------------------------------
 
   function renderCard() {
@@ -378,6 +400,13 @@
 
     // Nothing set up and nobody to set it up: render nothing. Never nag.
     if (!ready && !state.teacher) {
+      unmount();
+      return;
+    }
+
+    // Set up, then dismissed, and still no roster: the teacher has already said
+    // "not now" once. Asking again on every load is the same nag.
+    if (!ready && setupDismissed()) {
       unmount();
       return;
     }
@@ -425,6 +454,7 @@
     );
     var actions = el("div", "nt-sup-card__actions");
     actions.appendChild(link("nt-sup-btn", "Set up my students →", MANAGER_URL));
+    actions.appendChild(button("nt-sup-btn nt-sup-btn--ghost", "Not now", dismissSetup));
     body.appendChild(actions);
   }
 

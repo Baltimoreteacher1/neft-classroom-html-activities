@@ -271,15 +271,22 @@ export async function runRouteMonitor({
 }
 
 // ---- CLI ---------------------------------------------------------------
-/** Resolve the commit production SHOULD be serving: --expected, env, or git HEAD. */
+/** Resolve the commit production SHOULD be serving: --expected, env, or main. */
 export function resolveExpectedCommit(explicit) {
   if (explicit) return explicit;
   if (process.env.CF_EXPECTED_COMMIT) return process.env.CF_EXPECTED_COMMIT;
-  try {
-    return execFileSync("git", ["rev-parse", "HEAD"], { cwd: HERE, encoding: "utf8" }).trim();
-  } catch {
-    return "";
+  for (const ref of ["refs/remotes/origin/main", "refs/heads/main"]) {
+    try {
+      return execFileSync("git", ["rev-parse", "--verify", ref], {
+        cwd: HERE,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim();
+    } catch {
+      // A shallow checkout may have only its checked-out main branch.
+    }
   }
+  return "";
 }
 
 async function main(argv) {

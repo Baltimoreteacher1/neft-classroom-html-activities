@@ -164,6 +164,19 @@ export const PRESETS = [
     ],
   },
   {
+    id: "worksheets",
+    label: "Practice Worksheets",
+    description:
+      "Every practice sheet for the unit — as web pages, one PDF, or editable Word files.",
+    types: [
+      "student-practice",
+      "small-group-worksheet",
+      "small-group-practice",
+      "mstar-practice",
+      "handout",
+    ],
+  },
+  {
     id: "small-groups",
     label: "Small-Group Pack",
     description: "Both small-group levels, their worksheets, and catch-up stations.",

@@ -49,6 +49,19 @@ export function inScope(id, scope = lessonScope()) {
 // twin of anything — it is its own lesson covering two — so it may key directly.
 const FAMILY_HOMEWORK_DIR_RE = /^[0-9][0-9a-z-]*$/;
 const GROUP_TWIN_RE = /-group\d+$/;
+// A `-part2` page is the SECOND SESSION of a numbered lesson, not a variant of
+// it: the Reveal deck splits each lesson across two class days and the two days
+// teach different content (2-1 Session 1 is statistical questions, Session 2 is
+// dot plots and shape). So it earns its own family homework the same way a core
+// lesson does — sending one night's practice home for a two-night lesson leaves
+// the second session with nothing for families. Unlike `-group1`/`-group2`,
+// which ARE the same lesson at another level and must resolve through the
+// parent, this one keys the hub catalogue directly.
+// `-part3` is the same thing one section further along. It exists for exactly
+// one lesson — 3-2, which is taught over three sections this year — so the
+// suffix is enumerated rather than left open-ended: a `-part4` should be a
+// deliberate edit here, not something a stray directory name switches on.
+const EXTRA_SESSION_RE = /^\d+-\d+-part[23]$/;
 
 /**
  * True when `id` should be given a `homework.html` and a hub tile.
@@ -59,6 +72,7 @@ const GROUP_TWIN_RE = /-group\d+$/;
  */
 export function generatesFamilyHomework(id, config) {
   if (LESSON_DIR_RE.test(id)) return true;
+  if (EXTRA_SESSION_RE.test(id)) return true;
   if (GROUP_TWIN_RE.test(id)) return false;
   return FAMILY_HOMEWORK_DIR_RE.test(id) && Boolean(config?.familyHomework);
 }
@@ -81,4 +95,4 @@ export function compareFamilyHomeworkIds(a, b) {
   return ka[0] - kb[0] || ka[1] - kb[1] || (ka[2] < kb[2] ? -1 : ka[2] > kb[2] ? 1 : 0);
 }
 
-export { FAMILY_HOMEWORK_DIR_RE, GROUP_TWIN_RE, LESSON_DIR_RE };
+export { EXTRA_SESSION_RE, FAMILY_HOMEWORK_DIR_RE, GROUP_TWIN_RE, LESSON_DIR_RE };

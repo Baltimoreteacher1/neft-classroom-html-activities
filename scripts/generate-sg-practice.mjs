@@ -37,13 +37,10 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { SG_PRACTICE_CSS } from "./lib/sg-practice-style.mjs";
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
-import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 

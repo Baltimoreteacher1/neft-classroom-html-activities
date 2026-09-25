@@ -20,7 +20,11 @@ async function call(path, init = {}) {
     body = await response.json();
   } catch {}
   if (!response.ok) {
-    throw new PublishingError(body.error || `Publishing request failed (${response.status}).`, response.status, body.error);
+    throw new PublishingError(
+      body.error || `Publishing request failed (${response.status}).`,
+      response.status,
+      body.error,
+    );
   }
   return body;
 }
@@ -43,6 +47,11 @@ export async function saveDraft(draft) {
   ).draft;
 }
 
-export async function publishDraft() {
-  return (await call("publish", { method: "POST" })).published;
+export async function publishDraft(expectedRevision) {
+  const init = { method: "POST" };
+  if (Number.isInteger(expectedRevision)) {
+    init.headers = { "content-type": "application/json" };
+    init.body = JSON.stringify({ expectedRevision });
+  }
+  return (await call("publish", init)).published;
 }

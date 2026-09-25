@@ -73,6 +73,7 @@ export function normalizeLessons(input) {
       unit,
       lesson,
       title: cleanText(raw.title, 120) || `Lesson ${id}`,
+      titleEs: cleanText(raw.titleEs, 160),
       objective: cleanText(raw.objective, 320),
       languageObjective: cleanText(raw.languageObjective, 320),
       standard: cleanText(raw.standard, 40),

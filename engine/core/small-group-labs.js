@@ -565,9 +565,9 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
     if (steps[index]) steps[index].classList.remove("locked");
   };
 
-  // Step 1 — Understand: read it, hear it, tap the numbers that matter.
+  // Step 1 — Understand & Plan: read it, hear it, tap numbers, and pick a move.
   const understand = el("div", "card sg-apply-step");
-  understand.appendChild(el("div", "sg-step-lab", "1 · Understand"));
+  understand.appendChild(el("div", "sg-step-lab", "1 · Understand & Plan"));
   const tools = el("div", "sg-toolrow");
   const read = el("button", "btn ghost", "🔊 Read the problem");
   read.type = "button";
@@ -575,9 +575,7 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
   read.onclick = () => speak(problem.text, read);
   tools.appendChild(read);
   understand.appendChild(tools);
-  // The Reveal figure this problem was written for. Most Apply problems say
-  // "the packs shown" or "the table shown" — without the picture the numbers
-  // are simply not on the page, and the group has nothing to solve.
+
   if (problem.image) {
     const fig = el("figure", "sg-apply-figure");
     const img = document.createElement("img");
@@ -589,32 +587,17 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
     understand.appendChild(fig);
   }
   understand.appendChild(el("p", "block-lab", "Tap every number you think the problem needs"));
-  let tapped = false;
   understand.appendChild(
     tappableProblem(problem.text, () => {
-      if (!tapped) {
-        tapped = true;
-        unlock(1);
-      }
+      unlock(1);
     }),
   );
 
-  // Step 2 — Plan: pick the move(s) before touching the numbers.
-  const plan = el("div", "card sg-apply-step locked");
-  plan.appendChild(el("div", "sg-step-lab", "2 · Plan"));
-  plan.appendChild(
-    el(
-      "p",
-      "block-lab",
-      "Which move(s) will you try first? (Your call — plans can change. Tap ⓘ to see what a move means.)",
-    ),
+  understand.appendChild(
+    el("p", "block-lab", "Which move(s) will you try first? Tap ⓘ to see what a move means."),
   );
   const moves = el("div", "sg-planrow");
-  let planned = false;
   PLAN_MOVES.forEach(([emoji, label, what, example]) => {
-    // Two controls per move: the chip picks it, the ⓘ explains it. They are
-    // siblings (never nested) so tapping "what does this mean?" can't be
-    // mistaken for choosing the move.
     const option = el("div", "sg-planopt");
     const chip = el("button", "sg-plan", `${emoji} ${esc(label)}`);
     chip.type = "button";
@@ -622,10 +605,7 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
     chip.onclick = () => {
       const on = chip.classList.toggle("on");
       chip.setAttribute("aria-pressed", String(on));
-      if (!planned) {
-        planned = true;
-        unlock(2);
-      }
+      unlock(1);
     };
     const why = el("button", "sg-plan-why", "ⓘ");
     why.type = "button";
@@ -635,11 +615,11 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
     option.append(chip, why);
     moves.appendChild(option);
   });
-  plan.appendChild(moves);
+  understand.appendChild(moves);
 
-  // Step 3 — Solve: show the steps and the answer.
-  const solve = el("div", "card sg-apply-step locked");
-  solve.appendChild(el("div", "sg-step-lab", "3 · Solve"));
+  // Step 2 — Solve & Check: show steps, compare with sample, and self-assess.
+  const solve = el("div", "card sg-apply-step");
+  solve.appendChild(el("div", "sg-step-lab", "2 · Solve & Check"));
   solve.appendChild(el("p", "block-lab", "Show your steps and your answer"));
   const work = el("textarea", "sg-ta");
   work.setAttribute("aria-label", "Show your work");
@@ -647,35 +627,23 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
   work.value = store.get("applyWork") || "";
   work.addEventListener("input", () => store.set("applyWork", work.value));
   const solveRow = el("div", "row");
-  const readyCheck = el("button", "btn", "I'm ready to check");
+  const readyCheck = el("button", "btn", "Compare with sample answer");
   readyCheck.type = "button";
   const solveStatus = el("div", "fb");
   solveStatus.setAttribute("aria-live", "polite");
-  readyCheck.onclick = () => {
-    if (work.value.trim().length < 12) {
-      events.onAttempt?.({ correct: false });
-      solveStatus.className = "fb show no";
-      solveStatus.textContent = "Show at least one full step and an answer before you compare.";
-      return;
-    }
-    unlock(3);
-    readyCheck.disabled = true;
-    solveStatus.className = "fb show info";
-    solveStatus.textContent = "Now compare your thinking with the sample below.";
-  };
-  solveRow.appendChild(readyCheck);
-  solve.append(work, solveRow, solveStatus);
 
-  // Step 4 — Check: compare with the sample answer, then self-assess honestly.
-  const checkStep = el("div", "card sg-apply-step locked");
-  checkStep.appendChild(el("div", "sg-step-lab", "4 · Check"));
+  const sampleWrapper = el("div", "sg-sample-box");
+  sampleWrapper.hidden = true;
   if (problem.sampleAnswer) {
     const sample = el("details", "sg-sample");
-    sample.appendChild(el("summary", "block-lab", "Compare with a sample answer"));
+    sample.open = true;
+    sample.appendChild(el("summary", "block-lab", "Sample answer"));
     sample.appendChild(el("p", null, esc(problem.sampleAnswer)));
-    checkStep.appendChild(sample);
+    sampleWrapper.appendChild(sample);
   }
+
   const verdictRow = el("div", "row");
+  verdictRow.hidden = true;
   const finalStatus = el("div", "fb");
   finalStatus.setAttribute("aria-live", "polite");
   let complete = false;
@@ -710,9 +678,25 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
     button.onclick = () => finish(verdict, message);
     verdictRow.appendChild(button);
   });
-  checkStep.append(verdictRow, finalStatus);
+
+  readyCheck.onclick = () => {
+    if (work.value.trim().length < 8) {
+      events.onAttempt?.({ correct: false });
+      solveStatus.className = "fb show no";
+      solveStatus.textContent = "Show your steps and an answer before you compare.";
+      return;
+    }
+    readyCheck.disabled = true;
+    solveStatus.className = "fb show info";
+    solveStatus.textContent = "Compare your thinking below, then self-assess:";
+    sampleWrapper.hidden = false;
+    verdictRow.hidden = false;
+  };
+  solveRow.appendChild(readyCheck);
+  solve.append(work, solveRow, solveStatus, sampleWrapper, verdictRow, finalStatus);
+
   if (variant === "group2")
-    checkStep.appendChild(
+    solve.appendChild(
       el(
         "p",
         "sg-lab-note",
@@ -720,7 +704,7 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
       ),
     );
 
-  steps.push(understand, plan, solve, checkStep);
+  steps.push(understand, solve);
   steps.forEach((step) => section.appendChild(step));
   return section;
 }

@@ -6,359 +6,166 @@
 <title>6.13 Small Group · Group 1 — Practice Worksheet</title>
 <link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
 <style>
+
 :root {
-  --navy: #0f172a;
-  --navy-light: #1e293b;
-  --blue: #1d4ed8;
-  --blue-light: #eff6ff;
-  --teal: #0f766e;
-  --teal-light: #f0fdfa;
-  --amber-dark: #b45309;
-  --amber-light: #fef3c7;
-  --amber-border: #fde68a;
-  --purple-dark: #6b21a8;
-  --purple-light: #f5f3ff;
-  --purple-border: #d8b4fe;
-  --ink: #0f172a;
-  --muted: #475569;
-  --line: #cbd5e1;
-  --line-light: #e2e8f0;
-  --soft: #f8fafc;
-  --card-bg: #ffffff;
+  --navy: #1f3864;
+  --navy-deep: #17294a;
+  --teal: #0f6e6e;
+  --teal-soft: #e6f4f3;
+  --teal-line: #9fd0cc;
+  --amber-dark: #8a5a00;
+  --amber-soft: #fff4d6;
+  --amber-line: #f2d48a;
+  --ink: #19262f;
+  --muted: #4f5d68;
+  --line: #c9d2da;
+  --line-light: #e3e8ed;
+  --soft: #f6f8fa;
+  --key: #0b6b3a;
+  --key-soft: #e7f6ec;
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  margin: 0;
-  background: #f1f5f9;
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { background: #eef1f4; color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.45; }
 
-/* Page Container (Publisher Sheet) */
-.ws-page {
-  background: #ffffff;
-  max-width: 820px;
-  margin: 24px auto;
-  padding: 36px 44px 44px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
-  border-radius: 8px;
-  border: 1.5px solid var(--line-light);
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
+/* Pages */
+.ws-page { background: #fff; max-width: 8.5in; margin: 20px auto; padding: 0.55in 0.6in 0.6in; box-shadow: 0 6px 24px rgba(15,23,42,.10); border: 1px solid var(--line-light); }
+.ws-page + .ws-page { break-before: page; }
 
-/* Tiered Custom Color Themes */
-.ws-group1-page { border-top: 6px solid var(--amber-dark); }
-.ws-group2-page { border-top: 6px solid var(--purple-dark); }
-.ws-catchup-page { border-top: 6px solid var(--teal); }
-.ws-core-tier-page { border-top: 6px solid var(--blue); }
+/* Header */
+.ws-header { margin-bottom: 14px; }
+.ws-band { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--navy); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; }
+.ws-band span:last-child { white-space: nowrap; }
+.ws-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-top: 10px; }
+.ws-title { font-family: var(--font-display); font-size: 22px; line-height: 1.15; font-weight: 700; color: var(--navy-deep); }
+.ws-lesson-n { display: block; font-family: var(--font-body); font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); margin-bottom: 2px; }
+.ws-edition { margin-top: 4px; font-size: 13px; font-weight: 700; color: var(--navy); }
+.ws-edition-note { font-weight: 500; color: var(--muted); }
+.ws-edition-note::before { content: " · "; }
+.ws-mastery { flex-shrink: 0; display: grid; gap: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 10.5px; color: var(--muted); min-width: 130px; }
+.ws-mastery-title { font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); font-size: 9.5px; }
+.ws-meta-row { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 10px; font-size: 12.5px; }
+.ws-fill-line { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 90px; height: 16px; vertical-align: bottom; }
+.ws-fill-line-wide { width: 100%; min-width: 0; height: 20px; border-bottom-color: var(--line); }
+.ws-fill-inline { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 56px; height: 14px; vertical-align: baseline; }
+.ws-target { margin-top: 10px; padding: 7px 12px; background: var(--teal-soft); border-left: 4px solid var(--teal); border-radius: 0 6px 6px 0; font-size: 12.5px; }
+.ws-target b { color: var(--teal); text-transform: uppercase; letter-spacing: .05em; font-size: 10.5px; margin-right: 6px; }
 
-/* Publisher Header */
-.ws-publisher-header {
-  border-bottom: 2.5px solid var(--navy);
-  padding-bottom: 14px;
-  margin-bottom: 18px;
-}
-.ws-header-top-ribbon {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-.ws-ribbon-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.ws-pill {
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  padding: 3px 10px;
-  border-radius: 999px;
-}
-.ws-pill-std { background: var(--navy); color: #ffffff; }
-.ws-pill-lesson { background: #e2e8f0; color: #1e293b; }
-.ws-pill-level { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-.ws-group1-page .ws-pill-level { background: var(--amber-light); color: var(--amber-dark); border-color: var(--amber-border); }
-.ws-group2-page .ws-pill-level { background: var(--purple-light); color: var(--purple-dark); border-color: var(--purple-border); }
+/* Support blocks */
+.ws-block { margin: 9px 0; border: 1px solid var(--teal-line); border-radius: 6px; padding: 8px 12px 10px; background: #fff; break-inside: avoid; }
+.ws-block-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--navy-deep); margin-bottom: 4px; line-height: 1.25; }
+.ws-block-kicker { display: block; font-family: var(--font-body); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin-bottom: 1px; }
+.ws-block-sub { display: block; font-family: var(--font-body); font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: capitalize; }
+.ws-block-lead { font-size: 11.5px; color: var(--muted); margin-bottom: 8px; }
+.ws-words { width: 100%; border-collapse: collapse; font-size: 11.5px; line-height: 1.35; }
+.ws-words th { background: var(--teal); color: #fff; text-align: left; padding: 5px 8px; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; }
+.ws-words td { border: 1px solid var(--line-light); padding: 4px 7px; vertical-align: top; }
+.ws-words .ws-word { width: 26%; }
+.ws-es { display: block; font-size: 10.5px; color: var(--muted); font-style: italic; }
+.ws-word-ex { width: 30%; }
+.ws-example-problem { font-size: 13px; font-weight: 600; padding: 7px 10px; background: var(--soft); border-radius: 5px; margin-bottom: 8px; }
+.ws-example-steps { padding-left: 26px; font-size: 12.5px; display: grid; gap: 2px; }
+.ws-example-steps li::marker { font-weight: 800; color: var(--teal); }
+.ws-try-steps li { padding: 2px 0; }
+.ws-example-answer { margin-top: 8px; font-size: 12.5px; padding: 6px 10px; border-left: 3px solid var(--teal); }
+.ws-starters { list-style: none; display: grid; gap: 5px; font-size: 12.5px; }
+.ws-starters li::before { content: "•"; color: var(--teal); font-weight: 800; margin-right: 6px; }
+.ws-word-bank { margin-top: 8px; font-size: 11.5px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ws-chip { display: inline-block; padding: 1px 8px; border: 1px solid var(--teal-line); border-radius: 999px; background: var(--teal-soft); font-size: 11px; font-weight: 600; color: var(--navy-deep); }
+.ws-block-watch { border-color: var(--amber-line); background: var(--amber-soft); }
+.ws-block-watch .ws-block-kicker { color: var(--amber-dark); }
+.ws-watch-text { font-size: 12px; }
+.ws-block-remember { border-color: var(--line); }
+.ws-remember-lead { font-size: 12.5px; margin-bottom: 4px; }
+.ws-remember-steps { padding-left: 24px; font-size: 12px; display: grid; gap: 2px; margin-bottom: 6px; }
+.ws-remember-words, .ws-remember-watch { font-size: 11.5px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ws-remember-watch { display: block; }
+.ws-block-keynote { border-color: var(--key); background: var(--key-soft); }
 
-.ws-rubric-box {
-  background: var(--soft);
-  border: 1.5px solid var(--line);
-  border-radius: 6px;
-  padding: 4px 10px;
-  text-align: right;
-  font-size: 11px;
-}
-.ws-rubric-score { font-weight: 800; color: var(--navy); }
-.ws-score-blank { font-family: var(--font-mono); color: var(--blue); }
-.ws-rubric-badges { font-size: 10px; color: var(--muted); font-weight: 600; }
+/* Sections and problems */
+.ws-section-head { display: flex; align-items: baseline; gap: 10px; background: var(--navy); color: #fff; padding: 4px 12px; border-radius: 4px; margin: 10px 0 6px; break-after: avoid; }
+.ws-section-n { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.ws-section-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; }
+.ws-section-tag { margin-left: auto; font-size: 10.5px; opacity: .85; }
+.ws-problems { list-style: none; display: grid; gap: 8px; }
+.ws-problem-card { border: 1px solid var(--line); border-radius: 6px; background: #fff; break-inside: avoid; }
+.ws-problem-head { display: flex; align-items: center; gap: 10px; padding: 4px 12px; border-bottom: 1px solid var(--line-light); background: var(--soft); border-radius: 6px 6px 0 0; }
+.ws-pnum { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: var(--navy); color: #fff; font-weight: 800; font-size: 12.5px; }
+.ws-directions { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.ws-pbody { padding: 7px 12px 9px; }
+.ws-stem { font-size: 13.5px; font-weight: 500; margin-bottom: 8px; }
+.ws-opts { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; margin: 4px 0 6px; }
+.ws-opt { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.ws-bub { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 1.4px solid var(--navy); border-radius: 50%; font-size: 11px; font-weight: 800; color: var(--navy); flex-shrink: 0; }
+.ws-bub-sm { width: 18px; height: 18px; font-size: 10px; }
+.ws-hint { margin: 6px 0; padding: 6px 10px; background: var(--teal-soft); border-left: 3px solid var(--teal); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-hint-steps ol { margin: 4px 0 0 18px; display: grid; gap: 3px; }
+.ws-hint-steps li::marker { font-weight: 800; color: var(--teal); }
+.ws-hint-tag, .ws-frame-tag { font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: .05em; font-size: 10px; margin-right: 6px; }
+.ws-frame { margin: 6px 0; padding: 6px 10px; border: 1px dashed var(--teal-line); border-radius: 5px; font-size: 12px; }
+.ws-work { margin-top: 6px; border: 1px solid var(--line-light); border-radius: 5px; padding: 6px 10px 8px; background: #fff; }
+.ws-work-label { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.ws-lines { margin: 4px 0 0; }
+.ws-line { display: block; border-bottom: 1.2px solid var(--line); height: 21px; }
+.ws-answer-line { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; font-size: 12.5px; }
+.ws-answer-label { font-weight: 800; color: var(--navy); }
+.ws-answer-line .ws-fill-line { flex: 1 1 180px; max-width: 320px; }
+.ws-answer-unit { font-size: 11.5px; color: var(--muted); }
+.ws-prompt { font-size: 12.5px; font-weight: 600; margin: 8px 0 4px; }
 
-.ws-title-group {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-.ws-main-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--navy);
-  line-height: 1.15;
-}
-.ws-sub-title {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--muted);
-  margin-top: 2px;
-}
-.ws-digital-link-box {
-  background: var(--blue-light);
-  border: 1px solid #bfdbfe;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--blue);
-}
-.ws-digital-link-box a { color: var(--blue); text-decoration: none; }
+/* Matching, sorting, tables, steps */
+.ws-match { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; margin: 6px 0; font-size: 12.5px; }
+.ws-match-terms, .ws-match-bank { list-style: none; display: grid; gap: 6px; }
+.ws-match-term { display: flex; align-items: center; gap: 8px; }
+.ws-match-bank li { display: flex; align-items: flex-start; gap: 8px; }
+.ws-blank { display: inline-block; border-bottom: 1.2px solid var(--ink); min-width: 120px; height: 18px; text-align: center; font-weight: 700; }
+.ws-blank-sm { min-width: 34px; }
+.ws-blank-md { min-width: 96px; }
+.ws-cats-bar { font-size: 12px; margin: 4px 0 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ws-cat-pill { display: inline-block; padding: 2px 10px; border: 1px solid var(--navy); border-radius: 999px; font-size: 11.5px; font-weight: 700; color: var(--navy); }
+.ws-sort-list { list-style: none; display: grid; gap: 7px; margin: 4px 0; }
+.ws-sort-item { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.ws-table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 12.5px; }
+.ws-table th { background: var(--navy); color: #fff; font-size: 11px; padding: 5px 9px; text-align: left; }
+.ws-table td { border: 1px solid var(--line); padding: 7px 9px; }
+.ws-table td.ws-cell-blank { background: #fff; height: 30px; }
+.ws-scale-table th, .ws-scale-table td { text-align: center; }
+.ws-scale-n { font-weight: 800; color: var(--navy); }
+.ws-scale-eq { color: var(--muted); font-weight: 700; }
+.ws-check { white-space: nowrap; font-weight: 600; }
+.ws-steps-box { border: 1px solid var(--line-light); border-radius: 5px; padding: 8px 10px; background: var(--soft); margin: 6px 0; }
+.ws-steps { list-style: none; display: grid; gap: 5px; font-size: 12.5px; }
+.ws-steps li { display: grid; grid-template-columns: 22px auto 1fr; gap: 8px; align-items: baseline; }
+.ws-step-n { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10.5px; font-weight: 800; }
+.ws-step-l { font-weight: 700; color: var(--navy); }
+.ws-step-wrong .ws-step-n { background: #b42318; }
+.ws-gf-steps { list-style: none; display: grid; gap: 7px; margin: 6px 0; font-size: 12.5px; }
+.ws-gf-step { display: grid; grid-template-columns: 22px 1fr 150px; gap: 8px; align-items: end; }
+.ws-figure-wrap { margin: 8px auto; }
 
-.ws-meta-row {
-  display: flex;
-  gap: 20px;
-  margin-top: 12px;
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--ink);
-  flex-wrap: wrap;
-}
-.ws-fill-line {
-  display: inline-block;
-  border-bottom: 1.5px solid var(--ink);
-}
+/* Closing blocks */
+.ws-block-explain .ws-block-title { font-size: 13.5px; }
+.ws-confidence { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin-top: 12px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 11.5px; color: var(--muted); }
+.ws-confidence b { color: var(--navy); }
 
-/* Anchor Boxes */
-.ws-anchor-box {
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  border: 1.5px solid var(--line);
-}
-.ws-support-anchor { background: #fffbeb; border-color: var(--amber-border); border-left: 5px solid var(--amber-dark); }
-.ws-challenge-anchor { background: #faf5ff; border-color: var(--purple-border); border-left: 5px solid var(--purple-dark); }
-.ws-anchor-title {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 6px;
-}
-.ws-anchor-idea { font-size: 12.5px; margin-bottom: 6px; }
-.ws-anchor-steps ol { margin-left: 20px; font-size: 12px; }
-.ws-anchor-steps li { margin: 2px 0; }
+/* Answer key */
+.ws-keynote { margin: 4px 0; padding: 5px 10px; background: var(--key-soft); border-left: 3px solid var(--key); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-keynote b { color: var(--key); }
+.ws-keynote-inline { font-size: 11px; color: var(--key); }
+.ws-watch { margin: 4px 0; padding: 5px 10px; background: var(--amber-soft); border-left: 3px solid var(--amber-dark); border-radius: 0 5px 5px 0; font-size: 12px; }
+.ws-watch b { color: var(--amber-dark); }
+.ws-opt.ws-correct .ws-bub { background: var(--key); border-color: var(--key); color: #fff; }
+.ws-opt.ws-correct .ws-opt-text { font-weight: 800; color: var(--key); }
+.ws-blank.ws-correct, .ws-fill-line.ws-correct { color: var(--key); font-weight: 800; padding: 0 6px; height: auto; min-height: 18px; }
+td.ws-correct { color: var(--key); font-weight: 800; background: var(--key-soft); }
+.ws-key-page .ws-problem-card { break-inside: auto; }
+.ws-key-page .ws-pbody { padding: 8px 14px 10px; }
+.ws-key-page .ws-stem { font-size: 12.5px; margin-bottom: 4px; }
+.ws-key-page .ws-opts { margin: 2px 0 4px; gap: 2px 18px; }
 
-/* Word Bank */
-.ws-vocab-box { background: #f0fdf4; border-color: #bbf7d0; }
-.ws-bankgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 6px;
-}
-.ws-bank-card {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 5px 8px;
-  font-size: 11.5px;
-}
-.ws-bankword { font-weight: 800; color: #166534; }
-.ws-es-term { color: #64748b; font-style: italic; font-weight: 500; }
-.ws-bankdef { color: #475569; }
 
-/* Problems Grid & Cards */
-.ws-problems-grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.ws-problem-card {
-  background: #ffffff;
-  border: 1.5px solid var(--line-light);
-  border-radius: 8px;
-  padding: 14px 16px;
-  margin-bottom: 14px;
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-.ws-problem-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.ws-pnum {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.ws-pbadge {
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--muted);
-  letter-spacing: 0.05em;
-}
-.ws-stem {
-  font-size: 13.5px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #1e293b;
-}
-.ws-prompt {
-  font-size: 12.5px;
-  color: var(--muted);
-  margin: 6px 0;
-}
-
-/* Options */
-.ws-opts {
-  list-style: none;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
-  margin-top: 8px;
-}
-.ws-opt {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-.ws-bub {
-  flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
-  border: 1.8px solid var(--navy);
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 11px;
-}
-.ws-bub-sm { width: 19px; height: 19px; font-size: 10px; }
-.ws-opt-text { font-size: 13px; font-weight: 500; }
-.ws-correct .ws-bub { background: var(--teal); border-color: var(--teal); color: #fff; }
-.ws-correct .ws-opt-text { font-weight: 700; color: var(--teal); }
-
-/* Workspaces */
-.ws-work {
-  border: 1.5px dashed var(--line);
-  border-radius: 6px;
-  min-height: 75px;
-  padding: 8px 10px 2px;
-  margin-top: 8px;
-  background: #fafbfc;
-}
-.ws-work-tall { min-height: 110px; }
-.ws-work-label {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-/* ── Mastery check, guided notes and sections (model-worksheet shape) ── */
-.ws-rubric-badges { display: flex; gap: 10px; }
-.ws-mastery { white-space: nowrap; font-weight: 700; }
-.ws-strategy-line {
-  margin: 3px 0 0;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-}
-.ws-notes-box { break-inside: avoid; }
-.ws-note-point { margin-top: 8px; }
-.ws-note-head {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: var(--navy);
-}
-.ws-note-n {
-  display: inline-grid;
-  place-items: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: #fff;
-  font-size: 9.5px;
-  font-weight: 800;
-}
-.ws-note-list {
-  margin: 4px 0 0;
-  padding-left: 30px;
-  font-size: 11px;
-  line-height: 1.5;
-}
-.ws-note-list > li { margin-bottom: 2px; }
-.ws-note-warn .ws-note-head { color: #9a3412; }
-.ws-note-warn .ws-note-n { background: #9a3412; }
-.ws-section-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 14px 0 6px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  background: var(--navy);
-  color: #fff;
-  break-after: avoid;
-}
-.ws-section-n {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  opacity: 0.75;
-  white-space: nowrap;
-}
-.ws-section-name { font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; }
-.ws-section-tag {
-  margin-left: auto;
-  font-size: 9.5px;
-  font-weight: 700;
-  opacity: 0.85;
-  white-space: nowrap;
-}
-.ws-lines { margin: 6px 0; }
-.ws-line { display: block; border-bottom: 1.5px solid var(--line); height: 24px; }
-
-/* Division Frames */
 
   .dwf { display: block; }
   .dwf text {
@@ -582,123 +389,16 @@ body {
   background: #ffffff;
 }
 
-/* Tables */
-.ws-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 8px 0;
-}
-.ws-table th {
-  background: var(--navy);
-  color: #ffffff;
-  font-size: 11.5px;
-  padding: 6px 10px;
-  text-align: left;
-}
-.ws-table td {
-  border: 1px solid var(--line);
-  padding: 8px 10px;
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-/* Matching & Sorting */
-.ws-match { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
-.ws-match-terms, .ws-match-bank { list-style: none; flex: 1; min-width: 180px; }
-.ws-match-term { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-weight: 600; font-size: 12.5px; }
-.ws-blank { display: inline-block; min-width: 44px; border-bottom: 1.5px solid var(--ink); text-align: center; font-weight: 800; }
-.ws-blank-sm { min-width: 32px; }
-.ws-match-bank { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; }
-.ws-match-bank li { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; }
-
-.ws-cats-bar { margin: 6px 0; font-size: 12px; }
-.ws-cat-pill { background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 4px; padding: 2px 8px; font-weight: 700; color: #0369a1; }
-.ws-sort-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin-top: 8px; }
-.ws-sort-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; }
-
-/* Steps */
-.ws-steps-box { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; margin: 8px 0; }
-.ws-steps { list-style: none; }
-.ws-steps li { display: flex; gap: 8px; align-items: baseline; padding: 3px 0; font-size: 12.5px; }
-.ws-step-n { width: 18px; height: 18px; border-radius: 50%; background: #e2e8f0; font-size: 10.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
-.ws-step-l { font-weight: 700; width: 35%; }
-.ws-step-w { font-family: var(--font-mono); font-weight: 600; }
-
-/* Discourse & CER */
-.ws-discourse-box {
-  background: #f0fdfa;
-  border: 1.5px solid #99f6e4;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 16px 0;
-}
-.ws-disc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.ws-disc-badge { font-size: 11px; font-weight: 800; color: var(--teal); letter-spacing: 0.04em; }
-.ws-disc-prompt { font-size: 13px; margin-bottom: 8px; color: #134e4a; }
-.ws-disc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.ws-disc-card { background: #ffffff; border: 1px solid #ccfbf1; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #115e59; }
-
-.ws-cer-section {
-  background: var(--soft);
-  border: 1.5px solid var(--line);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 16px 0;
-}
-.ws-cer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.ws-cer-badge { font-size: 11px; font-weight: 800; color: var(--navy); letter-spacing: 0.04em; }
-.ws-cer-prompt { font-size: 13px; margin-bottom: 8px; font-weight: 600; }
-.ws-cer-table { display: flex; flex-direction: column; gap: 6px; }
-.ws-cer-row { display: flex; gap: 10px; background: #ffffff; border: 1px solid var(--line-light); border-radius: 6px; padding: 8px 10px; }
-.ws-cer-label { width: 90px; font-size: 12px; font-weight: 800; color: var(--navy); }
-.ws-cer-cell { flex: 1; }
-.ws-cer-prompt-hint { font-size: 11.5px; color: var(--muted); font-style: italic; display: block; margin-bottom: 4px; }
-
-.ws-author-challenge-box {
-  background: #faf5ff;
-  border: 1.5px solid var(--purple-border);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 16px 0;
-}
-.ws-author-head { font-size: 11.5px; font-weight: 800; color: var(--purple-dark); margin-bottom: 6px; letter-spacing: 0.04em; }
-.ws-author-prompt { font-size: 12.5px; margin-bottom: 8px; color: #3b0764; }
-
-/* Self-Check */
-.ws-self-check-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 6px 14px;
-  margin-top: 16px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--navy);
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.ws-sc-box { display: inline-block; width: 13px; height: 13px; border: 1.5px solid var(--navy); border-radius: 3px; vertical-align: -2px; margin-right: 4px; }
-
-/* Teacher Keys */
-.ws-keynote { margin: 6px 0 0; color: var(--teal); font-size: 12px; font-weight: 600; background: #f0fdfa; border-left: 3px solid var(--teal); padding: 4px 8px; border-radius: 0 4px 4px 0; }
-.ws-gf-steps { list-style: none; margin: 8px 0 0; padding: 0; }
-.ws-gf-step { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px dotted var(--line); }
-.ws-gf-prompt { flex: 0 1 auto; font-size: 12.5px; }
-.ws-gf-step .ws-blank { flex: 1 1 90px; min-width: 90px; }
-.ws-gf-final { margin-top: 10px; font-size: 12.5px; }
-.ws-blank-lg { display: inline-block; min-width: 150px; }
-.ws-watch { margin: 6px 0 0; color: #9a4a12; font-size: 12px; background: #fff3e6; border-left: 3px solid #e08a3c; padding: 4px 8px; border-radius: 0 4px 4px 0; }
 
 @media print {
-  body { background: #ffffff !important; font-size: 11pt; }
-  .ws-page { box-shadow: none !important; border: none !important; margin: 0 auto !important; max-width: none !important; padding: 0 !important; page-break-after: always; }
-  .ws-page:last-child { page-break-after: auto; }
-  .ws-digital-link-box { display: none !important; }
-  @page { margin: 1.2cm; }
+  body { background: #fff !important; font-size: 11pt; }
+  .ws-page { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: none !important; padding: 0 !important; }
+  .ws-page + .ws-page { break-before: page; page-break-before: always; }
+  .ws-block, .ws-problem-card { break-inside: avoid; page-break-inside: avoid; }
+  .ws-section-head { break-after: avoid; page-break-after: avoid; }
+  @page { size: letter; margin: 0.6in 0.6in 0.65in; }
 }
+
 
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
@@ -745,218 +445,119 @@ header.packet h1::after{
 </head>
 <body>
 <main data-support-slot="practice">
-
-    <section class="ws-page ws-group1-page">
-      
-    <header class="ws-publisher-header">
-      <div class="ws-header-top-ribbon">
-        <div class="ws-ribbon-left">
-          <span class="ws-pill ws-pill-std">6.NOS.4</span>
-          <span class="ws-pill ws-pill-lesson">Lesson 6-13-group1</span>
-          <span class="ws-pill ws-pill-level">🟡 Group 1 · Support &amp;amp; Scaffolding</span>
+<section class="ws-page ws-support-page">
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 6: Numerical and Algebraic Expressions</span><span>Standard 6.NOS.4</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 6.13</span>6.13 Small Group · Group 1</h1>
+          <p class="ws-edition">Start here<span class="ws-edition-note">Words, worked example, and sentence starters</span></p>
         </div>
-        <div class="ws-rubric-box">
-          <div class="ws-rubric-score">MASTERY CHECK</div>
-          <div class="ws-rubric-badges"><span class="ws-mastery">&#9744; Exceeds</span><span class="ws-mastery">&#9744; Meets Target</span><span class="ws-mastery">&#9744; Needs Practice</span></div>
-        </div>
+        
       </div>
-      <div class="ws-title-group">
-        <div class="ws-title-text-box">
-          <h1 class="ws-main-title">6.13 Small Group · Group 1</h1>
-          <p class="ws-sub-title">Tier 2 Intervention · Concrete-Representational-Abstract (CRA) · Dual-Language Anchors</p>
-          <p class="ws-strategy-line">Prime Factorization · Prime number · Procedural Fluency · Reasoning &amp; Critique</p>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> With my small group, I can write a number as a product of its prime factors using a factor tree — one step at a time, with support.</p>
+    </header><section class="ws-block ws-block-words">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Start here</span>Words for this lesson</h2>
+    <p class="ws-block-lead">Read each word before you begin. Say it out loud.</p>
+    <table class="ws-words"><thead><tr><th>Word</th><th>What it means</th><th>Example</th></tr></thead><tbody><tr>
+        <td class="ws-word"><b>Prime Factorization</b><span class="ws-es">Spanish: Factorización prima</span></td>
+        <td>Writing a whole number as a product of only prime numbers.</td>
+        <td class="ws-word-ex">36 = 2 × 2 × 3 × 3 = 2² × 3²</td></tr><tr>
+        <td class="ws-word"><b>Prime number</b><span class="ws-es">Spanish: Número primo</span></td>
+        <td>A number bigger than 1 that you can only divide by 1 and itself.</td>
+        <td class="ws-word-ex">7 has only two factors: 1 × 7. So 7 is prime.</td></tr><tr>
+        <td class="ws-word"><b>Composite number</b><span class="ws-es">Spanish: Número compuesto</span></td>
+        <td>A number bigger than 1 that you can divide by more than just 1 and itself.</td>
+        <td class="ws-word-ex">12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite</td></tr><tr>
+        <td class="ws-word"><b>Factor</b><span class="ws-es">Spanish: Factor</span></td>
+        <td>A factor of a whole number divides it evenly, with no remainder. For example, 3 is a factor of 12 because 12 ÷ 3 = 4.</td>
+        <td class="ws-word-ex">Factors of 12: 1, 2, 3, 4, 6, 12 — each divides 12 evenly.</td></tr><tr>
+        <td class="ws-word"><b>Factor tree</b><span class="ws-es">Spanish: Árbol de factores</span></td>
+        <td>A picture that splits a number into its prime numbers, step by step.</td>
+        <td class="ws-word-ex">24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3</td></tr><tr>
+        <td class="ws-word"><b>Exponent</b><span class="ws-es">Spanish: Exponente</span></td>
+        <td>A small number that tells how many times to multiply a number by itself.</td>
+        <td class="ws-word-ex">2³ means 2 × 2 × 2 = 8</td></tr></tbody></table>
+  </section>
+<section class="ws-block ws-block-example">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">How it works</span>Worked example</h2>
+    <p class="ws-block-lead">These numbers are not on your problems. The steps are. Follow them with your own numbers.</p>
+    <p class="ws-example-problem">I want the prime factorization of 60. I start by splitting it: 60 = 6 × 10.</p>
+    <ol class="ws-example-steps"><li>6 is not prime, so I break it: 6 = 2 × 3. Both 2 and 3 are prime, so I stop those branches.</li><li>10 is not prime, so I break it: 10 = 2 × 5. Both 2 and 5 are prime, so I stop.</li><li>Now every factor is prime: 60 = 2 × 2 × 3 × 5.</li><li>Using exponents, I write it as 2² × 3 × 5. I check: 2 × 2 × 3 × 5 = 60. Correct.</li></ol>
+    
+  </section>
+<section class="ws-block ws-block-try">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Now you try</span>Same steps, your turn</h2>
+    <p class="ws-block-lead">The steps are the same as the worked example. The numbers are yours. Do the work.</p>
+    <p class="ws-example-problem">Let's factor 12 together. What is one way to split 12 into two factors? (You might say 3 × 4.)</p>
+    <ol class="ws-example-steps ws-try-steps"><li><span class="ws-fill-line ws-fill-line-wide"></span></li><li><span class="ws-fill-line ws-fill-line-wide"></span></li><li><span class="ws-fill-line ws-fill-line-wide"></span></li><li><span class="ws-fill-line ws-fill-line-wide"></span></li></ol>
+    <div class="ws-answer-line"><span class="ws-answer-label">Answer:</span><span class="ws-fill-line"></span></div>
+  </section>
+<section class="ws-block ws-block-say">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Say it and write it</span>Sentence starters</h2>
+    <p class="ws-block-lead">Finish each sentence out loud with a partner. Then use them in your writing.</p>
+    <ul class="ws-starters"><li>I know <span class="ws-fill-inline"></span> is prime because its only factors are <span class="ws-fill-inline"></span> and <span class="ws-fill-inline"></span>. I know <span class="ws-fill-inline"></span> is composite because it has factors like <span class="ws-fill-inline"></span>.</li></ul>
+    <p class="ws-word-bank"><b>Word bank</b> <span class="ws-chip">Prime Factorization</span><span class="ws-chip">Prime number</span><span class="ws-chip">Composite number</span><span class="ws-chip">Factor</span><span class="ws-chip">Factor tree</span><span class="ws-chip">Exponent</span><span class="ws-chip">prime</span><span class="ws-chip">composite</span><span class="ws-chip">factors</span><span class="ws-chip">divisible</span><span class="ws-chip">two factors</span><span class="ws-chip">more than two</span></p>
+  </section>
+<section class="ws-block ws-block-watch">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Watch out</span>A common mistake</h2>
+    <p class="ws-watch-text">A common mistake in Prime Factorization is stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it. For example, writing 20 = 4 × 5 as the prime factorization (4 is composite) instead of finishing with 20 = 2 × 2 × 5. Before you submit, check every number in your final answer: if any factor can still be broken into smaller factors, the tree isn't finished yet.</p>
+  </section></section>
+<section class="ws-page ws-edition-page">
+    
+    <header class="ws-header">
+      <div class="ws-band"><span>Grade 6 Mathematics · Unit 6: Numerical and Algebraic Expressions</span><span>Standard 6.NOS.4</span></div>
+      <div class="ws-title-row">
+        <div class="ws-title-group">
+          <h1 class="ws-title"><span class="ws-lesson-n">Lesson 6.13</span>6.13 Small Group · Group 1</h1>
+          <p class="ws-edition">Group 1<span class="ws-edition-note">Supported practice</span></p>
         </div>
-        <div class="ws-digital-link-box">
-          <span aria-hidden="true">⚡</span> <a href="/curriculum/math-workbench/?lesson=6-13-group1" target="_blank" rel="noopener"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
-        </div>
+        <div class="ws-mastery" aria-label="Mastery check"><span class="ws-mastery-title">Mastery check</span><span>&#9744; Exceeds</span><span>&#9744; Meets target</span><span>&#9744; Needs practice</span></div>
       </div>
-      <div class="ws-meta-row">
-        <span><b>Name:</b> <span class="ws-fill-line" style="width:230px;"></span></span>
-        <span><b>Date:</b> <span class="ws-fill-line" style="width:110px;"></span></span>
-        <span><b>Period:</b> <span class="ws-fill-line" style="width:70px;"></span></span>
-        <span><b>Learning Goal:</b> <span class="ws-fill-line" style="width:160px;"></span></span>
-      </div>
+      <div class="ws-meta-row"><span><b>Name</b> <span class="ws-fill-line" style="width:230px;"></span></span><span><b>Date</b> <span class="ws-fill-line" style="width:110px;"></span></span><span><b>Period</b> <span class="ws-fill-line" style="width:60px;"></span></span></div>
+      <p class="ws-target"><b>Learning target</b> With my small group, I can write a number as a product of its prime factors using a factor tree — one step at a time, with support.</p>
     </header>
-  
-      
-    <section class="ws-anchor-box ws-notes-box">
-      <div class="ws-anchor-title">&#9632; CONCEPT SUMMARY &amp; GUIDED NOTES: Let's build it together — What is prime factorization?</div>
-      <div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">1</span>Keep breaking a number apart until every factor is a prime number you cannot split anymore.</div>
-        <ul class="ws-note-list"><li>Prime factorization means writing a number as a product of prime numbers only. A prime number can be divided only by 1 and itself, like 2, 3, 5, and 7. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.</li></ul>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">2</span>Worked Example — Watch me</div>
-        <ol class="ws-note-list"><li>I want the prime factorization of 60. I start by splitting it: 60 = 6 × 10.</li><li>6 is not prime, so I break it: 6 = 2 × 3. Both 2 and 3 are prime, so I stop those branches.</li><li>10 is not prime, so I break it: 10 = 2 × 5. Both 2 and 5 are prime, so I stop.</li><li>Now every factor is prime: 60 = 2 × 2 × 3 × 5.</li><li>Using exponents, I write it as 2² × 3 × 5. I check: 2 × 2 × 3 × 5 = 60. Correct.</li></ol>
-      </div><div class="ws-note-point">
-        <div class="ws-note-head"><span class="ws-note-n">3</span>Mathematical Word Bank</div>
-        <ul class="ws-note-list"><li>Prime Factorization (Factorización prima) — Writing a whole number as a product of only prime numbers.</li><li>Prime number (Número primo) — A number bigger than 1 that you can only divide by 1 and itself.</li><li>Composite number (Número compuesto) — A number bigger than 1 that you can divide by more than just 1 and itself.</li><li>Factor (Factor) — A factor of a whole number divides it evenly, with no remainder. For example, 3 is a factor of 12 because 12 ÷ 3 = 4.</li><li>Factor tree (Árbol de factores) — A picture that splits a number into its prime numbers, step by step.</li><li>Exponent (Exponente) — A small number that tells how many times to multiply a number by itself.</li></ul>
-      </div><div class="ws-note-point ws-note-warn">
-        <div class="ws-note-head"><span class="ws-note-n">4</span>Watch out</div>
-        <ul class="ws-note-list"><li>A common mistake in Prime Factorization is stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it. For example, writing 20 = 4 × 5 as the prime factorization (4 is composite) instead of finishing with 20 = 2 × 2 × 5. Before you submit, check every number in your final answer: if any factor can still be broken into smaller factors, the tree isn't finished yet.</li></ul>
-      </div>
-    </section>
-  
-      
-      <div class="ws-section-head"><span class="ws-section-n">SECTION 1</span>
-          <span class="ws-section-name">CONCEPTUAL UNDERSTANDING &amp; VISUAL MODELS</span>
-          <span class="ws-section-tag">[Visual Modeling]</span>
-        </div>
-        <ol class="ws-problems-grid">
+    
+    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
+        <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">1</span>
-        <span class="ws-pbadge">DRAG SORT</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
-  <div class="ws-cats-bar"><b>Target Categories:</b> <span class="ws-cat-pill">Complete Prime Factorization</span> <span class="ws-cat-pill">NOT Complete (Has Composite Factors)</span></div>
-  <ul class="ws-sort-list"></ul>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Write the name of the correct group on each line.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
+  <div class="ws-cats-bar"><b>Groups:</b> <span class="ws-cat-pill">Complete Prime Factorization</span> <span class="ws-cat-pill">NOT Complete (Has Composite Factors)</span></div>
+  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">2 × 2 × 3 (for 12)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">2 × 3 × 5 (for 30)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">2 × 2 × 2 × 3 (for 24)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">4 × 3 (for 12)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">6 × 5 (for 30)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">8 × 3 (for 24)</span></li></ul>
+  <p class="ws-hint"><span class="ws-hint-tag">Hint</span> 'Complete' means every single factor shown is prime. Even one composite factor makes the whole expression NOT complete.</p></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">2</span>
-        <span class="ws-pbadge">MATCHING GAME</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Match each number to its prime factorization.</p>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the letter of the matching item on each line.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Match each number to its prime factorization.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">12</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">18</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">20</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">28</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">45</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">50</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">2 × 2 × 3</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">2 × 3 × 3</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">2 × 2 × 5</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">2 × 2 × 7</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">3 × 3 × 5</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">2 × 5 × 5</span></li></ul></div>
-      </div>
-    </li>
-  </ol><div class="ws-section-head"><span class="ws-section-n">SECTION 2</span>
-          <span class="ws-section-name">REAL-WORLD CONTEXTS &amp; PROBLEM SOLVING</span>
-          <span class="ws-section-tag">[Applications]</span>
-        </div>
-        <ol class="ws-problems-grid">
+  <p class="ws-hint"><span class="ws-hint-tag">Hint</span> Look at each number's last digit: ending in 0 or 5 means a factor of 5; an even number needs at least one 2.</p></div>
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
+        <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">3</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which of the following is a prime number?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">17</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Which of the following is a prime number?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">17</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Re-read what 'prime' means: exactly two factors, 1 and itself. Any extra factor makes a number composite.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">4</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the prime factorization of 30?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5 × 6</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">What is the prime factorization of 30?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5 × 6</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> A prime factorization uses ONLY prime numbers. Look at each choice: are ALL of its factors prime?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">5</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">What is the prime factorization of 18?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 × 3</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">What is the prime factorization of 18?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 × 3</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Check every factor in each choice — numbers like 9 and 6 are composite, so they can't appear in a prime factorization.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
     </li>
-  
     <li class="ws-problem-card">
-      <div class="ws-problem-head">
-        <span class="ws-pnum">6</span>
-        <span class="ws-pbadge">MULTIPLE CHOICE</span>
-      </div>
-      <div class="ws-pbody">
-        
-        <p class="ws-stem">Which of these numbers is composite?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">23</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">27</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">29</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">31</span></li></ol><div class="ws-work ws-work-tall">
-    <span class="ws-work-label">✏️ Workspace &amp; Solution Steps</span>
-    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
-  </div>
-      </div>
-    </li>
-  </ol>
-      
-    <section class="ws-discourse-box">
-      <div class="ws-disc-header">
-        <span class="ws-disc-badge">🗣️ MATHEMATICAL DISCOURSE &amp; TALK MOVES</span>
-        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">SMP.3 / Construct Viable Arguments</span>
-      </div>
-      <p class="ws-disc-prompt"><b>Group Discussion Prompt:</b> How does your visual model justify your mathematical solution?</p>
-      <div class="ws-disc-grid">
-        <div class="ws-disc-card"><b>🗣️ Partner A:</b><br>Partner A: &quot;I modeled this by identifying the relationship and...&quot;</div>
-        <div class="ws-disc-card"><b>👂 Partner B:</b><br>Partner B: &quot;I agree with your step because the standard mathematical rule states...&quot;</div>
-      </div>
-    </section>
-  
-      
-    <section class="ws-twr-section" style="background:#f8fafc;border:1.5px solid #cbd5e1;border-left:5px solid #0f766e;border-radius:8px;padding:12px 16px;margin:14px 0;page-break-inside:avoid;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:11px;font-weight:800;color:#0f766e;letter-spacing:0.04em;text-transform:uppercase;">✍️ The Writing Revolution (TWR) · Sentence Expansion</span>
-        <span style="font-size:10px;font-weight:700;color:#475569;">Because · But · So</span>
-      </div>
-      <p style="font-size:12px;font-weight:600;color:#1e293b;margin-bottom:8px;">Complete each sentence stem to demonstrate precise mathematical reasoning:</p>
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:11.5px;">
-          <span style="display:inline-block;background:#ccfbf1;color:#0f766e;font-weight:800;padding:1px 5px;border-radius:4px;font-size:10px;margin-right:4px;">BECAUSE</span>
-          The mathematical model proves the solution because each step preserves quantitative equivalence.
-        </div>
-        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:11.5px;">
-          <span style="display:inline-block;background:#fef3c7;color:#b45309;font-weight:800;padding:1px 5px;border-radius:4px;font-size:10px;margin-right:4px;">BUT</span>
-          An estimate provides a quick benchmark, but an exact proof is required for precision.
-        </div>
-        <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:11.5px;">
-          <span style="display:inline-block;background:#eff6ff;color:#1d4ed8;font-weight:800;padding:1px 5px;border-radius:4px;font-size:10px;margin-right:4px;">SO</span>
-          The quantities follow the standard rule, so the final result is verified with certainty.
-        </div>
-      </div>
-    </section>
-  
-      
-    <section class="ws-cer-section">
-      <div class="ws-cer-header">
-        <span class="ws-cer-badge">📐 CER MATHEMATICAL PROOF MATRIX (CER 2.0)</span>
-        <span style="font-size:11px; font-weight:700; color:var(--brand-dark,#0f172a);">SMP.3 / Proof &amp; Justification</span>
-      </div>
-      <p class="ws-cer-prompt"><b>Writing Task:</b> Justify why your mathematical solution is accurate and complete.</p>
-      <div class="ws-cer-table">
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>C</b> Claim</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: My mathematical claim is that the solution is...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>E</b> Evidence</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: The evidence from the model/table demonstrates that...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-        <div class="ws-cer-row">
-          <div class="ws-cer-label"><b>R</b> Reasoning</div>
-          <div class="ws-cer-cell"><span class="ws-cer-prompt-hint">Starter: This proves my answer because the standard mathematical definition of...</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div>
-        </div>
-      </div>
-    </section>
-  
-      
-    <div class="ws-self-check-bar">
-      <div class="ws-sc-item"><b>Student Mastery Self-Assessment:</b></div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 1 · Need More Support</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 2 · Getting Closer</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 3 · Got It / Solid</div>
-      <div class="ws-sc-item"><span class="ws-sc-box"></span> 4 · Master / Can Teach It</div>
-    </div>
-  
-    </section>
-  
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Which of these numbers is composite?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">23</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">27</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">29</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">31</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Composite means MORE than two factors. Ask for each number: can I split it into two smaller whole numbers?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+    </li></ol>
+    <section class="ws-block ws-block-explain">
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>How did you decide whether a number is prime or composite? What strategy did you use?</h2>
+    <p class="ws-frame"><span class="ws-frame-tag">Sentence starter</span> I know ___ is prime because its only factors are ___ and ___. I know ___ is composite because it has factors like ___.</p>
+    <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
+  </section><div class="ws-confidence"><b>How did it go?</b>
+    <span>&#9744; 4 · I can teach it</span><span>&#9744; 3 · I've got it</span><span>&#9744; 2 · I need a hint</span><span>&#9744; 1 · I need help</span></div>
+  </section>
 </main>
 <script src="/shared/supports/print-supports.js" defer></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

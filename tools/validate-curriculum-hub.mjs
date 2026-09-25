@@ -370,6 +370,47 @@ check(
   }
 }
 
+/* Structured data. The hub carries a STATIC Course schema (crawlers that do
+   not run JS never saw the injected one, and on this page it listed zero units
+   because the browser lives at /curriculum/units/). Pin it to the manifest so
+   the two cannot drift: one sub-course per unit, lesson counts from the SoT. */
+{
+  const ld = html.match(
+    /<script type="application\/ld\+json" id="curriculum-jsonld">([\s\S]*?)<\/script>/,
+  );
+  check(Boolean(ld), "missing the static Course JSON-LD (#curriculum-jsonld)");
+  if (ld) {
+    let schema = null;
+    try {
+      schema = JSON.parse(ld[1]);
+    } catch {
+      check(false, "static Course JSON-LD does not parse");
+    }
+    if (schema) {
+      const manifest = JSON.parse(
+        readFileSync(resolve(ROOT, "data/curriculum-manifest.json"), "utf8"),
+      );
+      const units = [...new Set(manifest.lessons.map((l) => l.unit))].sort((a, b) => a - b);
+      check(schema["@type"] === "Course", "static JSON-LD is not a schema.org Course");
+      check(
+        Array.isArray(schema.hasPart) && schema.hasPart.length === units.length,
+        `static JSON-LD lists ${(schema.hasPart || []).length} units, manifest has ${units.length}`,
+      );
+      for (const n of units) {
+        const part = (schema.hasPart || []).find((p) => p.url && p.url.endsWith(`#unit-${n}`));
+        const count = manifest.lessons.filter((l) => l.unit === n && !l.flagship).length;
+        check(Boolean(part), `static JSON-LD has no entry for unit ${n}`);
+        if (part) {
+          check(
+            String(part.description || "").startsWith(`${count} lesson`),
+            `static JSON-LD says "${part.description}" for unit ${n}; manifest has ${count} lessons`,
+          );
+        }
+      }
+    }
+  }
+}
+
 if (failures.length) {
   console.error("✗ Curriculum Hub lock FAILED — the hub looks clobbered/stripped:");
   failures.forEach((f) => console.error("   • " + f));

@@ -31,21 +31,42 @@ import {
   renderHomeworkTabs,
   renderLearnTab,
   renderMoreContent,
+  renderPhotoboothTab,
   renderPlayTabPanel,
   renderProblemHintButton,
   renderQuickCheckIntro,
+  renderRefrigeratorSheet,
   renderTogetherTab,
   renderWelcomeBanner,
   renderWordsTab,
   renderWorkbenchTools,
   selectQuickCheckProblems,
 } from "./homework-guided-notes.mjs";
+import { MATH_INPUT_CSS, MATH_INPUT_JS, renderMathKeypad } from "./homework-math-input.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import {
+  matchingPairs,
+  questionGuide,
+  spanishChoiceFeedback,
+  tableModel,
+} from "./lib/homework-problems.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { toHomeworkShape } from "./lib/review-lesson-shape.mjs";
+
+const tableSpanishPath = new URL("../data/homework-table-spanish.json", import.meta.url);
+const tableSpanish = existsSync(tableSpanishPath)
+  ? JSON.parse(readFileSync(tableSpanishPath, "utf8"))
+  : {};
+const choiceSpanish = JSON.parse(
+  readFileSync(new URL("../data/homework-choices-spanish.json", import.meta.url), "utf8"),
+);
+const tableEs = (en, authored) => authored || tableSpanish[String(en)] || "";
+function langOption(value, en, es = "") {
+  return `<option value="${esc(value)}" data-text-en="${esc(en)}" data-text-es="${esc(es || en)}">${esc(en)}</option>`;
+}
 
 /** --check writes nothing and exits non-zero if any committed page has drifted. */
 const CHECK = process.argv.includes("--check");
@@ -53,10 +74,22 @@ const CHECK = process.argv.includes("--check");
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 
+/** Authored Session 2 practice, keyed by part2 lesson id. See the file's own
+ *  $comment, and tools/part-two-session2-practice.test.mjs for the answer key
+ *  verification. Absent file = every Part 2 keeps its inherited pool. */
+const SESSION2_PRACTICE = (() => {
+  const path = join(root, "data", "part-two-session2-practice.json");
+  if (!existsSync(path)) return {};
+  try {
+    return JSON.parse(readFileSync(path, "utf8")).lessons || {};
+  } catch (e) {
+    throw new Error(`data/part-two-session2-practice.json is unreadable: ${e.message}`);
+  }
+})();
+
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 // Match core/flagship lessons like "3-2" or "3-2-flagship"
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 // Folders this generator will consider at all. `generatesFamilyHomework` then
 // decides: core lessons always, anything else only when its config opts in.
 const HOMEWORK_DIR_RE = /^[0-9][0-9a-z-]*$/;
@@ -301,35 +334,37 @@ function normalizeDragSort(it) {
   categories = categories.map((cat, idx) => {
     if (typeof cat === "string") {
       const id = slugId(cat, idx);
-      return { id, label: cat };
+      return { id, label: cat, labelEs: it.categoriesEs?.[idx] };
     }
     if (cat && typeof cat === "object") {
       const label = cat.label || cat.id || `Group ${idx + 1}`;
       const id = cat.id || slugId(label, idx);
-      return { id, label, items: cat.items };
+      return { id, label, labelEs: cat.labelEs, items: cat.items, itemsEs: cat.itemsEs };
     }
     return { id: `cat-${idx}`, label: `Group ${idx + 1}` };
   });
 
   if (!items.length && categories.some((c) => Array.isArray(c.items))) {
     items = categories.flatMap((cat) =>
-      (cat.items || []).map((text) => ({
+      (cat.items || []).map((text, index) => ({
         text: String(text),
+        textEs: cat.itemsEs?.[index],
         category: cat.id,
       })),
     );
-    categories = categories.map(({ id, label }) => ({ id, label }));
+    categories = categories.map(({ id, label, labelEs }) => ({ id, label, labelEs }));
   }
 
   if (!items.length && Array.isArray(it.cards) && categories.length) {
     const normCats = categories.map((cat, idx) => {
       if (typeof cat === "string") return { id: slugId(cat, idx), label: cat };
       const label = cat.label || cat.id || `Group ${idx + 1}`;
-      return { id: cat.id || slugId(label, idx), label };
+      return { id: cat.id || slugId(label, idx), label, labelEs: cat.labelEs };
     });
     categories = normCats;
     items = it.cards.map((card) => ({
       text: String(card.text || ""),
+      textEs: card.textEs,
       category: normCats[card.correct]?.id || normCats[0]?.id || "",
     }));
   }
@@ -338,6 +373,7 @@ function normalizeDragSort(it) {
     if (typeof item === "string") return { text: item, category: "" };
     return {
       text: String(item.text || item.label || ""),
+      textEs: item.textEs || item.labelEs,
       category: String(item.category || ""),
     };
   });
@@ -492,22 +528,6 @@ function _selectProblems(practice = {}, config = {}) {
   return selectQuickCheckProblems(practice, config);
 }
 
-// Map column labels (Shape A) to row-object keys.
-function headerKeysFor(columns, sampleRow) {
-  const rowKeys = Object.keys(sampleRow);
-  const guesses = [];
-  for (let i = 0; i < columns.length; i++) {
-    if (i === 0 && rowKeys.includes("given")) guesses.push("given");
-    else if (i === columns.length - 1 && rowKeys.includes("answer")) guesses.push("answer");
-    else {
-      const used = new Set(guesses);
-      const candidate = rowKeys.find((k) => !used.has(k) && k !== "given" && k !== "answer");
-      guesses.push(candidate || rowKeys[i] || "answer");
-    }
-  }
-  return guesses;
-}
-
 function lessonConfigs() {
   const out = [];
   for (const dir of readdirSync(lessonsDir, { withFileTypes: true })) {
@@ -527,9 +547,59 @@ function lessonConfigs() {
         try {
           const notes = JSON.parse(readFileSync(notesPath, "utf8"));
           shaped.familyNotes = { ...notes, ...(shaped.familyNotes || {}) };
+          /* A Part 2 config carries the CORE lesson's vocabulary verbatim —
+             `generate-part-two.mjs` lists it under CARRIED — so the Words step
+             offers session ONE's terms on a page whose whole subject is session
+             two's. 3-1's Part 2 teaches scale factor and equivalent ratios and
+             named neither. A sidecar may therefore state the session's own word
+             list; it replaces rather than appends, because the family page shows
+             every term it is given and a session-one term is not wrong, just not
+             tonight's. The lesson's own `vocabulary` is untouched — worksheets,
+             slides and the printable all render that field. */
+          if (Array.isArray(notes.vocabulary) && notes.vocabulary.length) {
+            shaped.vocabulary = notes.vocabulary;
+          }
         } catch (e) {
           console.error(`Bad family-homework sidecar for ${dir.name}: ${e.message}`);
         }
+      }
+      /* A `-part2` page is the lesson's SECOND SESSION, taught with the same
+         manipulative as the first — but the Apply-Day config carries only the
+         Apply problem, so 13 of them declare no diagram at all and the family
+         page came out with no interactive model where every other homework has
+         one. Borrow the core lesson's, which is the tool that was on screen
+         both days. Only when the Part 2 config offers none of its own. */
+      if (dir.name.endsWith("-part2") && !selectLessonInteractiveModel(shaped)) {
+        const baseId = dir.name.slice(0, -"-part2".length);
+        const basePath = join(lessonsDir, baseId, "config.json");
+        if (existsSync(basePath)) {
+          try {
+            const base = JSON.parse(readFileSync(basePath, "utf8"));
+            const inherited = lessonModelCandidates(base)[0];
+            if (inherited) shaped.reviewDiagram = inherited;
+          } catch (e) {
+            console.error(`Could not read ${baseId} for ${dir.name}: ${e.message}`);
+          }
+        }
+      }
+      /* A Part 2 whose session has AUTHORED practice uses it instead of the
+         pool it inherits from day one. `buildGroupLevels` in
+         generate-part-two.mjs sources every Part 2's items from the PARENT
+         lesson's parallel banks, which drill the parent's skill — so 3-1
+         session 2 taught splitting a total with a tape diagram and then asked
+         "write the ratio" fifteen times. This replaces the tiers rather than
+         appending, because leaving the inherited items in place leaves the
+         family answering the other session's questions. Lessons absent from the
+         file are untouched and are listed by `npm run report:part-two-practice`. */
+      const authoredPractice = SESSION2_PRACTICE[dir.name];
+      if (authoredPractice) {
+        shaped.practice = {
+          ...(shaped.practice || {}),
+          approaching: authoredPractice.approaching || [],
+          onLevel: authoredPractice.onLevel || [],
+          extending: authoredPractice.extending || [],
+          optional: [],
+        };
       }
       out.push({ id: dir.name, config: shaped });
     } catch (err) {
@@ -546,239 +616,21 @@ function lessonConfigs() {
 // reason with, and room to show work — on screen (saved) and in print.
 // ---------------------------------------------------------------------------
 
-// Topic-aware one-liners woven into the step guide (bilingual + what to draw).
-const TOPIC_GUIDE = {
-  exponents: {
-    en: "The small top number tells how many copies of the base multiply together (e.g. 2³ = 2 × 2 × 2 = 8, NOT 2 × 3).",
-    es: "El número pequeño de arriba dice cuántas copias de la base se multiplican (ej. 2³ = 2 × 2 × 2 = 8, NO 2 × 3).",
-    draw: "Write out the repeated multiplication chain.",
-    drawEs: "Escribe la cadena de multiplicación repetida.",
-    coach: "Ask: 'Are we multiplying by the top number, or multiplying copies together?'",
-    coachEs: "Pregunta: '¿Multiplicamos por el número de arriba, o multiplicamos copias juntas?'",
-  },
-  ratios: {
-    en: "A ratio is like a recipe: if you double or scale one amount, multiply or divide the other by the exact same number.",
-    es: "Una razón es como una receta: si duplicas una cantidad, multiplica o divide la otra por el mismo número.",
-    draw: "Use a simple two-column table to scale both quantities together.",
-    drawEs: "Usa una tabla de dos columnas para escalar ambas cantidades juntas.",
-    coach: "Ask: 'What happened to the first number? Can we do that same action to the second?'",
-    coachEs: "Pregunta: '¿Qué le pasó al primer número? ¿Podemos hacerle lo mismo al segundo?'",
-  },
-  area: {
-    en: "Count how many 1×1 square floor tiles cover the flat shape (multiply base × height).",
-    es: "Cuenta cuántos cuadrados cubren la figura plana (multiplica base × altura).",
-    draw: "Outline the flat floor and multiply base by height.",
-    drawEs: "Delinea el piso plano y multiplica la base por la altura.",
-    coach: "Ask: 'Are we counting the outside border or the square tiles inside?'",
-    coachEs: "Pregunta: '¿Estamos contando el borde de afuera o los cuadrados de adentro?'",
-  },
-  volume: {
-    en: "Imagine packing unit cubes into a box: multiply length × width × height to find total cubic units inside.",
-    es: "Imagina llenar una caja con cubos: multiplica largo × ancho × alto para hallar los cubos totales adentro.",
-    draw: "Label the three box dimensions: length, width, and height.",
-    drawEs: "Rotula las tres dimensiones de la caja: largo, ancho y alto.",
-    coach: "Ask: 'How many cubes fit on the bottom floor, and how many floors high is the box?'",
-    coachEs: "Pregunta: '¿Cuántos cubos caben en la base y cuántos pisos de alto tiene la caja?'",
-  },
-  "surface-area": {
-    en: "Unfold the 3D shape like a cardboard box. Find the flat area of each face, then add them all together.",
-    es: "Desdobla la figura 3D como una caja de cartón. Halla el área de cada cara y súmalas todas.",
-    draw: "Draw the unfolded net and label each of the flat faces.",
-    drawEs: "Dibuja la plantilla desdoblada y rotula cada una de las caras planas.",
-    coach: "Ask: 'How many flat faces does this box have? Did we find the area of each one?'",
-    coachEs: "Pregunta: '¿Cuántas caras planas tiene esta caja? ¿Hallamos el área de cada una?'",
-  },
-  "coordinate-plane": {
-    en: "Think of an elevator: walk down the hallway right or left (x) first, then take the elevator up or down (y).",
-    es: "Piensa en un elevador: camina por el pasillo (x) primero, luego sube o baja en el elevador (y).",
-    draw: "Start at (0,0), move across x, then up or down to y.",
-    drawEs: "Empieza en (0,0), avanza en x, luego sube o baja en y.",
-    coach: "Ask: 'Did we move horizontally across the floor first, before going up or down?'",
-    coachEs:
-      "Pregunta: '¿Nos movimos primero por el piso horizontalmente, antes de subir o bajar?'",
-  },
-  "number-line": {
-    en: "Numbers on the right are always greater; numbers on the left are always smaller. Negative means below zero.",
-    es: "Los números a la derecha siempre son mayores; a la izquierda son menores. Negativo significa bajo cero.",
-    draw: "Plot the numbers on the line in order from left (least) to right (greatest).",
-    drawEs: "Marca los números en la recta en orden de izquierda (menor) a derecha (mayor).",
-    coach: "Ask: 'Which number is further to the right? That one is always greater!'",
-    coachEs: "Pregunta: '¿Cuál número está más a la derecha? ¡Ese siempre es mayor!'",
-  },
-  // Every lesson that resolves to this topic is a fraction DIVISION lesson
-  // (6-1, 6-2, 6-9, 6-10, 6-11). It used to carry common-denominator guidance —
-  // "make sure the pieces are cut to the exact same size" — which is the rule
-  // for ADDING fractions and is not how any of these five lessons divide. Unit 6
-  // teaches one method and only one: whole number over 1, then Keep, Change,
-  // Flip. Telling a family to cut equal pieces sent them to a different method
-  // than the one on their student's page.
-  fractions: {
-    en: "To divide by a fraction, keep the first number, change ÷ to ×, and flip the second one. Dividing by a piece smaller than 1 gives an answer BIGGER than you started with.",
-    es: "Para dividir entre una fracción, conserva el primer número, cambia ÷ por × y voltea el segundo. Dividir entre una parte menor que 1 da una respuesta MAYOR que con la que empezaste.",
-    draw: "Draw the whole, mark off pieces the size of the divisor, and count how many fit.",
-    drawEs: "Dibuja el entero, marca partes del tamaño del divisor y cuenta cuántas caben.",
-    coach:
-      "Ask: 'How many of these pieces fit inside? Should the answer be bigger or smaller than what we started with?'",
-    coachEs:
-      "Pregunta: '¿Cuántas de estas partes caben adentro? ¿La respuesta debe ser mayor o menor que con lo que empezamos?'",
-  },
-  decimals: {
-    en: "Line up the decimal points like buttons on a shirt so dollars stay with dollars and dimes stay with dimes.",
-    es: "Alinea los puntos decimales como botones de camisa para que las unidades queden juntas.",
-    draw: "Stack the numbers with their decimal dots aligned straight down.",
-    drawEs: "Coloca los números uno sobre otro con los puntos decimales bien alineados.",
-    coach: "Ask: 'Are our decimal dots lined up in a straight vertical line?'",
-    coachEs: "Pregunta: '¿Están nuestros puntos decimales alineados en una línea vertical recta?'",
-  },
-  equations: {
-    en: "Picture a balanced scale: whatever you do to one side (+, −, ×, ÷), do the exact same thing to the other side.",
-    es: "Imagina una balanza equilibrada: lo que hagas en un lado (+, −, ×, ÷), haz exactamente lo mismo en el otro.",
-    draw: "Draw a balance scale showing both sides equal.",
-    drawEs: "Dibuja una balanza que muestre ambos lados iguales.",
-    coach:
-      "Ask: 'What operation is connected to the variable, and what is the opposite operation to undo it?'",
-    coachEs:
-      "Pregunta: '¿Qué operación acompaña a la variable y cuál es la operación opuesta para deshacerla?'",
-  },
-  inequalities: {
-    en: "Solve like an equation, then test a number: shade all numbers that make the comparison true.",
-    es: "Resuelve como una ecuación y prueba un número: sombrea todos los números que hagan verdadera la comparación.",
-    draw: "Use an open circle for < or > and a solid filled circle for ≤ or ≥, then shade.",
-    drawEs: "Usa círculo abierto para < o > y círculo relleno para ≤ o ≥, luego sombrea.",
-    coach: "Ask: 'Is the endpoint included (solid dot) or not included (open circle)?'",
-    coachEs:
-      "Pregunta: '¿Está incluido el número límite (punto relleno) o no está incluido (círculo abierto)?'",
-  },
-  expressions: {
-    en: "Combine matching parts together — letters with letters and regular numbers with regular numbers.",
-    es: "Combina las partes iguales: letras con letras y números solos con números solos.",
-    draw: "Put boxes around letter terms and circles around plain numbers.",
-    drawEs: "Encierra en cajas los términos con letra y en círculos los números solos.",
-    coach: "Ask: 'Can we add apples and oranges together, or do we group matching items together?'",
-    coachEs: "Pregunta: '¿Podemos sumar peras con manzanas, o agrupamos lo que coincide junto?'",
-  },
-  statistics: {
-    en: "Statistical questions expect answers that VARY from person to person; non-statistical questions have 1 fixed fact.",
-    es: "Las preguntas estadísticas esperan respuestas que VARÍAN de una persona a otra; las no estadísticas tienen 1 solo dato fijo.",
-    draw: "Line up values from least to greatest to see the spread and middle.",
-    drawEs: "Ordena los valores de menor a mayor para ver la dispersión y el centro.",
-    coach:
-      "Ask: 'Would 10 classmates give 10 different answers, or would everyone give the exact same answer?'",
-    coachEs:
-      "Pregunta: '¿10 compañeros darían respuestas distintas, o todos darían exactamente la misma respuesta?'",
-  },
-  factors: {
-    en: "Factors are the building blocks that multiply to make a number (e.g. 2 × 3 = 6). Multiples are skip-counting.",
-    es: "Los factores son los bloques que se multiplican para formar un número (ej. 2 × 3 = 6). Los múltiplos son el conteo a saltos.",
-    draw: "Make a factor rainbow or factor tree to see all the pairs.",
-    drawEs: "Haz un arcoíris o árbol de factores para ver todas las parejas.",
-    coach: "Ask: 'What two numbers can multiply together to make this number?'",
-    coachEs: "Pregunta: '¿Qué dos números pueden multiplicarse para formar este número?'",
-  },
-  fallback: {
-    en: "Take it one step at a time: find what the question gives you, what it asks for, and picture the action.",
-    es: "Ve paso a paso: halla lo que te da la pregunta, lo que pide y visualiza la acción.",
-    draw: "Sketch a quick picture, number line, or table.",
-    drawEs: "Haz un dibujo rápido, una recta numérica o una tabla.",
-    coach: "Ask: 'In your own words, what is happening in this problem?'",
-    coachEs: "Pregunta: 'En tus propias palabras, ¿qué está pasando en este problema?'",
-  },
-};
-
-// Blank, annotatable manipulatives (families draw on / print). Static by design.
-const SVG_NUMBER_LINE = `<svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/>${[
-  0, 1, 2, 3, 4, 5, 6, 7, 8,
-]
-  .map((i) => {
-    const x = 30 + i * 33;
-    return `<line x1="${x}" y1="28" x2="${x}" y2="40" stroke="#12355b" stroke-width="1.5"/>`;
-  })
-  .join("")}</svg>`;
-
+// Neutral drawing space: the authored question supplies the mathematical method.
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
-const SVG_COORD = `<svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid">${Array.from({ length: 9 }, (_, i) => `<line x1="${20 + i * 20}" y1="20" x2="${20 + i * 20}" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="${20 + i * 20}" x2="180" y2="${20 + i * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}<line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>`;
-
-const SVG_RATIO_TABLE = `<svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/>${[85, 160, 235].map((x) => `<line x1="${x}" y1="15" x2="${x}" y2="95" stroke="#12355b" stroke-width="1.5"/>`).join("")}</svg>`;
-
-const SVG_PRISM = `<svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>`;
-
-const SVG_BALANCE = `<svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>`;
-
-const SVG_EXP = `<svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes">${[0, 1, 2, 3].map((i) => `<rect x="${15 + i * 78}" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${i < 3 ? `<text x="${72 + i * 78}" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text>` : ""}`).join("")}</svg>`;
-
-const TOPIC_VISUAL = {
-  exponents: SVG_EXP,
-  ratios: SVG_RATIO_TABLE,
-  area: SVG_GRID,
-  volume: SVG_PRISM,
-  "surface-area": SVG_PRISM,
-  "coordinate-plane": SVG_COORD,
-  "number-line": SVG_NUMBER_LINE,
-  fractions: SVG_NUMBER_LINE,
-  decimals: SVG_NUMBER_LINE,
-  equations: SVG_BALANCE,
-  inequalities: SVG_NUMBER_LINE,
-  expressions: SVG_GRID,
-  statistics: SVG_NUMBER_LINE,
-  factors: SVG_GRID,
-  fallback: SVG_GRID,
-};
-
-// Topics whose manipulative becomes a structured, tap-to-graph interactive widget
-// (hydrated client-side by the NeftGraph module). The static SVG above stays as the
-// no-JS / print fallback — progressive enhancement, nothing breaks without scripts.
-const INTERACTIVE_VISUAL = {
-  "number-line": "number-line",
-  // `fractions` is deliberately absent. It mapped to the number-line
-  // tap-to-graph widget, so every problem on the five fraction-DIVISION lessons
-  // offered a plotting tool captioned "Tap to graph: divide bars or lines into
-  // equal pieces" — a tool for a different question, labelled with a different
-  // method. Those pages get the draw-your-model canvas instead, which is what a
-  // family actually needs to sketch "how many of these fit inside".
-  decimals: "number-line",
-  inequalities: "number-line",
-  statistics: "number-line",
-  "coordinate-plane": "coordinate-plane",
-  area: "grid",
-  expressions: "grid",
-};
-function interactiveType(topic) {
-  return INTERACTIVE_VISUAL[topic] || null;
-}
-
-function topicGuide(topic) {
-  return TOPIC_GUIDE[topic] || TOPIC_GUIDE.fallback;
-}
-
-// Collapsible "How to solve it" routine — visual parent guidance, bilingual.
-function renderStepGuide(topic) {
-  const g = topicGuide(topic);
-  return `
-      <details class="hw-step-guide">
-        <summary><span class="lang-en">👁️ How to solve it — Quick Visual Guide for Parents</span><span class="lang-es" lang="es">👁️ Cómo resolverlo — Guía Visual para Familias</span></summary>
-        <div class="guide-grid">
-          <div class="guide-card">
-            <strong><span>💡 1. <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea clave</span></span></strong>
-            <p><span class="lang-en">${esc(g.en)}</span><span class="lang-es" lang="es">${esc(g.es)}</span></p>
-          </div>
-          <div class="guide-card">
-            <strong><span>✏️ 2. <span class="lang-en">Picture It</span><span class="lang-es" lang="es">Dibújalo</span></span></strong>
-            <p><span class="lang-en">${esc(g.draw)}</span><span class="lang-es" lang="es">${esc(g.drawEs)}</span></p>
-          </div>
-          <div class="guide-card" style="grid-column: 1 / -1;">
-            <strong><span>💬 3. <span class="lang-en">Ask Your Student</span><span class="lang-es" lang="es">Pregúntale a tu estudiante</span></span></strong>
-            <p><span class="lang-en"><strong>Parent prompt:</strong> ${esc(g.coach || "Ask: What is happening in this problem?")}</span><span class="lang-es" lang="es"><strong>Pregunta clave:</strong> ${esc(g.coachEs || "Pregunta: ¿Qué está pasando en este problema?")}</span></p>
-          </div>
-        </div>
-      </details>`;
-}
-
 // Visual model + "show your work" space. Persists (saveState) and prints with lines.
-function renderWorkspace(topic, pIdx) {
-  const g = topicGuide(topic);
-  const visual = TOPIC_VISUAL[topic] || SVG_GRID;
-  const itype = interactiveType(topic);
+function renderWorkspace(pIdx, g, topic) {
+  const visual = SVG_GRID;
+  // Restore the graphing surfaces while keeping the corrected question-specific
+  // coaching. Do not use number lines for fraction division or statistics.
+  const itype =
+    {
+      "number-line": "number-line",
+      inequalities: "number-line",
+      "coordinate-plane": "coordinate-plane",
+      area: "grid",
+    }[topic] || null;
 
   // Interactive graphing topics (number line, coordinate plane, grid): the static
   // SVG is hydrated into a tap-to-graph widget by NeftGraph. A hidden input lets
@@ -824,7 +676,13 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     const stem = it.stem || "";
     const stemEs = it.stemEs || "";
     const choices = it.choices || [];
-    const choicesEs = Array.isArray(it.choicesEs) ? it.choicesEs : [];
+    const choicesEs = choices.map(
+      (choice, index) =>
+        it.choicesEs?.[index] ||
+        choiceSpanish[String(choice)] ||
+        tableSpanish[String(choice)] ||
+        "",
+    );
     const correctIdx = it.correctIndex !== undefined ? it.correctIndex : 0;
     const explanation = it.explanation || "";
     const explanationEs = it.explanationEs || "";
@@ -833,14 +691,18 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       <div class="problem-body">
         <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
         ${renderFamilyTip("multiple-choice")}
-        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-topic="${esc(topic)}">
-          ${choices
+        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-choice-feedback-es='${esc(JSON.stringify(spanishChoiceFeedback(it)))}' data-topic="${esc(topic)}">
+          ${shuffleSteps(
+            choices.map((_, index) => index),
+            [],
+            `${stem}|${pIdx}`,
+          )
             .map(
-              (choice, cIdx) => `
+              (cIdx) => `
             <label class="mc-option-label" id="label_q_${pIdx}_${cIdx}">
               <input type="radio" name="q_${pIdx}" value="${cIdx}" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">${bi(choice, choicesEs[cIdx])}</span>
+              <span class="choice-text">${bi(choices[cIdx], choicesEs[cIdx])}</span>
             </label>
           `,
             )
@@ -849,12 +711,14 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       </div>
     `;
   } else if (type === "matching-game") {
-    const label = it.label || it.instructions || "Match each item to its correct partner.";
+    const label =
+      it.label || it.instructions || it.stem || "Match each item to its correct partner.";
     const labelEs =
       it.labelEs ||
       it.instructionsEs ||
-      (it.label || it.instructions ? "" : "Une cada elemento con su pareja correcta.");
-    const pairs = it.pairs || [];
+      it.stemEs ||
+      (it.label || it.instructions || it.stem ? "" : "Une cada elemento con su pareja correcta.");
+    const pairs = matchingPairs(it);
 
     // Get unique sorted matches for dropdown options
     const allMatches = pairs.map((p) => p.match);
@@ -869,11 +733,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             .map(
               (p, pairIdx) => `
             <div class="matching-row" data-term="${esc(p.term)}" data-correct="${esc(p.match)}">
-              <div class="matching-term">${esc(p.term)}</div>
+              <div class="matching-term">${bi(p.term, p.termEs)}</div>
               <div class="matching-select-container">
-                <select name="q_${pIdx}_pair_${pairIdx}" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  ${sortedMatches.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join("")}
+                <select name="q_${pIdx}_pair_${pairIdx}" class="custom-select matching-select" aria-label="${esc(p.term)} / ${esc(p.termEs || p.term)}" onchange="saveState(); updateProgress();">
+                  ${langOption("", "Choose a match", "Elige una pareja")}
+                  ${sortedMatches.map((m) => langOption(m, m, pairs.find((p) => p.match === m)?.matchEs)).join("")}
                 </select>
                 <span class="feedback-badge"></span>
               </div>
@@ -903,7 +767,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
               <div class="drag-order-row" draggable="true" id="order_${pIdx}_${stepIdx}" data-step-text="${esc(step)}" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">${stepIdx + 1}</span>
-                <span class="drag-order-text">${esc(step)}</span>
+                <span class="drag-order-text">${bi(step, it.itemsEs?.[norm.steps.indexOf(step)])}</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(${pIdx}, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(${pIdx}, this, 1)" aria-label="Move down">▼</button>
@@ -914,7 +778,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           </div>
         </div>
         <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(${pIdx}); saveState(); updateProgress();">Reset Order</button>
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(${pIdx}); saveState(); updateProgress();">${bi("Reset order", "Reiniciar orden")}</button>
         </div>
       </div>
     `;
@@ -937,14 +801,14 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
               .map(
                 (cat) => `
               <div class="drag-column" data-category-id="${esc(cat.id)}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '${escAttr(cat.id)}')">
-                <div class="drag-column-header">${esc(cat.label)}</div>
+                <div class="drag-column-header">${bi(cat.label, cat.labelEs)}</div>
                 <div class="drag-column-slots" id="slots_${pIdx}_${esc(cat.id)}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '${escAttr(cat.id)}')"></div>
               </div>`,
               )
               .join("")}
           </div>
           <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-header">${bi("Drag a card, tap a card then a column, or choose a group from its menu.", "Arrastra una tarjeta, toca una tarjeta y una columna, o elige un grupo en su menú.")}</div>
             <div class="drag-source-pile" id="pile_${pIdx}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '')">
               ${items
                 .map(
@@ -957,11 +821,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">${esc(item.text)}</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_${pIdx}_${itemIdx}', ${pIdx}); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    ${categories.map((cat) => `<option value="${esc(cat.id)}">${esc(cat.label)}</option>`).join("")}
-                    <option value="">Unsorted Pile</option>
+                  <span class="card-text">${bi(item.text, item.textEs)}</span>
+                  <select class="mobile-cat-select" aria-label="${esc(item.text)} / ${esc(item.textEs || item.text)}" onchange="mobileMoveCard(this, 'card_${pIdx}_${itemIdx}', ${pIdx}); saveState(); updateProgress();">
+                    ${langOption("", "Move to…", "Mover a…")}
+                    ${categories.map((cat) => langOption(cat.id, cat.label, cat.labelEs)).join("")}
+                    ${langOption("", "Unsorted pile", "Sin clasificar")}
                   </select>
                 </div>`,
                 )
@@ -970,50 +834,20 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           </div>
         </div>
         <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(${pIdx}); saveState(); updateProgress();">Reset Sorting</button>
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(${pIdx}); saveState(); updateProgress();">${bi("Reset sorting", "Reiniciar clasificación")}</button>
         </div>
       </div>
     `;
     }
   } else if (type === "fill-table") {
-    const label = it.label || it.instructions || "Complete the table.";
+    const label = it.label || it.instructions || it.stem || "Complete the table.";
     const labelEs =
-      it.labelEs || it.instructionsEs || (it.label || it.instructions ? "" : "Completa la tabla.");
+      it.labelEs ||
+      it.instructionsEs ||
+      it.stemEs ||
+      (it.label || it.instructions || it.stem ? "" : "Completa la tabla.");
 
-    let headers = [];
-    let rowsData = [];
-
-    if (Array.isArray(it.headers) && Array.isArray(it.rows) && Array.isArray(it.rows[0])) {
-      // Shape B: 2D array + editableCells
-      headers = it.headers;
-      const editableMap = new Map();
-      if (Array.isArray(it.editableCells)) {
-        for (const ec of it.editableCells) {
-          editableMap.set(`${ec.row}-${ec.col}`, ec.answer);
-        }
-      }
-      rowsData = it.rows.map((row, rIdx) => {
-        return row.map((cell, cIdx) => {
-          const key = `${rIdx}-${cIdx}`;
-          if (editableMap.has(key)) {
-            return { isEditable: true, correctValue: String(editableMap.get(key)), val: "" };
-          }
-          return { isEditable: false, val: String(cell ?? "") };
-        });
-      });
-    } else if (Array.isArray(it.columns) && Array.isArray(it.rows)) {
-      // Shape A: rows of objects
-      headers = it.columns;
-      const keys = headerKeysFor(it.columns, it.rows[0] || {});
-      rowsData = it.rows.map((rowObj) => {
-        return keys.map((key) => {
-          if (key === "answer") {
-            return { isEditable: true, correctValue: String(rowObj["answer"] ?? ""), val: "" };
-          }
-          return { isEditable: false, val: String(rowObj[key] ?? "") };
-        });
-      });
-    }
+    const { headers, headersEs, rows: rowsData } = tableModel(it);
 
     content = `
       <div class="problem-body">
@@ -1023,7 +857,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           <table class="fill-table">
             <thead>
               <tr>
-                ${headers.map((h) => `<th>${esc(h)}</th>`).join("")}
+                ${headers.map((h, i) => `<th scope="col">${bi(h, tableEs(h, headersEs[i]))}</th>`).join("")}
               </tr>
             </thead>
             <tbody>
@@ -1037,18 +871,19 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                         return `
                         <td>
                           <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
+                            <input type="text"
+                                   class="custom-input table-input"
                                    name="q_${pIdx}_table_${rIdx}_${cIdx}"
-                                   data-correct="${esc(cell.correctValue)}" 
-                                   placeholder="Type answer..." 
+                                   data-correct="${esc(cell.correctValue)}" data-self-review="${cell.selfReview ? "true" : "false"}" data-correct-es="${esc(tableEs(cell.correctValue, cell.valEs))}"
+                                   aria-label="${esc(headers[cIdx])}, row ${rIdx + 1}: ${esc(row[0]?.val || "")} / ${esc(tableEs(headers[cIdx], headersEs[cIdx]))}, fila ${rIdx + 1}"
+                                   placeholder="${cell.selfReview ? "Explain / Explica" : "Answer / Respuesta"}"
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
                       `;
                       } else {
-                        return `<td>${esc(cell.val)}</td>`;
+                        return `<td>${bi(cell.val, tableEs(cell.val, cell.valEs))}</td>`;
                       }
                     })
                     .join("")}
@@ -1079,7 +914,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           "Revisa los pasos de abajo. Identifica cuál paso tiene el error y explica por qué.",
         )}</p>
         ${renderFamilyTip("error-analysis")}
-        
+
         <div class="clipboard-box">
           <div class="clipboard-top"></div>
           <div class="clipboard-paper">
@@ -1088,43 +923,48 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                 (step, sIdx) => `
               <div class="worked-step" id="step_q_${pIdx}_${sIdx + 1}">
                 <span class="step-badge">Step ${sIdx + 1} / Paso ${sIdx + 1}</span>
-                <span class="step-label">${esc(step.label)}:</span>
-                <span class="step-work">${esc(step.work)}</span>
+                <span class="step-label">${bi(step.label, step.labelEs)}:</span>
+                <span class="step-work">${bi(step.work, step.workEs)}</span>
               </div>
             `,
               )
               .join("")}
           </div>
         </div>
-        
+
         <div class="error-controls">
           <div class="error-select-row">
-            <label for="error_step_select_${pIdx}">Which step has the error?</label>
+            <label for="error_step_select_${pIdx}">${bi("Which step has the error?", "¿Qué paso tiene el error?")}</label>
             <select id="error_step_select_${pIdx}" class="custom-select error-step-select" data-correct="${errorStep + 1}" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
+              ${langOption("", "Choose a step", "Elige un paso")}
               ${workedExample.map((_, sIdx) => `<option value="${sIdx + 1}">Step ${sIdx + 1}</option>`).join("")}
             </select>
             <span class="feedback-badge"></span>
           </div>
-          
+
           <div class="error-explain-row">
-            <label for="error_explain_input_${pIdx}">Explain the error and write the correct calculation:</label>
+            <label for="error_explain_input_${pIdx}">${bi("Explain the error and write the correct calculation:", "Explica el error y escribe el cálculo correcto:")}</label>
             <textarea id="error_explain_input_${pIdx}" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
             <span class="feedback-badge"></span>
           </div>
-          
+
           <div class="reveal-box" id="error_correct_work_${pIdx}" style="display:none;">
-            <strong>Correct Work Reference:</strong> ${esc(correctWork)}
-            ${explanation ? `<br /><strong>Why:</strong> ${esc(explanation)}` : ""}
+            <strong>${bi("Correct work:", "Trabajo correcto:")}</strong> ${bi(correctWork, it.correctWorkEs)}
+            ${explanation ? `<br /><strong>${bi("Why:", "Por qué:")}</strong> ${bi(explanation, it.explanationEs)}` : ""}
           </div>
         </div>
       </div>
     `;
   } else if (type === "open-response") {
-    const prompt = it.prompt || "";
+    /* Authored Session 2 items (data/part-two-session2-practice.json) state
+       their question as `stem`, like every other type; lesson configs say
+       `prompt`. Reading only `prompt` left the English side of every authored
+       open-response EMPTY while the Spanish side (which already fell back to
+       stemEs) rendered — an English-only family saw a blank question. */
+    const prompt = it.prompt || it.stem || "";
     const promptEs = it.promptEs || it.stemEs || "";
     const sentenceFrame = it.sentenceFrame || "";
-    const _sentenceFrameEs = it.sentenceFrameEs || "";
+    const sentenceFrameEs = it.sentenceFrameEs || "";
     const keywords = it.keywords || [];
     const minLength = it.minLength || 15;
 
@@ -1132,36 +972,36 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       <div class="problem-body">
         <p class="problem-stem"${esMissing(prompt, promptEs) ? ' data-es-missing="stem"' : ""}>${bi(prompt, promptEs)}</p>
         ${renderFamilyTip("open-response")}
-        
+
         ${
           sentenceFrame
             ? `
           <div class="sentence-frame-card">
-            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
-            <span class="sentence-frame-text" onclick="insertSentenceStarter(${pIdx}, '${esc(sentenceFrame).replace(/'/g, "\\'")}')">"${esc(sentenceFrame)}"</span>
-            <span class="click-to-insert-hint">(Click to insert starter)</span>
+            <span class="sentence-frame-tag">${bi("Sentence starter:", "Inicio de oración:")}</span>
+            <button type="button" class="sentence-frame-text" data-starter-en="${esc(sentenceFrame)}" data-starter-es="${esc(sentenceFrameEs)}" onclick="insertSentenceStarter(${pIdx}, pickLangText(this.dataset.starterEn, this.dataset.starterEs))">${bi(sentenceFrame, sentenceFrameEs)}</button>
+            <span class="click-to-insert-hint">${bi("Tap to insert", "Toca para insertar")}</span>
           </div>
         `
             : ""
         }
-        
+
         <div class="open-response-wrapper">
-          <textarea id="open_response_${pIdx}" 
-                    class="custom-textarea open-response-textarea" 
-                    data-min-length="${minLength}" 
+          <textarea id="open_response_${pIdx}"
+                    class="custom-textarea open-response-textarea" aria-label="${esc(prompt)} / ${esc(promptEs)}"
+                    data-min-length="${minLength}"
                     data-keywords="${esc(JSON.stringify(keywords))}"
-                    placeholder="Write your mathematical explanation here..." 
+                    placeholder="Write your mathematical explanation here..."
                     oninput="saveState(); updateProgress();"></textarea>
           <span class="feedback-badge"></span>
         </div>
-        
+
         ${
           keywords.length > 0
             ? `
           <div class="word-bank-container">
-            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-label">${bi("Vocabulary: tap to insert", "Vocabulario: toca para insertar")}</div>
             <div class="word-bank-chips">
-              ${keywords.map((kw) => `<span class="word-chip" onclick="insertWord(${pIdx}, '${esc(kw).replace(/'/g, "\\'")}')">${esc(kw)}</span>`).join("")}
+              ${keywords.map((kw, i) => `<button type="button" class="word-chip" data-word-en="${esc(kw)}" data-word-es="${esc(it.keywordsEs?.[i] || kw)}" onclick="insertWord(${pIdx}, pickLangText(this.dataset.wordEn, this.dataset.wordEs))">${bi(kw, it.keywordsEs?.[i])}</button>`).join("")}
             </div>
           </div>
         `
@@ -1179,14 +1019,22 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     "error-analysis",
     "open-response",
   ].includes(type);
-  const scaffold = renderStepGuide(topic) + (computational ? renderWorkspace(topic, pIdx) : "");
+  const guide = questionGuide(it);
+  const scaffold = computational ? renderWorkspace(pIdx, guide, topic) : "";
+  const coachLadder = {
+    strategyEn: guide.coach,
+    strategyEs: guide.coachEs,
+    startEn: guide.draw ? `Start here: ${guide.draw}` : "",
+    startEs: guide.drawEs ? `Empieza aquí: ${guide.drawEs}` : "",
+  };
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span> ${opts.num || pIdx + 1}</div>
+        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_${pIdx} .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_${pIdx} .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         ${typeChip}
       </div>
-      <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID)}</div>
+      <div class="problem-hint-row">${renderProblemHintButton(it, SVG_GRID, coachLadder)}</div>
       ${content}
       ${scaffold}
       <div class="problem-check-row">
@@ -1208,25 +1056,52 @@ function lessonModelCandidates(config) {
     }
   };
 
+  /* An AUTHORED family model wins. The lesson's own `practice.diagram` is
+     chosen for the lesson's surfaces, and it is not always the right thing to
+     hand a parent: 3-1 teaches "write a ratio, part-to-part and part-to-whole",
+     and its practice diagram is a 20-cup bowl split into 4 equal batches, which
+     the tape-diagram lab reads as "the whole is 20, split into 4 equal parts —
+     what is ONE part worth?". That is division for a unit value, the Part 2
+     session's mathematics, and no wording of the TOUCH & TRY prompts can make
+     it ask for a ratio. Authoring the family model in the sidecar fixes the
+     family page without editing lesson content the worksheets also render. */
+  add(config.familyNotes?.model);
   // Match the lesson flow: practice is the most actionable family model,
-  // followed by explore/connect and finally the launch visual.
+  // followed by explore/connect, the launch visual, and review diagram.
   add(config.practice?.diagram);
   add(config.explore?.diagram);
   add(config.connect?.diagram);
   add(config.launch?.visual);
+  add(config.reviewDiagram);
   return candidates;
 }
 
 function selectLessonInteractiveModel(config) {
-  for (const candidate of lessonModelCandidates(config)) {
+  /* A model with no title of its own borrows the lesson's — and a Part 2's own
+     title is "7.1 · Part II", so all 76 Part 2 pages headed their TOUCH & TRY
+     with a section number and no mathematics, next to a page header that
+     already says "Lesson 7-1 · Part 2". The page title already prefers the
+     sidecar's sessionTitle for exactly this reason; the model title did not. */
+  const lessonTitle = config.familyNotes?.sessionTitle || config.title;
+  const candidates = lessonModelCandidates(config);
+  if (String(config.lessonId || config.id) === "9-3")
+    candidates.sort(
+      (a, b) => Number(b.kind === "line-grapher") - Number(a.kind === "line-grapher"),
+    );
+  for (const candidate of candidates) {
+    const candidateTitle =
+      candidate.title ||
+      (candidate.kind === "fraction-divide"
+        ? "Fraction Division Visualizer & Lab"
+        : lessonTitle || "Interactive Lesson Model");
     const html = interactiveVisualHost(candidate, {
-      ariaLabel: `Interactive ${candidate.title || config.title || "lesson model"}`,
+      ariaLabel: `Interactive ${candidateTitle}`,
       fallback: "Turn on JavaScript to use the interactive lesson model.",
     });
     if (html) {
       return {
         kind: candidate.kind,
-        title: candidate.title || config.title || "Interactive Lesson Model",
+        title: candidateTitle,
         html,
       };
     }
@@ -1235,7 +1110,16 @@ function selectLessonInteractiveModel(config) {
 }
 
 function generateHtml(lessonId, config) {
-  const title = config.title || "Lesson Practice";
+  config.lessonId = config.lessonId || lessonId;
+  config.id = config.id || lessonId;
+  /* A `-part2` config titles itself "2.1 · Part II" — the label the lesson page
+     needs, and a redundancy on a family page whose own header already reads
+     "Lesson 2-1 · Part 2". The two sessions teach DIFFERENT mathematics (2-1
+     session 1 is statistical questions, session 2 is dot plots and shape), so
+     what a family needs there is the session's topic. It is authored beside the
+     rest of the parent-facing content, in the sidecar, because the part2
+     configs are generated and carry a "do not hand-edit" banner. */
+  const title = config.familyNotes?.sessionTitle || config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
   const vocabGlossary = buildVocabGlossary(vocab);
   // Serialize for an inline <script>; escape "<" so authored text can never
@@ -1256,7 +1140,7 @@ function generateHtml(lessonId, config) {
   const themeCss = renderUnitThemeCss(theme);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
-  const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length);
+  const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length, moreSelected.length > 0);
   const warmupHtml = warmup
     .map((p, idx) =>
       renderProblem(p, idx, topic, { badgeEn: "Warm-up", badgeEs: "Calentamiento", num: idx + 1 }),
@@ -1289,7 +1173,7 @@ function generateHtml(lessonId, config) {
   const tabPanels = [
     renderLearnTab(config, renderVisualMathLab(topic, config, lessonModel)),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
-    renderTogetherTab(config, lessonId, renderWorkbenchTools()),
+    renderTogetherTab(config, lessonId, renderWorkbenchTools(config)),
     renderCheckTab(
       quickCheckIntroHtml,
       warmupHtml,
@@ -1298,7 +1182,8 @@ function generateHtml(lessonId, config) {
       coreSelected.length,
     ),
     renderPlayTabPanel(config, lessonId),
-    renderDoneTab(),
+    renderDoneTab(config, lessonId),
+    renderPhotoboothTab(config, lessonId),
   ].join("\n");
 
   const tabsHtml = renderHomeworkTabs(
@@ -1306,6 +1191,7 @@ function generateHtml(lessonId, config) {
     renderHelpDrawer(renderHelpContent(config), renderMoreContent(config, lessonId)),
   );
   const helpModalHtml = renderHelpModal();
+  const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
 
   return `<!doctype html>
 <html lang="en">
@@ -1335,26 +1221,163 @@ ${EDITORIAL_FONT_IMPORT}
   --ink: #21313f;
   --muted: #5f6f80;
   --line: #d7e2ed;
-  
+
   --success: #0f7c4a;
   --success-bg: #e6f7ef;
   --error: #b64e2f;
   --error-bg: #fef0ec;
   --hint: #875f00;
   --hint-bg: #fef7e0;
-  
+
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 22px;
-  
+
   --font-display: "Outfit", system-ui, sans-serif;
   --font-body: "Hanken Grotesk", Calibri, "Segoe UI", system-ui, sans-serif;
-  
+
   --shadow: 0 8px 30px rgba(18, 53, 91, 0.05);
   --shadow-sm: 0 4px 12px rgba(18, 53, 91, 0.02);
 }
 
 ${themeCss}
+
+/* Save/Resume normally adds a shortcut to the site-wide workbench. Family
+   homework owns a stricter contract: only the lesson-matched manipulative may
+   appear, so the general all-tools shortcut stays out of this experience. */
+#nsr-workbench { display: none !important; }
+
+/* Enhancements: Share bar, Standard details, Time remaining, Kitchen table, Audio buttons */
+.hw-hero-share-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 6px 0;
+}
+.hw-share-btn {
+  font-size: 0.82rem;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.hw-share-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  text-decoration: none;
+}
+.hw-standard-details {
+  margin: 6px 0 10px 0;
+  font-size: 0.85rem;
+}
+.hw-standard-summary {
+  cursor: pointer;
+  color: var(--amber-light);
+  font-weight: 600;
+}
+.hw-standard-desc {
+  margin: 4px 0 0 0;
+  font-size: 0.8rem;
+  color: var(--teal-light);
+}
+.hw-tab-meta-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 12px 2px 12px;
+}
+.hw-time-remaining {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--amber-light);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+.btn-listen-prob {
+  background: var(--teal-light);
+  border: 1px solid var(--teal);
+  color: var(--teal-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+.btn-listen-prob:hover {
+  background: var(--teal);
+  color: #ffffff;
+}
+.kitchen-table-card {
+  margin: 20px 0;
+  padding: 18px 20px;
+  background: #fff;
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.kt-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--teal-ink);
+  margin-bottom: 6px;
+}
+.kt-title {
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
+  color: var(--navy);
+}
+.kt-materials {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0 0 10px 0;
+}
+.kt-steps {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+.kt-why {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+}
+.cert-streak-box {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--amber-light);
+  border-radius: 8px;
+  color: #78350f;
+  font-size: 0.9rem;
+}
+
+@media print {
+  body.print-problems-only [data-tab-panel]:not([data-tab-panel="check"]),
+  body.print-problems-only .hw-hero,
+  body.print-problems-only .homework-tab-chrome,
+  body.print-problems-only .hw-stuck-fab,
+  body.print-problems-only .workbench-drawer,
+  body.print-problems-only .more-practice,
+  body.print-problems-only .tab-flow-nav,
+  body.print-problems-only .problem-check-row {
+    display: none !important;
+  }
+  body.print-problems-only [data-tab-panel="check"] {
+    display: block !important;
+  }
+}
 
 * { box-sizing: border-box; }
 body {
@@ -2310,10 +2333,12 @@ header.homework-header h1 {
 }
 
 .mobile-cat-select {
-  display: none;
+  display: block;
   font-family: inherit;
-  font-size: 11px;
-  padding: 2px 4px;
+  font-size: 16px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 6px 8px;
   border-radius: 4px;
   border: 1px solid var(--line);
   outline: none;
@@ -2362,6 +2387,13 @@ header.homework-header h1 {
   width: 100%;
   border-collapse: collapse;
   background: var(--white);
+  /* .table-responsive has carried overflow-x since it was written, and it never
+     fired: width:100% makes the table fit its container by definition, so five
+     columns on a 390px phone were squeezed until "Option" set one letter per
+     line down the cell and the comparison chart the lesson is built around was
+     unreadable. A min-width lets the table be its own size and hands the
+     overflow to the scroller that was already there. */
+  min-width: 560px;
 }
 
 .fill-table th, .fill-table td {
@@ -2369,6 +2401,10 @@ header.homework-header h1 {
   border: 1px solid var(--line);
   text-align: left;
   font-size: 14.5px;
+  /* Column headings are short labels, not prose; wrapping between their words
+     is fine, breaking inside one is what produced the vertical alphabet. */
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 
 .fill-table th {
@@ -2810,14 +2846,12 @@ ${VISUAL_LABS_CSS}
    Polish layer — premium, TpT-quality finish (loads last).
    Refines shared content surfaces without changing structure.
    ============================================================ */
-body { font-size: 15px; line-height: 1.58; }
-.container { max-width: 840px; padding: 28px 18px 40px; }
+body { font-size: 18px; line-height: 1.65; }
+.container { max-width: 960px; padding: 28px 20px 44px; }
 
-/* On a laptop the 840px column left half the viewport empty while single
-   problem cards ran thousands of pixels tall. Give the reading column more
-   room — and keep the sticky bar's inner column locked to it. */
+/* On a laptop give the reading column more room — and keep the sticky bar's inner column locked to it. */
 @media (min-width: 1180px) {
-  .container, .status-bar-wrapper { max-width: 1000px; }
+  .container, .status-bar-wrapper { max-width: 1080px; }
 }
 
 /* Section headings get a clear accent + stronger hierarchy */
@@ -3241,7 +3275,9 @@ body .mwb-launcher {
     display: flex;
     width: 100%;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    /* A pill outline drawn around two rows reads as a mistake. */
+    border-radius: var(--radius-md);
   }
   .hw-hero .lang-toggle-btn {
     flex: 1 1 0;
@@ -3253,9 +3289,12 @@ body .mwb-launcher {
     font-size: 12px;
     white-space: nowrap;
   }
-  /* The full "Bilingual / Bilingüe" cannot fit a third of a phone; the flag
-     pair already carries it, and the label returns above 700px. */
-  .hw-hero .lang-toggle-btn[data-lang-mode="bilingual"] span { display: none; }
+  /* "Bilingual / Bilingüe" needs ~153px and an equal third of this row is 97px,
+     so it used to be hidden and the button showed two flags and nothing else —
+     the DEFAULT mode, unlabelled. It gets its own row instead: every option is
+     now readable, at the cost of one 44px row. (Hiding it was right when the
+     selector held six languages and no arrangement helped; it holds three.) */
+  .hw-hero .lang-toggle-btn[data-lang-mode="bilingual"] { flex: 1 0 100%; }
   .hw-hero .hw-quickplan { margin-top: 14px; }
   /* The opacity difference already says which tabs are optional; the divider
      and its label cost a whole extra row at this width. */
@@ -3271,6 +3310,60 @@ body .mwb-launcher {
 ${EDITORIAL_OVERRIDES}
 ${BIG_IDEA_CSS}
 ${ARENA_CSS}
+${MATH_INPUT_CSS}
+/* ============================================================
+   GLOBAL HIGH-LEGIBILITY TYPOGRAPHY SCALE (All Homeworks)
+   Bigger text, comfortable reading rhythm across all family devices
+   ============================================================ */
+body {
+  font-size: 18px !important;
+  line-height: 1.65 !important;
+}
+.problem-stem {
+  font-size: 20px !important;
+  line-height: 1.55 !important;
+  font-weight: 700 !important;
+}
+.problem-number-badge {
+  font-size: 20px !important;
+}
+.mc-option-label, .choice-text {
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+}
+.learning-big {
+  font-size: 20px !important;
+  line-height: 1.55 !important;
+}
+.bilingual-col, .worked-step, .welcome-lead, .watch-for-list, .watch-for, .hw-steps {
+  font-size: 17.5px !important;
+  line-height: 1.6 !important;
+}
+.hw-step-guide > summary {
+  font-size: 17px !important;
+}
+.step-label {
+  font-size: 17.5px !important;
+  line-height: 1.55 !important;
+}
+.custom-input, .custom-textarea {
+  font-size: 18px !important;
+}
+.btn-primary, .btn-secondary, .btn-check-one {
+  font-size: 17.5px !important;
+}
+.feedback-box, .explanation-box {
+  font-size: 17.5px !important;
+  line-height: 1.55 !important;
+}
+.math-talk-bubble {
+  font-size: 18.5px !important;
+  line-height: 1.55 !important;
+}
+.obj-popup-def {
+  font-size: 18px !important;
+  line-height: 1.6 !important;
+}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -3316,6 +3409,10 @@ ${ARENA_CSS}
     }
   } catch (e) {}
   document.body.classList.add('lang-mode-' + mode);
+  // Stamp the document language in the same breath as the class, so assistive
+  // tech and browser translation see Spanish from the first paint rather than
+  // from whenever setLanguageMode() runs on DOMContentLoaded.
+  document.documentElement.lang = mode === 'es' ? 'es' : 'en';
 })();
 </script>
 
@@ -3344,10 +3441,13 @@ ${ARENA_CSS}
   ${welcomeHtml}
 
   ${tabsHtml}
+  ${refrigeratorSheetHtml}
 
 </div>
 
 ${helpModalHtml}
+
+${renderMathKeypad()}
 
 <!-- Sticky bottom actions bar. It belongs to the Check stop and only appears
      there: on Learn, Words, Play and Done it was 139px of "Progress: 0 / 6" and
@@ -3389,10 +3489,33 @@ window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match)
 ${HOMEWORK_TABS_JS}
 ${HOMEWORK_GAME_JS}
 ${VISUAL_LABS_JS}
+${MATH_INPUT_JS}
 // Sound engine
 let soundEnabled = true;
 let audioCtx = null;
 let currentStreak = 0;
+
+/* How many times each problem has been checked, so a multiple-choice question
+   can coach before it answers itself.
+   The page used to reveal on the FIRST wrong tap: it turned the chosen option
+   red, the right one green, and printed the full walkthrough — and its own
+   Parent Coach line then asked "why does the highlighted green choice fit
+   best?", which only makes sense once the answer is already exposed. A family
+   guessing gets the answer for free, and the page's own framing ("Ask
+   questions — let your student do the thinking") stops being true at the first
+   mistake. Now: attempt 1 wrong shows the trap written for THAT choice and
+   invites another go; attempt 2 reveals, and so does the explicit
+   "Show me how" button, because a stuck family should never have to burn a
+   wrong answer to get help. */
+const problemAttempts = {};
+const revealForced = {};
+function revealIsDue(idx) {
+  return (problemAttempts[idx] || 0) >= 3 || revealForced[idx] === true;
+}
+function forceReveal(idx) {
+  revealForced[idx] = true;
+  checkProblem(idx);
+}
 
 function initAudio() {
   if (!audioCtx) {
@@ -3572,6 +3695,11 @@ function checkSkillPowerUp(btn, choiceIdx, correctIdx) {
     contentEl.innerHTML = '<span class="lang-en">🎉 <strong>Power-Up Unlocked!</strong> You earned +1 Star and mastered the key concept.</span><span class="lang-es" lang="es">🎉 <strong>¡Poder Desbloqueado!</strong> Ganaste +1 Estrella y dominaste el concepto clave.</span>';
     const badge = document.getElementById("tab_badge_learn");
     if (badge) badge.textContent = "★";
+    const starBadge = document.getElementById("powerup_star_badge");
+    if (starBadge) {
+      starBadge.classList.add("is-unlocked");
+      starBadge.innerHTML = '<span class="lang-en">★ Earned!</span><span class="lang-es" lang="es">★ ¡Ganada!</span>';
+    }
     if (typeof playFanfareSound === "function") playFanfareSound();
     if (typeof triggerConfettiBurst === "function") triggerConfettiBurst();
     try {
@@ -3693,6 +3821,17 @@ function markVocabCardKnown(idx, known) {
   }
   try {
     localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
+    const termEl = card ? card.querySelector('.term-text') : null;
+    const term = termEl ? termEl.textContent.trim() : '';
+    if (term) {
+      let reviewDeck = JSON.parse(localStorage.getItem('hw_vocab_review_deck') || '[]');
+      if (!known) {
+        if (!reviewDeck.includes(term)) reviewDeck.push(term);
+      } else {
+        reviewDeck = reviewDeck.filter(t => t !== term);
+      }
+      localStorage.setItem('hw_vocab_review_deck', JSON.stringify(reviewDeck));
+    }
   } catch (e) {}
 }
 
@@ -3807,25 +3946,33 @@ function triggerHighFive() {
 
 function updateCelebrationTab() {
   const problems = Array.from(document.querySelectorAll(".problem-section")).filter(
-    (s) => !s.closest(".more-practice"),
+    (s) => !s.closest(".more-practice") && !s.hidden && !s.closest("[hidden]"),
   );
   const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
+  const practiceGoal = Math.min(
+    3,
+    typeof activeHomeworkRoute === "function" ? activeHomeworkRoute().problemLimit : 3,
+  );
 
   const bLearn = document.getElementById("badge_achieve_learn");
   const bVocab = document.getElementById("badge_achieve_vocab");
   const bPractice = document.getElementById("badge_achieve_practice");
   const bArcade = document.getElementById("badge_achieve_arcade");
+  const bMission = document.getElementById("badge_achieve_mission");
 
   if (bLearn) bLearn.classList.add("is-unlocked");
   if (bArcade) bArcade.classList.add("is-unlocked");
-  if (bPractice && correctCount >= 3) bPractice.classList.add("is-unlocked");
+  if (bPractice && correctCount >= practiceGoal) bPractice.classList.add("is-unlocked");
   try {
     if (bVocab && localStorage.getItem(STORAGE_KEY + "_vocab_won")) {
       bVocab.classList.add("is-unlocked");
     }
+    if (bMission && localStorage.getItem("hw_family_mission_" + (window.LESSON_ID || location.pathname)) !== null) {
+      bMission.classList.add("is-unlocked");
+    }
   } catch (e) {}
 
-  if (correctCount >= 3) {
+  if (correctCount >= practiceGoal) {
     if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 60);
   }
 }
@@ -3850,13 +3997,13 @@ function playSuccessArpeggio() {
       const gain = audioCtx.createGain();
       osc.type = "triangle";
       osc.frequency.setValueAtTime(f, now + i * 0.1);
-      
+
       gain.gain.setValueAtTime(0.1, now + i * 0.1);
       gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.3);
-      
+
       osc.connect(gain);
       gain.connect(audioCtx.destination);
-      
+
       osc.start(now + i * 0.1);
       osc.stop(now + i * 0.1 + 0.35);
     });
@@ -3879,13 +4026,13 @@ function playFailureSound() {
       const gain = audioCtx.createGain();
       osc.type = "sawtooth";
       osc.frequency.setValueAtTime(f, now + i * 0.12);
-      
+
       gain.gain.setValueAtTime(0.08, now + i * 0.12);
       gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.2);
-      
+
       osc.connect(gain);
       gain.connect(audioCtx.destination);
-      
+
       osc.start(now + i * 0.12);
       osc.stop(now + i * 0.12 + 0.25);
     });
@@ -4097,13 +4244,13 @@ function resetDragSort(probIdx) {
       if (select) select.value = "";
     });
   });
-  
+
   // Clean all validation classes on items of this problem
   const allCards = pile.querySelectorAll(".drag-card");
   allCards.forEach(card => {
     card.classList.remove("is-correct", "is-incorrect");
   });
-  
+
   const pCard = document.getElementById("problem_" + probIdx);
   if (pCard) pCard.classList.remove("correct", "incorrect");
 }
@@ -4117,15 +4264,15 @@ function insertWord(probIdx, word) {
   const text = textarea.value;
   const before = text.substring(0, start);
   const after = text.substring(end, text.length);
-  
+
   // Insert word with trailing space
   textarea.value = before + (start > 0 && text[start - 1] !== " " ? " " : "") + word + " " + after;
   textarea.focus();
-  
+
   // Move cursor after the inserted word
   const newPos = start + (start > 0 && text[start - 1] !== " " ? 1 : 0) + word.length + 1;
   textarea.setSelectionRange(newPos, newPos);
-  
+
   saveState();
   updateProgress();
 }
@@ -4155,7 +4302,7 @@ function saveState() {
     dragPositions: {},
     orderPositions: {}
   };
-  
+
   // Save text inputs, select dropdowns, textareas, and radios
   const inputs = document.querySelectorAll(".custom-input, .custom-select, .custom-textarea, input[type='radio']:checked");
   inputs.forEach(input => {
@@ -4171,7 +4318,7 @@ function saveState() {
     state.studentName = studentNameInput.value;
   }
   state.currentStreak = currentStreak;
-  
+
   // Save drag-sort item locations
   const dragCards = document.querySelectorAll(".drag-card");
   dragCards.forEach(card => {
@@ -4185,7 +4332,7 @@ function saveState() {
     const probIdx = list.id.replace("orderlist_", "");
     state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
-  
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
@@ -4194,7 +4341,7 @@ function loadState() {
   if (!raw) return;
   try {
     const state = JSON.parse(raw);
-    
+
     // Restore text inputs, selects, textareas
     if (state.inputs) {
       for (const [id, val] of Object.entries(state.inputs)) {
@@ -4231,6 +4378,11 @@ function loadState() {
         if (badge) badge.textContent = "★";
         const btn = document.querySelector(".powerup-choice-btn[data-is-correct='true']");
         if (btn) btn.classList.add("is-correct");
+        const starBadge = document.getElementById("powerup_star_badge");
+        if (starBadge) {
+          starBadge.classList.add("is-unlocked");
+          starBadge.innerHTML = '<span class="lang-en">★ Earned!</span><span class="lang-es" lang="es">★ ¡Ganada!</span>';
+        }
       }
       if (localStorage.getItem(STORAGE_KEY + "_vocab_won") === "1") {
         const badge = document.getElementById("tab_badge_words");
@@ -4243,7 +4395,7 @@ function loadState() {
         }
       });
     } catch(e) {}
-    
+
     // Restore drag card positions
     if (state.dragPositions) {
       for (const [cardId, parentId] of Object.entries(state.dragPositions)) {
@@ -4288,15 +4440,29 @@ function loadState() {
 
 ${ANSWER_MATCH_JS}
 
+function activeCoreProblems() {
+  return Array.from(document.querySelectorAll(".problem-section")).filter(
+    (section) =>
+      !section.closest(".more-practice") &&
+      !section.hidden &&
+      !section.closest("[hidden]"),
+  );
+}
+
+function activeHomeworkGoal() {
+  return typeof activeHomeworkRoute === "function"
+    ? activeHomeworkRoute().problemLimit
+    : window.HW_CORE_COUNT || activeCoreProblems().length;
+}
+
 function updateProgress() {
-  const problems = Array.from(document.querySelectorAll(".problem-section"))
-    .filter((s) => !s.closest(".more-practice"));
+  const problems = activeCoreProblems();
   let completedCount = 0;
 
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
-    
+
     if (type === "multiple-choice") {
       const selected = section.querySelector("input[type='radio']:checked");
       if (selected) hasValue = true;
@@ -4323,10 +4489,10 @@ function updateProgress() {
       const txt = section.querySelector(".open-response-textarea");
       if (txt && txt.value.trim() !== "") hasValue = true;
     }
-    
+
     if (hasValue) completedCount++;
   });
-  
+
   const total = problems.length;
   const pct = total > 0 ? (completedCount / total) * 100 : 0;
   document.getElementById("progress_bar").style.width = pct + "%";
@@ -4379,6 +4545,13 @@ function pickLangText(en, es) {
 }
 
 
+function translateProblemOptions() {
+  const es = document.body.classList.contains("lang-mode-es");
+  document.querySelectorAll("option[data-text-en]").forEach(option => { option.textContent = es ? option.dataset.textEs : option.dataset.textEn; });
+}
+new MutationObserver(translateProblemOptions).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+document.addEventListener("DOMContentLoaded", translateProblemOptions);
+
 // Speech Rate & Big Idea Narration
 let vocabSpeechRate = 0.9;
 function toggleVocabSpeed() {
@@ -4406,6 +4579,7 @@ function speakBigIdea(textEn, textEs) {
     window.speechSynthesis.speak(utter);
   } catch (e) {}
 }
+window.speakHomeworkText = speakBigIdea;
 
 // Math Talk Prompt Spinner
 const mathTalkList = [
@@ -4479,6 +4653,26 @@ function filterVocabCards(filter, btn) {
 }
 
 // In-Page Workbench Tools
+function openTogetherWorkbench(tool) {
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("together");
+  const drawer = document.querySelector(".workbench-drawer");
+  if (!drawer) return;
+  if (drawer) {
+    drawer.open = true;
+    drawer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  const lessonTool = tool || drawer.dataset.workbenchTool || "";
+  if (lessonTool && typeof switchWorkbenchTool === "function") {
+    switchWorkbenchTool(lessonTool);
+  }
+}
+
+function workbenchActionButton(labelEn, labelEs) {
+  if (!document.querySelector(".workbench-drawer")) return "";
+  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
+    '🧮 <span class="lang-en">' + labelEn + '</span><span class="lang-es" lang="es">' + labelEs + '</span></button>';
+}
+
 function switchWorkbenchTool(tool) {
   document.querySelectorAll(".wb-tool-tab").forEach(t => t.classList.remove("is-active"));
   document.querySelectorAll(".wb-panel").forEach(p => p.hidden = true);
@@ -4512,6 +4706,23 @@ function clearFractionBars() {
   stage.innerHTML = '<div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>';
 }
 
+function loadFractionComparison(type) {
+  const stage = document.getElementById("fraction_stage_canvas");
+  if (!stage) return;
+  clearFractionBars();
+  if (type === "half") {
+    addFractionBar(2);
+    addFractionBar(4);
+  } else if (type === "third") {
+    addFractionBar(3);
+    addFractionBar(6);
+  } else if (type === "threefourths") {
+    addFractionBar(4);
+    addFractionBar(8);
+  }
+  if (typeof playMatchSound === "function") playMatchSound();
+}
+
 function drawCoordGrid() {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg || svg.dataset.drawn) return;
@@ -4528,6 +4739,27 @@ function drawCoordGrid() {
   svg.innerHTML = content;
 }
 
+function plotCoordPoint(x, y) {
+  drawCoordGrid();
+  const dot = document.getElementById("coord_plot_dot");
+  if (dot) {
+    dot.setAttribute("cx", x * 20);
+    dot.setAttribute("cy", -y * 20);
+  }
+  let quad = "Axes";
+  let quadEs = "Ejes";
+  if (x > 0 && y > 0) { quad = "Quadrant I (+, +)"; quadEs = "Cuadrante I (+, +)"; }
+  else if (x < 0 && y > 0) { quad = "Quadrant II (−, +)"; quadEs = "Cuadrante II (−, +)"; }
+  else if (x < 0 && y < 0) { quad = "Quadrant III (−, −)"; quadEs = "Cuadrante III (−, −)"; }
+  else if (x > 0 && y < 0) { quad = "Quadrant IV (+, −)"; quadEs = "Cuadrante IV (+, −)"; }
+  else if (x === 0 && y === 0) { quad = "Origin (0, 0)"; quadEs = "Origen (0, 0)"; }
+  const readout = document.getElementById("coord_readout");
+  if (readout) {
+    readout.innerHTML = "(x: " + x + ", y: " + y + ') — <span class="lang-en">' + quad + '</span><span class="lang-es" lang="es">' + quadEs + "</span>";
+  }
+  if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
 function clickCoordGrid(e) {
   const svg = document.getElementById("interactive_coord_svg");
   if (!svg) return;
@@ -4538,20 +4770,43 @@ function clickCoordGrid(e) {
   const gridY = Math.round(-(((rawY / rect.height) * 240 - 120) / 20));
   const clampedX = Math.max(-5, Math.min(5, gridX));
   const clampedY = Math.max(-5, Math.min(5, gridY));
-  const dot = document.getElementById("coord_plot_dot");
-  if (dot) {
-    dot.setAttribute("cx", clampedX * 20);
-    dot.setAttribute("cy", -clampedY * 20);
-  }
-  let quad = "Axes / Ejes";
-  if (clampedX > 0 && clampedY > 0) quad = "Quadrant I (+, +)";
-  else if (clampedX < 0 && clampedY > 0) quad = "Quadrant II (−, +)";
-  else if (clampedX < 0 && clampedY < 0) quad = "Quadrant III (−, −)";
-  else if (clampedX > 0 && clampedY < 0) quad = "Quadrant IV (+, −)";
-  else if (clampedX === 0 && clampedY === 0) quad = "Origin (0, 0)";
-  const readout = document.getElementById("coord_readout");
-  if (readout) readout.textContent = "(x: " + clampedX + ", y: " + clampedY + ") — " + quad;
+  plotCoordPoint(clampedX, clampedY);
+}
+
+function loadRatioPreset(a, b, f) {
+  const slA = document.getElementById("tape_slider_a");
+  const slB = document.getElementById("tape_slider_b");
+  const slF = document.getElementById("tape_slider_factor");
+  if (slA) slA.value = a;
+  if (slB) slB.value = b;
+  if (slF) slF.value = f;
+  updateTapeDiagram();
   if (typeof playTabSwitchSound === "function") playTabSwitchSound();
+}
+
+function loadDecimalPreset(topStr, botStr) {
+  const table = document.querySelector(".dec-grid-table tbody");
+  if (!table) return;
+  const rows = table.querySelectorAll("tr");
+  if (rows.length < 2) return;
+
+  function populateRow(row, valStr) {
+    const inputs = row.querySelectorAll("input.dg-cell");
+    inputs.forEach(inp => inp.value = "");
+    const parts = String(valStr).split(".");
+    const whole = parts[0] || "";
+    const frac = parts[1] || "";
+    if (whole.length >= 1) inputs[2].value = whole[whole.length - 1];
+    if (whole.length >= 2) inputs[1].value = whole[whole.length - 2];
+    if (whole.length >= 3) inputs[0].value = whole[whole.length - 3];
+    if (frac.length >= 1) inputs[3].value = frac[0];
+    if (frac.length >= 2) inputs[4].value = frac[1];
+    if (frac.length >= 3) inputs[5].value = frac[2];
+  }
+
+  populateRow(rows[0], topStr);
+  populateRow(rows[1], botStr);
+  if (typeof playMatchSound === "function") playMatchSound();
 }
 
 function updateTapeDiagram() {
@@ -4619,17 +4874,24 @@ function checkProblem(idx, options) {
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       let choiceFeedback = [];
+      let choiceFeedbackEs = [];
       try {
         choiceFeedback = JSON.parse(container.dataset.choiceFeedback || "[]");
+        choiceFeedbackEs = JSON.parse(container.dataset.choiceFeedbackEs || "[]");
       } catch (e) {
         choiceFeedback = [];
+        choiceFeedbackEs = [];
       }
-      
+
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
       labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
-      
+
       let selectedFeedback = "";
+      // A miss only counts as an attempt once an answer is actually chosen —
+      // tapping Check on an empty question is not a try, and must not burn the
+      // one coaching turn the student gets.
+      let firstMiss = false;
       if (!selected) {
         isProblemCorrect = false;
       } else {
@@ -4640,43 +4902,116 @@ function checkProblem(idx, options) {
           if (correctLabel) correctLabel.classList.add("is-correct");
         } else {
           isProblemCorrect = false;
+          problemAttempts[idx] = (problemAttempts[idx] || 0) + 1;
+          firstMiss = !revealIsDue(idx);
           // Highlight selected label as incorrect
           const incorrectLabel = document.getElementById("label_q_" + idx + "_" + val);
           if (incorrectLabel) incorrectLabel.classList.add("is-incorrect");
-          // Highlight correct label as correct
-          const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
-          if (correctLabel) correctLabel.classList.add("is-correct");
-          selectedFeedback = choiceFeedback[val] || "";
+          // Show where the answer IS only once coaching has had its turn.
+          if (!firstMiss) {
+            const correctLabel = document.getElementById("label_q_" + idx + "_" + correctIdx);
+            if (correctLabel) correctLabel.classList.add("is-correct");
+          }
+          const fbEn = choiceFeedback[val] || "";
+          const fbEs = choiceFeedbackEs[val] || "";
+          selectedFeedback = pickLangText(fbEn, fbEs);
         }
       }
-      
+
       // Append visual explanation if checked
       if (selected) {
         const expDiv = document.createElement("div");
         expDiv.className = "visual-explanation-card explanation-box";
-        let html = '<div class="exp-header"><span>' + (isProblemCorrect ? '✅ Solved! How to understand it / Por qué funciona' : '🔍 Walkthrough / Repaso visual') + '</span></div>';
-        if (!isProblemCorrect && selectedFeedback) {
-          html += '<div class="exp-trap"><strong>⚠️ Common Trap / Trampa común:</strong> ' + selectedFeedback + '</div>';
+        if (isProblemCorrect) {
+          let html = '<div class="exp-header"><span>✅ ' + pickLangText("Solved! How to understand it", "¡Resuelto! Por qué funciona") + '</span></div>';
+          if (explanation) {
+            html += '<div class="exp-why"><strong>💡 ' + pickLangText("Key Step:", "Paso clave:") + '</strong> ' + explanation + '</div>';
+          }
+          html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+            pickLangText(
+              'Ask your student: <em>“In your own words, why does this choice make mathematical sense?”</em>',
+              'Pregunta a tu estudiante: <em>“En tus propias palabras, ¿por qué esta opción tiene sentido matemático?”</em>'
+            ) + '</div>';
+          expDiv.innerHTML = html;
+        } else {
+          const attempts = problemAttempts[idx] || 1;
+          const tier = revealForced[idx] ? 3 : Math.min(3, attempts);
+
+          if (tier === 1) {
+            // Tier 1: Clarify & Trap
+            expDiv.classList.add("is-nudge");
+            let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Hint 1 of 3 — Spot the Trap", "Pista 1 de 3 — Identifica la trampa") + '</span></div>';
+            if (selectedFeedback) {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Common Trap:", "Trampa común:") + '</strong> ' + selectedFeedback + '</div>';
+            } else {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Clarify:", "Aclaración:") + '</strong> ' +
+                pickLangText("Check what quantity the question asks for and look at your units carefully.", "Revisa qué cantidad pide la pregunta y observa las unidades con atención.") + '</div>';
+            }
+            html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+              pickLangText(
+                'Ask your student: <em>“What is this problem asking you to find or compare?”</em> Then try another choice.',
+                'Pregunta a tu estudiante: <em>“¿Qué te pide hallar o comparar este problema?”</em> Luego intenta otra opción.'
+              ) + '</div>';
+            html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
+              workbenchActionButton("Try with tonight's tool", "Probar con la herramienta de hoy") + '</div>';
+            expDiv.innerHTML = html;
+          } else if (tier === 2) {
+            // Tier 2: Strategy Clue & Model
+            expDiv.classList.add("is-nudge");
+            let html = '<div class="exp-header"><span>💡 ' + pickLangText("Hint 2 of 3 — Strategy & Math Clue", "Pista 2 de 3 — Estrategia y pista matemática") + '</span></div>';
+            if (selectedFeedback) {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Remember:", "Recuerda:") + '</strong> ' + selectedFeedback + '</div>';
+            }
+            html += '<div class="exp-why"><strong>🎯 ' + pickLangText("Strategy Clue:", "Pista de estrategia:") + '</strong> ' +
+              pickLangText(
+                'Look at the relationship between the quantities. Can you write a fraction or divide Top ÷ Bottom to test the numbers?',
+                'Observa la relación entre las cantidades. ¿Puedes escribir una fracción o dividir Arriba ÷ Abajo para probar los números?'
+              ) + '</div>';
+            html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+              pickLangText(
+                'Ask: <em>“Which number goes on top, and which goes on bottom?”</em> or use the Math Tools workbench below.',
+                'Pregunta: <em>“¿Qué número va arriba y cuál va abajo?”</em> o usa las herramientas de matemáticas abajo.'
+              ) + '</div>';
+            html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
+              workbenchActionButton("Open tonight's tool", "Abrir la herramienta de hoy") + '</div>';
+            expDiv.innerHTML = html;
+          } else {
+            // Tier 3: Full Step-by-Step Walkthrough
+            let html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step-by-Step Walkthrough", "Pista 3 de 3 — Repaso visual paso a paso") + '</span></div>';
+            if (selectedFeedback) {
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Trap to avoid:", "Trampa a evitar:") + '</strong> ' + selectedFeedback + '</div>';
+            }
+            if (explanation) {
+              html += '<div class="exp-why"><strong>💡 ' + pickLangText("Key Step & Solution:", "Paso clave y solución:") + '</strong> ' + explanation + '</div>';
+            }
+            html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+              pickLangText(
+                'Ask your student: <em>“In your own words, how does the highlighted green answer solve the problem?”</em>',
+                'Pregunta a tu estudiante: <em>“En tus propias palabras, ¿cómo la respuesta verde destacada resuelve el problema?”</em>'
+              ) + '</div>';
+            const workbenchButton = workbenchActionButton("Model with tonight's tool", "Modelar con la herramienta de hoy");
+            if (workbenchButton) html += '<div class="exp-tool" style="margin-top:8px;">' + workbenchButton + '</div>';
+            expDiv.innerHTML = html;
+          }
         }
-        if (explanation) {
-          html += '<div class="exp-why"><strong>💡 Key Step:</strong> ' + explanation + '</div>';
-        }
-        html += '<div class="exp-coach"><strong>💬 Parent Coach Tip:</strong> Ask your student: <em>“In your own words, why does the highlighted green choice fit best?”</em></div>';
-        expDiv.innerHTML = html;
         container.appendChild(expDiv);
       }
-      
+
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");
-      
+
       rows.forEach(row => {
         const select = row.querySelector(".matching-select");
         const correct = row.dataset.correct;
         const feedbackBadge = row.querySelector(".feedback-badge");
-        
+
         select.classList.remove("is-correct", "is-incorrect");
         feedbackBadge.className = "feedback-badge";
-        
+
         if (select.value === "") {
           isProblemCorrect = false;
           select.classList.add("is-incorrect");
@@ -4690,7 +5025,7 @@ function checkProblem(idx, options) {
           feedbackBadge.classList.add("error-cross");
         }
       });
-      
+
     } else if (type === "drag-sort") {
       if (section.dataset.problemSubtype === "drag-order") {
         const workspace = section.querySelector(".drag-order-workspace");
@@ -4737,21 +5072,27 @@ function checkProblem(idx, options) {
 
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
-      
+
       inputs.forEach(input => {
+        input.parentElement.querySelector(".table-sample")?.remove();
+        if (input.dataset.selfReview === "true" && input.value.trim()) {
+          const sample = document.createElement("p"); sample.className = "table-sample";
+          sample.textContent = pickLangText("Compare your response with this example: ", "Compara tu respuesta con este ejemplo: ") + pickLangText(input.dataset.correct, input.dataset.correctEs);
+          input.parentElement.append(sample);
+        }
         input.classList.remove("is-correct", "is-incorrect");
         const wrapper = input.parentElement;
         const feedbackBadge = wrapper.querySelector(".feedback-badge");
         feedbackBadge.className = "feedback-badge";
-        
+
         const correctVal = input.dataset.correct;
         const studentVal = input.value;
-        
+
         if (studentVal.trim() === "") {
           isProblemCorrect = false;
           input.classList.add("is-incorrect");
           feedbackBadge.classList.add("error-cross");
-        } else if (NTAnswerMatch.isRight(studentVal, correctVal)) {
+        } else if (input.dataset.selfReview === "true" || NTAnswerMatch.isRight(studentVal, correctVal) || (input.dataset.correctEs && NTAnswerMatch.isRight(studentVal, input.dataset.correctEs))) {
           input.classList.add("is-correct");
           feedbackBadge.classList.add("success-check");
         } else {
@@ -4760,32 +5101,32 @@ function checkProblem(idx, options) {
           feedbackBadge.classList.add("error-cross");
         }
       });
-      
+
     } else if (type === "error-analysis") {
       const select = section.querySelector(".error-step-select");
       const textarea = section.querySelector(".error-explain-textarea");
       const revealBox = section.querySelector(".reveal-box");
-      
+
       // Clean select and textarea validation states
       select.classList.remove("is-correct", "is-incorrect");
       textarea.classList.remove("is-correct", "is-incorrect");
-      
+
       const selectBadge = select.parentElement.querySelector(".feedback-badge");
       const textareaBadge = textarea.parentElement.querySelector(".feedback-badge");
       selectBadge.className = "feedback-badge";
       textareaBadge.className = "feedback-badge";
-      
+
       const correctStep = select.dataset.correct;
-      
+
       // Highlight worked steps inside paper clipboard based on selection
       const workedSteps = section.querySelectorAll(".worked-step");
       workedSteps.forEach(s => s.classList.remove("highlighted"));
-      
+
       if (select.value !== "") {
         const stepElement = document.getElementById("step_q_" + idx + "_" + select.value);
         if (stepElement) stepElement.classList.add("highlighted");
       }
-      
+
       // Check step selection
       if (select.value === correctStep) {
         select.classList.add("is-correct");
@@ -4795,7 +5136,7 @@ function checkProblem(idx, options) {
         select.classList.add("is-incorrect");
         selectBadge.classList.add("error-cross");
       }
-      
+
       // Check written explanation
       if (textarea.value.trim().length >= 15) {
         textarea.classList.add("is-correct");
@@ -4805,53 +5146,41 @@ function checkProblem(idx, options) {
         textarea.classList.add("is-incorrect");
         textareaBadge.classList.add("error-cross");
       }
-      
+
       // Show correct work reference for reinforcement
       if (revealBox) {
         revealBox.style.display = "block";
       }
-      
+
     } else if (type === "open-response") {
       const textarea = section.querySelector(".open-response-textarea");
       textarea.classList.remove("is-correct", "is-incorrect");
       const badge = textarea.parentElement.querySelector(".feedback-badge");
       badge.className = "feedback-badge";
-      
+
       const minLen = parseInt(textarea.dataset.minLength) || 15;
       const text = textarea.value.trim();
-      
-      let keywordsList = [];
-      try {
-        keywordsList = JSON.parse(textarea.dataset.keywords || "[]");
-      } catch (e) {}
-      
-      // Validate length and keywords
+
+      // A vocabulary match cannot assess the reasoning or the language a
+      // student chooses. Record a substantial response for self-review.
       const hasLength = text.length >= minLen;
-      const matchedKeywords = keywordsList.filter(kw => text.toLowerCase().includes(kw.toLowerCase()));
-      
-      // If keywords list exists, require at least one keyword for green-check self-grading
-      const hasKeywords = keywordsList.length === 0 || matchedKeywords.length > 0;
-      
-      if (hasLength && hasKeywords) {
+      if (hasLength) {
         textarea.classList.add("is-correct");
         badge.classList.add("success-check");
       } else {
         isProblemCorrect = false;
         textarea.classList.add("is-incorrect");
         badge.classList.add("error-cross");
-        
+
         // Add helpful dynamic guidance if they failed checking
-        let msg = "Write a bit more explanation to explain your reasoning.";
-        if (keywordsList.length > 0 && matchedKeywords.length === 0) {
-          msg = "Try adding key vocabulary terms like: " + keywordsList.slice(0, 3).join(", ") + " to strengthen your response.";
-        }
-        
+        const msg = pickLangText("Write a bit more to explain your reasoning.", "Escribe un poco más para explicar tu razonamiento.");
+
         const expDiv = document.createElement("div");
         expDiv.className = "explanation-box";
         expDiv.style.backgroundColor = "var(--error-bg)";
         expDiv.style.borderColor = "var(--error)";
         expDiv.style.color = "var(--error)";
-        expDiv.innerHTML = "<strong>Hint:</strong> " + msg;
+        expDiv.textContent = pickLangText("Hint: ", "Pista: ") + msg;
         textarea.parentElement.parentElement.appendChild(expDiv);
         feedbackMessage = msg;
       }
@@ -4863,11 +5192,19 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = "✓ Correct! Nice work — see the explanation above.";
+        feedbackMessage = pickLangText("✓ Correct! Read the explanation above.", "✓ ¡Correcto! Lee la explicación de arriba.");
       } else if (!section.querySelector("input[type='radio']:checked")) {
-        feedbackMessage = "Choose an answer, then check again.";
+        feedbackMessage = pickLangText("Choose an answer, then check again.", "Elige una respuesta y revisa otra vez.");
+      } else if (!revealIsDue(idx)) {
+        const att = problemAttempts[idx] || 1;
+        feedbackMessage = att === 1
+          ? pickLangText("Not quite — check Hint 1 above and give it another shot!", "Todavía no: lee la Pista 1 arriba e inténtalo de nuevo.")
+          : pickLangText("Still tricky — review Hint 2 above and test with Math Tools.", "Casi: revisa la Pista 2 arriba y prueba con las herramientas.");
       } else {
-        feedbackMessage = "Not quite — the correct choice is highlighted in green. Review the visual walkthrough above!";
+        feedbackMessage = pickLangText(
+          "Review complete — the correct choice is highlighted in green. Review the visual walkthrough above!",
+          "Repaso completo: la opción correcta está resaltada en verde. ¡Revisa la solución paso a paso arriba!"
+        );
       }
     } else if (type === "matching-game") {
       const rows = section.querySelectorAll(".matching-row");
@@ -4876,36 +5213,36 @@ function checkProblem(idx, options) {
         return sel && sel.value === row.dataset.correct;
       }).length;
       feedbackMessage = isProblemCorrect
-        ? "All " + rows.length + " matches are correct!"
-        : right + " of " + rows.length + " matches correct. Fix the red dropdowns and check again.";
+        ? pickLangText("All " + rows.length + " matches are correct!", "¡Las " + rows.length + " parejas son correctas!")
+        : pickLangText(right + " of " + rows.length + " matches correct. Fix the red dropdowns and check again.", right + " de " + rows.length + " parejas correctas. Revisa los menús rojos e intenta otra vez.");
     } else if (type === "drag-sort") {
       if (section.dataset.problemSubtype === "drag-order") {
         const rows = section.querySelectorAll(".drag-order-row");
         const right = Array.from(rows).filter((r) => r.classList.contains("is-correct")).length;
         feedbackMessage = isProblemCorrect
-          ? "Perfect order! Every step is in the right sequence."
-          : right + " of " + rows.length + " steps in the right spot. Use ▲ ▼ to rearrange.";
+          ? pickLangText("Every step is in the right sequence!", "¡Todos los pasos están en el orden correcto!")
+          : pickLangText(right + " of " + rows.length + " steps in the right spot. Use ▲ ▼ to rearrange.", right + " de " + rows.length + " pasos en el lugar correcto. Usa ▲ ▼ para reordenar.");
       } else {
         const cards = section.querySelectorAll(".drag-card");
         const right = Array.from(cards).filter((c) => c.classList.contains("is-correct")).length;
         feedbackMessage = isProblemCorrect
-          ? "Every card is sorted into the correct column!"
-          : right + " of " + cards.length + " cards in the right place. Move the highlighted cards.";
+          ? pickLangText("Every card is sorted into the correct column!", "¡Todas las tarjetas están en la columna correcta!")
+          : pickLangText(right + " of " + cards.length + " cards in the right place. Move the highlighted cards.", right + " de " + cards.length + " tarjetas en el lugar correcto. Mueve las tarjetas resaltadas.");
       }
     } else if (type === "fill-table") {
       const inputs = section.querySelectorAll(".table-input");
       const right = Array.from(inputs).filter((i) => i.classList.contains("is-correct")).length;
       feedbackMessage = isProblemCorrect
-        ? "Table complete — all answers look good!"
-        : right + " of " + inputs.length + " cells correct. Check the red boxes.";
+        ? (section.querySelector('[data-self-review="true"]') ? pickLangText("Responses recorded. Compare your explanations with the examples; other valid explanations are possible.", "Respuestas guardadas. Compara tus explicaciones con los ejemplos; hay otras explicaciones válidas.") : pickLangText("Table complete — checked answers are correct!", "Tabla completa: las respuestas comprobadas son correctas."))
+        : pickLangText(right + " of " + inputs.length + " cells checked. Revisit the red boxes.", right + " de " + inputs.length + " casillas revisadas. Revisa las casillas rojas.");
     } else if (type === "error-analysis") {
       feedbackMessage = isProblemCorrect
-        ? "Great detective work! You found the error and explained it."
-        : "Check the step you selected and write a fuller explanation (at least 15 characters).";
+        ? pickLangText("You found the error and wrote an explanation. Compare it with the reference.", "Encontraste el error y escribiste una explicación. Compárala con la referencia.")
+        : pickLangText("Check the step you selected and write a fuller explanation (at least 15 characters).", "Revisa el paso elegido y escribe una explicación más completa (al menos 15 caracteres).");
     } else if (type === "open-response") {
       feedbackMessage = isProblemCorrect
-        ? "Strong explanation! You included enough detail and vocabulary."
-        : feedbackMessage || "Add more detail or key vocabulary, then check again.";
+        ? pickLangText("Response recorded. Read it back and check that it explains your reasoning.", "Respuesta guardada. Léela y comprueba que explique tu razonamiento.")
+        : pickLangText(feedbackMessage || "Add more detail or key vocabulary, then check again.", "Agrega más detalles o vocabulario y revisa otra vez.");
     }
   }
 
@@ -4945,8 +5282,7 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = Array.from(document.querySelectorAll(".problem-section"))
-    .filter((s) => !s.closest(".more-practice"));
+  const problems = activeCoreProblems();
   const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
   const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
@@ -4958,7 +5294,7 @@ function updateScoreSummary() {
   }
 
   // Goal milestone — the number the page states, not a hardcoded 3.
-  if (correctCount >= (window.HW_CORE_COUNT || total)) {
+  if (correctCount >= activeHomeworkGoal()) {
     const goalBanner = document.getElementById("goal_reached_banner");
     if (goalBanner && goalBanner.hidden) {
       goalBanner.hidden = false;
@@ -4971,22 +5307,21 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = Array.from(document.querySelectorAll(".problem-section"));
+  const problems = activeCoreProblems();
   let correctCount = 0;
 
   problems.forEach((section) => {
     const idx = parseInt((section.id || "").replace("problem_", ""), 10);
     if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    // Only core (non-optional) problems count toward the worksheet score.
-    if (result.correct && !section.closest(".more-practice")) correctCount++;
+    if (result.correct) correctCount++;
   });
 
-  const total = problems.filter((s) => !s.closest(".more-practice")).length;
+  const total = problems.length;
   document.getElementById("progress_text").textContent = correctCount + " / " + total;
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 
-  if (correctCount >= (window.HW_CORE_COUNT || total)) {
+  if (correctCount >= activeHomeworkGoal()) {
     const goalBanner = document.getElementById("goal_reached_banner");
     if (goalBanner && goalBanner.hidden) {
       goalBanner.hidden = false;
@@ -5005,36 +5340,36 @@ function checkWorksheet() {
 function resetWorksheet() {
   if (confirm("Are you sure you want to reset all your work?")) {
     localStorage.removeItem(STORAGE_KEY);
-    
+
     // Clear normal text inputs, textareas, dropdowns, and radios
     const textareas = document.querySelectorAll("textarea");
     textareas.forEach(t => {
       t.value = "";
       t.classList.remove("is-correct", "is-incorrect");
     });
-    
+
     const inputs = document.querySelectorAll("input[type='text']");
     inputs.forEach(i => {
       i.value = "";
       i.classList.remove("is-correct", "is-incorrect");
     });
-    
+
     const selects = document.querySelectorAll("select:not(.mobile-cat-select)");
     selects.forEach(s => {
       s.value = "";
       s.classList.remove("is-correct", "is-incorrect");
     });
-    
+
     const radios = document.querySelectorAll("input[type='radio']");
     radios.forEach(r => r.checked = false);
-    
+
     const labels = document.querySelectorAll(".mc-option-label");
     labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
-    
+
     // Clear feedback badges and sections
     const badges = document.querySelectorAll(".feedback-badge");
     badges.forEach(b => b.className = "feedback-badge");
-    
+
     const sections = document.querySelectorAll(".problem-section");
     document.querySelectorAll(".problem-check-result").forEach((el) => {
       el.textContent = "";
@@ -5045,13 +5380,13 @@ function resetWorksheet() {
       s.classList.remove("correct", "incorrect");
       const expBoxes = s.querySelectorAll(".explanation-box");
       expBoxes.forEach(b => b.remove());
-      
+
       const workedSteps = s.querySelectorAll(".worked-step");
       workedSteps.forEach(ws => ws.classList.remove("highlighted"));
-      
+
       const reveal = s.querySelector(".reveal-box");
       if (reveal) reveal.style.display = "none";
-      
+
       const type = s.dataset.problemType;
       if (type === "drag-sort") {
         const parts = s.id.split("_");
@@ -5064,11 +5399,11 @@ function resetWorksheet() {
         }
       }
     });
-    
+
     // Save blank state
     saveState();
     updateProgress();
-    
+
     // Play a reset click sound
     if (soundEnabled) {
       try {
@@ -5125,29 +5460,51 @@ var NeftGraph = (function () {
     return b;
   }
 
+  function graphNumberInput(container, label, value) {
+    var wrap = document.createElement("label");
+    wrap.innerHTML = label + " ";
+    var input = document.createElement("input");
+    input.type = "number"; input.step = "any"; input.value = value;
+    input.style.width = "6em"; input.style.minHeight = "44px";
+    wrap.appendChild(input); container.appendChild(wrap);
+    return input;
+  }
+  function graphHit(node, label, action) {
+    node.setAttribute("role", "button"); node.setAttribute("tabindex", "0");
+    node.setAttribute("aria-label", label);
+    node.addEventListener("click", action);
+    node.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); action(); }
+    });
+  }
+
   // ----- Number line: tap a tick to set the boundary, toggle open/closed, shade a ray -----
   function initNumberLine(frame) {
     var MIN = -5, MAX = 5, x0 = 24, x1 = 320, y = 46;
     var stepX = (x1 - x0) / (MAX - MIN);
     var state = readState(frame) || { v: null, closed: true, dir: null };
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive number line" });
-    var rayLayer = el("g"), pointLayer = el("g");
+    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive number line" });
+    var tickLayer = el("g"), rayLayer = el("g"), pointLayer = el("g");
+    svg.appendChild(tickLayer);
     svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "#12355b", "stroke-width": 2 }));
     svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "#12355b" }));
     svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "#12355b" }));
     function xFor(v) { return x0 + (v - MIN) * stepX; }
-    for (var v = MIN; v <= MAX; v++) {
-      var x = xFor(v);
-      svg.appendChild(el("line", { x1: x, y1: y - 6, x2: x, y2: y + 6, stroke: "#12355b", "stroke-width": 1.5 }));
-      var lbl = el("text", { x: x, y: y + 22, "text-anchor": "middle", "class": "ng-tick-lbl" });
-      lbl.textContent = String(v);
-      svg.appendChild(lbl);
-      (function (val, cx) {
-        var hit = el("rect", { x: cx - stepX / 2, y: 6, width: stepX, height: 60, "class": "ng-hit" });
-        hit.addEventListener("click", function () { state.v = val; render(); });
-        svg.appendChild(hit);
-      })(v, x);
+    function drawTicks() {
+      tickLayer.replaceChildren();
+      var tickStep = Math.max(1, Math.ceil(MAX / 5));
+      for (var v = MIN; v <= MAX; v += tickStep) {
+        var x = xFor(v);
+        tickLayer.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"#12355b" }));
+        var lbl = el("text", { x:x, y:y+22, "text-anchor":"middle", "class":"ng-tick-lbl" });
+        lbl.textContent = String(v); tickLayer.appendChild(lbl);
+        (function(val, cx) {
+          var hit = el("rect", { x:cx-stepX*tickStep/2, y:6, width:stepX*tickStep, height:60, "class":"ng-hit" });
+          graphHit(hit, "Plot / Marcar " + val, function() { state.v=val; render(); });
+          tickLayer.appendChild(hit);
+        })(v,x);
+      }
     }
     svg.appendChild(rayLayer);
     svg.appendChild(pointLayer);
@@ -5155,12 +5512,22 @@ var NeftGraph = (function () {
 
     var controls = frame.querySelector("[data-graph-controls]");
     controls.innerHTML = "";
+    var boundary = graphNumberInput(controls, bi("Boundary", "Límite"), state.v ?? "");
+    boundary.addEventListener("change", function() {
+      if (boundary.value === "") { state.v = null; render(); return; }
+      var value = Number(boundary.value);
+      if (Number.isFinite(value)) { state.v = value; render(); }
+    });
     var bCircle = makeBtn("", function () { state.closed = !state.closed; render(); });
     var bLeft = makeBtn(bi("◀ Shade left", "◀ Sombrear izq."), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
     var bRight = makeBtn(bi("Shade right ▶", "Sombrear der. ▶"), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
     controls.appendChild(bCircle); controls.appendChild(bLeft); controls.appendChild(bRight);
 
     function render() {
+      MAX = Math.max(5, Math.ceil(Math.abs(state.v || 0) / 5) * 5);
+      MIN = -MAX; stepX = (x1-x0)/(MAX-MIN);
+      boundary.value = state.v ?? "";
+      drawTicks();
       while (rayLayer.firstChild) rayLayer.removeChild(rayLayer.firstChild);
       while (pointLayer.firstChild) pointLayer.removeChild(pointLayer.firstChild);
       bCircle.innerHTML = state.closed ? bi("● Closed", "● Cerrado") : bi("○ Open", "○ Abierto");
@@ -5195,7 +5562,7 @@ var NeftGraph = (function () {
     var MIN = -5, MAX = 5, O = 120, STEP = 20; // origin at (120,120); 5*20=100 -> 20..220
     var state = readState(frame) || { pts: [] };
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive coordinate plane" });
+    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive coordinate plane" });
     function sx(x) { return O + x * STEP; }
     function sy(yv) { return O - yv * STEP; }
     for (var i = MIN; i <= MAX; i++) {
@@ -5206,19 +5573,47 @@ var NeftGraph = (function () {
     svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
     var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
     var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
-    var plotLayer = el("g");
-    for (var gx = MIN; gx <= MAX; gx++) {
-      for (var gy = MIN; gy <= MAX; gy++) {
-        (function (px, py) {
-          var hit = el("circle", { cx: sx(px), cy: sy(py), r: 9, "class": "ng-hit" });
-          hit.addEventListener("click", function () { toggle(px, py); });
-          svg.appendChild(hit);
-        })(gx, gy);
-      }
-    }
+    var plotLayer = el("g"), hitLayer = el("g");
+    svg.appendChild(hitLayer);
     svg.appendChild(plotLayer);
     oldSvg.parentNode.replaceChild(svg, oldSvg);
 
+    var controls = frame.querySelector("[data-graph-controls]");
+    var xInput = graphNumberInput(controls, "x", 0);
+    var yInput = graphNumberInput(controls, "y", 0);
+    controls.appendChild(makeBtn(bi("Plot / remove point", "Marcar / quitar punto"), function() {
+      if (xInput.value === "" || yInput.value === "") return;
+      var x = Number(xInput.value), y = Number(yInput.value);
+      if (Number.isFinite(x) && Number.isFinite(y)) toggle(x,y);
+    }));
+    function drawGrid() {
+      MAX = Math.max(5, ...state.pts.flat().map(function(v) { return Math.ceil(Math.abs(v)/5)*5; }));
+      MIN = -MAX; STEP = 100/MAX;
+      // Remove the old fixed grid and labels, keeping the plot and hit layers.
+      Array.from(svg.children).forEach(function(child) {
+        if (child !== plotLayer && child !== hitLayer) child.remove();
+      });
+      hitLayer.replaceChildren();
+      var tickStep = Math.max(1, Math.ceil(MAX/5));
+      for (var i=MIN; i<=MAX; i+=tickStep) {
+        var shade = i === 0 ? "#12355b" : "#d6e2ee";
+        svg.insertBefore(el("line", {x1:sx(i),y1:sy(MAX),x2:sx(i),y2:sy(MIN),stroke:shade}), hitLayer);
+        svg.insertBefore(el("line", {x1:sx(MIN),y1:sy(i),x2:sx(MAX),y2:sy(i),stroke:shade}), hitLayer);
+        var label = el("text", {x:sx(i), y:O+14, "class":"ng-tick-lbl", "text-anchor":"middle"});
+        label.textContent = i; svg.insertBefore(label,hitLayer);
+        if (i) {
+          var yLabel = el("text", {x:O+4,y:sy(i)-3,"class":"ng-tick-lbl"});
+          yLabel.textContent=i; svg.insertBefore(yLabel,hitLayer);
+        }
+        for (var j=MIN; j<=MAX; j+=tickStep) {
+          (function(x,y) {
+            var hit = el("circle", {cx:sx(x),cy:sy(y),r:8,"class":"ng-hit"});
+            graphHit(hit,"Plot / Marcar ("+x+", "+y+")",function(){toggle(x,y);});
+            hitLayer.appendChild(hit);
+          })(i,j);
+        }
+      }
+    }
     function toggle(x, y) {
       var idx = -1;
       for (var i = 0; i < state.pts.length; i++) { if (state.pts[i][0] === x && state.pts[i][1] === y) { idx = i; break; } }
@@ -5226,6 +5621,7 @@ var NeftGraph = (function () {
       render();
     }
     function render() {
+      drawGrid();
       while (plotLayer.firstChild) plotLayer.removeChild(plotLayer.firstChild);
       var parts = [];
       for (var i = 0; i < state.pts.length; i++) {
@@ -5251,7 +5647,7 @@ var NeftGraph = (function () {
     var state = readState(frame) || { cells: [] };
     var on = {}; for (var i = 0; i < state.cells.length; i++) on[state.cells[i]] = true;
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "img", "aria-label": "Interactive grid" });
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "group", "aria-label": "Interactive grid" });
     svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "#ffffff", stroke: "#12355b", "stroke-width": 1.5 }));
     var cellLayer = el("g");
     svg.appendChild(cellLayer);
@@ -5262,7 +5658,7 @@ var NeftGraph = (function () {
         (function (row, col) {
           var key = row + "," + col;
           var rect = el("rect", { x: PAD + col * CELL, y: PAD + row * CELL, width: CELL, height: CELL, "class": "ng-cell" + (on[key] ? " is-on" : "") });
-          rect.addEventListener("click", function () {
+          graphHit(rect, "Square / Cuadro " + (row+1) + ", " + (col+1), function () {
             if (on[key]) { delete on[key]; rect.setAttribute("class", "ng-cell"); }
             else { on[key] = true; rect.setAttribute("class", "ng-cell is-on"); }
             commit();
@@ -5332,6 +5728,7 @@ window.onload = function() {
   document.querySelectorAll(".drag-card").forEach((card) => {
     card.addEventListener("click", function(e) {
       if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
+      e.stopPropagation();
       if (selectedDragCard === this) {
         this.style.borderColor = "var(--line)";
         selectedDragCard = null;
@@ -5344,10 +5741,12 @@ window.onload = function() {
   });
 
   document.querySelectorAll(".drag-column, .drag-source-pile, .drag-column-slots").forEach((zone) => {
-    zone.addEventListener("click", function() {
+    zone.addEventListener("click", function(e) {
       if (!selectedDragCard) return;
+      if (e.target.closest('.drag-card')) return;
       const probIdx = selectedDragCard.id.split("_")[1];
-      if (!selectedDragCard.id.startsWith("card_" + probIdx + "_")) return;
+      if (this.closest('.drag-sort-workspace') !== selectedDragCard.closest('.drag-sort-workspace')) return;
+      e.stopPropagation();
 
       let targetContainer = null;
       let categoryId = "";
@@ -5390,8 +5789,8 @@ window.onload = function() {
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>
   <!-- canvas-bridge-injected:end -->
-<!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
+<!-- mwb-injected:begin (lesson-matched tools only — family homework opt-out) -->
+  <!-- The family page embeds only the manipulative selected for this lesson. -->
   <!-- mwb-injected:end -->
 </body>
 </html>
@@ -5449,6 +5848,8 @@ function localizeBilingualLabels(html) {
     /(<span class="fam-game-badge">)([^<]*)(<\/span>)/g,
     /(<span class="help-frame-tag">)([^<]*)(<\/span>)/g,
     /(<span class="practice-tier-label">)([^<]*)(<\/span>)/g,
+    /(<div class="powerup-badge-star"[^>]*>)([^<]*)(<\/div>)/g,
+    /(<div class="hw-game-score"[^>]*>)([^<]*)(<\/div>)/g,
   ];
   let out = html;
   for (const re of rules) {
@@ -5474,7 +5875,7 @@ function main() {
   for (const { id, config } of lessons) {
     const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
-    const normalizedHtml = `${homeworkHtml.replace(/^ {12}$/gm, "").trimEnd()}\n`;
+    const normalizedHtml = `${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`;
     // --check: report drift, write nothing. This page does NOT run in
     // `npm run build`, so it rots whenever a config field it renders is added
     // later — which is exactly how 18 pages ended up missing the vocabulary

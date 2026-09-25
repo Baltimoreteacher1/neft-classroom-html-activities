@@ -17,7 +17,7 @@
 import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ANSWER_MATCH_JS } from "../scripts/homework-answer-match.mjs";
+import { CORE_ANSWER_MATCH_JS as ANSWER_MATCH_JS } from "../scripts/homework-answer-match.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = resolve(ROOT, "shared/study-pack");

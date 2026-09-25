@@ -364,6 +364,41 @@ export const COPY_FIELDS = Object.freeze([
     en: "Use your school's family channel to ask a question or share what your student noticed.",
     es: "Use el canal familiar de su escuela para preguntar o compartir lo que notó su estudiante.",
   },
+  {
+    key: "historyEyebrow",
+    group: "History",
+    label: "History Eyebrow",
+    en: "On this device",
+    es: "En este dispositivo",
+  },
+  {
+    key: "historyTitle",
+    group: "History",
+    label: "History Title",
+    en: "Our Family Practice Progress",
+    es: "Progreso de práctica familiar",
+  },
+  {
+    key: "historyLessons",
+    group: "History",
+    label: "Lessons Count",
+    en: "Lessons Reviewed",
+    es: "Lecciones revisadas",
+  },
+  {
+    key: "historyStreak",
+    group: "History",
+    label: "Nights Streak",
+    en: "Nights Streak",
+    es: "Noches de racha",
+  },
+  {
+    key: "historyVocab",
+    group: "History",
+    label: "Words in Review",
+    en: "Words in Review",
+    es: "Palabras en repaso",
+  },
 ]);
 
 export const COPY_KEYS = Object.freeze(COPY_FIELDS.map((field) => field.key));

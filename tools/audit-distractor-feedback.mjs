@@ -9,8 +9,6 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-
 import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 const argv = process.argv.slice(2);
@@ -55,7 +53,7 @@ export function auditItem({ item, correct }) {
   if (fb.length !== item.choices.length)
     problems.push(`length ${fb.length} != ${item.choices.length} choices`);
   const seen = new Map();
-  item.choices.forEach((choice, i) => {
+  item.choices.forEach((_choice, i) => {
     const text = String(fb[i] ?? "").trim();
     if (i === correct) {
       if (text) problems.push(`slot ${i} is the correct choice but carries feedback`);

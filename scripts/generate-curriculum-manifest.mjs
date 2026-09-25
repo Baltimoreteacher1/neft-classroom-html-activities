@@ -21,6 +21,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const lessonsDir = join(root, "lessons");
 const dataDir = join(root, "data");
+const familyTitlesEs = JSON.parse(
+  readFileSync(join(dataDir, "family-homework-titles-es.json"), "utf8"),
+);
 
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -83,6 +86,15 @@ function resourcesFor(id) {
       file: `lessons/${id}/worksheet-2.html`,
       applicable: true,
     },
+    /* Level 0 — the most-supported form: the START HERE page plus the first
+       four Version A problems with every authored hint printed as steps. Its
+       own sheet so the packet everyone else prints stays short. Core lessons
+       with an approaching pool have one; presence is the file on disk. */
+    worksheetLevel0: {
+      path: `/lessons/${id}/worksheet-level-0.html`,
+      file: `lessons/${id}/worksheet-level-0.html`,
+      applicable: true,
+    },
     /* The printable MSTAR-style practice worksheet (generate-mstar-worksheets.mjs)
        — the per-lesson rehearsal of the state test's question formats. Same
        rule as worksheet/worksheet2: a sheet the manifest does not name is a
@@ -140,6 +152,17 @@ function resourcesFor(id) {
       inline: true,
     },
   };
+
+  /* The tabbed Get Ready pre-lesson (scripts/readiness/generate-readiness.mjs).
+     64 of 84 lessons ship one; the hub used to link every lesson to it and
+     served 24 dead links. Listed only when it exists so the hub can ask. */
+  if (present(`lessons/${id}/readiness/index.html`)) {
+    res.readiness = {
+      path: `/lessons/${id}/readiness/`,
+      file: `lessons/${id}/readiness/index.html`,
+      applicable: true,
+    };
+  }
 
   if (present(`lessons/${id}/bundle/interactive.html`)) {
     res.studentPractice = {
@@ -239,6 +262,7 @@ function buildEntry(id, cfg) {
     unit,
     lesson,
     title: cfg.title || id,
+    titleEs: familyTitlesEs[id] || cfg.titleEs || "",
     flagship: id.endsWith("-flagship"),
     standard: standard || "Needs Review",
     topic: cfg.theme || "",

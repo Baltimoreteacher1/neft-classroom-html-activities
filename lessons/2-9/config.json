@@ -76,7 +76,7 @@
     {
       "phase": "explore",
       "question": "To find the MAD for Player A (18, 22, 20, 24, 16, mean 20), why do we take the ABSOLUTE VALUE of each deviation before averaging?",
-      "kernel": "Absolute value makes every distance from the mean positive so they don't cancel out.",
+      "kernel": "Absolute value makes each deviation a nonnegative distance, including zero, so signed deviations do not cancel out.",
       "stems": [
         {
           "en": "We use absolute value so the deviations are all ___.",
@@ -94,7 +94,7 @@
         "spread",
         "mean"
       ],
-      "listenFor": "A strong answer explains deviations above and below the mean would cancel to zero, so absolute value keeps each as a positive distance.",
+      "listenFor": "A strong answer explains that signed deviations above and below the mean cancel to zero; absolute value keeps their nonnegative distances, including zero.",
       "extend": "Compute and justify: find the MAD of 18, 22, 20, 24, 16. Show the deviations, take absolute values, and average them.",
       "extendStems": [
         "The absolute deviations are ___, which sum to ___.",
@@ -122,7 +122,7 @@
         "consistent",
         "mean"
       ],
-      "listenFor": "Students pick Keeper A and explain a smaller MAD (0.67) means goals allowed stay close to the mean, so performance is more reliable.",
+      "listenFor": "Students pick Keeper A and explain that a smaller MAD means a smaller average distance from the mean in these games.",
       "extend": "Critique: when might a coach actually prefer the LESS consistent keeper (higher MAD)? Defend with a scenario.",
       "extendStems": [
         "A coach might prefer the higher-MAD keeper when ___.",
@@ -160,7 +160,7 @@
     {
       "phase": "practice",
       "question": "During practice on Mean Absolute Deviation, what strategy did you use when a problem felt tricky?",
-      "kernel": "MAD = the average of how far each number is from the mean (always a positive distance).",
+      "kernel": "MAD = the average of how far each number is from the mean (a nonnegative distance, including zero).",
       "stems": [
         {
           "en": "We use absolute value so the deviations are all ___.",
@@ -233,7 +233,7 @@
       "definition": "How far a number is from zero. It is never negative.",
       "definitionEs": "Qué tan lejos está un número de cero. Nunca es negativo.",
       "visual": "|−3| = 3 and |3| = 3 — both are 3 units from zero",
-      "cloze": "The distance of a number from zero, always positive, is its ___.",
+      "cloze": "The distance of a number from zero, never negative (zero is allowed), is its ___.",
       "examples": [
         {
           "text": "The absolute value of −4 is 4",
@@ -306,6 +306,46 @@
           "why": "Nothing varies, so there is no spread to describe."
         }
       ]
+    },
+    {
+      "term": "Mean",
+      "termEs": "Media",
+      "definition": "The total shared equally among all the values.",
+      "definitionEs": "El total repartido en partes iguales entre todos los valores.",
+      "visual": "Add the values, then divide by how many there are.",
+      "cloze": "The total shared equally among all the values is the ___.",
+      "examples": [
+        {
+          "text": "6, for the values 1, 3, 8, 8, 10",
+          "isExample": true,
+          "why": "1 + 3 + 8 + 8 + 10 = 30 and 30 ÷ 5 = 6."
+        },
+        {
+          "text": "8, for the values 1, 3, 8, 8, 10",
+          "isExample": false,
+          "why": "8 is the most common value, not the total shared equally."
+        }
+      ]
+    },
+    {
+      "term": "Variation",
+      "termEs": "Variación",
+      "definition": "How much the values in a data set differ from one another.",
+      "definitionEs": "Cuánto difieren entre sí los valores de un conjunto de datos.",
+      "visual": "A larger MAD means more variation.",
+      "cloze": "How much the values differ from one another is the ___.",
+      "examples": [
+        {
+          "text": "Temperatures of 62, 68, 77, 83, 92 in one week",
+          "isExample": true,
+          "why": "The values are far apart, so there is a lot of variation."
+        },
+        {
+          "text": "Temperatures of 78, 79, 80, 80, 81 in one week",
+          "isExample": false,
+          "why": "The values are close together, so there is little variation."
+        }
+      ]
     }
   ],
   "launch": {
@@ -348,13 +388,13 @@
         "lines": [
           "My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.",
           "Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.",
-          "Then I take the absolute value of each (the distance, always positive): 3, 1, 1, 3.",
+          "Then I take the absolute value of each (the distance, never negative (zero is allowed)): 3, 1, 1, 3.",
           "Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points."
         ],
         "linesEs": [
           "Mi conjunto de datos: 6, 8, 10, 12. Primero hallo la media: 6 + 8 + 10 + 12 = 36, luego 36 ÷ 4 = 9. La media es 9.",
           "Luego hallo cada desviación (valor − media): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.",
-          "Después tomo el valor absoluto de cada una (la distancia, siempre positiva): 3, 1, 1, 3.",
+          "Después tomo el valor absoluto de cada una (la distancia, nunca negativa (puede ser cero)): 3, 1, 1, 3.",
           "Por último promedio esas distancias: 3 + 1 + 1 + 3 = 8, luego 8 ÷ 4 = 2. Así que la desviación media absoluta = 2 puntos."
         ],
         "titleEs": "Mírame"
@@ -596,7 +636,7 @@
           "You cannot tell consistency from MAD"
         ],
         "correctIndex": 2,
-        "explanation": "A smaller MAD means the scores hug the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent.",
+        "explanation": "A smaller MAD means a smaller average distance from the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent in these data.",
         "choiceFeedback": [
           "Bigger MAD means scores spread wider, not closer to average.",
           "Scores would vary more with a bigger MAD, not less.",
@@ -604,16 +644,16 @@
           "MAD directly tells you how spread out the data is."
         ],
         "stemEs": "Dos tiradores promedian 11 puntos por partido. La MAD del tirador A es de 2 puntos y la del tirador B es de 6 puntos. ¿Qué tirador es MÁS consistente?",
-        "explanationEs": "Una MAD menor significa que los puntajes se mantienen cerca de la media. La MAD de 2 del tirador A es menor que la de 6 del tirador B, así que el tirador A es más consistente.",
+        "explanationEs": "Una MAD menor significa una menor distancia promedio a la media. La MAD de 2 del tirador A es menor que la de 6 del tirador B, así que el tirador A es más consistente en estos datos.",
         "hints": [
-          "MAD measures spread — how far the scores usually land from the average.",
+          "MAD measures spread: the average distance of the scores from their mean.",
           "Both shooters have the same mean, so the mean cannot settle this. Compare the MAD values instead.",
-          "A MAD of 2 means scores usually sit about 2 points away from 11, while a MAD of 6 means they wander about 6 points away. Decide which of those describes scores that stay close to the average."
+          "A MAD of 2 means the average distance of the scores from 11 is 2 points; a MAD of 6 means that average distance is 6 points. Compare these average distances to decide which shooter was more consistent."
         ],
         "hintsEs": [
-          "La MAD mide la dispersión: qué tan lejos suelen quedar los puntajes del promedio.",
+          "La MAD mide la dispersión: la distancia promedio de los puntajes a su media.",
           "Ambos tiradores tienen la misma media, así que la media no puede decidir esto. Compara los valores de la MAD.",
-          "Una MAD de 2 significa que los puntajes suelen quedar a unos 2 puntos de 11, mientras que una MAD de 6 significa que se alejan unos 6 puntos. Decide cuál de esas describe puntajes que se mantienen cerca del promedio."
+          "Una MAD de 2 significa que la distancia promedio de los puntajes a 11 es de 2 puntos; una MAD de 6 significa que esa distancia promedio es de 6 puntos. Compara estas distancias promedio para decidir qué tirador fue más consistente."
         ],
         "choicesEs": [
           "Tirador B, porque una DMA más grande significa un promedio más grande",
@@ -655,12 +695,12 @@
         "explanation": "Find each player's mean, then average the distances. Bench (8, 10, 12, 14) has a mean of 11 and distances 3, 1, 1, 3, so MAD = 8 ÷ 4 = 2 points. Rookie (4, 4, 4, 4) has a mean of 4 and every distance is 0, so MAD = 0 points. Starter (5, 15, 5, 15) has a mean of 10 and every distance is 5, so MAD = 5 points — the widest swing of the three.",
         "explanationEs": "Encuentra la media de cada jugador y luego promedia las distancias. Bench (8, 10, 12, 14) tiene media 11 y distancias 3, 1, 1, 3, así que MAD = 8 ÷ 4 = 2 puntos. Rookie (4, 4, 4, 4) tiene media 4 y todas las distancias son 0, así que MAD = 0 puntos. Starter (5, 15, 5, 15) tiene media 10 y todas las distancias son 5, así que MAD = 5 puntos, la variación más amplia de las tres.",
         "hints": [
-          "MAD measures how far a player's points typically land from that player's own mean, so each data set needs its own mean before anything else.",
+          "MAD measures the average distance of a player's scores from that player's own mean, so first find the mean of each data set.",
           "For each player: add the four values and divide by 4 to get the mean, find the distance from the mean for each value, then average those distances.",
           "Start with Rookie: 4, 4, 4, 4 all equal the mean of 4, so ask what the average distance must be when no value ever moves away from it."
         ],
         "hintsEs": [
-          "El MAD mide qué tan lejos suelen quedar los puntos de un jugador respecto a su propia media, así que cada conjunto de datos necesita su propia media antes que nada.",
+          "El MAD mide la distancia promedio de los puntajes de un jugador a su propia media, así que primero halla la media de cada conjunto de datos.",
           "Para cada jugador: suma los cuatro valores y divide entre 4 para obtener la media, halla la distancia de cada valor a la media y luego promedia esas distancias.",
           "Empieza con Rookie: 4, 4, 4, 4 son todos iguales a la media de 4, así que pregúntate cuál debe ser la distancia promedio cuando ningún valor se aleja de ella."
         ],
@@ -782,21 +822,27 @@
         "explanation": "Deviation = 11 − 15 = −4. Absolute deviation = |−4| = 4.",
         "choiceFeedback": [
           "",
-          "Absolute deviation is always positive—take the absolute value of 11 − 15.",
-          "Absolute means positive—what's |11 − 15|?",
-          "The deviation is negative; absolute deviation is the positive version."
+          "Absolute deviation is never negative (zero is allowed)—take the absolute value of 11 − 15.",
+          "Absolute value measures distance and can be zero. What is |11 − 15|?",
+          "Find the distance between 11 and 15: |11 − 15|. The sum 26 does not measure that distance."
         ],
         "hints": [
-          "Absolute deviation asks: how FAR is the value 11 from the mean of 15? A distance is always a positive number.",
+          "Absolute deviation asks: how FAR is the value 11 from the mean of 15? A distance is never negative; zero is allowed.",
           "Subtract: value − mean gives the deviation. Then take the absolute value (drop any negative sign) to get the absolute deviation.",
           "Step 1: set up 11 − 15 (the result will be negative). Step 2 is turning that result into a positive distance."
         ],
         "stemEs": "La media de un conjunto de datos es 15. Uno de los valores es 11. ¿Cuál es la desviación absoluta de ese valor respecto a la media?",
         "explanationEs": "Desviación = 11 − 15 = −4. Desviación absoluta = |−4| = 4.",
         "hintsEs": [
-          "La desviación absoluta pregunta: ¿qué tan LEJOS está el valor 11 de la media de 15? Una distancia siempre es un número positivo.",
+          "La desviación absoluta pregunta: ¿qué tan LEJOS está el valor 11 de la media de 15? Una distancia nunca es negativa; puede ser cero.",
           "Resta: valor − media da la desviación. Luego toma el valor absoluto (quita el signo negativo) para obtener la desviación absoluta.",
           "Paso 1: plantea 11 − 15 (el resultado será negativo). El paso 2 es convertir ese resultado en una distancia positiva."
+        ],
+        "choiceFeedbackEs": [
+          "",
+          "La desviación absoluta nunca es negativa; puede ser cero. Toma el valor absoluto de 11 − 15.",
+          "El valor absoluto mide distancia y puede ser cero. ¿Cuánto es |11 − 15|?",
+          "Halla la distancia entre 11 y 15: |11 − 15|. La suma 26 no mide esa distancia."
         ]
       },
       {
@@ -854,8 +900,8 @@
         "explanation": "Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6.",
         "choiceFeedback": [
           "",
-          "Absolute deviation is positive—what's |26 − 20|?",
-          "Absolute means take the positive version—what's |26 − 20|?",
+          "Absolute deviation is never negative; zero is allowed. What is |26 − 20|?",
+          "Absolute deviation is the distance from the mean, not the original value. What is |26 − 20|?",
           "The deviation is positive; absolute value doesn't change it here."
         ],
         "hints": [
@@ -869,6 +915,12 @@
           "La misma destreza de antes: la desviación absoluta es la distancia entre el valor 26 y la media 20.",
           "Calcula valor − media y luego toma el valor absoluto. Si la diferencia ya es positiva, el valor absoluto la deja igual.",
           "Paso 1: plantea 26 − 20. Paso 2: revisa el signo; una diferencia positiva ya es una distancia, así que casi terminas."
+        ],
+        "choiceFeedbackEs": [
+          "",
+          "La desviación absoluta nunca es negativa; puede ser cero. ¿Cuánto es |26 − 20|?",
+          "La desviación absoluta es la distancia a la media, no el valor original. ¿Cuánto es |26 − 20|?",
+          "La desviación es positiva; el valor absoluto no la cambia aquí."
         ]
       },
       {
@@ -1171,7 +1223,7 @@
           "Neither — MAD doesn't matter for relay races"
         ],
         "correctIndex": 2,
-        "explanation": "Runner A's MAD of 1.2 means times are usually within 1.2 seconds of 60. Runner B's times vary more widely. For reliability, pick Runner A.",
+        "explanation": "Runner A's MAD of 1.2 seconds means the average distance of the recorded times from the 60-second mean is 1.2 seconds. Runner B has a larger average distance from the same mean, so A was more consistent in these data. MAD does not guarantee how many times fall within 1.2 seconds of the mean.",
         "choiceFeedback": [
           "Bigger MAD means times vary more, not faster potential.",
           "Same average doesn't tell you consistency—MAD does.",
@@ -1181,10 +1233,10 @@
         "hints": [
           "'Reliable' is the key word — the coach wants times that barely change from race to race, not just a good average.",
           "Both runners average 60 seconds, so the average can't decide this. MAD tells you how much each runner's times swing around 60.",
-          "First step: read each MAD as a sentence — a MAD of 1.2 means times usually stay within about 1.2 seconds of 60. Do the same for 5.8, then decide."
+          "Read each MAD as an average distance: for Runner A, the recorded times are an average of 1.2 seconds away from the mean of 60 seconds. Compare that with 5.8 seconds for Runner B."
         ],
         "stemEs": "Dos corredores tienen el mismo tiempo promedio de 60 segundos. La MAD del corredor A es de 1.2 segundos y la del corredor B es de 5.8 segundos. ¿Qué corredor es más probable que el entrenador elija para una carrera de relevos que necesita un tiempo confiable?",
-        "explanationEs": "La MAD de 1.2 del corredor A significa que sus tiempos suelen estar dentro de 1.2 segundos de 60. Los tiempos del corredor B varían mucho más. Para tener confiabilidad, se elige al corredor A.",
+        "explanationEs": "La DAM del corredor A, de 1.2 segundos, indica que la distancia promedio de sus tiempos a la media de 60 segundos es 1.2 segundos. El corredor B tiene una distancia promedio mayor a la misma media, así que A fue más constante en estos datos. La DAM no garantiza cuántos tiempos están a menos de 1.2 segundos de la media.",
         "choicesEs": [
           "Corredor B — una DMA mayor significa más potencial de velocidad",
           "Cualquiera — tienen el mismo promedio",
@@ -1194,7 +1246,7 @@
         "hintsEs": [
           "'Confiable' es la palabra clave: el entrenador quiere tiempos que casi no cambien de carrera a carrera, no solo un buen promedio.",
           "Ambos corredores promedian 60 segundos, así que el promedio no puede decidir. La DMA te dice cuánto oscilan los tiempos de cada uno alrededor de 60.",
-          "Primer paso: lee cada DMA como una oración: una DMA de 1.2 significa que los tiempos suelen quedarse a unos 1.2 segundos de 60. Haz lo mismo con 5.8 y decide."
+          "Lee cada DMA como una distancia promedio: para el corredor A, los tiempos registrados están a una distancia promedio de 1.2 segundos de la media de 60 segundos. Compara esa distancia con los 5.8 segundos del corredor B."
         ],
         "misconceptionTags": [
           "stat-center-vs-spread",
@@ -1307,8 +1359,8 @@
           "For each team: find how far each of the 5 scores is from 75 (drop negative signs), add those five distances, then divide by 5. That's the MAD.",
           "Team A first: the distances from 75 are |73−75|, |76−75|, |74−75|, |77−75|, |75−75|. Add them, divide by 5, then repeat for Team B."
         ],
-        "explanation": "Both teams average 75, so the mean cannot tell them apart — the MAD can. Team A's distances from 75 are 2, 1, 1, 2, 0, which total 6, so its MAD is 6 ÷ 5 = 1.2. Team B's distances are 15, 15, 10, 10, 0, which total 50, so its MAD is 50 ÷ 5 = 10. A coach who needs predictable scoring would choose Team A, because a MAD of 1.2 means its scores stay within about a point or two of 75 every game.",
-        "explanationEs": "Los dos equipos promedian 75, así que la media no los distingue: el MAD sí. Las distancias del equipo A respecto a 75 son 2, 1, 1, 2, 0, que suman 6, así que su MAD es 6 ÷ 5 = 1.2. Las distancias del equipo B son 15, 15, 10, 10, 0, que suman 50, así que su MAD es 50 ÷ 5 = 10. Un entrenador que necesita anotación predecible elegiría al equipo A, porque un MAD de 1.2 significa que sus puntajes se mantienen a uno o dos puntos de 75 en cada partido.",
+        "explanation": "Both teams average 75, so compare their MADs. Team A's distances from 75 are 2, 1, 1, 2, 0, totaling 6, so its MAD is 6 ÷ 5 = 1.2 points. Team B's distances are 15, 15, 10, 10, 0, totaling 50, so its MAD is 50 ÷ 5 = 10 points. A coach seeking consistency would prefer Team A because its recorded scores have the smaller average distance from 75. MAD describes an average distance, not a maximum distance for every game.",
+        "explanationEs": "Ambos equipos promedian 75, así que compara sus MAD. Las distancias del equipo A a 75 son 2, 1, 1, 2, 0, que suman 6; su MAD es 6 ÷ 5 = 1.2 puntos. Las distancias del equipo B son 15, 15, 10, 10, 0, que suman 50; su MAD es 50 ÷ 5 = 10 puntos. Un entrenador que busca consistencia preferiría al equipo A porque sus puntajes registrados tienen la menor distancia promedio a 75. La MAD describe una distancia promedio, no una distancia máxima para cada partido.",
         "promptEs": "Dos equipos de baloncesto promedian 75 puntos por partido. Últimos 5 puntajes del equipo A: 73, 76, 74, 77, 75. Últimos 5 puntajes del equipo B: 60, 90, 65, 85, 75. Calcula la DMA de cada equipo y explica cuál preferiría un entrenador que necesita anotación predecible.",
         "hintsEs": [
           "Ambos equipos promedian exactamente 75 puntos, así que la media no puede separarlos: lo hará la dispersión (DMA).",
@@ -1352,7 +1404,7 @@
         "explanationEs": "Los tornillos que deben medir exactamente 5 cm y los autobuses que deben llegar a tiempo dependen de que los resultados se mantengan cerca del objetivo, así que lo que quieres es un MAD bajo; uno grande significaría tornillos inservibles o autobuses poco confiables. El programa de concursos es lo contrario: su objetivo es la variedad en los valores de puntos, así que ahí un MAD alto sí conviene.",
         "labelEs": "Clasifica cada situación según si conviene una variabilidad baja o alta.",
         "hintsEs": [
-          "Una DMA BAJA significa que los valores se quedan cerca de la media: útil cuando necesitas consistencia.",
+          "Una DMA BAJA significa que los valores tienen una menor distancia promedio a la media: útil cuando necesitas consistencia.",
           "Una DMA ALTA significa que los valores están dispersos: útil cuando la variedad o la dispersión es la meta."
         ]
       }
@@ -1363,7 +1415,7 @@
       "intro": "Step into the coach's office and use mean absolute deviation (MAD) to scout which players keep their stats closest to their average.",
       "stepLabel": "Step"
     },
-    "commonMistake": "A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean."
+    "commonMistake": "A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a nonnegative distance, including zero: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean."
   },
   "connect": {
     "diagram": {
@@ -1470,9 +1522,9 @@
           "Keeper B, because a larger MAD means more skill"
         ],
         "answer": 2,
-        "explanation": "The means are identical, so the tiebreaker is spread. Keeper A's MAD of 0.67 means most games land near 1.67 goals. Keeper B swings from shutouts to 4-goal games — riskier when one bad game ends the season.",
+        "explanation": "The means are identical, so compare spread. Keeper A's MAD of about 0.67 goals is the average distance from the mean of about 1.67 goals. Keeper B's MAD is about 1.33 goals, a larger average distance. A coach seeking consistent results would prefer Keeper A based on these data.",
         "stemEs": "¿Qué portero debe poner de titular el entrenador, y por qué?",
-        "explanationEs": "Las medias son idénticas, así que el desempate es la dispersión. La desviación media absoluta de 0.67 del portero A significa que la mayoría de los partidos caen cerca de 1.67 goles. El portero B oscila de dejar el arco en cero a partidos de 4 goles — más riesgoso cuando un mal partido acaba la temporada.",
+        "explanationEs": "Las medias son iguales, así que compara la dispersión. La desviación media absoluta del portero A, de unos 0.67 goles, es la distancia promedio a la media de unos 1.67 goles. La del portero B es de unos 1.33 goles, una distancia promedio mayor. Un entrenador que busca resultados consistentes preferiría al portero A según estos datos.",
         "choicesEs": [
           "El portero B, porque dos partidos con el arco en cero es lo mejor",
           "Cualquiera de los dos, porque las medias son iguales",
@@ -1513,11 +1565,11 @@
       ],
       null
     ],
-    "modelAnswer": "Both keepers have a mean of about 1.67 goals allowed. The difference is spread: Keeper A's MAD is about 0.67, so their games stay close to that average, while Keeper B's MAD is about 1.33 — twice as variable, swinging between shutouts and 4-goal games. The coach should start Keeper A, because consistency is more reliable when one bad game ends the season.",
+    "modelAnswer": "Both keepers have a mean of about 1.67 goals allowed. Keeper A's MAD is about 0.67 goals, the average distance of the recorded results from that mean. Keeper B's MAD is about 1.33 goals, roughly twice that average distance. A coach seeking consistent results would start Keeper A based on these data.",
     "promptEs": "Los dos porteros tienen una media de ___. La desviación media absoluta del portero A es ___, lo que significa ___. La del portero B es ___, lo que significa ___. El entrenador debe escoger ___ porque ___.",
     "scenarioEs": "Dos porteros de fútbol registran los goles permitidos por partido en 6 partidos. Portero A: 1, 2, 1, 3, 2, 1 (media = 1.67, desviación media absoluta ≈ 0.67). Portero B: 0, 4, 1, 3, 0, 2 (media = 1.67, desviación media absoluta ≈ 1.33). El entrenador necesita escoger un titular para el partido del campeonato.",
     "promptQuestionEs": "Los dos porteros permiten el mismo promedio de goles. ¿A cuál debe escoger el entrenador y por qué?",
-    "modelAnswerEs": "Los dos porteros tienen una media de como 1.67 goles permitidos. La diferencia es la dispersión: la desviación media absoluta del portero A es como 0.67, así que sus partidos se quedan cerca de ese promedio, mientras que la del portero B es como 1.33 — el doble de variable, oscilando entre dejar el arco en cero y recibir 4 goles. El entrenador debe empezar con el portero A, porque la consistencia es más confiable cuando un mal partido acaba la temporada.",
+    "modelAnswerEs": "Los dos porteros tienen una media de unos 1.67 goles recibidos. La desviación media absoluta del portero A es de unos 0.67 goles: la distancia promedio de los resultados registrados a esa media. La del portero B es de unos 1.33 goles, aproximadamente el doble de esa distancia promedio. Un entrenador que busca resultados consistentes pondría de titular al portero A según estos datos.",
     "keywordsEs": [
       "1.67",
       "más bajo",

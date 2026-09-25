@@ -6,14 +6,24 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { qrSvg } from "@eduwonderlab/engine/core/qr-mini.js";
+import { DEFAULT_KITCHEN_TABLE } from "../curriculum/family-connections/broadcast/broadcast-content.js";
 import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 import {
   decimalOperation,
   detectVisualTopic,
+  homeworkWorkbenchTool,
+  ratioFocus,
   selectAlignedQuickCheckProblems,
 } from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
-import { renderPlayTab } from "./homework-games.mjs";
+import {
+  exactConceptVisual,
+  exactFamilyMission,
+  exactFamilyPowerUp,
+  exactFamilySupport,
+} from "./homework-family-support.mjs";
+import { buildHomeworkGame, renderPlayTab } from "./homework-games.mjs";
 import {
   plainObjective,
   polishSpanish,
@@ -27,6 +37,9 @@ import { getUnitTheme } from "./homework-themes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
+const familyTitlesEs = JSON.parse(
+  readFileSync(join(_root, "data/family-homework-titles-es.json"), "utf8"),
+);
 
 export function esc(s) {
   return String(s ?? "")
@@ -38,13 +51,30 @@ export function esc(s) {
 }
 export const escAttr = esc;
 
+/**
+ * How each extra session names itself wherever a family reads it.
+ *
+ * `-part2` is the second of the two class days nearly every lesson is taught
+ * over. `-part3` exists for lesson 3-2 alone — the one lesson taught over three
+ * sections — and it is called "Section 3" because that is the word used with
+ * families for it; the hub tile in lessons/3-2-part3/config.json says the same
+ * words, and this map is the one place the two are kept in step.
+ */
+const SESSION_LABELS = { part2: "Part 2", part3: "Section 3" };
+
 // Lesson folder slugs carry internal variant suffixes ("2-1-flagship",
 // "2-1-group1", "2-1-catchup"). Those are build/routing details — families
 // should only ever see the lesson number, so strip the suffix for any
 // human-facing label. The raw id still drives URLs, storage keys, and
 // window.LESSON_ID.
 export function displayLessonId(lessonId) {
-  return String(lessonId ?? "").replace(/-(flagship|group\d+|catchup)$/, "");
+  // `-partN` is NOT a build detail like the others: it is one of the sessions
+  // the lesson is taught over, and a family holding several pages for one
+  // lesson needs to see which night each belongs to. Kept, but said in words —
+  // "Lesson 2-1 · Part 2", never the folder slug "2-1-part2".
+  return String(lessonId ?? "")
+    .replace(/-(flagship|group\d+|catchup)$/, "")
+    .replace(/-(part[23])$/, (_, slug) => ` · ${SESSION_LABELS[slug]}`);
 }
 
 /**
@@ -61,7 +91,13 @@ export function displayLessonId(lessonId) {
  */
 export function homeworkPageLabel(lessonId) {
   const id = String(lessonId ?? "");
-  return /-(practice|catchup|review)$/.test(id) ? "Review" : `Lesson ${displayLessonId(id)}`;
+  if (/-(practice|catchup|review)$/.test(id)) return "Review";
+  // A bridge lesson's Part 2 is still a review: its own title says which
+  // lessons it covers, so naming it "Lesson 6-1-6-2-practice · Part 2" is the
+  // folder slug leaking to a family all over again.
+  const bridgeSession = /-(?:practice|catchup|review)-(part[23])$/.exec(id);
+  if (bridgeSession) return `Review · ${SESSION_LABELS[bridgeSession[1]]}`;
+  return `Lesson ${displayLessonId(id)}`;
 }
 
 function firstTurnAndTalk(config) {
@@ -74,6 +110,8 @@ function conceptIntro(config) {
 }
 
 function keyIdea(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact) return exact.capEn;
   if (config.familyNotes?.bigIdea?.en) return config.familyNotes.bigIdea.en;
   const intro = conceptIntro(config);
   if (intro?.keyIdea) return intro.keyIdea;
@@ -83,6 +121,8 @@ function keyIdea(config) {
 }
 
 function keyIdeaEs(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact) return exact.capEs;
   if (config.familyNotes?.bigIdea?.es) return config.familyNotes.bigIdea.es;
   return spanishKeyIdea(config);
 }
@@ -156,6 +196,8 @@ function _languageTonightEs(config) {
 }
 
 function buildConceptSteps(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact) return exact.steps.map((step, i) => ({ ...step, stepNum: i + 1 }));
   const intro = conceptIntro(config);
   const custom = config.familyNotes?.conceptSteps;
   if (Array.isArray(custom) && custom.length) return custom;
@@ -272,6 +314,15 @@ function togetherStepHints(config, isLast) {
 }
 
 function tryTogetherActivity(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact)
+    return {
+      titleEn: exact.titleEn,
+      titleEs: exact.titleEs,
+      scenarioEn: "Use the small example below, then try the practice questions.",
+      scenarioEs: "Usa el ejemplo de abajo; luego intenta las preguntas de práctica.",
+      steps: exact.steps.map((step) => ({ ...step, hint: exact.capEn, hintEs: exact.capEs })),
+    };
   const custom = config.familyNotes?.tryTogether;
   if (custom) return custom;
 
@@ -349,13 +400,22 @@ function ladderCard(prob) {
     if (!q || !Array.isArray(prob.choices) || !Number.isInteger(prob.correctIndex)) return null;
     const a = prob.choices[prob.correctIndex];
     if (a == null) return null;
+    const qEs = prob.stemEs || prob.questionEs || "";
+    const choicesEs =
+      Array.isArray(prob.choicesEs) && prob.choicesEs.length === prob.choices.length
+        ? prob.choicesEs.map((c) => String(c))
+        : null;
+    const aEs = choicesEs ? choicesEs[prob.correctIndex] : null;
     // Carry the answer choices through so the ladder can render the options the
     // stem refers to ("Which of the following…?"). Without them the family sees
     // a question with no choices and only the reveal — impossible to answer.
     return {
       q,
+      qEs,
       a: String(a),
+      aEs: aEs != null ? String(aEs) : "",
       choices: prob.choices.map((c) => String(c)),
+      choicesEs,
       correctIndex: prob.correctIndex,
     };
   }
@@ -363,7 +423,9 @@ function ladderCard(prob) {
     const q = prob.prompt || prob.question || prob.stem || "";
     if (!q) return null;
     const a = prob.sampleAnswer || prob.answer || prob.exemplar || "";
-    return { q, a: String(a) };
+    const qEs = prob.promptEs || prob.questionEs || prob.stemEs || "";
+    const aEs = prob.sampleAnswerEs || prob.answerEs || prob.exemplarEs || "";
+    return { q, qEs, a: String(a), aEs: String(aEs) };
   }
   return null;
 }
@@ -403,6 +465,17 @@ export function buildTogetherLadder(config = {}) {
 }
 
 function stuckTips(config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact)
+    return {
+      say: [{ en: exact.capEn, es: exact.capEs }, ...exact.steps.slice(0, 2)],
+      dontSay: [
+        {
+          en: "Use a rule before checking what this question asks.",
+          es: "Usa una regla sin revisar qué pide esta pregunta.",
+        },
+      ],
+    };
   const custom = config.familyNotes?.stuckTips;
   if (custom) return custom;
 
@@ -805,6 +878,60 @@ function conceptCard(x, y, w, h, extra = "") {
   return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" ${extra}/>`;
 }
 
+/**
+ * One pack card for the 3-2 unit-rate comparison, worked in four LABELLED
+ * steps inside its own boxes.
+ *
+ * The old card jumped from "$3.00 for 5 pencils" straight to "$0.60 per
+ * pencil" with a single "$3.00 / 5 pencils =" line between them. The division
+ * that produces the unit rate — and which number is the cost and which is the
+ * amount — was left implicit, which is exactly the step a family at the
+ * kitchen table needs to see. Each step is now its own box, the fraction is
+ * written with its numerator and denominator named, and the denominator
+ * division is shown before the 1 is dropped.
+ */
+function unitRatePack({ x, y, name, badgeFill, cost, count, noun, rate, best }) {
+  const cx = x + 16;
+  const w = 244;
+  const money = (n) => `$${n.toFixed(2)}`;
+  const box = (by, bh, fill = "#f8fafc", stroke = "#cbd5e1") =>
+    `<rect x="${cx}" y="${by}" width="${w}" height="${bh}" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+  const step = (by, n, label) =>
+    `<text x="${cx + 10}" y="${by + 18}" font-size="12" font-weight="800" fill="#0f766e">STEP ${n} · ${label}</text>`;
+
+  const fracX = cx + 62;
+  return `
+        ${conceptCard(x, y, 276, 392)}
+        <rect x="${cx}" y="${y + 14}" width="90" height="24" rx="6" fill="${badgeFill}"/>
+        <text x="${cx + 45}" y="${y + 31}" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">${name}</text>
+        <text x="${cx}" y="${y + 62}" font-size="18" font-weight="800" fill="#12355b">${money(cost)} for ${count} ${noun}s</text>
+
+        ${box(y + 76, 82)}
+        ${step(y + 76, 1, "Rate as a fraction")}
+        <text x="${fracX}" y="${y + 114}" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">${money(cost)}</text>
+        <line x1="${cx + 18}" y1="${y + 122}" x2="${cx + 106}" y2="${y + 122}" stroke="#12355b" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 144}" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">${count} ${noun}s</text>
+        <text x="${cx + 116}" y="${y + 114}" font-size="11" font-weight="700" fill="#5f6f80">← cost (top)</text>
+        <text x="${cx + 116}" y="${y + 144}" font-size="11" font-weight="700" fill="#5f6f80">← units (bottom)</text>
+
+        ${box(y + 164, 82)}
+        ${step(y + 164, 2, "Divide both by " + count)}
+        <text x="${fracX}" y="${y + 202}" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">${money(cost)} ÷ ${count}</text>
+        <line x1="${cx + 18}" y1="${y + 210}" x2="${cx + 106}" y2="${y + 210}" stroke="#0f766e" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 232}" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">${count} ÷ ${count}</text>
+        <text x="${cx + 116}" y="${y + 218}" font-size="11" font-weight="700" fill="#0f766e">divide both</text>
+
+        ${box(y + 252, 92, best ? "#dcfce7" : "#f1f5f9", best ? "#16a34a" : "#94a3b8")}
+        ${step(y + 252, 3, "Unit rate: fraction over 1")}
+        <text x="${fracX}" y="${y + 290}" text-anchor="middle" font-size="17" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">${money(rate)}</text>
+        <line x1="${cx + 18}" y1="${y + 298}" x2="${cx + 106}" y2="${y + 298}" stroke="${best ? "#15803d" : "#12355b"}" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 318}" text-anchor="middle" font-size="16" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">1 ${noun}</text>
+        <text x="${cx + 116}" y="${y + 306}" font-size="13" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">= ${money(rate)}/${noun}</text>
+
+        <rect x="${cx}" y="${y + 352}" width="${w}" height="26" rx="8" fill="${best ? "#dcfce7" : "#f1f5f9"}" stroke="${best ? "#16a34a" : "#94a3b8"}" stroke-width="1.5"/>
+        <text x="${cx + w / 2}" y="${y + 370}" text-anchor="middle" font-size="13" font-weight="800" fill="${best ? "#15803d" : "#64748b"}">${best ? "★ LOWER unit rate = BETTER BUY!" : "Higher cost for 1"}</text>`;
+}
+
 /** One numbered "do this" row inside a visual. */
 function conceptRow(y, n, text, color = "#12355b") {
   return `${conceptCard(34, y, 572, 62)}
@@ -814,7 +941,707 @@ function conceptRow(y, n, text, color = "#12355b") {
 }
 
 function conceptVisual(config) {
+  const exact = exactConceptVisual(config || {});
+  if (exact) return exact;
   const topic = detectVisualTopic(config);
+  const lessonId = String(config.lessonId || config.id || "").replace(/^lesson-/, "");
+  const baseLesson = lessonId.replace(/-(?:part\d|group\d|catchup)$/, "");
+
+  if (baseLesson === "1-practice") {
+    const tapeCells = [0, 1, 2, 3, 4, 5]
+      .map((i) => {
+        const cx = 74 + i * 82;
+        const isWhole = i < 4;
+        const fill = isWhole
+          ? i % 2 === 0
+            ? "#e0f2fe"
+            : "#ffffff"
+          : i % 2 === 0
+            ? "#fef3c7"
+            : "#ffffff";
+        const stroke = isWhole ? "#0284c7" : "#d97706";
+        const textFill = isWhole ? "#0369a1" : "#b45309";
+        const numBg = isWhole ? "#0284c7" : "#d97706";
+        return `
+          <rect x="${cx}" y="120" width="82" height="38" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+          <text x="${cx + 41}" y="144" text-anchor="middle" font-size="15" font-weight="800" fill="${textFill}">¼ yd</text>
+          <circle cx="${cx + 41}" cy="176" r="11" fill="${numBg}"/>
+          <text x="${cx + 41}" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">${i + 1}</text>
+          <text x="${cx + 41}" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#5f6f80">Bow ${i + 1}</text>`;
+      })
+      .join("");
+
+    return {
+      svg: conceptFrame({
+        label:
+          "Unit 1 Practice Test: Dividing 1 1/2 yards by 1/4 yard shows 6 bows with a tape diagram and Keep Change Flip",
+        tone: "coral",
+        height: 456,
+        title: "Dividing Fractions: Tape Diagram & Steps / Dividir fracciones: Diagrama y pasos",
+        body: `
+        <!-- Tape Diagram Card -->
+        ${conceptCard(34, 66, 572, 166)}
+        <rect x="52" y="78" width="180" height="22" rx="6" fill="#0f766e"/>
+        <text x="142" y="94" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">TAPE DIAGRAM (STRIP)</text>
+        <text x="250" y="94" font-size="15" font-weight="800" fill="#12355b">Total: 1 ½ yards of ribbon ÷ ¼ yd per bow</text>
+
+        <!-- Brackets above tape -->
+        <line x1="74" y1="112" x2="402" y2="112" stroke="#0284c7" stroke-width="2"/>
+        <text x="238" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="#0284c7">1 Whole Yard (4 fourths)</text>
+        <line x1="402" y1="112" x2="566" y2="112" stroke="#d97706" stroke-width="2"/>
+        <text x="484" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="#d97706">½ Yard (2 fourths)</text>
+
+        <!-- Tape Cells -->
+        ${tapeCells}
+
+        <!-- Tape Summary -->
+        <text x="320" y="218" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">4 fourths + 2 fourths = 6 fourths in all  ➔  6 Whole Bows</text>
+
+        <!-- Check With Numbers Card -->
+        ${conceptCard(34, 244, 278, 196)}
+        <rect x="48" y="256" width="168" height="22" rx="5" fill="#2563eb"/>
+        <text x="132" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">CHECK WITH NUMBERS</text>
+        <text x="50" y="298" font-size="13" font-weight="700" fill="#64748b">1. Mixed to improper fraction:</text>
+        <text x="50" y="320" font-size="17" font-weight="800" fill="#12355b">1 ½  =  3/2</text>
+        <text x="50" y="348" font-size="13" font-weight="700" fill="#64748b">2. Keep · Change · Flip:</text>
+        <text x="50" y="370" font-size="17" font-weight="800" fill="#0f766e">3/2  ×  4/1  =  12/2</text>
+        <text x="50" y="398" font-size="13" font-weight="700" fill="#64748b">3. Divide to simplify:</text>
+        <text x="50" y="422" font-size="19" font-weight="800" fill="#2563eb">12/2  =  6 bows</text>
+
+        <!-- Watch For on the Test Card -->
+        ${conceptCard(328, 244, 278, 196)}
+        <rect x="342" y="256" width="176" height="22" rx="5" fill="#d97706"/>
+        <text x="430" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">WATCH FOR ON THE TEST</text>
+        <circle cx="348" cy="298" r="4" fill="#0f766e"/>
+        <text x="360" y="302" font-size="12" font-weight="700" fill="#12355b">Turn mixed numbers to fractions 1st</text>
+        <circle cx="348" cy="324" r="4" fill="#2563eb"/>
+        <text x="360" y="328" font-size="12" font-weight="700" fill="#12355b">Flip ONLY the 2nd fraction (divisor)</text>
+        <circle cx="348" cy="350" r="4" fill="#d97706"/>
+        <text x="360" y="354" font-size="12" font-weight="800" fill="#b45309">What Leftovers Mean (Q4A &amp; 4B):</text>
+        <rect x="342" y="364" width="250" height="62" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
+        <text x="352" y="385" font-size="12" font-weight="700" fill="#12355b">3 ½ batches = 3 FULL batches.</text>
+        <text x="352" y="405" font-size="12" font-weight="700" fill="#92400e">The ½ is half a batch, not a cup!</text>`,
+      }),
+      capEn:
+        "Dividing by a fraction asks how many small pieces fit inside the total amount. Convert mixed numbers first, then Keep, Change, Flip.",
+      capEs:
+        "Dividir entre una fracción pregunta cuántas partes pequeñas caben en el total. Convierte los números mixtos primero y luego Mantén, Cambia, Voltea.",
+    };
+  }
+
+  if (baseLesson === "3-1") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Ratios: 4 cups of water and 2 cups of lemon juice comparing part to part and part to whole",
+        tone: "teal",
+        height: 410,
+        title: "Understand Ratios / ¿Qué es una razón?",
+        body: `
+        <!-- Part to Part Card -->
+        ${conceptCard(34, 68, 276, 172)}
+        <text x="172" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="#0f766e">PART-TO-PART RATIO</text>
+        <g transform="translate(56, 110)">
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="30" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="60" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="90" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <text x="57" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#0284c7">4 Water</text>
+        </g>
+        <g transform="translate(196, 110)">
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <rect x="30" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <text x="27" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#ca8a04">2 Juice</text>
+        </g>
+        <text x="172" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">4 : 2  or  2 : 1</text>
+        <text x="172" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Water to Lemon Juice</text>
+
+        <!-- Part to Whole Card -->
+        ${conceptCard(330, 68, 276, 172)}
+        <text x="468" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="#2563eb">PART-TO-WHOLE RATIO</text>
+        <g transform="translate(362, 110)">
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="28" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="56" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="84" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+          <rect x="120" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <rect x="148" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+          <text x="106" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#12355b">6 Total Cups in Mixture</text>
+        </g>
+        <text x="468" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">4 : 6  or  2 : 3</text>
+        <text x="468" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Water to Total Mixture</text>
+
+        <!-- Order Matters Callout -->
+        <rect x="34" y="254" width="572" height="136" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+        <rect x="52" y="268" width="168" height="26" rx="6" fill="#f59e0b"/>
+        <text x="136" y="286" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">ORDER MATTERS!</text>
+        <text x="52" y="322" font-size="18" font-weight="800" fill="#12355b">Water to Juice = 4 : 2</text>
+        <text x="320" y="322" font-size="18" font-weight="800" fill="#b02a24">Juice to Water = 2 : 4</text>
+        <text x="52" y="354" font-size="15" font-weight="700" fill="#5f6f80">Always write numbers in the exact order the question names them!</text>
+        <text x="52" y="376" font-size="14" font-weight="700" fill="#0f766e">Three ways to write a ratio:  4 to 2   ·   4 : 2   ·   4/2</text>`,
+      }),
+      capEn:
+        "A ratio compares two quantities. The order of numbers must match the order of words in the question.",
+      capEs:
+        "Una razón compara dos cantidades. El orden de los números debe coincidir con el orden de las palabras.",
+    };
+  }
+
+  if (baseLesson === "3-2") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Rates and Unit Rates: each pack worked step by step — rate as a fraction, divide both by bottom number, unit rate as fraction over 1",
+        tone: "amber",
+        height: 640,
+        title: "Rates & Unit Rates / Tasa y tasa unitaria",
+        body: `
+        <!-- Each pack worked in three labelled steps; see unitRatePack(). -->
+        ${unitRatePack({
+          x: 34,
+          y: 68,
+          name: "PACK A",
+          badgeFill: "#0f766e",
+          cost: 3.0,
+          count: 5,
+          noun: "pencil",
+          rate: 0.6,
+          best: true,
+        })}
+        ${unitRatePack({
+          x: 330,
+          y: 68,
+          name: "PACK B",
+          badgeFill: "#64748b",
+          cost: 5.2,
+          count: 8,
+          noun: "pencil",
+          rate: 0.65,
+          best: false,
+        })}
+
+        <!-- Formula Rule Card -->
+        <rect x="34" y="476" width="572" height="140" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="320" y="506" text-anchor="middle" font-size="19" font-weight="800" fill="#0f766e">Unit Rate = Rate written as a fraction over 1</text>
+        <line x1="60" y1="520" x2="580" y2="520" stroke="#99f6e4" stroke-width="2"/>
+        <text x="320" y="546" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">1. Write rate as fraction: Cost on TOP, Units on BOTTOM.</text>
+        <text x="320" y="572" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">2. Divide BOTH parts by the bottom number.</text>
+        <text x="320" y="598" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">3. Unit rate is in fraction form over 1: ($0.60 / 1 pencil = $0.60 per pencil).</text>`,
+      }),
+      capEn:
+        "A unit rate is a ratio that compares a quantity to 1 unit. Write the rate as a fraction and divide both parts by the bottom number to get a fraction over 1.",
+      capEs:
+        "Una tasa unitaria es una razón que compara una cantidad con 1 unidad. Escribe la tasa como fracción y divide ambas partes entre el número de abajo para obtener una fracción sobre 1.",
+    };
+  }
+
+  if (baseLesson === "3-3") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Ratio Table Scaling: apply the same scale factor to each quantity to create an equivalent ratio",
+        tone: "teal",
+        height: 420,
+        title: "Ratio Table Scaling / Tabla de razones",
+        body: `
+        <!-- Table on Left -->
+        <g transform="translate(34, 68)">
+          <!-- Headers -->
+          <rect x="0" y="0" width="100" height="42" rx="8" fill="#12355b"/>
+          <text x="50" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Batches</text>
+          <rect x="108" y="0" width="116" height="42" rx="8" fill="#0f766e"/>
+          <text x="166" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Mix (cups)</text>
+          <rect x="232" y="0" width="116" height="42" rx="8" fill="#0f766e"/>
+          <text x="290" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Milk (cups)</text>
+
+          <!-- Row 1 -->
+          <rect x="0" y="48" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">1</text>
+          <rect x="108" y="48" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">2</text>
+          <rect x="232" y="48" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">3</text>
+
+          <!-- Row 2 -->
+          <rect x="0" y="98" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">2</text>
+          <rect x="108" y="98" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">4</text>
+          <rect x="232" y="98" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">6</text>
+
+          <!-- Row 3 -->
+          <rect x="0" y="148" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">3</text>
+          <rect x="108" y="148" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">6</text>
+          <rect x="232" y="148" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">9</text>
+
+          <!-- Row 4 -->
+          <rect x="0" y="198" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="50" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">4</text>
+          <rect x="108" y="198" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="166" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">8</text>
+          <rect x="232" y="198" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
+          <text x="290" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">12</text>
+        </g>
+
+        <!-- Right Side Rules -->
+        <g transform="translate(394, 68)">
+          <!-- Multiply Rule -->
+          <rect x="0" y="0" width="212" height="114" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+          <text x="16" y="27" font-size="14" font-weight="800" fill="#047857">✔ USE THE SAME FACTOR: ×2</text>
+          <text x="16" y="54" font-size="15" font-weight="700" fill="#12355b">Mix:  2 × 2 = 4</text>
+          <text x="16" y="78" font-size="15" font-weight="700" fill="#12355b">Milk: 3 × 2 = 6</text>
+          <text x="16" y="101" font-size="13" font-weight="700" fill="#047857">Both quantities use ×2.</text>
+
+          <!-- Add Contrast Bug -->
+          <rect x="0" y="128" width="212" height="114" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+          <text x="16" y="156" font-size="14" font-weight="800" fill="#b91c1c">✗ NEVER ADD (+):</text>
+          <text x="16" y="184" font-size="14" font-weight="700" fill="#12355b">2 + 1 = 3   and   3 + 1 = 4</text>
+          <text x="16" y="208" font-size="15" font-weight="800" fill="#b91c1c">3 : 4 ≠ 2 : 3</text>
+          <text x="16" y="230" font-size="13" font-weight="700" fill="#b91c1c">Adding breaks the ratio!</text>
+        </g>
+
+        <!-- Bottom Summary Card -->
+        ${conceptCard(34, 324, 572, 76)}
+        <text x="320" y="356" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">Equivalent Ratios:  2 : 3  =  4 : 6  =  6 : 9  =  8 : 12</text>
+        <text x="320" y="384" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">Multiply or divide every quantity in the ratio table by the same scale factor.</text>`,
+      }),
+      capEn:
+        "Multiply or divide BOTH columns by the exact same scale factor to find equivalent ratios in a ratio table.",
+      capEs:
+        "Multipliquen o dividan AMBAS columnas por el mismo factor para hallar razones equivalentes en una tabla de razones.",
+    };
+  }
+
+  if (baseLesson === "3-4") {
+    const ox = 74;
+    const oy = 320;
+    const u = 54;
+    return {
+      svg: conceptFrame({
+        label:
+          "Graphing Equivalent Ratios: Ordered pairs on a coordinate plane forming a straight ray from the origin (0, 0)",
+        tone: "amber",
+        height: 420,
+        title: "Graphing Equivalent Ratios / Gráfica de razones",
+        body: `
+        <!-- Coordinate Grid -->
+        <g stroke="#cbd5e1" stroke-width="1.5">
+          ${[0, 1, 2, 3, 4].map((i) => `<line x1="${ox + i * u}" y1="${oy - 4 * u}" x2="${ox + i * u}" y2="${oy}"/>`).join("")}
+          ${[0, 1, 2, 3, 4].map((i) => `<line x1="${ox}" y1="${oy - i * u}" x2="${ox + 4 * u}" y2="${oy - i * u}"/>`).join("")}
+        </g>
+        <!-- Axes -->
+        <line x1="${ox}" y1="${oy}" x2="${ox + 4 * u + 18}" y2="${oy}" stroke="#12355b" stroke-width="3"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - 4 * u - 18}" stroke="#12355b" stroke-width="3"/>
+        <!-- Arrowheads -->
+        <path d="M${ox + 4 * u + 18} ${oy - 5} L${ox + 4 * u + 28} ${oy} L${ox + 4 * u + 18} ${oy + 5} Z" fill="#12355b"/>
+        <path d="M${ox - 5} ${oy - 4 * u - 18} L${ox} ${oy - 4 * u - 28} L${ox + 5} ${oy - 4 * u - 18} Z" fill="#12355b"/>
+        
+        <!-- Axis Labels -->
+        <text x="${ox + 2 * u}" y="${oy + 38}" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b">Batches (x-axis)</text>
+        <text x="${ox - 46}" y="${oy - 2 * u}" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b" transform="rotate(-90 ${ox - 46} ${oy - 2 * u})">Milk Cups (y-axis)</text>
+
+        <!-- Ticks on x-axis -->
+        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox + i * u}" y="${oy + 18}" text-anchor="middle" font-size="13" font-weight="700" fill="#64748b">${i}</text>`).join("")}
+        <!-- Ticks on y-axis (0, 3, 6, 9, 12 cups) -->
+        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox - 12}" y="${oy - i * u + 5}" text-anchor="end" font-size="13" font-weight="700" fill="#64748b">${i * 3}</text>`).join("")}
+
+        <!-- Straight Ray through Origin -->
+        <line x1="${ox}" y1="${oy}" x2="${ox + 3.8 * u}" y2="${oy - 3.8 * u}" stroke="#0f766e" stroke-width="4"/>
+
+        <!-- Points Plotted -->
+        <circle cx="${ox}" cy="${oy}" r="6" fill="#12355b"/>
+        <text x="${ox + 10}" y="${oy - 10}" font-size="13" font-weight="800" fill="#12355b">(0, 0)</text>
+        <circle cx="${ox + u}" cy="${oy - u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+        <text x="${ox + u + 10}" y="${oy - u - 6}" font-size="14" font-weight="800" fill="#0f766e">(1, 3)</text>
+        <circle cx="${ox + 2 * u}" cy="${oy - 2 * u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+        <text x="${ox + 2 * u + 10}" y="${oy - 2 * u - 6}" font-size="14" font-weight="800" fill="#0f766e">(2, 6)</text>
+        <circle cx="${ox + 3 * u}" cy="${oy - 3 * u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+        <text x="${ox + 3 * u + 10}" y="${oy - 3 * u - 6}" font-size="14" font-weight="800" fill="#0f766e">(3, 9)</text>
+
+        <!-- Right Side Explainer Cards -->
+        <g transform="translate(324, 68)">
+          <!-- Ordered Pairs Card -->
+          ${conceptCard(0, 0, 282, 140)}
+          <text x="14" y="26" font-size="16" font-weight="800" fill="#12355b">Ordered Pairs from Ratio Table:</text>
+          <text x="14" y="54" font-size="15" font-weight="700" fill="#0f766e">1 batch : 3 cups  →  (1, 3)</text>
+          <text x="14" y="78" font-size="15" font-weight="700" fill="#0f766e">2 batches : 6 cups  →  (2, 6)</text>
+          <text x="14" y="102" font-size="15" font-weight="700" fill="#0f766e">3 batches : 9 cups  →  (3, 9)</text>
+          <text x="14" y="126" font-size="13" font-weight="700" fill="#5f6f80">(x = across on x-axis, y = up on y-axis)</text>
+
+          <!-- Key Rules Card -->
+          <rect x="0" y="152" width="282" height="172" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+          <text x="14" y="178" font-size="16" font-weight="800" fill="#047857">✔ 2 BIG CLUES FOR RATIOS:</text>
+          <text x="14" y="206" font-size="15" font-weight="800" fill="#12355b">1. Starts at the Origin (0, 0)</text>
+          <text x="14" y="226" font-size="13" font-weight="600" fill="#5f6f80">0 batches need 0 cups of milk.</text>
+          <text x="14" y="254" font-size="15" font-weight="800" fill="#12355b">2. Forms a Straight Ray</text>
+          <text x="14" y="274" font-size="13" font-weight="600" fill="#5f6f80">Points line up in a straight path.</text>
+          <text x="14" y="304" font-size="14" font-weight="800" fill="#047857">If it curves, it is NOT equivalent!</text>
+        </g>`,
+      }),
+      capEn:
+        "Plotting equivalent ratios as ordered pairs on a coordinate plane creates a straight ray starting at the origin (0, 0).",
+      capEs:
+        "Graficar razones equivalentes como pares ordenados en el plano de coordenadas forma un rayo recto que inicia en el origen (0, 0).",
+    };
+  }
+
+  if (baseLesson === "3-5") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Compare Ratio Relationships: Comparing runner speeds using unit rates to see who is faster",
+        tone: "teal",
+        height: 410,
+        title: "Compare Ratio Relationships / Comparar razones",
+        body: `
+        <!-- Runner A Card -->
+        ${conceptCard(34, 68, 572, 98)}
+        <rect x="50" y="82" width="104" height="26" rx="6" fill="#0f766e"/>
+        <text x="102" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">RUNNER A</text>
+        <text x="168" y="101" font-size="17" font-weight="700" fill="#12355b">6 miles in 2 hours  →  6 ÷ 2 =</text>
+        <text x="430" y="101" font-size="22" font-weight="800" fill="#0f766e">3.0 mph</text>
+        <rect x="50" y="124" width="360" height="24" rx="6" fill="#0d9488"/>
+        <text x="420" y="142" font-size="15" font-weight="800" fill="#0d9488">3.0 miles per hour</text>
+
+        <!-- Runner B Card -->
+        ${conceptCard(34, 180, 572, 98)}
+        <rect x="50" y="194" width="104" height="26" rx="6" fill="#6366f1"/>
+        <text x="102" y="212" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">RUNNER B</text>
+        <text x="168" y="213" font-size="17" font-weight="700" fill="#12355b">10 miles in 4 hours  →  10 ÷ 4 =</text>
+        <text x="430" y="213" font-size="22" font-weight="800" fill="#6366f1">2.5 mph</text>
+        <rect x="50" y="236" width="300" height="24" rx="6" fill="#818cf8"/>
+        <text x="360" y="254" font-size="15" font-weight="800" fill="#6366f1">2.5 miles per hour</text>
+
+        <!-- Comparison Winner Banner -->
+        <rect x="34" y="292" width="572" height="98" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+        <text x="320" y="324" text-anchor="middle" font-size="21" font-weight="800" fill="#b45309">★ Runner A is Faster!  (3.0 mph &gt; 2.5 mph)</text>
+        <line x1="60" y1="338" x2="580" y2="338" stroke="#fde68a" stroke-width="2"/>
+        <text x="320" y="364" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">Key Strategy: Convert different ratios to a unit rate (rate per 1 unit) to compare fairly.</text>`,
+      }),
+      capEn:
+        "To compare two ratio relationships, calculate the unit rate for each one. The higher unit rate is faster or greater.",
+      capEs:
+        "Para comparar dos relaciones de razón, calculen la tasa unitaria de cada una. La tasa mayor es más rápida o mayor.",
+    };
+  }
+
+  if (baseLesson === "3-6") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Measurement Conversion Ladder: Converting yards to feet to inches using ratios and multiplication",
+        tone: "teal",
+        height: 420,
+        title: "Measurement Conversion Ladder / Conversión de medidas",
+        body: `
+        <!-- Ladder Top: 3 Unit Boxes -->
+        <g transform="translate(44, 68)">
+          <!-- Yards -->
+          <rect x="0" y="0" width="130" height="60" rx="10" fill="#12355b"/>
+          <text x="65" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Yards (yd)</text>
+          
+          <!-- Arrow 1: × 3 -->
+          <path d="M142 22 L198 22" stroke="#0f766e" stroke-width="3"/>
+          <path d="M192 16 L202 22 L192 28 Z" fill="#0f766e"/>
+          <text x="170" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">× 3</text>
+          <!-- Reverse Arrow: ÷ 3 -->
+          <path d="M198 42 L142 42" stroke="#d9795d" stroke-width="2.5"/>
+          <path d="M148 36 L138 42 L148 48 Z" fill="#d9795d"/>
+          <text x="170" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#d9795d">÷ 3</text>
+
+          <!-- Feet -->
+          <rect x="210" y="0" width="130" height="60" rx="10" fill="#0f766e"/>
+          <text x="275" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Feet (ft)</text>
+
+          <!-- Arrow 2: × 12 -->
+          <path d="M352 22 L408 22" stroke="#0f766e" stroke-width="3"/>
+          <path d="M402 16 L412 22 L402 28 Z" fill="#0f766e"/>
+          <text x="380" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">× 12</text>
+          <!-- Reverse Arrow: ÷ 12 -->
+          <path d="M408 42 L352 42" stroke="#d9795d" stroke-width="2.5"/>
+          <path d="M358 36 L348 42 L358 48 Z" fill="#d9795d"/>
+          <text x="380" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#d9795d">÷ 12</text>
+
+          <!-- Inches -->
+          <rect x="420" y="0" width="130" height="60" rx="10" fill="#d97706"/>
+          <text x="485" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Inches (in)</text>
+        </g>
+
+        <!-- Worked Example Card -->
+        ${conceptCard(34, 156, 572, 136)}
+        <text x="54" y="186" font-size="17" font-weight="800" fill="#12355b">Example: Convert 4 yards to inches</text>
+        <text x="54" y="216" font-size="16" font-weight="700" fill="#0f766e">Step 1: 4 yards × 3 = 12 feet  (ratio of feet to yards = 3:1)</text>
+        <text x="54" y="244" font-size="16" font-weight="700" fill="#0f766e">Step 2: 12 feet × 12 = 144 inches  (ratio of inches to feet = 12:1)</text>
+        <text x="54" y="274" font-size="20" font-weight="800" fill="#12355b">Result: <tspan fill="#0f766e">4 yards = 144 inches</tspan></text>
+
+        <!-- Rule Card -->
+        <g transform="translate(34, 308)">
+          <rect x="0" y="0" width="276" height="92" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+          <text x="138" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="#047857">BIGGER → SMALLER</text>
+          <text x="138" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">MULTIPLY  (×)</text>
+          <text x="138" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">Yards to feet: multiply by 3</text>
+
+          <rect x="296" y="0" width="276" height="92" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+          <text x="434" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="#c2410c">SMALLER → BIGGER</text>
+          <text x="434" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">DIVIDE  (÷)</text>
+          <text x="434" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">Inches to feet: divide by 12</text>
+        </g>`,
+      }),
+      capEn:
+        "Use equivalent ratios to convert measurements: multiply when going to smaller units, divide when going to larger units.",
+      capEs:
+        "Usen razones equivalentes para convertir medidas: multipliquen al cambiar a unidades menores, dividan al cambiar a mayores.",
+    };
+  }
+
+  if (baseLesson === "3-7") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Converting Between Measurement Systems: Customary to metric using approximate ratio conversions",
+        tone: "amber",
+        height: 420,
+        title: "Converting Between Systems / Conversión entre sistemas",
+        body: `
+        <!-- Distance Dual Bar -->
+        ${conceptCard(34, 68, 572, 108)}
+        <rect x="50" y="80" width="160" height="24" rx="6" fill="#12355b"/>
+        <text x="130" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">DISTANCE (mi ↔ km)</text>
+        <text x="226" y="97" font-size="16" font-weight="800" fill="#d97706">1 mile ≈ 1.61 kilometers</text>
+        <g transform="translate(50, 116)">
+          <rect x="0" y="0" width="180" height="36" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#4338ca">5 miles</text>
+          <text x="200" y="23" font-size="20" font-weight="800" fill="#12355b">×</text>
+          <rect x="226" y="0" width="90" height="36" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">1.61</text>
+          <text x="330" y="23" font-size="20" font-weight="800" fill="#12355b">≈</text>
+          <rect x="354" y="0" width="168" height="36" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">8.05 kilometers</text>
+        </g>
+
+        <!-- Weight Dual Bar -->
+        ${conceptCard(34, 188, 572, 108)}
+        <rect x="50" y="200" width="160" height="24" rx="6" fill="#0f766e"/>
+        <text x="130" y="217" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">WEIGHT (kg ↔ lb)</text>
+        <text x="226" y="217" font-size="16" font-weight="800" fill="#d97706">1 kilogram ≈ 2.20 pounds</text>
+        <g transform="translate(50, 236)">
+          <rect x="0" y="0" width="180" height="36" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#4338ca">10 kilograms</text>
+          <text x="200" y="23" font-size="20" font-weight="800" fill="#12355b">×</text>
+          <rect x="226" y="0" width="90" height="36" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">2.20</text>
+          <text x="330" y="23" font-size="20" font-weight="800" fill="#12355b">≈</text>
+          <rect x="354" y="0" width="168" height="36" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">22.0 pounds</text>
+        </g>
+
+        <!-- Bottom Callout -->
+        <rect x="34" y="308" width="572" height="92" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+        <text x="320" y="338" text-anchor="middle" font-size="17" font-weight="800" fill="#b45309">Notice the wavy ≈ symbol: Between systems, conversions are approximate!</text>
+        <text x="320" y="366" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">Set up an equivalent ratio with the conversion factor and multiply or divide.</text>
+        <text x="320" y="386" text-anchor="middle" font-size="14" font-weight="600" fill="#5f6f80">Ratio benchmarks: 1 mi ≈ 1.61 km   ·   1 kg ≈ 2.2 lb   ·   1 in ≈ 2.54 cm</text>`,
+      }),
+      capEn:
+        "Conversions between measurement systems are approximate (≈). Set up an equivalent ratio with the conversion rate to solve.",
+      capEs:
+        "Las conversiones entre sistemas son aproximadas (≈). Usen una razón equivalente con la tasa de conversión para resolver.",
+    };
+  }
+
+  if (baseLesson === "3-8") {
+    return {
+      svg: conceptFrame({
+        label:
+          "The Unit Rate Bridge: 2 steps to solve any rate problem by first finding the rate for 1",
+        tone: "teal",
+        height: 420,
+        title: "The Unit Rate Bridge / Resolver con tasa unitaria",
+        body: `
+        <!-- Problem Header Card -->
+        ${conceptCard(34, 68, 572, 60)}
+        <text x="320" y="104" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">Problem: 6 movie tickets cost $72. How much do 9 tickets cost?</text>
+
+        <!-- 2-Step Side-by-Side Cards -->
+        <g transform="translate(34, 140)">
+          <!-- Step 1 -->
+          <rect x="0" y="0" width="272" height="152" rx="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+          <rect x="16" y="14" width="144" height="26" rx="6" fill="#0f766e"/>
+          <text x="88" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">STEP 1: DIVIDE TO 1</text>
+          <text x="16" y="68" font-size="16" font-weight="700" fill="#5f6f80">Find the Unit Rate (Cost for 1):</text>
+          <text x="16" y="100" font-size="24" font-weight="800" fill="#12355b">$72 ÷ 6 tickets =</text>
+          <text x="16" y="132" font-size="26" font-weight="800" fill="#0f766e">$12 per ticket</text>
+
+          <!-- Step 2 -->
+          <rect x="300" y="0" width="272" height="152" rx="14" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
+          <rect x="316" y="14" width="190" height="26" rx="6" fill="#10b981"/>
+          <text x="411" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">STEP 2: MULTIPLY TO TARGET</text>
+          <text x="316" y="68" font-size="16" font-weight="700" fill="#5f6f80">Scale to the target amount:</text>
+          <text x="316" y="100" font-size="24" font-weight="800" fill="#12355b">$12 × 9 tickets =</text>
+          <text x="316" y="132" font-size="26" font-weight="800" fill="#15803d">$108 for 9 tickets</text>
+        </g>
+
+        <!-- Visual Bridge Flow Banner -->
+        <g transform="translate(34, 306)">
+          <rect x="0" y="0" width="572" height="96" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+          <text x="286" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">THE 2-STEP RATIO BRIDGE FLOW</text>
+          <text x="64" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">6 Tickets ($72)</text>
+          <path d="M142 62 L200 62" stroke="#0f766e" stroke-width="3"/>
+          <path d="M194 56 L204 62 L194 68 Z" fill="#0f766e"/>
+          <text x="171" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">÷ 6</text>
+          <text x="286" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">1 Ticket ($12)</text>
+          <path d="M372 62 L430 62" stroke="#10b981" stroke-width="3"/>
+          <path d="M424 56 L434 62 L424 68 Z" fill="#10b981"/>
+          <text x="401" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="#10b981">× 9</text>
+          <text x="504" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">9 Tickets ($108)</text>
+        </g>`,
+      }),
+      capEn:
+        "The 2-step unit rate bridge: First divide to find the cost of 1, then multiply to find the total for any quantity.",
+      capEs:
+        "El puente de 2 pasos: Primero dividan para hallar el costo de 1, luego multipliquen por la cantidad total deseada.",
+    };
+  }
+
+  if (baseLesson === "3-9") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Equivalent Ratios: Scaling up with multiplication and scaling down by dividing with tape diagrams",
+        tone: "amber",
+        height: 420,
+        title: "Equivalent Ratios: Scale Up & Down / Razones equivalentes",
+        body: `
+        <!-- Top Tape Diagrams -->
+        ${conceptCard(34, 68, 572, 136)}
+        <text x="50" y="94" font-size="15" font-weight="800" fill="#12355b">Ratio 2 : 5 (Base Ratio)</text>
+        <g transform="translate(50, 102)">
+          <rect x="0" y="0" width="46" height="24" rx="5" fill="#0d9488"/>
+          <rect x="50" y="0" width="46" height="24" rx="5" fill="#0d9488"/>
+          <rect x="108" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="158" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="208" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="258" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <rect x="308" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
+          <text x="380" y="18" font-size="16" font-weight="800" fill="#0f766e">2 parts to 5 parts</text>
+        </g>
+        <text x="50" y="154" font-size="15" font-weight="800" fill="#12355b">Ratio 4 : 10 (Scaled up by 2)</text>
+        <g transform="translate(50, 162)">
+          <rect x="0" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="25" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="50" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="75" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
+          <rect x="108" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="133" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="158" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="183" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="208" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="233" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="258" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="283" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="308" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <rect x="333" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
+          <text x="380" y="17" font-size="16" font-weight="800" fill="#0f766e">4 parts to 10 parts (Equal!)</text>
+        </g>
+
+        <!-- Bottom Strategy Cards -->
+        <g transform="translate(34, 218)">
+          <!-- Scale UP Card -->
+          <rect x="0" y="0" width="276" height="184" rx="14" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
+          <rect x="16" y="14" width="170" height="26" rx="6" fill="#10b981"/>
+          <text x="101" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">SCALE UP (MULTIPLY)</text>
+          <text x="16" y="68" font-size="16" font-weight="700" fill="#5f6f80">Multiply both terms by 3:</text>
+          <text x="16" y="104" font-size="28" font-weight="800" fill="#12355b">3 : 4  =  9 : 12</text>
+          <text x="16" y="136" font-size="15" font-weight="700" fill="#047857">3 × 3 = 9   and   4 × 3 = 12</text>
+          <text x="16" y="162" font-size="14" font-weight="600" fill="#5f6f80">Scale factor is 3.</text>
+
+          <!-- Scale DOWN Card -->
+          <rect x="296" y="0" width="276" height="184" rx="14" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+          <rect x="312" y="14" width="180" height="26" rx="6" fill="#0284c7"/>
+          <text x="402" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">SCALE DOWN (SIMPLIFY)</text>
+          <text x="312" y="68" font-size="16" font-weight="700" fill="#5f6f80">Divide both terms by GCF (4):</text>
+          <text x="312" y="104" font-size="28" font-weight="800" fill="#12355b">12 : 20  =  3 : 5</text>
+          <text x="312" y="136" font-size="15" font-weight="700" fill="#0284c7">12 ÷ 4 = 3   and   20 ÷ 4 = 5</text>
+          <text x="312" y="162" font-size="14" font-weight="600" fill="#5f6f80">3:5 is the simplest form ratio.</text>
+        </g>`,
+      }),
+      capEn:
+        "Equivalent ratios describe the same relationship. Multiply both terms to scale up, or divide by a common factor to simplify.",
+      capEs:
+        "Las razones equivalentes describen la misma relación. Multipliquen ambos términos para agrandar o dividan para simplificar.",
+    };
+  }
+
+  if (baseLesson === "3-10") {
+    return {
+      svg: conceptFrame({
+        label:
+          "Unit Cancellation and Conversion Ratios: Crossing out diagonal matching units to leave target units",
+        tone: "teal",
+        height: 420,
+        title: "Unit Cancellation & Ratios / Conversión de unidades",
+        body: `
+        <!-- Problem Card -->
+        ${conceptCard(34, 68, 572, 54)}
+        <text x="320" y="102" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">Problem: Convert 180 inches into yards using conversion ratios</text>
+
+        <!-- Big Dimensional Analysis Display Card -->
+        <g transform="translate(34, 134)">
+          <rect x="0" y="0" width="572" height="152" rx="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+          
+          <!-- Fraction 1: 180 in -->
+          <text x="36" y="80" font-size="28" font-weight="800" fill="#12355b">180</text>
+          <text x="92" y="80" font-size="26" font-weight="800" fill="#dc2626">in</text>
+          <line x1="88" y1="86" x2="118" y2="60" stroke="#dc2626" stroke-width="3.5"/>
+
+          <text x="134" y="80" font-size="28" font-weight="800" fill="#12355b">×</text>
+
+          <!-- Fraction 2: 1 ft / 12 in -->
+          <g transform="translate(162, 28)">
+            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">1 <tspan fill="#2563eb">ft</tspan></text>
+            <line x1="22" y1="36" x2="48" y2="14" stroke="#2563eb" stroke-width="3.5"/>
+            <line x1="0" y1="52" x2="68" y2="52" stroke="#12355b" stroke-width="2.5"/>
+            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">12 <tspan fill="#dc2626">in</tspan></text>
+            <line x1="32" y1="88" x2="62" y2="64" stroke="#dc2626" stroke-width="3.5"/>
+          </g>
+
+          <text x="254" y="80" font-size="28" font-weight="800" fill="#12355b">×</text>
+
+          <!-- Fraction 3: 1 yd / 3 ft -->
+          <g transform="translate(282, 28)">
+            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="#15803d">1 yd</text>
+            <line x1="0" y1="52" x2="68" y2="52" stroke="#12355b" stroke-width="2.5"/>
+            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">3 <tspan fill="#2563eb">ft</tspan></text>
+            <line x1="32" y1="88" x2="58" y2="64" stroke="#2563eb" stroke-width="3.5"/>
+          </g>
+
+          <text x="374" y="80" font-size="28" font-weight="800" fill="#12355b">=</text>
+
+          <!-- Result: 5 yards -->
+          <rect x="410" y="44" width="144" height="64" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="482" y="86" text-anchor="middle" font-size="26" font-weight="800" fill="#15803d">5 yards</text>
+
+          <text x="286" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Diagonal cancellation leaves only the target unit: yards!</text>
+        </g>
+
+        <!-- Bottom Explanation Card -->
+        <g transform="translate(34, 298)">
+          <rect x="0" y="0" width="572" height="104" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+          <text x="20" y="28" font-size="16" font-weight="800" fill="#0f766e">✔ DIAGONAL UNIT CANCELLATION RULE:</text>
+          <text x="20" y="56" font-size="15" font-weight="700" fill="#12355b">1. Place the unit you want to cancel in the opposite position (top vs bottom).</text>
+          <text x="20" y="78" font-size="15" font-weight="700" fill="#12355b">2. Calculate the math: (180 × 1 × 1) ÷ (12 × 3) = 180 ÷ 36 = 5 yards.</text>
+          <text x="20" y="98" font-size="14" font-weight="700" fill="#0f766e">Equivalent conversion ratios guarantee your final answer is accurate.</text>
+        </g>`,
+      }),
+      capEn:
+        "Set up conversion ratios so units cancel diagonally across fractions, leaving only the unit you want to find.",
+      capEs:
+        "Escriban razones de conversión de modo que las unidades se cancelen en diagonal, dejando solo la unidad deseada.",
+    };
+  }
 
   if (topic === "ratios") {
     const cols = ["Batches", "Cups A", "Cups B"];
@@ -1238,9 +2065,9 @@ function conceptVisual(config) {
         ${conceptRow(348, 3, "Multiply across:  12/1 = 12", "#d97706")}`,
       }),
       capEn:
-        "Dividing by a fraction asks how many of that small piece fit inside. The answer gets BIGGER.",
+        "Dividing by a fraction asks how many of that small piece fit inside. For a positive amount, dividing by a fraction between 0 and 1 makes the result larger.",
       capEs:
-        "Dividir entre una fracción pregunta cuántas piezas pequeñas caben adentro. La respuesta se hace MÁS GRANDE.",
+        "Dividir entre una fracción pregunta cuántas piezas pequeñas caben adentro. Para una cantidad positiva, dividir entre una fracción entre 0 y 1 aumenta el resultado.",
     };
   }
 
@@ -1459,31 +2286,52 @@ export function renderWelcomeBanner(config, lessonId) {
         <div class="hw-hero-head">
           <span class="hw-hero-emoji" aria-hidden="true">${esc(themeEmoji)}</span>
           <div class="hw-hero-titles">
-            <h1 class="welcome-title-en">Family Math Night</h1>
-            <p class="welcome-title-es" lang="es">Ayuda a tu estudiante</p>
+            <h1><span class="welcome-title-en lang-en">Family Math Homework</span><span class="welcome-title-es lang-es" lang="es">Tarea de matemáticas en familia</span></h1>
           </div>
         </div>
 
         <p class="hw-hero-lesson">
-          <span class="hw-hero-lesson-title">${esc(title)}</span>
+          <span class="hw-hero-lesson-title"><span class="lang-en">${esc(title)}</span><span class="lang-es" lang="es">${esc(familyTitlesEs[lessonId] || title)}</span></span>
           <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}${standard ? ` · ${esc(standard)}` : ""}</span>
         </p>
 
+        ${
+          standard
+            ? `
+        <details class="hw-standard-details">
+          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>${esc(standard)}</code></span> ▾</summary>
+          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard ${esc(standard)}.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado ${esc(standard)}.</span></p>
+        </details>`
+            : ""
+        }
+
         <p class="hw-hero-lead">
-          <span class="lang-en">Use the pictures and the short steps. Ask questions — let your student do the thinking.</span>
-          <span class="lang-es" lang="es">Usen los dibujos y los pasos cortos. Hagan preguntas: dejen que su estudiante piense.</span>
+          <span class="lang-en">Start with 10 minutes. Explain one idea, practice two problems, and finish. Work with a partner or on your own.</span>
+          <span class="lang-es" lang="es">Empieza con 10 minutos. Explica una idea, practica dos problemas y termina. Trabaja con alguien o por tu cuenta.</span>
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en">${HOMEWORK_STOP_COUNT} stops</span><span class="lang-es" lang="es">${HOMEWORK_STOP_COUNT} paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About ${HOMEWORK_TOTAL_MINUTES} minutes</span><span class="lang-es" lang="es">Unos ${HOMEWORK_TOTAL_MINUTES} minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">4</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">4</span> paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">10</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">10</span> minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
+
+        <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
+        <div class="hw-hero-share-bar">
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printRefrigeratorSheet()">📄 <span class="lang-en">1-Page Sheet</span><span class="lang-es" lang="es">Hoja de 1 pág.</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="preparePaperPractice()">📄 <span class="lang-en">Prepare paper practice</span><span class="lang-es" lang="es">Preparar práctica en papel</span></button>
+        </div>
+
+        </details>
 
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
             <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
               <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
                 🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
               </button>
@@ -1506,23 +2354,40 @@ export function renderWelcomeBanner(config, lessonId) {
    needs to see it before they scroll, and it used to sit in a second nav card
    that competed with the tab bar for the same job. */
 export function renderQuickPlan() {
+  /* One decision before the family starts: how much time is realistic tonight?
+     The old 10-minute disclosure still left the entire 30-minute path active,
+     so every Next button immediately returned the family to the long route.
+     These are real modes: tabs, practice count, time remaining, and flow all
+     agree. The short route is the default; saved choices and explicit links still win. */
   return `
-      <details class="hw-quickplan">
-        <summary class="hw-quickplan-summary">
-          <span class="hw-quickplan-icon" aria-hidden="true">⏰</span>
-          <strong><span class="lang-en">Only have 10 minutes tonight?</span><span class="lang-es" lang="es">¿Solo tienen 10 minutos hoy?</span></strong>
-          <span class="hw-quickplan-chevron" aria-hidden="true">▾</span>
-        </summary>
-        <ol class="hw-quickplan-steps">
-          <li><span class="lang-en"><strong>2 min</strong> — Read the Big Idea out loud on the Learn stop.</span><span class="lang-es" lang="es"><strong>2 min</strong> — Lean en voz alta la idea principal en la parada Aprender.</span></li>
-          <li><span class="lang-en"><strong>3 min</strong> — Do just the FIRST Try Together step.</span><span class="lang-es" lang="es"><strong>3 min</strong> — Hagan solo el PRIMER paso de Intentar Juntos.</span></li>
-          <li><span class="lang-en"><strong>5 min</strong> — Answer the 3 Warm-up problems on the Check stop.</span><span class="lang-es" lang="es"><strong>5 min</strong> — Contesten los 3 problemas de calentamiento en la parada Repaso.</span></li>
-        </ol>
-        <p class="hw-quickplan-note">
-          <span class="lang-en">💛 Short and calm beats long and stressful. Ten focused minutes tonight is a win.</span>
-          <span class="lang-es" lang="es">💛 Corto y tranquilo vale más que largo y estresante. Diez minutos concentrados hoy ya son un logro.</span>
+      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
+        <div class="hw-route-heading">
+          <span class="hw-route-icon" aria-hidden="true">🧭</span>
+          <div>
+            <h2 id="hw_route_title"><span class="lang-en">Tonight: the essentials</span><span class="lang-es" lang="es">Hoy: lo esencial</span></h2>
+            <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
+          </div>
+        </div>
+        <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
+          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
+            <span class="hw-route-time">10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Essentials</span><span class="lang-es" lang="es">Lo esencial</span></strong><small><span class="lang-en">Big idea · 1 guided step · 2 warm-ups</span><span class="lang-es" lang="es">Idea principal · 1 paso · 2 ejercicios</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
+            <span class="hw-route-time">20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
+            <span class="hw-route-time">30 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
+          </button>
+        </div>
+        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
+          <span class="lang-en">Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.</span>
+          <span class="lang-es" lang="es">Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.</span>
         </p>
-      </details>`;
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
+      </section>`;
 }
 
 export function renderLearningTonight(config) {
@@ -1539,7 +2404,10 @@ export function renderLearningTonight(config) {
 
   return `
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
-      <h2 class="section-title">📖 What we're learning tonight / Qué aprendemos hoy</h2>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h2 class="section-title" style="margin:0;">📖 <span class="lang-en">What we're learning tonight</span><span class="lang-es" lang="es">Qué aprendemos hoy</span></h2>
+        <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(en)}', '${escAttr(es)}')" title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+      </div>
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
@@ -1576,14 +2444,19 @@ export function renderConceptExplainer(config) {
 
   return `
     <section class="guided-section card section-visual" aria-label="Visual concept explainer">
-      <h2 class="section-title">🎯 The big idea / La idea principal</h2>
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
       <!-- renderLearnTab() strips the <section> wrapper, so the oversized
            "big idea" type scale hangs off this inner div, not off
            .section-visual (which never reaches the page). -->
       <div class="big-idea">
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
-        <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div>
+            <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
+            <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+          </div>
+          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+        </div>
       </div>
       <figure class="concept-visual-wrap">${visual.svg}${caption}</figure>
       <div class="concept-quick-wrap">
@@ -1644,48 +2517,49 @@ export function renderTryTogether(config, lessonId = "") {
       <div class="huddle-hook-banner hook-debate">
         <span class="huddle-hook-icon" aria-hidden="true">🗣️</span>
         <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Would You Rather? · Family Math Debate</span><span class="lang-es" lang="es">¿Qué prefieres? · Debate Matemático</span></strong>
-          <span><span class="lang-en">Choose a side with your student and defend your mathematical thinking!</span><span class="lang-es" lang="es">¡Elige una opción con tu estudiante y defiende tu razonamiento matemático!</span></span>
+          <strong><span class="lang-en">Show Your Reasoning</span><span class="lang-es" lang="es">Muestra tu razonamiento</span></strong>
+          <span><span class="lang-en">Student: explain your first step. Partner: ask why it makes sense, then switch roles.</span><span class="lang-es" lang="es">Estudiante: explica tu primer paso. Acompañante: pregunta por qué tiene sentido; luego cambien de rol.</span></span>
         </div>
       </div>
       <div class="parent-coach-prompt">
         <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
-        <span class="lang-en">Ask: "Which option makes more sense or is the better deal, and why? Show me with numbers or pictures."</span>
-        <span class="lang-es" lang="es">Pregunta: "¿Qué opción tiene más sentido o es mejor opción, y por qué? Muéstramelo con números o dibujos."</span>
+        <span class="lang-en">Ask: "How do your numbers match your picture or explanation?"</span>
+        <span class="lang-es" lang="es">Pregunta: "¿Cómo corresponden los números a tu dibujo o explicación?"</span>
       </div>`;
   } else if (hookIndex === 1) {
     hookBanner = `
       <div class="huddle-hook-banner hook-detective">
         <span class="huddle-hook-icon" aria-hidden="true">🕵️‍♂️</span>
         <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Spot the Slip · Math Detective</span><span class="lang-es" lang="es">Encuentra el error · Detective Matemático</span></strong>
-          <span><span class="lang-en">A student solved a problem and made a common slip. Can you find where they went off track?</span><span class="lang-es" lang="es">Alguien cometió un error común al resolver. ¿Pueden encontrar en qué paso falló?</span></span>
+          <strong><span class="lang-en">Check Your Strategy</span><span class="lang-es" lang="es">Revisa tu estrategia</span></strong>
+          <span><span class="lang-en">Solve the task below. Then check one step using a picture, an estimate, or the original question.</span><span class="lang-es" lang="es">Resuelve la actividad de abajo. Luego revisa un paso con un dibujo, una estimación o la pregunta original.</span></span>
         </div>
       </div>
       <div class="parent-coach-prompt">
         <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
-        <span class="lang-en">Ask: "Look at the steps closely. What is the one thing they forgot to check?"</span>
-        <span class="lang-es" lang="es">Pregunta: "Mira los pasos con atención. ¿Qué fue lo que olvidó revisar?"</span>
+        <span class="lang-en">Ask: "Which step can you verify another way?"</span>
+        <span class="lang-es" lang="es">Pregunta: "¿Qué paso puedes comprobar de otra manera?"</span>
       </div>`;
   } else {
     hookBanner = `
       <div class="huddle-hook-banner hook-teacher">
         <span class="huddle-hook-icon" aria-hidden="true">🎓</span>
         <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Student-as-Teacher · 60-Second Challenge</span><span class="lang-es" lang="es">Estudiante como profe · Reto de 60 segundos</span></strong>
-          <span><span class="lang-en">Student challenge: Teach your family this concept in under 60 seconds!</span><span class="lang-es" lang="es">Reto para el estudiante: ¡Explica este concepto a tu familia en menos de 60 segundos!</span></span>
+          <strong><span class="lang-en">Student as Teacher</span><span class="lang-es" lang="es">Estudiante como profe</span></strong>
+          <span><span class="lang-en">Student: explain one idea. Partner: ask for an example, then switch roles.</span><span class="lang-es" lang="es">Estudiante: explica una idea. Acompañante: pide un ejemplo; luego cambien de rol.</span></span>
         </div>
       </div>
       <div class="parent-coach-prompt">
         <strong>💬 <span class="lang-en">Family role:</span><span class="lang-es" lang="es">Rol de la familia:</span></strong>
-        <span class="lang-en">Listen without interrupting for 1 minute, then ask: "Can you show me one quick example?"</span>
-        <span class="lang-es" lang="es">Escuchen sin interrumpir por 1 minuto, luego pregunten: "¿Puedes mostrarme un ejemplo rápido?"</span>
+        <span class="lang-en">Listen, then ask: "Can you show me one example?"</span>
+        <span class="lang-es" lang="es">Escuchen y luego pregunten: "¿Puedes mostrarme un ejemplo?"</span>
       </div>`;
   }
 
   return `
     <section class="guided-section card section-together" aria-label="Try this together">
       <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
+      <p class="family-roles"><span class="lang-en">Student: explain. Partner: ask “How do you know?” Then switch. Working solo? Say or write your explanation; bring a question to a trusted adult at school.</span><span class="lang-es" lang="es">Estudiante: explica. Acompañante: pregunta «¿Cómo lo sabes?» Luego cambien. ¿Trabajas a solas? Di o escribe tu explicación; lleva una pregunta a un adulto de confianza en la escuela.</span></p>
       ${hookBanner}
       ${
         activity.scenarioEn
@@ -1751,28 +2625,46 @@ function renderTogetherLadder(config) {
       const hasChoices = Array.isArray(item.choices) && item.choices.length > 0;
       const choicesHtml = hasChoices
         ? `<ol class="ladder-choices">${item.choices
-            .map((c) => `<li class="ladder-choice">${esc(c)}</li>`)
+            .map((c, idx) => {
+              const cEs = item.choicesEs?.[idx];
+              return `<li class="ladder-choice">${
+                cEs
+                  ? `<span class="lang-en">${esc(c)}</span><span class="lang-es" lang="es">${esc(cEs)}</span>`
+                  : esc(c)
+              }</li>`;
+            })
             .join("")}</ol>`
         : "";
       // For multiple-choice, reveal the correct option with its letter (e.g. "A. …")
       // so it lines up with the rendered choices; open-response just shows the sample.
-      const answerText =
+      const answerTextEn =
         hasChoices && Number.isInteger(item.correctIndex)
           ? `${letters[item.correctIndex] ? `${letters[item.correctIndex]}. ` : ""}${item.a}`
           : item.a;
+      const answerTextEs = item.aEs
+        ? hasChoices && Number.isInteger(item.correctIndex)
+          ? `${letters[item.correctIndex] ? `${letters[item.correctIndex]}. ` : ""}${item.aEs}`
+          : item.aEs
+        : "";
+      const answerBody = answerTextEs
+        ? `<p class="ladder-answer-text"><span class="lang-en">${esc(answerTextEn)}</span><span class="lang-es" lang="es">${esc(answerTextEs)}</span></p>`
+        : `<p class="ladder-answer-text">${esc(answerTextEn)}</p>`;
       const answer = item.a
         ? `<details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">${esc(answerText)}</p>
+             ${answerBody}
            </details>`
         : "";
+      const questionHtml = item.qEs
+        ? `<p class="ladder-q"><span class="lang-en">${esc(item.q)}</span><span class="lang-es" lang="es">${esc(item.qEs)}</span></p>`
+        : `<p class="ladder-q">${esc(item.q)}</p>`;
       return `
         <li class="ladder-item">
           <div class="ladder-head">
             <span class="ladder-stars" aria-hidden="true">${item.stars}</span>
             <span class="ladder-tier"><span class="lang-en">${esc(item.tierEn)}</span><span class="lang-es" lang="es">${esc(item.tierEs)}</span></span>
           </div>
-          <p class="ladder-q">${esc(item.q)}</p>
+          ${questionHtml}
           ${choicesHtml}
           <input type="text" id="ladder_${i}" name="ladder_${i}" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}" />
           ${answer}
@@ -1798,8 +2690,8 @@ export function renderStuckSection(config) {
   const tips = stuckTips(config);
 
   return `
-    <section class="guided-section card section-stuck" aria-label="If your student gets stuck">
-      <h2 class="section-title">💬 If your student gets stuck / Si se atora</h2>
+    <section class="guided-section card section-stuck" aria-label="If your student gets stuck" data-aria-en="If your student gets stuck" data-aria-es="Ayuda si te atoras">
+      <h2 class="section-title">💬 <span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atora</span></h2>
       <div class="stuck-grid">
         <div class="stuck-panel stuck-say">
           <h3 class="stuck-heading">✅ <span class="lang-en">What to say</span><span class="lang-es" lang="es">Qué decir</span></h3>
@@ -1831,17 +2723,53 @@ export function renderStuckSection(config) {
     </section>`;
 }
 
-export function renderCelebration() {
+export function resolveKitchenTableActivity(config) {
+  if (!config) return DEFAULT_KITCHEN_TABLE;
+  const activity = getFamilyActivities(config)[0];
+  return {
+    title: activity.titleEn,
+    titleEs: activity.titleEs,
+    materials: activity.materialsEn,
+    materialsEs: activity.materialsEs,
+    steps: activity.steps.map((step) => step.en),
+    stepsEs: activity.steps.map((step) => step.es),
+    why: activity.talkEn,
+    whyEs: activity.talkEs,
+  };
+}
+
+export function renderCelebration(config = null, _lessonId = "") {
+  const kt = resolveKitchenTableActivity(config);
+  const ktHtml = kt
+    ? `
+    <div class="kitchen-table-card card-ish">
+      <div class="kt-badge">🍽️ <span class="lang-en">5-MINUTE KITCHEN TABLE MATH</span><span class="lang-es" lang="es">MATEMÁTICAS EN LA MESA · 5 MINUTOS</span></div>
+      <h3 class="kt-title"><span class="lang-en">${esc(kt.title)}</span><span class="lang-es" lang="es">${esc(kt.titleEs || kt.title)}</span></h3>
+      <p class="kt-materials">📦 <strong><span class="lang-en">Materials:</span><span class="lang-es" lang="es">Materiales:</span></strong> <span class="lang-en">${esc(kt.materials)}</span><span class="lang-es" lang="es">${esc(kt.materialsEs || kt.materials)}</span></p>
+      <ol class="kt-steps">
+        ${(kt.steps || []).map((st, i) => `<li><span class="lang-en">${esc(st)}</span><span class="lang-es" lang="es">${esc(kt.stepsEs?.[i] || st)}</span></li>`).join("")}
+      </ol>
+      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">${esc(kt.why)}</span><span class="lang-es" lang="es">${esc(kt.whyEs || kt.why)}</span></p>
+    </div>`
+    : "";
+
   return `
     <section class="guided-section card section-celebrate" aria-label="Celebration">
-      <h2 class="section-title">🎉 You did it together! / ¡Lo lograron juntos!</h2>
-      <p class="celebrate-text lang-en">High five! Whether every answer was perfect or not, you showed up for your student tonight. That matters.</p>
-      <p class="celebrate-text lang-es" lang="es">¡Chócalas! No importa si cada respuesta fue perfecta — estuviste con tu estudiante esta noche. Eso importa.</p>
+      <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
+      <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
+      <p class="celebrate-text lang-es" lang="es">Di una estrategia que te ayudó o una pregunta para la próxima vez. Puedes terminar aquí; no necesitas la firma de un adulto.</p>
       <p class="celebrate-sub bilingual-block">
         <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+      <div class="homework-message-action">
+        <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+      </div>
+      <details class="homework-optional-extras"><summary><span class="lang-en">Optional: more practice, photos &amp; a local reflection</span><span class="lang-es" lang="es">Opcional: más práctica, fotos y una reflexión local</span></summary>
+      <p><span class="lang-en">These extras are not required. Photos, recordings and reflections stay on this device. To send anything to Mr. Neft, use ClassDojo.</span><span class="lang-es" lang="es">Estos extras no son obligatorios. Las fotos, grabaciones y reflexiones quedan en este dispositivo. Para enviar algo al Sr. Neft, usa ClassDojo.</span></p>
+      <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">Open optional photobooth</span><span class="lang-es" lang="es">Abrir cabina de fotos opcional</span></button>
       <div class="high-five-banner">
         <button type="button" class="btn-high-five" onclick="triggerHighFive()">
           <span class="high-five-emoji" aria-hidden="true">✋</span>
@@ -1869,18 +2797,28 @@ export function renderCelebration() {
           <span class="achieve-icon" aria-hidden="true">🎮</span>
           <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
         </div>
+        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
+          <span class="achieve-icon" aria-hidden="true">🔥</span>
+          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
+        </div>
+        <div class="achievement-badge badge-mission" id="badge_achieve_mission">
+          <span class="achieve-icon" aria-hidden="true">🏡</span>
+          <span class="achieve-name"><span class="lang-en">Home Explorer</span><span class="lang-es" lang="es">Explorador del Hogar</span></span>
+        </div>
       </div>
 
+      ${ktHtml}
+
       <div class="parent-signoff-container card-ish">
-        <h3 class="signoff-title">✍️ <span class="lang-en">Parent Sign-off &amp; Feedback</span><span class="lang-es" lang="es">Firma del padre y comentarios</span></h3>
+        <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
         
         <!-- Active Form -->
         <div id="signoff_form_wrapper">
           <div class="signoff-field checkbox-field">
             <label class="checkbox-label">
               <input type="checkbox" id="parent_reviewed_checkbox" onchange="toggleSignoffSubmitBtn()" />
-              <span class="lang-en">I reviewed this homework with my student tonight.</span>
-              <span class="lang-es" lang="es">Revisé esta tarea con mi estudiante esta noche.</span>
+              <span class="lang-en">I practiced or discussed an idea from this homework.</span>
+              <span class="lang-es" lang="es">Practiqué o comenté una idea de esta tarea.</span>
             </label>
           </div>
           
@@ -1894,22 +2832,78 @@ export function renderCelebration() {
 
           <div class="signoff-field text-field">
             <label for="parent_name_input">
-              <span class="lang-en">Parent/Guardian Name:</span>
-              <span class="lang-es" lang="es">Nombre del padre/tutor:</span>
+              <span class="lang-en">Partner name (optional):</span>
+              <span class="lang-es" lang="es">Nombre del acompañante (opcional):</span>
             </label>
             <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" oninput="toggleSignoffSubmitBtn()" />
           </div>
 
           <div class="signoff-field textarea-field">
             <label for="parent_note_input">
-              <span class="lang-en">Note to Teacher (optional):</span>
-              <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
+              <span class="lang-en">Draft a question for ClassDojo (optional; not sent):</span>
+              <span class="lang-es" lang="es">Borrador para ClassDojo (opcional; no se envía):</span>
             </label>
-            <textarea id="parent_note_input" rows="3" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+            <textarea id="parent_note_input" rows="2" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
           </div>
 
-          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
-            <span class="lang-en">Confirm &amp; Save</span>
+          <div class="signoff-field textarea-field">
+            <label for="parent_reflection_input">
+              <span class="lang-en">Tonight's Math Reflection (optional):</span>
+              <span class="lang-es" lang="es">Reflexión de hoy (opcional):</span>
+            </label>
+            <textarea id="parent_reflection_input" rows="2" placeholder="What strategy or idea clicked best for your student tonight?"></textarea>
+          </div>
+
+          <div class="signoff-field feeling-pulse-field" style="margin:12px 0;">
+            <label class="feeling-pulse-label" style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+              <span class="lang-en">How did tonight's math feel?</span>
+              <span class="lang-es" lang="es">¿Cómo se sintió la matemática de hoy?</span>
+            </label>
+            <div class="feeling-options" role="radiogroup" aria-label="Tonight feeling" style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn-feeling is-selected" data-feeling="smooth" onclick="selectFeeling(this, 'smooth')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+                <span class="feeling-icon">🟢</span> <span class="lang-en">Smooth sailing</span><span class="lang-es" lang="es">¡Muy bien!</span>
+              </button>
+              <button type="button" class="btn-feeling" data-feeling="discussion" onclick="selectFeeling(this, 'discussion')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+                <span class="feeling-icon">🟡</span> <span class="lang-en">Needed discussion</span><span class="lang-es" lang="es">Con algo de ayuda</span>
+              </button>
+              <button type="button" class="btn-feeling" data-feeling="challenge" onclick="selectFeeling(this, 'challenge')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+                <span class="feeling-icon">🔴</span> <span class="lang-en">Tough battle</span><span class="lang-es" lang="es">Nos costó trabajo</span>
+              </button>
+            </div>
+            <input type="hidden" id="family_feeling_input" value="smooth" />
+          </div>
+
+          <div class="signoff-field photo-upload-field" style="margin:12px 0;">
+            <label for="student_work_photo_input" style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+              <span class="lang-en">📸 Snap photo of student notebook or work (optional):</span>
+              <span class="lang-es" lang="es">📸 Foto del cuaderno o trabajo (opcional):</span>
+            </label>
+            <input type="file" id="student_work_photo_input" accept="image/*" capture="environment" onchange="previewWorkPhoto(this)" style="font-size:12px;" />
+            <div id="work_photo_preview_wrap" class="work-photo-preview-wrap" hidden style="margin-top:6px;">
+              <img id="work_photo_preview" alt="Student work preview" style="max-height:120px;border-radius:8px;border:1px solid #cbd5e1;display:block;" />
+              <button type="button" class="btn btn-sm btn-link text-danger" onclick="clearWorkPhoto()" style="border:none;background:none;color:#dc2626;cursor:pointer;padding:4px 0;font-size:12px;"><span class="lang-en">✕ Remove</span><span class="lang-es" lang="es">✕ Quitar</span></button>
+            </div>
+          </div>
+
+          <div class="signoff-field voice-memo-field" style="margin:12px 0;">
+            <label style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+              <span class="lang-en">🎙️ 20-Second Math Strategy Voice Memo (optional):</span>
+              <span class="lang-es" lang="es">🎙️ Nota de voz de 20 seg. explicando tu estrategia (opcional):</span>
+            </label>
+            <div class="voice-memo-controls" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <button type="button" id="btn_record_voice" class="btn btn-sm btn-outline-danger" onclick="toggleVoiceRecording()" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12.5px;cursor:pointer;background:#fef2f2;border:1.5px solid #f87171;color:#b91c1c;">
+                <span id="record_voice_icon">🎙️</span> <span id="record_voice_label"><span class="lang-en">Record Strategy</span><span class="lang-es" lang="es">Grabar explicación</span></span>
+              </button>
+              <span id="voice_timer" style="font-family:monospace;font-size:13px;font-weight:700;color:#dc2626;display:none;">0:00</span>
+              <div id="voice_player_wrap" style="display:none;align-items:center;gap:8px;">
+                <audio id="voice_audio_player" controls style="height:32px;max-width:220px;"></audio>
+                <button type="button" class="btn btn-sm text-danger" onclick="deleteVoiceRecording()" style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:12px;"><span class="lang-en">✕ Delete</span><span class="lang-es" lang="es">✕ Borrar</span></button>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" onclick="saveParentSignoff()">
+            <span class="lang-en">Save reflection on this device</span><span class="lang-es" lang="es">Guardar reflexión en este dispositivo</span>
           </button>
         </div>
 
@@ -1919,40 +2913,73 @@ export function renderCelebration() {
             <div class="cert-check">🏆</div>
             <div class="cert-info">
               <h4 class="cert-header">
-                <span class="lang-en">Homework Review Verified!</span>
-                <span class="lang-es" lang="es">¡Revisión de tarea verificada!</span>
+                <span class="lang-en">Reflection saved on this device</span>
+                <span class="lang-es" lang="es">Reflexión guardada en este dispositivo</span>
               </h4>
               <p class="cert-detail"><strong id="display_parent_name"></strong></p>
-              <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <p class="cert-date"><span class="lang-en">Saved on:</span><span class="lang-es" lang="es">Guardado el:</span> <span id="display_signoff_date"></span></p>
+              <div id="display_family_streak_box" class="cert-streak-box">
+                <p>🔥 <strong id="display_family_streak_text"><span class="lang-en">1-Night Streak</span><span class="lang-es" lang="es">Racha de 1 noche</span></strong></p>
+              </div>
+              <div id="display_family_feeling_box" class="cert-feeling-box" style="margin:6px 0;">
+                <span id="display_family_feeling_badge" class="badge-feeling" style="display:inline-block;padding:3px 8px;border-radius:6px;background:#f1f5f9;font-size:12px;font-weight:700;"></span>
+              </div>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
-                <p class="cert-note-title"><strong><span class="lang-en">Note to teacher:</span><span class="lang-es" lang="es">Nota para el maestro:</span></strong></p>
+                <p class="cert-note-title"><strong><span class="lang-en">Question draft (not sent):</span><span class="lang-es" lang="es">Borrador de pregunta (no enviado):</span></strong></p>
                 <p id="display_parent_note" class="cert-note-content"></p>
+              </div>
+              <div id="display_parent_reflection_box" class="cert-note-box" hidden>
+                <p class="cert-note-title"><strong><span class="lang-en">Family reflection:</span><span class="lang-es" lang="es">Reflexión familiar:</span></strong></p>
+                <p id="display_parent_reflection" class="cert-note-content"></p>
+              </div>
+              <div id="display_family_photo_box" class="cert-photo-box" hidden style="margin-top:8px;">
+                <p class="cert-note-title"><strong><span class="lang-en">Student Work Photo:</span><span class="lang-es" lang="es">Foto del trabajo:</span></strong></p>
+                <img id="display_family_photo" alt="Student notebook work" style="max-width:180px;border-radius:8px;border:1.5px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+              </div>
+              <div id="display_family_voice_box" class="cert-voice-box" hidden style="margin-top:8px;">
+                <p class="cert-note-title"><strong><span class="lang-en">Student Voice Memo:</span><span class="lang-es" lang="es">Nota de voz del estudiante:</span></strong></p>
+                <audio id="display_family_voice_player" controls style="height:32px;max-width:220px;margin-top:4px;"></audio>
               </div>
             </div>
           </div>
           <div class="cert-actions">
             <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
-              <span class="lang-en">🖨️ Print Certificate</span>
+              <span class="lang-en">🖨️ Print Certificate</span><span class="lang-es" lang="es">🖨️ Imprimir certificado</span>
+            </button>
+            <button type="button" class="btn btn-outline-secondary print-cert-btn" onclick="printRefrigeratorSheet()">
+              <span class="lang-en">📄 1-Page Refrigerator Sheet</span><span class="lang-es" lang="es">📄 Hoja familiar (1 pág.)</span>
             </button>
             <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
-              <span class="lang-en">Edit sign-off</span>
+              <span class="lang-en">Edit reflection</span><span class="lang-es" lang="es">Editar reflexión</span>
             </button>
           </div>
         </div>
       </div>
 
+      <div class="next-photobooth-banner card-ish">
+        <button type="button" class="btn-next-photobooth" onclick="switchHomeworkTab('photobooth')">
+          <span class="pb-banner-icon" aria-hidden="true">📸</span>
+          <div class="pb-banner-labels">
+            <strong><span class="lang-en">Open the Math Work Photobooth ➔</span><span class="lang-es" lang="es">Abre la cabina de fotos del trabajo ➔</span></strong>
+            <small><span class="lang-en">Optional. Photograph tonight's notebook page, scratchpad or whiteboard — add a frame and stickers, then download or print it.</span><span class="lang-es" lang="es">Opcional. Tomen una foto de la página del cuaderno, del borrador o de la pizarra: agreguen un marco y calcomanías, y descárguenla o imprímanla.</span></small>
+          </div>
+        </button>
+      </div>
+
+      </details>
+
       <!-- Print-Only Certificate Layout -->
       <div class="print-only-certificate" id="print_only_certificate">
         <div class="print-cert-header">
           <h2>EDU WONDERLAB MATH</h2>
-          <h3>Family Math Night Completion Certificate</h3>
+          <h3>Family Math Practice Record</h3>
         </div>
         <div class="print-cert-body">
-          <p>This certifies that the homework for <strong><span id="print_lesson_title"></span></strong> was completed and reviewed collaboratively.</p>
+          <p>A personal record of practice for <strong><span id="print_lesson_title"></span></strong>. Saved on this device; not submitted to the teacher.</p>
           <div class="print-cert-signatures">
             <div class="print-sig-block">
               <p class="sig-line" id="print_parent_name"></p>
-              <p class="sig-label">Parent/Guardian Signature</p>
+              <p class="sig-label">Practice partner (optional)</p>
             </div>
             <div class="print-sig-block">
               <p class="sig-line" id="print_signoff_date"></p>
@@ -1960,7 +2987,7 @@ export function renderCelebration() {
             </div>
           </div>
           <div class="print-cert-note" id="print_parent_note_wrapper" style="display:none;">
-            <p class="note-heading"><strong>Parent Note to Teacher:</strong></p>
+            <p class="note-heading"><strong>Question draft (not sent):</strong></p>
             <p id="print_parent_note" class="note-body"></p>
           </div>
         </div>
@@ -1975,14 +3002,19 @@ export function renderCelebration() {
    button, the hero total and this paragraph cannot disagree. They did: the hero
    promised 25 minutes across 5 stops, the rail billed Check at 10, and this
    paragraph asked for 15-20 — three numbers for one stop, on one screen. */
-export function renderQuickCheckIntro(coreCount = 6) {
+export function renderQuickCheckIntro(coreCount = 6, hasMore = true) {
   const mins = HOMEWORK_TABS.find((t) => t.id === "check")?.min ?? 8;
+  /* A Part 2 with authored session practice ships exactly its core set and no
+     bonus accordion, so "the extra practice at the bottom" pointed at nothing.
+     Only promise it when the page renders it. */
+  const extraEn = hasMore ? " The extra practice at the bottom is optional." : "";
+  const extraEs = hasMore ? " La práctica extra al final es opcional." : "";
   return `
     <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">⏱️ About <strong>${mins} minutes</strong> for the ${coreCount} problems below. The extra practice at the bottom is optional.</span>
-        <span class="lang-es" lang="es">⏱️ Unos <strong>${mins} minutos</strong> para los ${coreCount} problemas de abajo. La práctica extra al final es opcional.</span>
+        <span class="lang-en">⏱️ About <strong><span id="hw_check_minutes">${mins}</span> minutes</strong> for the <span id="hw_check_problem_count">${coreCount}</span> problems below.<span class="quick-check-extra-copy">${extraEn}</span></span>
+        <span class="lang-es" lang="es">⏱️ Unos <strong><span id="hw_check_minutes_es">${mins}</span> minutos</strong> para los <span id="hw_check_problem_count_es">${coreCount}</span> problemas de abajo.<span class="quick-check-extra-copy">${extraEs}</span></span>
       </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
@@ -2134,7 +3166,19 @@ export function getRealWorldSpotlight(topic) {
   );
 }
 
-export function getTopicMisconception(topic) {
+export function getTopicMisconception(topic, config) {
+  const exact = exactFamilySupport(config || {});
+  if (exact)
+    return {
+      trapEn: "Using a familiar rule before identifying what this question asks.",
+      trapEs: "Usar una regla conocida sin identificar qué pide esta pregunta.",
+      coachEn: exact.capEn,
+      coachEs: exact.capEs,
+    };
+  if (topic === "ratios") {
+    const strand = RATIO_STRAND_MISCONCEPTIONS[ratioFocus(config)];
+    if (strand) return strand;
+  }
   const misconceptions = {
     exponents: {
       trapEn: "Multiplying base × exponent (thinking 3⁴ = 12 instead of 3 × 3 × 3 × 3 = 81).",
@@ -3551,7 +4595,33 @@ const FAMILY_ACTIVITIES = {
   ],
 };
 
-export function getFamilyActivities(topic) {
+export function getFamilyActivities(topicOrConfig) {
+  const config = typeof topicOrConfig === "object" ? topicOrConfig : null;
+  const exact = config && exactFamilyMission(config);
+  if (exact)
+    return [
+      exact,
+      {
+        ...exact,
+        titleEn: "Try your own numbers",
+        titleEs: "Prueba tus propios números",
+        steps: [
+          {
+            en: "Use the recommended activity above as your model. Choose a new set of sensible numbers for the same situation.",
+            es: "Usa la actividad recomendada como modelo. Elige otros números razonables para la misma situación.",
+          },
+          {
+            en: "Solve with the same representation. Keep labels, units, and the meaning of each number clear.",
+            es: "Resuelve con la misma representación. Mantén claras las etiquetas, unidades y el significado de cada número.",
+          },
+          {
+            en: "Partner: ask how the answer changes. Working solo: write one sentence comparing the two examples.",
+            es: "Acompañante: pregunta cómo cambia la respuesta. A solas: escribe una oración que compare los dos ejemplos.",
+          },
+        ],
+      },
+    ];
+  const topic = config ? detectVisualTopic(config) : topicOrConfig;
   return FAMILY_ACTIVITIES[topic] || FAMILY_ACTIVITIES.fallback;
 }
 
@@ -3571,7 +4641,7 @@ function renderFamilyActivityCard(act, idx) {
     .join("");
 
   return `
-    <details class="fam-act-card"${idx === 0 ? " open" : ""}>
+    <details class="fam-act-card" data-family-activity="${idx}"${idx === 0 ? " open" : ""}>
       <summary class="fam-act-summary">
         <span class="fam-act-icon" aria-hidden="true">${act.icon}</span>
         <span class="fam-act-titles">
@@ -3590,6 +4660,10 @@ function renderFamilyActivityCard(act, idx) {
           <span class="lang-en">${esc(act.talkEn)}</span>
           <span class="lang-es" lang="es">${esc(act.talkEs)}</span>
         </div>
+        <button type="button" class="fam-mission-complete" data-mission-complete="${idx}" aria-pressed="false" onclick="completeFamilyMission(${idx})">
+          <span class="fam-mission-check" aria-hidden="true">✓</span>
+          <span class="lang-en">We did this mission</span><span class="lang-es" lang="es">Completamos esta misión</span>
+        </button>
       </div>
     </details>`;
 }
@@ -3601,15 +4675,27 @@ function renderFamilyActivityCard(act, idx) {
 export function renderFamilyActivityCorner(topic) {
   const acts = getFamilyActivities(topic);
   return `
-    <div class="fam-act-corner card-ish" aria-label="Family activity corner">
+    <div class="fam-act-corner card-ish" aria-label="Family activity corner" data-aria-en="Family activity corner" data-aria-es="Actividades familiares">
       <div class="fam-act-head">
-        <span class="fam-act-badge">🏡 <span class="lang-en">FAMILY ACTIVITY CORNER</span><span class="lang-es" lang="es">RINCÓN DE ACTIVIDADES</span></span>
-        <p class="fam-act-lead">
-          <span class="lang-en">No screens needed — three quick activities with things already in your home. Pick ONE tonight!</span>
-          <span class="lang-es" lang="es">Sin pantallas: tres actividades rápidas con cosas que ya tienen en casa. ¡Escojan UNA hoy!</span>
-        </p>
+        <div>
+          <span class="fam-act-badge">🏡 <span class="lang-en">FAMILY ACTIVITY CORNER</span><span class="lang-es" lang="es">RINCÓN DE ACTIVIDADES</span></span>
+          <p class="fam-act-lead">
+            <span class="lang-en">Try the recommended mission. Student: explain; partner: ask one question, then switch. Paper drawings work for every object.</span>
+            <span class="lang-es" lang="es">Prueba la misión recomendada. Estudiante: explica; acompañante: haz una pregunta, luego cambien. Puedes dibujar los objetos en papel.</span>
+          </p>
+        </div>
+        <button type="button" class="family-mission-picker" onclick="pickFamilyMission()">
+          🎲 <span class="lang-en">Pick an alternative</span><span class="lang-es" lang="es">Elegir una alternativa</span>
+        </button>
       </div>
-      ${acts.map((a, i) => renderFamilyActivityCard(a, i)).join("")}
+      <p class="family-mission-status" id="family_mission_status" aria-live="polite">
+        <span class="lang-en">One mission is enough. You can also work solo and explain in writing.</span><span class="lang-es" lang="es">Una misión es suficiente. También puedes trabajar a solas y explicar por escrito.</span>
+      </p>
+      ${renderFamilyActivityCard(acts[0], 0)}
+      <details class="family-mission-alternatives"><summary><span class="lang-en">Optional alternatives</span><span class="lang-es" lang="es">Alternativas opcionales</span></summary>${acts
+        .slice(1)
+        .map((a, i) => renderFamilyActivityCard(a, i + 1))
+        .join("")}</details>
     </div>`;
 }
 
@@ -3623,10 +4709,34 @@ export function renderFamilyActivityCorner(topic) {
  * below; every pair and statement is checked arithmetic, not generated.
  */
 const FAMILY_GAME_PAIRS = {
+  // 6.AT.1 — writing a comparison, in the order it is named. No equivalence,
+  // no rates, no percent: none of it has been taught on the night this runs.
+  "ratios-understand": [
+    { a: "3 to 2", b: "3 : 2" },
+    { a: "3 red to 5 blue", b: "part to part" },
+    { a: "3 red out of 8 in all", b: "part to whole" },
+    { a: "the word “to”", b: "the symbol :" },
+  ],
+  // 6.AT.2 — the rate for ONE.
+  "ratios-rate": [
+    { a: "$6 for 3 lb", b: "$2 per lb" },
+    { a: "120 miles in 2 hours", b: "60 miles per hour" },
+    { a: "$5.00 for 10 pencils", b: "50¢ per pencil" },
+    { a: "the words “per” and “each”", b: "a rate for 1" },
+  ],
+  // 6.AT.4 — Unit 4.
+  percent: [
+    { a: "1/2 as a percent", b: "50%" },
+    { a: "0.25", b: "25%" },
+    { a: "percent", b: "per 100" },
+    { a: "10% of 80", b: "8" },
+  ],
+  // 6.AT.3* — equivalent ratios. This is the bank the whole strand used to
+  // share, and it fits the middle of Unit 3 exactly.
   ratios: [
     { a: "2 : 3 doubled", b: "4 : 6" },
-    { a: "$6 for 3 lb", b: "$2 per lb" },
-    { a: "1/2 as a percent", b: "50%" },
+    { a: "2 : 5 times 4", b: "8 : 20" },
+    { a: "6 : 9 simplified", b: "2 : 3" },
     { a: "3 to 4", b: "3 : 4" },
   ],
   fractions: [
@@ -3728,6 +4838,121 @@ const FAMILY_GAME_PAIRS = {
 };
 
 const FAMILY_TF_QUESTIONS = {
+  "ratios-understand": [
+    {
+      en: "The ratio 2:3 is the same as the ratio 3:2.",
+      es: "La razón 2:3 es igual a la razón 3:2.",
+      answer: false,
+      whyEn: "Order matters in a ratio — 2 cups juice to 3 cups water is not 3 juice to 2 water.",
+      whyEs:
+        "El orden importa en una razón: 2 tazas de jugo por 3 de agua no es lo mismo que 3 de jugo por 2 de agua.",
+    },
+    {
+      en: "A bowl has 3 apples and 5 oranges. The ratio of apples to oranges is 3:5.",
+      es: "Un frutero tiene 3 manzanas y 5 naranjas. La razón de manzanas a naranjas es 3:5.",
+      answer: true,
+      whyEn: "Apples are named first, so 3 goes first. That is a part-to-part ratio.",
+      whyEs:
+        "Las manzanas se nombran primero, así que el 3 va primero. Es una razón parte a parte.",
+    },
+    {
+      en: "In that same bowl, the ratio of apples to ALL the fruit is 3:5.",
+      es: "En ese mismo frutero, la razón de manzanas a TODA la fruta es 3:5.",
+      answer: false,
+      whyEn: "All the fruit is 3 + 5 = 8, so apples to all the fruit is 3:8 — part to whole.",
+      whyEs: "Toda la fruta es 3 + 5 = 8, así que manzanas a toda la fruta es 3:8 — parte a todo.",
+    },
+    {
+      en: "“12 cookies” by itself is a ratio.",
+      es: "“12 galletas” por sí solo es una razón.",
+      answer: false,
+      whyEn: "A ratio always compares TWO amounts. One number alone is just a count.",
+      whyEs: "Una razón siempre compara DOS cantidades. Un solo número es nada más un conteo.",
+    },
+    {
+      en: "“3 to 2” and “3 : 2” are two ways to write the same ratio.",
+      es: "“3 a 2” y “3 : 2” son dos maneras de escribir la misma razón.",
+      answer: true,
+      whyEn: "The colon is just a shorter way to write the word “to.”",
+      whyEs: "Los dos puntos son solo una manera más corta de escribir la palabra “a.”",
+    },
+  ],
+  "ratios-rate": [
+    {
+      en: "A unit rate compares a quantity to exactly 1 of something.",
+      es: "Una tasa unitaria compara una cantidad con exactamente 1 de algo.",
+      answer: true,
+      whyEn: "Miles per 1 hour, dollars per 1 pound — the 1 is what makes it a UNIT rate.",
+      whyEs: "Millas por 1 hora, dólares por 1 libra: el 1 es lo que la hace tasa UNITARIA.",
+    },
+    {
+      en: "To find the price for one item, divide the total cost by the number of items.",
+      es: "Para hallar el precio de un artículo, divide el costo total entre el número de artículos.",
+      answer: true,
+      whyEn: "$6 for 3 pounds is $6 ÷ 3 = $2 per pound.",
+      whyEs: "$6 por 3 libras es $6 ÷ 3 = $2 por libra.",
+    },
+    {
+      en: "$8 for 4 pounds is a better price per pound than $9 for 3 pounds.",
+      es: "$8 por 4 libras es mejor precio por libra que $9 por 3 libras.",
+      answer: true,
+      whyEn: "$8 ÷ 4 = $2 per pound; $9 ÷ 3 = $3 per pound. $2 is less.",
+      whyEs: "$8 ÷ 4 = $2 por libra; $9 ÷ 3 = $3 por libra. $2 es menos.",
+    },
+    {
+      en: "The bigger package is always the better buy.",
+      es: "El paquete más grande siempre es la mejor compra.",
+      answer: false,
+      whyEn:
+        "Only the price for ONE unit can answer that — a big box can still cost more per ounce.",
+      whyEs:
+        "Solo el precio por UNA unidad lo responde: una caja grande puede costar más por onza.",
+    },
+    {
+      en: "“60 miles per hour” and “60 miles every 2 hours” are the same rate.",
+      es: "“60 millas por hora” y “60 millas cada 2 horas” son la misma tasa.",
+      answer: false,
+      whyEn: "60 miles every 2 hours is 60 ÷ 2 = 30 miles per hour — half as fast.",
+      whyEs: "60 millas cada 2 horas es 60 ÷ 2 = 30 millas por hora: la mitad de rápido.",
+    },
+  ],
+  percent: [
+    {
+      en: "Percent means “per 100.”",
+      es: "Por ciento significa “por cada 100.”",
+      answer: true,
+      whyEn: "45% means 45 out of every 100.",
+      whyEs: "45% significa 45 de cada 100.",
+    },
+    {
+      en: "25% of a number is the same as 1/4 of it.",
+      es: "El 25% de un número es lo mismo que 1/4 de él.",
+      answer: true,
+      whyEn: "25 out of 100 simplifies to 1/4, so both take the same amount.",
+      whyEs: "25 de 100 se simplifica a 1/4, así que ambos toman la misma cantidad.",
+    },
+    {
+      en: "A percent can never be more than 100.",
+      es: "Un porcentaje nunca puede ser mayor que 100.",
+      answer: false,
+      whyEn: "150% just means one and a half times the whole — 150% of 20 is 30.",
+      whyEs: "150% significa una vez y media el total: el 150% de 20 es 30.",
+    },
+    {
+      en: "To find 10% of a number, move the decimal point one place to the left.",
+      es: "Para hallar el 10% de un número, mueve el punto decimal un lugar a la izquierda.",
+      answer: true,
+      whyEn: "10% of 80 is 8.0 — and that makes 5% and 20% easy from there.",
+      whyEs: "El 10% de 80 es 8.0, y desde ahí el 5% y el 20% salen fácil.",
+    },
+    {
+      en: "Taking 50% off, then 50% off again, is the same as 100% off.",
+      es: "Quitar 50%, y luego otro 50%, es lo mismo que quitar 100%.",
+      answer: false,
+      whyEn: "The second 50% comes off the SMALLER price, so you still pay 25% — never free.",
+      whyEs: "El segundo 50% se quita del precio MÁS PEQUEÑO, así que pagas 25%: nunca es gratis.",
+    },
+  ],
   ratios: [
     {
       en: "The ratio 2:3 is the same as the ratio 3:2.",
@@ -4295,12 +5520,12 @@ const FAMILY_TF_QUESTIONS = {
       whyEs: "En la recta, −7 está más a la IZQUIERDA. ¡Deber $7 es peor que deber $2!",
     },
     {
-      en: "The absolute value of −6 is −6.",
-      es: "El valor absoluto de −6 es −6.",
+      en: "Only whole numbers belong on a number line.",
+      es: "Solo los números enteros van en una recta numérica.",
       answer: false,
-      whyEn: "Absolute value is DISTANCE from zero, and distance is never negative: |−6| = 6.",
+      whyEn: "Fractions and decimals have their own spots: −2.5 sits halfway between −2 and −3.",
       whyEs:
-        "El valor absoluto es la DISTANCIA a cero, y la distancia nunca es negativa: |−6| = 6.",
+        "Las fracciones y los decimales tienen su propio lugar: −2.5 queda a la mitad entre −2 y −3.",
     },
     {
       en: "−4 and 4 are opposites.",
@@ -4416,6 +5641,120 @@ const FAMILY_TF_QUESTIONS = {
  * something specific (each card carries its own why).
  */
 const FAMILY_SORT_GAMES = {
+  // 6.AT.1's whole skill: is this comparing two GROUPS, or a group to the TOTAL?
+  "ratios-understand": {
+    a: { en: "Part to PART", es: "Parte a PARTE" },
+    b: { en: "Part to WHOLE", es: "Parte a TODO" },
+    cards: [
+      {
+        t: "3 boys to 4 girls",
+        bucket: 0,
+        en: "Two groups compared with each other.",
+        es: "Dos grupos comparados entre sí.",
+      },
+      {
+        t: "3 boys out of 7 students",
+        bucket: 1,
+        en: "One group compared with the whole class.",
+        es: "Un grupo comparado con toda la clase.",
+      },
+      {
+        t: "2 cups juice to 5 cups water",
+        bucket: 0,
+        en: "Juice and water are both parts of the mix.",
+        es: "El jugo y el agua son dos partes de la mezcla.",
+      },
+      {
+        t: "2 cups juice in 7 cups of punch",
+        bucket: 1,
+        en: "Juice compared with all 7 cups of punch.",
+        es: "El jugo comparado con las 7 tazas de ponche.",
+      },
+      {
+        t: "5 red marbles to 3 blue marbles",
+        bucket: 0,
+        en: "Red and blue are two separate parts.",
+        es: "Rojas y azules son dos partes distintas.",
+      },
+      {
+        t: "5 red marbles out of 8 marbles",
+        bucket: 1,
+        en: "Red compared with every marble there is.",
+        es: "Las rojas comparadas con todas las canicas.",
+      },
+    ],
+  },
+  // 6.AT.2 — spotting whether a rate has already been reduced to "for 1".
+  "ratios-rate": {
+    a: { en: "Already a rate for 1", es: "Ya es una tasa por 1" },
+    b: { en: "NOT yet a rate for 1", es: "TODAVÍA no es tasa por 1" },
+    cards: [
+      { t: "55 miles per hour", bucket: 0, en: "Per ONE hour.", es: "Por UNA hora." },
+      {
+        t: "$12 for 4 tickets",
+        bucket: 1,
+        en: "Divide by 4 to get $3 per ticket.",
+        es: "Divide entre 4 para obtener $3 por boleto.",
+      },
+      { t: "$3 per pound", bucket: 0, en: "Per ONE pound.", es: "Por UNA libra." },
+      {
+        t: "150 words in 5 minutes",
+        bucket: 1,
+        en: "Divide by 5 to get 30 words per minute.",
+        es: "Divide entre 5 para obtener 30 palabras por minuto.",
+      },
+      {
+        t: "9 miles each gallon",
+        bucket: 0,
+        en: "“Each” means per ONE.",
+        es: "“Cada” significa por UNO.",
+      },
+      {
+        t: "$20 for 8 gallons",
+        bucket: 1,
+        en: "Divide by 8 to get $2.50 per gallon.",
+        es: "Divide entre 8 para obtener $2.50 por galón.",
+      },
+    ],
+  },
+  // 6.AT.4 — the same amount wearing three different costumes.
+  percent: {
+    a: { en: "Equal to 1/4", es: "Igual a 1/4" },
+    b: { en: "NOT equal to 1/4", es: "NO es igual a 1/4" },
+    cards: [
+      { t: "25%", bucket: 0, en: "25 out of 100 = 1/4.", es: "25 de 100 = 1/4." },
+      {
+        t: "0.25",
+        bucket: 0,
+        en: "Twenty-five hundredths = 1/4.",
+        es: "Veinticinco centésimas = 1/4.",
+      },
+      {
+        t: "25 out of 100",
+        bucket: 0,
+        en: "That is what the word percent means.",
+        es: "Eso es lo que significa la palabra por ciento.",
+      },
+      {
+        t: "2.5%",
+        bucket: 1,
+        en: "2.5 out of 100 — that is 1/40, ten times smaller.",
+        es: "2.5 de 100: eso es 1/40, diez veces más pequeño.",
+      },
+      {
+        t: "1/40",
+        bucket: 1,
+        en: "Much smaller than one quarter.",
+        es: "Mucho más pequeño que un cuarto.",
+      },
+      {
+        t: "4%",
+        bucket: 1,
+        en: "That flips the fraction — 1/4 is 25%, not 4%.",
+        es: "Eso invierte la fracción: 1/4 es 25%, no 4%.",
+      },
+    ],
+  },
   ratios: {
     a: { en: "Equivalent to 2 : 3", es: "Equivale a 2 : 3" },
     b: { en: "NOT equivalent to 2 : 3", es: "NO equivale a 2 : 3" },
@@ -4923,6 +6262,60 @@ const FAMILY_SORT_GAMES = {
  * family argues about numbers for two minutes and then checks.
  */
 const FAMILY_WYR = {
+  "ratios-understand": [
+    {
+      a: {
+        en: "Punch mixed 1 part syrup to 4 parts water",
+        es: "Ponche de 1 parte de jarabe por 4 de agua",
+      },
+      b: {
+        en: "Punch mixed 4 parts syrup to 1 part water",
+        es: "Ponche de 4 partes de jarabe por 1 de agua",
+      },
+      en: "Same two numbers, opposite order — and 4:1 is far sweeter. Order is the whole point of a ratio.",
+      es: "Los mismos dos números, en orden opuesto: 4:1 es mucho más dulce. El orden es lo esencial de una razón.",
+    },
+    {
+      a: {
+        en: "A class with a 1 : 4 teacher-to-student ratio",
+        es: "Una clase con razón de 1 : 4 de maestro a estudiantes",
+      },
+      b: {
+        en: "A class with a 1 : 30 teacher-to-student ratio",
+        es: "Una clase con razón de 1 : 30 de maestro a estudiantes",
+      },
+      en: "1 : 4 means one teacher for every 4 students, so there is far more help to go around.",
+      es: "1 : 4 significa un maestro por cada 4 estudiantes, así que hay mucha más ayuda disponible.",
+    },
+  ],
+  "ratios-rate": [
+    {
+      a: { en: "8 oz of juice for $2.00", es: "8 oz de jugo por $2.00" },
+      b: { en: "12 oz of juice for $2.70", es: "12 oz de jugo por $2.70" },
+      en: "The 12 oz wins: 22.5¢ an ounce against 25¢ an ounce. Always compare the price for ONE.",
+      es: "Gana la de 12 oz: 22.5¢ por onza contra 25¢ por onza. Siempre comparen el precio de UNA.",
+    },
+    {
+      a: { en: "A job paying $45 for 5 hours", es: "Un trabajo que paga $45 por 5 horas" },
+      b: { en: "A job paying $60 for 8 hours", es: "Un trabajo que paga $60 por 8 horas" },
+      en: "The first: $9 an hour against $7.50 an hour. The bigger total is not the better rate.",
+      es: "El primero: $9 por hora contra $7.50 por hora. El total mayor no es la mejor tasa.",
+    },
+  ],
+  percent: [
+    {
+      a: { en: "25% off a $40 jacket", es: "25% de descuento en una chaqueta de $40" },
+      b: { en: "$12 off a $40 jacket", es: "$12 de descuento en una chaqueta de $40" },
+      en: "Take the $12. 25% of $40 is only $10 — a percent is worth whatever the whole is worth.",
+      es: "Tomen los $12. El 25% de $40 son solo $10: un porcentaje vale según el total del que se saca.",
+    },
+    {
+      a: { en: "A 10% raise on $500 a week", es: "Un aumento del 10% sobre $500 por semana" },
+      b: { en: "A $40 raise on $500 a week", es: "Un aumento de $40 sobre $500 por semana" },
+      en: "Take the 10% — that is $50, ten dollars more than the flat $40. Same idea, opposite answer.",
+      es: "Tomen el 10%: son $50, diez dólares más que los $40 fijos. La misma idea, respuesta opuesta.",
+    },
+  ],
   ratios: [
     {
       a: { en: "A 12 oz drink for $3", es: "Una bebida de 12 oz por $3" },
@@ -5175,21 +6568,215 @@ const FAMILY_WYR = {
   ],
 };
 
-function familySortGame(topic) {
-  return FAMILY_SORT_GAMES[topic] || FAMILY_SORT_GAMES.fallback;
+/**
+ * The arcade's own lookup key, which is FINER than detectVisualTopic().
+ *
+ * detectVisualTopic answers "which picture does this lesson need", and one
+ * picture legitimately serves a whole strand — every 6.AT standard except the
+ * algebra ones resolves to "ratios". The games are a different question. The
+ * arcade's lead says "four quick games about TONIGHT'S math", and one `ratios`
+ * bank spanning 14 lessons across 6 standards and two units could not keep that
+ * promise at either end: lesson 3-1 "Understand Ratios" — night one, where the
+ * whole skill is writing a comparison in the named order — was handed a memory
+ * pair for "1/2 as a percent → 50%" (Unit 4), a unit-rate pair, an equivalent-
+ * ratio sorting game and a better-buy dilemma. Three of its four games were
+ * mathematics the family had not been taught yet; the 4-x percent lessons got
+ * the mirror image, a bank about 2:3 equivalence with percent in one card.
+ *
+ * So the games key off the STANDARD, and fall back to the visual topic for
+ * every strand still served well by one bank. Kept deliberately separate from
+ * detectVisualTopic: that function also drives the visual lab, the spotlight,
+ * the misconception, the family activities and the external resources, and
+ * splitting it would move all of them to chase a games defect.
+ *
+ * REACHING BACK is fine and reaching FORWARD is not — a game may use what the
+ * family has already been taught, never what is still coming. That asymmetry is
+ * what tools/validate-family-games.mjs enforces.
+ */
+// The same strand can contain different operations: these two banks deliberately
+// override topic-wide fraction division and one-variable equation games.
+FAMILY_GAME_PAIRS["fraction-multiply"] = [
+  { a: "½ × 12", b: "6" },
+  { a: "¾ × 20", b: "15" },
+  { a: "⅔ × 12", b: "8" },
+  { a: "⅗ × 20", b: "12" },
+  { a: "6/5 × 20", b: "24" },
+  { a: "5/3 × 12", b: "20" },
+];
+FAMILY_TF_QUESTIONS["fraction-multiply"] = [
+  {
+    en: "¾ of 20 is 15.",
+    es: "¾ de 20 es 15.",
+    answer: true,
+    whyEn: "20 ÷ 4 × 3 = 15.",
+    whyEs: "20 ÷ 4 × 3 = 15.",
+  },
+  {
+    en: "Multiplying a positive number by 6/5 makes it larger.",
+    es: "Multiplicar un número positivo por 6/5 lo aumenta.",
+    answer: true,
+    whyEn: "6/5 is greater than 1.",
+    whyEs: "6/5 es mayor que 1.",
+  },
+  {
+    en: "To find ⅔ of 12, divide by ⅔.",
+    es: "Para hallar ⅔ de 12, divide entre ⅔.",
+    answer: false,
+    whyEn: "Multiply: ⅔ × 12 = 8.",
+    whyEs: "Multiplica: ⅔ × 12 = 8.",
+  },
+  {
+    en: "A fraction factor is always less than 1.",
+    es: "Un factor fraccionario siempre es menor que 1.",
+    answer: false,
+    whyEn: "6/5 is a fraction greater than 1.",
+    whyEs: "6/5 es una fracción mayor que 1.",
+  },
+];
+FAMILY_SORT_GAMES["fraction-multiply"] = {
+  a: { en: "Product less than 12", es: "Producto menor que 12" },
+  b: { en: "Product greater than 12", es: "Producto mayor que 12" },
+  cards: [
+    ["½ × 12", 0],
+    ["¾ × 12", 0],
+    ["⅔ × 12", 0],
+    ["3/2 × 12", 1],
+    ["5/4 × 12", 1],
+    ["4/3 × 12", 1],
+  ].map(([t, bucket]) => ({
+    t,
+    bucket,
+    en: bucket ? "The factor is greater than 1." : "The factor is between 0 and 1.",
+    es: bucket ? "El factor es mayor que 1." : "El factor está entre 0 y 1.",
+  })),
+};
+FAMILY_WYR["fraction-multiply"] = [
+  {
+    a: { en: "¾ of 20 tokens", es: "¾ de 20 fichas" },
+    b: { en: "½ of 24 tokens", es: "½ de 24 fichas" },
+    en: "The first gives 15; the second gives 12. Choose and explain with equal groups.",
+    es: "La primera da 15; la segunda da 12. Elige y explica con grupos iguales.",
+  },
+  {
+    a: { en: "6/5 of 10 tokens", es: "6/5 de 10 fichas" },
+    b: { en: "⅔ of 15 tokens", es: "⅔ de 15 fichas" },
+    en: "The first gives 12; the second gives 10. A factor above 1 can enlarge the starting amount.",
+    es: "La primera da 12; la segunda da 10. Un factor mayor que 1 puede aumentar la cantidad inicial.",
+  },
+];
+FAMILY_GAME_PAIRS["two-variables"] = [
+  { a: "y=2x; x=1", b: "y=2" },
+  { a: "y=2x; x=3", b: "y=6" },
+  { a: "y=x+5; x=2", b: "y=7" },
+  { a: "y=3x; x=4", b: "y=12" },
+  { a: "y=2x+1; x=4", b: "y=9" },
+  { a: "y=x+4; x=1", b: "y=5" },
+];
+FAMILY_TF_QUESTIONS["two-variables"] = [
+  {
+    en: "For y=3x, the pair (2,6) fits.",
+    es: "Para y=3x, el par (2,6) cumple.",
+    answer: true,
+    whyEn: "6 = 3 × 2.",
+    whyEs: "6 = 3 × 2.",
+  },
+  {
+    en: "For y=x+4, doubling x always doubles y.",
+    es: "Para y=x+4, duplicar x siempre duplica y.",
+    answer: false,
+    whyEn: "x=2 gives y=6; x=4 gives y=8, not 12.",
+    whyEs: "x=2 da y=6; x=4 da y=8, no 12.",
+  },
+  {
+    en: "An ordered pair records both an input and an output.",
+    es: "Un par ordenado registra una entrada y una salida.",
+    answer: true,
+    whyEn: "(x,y) keeps the quantities in order.",
+    whyEs: "(x,y) mantiene las cantidades en orden.",
+  },
+  {
+    en: "For y=2x+1, input 3 gives output 6.",
+    es: "Para y=2x+1, la entrada 3 da la salida 6.",
+    answer: false,
+    whyEn: "2 × 3 + 1 = 7.",
+    whyEs: "2 × 3 + 1 = 7.",
+  },
+];
+FAMILY_SORT_GAMES["two-variables"] = {
+  a: { en: "Fits y=3x", es: "Cumple y=3x" },
+  b: { en: "Does not fit y=3x", es: "No cumple y=3x" },
+  cards: [
+    ["(1,3)", 0],
+    ["(2,6)", 0],
+    ["(0,0)", 0],
+    ["(3,6)", 1],
+    ["(2,5)", 1],
+    ["(4,7)", 1],
+  ].map(([t, bucket]) => ({
+    t,
+    bucket,
+    en: "Multiply the first coordinate by 3 and compare with the second.",
+    es: "Multiplica la primera coordenada por 3 y compárala con la segunda.",
+  })),
+};
+FAMILY_WYR["two-variables"] = [
+  {
+    a: { en: "Pay y=3x dollars for x rides", es: "Pagar y=3x dólares por x viajes" },
+    b: { en: "Pay y=2x+5 dollars for x rides", es: "Pagar y=2x+5 dólares por x viajes" },
+    en: "For 2 rides, A costs $6 and B costs $9. For 8 rides, A costs $24 and B costs $21. The better choice depends on x.",
+    es: "Para 2 viajes, A cuesta $6 y B $9. Para 8 viajes, A cuesta $24 y B $21. La mejor opción depende de x.",
+  },
+];
+
+const FAMILY_GAME_STANDARD_KEYS = {
+  "6.AT.1": "ratios-understand",
+  "6.AT.2": "ratios-rate",
+  "6.AT.4": "percent",
+};
+
+export function familyGameKey(config) {
+  const id = String(config.lessonId || config.id || "");
+  if (id === "1-2") return "fraction-multiply";
+  if (/^9-[1-4]$/.test(id)) return "two-variables";
+  const topic = detectVisualTopic(config);
+  if (topic !== "ratios") return topic;
+  return FAMILY_GAME_STANDARD_KEYS[String(config.standard || "")] || topic;
 }
 
-function familyWyr(topic) {
-  return FAMILY_WYR[topic] || FAMILY_WYR.fallback;
+/* Resolution order is refined key -> visual topic -> fallback. Without the
+   middle step a refined key missing from one of the four banks would drop that
+   game to the generic bank instead of the strand's own, which is a worse answer
+   than the bug being fixed. */
+function pickBank(bank, key, topic) {
+  return bank[key] || bank[topic] || bank.fallback;
 }
 
-function familyGamePairs(topic) {
-  return FAMILY_GAME_PAIRS[topic] || FAMILY_GAME_PAIRS.fallback;
+function familySortGame(key, topic) {
+  return pickBank(FAMILY_SORT_GAMES, key, topic);
 }
 
-function familyTfQuestions(topic) {
-  return FAMILY_TF_QUESTIONS[topic] || FAMILY_TF_QUESTIONS.fallback;
+function familyWyr(key, topic) {
+  return pickBank(FAMILY_WYR, key, topic);
 }
+
+function familyGamePairs(key, topic) {
+  return pickBank(FAMILY_GAME_PAIRS, key, topic);
+}
+
+function familyTfQuestions(key, topic) {
+  return pickBank(FAMILY_TF_QUESTIONS, key, topic);
+}
+
+/* Exported for tools/validate-family-games.mjs, which has to read the banks as
+   DATA to ask which standards each one is authored for. It reads them here
+   rather than keeping its own copy, because a copy drifts from the thing it is
+   meant to be checking and then reports on a set nobody ships. */
+export const FAMILY_GAME_BANKS = {
+  pairs: FAMILY_GAME_PAIRS,
+  tf: FAMILY_TF_QUESTIONS,
+  sort: FAMILY_SORT_GAMES,
+  wyr: FAMILY_WYR,
+};
 
 /**
  * The Family Game Break: Memory Flip (pairs) + True/False Face-Off, rendered on
@@ -5216,11 +6803,11 @@ const ARCADE_GAMES = [
   { id: "full", icon: "🕹️", en: "Big Arcade", es: "Sala grande" },
 ];
 
-export function renderFamilyGameBreak(topic, extras = {}) {
-  const pairs = familyGamePairs(topic);
-  const tf = familyTfQuestions(topic);
-  const sort = familySortGame(topic);
-  const wyr = familyWyr(topic);
+export function renderFamilyGameBreak(key, extras = {}, topic = key) {
+  const pairs = familyGamePairs(key, topic);
+  const tf = familyTfQuestions(key, topic);
+  const sort = familySortGame(key, topic);
+  const wyr = familyWyr(key, topic);
   const payload = JSON.stringify({ pairs, tf, sort, wyr }).replace(/</g, "\\u003c");
   const games = ARCADE_GAMES.filter(
     (g) => (g.id !== "quiz" || extras.quizHtml) && (g.id !== "full" || extras.arcadeUrl),
@@ -5338,7 +6925,17 @@ export function renderFamilyGameBreak(topic, extras = {}) {
 ${
   extras.quizHtml
     ? `
-      <div class="fam-game-card" id="fam_quiz_game" data-arcade-panel="quiz" hidden>${extras.quizHtml}</div>`
+      <div class="fam-game-card" id="fam_quiz_game" data-arcade-panel="quiz" hidden>
+        <div class="fam-game-card-head">
+          <h3 class="fam-game-h3">⚡ <span class="lang-en">Quick Quiz</span><span class="lang-es" lang="es">Reto rápido</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="initHomeworkGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+        </div>
+        <p class="fam-game-sub">
+          <span class="lang-en">Reinforce tonight's topic with a quick family game. You ask; your student decides!</span>
+          <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
+        </p>
+        ${extras.quizHtml}
+      </div>`
     : ""
 }${
   extras.arcadeUrl
@@ -5402,8 +6999,107 @@ export const MATH_TALK_QUESTIONS = [
   },
 ];
 
+/**
+ * The Skill Power-Up for a ratio-strand lesson, chosen by what the lesson
+ * actually teaches rather than by the shared "ratios" topic. See ratioFocus()
+ * in homework-alignment.mjs for why the topic alone is not enough.
+ */
+const RATIO_STRAND_POWER_UPS = {
+  "unit-rate": {
+    qEn: "A 12-pack of juice costs $6.00 and an 8-pack costs $4.40. Which is the better buy, and how do you know?",
+    qEs: "Un paquete de 12 jugos cuesta $6.00 y uno de 8 cuesta $4.40. ¿Cuál conviene más y cómo lo sabes?",
+    choices: [
+      {
+        en: "The 12-pack — $6.00 ÷ 12 = $0.50 each, and $4.40 ÷ 8 = $0.55 each",
+        es: "El de 12 — $6.00 ÷ 12 = $0.50 cada uno, y $4.40 ÷ 8 = $0.55 cada uno",
+      },
+      {
+        en: "The 8-pack — it costs less money in total ($4.40 < $6.00)",
+        es: "El de 8 — cuesta menos dinero en total ($4.40 < $6.00)",
+      },
+      {
+        en: "The 12-pack — it has more juices, so more is always the better buy",
+        es: "El de 12 — trae más jugos, y más siempre conviene más",
+      },
+    ],
+    correctIndex: 0,
+    hintEn:
+      "Divide the price by the number of items to get the price for ONE — then the smaller unit price wins.",
+    hintEs:
+      "Divide el precio entre la cantidad para obtener el precio de UNO — gana el precio unitario menor.",
+  },
+  percent: {
+    qEn: "A jacket is $40 and is marked 25% off. How much do you SAVE?",
+    qEs: "Una chaqueta cuesta $40 y tiene 25% de descuento. ¿Cuánto AHORRAS?",
+    choices: [
+      {
+        en: "$10 — because 25% means 25 out of 100, and 1/4 of $40 is $10",
+        es: "$10 — 25% es 25 de cada 100, y 1/4 de $40 es $10",
+      },
+      { en: "$25 — because the percent is 25", es: "$25 — porque el porcentaje es 25" },
+      { en: "$15 — because $40 − 25 = $15", es: "$15 — porque $40 − 25 = $15" },
+    ],
+    correctIndex: 0,
+    hintEn: "A percent is a rate out of 100 — it is a PART of the amount, never the amount itself.",
+    hintEs:
+      "Un porcentaje es una razón por cada 100 — es una PARTE de la cantidad, nunca la cantidad misma.",
+  },
+  convert: {
+    qEn: "There are 3 feet in 1 yard. How many feet are in 7 yards?",
+    qEs: "Hay 3 pies en 1 yarda. ¿Cuántos pies hay en 7 yardas?",
+    choices: [
+      {
+        en: "21 feet — multiply by 3 because feet are smaller, so you need more of them",
+        es: "21 pies — multiplica por 3 porque los pies son más pequeños, así que necesitas más",
+      },
+      { en: "About 2.3 feet — divide 7 by 3", es: "Unos 2.3 pies — divide 7 entre 3" },
+      { en: "10 feet — add 3 to 7", es: "10 pies — suma 3 a 7" },
+    ],
+    correctIndex: 0,
+    hintEn:
+      "Going to a SMALLER unit means more of them, so multiply. Going to a bigger unit means fewer, so divide.",
+    hintEs:
+      "Ir a una unidad MÁS PEQUEÑA significa más unidades: multiplica. Ir a una más grande significa menos: divide.",
+  },
+};
+
+const RATIO_STRAND_MISCONCEPTIONS = {
+  "unit-rate": {
+    trapEn: "Picking the cheaper TOTAL price instead of dividing to compare the price for one.",
+    trapEs: "Elegir el precio TOTAL más bajo en lugar de dividir para comparar el precio de uno.",
+    coachEn:
+      "Ask: 'What does ONE of them cost in each deal? Which number do we divide by to find that?'",
+    coachEs:
+      "Pregunta: '¿Cuánto cuesta UNO en cada oferta? ¿Entre qué número dividimos para saberlo?'",
+  },
+  percent: {
+    trapEn: "Treating the percent as an amount of money — reading 25% off $40 as $25 off.",
+    trapEs: "Tratar el porcentaje como una cantidad de dinero — leer 25% de $40 como $25.",
+    coachEn:
+      "Ask: '25% of WHAT? A percent is always a part of some amount — which amount is it a part of here?'",
+    coachEs:
+      "Pregunta: '¿25% de QUÉ? Un porcentaje siempre es parte de una cantidad — ¿de cuál es parte aquí?'",
+  },
+  convert: {
+    trapEn:
+      "Multiplying when the new unit is bigger (or dividing when it is smaller), so the answer moves the wrong way.",
+    trapEs:
+      "Multiplicar cuando la nueva unidad es más grande (o dividir cuando es más pequeña), y el resultado va al revés.",
+    coachEn:
+      "Ask: 'Is the new unit bigger or smaller? Should our number end up bigger or smaller than we started?'",
+    coachEs:
+      "Pregunta: '¿La nueva unidad es más grande o más pequeña? ¿El número debe terminar mayor o menor?'",
+  },
+};
+
 export function getTopicPowerUp(topic, config) {
+  const exact = exactFamilyPowerUp(config || {});
+  if (exact) return exact;
   const title = config?.title || "Tonight's Math";
+  if (topic === "ratios") {
+    const strand = RATIO_STRAND_POWER_UPS[ratioFocus(config)];
+    if (strand) return strand;
+  }
   const powerUps = {
     exponents: {
       qEn: "Which statement shows the true meaning of 4³?",
@@ -5691,7 +7387,7 @@ export function renderSkillPowerUp(config, topic = "expressions") {
             <span class="lang-es" lang="es">${esc(powerUp.qEs)}</span>
           </h3>
         </div>
-        <div class="powerup-badge-star" id="powerup_star_badge">★ 1 Star / 1 Estrella</div>
+        <div class="powerup-badge-star" id="powerup_star_badge"><span class="lang-en">★ 1 Star</span><span class="lang-es" lang="es">★ 1 Estrella</span></div>
       </div>
       <div class="powerup-choices-grid" id="powerup_choices">
         ${powerUp.choices
@@ -5857,9 +7553,9 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
           .join("")}
       </div>
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('together')">
-          <span class="lang-en">Next: Try Together ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Intentar Juntos ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('words')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </section>`;
@@ -5869,15 +7565,61 @@ function tabPanelAttrs(id, hidden = false) {
   return `class="tab-panel-inner" data-tab-panel="${id}" id="hw_panel_${id}" role="tabpanel"${hidden ? " hidden" : ""}`;
 }
 
+const WORKBENCH_TOOL_COPY = {
+  fractions: {
+    icon: "📏",
+    en: "Fraction Strips",
+    es: "Tiras de fracciones",
+    actionEn: "Build and compare fraction pieces to represent tonight's question.",
+    actionEs: "Construyan y comparen partes para representar la pregunta de hoy.",
+  },
+  coords: {
+    icon: "🧭",
+    en: "Coordinate Grid",
+    es: "Cuadrícula de coordenadas",
+    actionEn: "Plot ordered pairs on the same coordinate grid used in tonight's lesson.",
+    actionEs: "Ubiquen pares ordenados en la cuadrícula de la lección de hoy.",
+  },
+  tapes: {
+    icon: "📊",
+    en: "Ratio Tape",
+    es: "Cinta de razones",
+    actionEn: "Scale both parts together to model tonight's equivalent-ratio work.",
+    actionEs: "Escalen ambas partes juntas para modelar las razones equivalentes de hoy.",
+  },
+  decimals: {
+    icon: "🔢",
+    en: "Decimal Columns",
+    es: "Columnas decimales",
+    actionEn: "Line up place values for tonight's decimal addition and subtraction.",
+    actionEs: "Alineen los valores posicionales para sumar y restar decimales hoy.",
+  },
+};
+
+function workbenchSpec(config) {
+  const id = homeworkWorkbenchTool(config);
+  return id ? { id, ...WORKBENCH_TOOL_COPY[id] } : null;
+}
+
 export function renderLearnTab(config, visualLabHtml = "") {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   let concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
   const topic = detectVisualTopic(config);
+  const workbench = workbenchSpec(config);
   const powerUpHtml = renderSkillPowerUp(config, topic);
-  const spotlight = getRealWorldSpotlight(topic);
-  const mis = getTopicMisconception(topic);
+  const support = exactFamilySupport(config);
+  const spotlight = support
+    ? {
+        titleEn: support.titleEn,
+        titleEs: support.titleEs,
+        factEn: support.steps[0].en,
+        factEs: support.steps[0].es,
+        icon: "🏡",
+      }
+    : getRealWorldSpotlight(topic);
+  const mis = getTopicMisconception(topic, config);
 
   // Add Listen button to the Big Idea title
   const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
@@ -5939,18 +7681,34 @@ export function renderLearnTab(config, visualLabHtml = "") {
       </div>
     </details>`;
 
+  const workbenchLaunchHtml = workbench
+    ? `<div class="workbench-quick-launch card-ish learn-extended-block">
+        <div class="wb-launch-content">
+          <span class="wb-launch-icon" aria-hidden="true">${workbench.icon}</span>
+          <div class="wb-launch-text">
+            <strong><span class="lang-en">Tonight's math tool: ${workbench.en}</span><span class="lang-es" lang="es">Herramienta de hoy: ${workbench.es}</span></strong>
+            <p><span class="lang-en">${workbench.actionEn}</span><span class="lang-es" lang="es">${workbench.actionEs}</span></p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openTogetherWorkbench('${workbench.id}')">
+          <span class="lang-en">Open ${workbench.en} ➔</span>
+          <span class="lang-es" lang="es">Abrir ${workbench.es} ➔</span>
+        </button>
+      </div>`
+    : "";
+
   return `
     <div ${tabPanelAttrs("learn")}>
-      ${learning}
-      ${concept}
-      ${visualLabHtml}
-      ${parentDrawerHtml}
-      ${powerUpHtml}
-      <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
+      <div class="learn-summary-block">${learning}</div>
+      <div class="learn-big-idea-block">${concept}</div>
+      <div class="learn-extended-block">${visualLabHtml}</div>
+${workbenchLaunchHtml}
+      <div class="learn-extended-block">${parentDrawerHtml}${powerUpHtml}</div>
+      <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('words')">
-          <span class="lang-en">Next: Review Words ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Repasar Palabras ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </div>`;
@@ -5988,17 +7746,17 @@ export function renderTogetherTab(config, lessonId = "", workbenchHtml = "") {
     <div ${tabPanelAttrs("together", true)}>
       ${inner}
       ${mathTalkHtml}
-      ${renderFamilyActivityCorner(detectVisualTopic(config))}
+      ${renderFamilyActivityCorner(config)}
       <div class="scratchpad-inline-toggle">
         <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
           ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
         </button>
       </div>
-      ${workbenchHtml}
+${workbenchHtml}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('check')">
-          <span class="lang-en">Next: Try the problems ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Resolver los problemas ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('together')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </div>`;
@@ -6022,8 +7780,8 @@ export function renderCheckTab(
       <div class="stars-to-win-title">
         <span>⭐</span>
         <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the ${coreCount} problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los ${coreCount} problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
+          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">${coreCount}</span> problems below. Stop any time — your work saves itself.</span>
+          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">${coreCount}</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
         </div>
       </div>
       <div class="stars-milestone-chips" aria-hidden="true">
@@ -6054,7 +7812,11 @@ export function renderCheckTab(
       <span class="goal-icon" aria-hidden="true">🌟</span>
       <div class="goal-text">
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
-        <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to celebrate and sign off.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para celebrar y firmar.</span></p>
+        <p>${
+          moreHtml
+            ? `<span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span>`
+            : `<span class="lang-en">Great work. Head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span>`
+        }</p>
       </div>
       <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
         <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
@@ -6123,9 +7885,9 @@ export function renderCheckTab(
 
   const flowNext = `
     <div class="tab-flow-nav">
-      <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('play')">
-        <span class="lang-en">Next: Play Tonight's Math Game ➔</span>
-        <span class="lang-es" lang="es">Siguiente: Jugar el Juego Matemático ➔</span>
+      <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('check')">
+        <span class="lang-en">Continue ➔</span>
+        <span class="lang-es" lang="es">Continuar ➔</span>
       </button>
     </div>`;
 
@@ -6151,43 +7913,67 @@ export function renderCheckTab(
  * interrupting the one sequence the page is trying to get a family to walk.
  * Closed by default: a family that needs fraction strips opens them.
  */
-export function renderWorkbenchTools() {
+export function renderWorkbenchTools(config) {
+  const tool = workbenchSpec(config);
+  if (!tool) return "";
   return `
-    <details class="workbench-drawer">
+    <details class="workbench-drawer" data-workbench-tool="${tool.id}">
       <summary class="workbench-drawer-summary">
         <span class="workbench-drawer-icon" aria-hidden="true">🧮</span>
         <span class="workbench-drawer-text">
-          <strong><span class="lang-en">Need to build it? Open the math tools</span><span class="lang-es" lang="es">¿Necesitan construirlo? Abran las herramientas</span></strong>
-          <small><span class="lang-en">Fraction strips, a coordinate grid, ratio tape and decimal columns</span><span class="lang-es" lang="es">Fracciones, cuadrícula, cintas de razón y columnas decimales</span></small>
+          <strong><span class="lang-en">Need to build it? Open ${tool.en}</span><span class="lang-es" lang="es">¿Necesitan construirlo? Abran ${tool.es}</span></strong>
+          <small><span class="lang-en">Only the tool for tonight's lesson is included.</span><span class="lang-es" lang="es">Solo se incluye la herramienta de la lección de hoy.</span></small>
         </span>
         <span class="workbench-drawer-chevron" aria-hidden="true">▾</span>
       </summary>
       <div class="workbench-drawer-body">
 
         <!-- Tool Selection Tabs -->
-        <div class="wb-tool-bar" role="tablist" aria-label="Workbench tools">
+        <div class="wb-tool-bar" aria-label="Lesson math tool">
+          ${
+            tool.id === "fractions"
+              ? `
           <button type="button" class="wb-tool-tab is-active" id="wb_tab_fractions" onclick="switchWorkbenchTool('fractions')">
             <span class="tool-icon">📏</span>
             <span class="tool-name"><span class="lang-en">Fraction Strips</span><span class="lang-es" lang="es">Fracciones</span></span>
-          </button>
-          <button type="button" class="wb-tool-tab" id="wb_tab_coords" onclick="switchWorkbenchTool('coords')">
+          </button>`
+              : ""
+          }
+          ${
+            tool.id === "coords"
+              ? `
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_coords" onclick="switchWorkbenchTool('coords')">
             <span class="tool-icon">🧭</span>
             <span class="tool-name"><span class="lang-en">Coordinate Grid</span><span class="lang-es" lang="es">Coordenadas</span></span>
-          </button>
-          <button type="button" class="wb-tool-tab" id="wb_tab_tapes" onclick="switchWorkbenchTool('tapes')">
+          </button>`
+              : ""
+          }
+          ${
+            tool.id === "tapes"
+              ? `
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_tapes" onclick="switchWorkbenchTool('tapes')">
             <span class="tool-icon">📊</span>
             <span class="tool-name"><span class="lang-en">Ratio Tape</span><span class="lang-es" lang="es">Cintas de razón</span></span>
-          </button>
-          <button type="button" class="wb-tool-tab" id="wb_tab_decimals" onclick="switchWorkbenchTool('decimals')">
+          </button>`
+              : ""
+          }
+          ${
+            tool.id === "decimals"
+              ? `
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_decimals" onclick="switchWorkbenchTool('decimals')">
             <span class="tool-icon">🔢</span>
             <span class="tool-name"><span class="lang-en">Decimal Columns</span><span class="lang-es" lang="es">Columnas decimales</span></span>
-          </button>
+          </button>`
+              : ""
+          }
         </div>
 
         <!-- Tool Stage -->
         <div class="wb-tool-stage card-ish">
           <!-- 1. Fraction Strips Tool -->
-          <div class="wb-panel" id="wb_panel_fractions">
+          ${
+            tool.id === "fractions"
+              ? `<div class="wb-panel" id="wb_panel_fractions">
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Tap fraction tiles to add bars and compare lengths:</span><span class="lang-es" lang="es">Toca fichas para añadir barras y comparar longitudes:</span></span>
               <div class="fraction-button-group">
@@ -6201,24 +7987,52 @@ export function renderWorkbenchTools() {
                 <button type="button" class="btn btn-sm btn-secondary" onclick="clearFractionBars()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
               </div>
             </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Compare:</span><span class="lang-es" lang="es">⚡ Comparar:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('half')"><span class="lang-en">1/2 = 2/4</span><span class="lang-es" lang="es">1/2 = 2/4</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('third')"><span class="lang-en">1/3 = 2/6</span><span class="lang-es" lang="es">1/3 = 2/6</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('threefourths')"><span class="lang-en">3/4 = 6/8</span><span class="lang-es" lang="es">3/4 = 6/8</span></button>
+            </div>
             <div class="fraction-stage-canvas" id="fraction_stage_canvas">
               <div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>
             </div>
-          </div>
+          </div>`
+              : ""
+          }
 
           <!-- 2. Coordinate Grid Tool -->
-          <div class="wb-panel" id="wb_panel_coords" hidden>
+          ${
+            tool.id === "coords"
+              ? `<div class="wb-panel" id="wb_panel_coords">
             <div class="tool-controls-row">
-              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid to plot an (x, y) point and see its quadrant:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula para marcar un punto (x, y) y ver su cuadrante:</span></span>
+              <span class="tool-hint"><span class="lang-en">Click anywhere on the grid or tap a sample point:</span><span class="lang-es" lang="es">Haz clic en la cuadrícula o toca un punto de muestra:</span></span>
               <span class="coord-readout" id="coord_readout">(x: 0, y: 0) — <span class="lang-en">Origin</span><span class="lang-es" lang="es">Origen</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Sample Points:</span><span class="lang-es" lang="es">⚡ Puntos muestra:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(3, 4)"><span class="lang-en">(3, 4) Quad I</span><span class="lang-es" lang="es">(3, 4) Cuad I</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-3, 2)"><span class="lang-en">(-3, 2) Quad II</span><span class="lang-es" lang="es">(-3, 2) Cuad II</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-4, -3)"><span class="lang-en">(-4, -3) Quad III</span><span class="lang-es" lang="es">(-4, -3) Cuad III</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(4, -2)"><span class="lang-en">(4, -2) Quad IV</span><span class="lang-es" lang="es">(4, -2) Cuad IV</span></button>
+              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(0, 0)"><span class="lang-en">(0, 0) Origin</span><span class="lang-es" lang="es">(0, 0) Origen</span></button>
             </div>
             <div class="coord-canvas-wrap">
               <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
             </div>
-          </div>
+          </div>`
+              : ""
+          }
 
           <!-- 3. Ratio Tape Diagram Tool -->
-          <div class="wb-panel" id="wb_panel_tapes" hidden>
+          ${
+            tool.id === "tapes"
+              ? `<div class="wb-panel" id="wb_panel_tapes">
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Quick Ratios:</span><span class="lang-es" lang="es">⚡ Razones rápidas:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(2, 3, 2)"><span class="lang-en">Paint (2 : 3 × 2)</span><span class="lang-es" lang="es">Pintura (2 : 3 × 2)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(1, 4, 3)"><span class="lang-en">Juice (1 : 4 × 3)</span><span class="lang-es" lang="es">Jugo (1 : 4 × 3)</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(3, 5, 2)"><span class="lang-en">Recipe (3 : 5 × 2)</span><span class="lang-es" lang="es">Receta (3 : 5 × 2)</span></button>
+            </div>
             <div class="tool-controls-row">
               <label class="tape-slider-label">
                 <span class="lang-en">Part A (Blue):</span><span class="lang-es" lang="es">Parte A (Azul):</span>
@@ -6237,12 +8051,22 @@ export function renderWorkbenchTools() {
               </label>
             </div>
             <div class="tape-diagram-render" id="tape_diagram_render"></div>
-          </div>
+          </div>`
+              : ""
+          }
 
           <!-- 4. Decimal Place Value Tool -->
-          <div class="wb-panel" id="wb_panel_decimals" hidden>
+          ${
+            tool.id === "decimals"
+              ? `<div class="wb-panel" id="wb_panel_decimals">
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Type numbers to align decimal points vertically:</span><span class="lang-es" lang="es">Escribe números para alinear puntos decimales:</span></span>
+            </div>
+            <div class="tool-presets-row">
+              <span class="tool-presets-label"><span class="lang-en">⚡ Examples:</span><span class="lang-es" lang="es">⚡ Ejemplos:</span></span>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('25.40', '8.75')"><span class="lang-en">Add: 25.40 + 8.75</span><span class="lang-es" lang="es">Suma: 25.40 + 8.75</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('14.50', '3.25')"><span class="lang-en">Money: $14.50 + $3.25</span><span class="lang-es" lang="es">Dinero: $14.50 + $3.25</span></button>
+              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('12.08', '12.80')"><span class="lang-en">Compare: 12.08 vs 12.80</span><span class="lang-es" lang="es">Comparar: 12.08 vs 12.80</span></button>
             </div>
             <div class="decimal-place-grid">
               <table class="dec-grid-table">
@@ -6271,7 +8095,9 @@ export function renderWorkbenchTools() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>`
+              : ""
+          }
         </div>
 
         <!-- Family Investigation Prompt -->
@@ -6279,18 +8105,11 @@ export function renderWorkbenchTools() {
           <span class="investigation-icon" aria-hidden="true">💡</span>
           <div class="investigation-content">
             <strong><span class="lang-en">Family Investigation Challenge:</span><span class="lang-es" lang="es">Desafío de investigación familiar:</span></strong>
-            <p><span class="lang-en">Choose one tool above that matches tonight's homework. Try creating an example together before solving the practice problems!</span><span class="lang-es" lang="es">Elijan una herramienta arriba que coincida con la tarea de hoy. ¡Intenten crear un ejemplo juntos antes de resolver los problemas de práctica!</span></p>
+            <p><span class="lang-en">Use ${tool.en} to create one example together before solving the practice problems.</span><span class="lang-es" lang="es">Usen ${tool.es} para crear un ejemplo juntos antes de resolver los problemas.</span></p>
           </div>
         </div>
-
-        <p class="workbench-openrow">
-          <a class="btn btn-secondary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
-            <span class="lang-en">🧮 Open the full Math Workbench ↗</span>
-            <span class="lang-es" lang="es">🧮 Abrir la Pizarra completa ↗</span>
-          </a>
-        </p>
       </div>
-    </details>`;
+    </details>`.replace(/^[ \t]+$/gm, "");
 }
 
 /** The body of the "Stuck?" drawer. No longer a tab — see renderHelpDrawer. */
@@ -6347,14 +8166,7 @@ export function renderMoreContent(config, lessonId) {
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
         </a>
-        <a href="/curriculum/math-workbench/" target="_blank" rel="noopener" class="ai-lab-cta workbench-cta">
-          <span class="ai-lab-emoji" aria-hidden="true">📝</span>
-          <span class="ai-lab-text">
-            <span class="lang-en"><strong>Open the Math Workbench</strong> — a digital whiteboard to draw, write, and work out problems together.</span>
-            <span class="lang-es" lang="es"><strong>Abre la Pizarra de matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
-          </span>
-          <span class="ai-lab-arrow" aria-hidden="true">→</span>
-        </a>${offlineCta}
+${offlineCta}
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
           <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
@@ -6383,54 +8195,355 @@ export function renderMoreContent(config, lessonId) {
  * family reached depended entirely on how far they had scrolled.
  */
 export function renderPlayTabPanel(config, lessonId = "") {
-  const quizHtml = renderPlayTab(config).replace(/<section[^>]*>|<\/section>/g, "");
+  const game = buildHomeworkGame(config);
+  const quizHtml = game ? game.html : "";
   const arcadeUrl = lessonId
     ? `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`
     : "";
   return `
     <div ${tabPanelAttrs("play", true)}>
-      <h2 class="section-title">🎮 Play together / Juguemos juntos</h2>
+      <h2 class="section-title">🎮 <span class="lang-en">Play together</span><span class="lang-es" lang="es">Juguemos juntos</span></h2>
       <p class="bilingual-block play-intro">
         <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
         <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
       </p>
-      ${renderFamilyGameBreak(detectVisualTopic(config), { quizHtml, arcadeUrl })}
+      <div class="coop-mode-banner" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:12px 16px;margin:12px 0 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:24px;">👥</span>
+          <div>
+            <strong style="font-size:13.5px;color:#15803d;display:block;">
+              <span class="lang-en">Pass-the-Phone Co-Op Mode</span>
+              <span class="lang-es" lang="es">Modo Cooperativo: Pasa el Teléfono</span>
+            </strong>
+            <small style="font-size:12px;color:#166534;">
+              <span class="lang-en">Turn 1: Parent sets or guesses · Turn 2: Student solves · Turn 3: Reveal together!</span>
+              <span class="lang-es" lang="es">Turno 1: Padre propone · Turno 2: Estudiante resuelve · Turno 3: ¡Celebren juntos!</span>
+            </small>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-success" id="btn_toggle_coop" onclick="toggleCoOpMode()" style="font-weight:700;padding:6px 14px;border-radius:8px;cursor:pointer;background:#ffffff;border:1.5px solid #22c55e;color:#15803d;">
+          <span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>
+        </button>
+      </div>
+      ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="switchHomeworkTab('done')">
-          <span class="lang-en">Next: Finish up ➔</span>
-          <span class="lang-es" lang="es">Siguiente: Terminar ➔</span>
+        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('play')">
+          <span class="lang-en">Continue ➔</span>
+          <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
       </div>
     </div>`;
 }
 
-export function renderProblemHintButton(problem, visual = "") {
-  const hintEn =
-    problem.hints?.[0] ||
-    problem.explanation ||
-    "Read the question aloud. What do you notice? What operation or idea fits?";
-  /* This used to be one fixed Spanish sentence for every problem on the page —
-     the English hint was problem-specific, the Spanish one never was. Use the
-     curated Spanish hint when the config has one, and only fall back to the
-     generic prompt when it genuinely has none. */
-  const hintEs =
-    problem.hintsEs?.[0] ||
-    problem.explanationEs ||
-    "Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?";
-  return helpButton("💡 Stuck? Get a hint / ¿Atorado? Pista", {
-    titleEn: "Hint before you check",
-    titleEs: "Pista antes de revisar",
-    en: hintEn,
-    es: hintEs,
-    visual,
-    frameEn: "Draw it first, then solve. Try saying: “This problem is asking me to…”",
-    frameEs: "Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”",
-  });
+export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
+  /* A single hint forced two bad choices: make it so vague it did not help, or
+     make it so specific it leaked the answer. The ladder gives one useful move
+     at a time and never uses the worked explanation or correct answer. */
+  const steps = [
+    {
+      labelEn: "Notice",
+      labelEs: "Observa",
+      en:
+        coach.noticeEn ||
+        "Say the question in your own words. Circle what you know and underline what you need to find.",
+      es:
+        coach.noticeEs ||
+        "Explica la pregunta con tus propias palabras. Encierra lo que sabes y subraya lo que debes hallar.",
+    },
+    {
+      labelEn: "Choose a strategy",
+      labelEs: "Elige una estrategia",
+      en:
+        coach.strategyEn ||
+        "Ask: What picture, table, number line, or equation could show what is happening?",
+      es:
+        coach.strategyEs ||
+        "Pregunta: ¿Qué dibujo, tabla, recta numérica o ecuación puede mostrar lo que pasa?",
+    },
+    {
+      labelEn: "Start the first step",
+      labelEs: "Empieza el primer paso",
+      en:
+        coach.startEn ||
+        "Draw the model first. Label it with the numbers from the question, then write only the first calculation.",
+      es:
+        coach.startEs ||
+        "Dibuja primero el modelo. Rotúlalo con los números de la pregunta y escribe solo el primer cálculo.",
+    },
+  ];
+  return `
+    <details class="problem-coach-ladder">
+      <summary>
+        <span>🪜 <span class="lang-en">Coach me step by step</span><span class="lang-es" lang="es">Guíame paso a paso</span></span>
+        <small><span class="lang-en">No answer spoilers</span><span class="lang-es" lang="es">Sin revelar la respuesta</span></small>
+      </summary>
+      <ol class="coach-ladder-list">${steps
+        .map(
+          (step, index) => `
+          <li class="coach-ladder-step">
+            <button type="button" aria-expanded="false" onclick="revealCoachStep(this)">
+              <span class="coach-step-number">${index + 1}</span>
+              <span class="lang-en">${esc(step.labelEn)}</span><span class="lang-es" lang="es">${esc(step.labelEs)}</span>
+            </button>
+            <div class="coach-step-help" hidden>
+              <p class="lang-en">${esc(step.en)}</p>
+              <p class="lang-es" lang="es">${esc(step.es)}</p>${
+                index === 2
+                  ? `
+              <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`
+                  : ""
+              }
+            </div>
+          </li>`,
+        )
+        .join("")}
+      </ol>
+    </details>`;
 }
 
-export function renderDoneTab() {
-  const inner = renderCelebration().replace(/<section[^>]*>|<\/section>/g, "");
+export function renderDoneTab(config = null, lessonId = "") {
+  const inner = renderCelebration(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
   return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
+}
+
+export function renderPhotoboothTab(config = null, lessonId = "") {
+  const displayId = displayLessonId(lessonId);
+  const title = config?.familyNotes?.sessionTitle || config?.title || "Tonight's Math Work";
+
+  const inner = `
+    <section class="guided-section card section-photobooth" aria-label="Math Work Photobooth" data-pb-display-id="${escAttr(displayId)}" data-pb-lesson-line="${escAttr(`Lesson ${displayId}: ${title}`)}">
+      <div class="photobooth-header">
+        <div class="photobooth-badge">📸 <span class="lang-en">MATH WORK PHOTOBOOTH</span><span class="lang-es" lang="es">CABINA DE FOTOS DEL TRABAJO DE MATEMÁTICAS</span></div>
+        <h2 class="section-title">
+          <span class="lang-en">Celebrate &amp; Snap Your Math Work!</span>
+          <span class="lang-es" lang="es">¡Celebra y toma foto de tu trabajo matemático!</span>
+        </h2>
+        <p class="photobooth-sub bilingual-block">
+          <span class="lang-en">Use this as a photobooth for the work itself: point the camera at tonight's notebook page, the scratchpad or the whiteboard and take the picture — or pose holding it up. Choose a frame, add stickers, then download it, print it, or attach it to the parent sign-off. The photo is never uploaded; it stays on this device.</span>
+          <span class="lang-es" lang="es">Úsenla como cabina de fotos del trabajo: apunten la cámara a la página del cuaderno, al borrador o a la pizarra y tomen la foto, o posen sosteniéndola. Elijan un marco, agreguen calcomanías y luego descárguenla, imprímanla o adjúntenla a la firma del adulto. La foto nunca se sube a internet; se queda en este dispositivo.</span>
+        </p>
+      </div>
+
+      <div class="photobooth-container">
+        <!-- Main Stage / Viewfinder -->
+        <div class="pb-stage-wrap">
+          <div class="pb-viewfinder card-ish" id="pb_viewfinder">
+            <!-- Live Video -->
+            <video id="pb_video" autoplay playsinline muted></video>
+            
+            <!-- Live Frame Overlay -->
+            <div class="pb-frame-overlay frame-champion" id="pb_frame_overlay" hidden>
+              <div class="pb-frame-header">
+                <span class="pb-frame-badge">🏆 <span class="lang-en">MATH CHAMPION</span><span class="lang-es" lang="es">CAMPEÓN DE MATES</span></span>
+                <span class="pb-frame-lesson">Lesson ${esc(displayId)}</span>
+              </div>
+              <div class="pb-frame-footer">
+                <span class="pb-frame-title" id="pb_frame_title">${esc(title)}</span>
+                <span class="pb-frame-date" id="pb_frame_date">Tonight</span>
+              </div>
+              <!-- Dynamic Stickers container on the frame -->
+              <div class="pb-stickers-layer" id="pb_stickers_layer"></div>
+            </div>
+
+            <!-- Captured Preview Canvas & Img -->
+            <canvas id="pb_canvas" hidden></canvas>
+            <img id="pb_captured_img" alt="Captured math work" hidden />
+
+            <!-- Visual Countdown Overlay -->
+            <div class="pb-countdown-overlay" id="pb_countdown" hidden>3</div>
+
+            <!-- Camera Flash Effect -->
+            <div class="pb-flash-layer" id="pb_flash" hidden></div>
+
+            <!-- Camera Permissions / Idle Placeholder -->
+            <div class="pb-idle-placeholder" id="pb_idle_placeholder">
+              <span class="pb-idle-icon" aria-hidden="true">📸</span>
+              <p><strong><span class="lang-en">Camera Ready!</span><span class="lang-es" lang="es">¡Cámara lista!</span></strong></p>
+              <p class="pb-idle-sub"><span class="lang-en">Tap &ldquo;Start Camera&rdquo; to photograph tonight&rsquo;s work, or use &ldquo;Upload Work&rdquo; below. The photo stays on this device.</span><span class="lang-es" lang="es">Toca &ldquo;Iniciar Cámara&rdquo; para fotografiar el trabajo de hoy, o usa &ldquo;Subir Foto&rdquo;. La foto se queda en este dispositivo.</span></p>
+              <button type="button" class="btn btn-primary btn-lg" id="pb_start_btn" onclick="startPhotoboothCamera()">
+                📷 <span class="lang-en">Start Camera</span><span class="lang-es" lang="es">Iniciar Cámara</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Inline status: camera errors, save hints, attach confirmations.
+               Never alert() — a blocked dialog strands the whole homework page. -->
+          <p class="pb-status" id="pb_status" role="status" aria-live="polite" hidden></p>
+
+          <!-- Photobooth Controls -->
+          <div class="pb-controls-bar">
+            <!-- Live Mode Actions -->
+            <div class="pb-actions-live" id="pb_actions_live">
+              <button type="button" class="btn btn-primary pb-btn-snap" id="pb_snap_btn" onclick="snapPhotoboothPicture()" disabled>
+                📸 <span class="lang-en">Take Photo (3s Timer)</span><span class="lang-es" lang="es">Tomar Foto (3s)</span>
+              </button>
+              <button type="button" class="btn btn-secondary pb-btn-flip" id="pb_flip_btn" onclick="flipPhotoboothCamera()">
+                🔄 <span class="lang-en">Flip Camera</span><span class="lang-es" lang="es">Voltear Cámara</span>
+              </button>
+              <label class="btn btn-outline-secondary pb-btn-upload" title="Upload an existing photo of your notebook">
+                📁 <span class="lang-en">Upload Work</span><span class="lang-es" lang="es">Subir Foto</span>
+                <input type="file" id="pb_file_input" accept="image/*" capture="environment" onchange="uploadPhotoboothImage(this)" style="display:none;" />
+              </label>
+            </div>
+
+            <!-- Captured Mode Actions -->
+            <div class="pb-actions-review" id="pb_actions_review" hidden>
+              <button type="button" class="btn btn-secondary" onclick="retakePhotobooth()">
+                🔄 <span class="lang-en">Retake</span><span class="lang-es" lang="es">Repetir</span>
+              </button>
+              <a class="btn btn-success" id="pb_download_link" download="Math-Work-Photobooth.jpg">
+                📥 <span class="lang-en">Download Photo</span><span class="lang-es" lang="es">Descargar Foto</span>
+              </a>
+              <button type="button" class="btn btn-primary" onclick="printPhotoboothPhoto()">
+                🖨️ <span class="lang-en">Print Photo</span><span class="lang-es" lang="es">Imprimir Foto</span>
+              </button>
+              <button type="button" class="btn btn-warning" id="pb_attach_btn" onclick="attachPhotoboothToSignoff()">
+                📎 <span class="lang-en">Attach to Parent Sign-off</span><span class="lang-es" lang="es">Adjuntar a la Firma</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Studio Customizer Sidebar -->
+        <div class="pb-customizer card-ish">
+          <h3 class="pb-custom-title">🎨 <span class="lang-en">Photobooth Studio</span><span class="lang-es" lang="es">Estudio de Fotos</span></h3>
+          
+          <!-- Frame Selector -->
+          <div class="pb-custom-section">
+            <label class="pb-custom-label"><strong><span class="lang-en">Select Frame:</span><span class="lang-es" lang="es">Elegir Marco:</span></strong></label>
+            <div class="pb-frame-selector" role="radiogroup" aria-label="Photobooth Frame">
+              <button type="button" class="pb-frame-btn is-selected" role="radio" aria-checked="true" data-frame="champion" onclick="setPhotoboothFrame('champion', this)">
+                🏆 <span class="lang-en">Champion</span><span class="lang-es" lang="es">Campeón</span>
+              </button>
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="notebook" onclick="setPhotoboothFrame('notebook', this)">
+                📝 <span class="lang-en">Notebook</span><span class="lang-es" lang="es">Cuaderno</span>
+              </button>
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="stars" onclick="setPhotoboothFrame('stars', this)">
+                ⭐ <span class="lang-en">Gold Star</span><span class="lang-es" lang="es">Estrellas</span>
+              </button>
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="polaroid" onclick="setPhotoboothFrame('polaroid', this)">
+                🎞️ <span class="lang-en">Polaroid</span><span class="lang-es" lang="es">Polaroid</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Stickers & Props -->
+          <div class="pb-custom-section">
+            <label class="pb-custom-label"><strong><span class="lang-en">Add Stickers:</span><span class="lang-es" lang="es">Agregar Calcomanías:</span></strong></label>
+            <div class="pb-stickers-picker">
+              <button type="button" class="pb-sticker-chip" data-sticker="🏆" aria-pressed="false" onclick="togglePhotoboothSticker('🏆')">🏆 <span class="lang-en">Trophy</span><span class="lang-es" lang="es">Trofeo</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="💯" aria-pressed="false" onclick="togglePhotoboothSticker('💯')">💯 <span class="lang-en">100% Effort</span><span class="lang-es" lang="es">100%</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="⭐" aria-pressed="false" onclick="togglePhotoboothSticker('⭐')">⭐ <span class="lang-en">Math Star</span><span class="lang-es" lang="es">Estrella</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🧮" aria-pressed="false" onclick="togglePhotoboothSticker('🧮')">🧮 <span class="lang-en">Top ÷ Bottom</span><span class="lang-es" lang="es">Arriba ÷ Abajo</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🧠" aria-pressed="false" onclick="togglePhotoboothSticker('🧠')">🧠 <span class="lang-en">Big Brain</span><span class="lang-es" lang="es">Cerebro</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="✋" aria-pressed="false" onclick="togglePhotoboothSticker('✋')">✋ <span class="lang-en">High Five</span><span class="lang-es" lang="es">Chócalas</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="📐" aria-pressed="false" onclick="togglePhotoboothSticker('📐')">📐 <span class="lang-en">Math Tools</span><span class="lang-es" lang="es">Herramientas</span></button>
+              <button type="button" class="pb-sticker-chip text-danger" onclick="clearPhotoboothStickers()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+            </div>
+          </div>
+
+          <!-- Family Shout-Out Caption -->
+          <div class="pb-custom-section">
+            <label for="pb_caption_input" class="pb-custom-label"><strong><span class="lang-en">Add Message or Names:</span><span class="lang-es" lang="es">Mensaje o nombres:</span></strong></label>
+            <input type="text" id="pb_caption_input" class="form-control" placeholder="e.g. Alex &amp; Mom - We crushed unit rates!" oninput="updatePhotoboothCaption(this.value)" />
+          </div>
+
+          <!-- Helpful Tip -->
+          <div class="pb-tip-box">
+            <span class="pb-tip-icon" aria-hidden="true">💡</span>
+            <p class="pb-tip-text">
+              <span class="lang-en">Holding your open notebook or paper up next to your smile makes the best shot! You can also snap a photo of just your written work.</span>
+              <span class="lang-es" lang="es">¡Sostener el cuaderno abierto junto a su sonrisa crea la mejor foto! También pueden tomar la foto solo de su trabajo escrito.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>`;
+
+  return `<div ${tabPanelAttrs("photobooth", true)}>${inner}</div>`;
+}
+
+export function renderRefrigeratorSheet(config = {}, lessonId = "") {
+  const displayId = displayLessonId(lessonId);
+  const title = config.familyNotes?.sessionTitle || config.title || "Lesson Practice";
+  const keyEn = keyIdea(config);
+  const keyEs = keyIdeaEs(config);
+  const watchCues = watchForCues(config).slice(0, 3);
+  const quickChecks = (config.practice?.approaching || config.practice?.onLevel || []).slice(0, 2);
+
+  const origin = "https://eduwonderlab.com";
+  const hwUrl = `${origin}/lessons/${lessonId}/homework.html`;
+  const qr = qrSvg(hwUrl, { size: 90, margin: 1, fg: "#0f172a" });
+
+  return `
+    <div class="refrigerator-sheet-print-container" aria-hidden="true">
+      <div class="rf-header">
+        <div class="rf-title-group">
+          <span class="rf-kicker">EduWonderLab Mathematics · Grade 6 Core Program</span>
+          <h1 class="rf-title">Lesson ${esc(displayId)}: ${esc(title)}</h1>
+          <p class="rf-sub">🏠 <strong><span class="lang-en">Family Math Night Companion</span><span class="lang-es" lang="es">Hoja Familiar de Matemáticas</span></strong></p>
+        </div>
+        <div class="rf-qr-box">
+          ${qr}
+          <span class="rf-qr-label"><span class="lang-en">Scan for interactive practice &amp; games</span><span class="lang-es" lang="es">Escanea para jugar</span></span>
+        </div>
+      </div>
+
+      <div class="rf-grid">
+        <div class="rf-col-left">
+          <div class="rf-card rf-card-bigidea">
+            <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
+            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> ${esc(completeSentence(keyEn))}</p>
+            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+          </div>
+
+          <div class="rf-card rf-card-dinner">
+            <h3>💬 <span class="lang-en">Dinner Table Talk</span><span class="lang-es" lang="es">Preguntas para la cena</span></h3>
+            <p class="rf-dinner-intro"><span class="lang-en">Ask your student — let them explain the thinking:</span><span class="lang-es" lang="es">Pregunta a tu estudiante — deja que explique su razonamiento:</span></p>
+            <ul class="rf-dinner-list">
+              ${watchCues.map((c) => `<li>${c.icon} <span>${esc(c.en)}</span><br/><small lang="es">${esc(c.es)}</small></li>`).join("")}
+            </ul>
+          </div>
+        </div>
+
+        <div class="rf-col-right">
+          <div class="rf-card rf-card-practice">
+            <h3>✏️ <span class="lang-en">Quick Paper Practice</span><span class="lang-es" lang="es">Práctica rápida en papel</span></h3>
+            ${quickChecks
+              .map(
+                (q, idx) => `
+              <div class="rf-prob">
+                <p class="rf-prob-stem"><strong>#${idx + 1}:</strong> ${esc(q.stem || q.question || "")}</p>
+                <div class="rf-workspace">
+                  <span class="rf-ws-label"><span class="lang-en">Student Work &amp; Thinking:</span><span class="lang-es" lang="es">Espacio de trabajo del estudiante:</span></span>
+                </div>
+              </div>
+            `,
+              )
+              .join("")}
+          </div>
+        </div>
+      </div>
+
+      <div class="rf-slip">
+        <div class="rf-slip-head">
+          <span>✂️ <em><span class="lang-en">Tear off or keep on refrigerator</span><span class="lang-es" lang="es">Desprende o cuelga en el refrigerador</span></em></span>
+          <strong><span class="lang-en">Family Sign-Off Slip</span><span class="lang-es" lang="es">Tira de confirmación familiar</span></strong>
+        </div>
+        <div class="rf-slip-fields">
+          <span><span class="lang-en">Student:</span><span class="lang-es" lang="es">Estudiante:</span> ______________________</span>
+          <span><span class="lang-en">Parent/Guardian:</span><span class="lang-es" lang="es">Firma:</span> ______________________</span>
+          <span><span class="lang-en">Date:</span><span class="lang-es" lang="es">Fecha:</span> __________</span>
+        </div>
+        <div class="rf-slip-mood">
+          <span><span class="lang-en">Tonight's math felt:</span><span class="lang-es" lang="es">La matemática de hoy se sintió:</span></span>
+          <span>[ &nbsp; ] 🟢 <span class="lang-en">Smooth</span><span class="lang-es" lang="es">Bien</span></span>
+          <span>[ &nbsp; ] 🟡 <span class="lang-en">Needed help</span><span class="lang-es" lang="es">Con ayuda</span></span>
+          <span>[ &nbsp; ] 🔴 <span class="lang-en">Tough</span><span class="lang-es" lang="es">Difícil</span></span>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 /**
@@ -6460,6 +8573,29 @@ const HOMEWORK_TABS = [
   { id: "check", icon: "✅", en: "Check", es: "Repaso", min: 8 },
   { id: "play", icon: "🎮", en: "Play", es: "Jugar", min: 5 },
   { id: "done", icon: "🎉", en: "Done", es: "Listo", min: 3 },
+];
+
+/**
+ * Stops that are NOT part of tonight's path.
+ *
+ * The photobooth used to be stop 7 of 7 — numbered, budgeted at two minutes,
+ * and sitting AFTER the stop called "Done", which told a family the homework
+ * was not finished until they had taken a photo. It is a tool, not an
+ * assignment: a camera with frames and stickers for photographing the work in
+ * the notebook, the scratchpad or the whiteboard, whenever they want it. So it
+ * keeps its place beside Done and loses its number, its minutes and its claim
+ * on the progress track.
+ */
+const HOMEWORK_EXTRA_TABS = [
+  {
+    id: "photobooth",
+    icon: "📸",
+    en: "Photobooth",
+    es: "Fotos",
+    blurbEn: "Optional — snap a picture of tonight's math work",
+    blurbEs: "Opcional: toma una foto del trabajo de matemáticas de hoy",
+    ariaEn: "Photobooth — optional. Take a picture of your math work with fun frames and stickers.",
+  },
 ];
 
 /** Minutes the hero advertises. Derived, so the two can never disagree. */
@@ -6509,22 +8645,40 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
   const scratchpad = renderScratchpadHtml();
   const tabBtn = (t, i) => `
             <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
-              aria-selected="${i === 0 ? "true" : "false"}" aria-controls="hw_panel_${t.id}"
+              aria-selected="${i === 0 ? "true" : "false"}"${i === 0 ? ' aria-current="step"' : ""} aria-controls="hw_panel_${t.id}"
               aria-label="${esc(t.en)} — stop ${i + 1} of ${tabCount}, about ${t.min} minutes"
-              data-tab="${t.id}" data-stop="${i + 1}" onclick="switchHomeworkTab('${t.id}')">
+              data-tab="${t.id}" data-stop="${i + 1}" data-min="${t.min}" onclick="switchHomeworkTab('${t.id}')">
               <span class="tab-step" aria-hidden="true">${i + 1}</span>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
               <span class="tab-min" aria-hidden="true">${t.min} min</span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>`;
+  const extraBtn = (t) => `
+            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-extra"
+              aria-selected="false" aria-controls="hw_panel_${t.id}"
+              aria-label="${esc(t.ariaEn)}" title="${esc(t.ariaEn)}"
+              data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
+              <span class="tab-icon" aria-hidden="true">${t.icon}</span>
+              <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
+              <span class="tab-extra-blurb"><span class="lang-en">${esc(t.blurbEn)}</span><span class="lang-es" lang="es">${esc(t.blurbEs)}</span></span>
+            </button>`;
 
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
-        <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path">
+        <div class="hw-tab-meta-row"><div id="hw_utility_controls" class="hw-utility-controls"></div>
+          <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~${HOMEWORK_TOTAL_MINUTES} min left</span><span class="lang-es" lang="es">~${HOMEWORK_TOTAL_MINUTES} min restantes</span></span>
+        </div>
+        <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
+          ${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}
         </nav>
+        <p class="homework-tab-extra-note">
+          <span aria-hidden="true">📸</span>
+          <span class="lang-en">The <strong>Photobooth</strong> is a camera you can open any time — photograph the notebook page, the scratchpad or the whiteboard, add a frame and stickers, then download or print it. It is optional, and the photo stays on this device.</span>
+          <span class="lang-es" lang="es">La <strong>cabina de fotos</strong> es una cámara que pueden abrir cuando quieran: fotografíen la página del cuaderno, el borrador o la pizarra, agreguen un marco y calcomanías, y descárguenla o imprímanla. Es opcional, y la foto se queda en este dispositivo.</span>
+        </p>
         <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
@@ -6550,12 +8704,12 @@ export function renderHelpDrawer(stuckHtml, moreHtml) {
       <span class="hw-stuck-fab-label"><span class="lang-en">Stuck?</span><span class="lang-es" lang="es">¿Atorados?</span></span>
     </button>
     <div class="hw-help-drawer" id="hw_help_drawer" role="dialog" aria-modal="true"
-      aria-label="If your student gets stuck" hidden>
+      aria-label="If your student gets stuck" data-aria-en="If your student gets stuck" data-aria-es="Ayuda si te atoras" hidden>
       <div class="hw-help-drawer-scrim" onclick="toggleHelpDrawer()"></div>
       <div class="hw-help-drawer-sheet">
         <div class="hw-help-drawer-head">
           <strong><span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atoran</span></strong>
-          <button type="button" class="hw-help-drawer-close" onclick="toggleHelpDrawer()" aria-label="Close help">✕</button>
+          <button type="button" class="hw-help-drawer-close" onclick="toggleHelpDrawer()" aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
         </div>
         <div class="hw-help-drawer-body">
           ${stuckHtml}
@@ -6569,7 +8723,7 @@ export function renderHelpModal() {
   return `
     <div class="help-modal-overlay" id="help_modal_overlay" hidden onclick="closeHelpModal(event)">
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
-        <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
+        <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
         <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
@@ -6586,6 +8740,16 @@ export function renderHelpModal() {
 export const HOMEWORK_TABS_JS = `
 function journeyStorageKey() {
   return 'hw_journey_' + (window.LESSON_ID || location.pathname);
+}
+
+/* Which stop to reopen on is a fact about ONE lesson, so it is keyed like the
+   journey map above. It used to be the single global 'hw_last_tab': a family
+   that finished 3-5 on the Done stop then opened 3-6 for the FIRST time landed
+   on its celebration + parent sign-off screen, never saw Learn/Words/Together/
+   Check/Play, and updateJourneyMap immediately ticked that untouched lesson
+   'done'. The old key is cleared on sight so nobody inherits that landing. */
+function lastTabStorageKey() {
+  return 'hw_last_tab_' + (window.LESSON_ID || location.pathname);
 }
 
 /* ── Family Game Break (Together tab) ─────────────────────────────────────
@@ -6956,13 +9120,249 @@ function initFamilyGames() {
   resetWyrGame();
 }
 
+/* ── Family route chooser ───────────────────────────────────────────────
+   A route is a real contract, not decorative copy: it controls which stops
+   are in the path, how many practice problems count, the remaining-time
+   display, and every Continue button. */
+var HOMEWORK_ROUTES = {
+  quick: { tabs: ['learn', 'together', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 2, together: 3, check: 4, done: 1 } },
+  core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
+  full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
+};
+
+function routeStorageKey() {
+  return 'hw_route_' + (window.LESSON_ID || location.pathname);
+}
+
+function activeHomeworkRoute() {
+  var id = document.body.dataset.homeworkRoute || 'quick';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.quick;
+}
+
+function setHomeworkRoute(mode, options) {
+  options = options || {};
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'quick';
+  var route = HOMEWORK_ROUTES[mode];
+  document.body.dataset.homeworkRoute = mode;
+
+  document.querySelectorAll('[data-route-mode]').forEach(function (btn) {
+    var active = btn.dataset.routeMode === mode;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  var visibleIndex = 0;
+  document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
+    var included = route.tabs.indexOf(btn.dataset.tab) !== -1;
+    btn.hidden = !included;
+    if (!included) {
+      btn.setAttribute('aria-selected', 'false');
+      btn.removeAttribute('aria-current');
+      return;
+    }
+    visibleIndex++;
+    var step = btn.querySelector('.tab-step');
+    if (step) step.textContent = String(visibleIndex);
+    var label = btn.querySelector('.tab-en');
+    var labelEs = btn.querySelector('.tab-es');
+    btn.dataset.ariaEn = (label ? label.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length;
+    btn.dataset.ariaEs = (labelEs ? labelEs.textContent : btn.dataset.tab) + ' — parada ' + visibleIndex + ' de ' + route.tabs.length;
+    btn.setAttribute('aria-label', document.documentElement.lang === 'es' ? btn.dataset.ariaEs : btn.dataset.ariaEn);
+  });
+  document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
+    btn.hidden = mode !== 'full';
+  });
+  var shell = document.querySelector('.homework-tabs-shell');
+  if (shell) shell.dataset.tabCount = String(route.tabs.length);
+  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.tabs.length);
+  });
+  ['hw_hero_minutes', 'hw_hero_minutes_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.total);
+  });
+
+  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
+  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
+  var challenge = document.querySelector('.practice-tier-challenge');
+  if (challenge) challenge.hidden = mode === 'quick';
+  var more = document.querySelector('.more-practice');
+  if (more) more.hidden = mode === 'quick';
+  ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.problemLimit);
+  });
+  ['hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.problemLimit);
+  });
+  ['hw_check_minutes', 'hw_check_minutes_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.minutes.check);
+  });
+  var progress = document.getElementById('progress_text');
+  if (progress) {
+    var completed = Array.from(document.querySelectorAll('.problem-section.correct'))
+      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); })
+      .length;
+    progress.textContent = completed + ' / ' + route.problemLimit;
+  }
+  if (typeof updateProgress === 'function') updateProgress();
+
+  var note = document.getElementById('hw_route_note');
+  if (note) {
+    var copy = {
+      quick: ['Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.', 'Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.'],
+      core: ['Learn & practice selected: 4 focused stops and all 6 core problems, about 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
+      full: ['Full route selected: all 6 stops, about 30 minutes.', 'Ruta completa: 6 paradas, unos 30 minutos.']
+    }[mode];
+    setBiText(note, copy[0], copy[1]);
+  }
+
+  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
+  initHomeworkShareLinks();
+
+  var current = document.body.dataset.activeTab;
+  if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) {
+    switchHomeworkTab(route.tabs[0]);
+  } else if (current) {
+    switchHomeworkTab(current);
+  } else {
+    updateHomeworkRouteTime(route.total);
+  }
+  if (!options.silent) {
+    var chooser = document.querySelector('.hw-route-chooser');
+    if (chooser) chooser.classList.add('route-just-changed');
+    setTimeout(function () { if (chooser) chooser.classList.remove('route-just-changed'); }, 500);
+  }
+}
+
+function updateHomeworkRouteTime(minutes) {
+  var timeEl = document.getElementById('hw_time_remaining');
+  if (!timeEl) return;
+  timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minutes + ' min left</span><span class="lang-es" lang="es">~' + minutes + ' min restantes</span>';
+}
+
+function restoreHomeworkRoute() {
+  var mode = 'quick';
+  try { mode = localStorage.getItem(routeStorageKey()) || 'quick'; } catch (e) {}
+  var requested = new URLSearchParams(location.search).get('route');
+  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
+  setHomeworkRoute(mode, { silent: true, keepTab: true });
+}
+
+function goNextHomeworkStop(current) {
+  var tabs = activeHomeworkRoute().tabs;
+  var index = tabs.indexOf(current);
+  var next = tabs[Math.min(index + 1, tabs.length - 1)] || tabs[0];
+  switchHomeworkTab(next);
+}
+
+/* Reveal the requested rung and every earlier rung. A family cannot jump to
+   the strongest nudge without also seeing the noticing and strategy prompts. */
+function revealCoachStep(btn) {
+  var step = btn.closest('.coach-ladder-step');
+  var list = step && step.parentElement;
+  if (!step || !list) return;
+  var steps = Array.from(list.querySelectorAll('.coach-ladder-step'));
+  var stop = steps.indexOf(step);
+  steps.forEach(function (item, index) {
+    if (index > stop) return;
+    item.classList.add('is-revealed');
+    var help = item.querySelector('.coach-step-help');
+    var trigger = item.querySelector('button');
+    if (help) help.hidden = false;
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+  });
+  var help = step.querySelector('.coach-step-help');
+  if (help) help.focus && help.focus();
+}
+
+/* ── Trackable hands-on mission ───────────────────────────────────────── */
+function familyMissionStorageKey() {
+  return 'hw_family_mission_' + (window.LESSON_ID || location.pathname);
+}
+
+function showFamilyMissionState(index, celebrate) {
+  var cards = Array.from(document.querySelectorAll('[data-family-activity]'));
+  cards.forEach(function (card, cardIndex) {
+    var done = cardIndex === index;
+    card.classList.toggle('is-mission-complete', done);
+    var btn = card.querySelector('[data-mission-complete]');
+    if (btn) {
+      btn.classList.toggle('is-complete', done);
+      btn.setAttribute('aria-pressed', done ? 'true' : 'false');
+    }
+  });
+  var badge = document.getElementById('badge_achieve_mission');
+  if (badge) badge.classList.toggle('is-unlocked', index >= 0);
+  var status = document.getElementById('family_mission_status');
+  if (status && index >= 0 && cards[index]) {
+    var titleEn = cards[index].querySelector('.fam-act-titles .lang-en');
+    var titleEs = cards[index].querySelector('.fam-act-titles .lang-es');
+    setBiText(
+      status,
+      'Mission complete: ' + (titleEn ? titleEn.textContent : 'family activity') + '. Home Explorer badge unlocked!',
+      'Misión completada: ' + (titleEs ? titleEs.textContent : 'actividad familiar') + '. ¡Insignia de Explorador del Hogar desbloqueada!',
+    );
+  }
+  if (celebrate && index >= 0) {
+    if (typeof triggerConfettiBurst === 'function') triggerConfettiBurst(null, null, 45);
+    if (typeof playSuccessArpeggio === 'function') playSuccessArpeggio();
+  }
+}
+
+function pickFamilyMission() {
+  var cards = Array.from(document.querySelectorAll('[data-family-activity]'));
+  if (!cards.length) return;
+  var index = Math.floor(Math.random() * cards.length);
+  cards.forEach(function (card, cardIndex) {
+    card.open = cardIndex === index;
+    card.classList.toggle('is-mission-picked', cardIndex === index);
+    if (cardIndex === index) { var alternatives = card.closest('.family-mission-alternatives'); if (alternatives) alternatives.open = true; }
+  });
+  var titleEn = cards[index].querySelector('.fam-act-titles .lang-en');
+  var titleEs = cards[index].querySelector('.fam-act-titles .lang-es');
+  setBiText(
+    document.getElementById('family_mission_status'),
+    "Tonight's mission: " + (titleEn ? titleEn.textContent : 'family activity') + '.',
+    'Misión de hoy: ' + (titleEs ? titleEs.textContent : 'actividad familiar') + '.',
+  );
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  cards[index].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+}
+
+function completeFamilyMission(index) {
+  var current = -1;
+  try {
+    var saved = localStorage.getItem(familyMissionStorageKey());
+    if (saved !== null) current = Number(saved);
+  } catch (e) {}
+  var next = current === index ? -1 : index;
+  try {
+    if (next >= 0) localStorage.setItem(familyMissionStorageKey(), String(next));
+    else localStorage.removeItem(familyMissionStorageKey());
+  } catch (e) {}
+  showFamilyMissionState(next, next >= 0);
+}
+
+function restoreFamilyMission() {
+  var index = -1;
+  try {
+    var saved = localStorage.getItem(familyMissionStorageKey());
+    if (saved !== null) index = Number(saved);
+  } catch (e) {}
+  showFamilyMissionState(Number.isInteger(index) ? index : -1, false);
+}
+
 /* Tonight's Path roadmap: light up the current stop, keep a persistent check
    on every stop the family has visited for THIS lesson. */
 /* Progress lives ON the tab bar now, not on a second rail underneath it: each
    tab gets a tick once it has been opened, and the hairline under the bar fills
    to the furthest stop reached. One control, one answer to "where are we". */
 function updateJourneyMap(tabId) {
-  const tabs = document.querySelectorAll('.homework-tab-btn');
+  const tabs = Array.from(document.querySelectorAll('.homework-tab-btn')).filter(function (btn) { return !btn.hidden; });
   if (!tabs.length) return;
   let visited = {};
   try { visited = JSON.parse(localStorage.getItem(journeyStorageKey()) || '{}') || {}; } catch (e) {}
@@ -7021,7 +9421,10 @@ function syncHomeworkChromeHeights() {
   // "Next" button: on Together the Stuck? pill covered "Next: Try the
   // problems". Measure the tallest floating control's real top edge instead.
   var floatTop = 0;
-  document.querySelectorAll('.hw-stuck-fab, #nsr-root').forEach(function (el) {
+  // The math keypad is a bottom-fixed control like the pills, and the tallest
+  // one when it is open; left out, the last answer field on a stop sat under it.
+  document.querySelectorAll('.hw-stuck-fab, #nsr-root, .mathpad:not([hidden])').forEach(function (el) {
+    if (window.getComputedStyle(el).position !== 'fixed') return;
     var r = el.getBoundingClientRect();
     if (r.height) floatTop = Math.max(floatTop, Math.ceil(window.innerHeight - r.top));
   });
@@ -7029,39 +9432,84 @@ function syncHomeworkChromeHeights() {
 }
 
 function switchHomeworkTab(tabId) {
-  const tabs = document.querySelectorAll('.homework-tab-btn');
+  const allTabs = document.querySelectorAll('.homework-tab-btn');
+  const tabs = Array.from(allTabs).filter(function (btn) { return !btn.hidden; });
+  const extras = document.querySelectorAll('.homework-tab-extra');
   const panels = document.querySelectorAll('[data-tab-panel]');
   let idx = 0;
+  extras.forEach(function(btn) {
+    const active = btn.dataset.tab === tabId;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  allTabs.forEach(function(btn) {
+    if (!btn.hidden) return;
+    btn.classList.remove('is-active');
+    btn.setAttribute('aria-selected', 'false');
+    btn.removeAttribute('aria-current');
+  });
   tabs.forEach(function(btn, i) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
-    if (active) idx = i + 1;
+    if (active) {
+      idx = i + 1;
+      btn.setAttribute('aria-current', 'step');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
   });
   panels.forEach(function(p) {
     p.hidden = p.dataset.tabPanel !== tabId;
   });
   document.body.dataset.activeTab = tabId;
+  // Practice is inside the Check panel. Recalculate only after that panel is
+  // visible so route-aware scoring sees the two or six active core problems
+  // instead of treating every problem as hidden behind its tab panel.
+  if (tabId === 'check' && typeof updateProgress === 'function') updateProgress();
   // The bottom bar exists on one stop, so its height changes as you move
   // between them, and the floating controls are positioned off that height.
   if (typeof syncHomeworkChromeHeights === 'function') syncHomeworkChromeHeights();
-  const prog = document.getElementById('hw_tab_progress');
-  const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount
-    || String(tabs.length);
-  if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
-  const fill = document.getElementById('tab_progress_fill');
-  if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+  // "3 of 6" and the minutes left describe tonight's PATH. An extra stop is not
+  // on it, so idx is 0 and both readings are left showing the last numbered
+  // stop the family was on, rather than reporting "0 of 6" and reading
+  // tabs[-1].dataset for the time sum.
+  if (idx > 0) {
+    const prog = document.getElementById('hw_tab_progress');
+    const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount
+      || String(tabs.length);
+    if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
+    const fill = document.getElementById('tab_progress_fill');
+    if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
+
+    // Dynamic time remaining calculation
+    var minsLeft = 0;
+    var route = activeHomeworkRoute();
+    for (var k = idx - 1; k < tabs.length; k++) {
+      minsLeft += route.minutes[tabs[k].dataset.tab] || parseInt(tabs[k].dataset.min || '5', 10);
+    }
+    var timeEl = document.getElementById('hw_time_remaining');
+    if (timeEl) {
+      timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
+    }
+  }
+
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
+  }
+  if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
+    initPhotobooth();
+  } else if (typeof stopPhotoboothStream === 'function') {
+    stopPhotoboothStream();
   }
   const activeBtn = document.getElementById('hw_tab_' + tabId);
   if (activeBtn) {
     activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
     activeBtn.focus();
   }
-  try { localStorage.setItem('hw_last_tab', tabId); } catch(e) {}
+  try { localStorage.setItem(lastTabStorageKey(), tabId); } catch(e) {}
   if (typeof initHomeworkVocabPopups === 'function') {
     initHomeworkVocabPopups();
   }
@@ -7116,10 +9564,31 @@ function triggerCelebration() {
   document.querySelector('.section-celebrate')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+/* The document language has to move WITH the toggle. It used to stay lang="en"
+   in Spanish mode, so a screen reader read a fully Spanish page with English
+   phonemes and browser auto-translate mis-fired on it. Bilingual stays "en":
+   the page's own prose is English and the Spanish half already carries its own
+   lang="es" on every .lang-es span. */
+function syncDocumentLanguage(mode) {
+  document.documentElement.lang = mode === 'es' ? 'es' : 'en';
+}
+
+/* English and Spanish are the languages this page is WRITTEN in — every string
+   on it is a .lang-en / .lang-es pair. Kreyol, Portugues and Arabic were also
+   offered, and picking one set a body class no stylesheet reads: the page
+   stayed bilingual, so the buttons promised a translation that does not exist.
+   Arabic additionally flipped the document to RTL, mirroring the layout of a
+   page still written left-to-right. Removed rather than stubbed, because an
+   offer a family cannot use is worse than no offer. */
 function setLanguageMode(mode) {
+  if (mode !== 'en' && mode !== 'es') mode = 'bilingual';
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
+  syncDocumentLanguage(mode);
+  document.body.dataset.homeworkLanguage = mode;
+  initHomeworkShareLinks();
+  document.querySelectorAll('[data-aria-en]').forEach(function (el) { el.setAttribute('aria-label', mode === 'es' ? el.dataset.ariaEs : el.dataset.ariaEn); });
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
     btn.classList.toggle('active', active);
@@ -7127,64 +9596,311 @@ function setLanguageMode(mode) {
   });
 }
 
+function toggleCoOpMode() {
+  var active = document.body.classList.toggle('coop-mode-active');
+  var btn = document.getElementById('btn_toggle_coop');
+  if (btn) {
+    btn.innerHTML = active
+      ? '<span class="lang-en">✓ Co-Op Active (2-Player)</span><span class="lang-es" lang="es">✓ Co-Op Activo (2 Jugadores)</span>'
+      : '<span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>';
+    if (active) {
+      btn.style.background = '#22c55e';
+      btn.style.color = '#ffffff';
+    } else {
+      btn.style.background = '#ffffff';
+      btn.style.color = '#15803d';
+    }
+  }
+}
+window.toggleCoOpMode = toggleCoOpMode;
+
+function preparePaperPractice() {
+  alert("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.");
+  printProblemsOnly();
+}
+window.preparePaperPractice = preparePaperPractice;
+
+var currentVoiceMemoData = '';
+var voiceMediaRecorder = null;
+var voiceAudioChunks = [];
+var voiceRecordTimer = null;
+var voiceRecordSeconds = 0;
+
+function toggleVoiceRecording() {
+  if (voiceMediaRecorder && voiceMediaRecorder.state === 'recording') {
+    voiceMediaRecorder.stop();
+    return;
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Audio recording is not supported in this browser. / La grabación no es compatible en este navegador.");
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    voiceAudioChunks = [];
+    voiceMediaRecorder = new MediaRecorder(stream);
+    voiceMediaRecorder.ondataavailable = function(e) {
+      if (e.data && e.data.size > 0) voiceAudioChunks.push(e.data);
+    };
+    voiceMediaRecorder.onstop = function() {
+      clearInterval(voiceRecordTimer);
+      var timerEl = document.getElementById('voice_timer');
+      if (timerEl) timerEl.style.display = 'none';
+      var labelEl = document.getElementById('record_voice_label');
+      if (labelEl) labelEl.innerHTML = '<span class="lang-en">Record Again</span><span class="lang-es" lang="es">Grabar otra vez</span>';
+      var iconEl = document.getElementById('record_voice_icon');
+      if (iconEl) iconEl.textContent = '🎙️';
+      stream.getTracks().forEach(function(t) { t.stop(); });
+
+      var blob = new Blob(voiceAudioChunks, { type: 'audio/webm' });
+      var reader = new FileReader();
+      reader.onload = function(evt) {
+        currentVoiceMemoData = evt.target.result;
+        var player = document.getElementById('voice_audio_player');
+        var wrap = document.getElementById('voice_player_wrap');
+        if (player && wrap) {
+          player.src = currentVoiceMemoData;
+          wrap.style.display = 'inline-flex';
+        }
+      };
+      reader.readAsDataURL(blob);
+    };
+
+    voiceMediaRecorder.start();
+    voiceRecordSeconds = 0;
+    var timerEl = document.getElementById('voice_timer');
+    if (timerEl) {
+      timerEl.textContent = '0:00';
+      timerEl.style.display = 'inline';
+    }
+    var labelEl = document.getElementById('record_voice_label');
+    if (labelEl) labelEl.innerHTML = '<span class="lang-en">Stop (Recording...)</span><span class="lang-es" lang="es">Detener (Grabando...)</span>';
+    var iconEl = document.getElementById('record_voice_icon');
+    if (iconEl) iconEl.textContent = '⏹️';
+
+    voiceRecordTimer = setInterval(function() {
+      voiceRecordSeconds++;
+      if (timerEl) {
+        var m = Math.floor(voiceRecordSeconds / 60);
+        var s = voiceRecordSeconds % 60;
+        timerEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }
+      if (voiceRecordSeconds >= 30) {
+        if (voiceMediaRecorder && voiceMediaRecorder.state === 'recording') {
+          voiceMediaRecorder.stop();
+        }
+      }
+    }, 1000);
+  }).catch(function() {
+    alert("Microphone access was blocked. Please allow mic permissions to record. / Se bloqueó el acceso al micrófono.");
+  });
+}
+window.toggleVoiceRecording = toggleVoiceRecording;
+
+function deleteVoiceRecording() {
+  currentVoiceMemoData = '';
+  var player = document.getElementById('voice_audio_player');
+  var wrap = document.getElementById('voice_player_wrap');
+  if (player && wrap) {
+    player.src = '';
+    wrap.style.display = 'none';
+  }
+}
+window.deleteVoiceRecording = deleteVoiceRecording;
+
 function toggleSignoffSubmitBtn() {
-  const checkbox = document.getElementById('parent_reviewed_checkbox');
-  const nameInput = document.getElementById('parent_name_input');
-  const submitBtn = document.getElementById('submit_signoff_btn');
-  if (checkbox && nameInput && submitBtn) {
-    submitBtn.disabled = !(checkbox.checked && nameInput.value.trim().length > 0);
+  var submitBtn = document.getElementById('submit_signoff_btn');
+  if (submitBtn) submitBtn.disabled = false;
+}
+
+function homeworkShareUrl() {
+  var url = new URL(window.location.href);
+  var route = document.body.dataset.homeworkRoute || 'quick';
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'quick');
+  url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
+  return url.href;
+}
+
+function copyHomeworkLink() {
+  var url = homeworkShareUrl();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function() {
+      alert("Link copied with your route and language. / Enlace copiado con tu ruta e idioma.");
+    }).catch(function() { window.prompt('Copy this link / Copia este enlace:', url); });
+  } else window.prompt('Copy this link / Copia este enlace:', url);
+}
+
+function startHomework() {
+  var last = document.body.dataset.activeTab || 'learn';
+  switchHomeworkTab(last);
+  document.getElementById('hw_panel_' + last)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+
+function printProblemsOnly() {
+  document.body.classList.add('print-problems-only');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-problems-only');
+  }, 1000);
+}
+
+function printRefrigeratorSheet() {
+  document.body.classList.add('print-refrigerator-sheet');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-refrigerator-sheet');
+  }, 1000);
+}
+window.printRefrigeratorSheet = printRefrigeratorSheet;
+
+function speakHomeworkText(enText, esText) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    var isEs = document.body.classList.contains('lang-mode-es') || document.documentElement.lang === 'es';
+    var text = (isEs && esText) ? esText : (enText || esText);
+    var lang = (isEs && esText) ? 'es-US' : 'en-US';
+    if (!text || !text.trim()) return;
+    var utter = new SpeechSynthesisUtterance(text.trim());
+    utter.lang = lang;
+    utter.rate = 0.95;
+    window.speechSynthesis.speak(utter);
+  } catch(e) {}
+}
+window.speakHomeworkText = speakHomeworkText;
+window.speakSectionText = speakHomeworkText;
+
+function selectFeeling(btn, feeling) {
+  document.querySelectorAll('.btn-feeling').forEach(function(b) { b.classList.remove('is-selected'); });
+  btn.classList.add('is-selected');
+  var input = document.getElementById('family_feeling_input');
+  if (input) input.value = feeling;
+}
+window.selectFeeling = selectFeeling;
+
+var currentWorkPhotoData = '';
+function previewWorkPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        var maxDim = 800;
+        var w = img.width;
+        var h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        currentWorkPhotoData = canvas.toDataURL('image/jpeg', 0.75);
+      } catch (err) {
+        currentWorkPhotoData = e.target.result;
+      }
+      var preview = document.getElementById('work_photo_preview');
+      var wrap = document.getElementById('work_photo_preview_wrap');
+      if (preview && wrap) {
+        preview.src = currentWorkPhotoData;
+        wrap.hidden = false;
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+window.previewWorkPhoto = previewWorkPhoto;
+
+function clearWorkPhoto() {
+  currentWorkPhotoData = '';
+  var input = document.getElementById('student_work_photo_input');
+  if (input) input.value = '';
+  var wrap = document.getElementById('work_photo_preview_wrap');
+  if (wrap) wrap.hidden = true;
+}
+window.clearWorkPhoto = clearWorkPhoto;
+
+function initHomeworkShareLinks() {
+  var url = encodeURIComponent(homeworkShareUrl());
+  var title = encodeURIComponent(document.title || "Family Math Homework");
+  var textBtn = document.getElementById("hw_text_link");
+  if (textBtn) textBtn.href = "sms:?&body=" + title + "%20" + url;
+  var emailBtn = document.getElementById("hw_email_link");
+  if (emailBtn) emailBtn.href = "mailto:?subject=" + title + "&body=" + title + "%0A%0A" + url;
+}
+
+function getFamilyStreakCount() {
+  try {
+    var streakKey = 'hw_family_streak_history';
+    var history = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (!history.length) return 1;
+    var streak = 1;
+    for (var i = history.length - 2; i >= 0; i--) {
+      var prev = new Date(history[i]);
+      var next = new Date(history[i + 1]);
+      var diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) streak++;
+      else if (diffDays === 0) continue;
+      else break;
+    }
+    return streak;
+  } catch(e) {
+    return 1;
   }
 }
 
 function saveParentSignoff() {
   const nameVal = document.getElementById('parent_name_input')?.value.trim();
   const noteVal = document.getElementById('parent_note_input')?.value.trim();
-  const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
+  const reflVal = document.getElementById('parent_reflection_input')?.value.trim();
+  const feelingVal = document.getElementById('family_feeling_input')?.value || 'smooth';
   const lessonId = window.LESSON_ID || 'general';
   const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
   
-  if (!checked || !nameVal) return;
   
   const signoffDate = new Date().toLocaleDateString(undefined, { 
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
   });
   
+  // Track consecutive nights practiced
+  try {
+    var todayKey = new Date().toISOString().slice(0, 10);
+    var streakKey = 'hw_family_streak_history';
+    var streakHistory = JSON.parse(localStorage.getItem(streakKey) || '[]');
+    if (streakHistory.indexOf(todayKey) === -1) {
+      streakHistory.push(todayKey);
+      streakHistory.sort();
+      localStorage.setItem(streakKey, JSON.stringify(streakHistory));
+    }
+  } catch(e) {}
+
   const payload = {
     parentName: nameVal,
     note: noteVal,
+    reflection: reflVal,
+    feeling: feelingVal,
+    photo: currentWorkPhotoData ? 'present' : '',
+    photoData: currentWorkPhotoData || '',
+    voiceMemoData: currentVoiceMemoData || '',
     date: signoffDate,
     lessonTitle: lessonTitle
   };
   
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
-  } catch(e) {}
-
-  /* localStorage stays the source of truth for what this page displays, but a
-     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
-     the endpoint always answers 204, and any failure here is swallowed so a
-     family on a bad connection still gets their confirmation. */
-  try {
-    var signoffBody = JSON.stringify({
-      lessonId: lessonId,
-      lessonTitle: lessonTitle,
-      parentName: nameVal,
-      note: noteVal,
-      date: signoffDate,
-      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
-      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
-    });
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
-    } else {
-      fetch('/api/progress/family-signoff', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: signoffBody,
-        keepalive: true
-      }).catch(function() {});
-    }
-  } catch(e) {}
+  } catch(e) {
+    alert('This reflection could not be saved on this device. Copy it before leaving. / No se pudo guardar esta reflexión. Cópiala antes de salir.');
+    return;
+  }
 
   updateSignoffUI(payload);
 }
@@ -7205,6 +9921,64 @@ function updateSignoffUI(data) {
     } else {
       noteBox.hidden = true;
     }
+  }
+
+  const reflBox = document.getElementById('display_parent_reflection_box');
+  const reflEl = document.getElementById('display_parent_reflection');
+  if (reflBox && reflEl) {
+    if (data.reflection) {
+      reflEl.textContent = data.reflection;
+      reflBox.hidden = false;
+    } else {
+      reflBox.hidden = true;
+    }
+  }
+
+  const feelingBadge = document.getElementById('display_family_feeling_badge');
+  const feelingBox = document.getElementById('display_family_feeling_box');
+  if (feelingBadge && feelingBox) {
+    if (data.feeling === 'challenge') {
+      feelingBadge.innerHTML = '<span class="lang-en">🔴 Tough battle tonight</span><span class="lang-es" lang="es">🔴 Nos costó trabajo hoy</span>';
+      feelingBox.hidden = false;
+    } else if (data.feeling === 'discussion') {
+      feelingBadge.innerHTML = '<span class="lang-en">🟡 Needed some discussion</span><span class="lang-es" lang="es">🟡 Con algo de ayuda</span>';
+      feelingBox.hidden = false;
+    } else if (data.feeling === 'smooth') {
+      feelingBadge.innerHTML = '<span class="lang-en">🟢 Smooth sailing tonight</span><span class="lang-es" lang="es">🟢 ¡Muy bien hoy!</span>';
+      feelingBox.hidden = false;
+    } else {
+      feelingBox.hidden = true;
+    }
+  }
+
+  const photoBox = document.getElementById('display_family_photo_box');
+  const photoEl = document.getElementById('display_family_photo');
+  if (photoBox && photoEl) {
+    var photoSrc = data.photoData || currentWorkPhotoData;
+    if (photoSrc) {
+      photoEl.src = photoSrc;
+      photoBox.hidden = false;
+    } else {
+      photoBox.hidden = true;
+    }
+  }
+
+  const voiceBox = document.getElementById('display_family_voice_box');
+  const voicePlayer = document.getElementById('display_family_voice_player');
+  if (voiceBox && voicePlayer) {
+    var voiceSrc = data.voiceMemoData || currentVoiceMemoData;
+    if (voiceSrc) {
+      voicePlayer.src = voiceSrc;
+      voiceBox.hidden = false;
+    } else {
+      voiceBox.hidden = true;
+    }
+  }
+
+  const streakText = document.getElementById('display_family_streak_text');
+  if (streakText) {
+    var sc = getFamilyStreakCount();
+    streakText.innerHTML = '<span class="lang-en">' + sc + (sc === 1 ? ' Night Streak' : ' Nights Streak') + '</span><span class="lang-es" lang="es">Racha de ' + sc + (sc === 1 ? ' noche' : ' noches') + '</span>';
   }
   
   const formWrap = document.getElementById('signoff_form_wrapper');
@@ -7246,16 +10020,9 @@ function editParentSignoff() {
   if (printCert) printCert.classList.remove('is-signed');
 }
 
-/* THE DEFAULT IS ONE LANGUAGE, NOT TWO.
-   Bilingual was the default, so every family read every sentence twice — the
-   single largest reason this page felt long and technical. It is not a
-   translation cost: on lesson 6-1 the six panels hold ~9,240 words, and roughly
-   half of them are the other language's copy of the half you can read. A
-   Spanish-speaking family loses nothing, because a browser set to Spanish now
-   OPENS in Spanish instead of having to find a toggle; bilingual survives as a
-   choice for families who want to read both, which is a real audience and a
-   minority of it. Whatever a family last chose still wins over both. */
 function preferredLanguageMode() {
+  var requested = new URLSearchParams(location.search).get('lang');
+  if (['en', 'es', 'bilingual'].indexOf(requested) !== -1) return requested;
   try {
     const saved = localStorage.getItem('hw_lang_mode');
     if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
@@ -7264,9 +10031,7 @@ function preferredLanguageMode() {
     const langs = navigator.languages && navigator.languages.length
       ? navigator.languages
       : [navigator.language || ''];
-    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) {
-      return 'es';
-    }
+    if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) return 'es';
   } catch (e) {}
   return 'en';
 }
@@ -7281,9 +10046,11 @@ function restoreParentSignoff() {
       const data = JSON.parse(saved);
       const nameInput = document.getElementById('parent_name_input');
       const noteInput = document.getElementById('parent_note_input');
+      const reflInput = document.getElementById('parent_reflection_input');
       const checkbox = document.getElementById('parent_reviewed_checkbox');
       if (nameInput) nameInput.value = data.parentName || '';
       if (noteInput) noteInput.value = data.note || '';
+      if (reflInput) reflInput.value = data.reflection || '';
       if (checkbox) checkbox.checked = true;
       toggleSignoffSubmitBtn();
       
@@ -7293,21 +10060,45 @@ function restoreParentSignoff() {
 }
 
 function initHomeworkPage() {
+  var utilities = document.getElementById("hw_utility_controls");
+  var help = document.getElementById("hw_stuck_fab");
+  if (utilities && help) utilities.appendChild(help);
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  initHomeworkShareLinks();
   // Measure again once fonts and images have settled: a reading taken mid
   // layout reported the status bar three times its rendered height, and the
   // floating launchers are positioned off that number.
+  function placeSaveControl() {
+    var save = document.getElementById('nsr-root');
+    if (!utilities || !save) return false;
+    utilities.appendChild(save);
+    syncHomeworkChromeHeights();
+    return true;
+  }
+  if (!placeSaveControl()) {
+    var saveObserver = new MutationObserver(function () {
+      if (document.getElementById('nsr-root')) { saveObserver.disconnect(); placeSaveControl(); }
+    });
+    saveObserver.observe(document.body, { childList: true, subtree: true });
+  }
   window.addEventListener('load', syncHomeworkChromeHeights);
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
+  restoreHomeworkRoute();
   try {
-    const last = localStorage.getItem('hw_last_tab');
-    if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
+    localStorage.removeItem('hw_last_tab');
+    const last = localStorage.getItem(lastTabStorageKey());
+    const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
+    if (lastBtn && !lastBtn.hidden) switchHomeworkTab(last);
     else switchHomeworkTab('learn');
   } catch(e) {}
   restoreParentSignoff();
+  initHomeworkShareLinks();
+  var start = document.getElementById('hw_start_button');
+  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue homework', 'Continuar la tarea');
+  restoreFamilyMission();
   initDrawCanvases();
   initHomeworkVocabPopups();
   initFamilyGames();
@@ -7530,17 +10321,26 @@ function initDrawCanvases() {
     function resize() {
       const r = frame.getBoundingClientRect();
       if (!r.width) return;
-      const prev = canvas.toDataURL && canvas.width ? canvas.toDataURL() : null;
-      canvas.width = Math.round(r.width); canvas.height = Math.round(r.height);
+      const width = Math.round(r.width), height = Math.round(r.height);
+      if (!width || !height || (canvas.width === width && canvas.height === height)) return;
+      const prev = document.createElement('canvas');
+      prev.width = canvas.width; prev.height = canvas.height;
+      prev.getContext('2d').drawImage(canvas, 0, 0);
+      canvas.width = width; canvas.height = height;
       ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
-      if (prev) { const img = new Image(); img.onload = function(){ ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src = prev; }
+      ctx.drawImage(prev, 0, 0, width, height);
     }
     function pos(e) {
       const r = canvas.getBoundingClientRect();
       const t = e.touches ? e.touches[0] : e;
-      return { x: t.clientX - r.left, y: t.clientY - r.top };
+      return { x: (t.clientX - r.left) * canvas.width / r.width,
+        y: (t.clientY - r.top) * canvas.height / r.height };
     }
-    function start(e) { drawing = true; last = pos(e); e.preventDefault(); }
+    function start(e) {
+      resize();
+      drawing = true; last = pos(e); e.preventDefault();
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    }
     function move(e) {
       if (!drawing) return;
       const p = pos(e);
@@ -7551,12 +10351,747 @@ function initDrawCanvases() {
     canvas.addEventListener('pointerdown', start);
     canvas.addEventListener('pointermove', move);
     window.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('lostpointercapture', end);
     const clearBtn = frame.querySelector('[data-draw-clear]');
     if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
     resize();
     window.addEventListener('resize', resize);
+    if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
   });
 }
+
+/* ── Photobooth Studio with Math Work ─────────────────────────────────── */
+/* This is a camera pointed at a notebook page on a family's phone, so every
+   path that can fail has to fail politely: a denied permission, a browser with
+   no getUserMedia, a tab switch mid-countdown, an iPad that will not download a
+   data: URL. Two rules keep it honest — the viewfinder's three states go
+   through one renderer (renderPhotoboothStage) rather than six call sites each
+   toggling their own flags, and nothing here ever calls alert(), because a
+   blocked dialog strands the whole homework page behind it. */
+var pbState = {
+  stream: null,
+  facingMode: 'user',
+  frame: 'champion',
+  stickers: [],
+  caption: '',
+  capturedDataUrl: '',
+  countdownTimer: null,
+  flashTimer: null,
+  cameraRequestId: 0,
+  downloadUrl: '',
+  exportRequestId: 0,
+};
+
+function pbEl(id) { return document.getElementById(id); }
+
+function pbSection() { return document.querySelector('.section-photobooth'); }
+
+function pbDisplayId() {
+  var sec = pbSection();
+  var id = sec ? sec.getAttribute('data-pb-display-id') : '';
+  return id || window.LESSON_ID || '';
+}
+
+function setPhotoboothStatus(en, es, tone) {
+  var box = pbEl('pb_status');
+  if (!box) return;
+  if (!en && !es) {
+    box.hidden = true;
+    box.textContent = '';
+    return;
+  }
+  box.className = 'pb-status' + (tone ? ' is-' + tone : '');
+  box.textContent = '';
+  var spanEn = document.createElement('span');
+  spanEn.className = 'lang-en';
+  spanEn.textContent = en || '';
+  var spanEs = document.createElement('span');
+  spanEs.className = 'lang-es';
+  spanEs.setAttribute('lang', 'es');
+  spanEs.textContent = es || '';
+  box.appendChild(spanEn);
+  box.appendChild(spanEs);
+  box.hidden = false;
+}
+window.setPhotoboothStatus = setPhotoboothStatus;
+
+/* The single source of truth for what the viewfinder shows: 'idle' (the
+   placeholder and its Start Camera button), 'live' (video + frame overlay,
+   shutter enabled) or 'captured' (the finished composite + review buttons). */
+function renderPhotoboothStage(mode) {
+  var isLive = mode === 'live';
+  var isShot = mode === 'captured';
+
+  var placeholder = pbEl('pb_idle_placeholder');
+  if (placeholder) placeholder.hidden = isLive || isShot;
+
+  var video = pbEl('pb_video');
+  if (video) {
+    video.hidden = !isLive;
+    // Only the selfie camera is mirrored. The rear camera reads the notebook
+    // page, and a mirrored preview of writing is unusable.
+    if (isLive && pbState.facingMode === 'user') video.classList.add('is-mirrored');
+    else video.classList.remove('is-mirrored');
+  }
+
+  var overlay = pbEl('pb_frame_overlay');
+  if (overlay) overlay.hidden = !isLive;
+
+  var shot = pbEl('pb_captured_img');
+  if (shot) shot.hidden = !isShot;
+
+  var live = pbEl('pb_actions_live');
+  if (live) live.hidden = isShot;
+
+  var review = pbEl('pb_actions_review');
+  if (review) review.hidden = !isShot;
+
+  var snapBtn = pbEl('pb_snap_btn');
+  if (snapBtn) snapBtn.disabled = !isLive;
+
+  var flipBtn = pbEl('pb_flip_btn');
+  if (flipBtn) flipBtn.disabled = !isLive;
+}
+
+function initPhotobooth() {
+  var dEl = pbEl('pb_frame_date');
+  if (dEl) {
+    try {
+      dEl.textContent = new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch(e) {
+      dEl.textContent = 'Tonight';
+    }
+  }
+  var sName = '';
+  try {
+    var stored = localStorage.getItem('hw_signoff_' + (window.LESSON_ID || location.pathname));
+    if (stored) {
+      var parsed = JSON.parse(stored);
+      if (parsed.student) sName = parsed.student;
+    }
+  } catch(e) {}
+  var capInput = pbEl('pb_caption_input');
+  if (capInput && !capInput.value && sName) {
+    capInput.value = sName + ' · Math Champion!';
+    updatePhotoboothCaption(capInput.value);
+  }
+  // Re-entering the tab must not resurrect a stale state: if a photo is still
+  // held, show it; otherwise show the idle placeholder, never a dead video.
+  renderPhotoboothStage(pbState.capturedDataUrl ? 'captured' : 'idle');
+}
+window.initPhotobooth = initPhotobooth;
+
+function startPhotoboothCamera() {
+  if (!window.isSecureContext && location.protocol !== 'file:') {
+    setPhotoboothStatus(
+      'This page needs a secure (https) connection to open the camera. Use "Upload Work" to pick a photo instead.',
+      'Esta página necesita una conexión segura (https) para abrir la cámara. Usen "Subir Foto" para elegir una foto.',
+      'warn');
+    return;
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setPhotoboothStatus(
+      'This browser cannot open the camera here. Tap "Upload Work" to pick a photo from your camera roll.',
+      'Este navegador no puede abrir la cámara aquí. Toquen "Subir Foto" para elegir una foto del carrete.',
+      'warn');
+    return;
+  }
+
+  // Starting over a running stream leaves the old camera light on, so stop
+  // first. stopPhotoboothStream() also clears any countdown still ticking.
+  stopPhotoboothStream({ keepStage: true });
+  var requestId = pbState.cameraRequestId;
+
+  var startBtn = pbEl('pb_start_btn');
+  if (startBtn) startBtn.disabled = true;
+  setPhotoboothStatus('Opening the camera…', 'Abriendo la cámara…', 'info');
+
+  var constraints = {
+    video: {
+      facingMode: pbState.facingMode,
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
+    },
+    audio: false,
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(function(stream) {
+      if (requestId !== pbState.cameraRequestId) {
+        stream.getTracks().forEach(function(track) { track.stop(); });
+        return;
+      }
+      pbState.stream = stream;
+      var video = pbEl('pb_video');
+      if (video) {
+        video.srcObject = stream;
+        var playing = video.play();
+        if (playing && playing.catch) playing.catch(function() {});
+      }
+      renderPhotoboothStage('live');
+      setPhotoboothStatus('', '', '');
+      if (startBtn) startBtn.disabled = false;
+    })
+    .catch(function(err) {
+      if (requestId !== pbState.cameraRequestId) return;
+      console.warn('Camera access denied or unavailable:', err);
+      var name = (err && err.name) || '';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        setPhotoboothStatus(
+          'The camera is blocked for this site. Allow camera access in your browser settings, or tap "Upload Work" to choose a photo instead.',
+          'La cámara está bloqueada para este sitio. Permitan el acceso en la configuración del navegador, o toquen "Subir Foto" para elegir una foto.',
+          'warn');
+      } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+        setPhotoboothStatus(
+          'No camera was found on this device. Tap "Upload Work" to choose a photo of the notebook page.',
+          'No se encontró ninguna cámara en este dispositivo. Toquen "Subir Foto" para elegir una foto del cuaderno.',
+          'warn');
+      } else {
+        setPhotoboothStatus(
+          'The camera could not start. Tap "Upload Work" to choose a photo of the notebook page instead.',
+          'No se pudo iniciar la cámara. Toquen "Subir Foto" para elegir una foto del cuaderno.',
+          'warn');
+      }
+      renderPhotoboothStage(pbState.capturedDataUrl ? 'captured' : 'idle');
+      if (startBtn) startBtn.disabled = false;
+    });
+}
+window.startPhotoboothCamera = startPhotoboothCamera;
+
+function cancelPhotoboothCountdown() {
+  if (pbState.countdownTimer) {
+    clearInterval(pbState.countdownTimer);
+    pbState.countdownTimer = null;
+  }
+  var countdown = pbEl('pb_countdown');
+  if (countdown) countdown.hidden = true;
+}
+
+function stopPhotoboothStream(opts) {
+  pbState.cameraRequestId++;
+  var startBtn = pbEl('pb_start_btn');
+  if (startBtn) startBtn.disabled = false;
+  cancelPhotoboothCountdown();
+  if (pbState.stream) {
+    try {
+      pbState.stream.getTracks().forEach(function(t) { t.stop(); });
+    } catch(e) {}
+    pbState.stream = null;
+  }
+  var video = pbEl('pb_video');
+  if (video) {
+    try { video.srcObject = null; } catch(e) {}
+  }
+  if (opts && opts.keepStage) return;
+  renderPhotoboothStage(pbState.capturedDataUrl ? 'captured' : 'idle');
+}
+window.stopPhotoboothStream = stopPhotoboothStream;
+
+function flipPhotoboothCamera() {
+  pbState.facingMode = (pbState.facingMode === 'user') ? 'environment' : 'user';
+  startPhotoboothCamera();
+}
+window.flipPhotoboothCamera = flipPhotoboothCamera;
+
+function setPhotoboothFrame(frameKey, btn) {
+  pbState.frame = frameKey;
+  document.querySelectorAll('.pb-frame-btn').forEach(function(b) {
+    var on = b === btn;
+    b.classList.toggle('is-selected', on);
+    b.setAttribute('aria-checked', on ? 'true' : 'false');
+  });
+
+  var overlay = pbEl('pb_frame_overlay');
+  if (overlay) {
+    var wasHidden = overlay.hidden;
+    overlay.className = 'pb-frame-overlay frame-' + frameKey;
+    overlay.hidden = wasHidden;
+  }
+  if (pbState.capturedDataUrl) {
+    renderPhotoboothComposite();
+  }
+}
+window.setPhotoboothFrame = setPhotoboothFrame;
+
+function togglePhotoboothSticker(emoji) {
+  var idx = pbState.stickers.indexOf(emoji);
+  if (idx > -1) {
+    pbState.stickers.splice(idx, 1);
+  } else {
+    if (pbState.stickers.length >= 6) {
+      pbState.stickers.shift();
+    }
+    pbState.stickers.push(emoji);
+  }
+  renderPhotoboothStickers();
+  if (pbState.capturedDataUrl) {
+    renderPhotoboothComposite();
+  }
+}
+window.togglePhotoboothSticker = togglePhotoboothSticker;
+
+function clearPhotoboothStickers() {
+  pbState.stickers = [];
+  renderPhotoboothStickers();
+  if (pbState.capturedDataUrl) {
+    renderPhotoboothComposite();
+  }
+}
+window.clearPhotoboothStickers = clearPhotoboothStickers;
+
+function renderPhotoboothStickers() {
+  var layer = pbEl('pb_stickers_layer');
+  if (layer) {
+    layer.innerHTML = '';
+    pbState.stickers.forEach(function(st) {
+      var span = document.createElement('span');
+      span.className = 'pb-sticker-stamp';
+      span.textContent = st;
+      layer.appendChild(span);
+    });
+  }
+  document.querySelectorAll('.pb-sticker-chip[data-sticker]').forEach(function(chip) {
+    var on = pbState.stickers.indexOf(chip.getAttribute('data-sticker')) > -1;
+    chip.classList.toggle('is-selected', on);
+    chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
+function updatePhotoboothCaption(val) {
+  pbState.caption = val;
+  var el = pbEl('pb_frame_title');
+  var fallback = pbDisplayId() ? 'Lesson ' + pbDisplayId() : "Tonight's Math Work";
+  if (el) el.textContent = val || fallback;
+  if (pbState.capturedDataUrl) renderPhotoboothComposite();
+}
+window.updatePhotoboothCaption = updatePhotoboothCaption;
+
+function snapPhotoboothPicture() {
+  var video = pbEl('pb_video');
+  if (!pbState.stream || !video) {
+    setPhotoboothStatus(
+      'Start the camera first, or tap "Upload Work" to choose a photo.',
+      'Primero inicien la cámara, o toquen "Subir Foto" para elegir una foto.',
+      'warn');
+    return;
+  }
+  if (pbState.countdownTimer) return;
+
+  var countdown = pbEl('pb_countdown');
+  var snapBtn = pbEl('pb_snap_btn');
+  if (snapBtn) snapBtn.disabled = true;
+  setPhotoboothStatus('', '', '');
+
+  var count = 3;
+  if (countdown) {
+    countdown.textContent = String(count);
+    countdown.hidden = false;
+  }
+
+  pbState.countdownTimer = setInterval(function() {
+    count--;
+    if (count > 0) {
+      if (countdown) countdown.textContent = String(count);
+      return;
+    }
+    cancelPhotoboothCountdown();
+    var flash = pbEl('pb_flash');
+    if (flash) {
+      flash.hidden = false;
+      flash.classList.add('is-active');
+      if (pbState.flashTimer) clearTimeout(pbState.flashTimer);
+      pbState.flashTimer = setTimeout(function() {
+        flash.classList.remove('is-active');
+        flash.hidden = true;
+      }, 400);
+    }
+    captureFrameFromVideo(video);
+  }, 1000);
+}
+window.snapPhotoboothPicture = snapPhotoboothPicture;
+
+function captureFrameFromVideo(video) {
+  var canvas = pbEl('pb_canvas');
+  if (!video || !canvas) return;
+
+  var w = video.videoWidth;
+  var h = video.videoHeight;
+  // A stream that has not delivered a frame yet reports 0×0. Drawing it would
+  // bake a black rectangle and call it the student's work.
+  if (!w || !h) {
+    setPhotoboothStatus(
+      'The camera was not ready. Give it a second and tap "Take Photo" again.',
+      'La cámara no estaba lista. Esperen un segundo y toquen "Tomar Foto" otra vez.',
+      'warn');
+    var snapBtn = pbEl('pb_snap_btn');
+    if (snapBtn) snapBtn.disabled = false;
+    return;
+  }
+
+  canvas.width = w;
+  canvas.height = h;
+  var ctx = canvas.getContext('2d');
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  // The selfie preview is mirrored, so the capture is mirrored to match what
+  // the family just saw. The rear camera is not, so writing stays readable.
+  if (pbState.facingMode === 'user') {
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(video, 0, 0, w, h);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+  pbState.capturedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+  stopPhotoboothStream({ keepStage: true });
+  renderPhotoboothComposite();
+}
+
+function uploadPhotoboothImage(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.type && file.type.indexOf('image/') !== 0) {
+    setPhotoboothStatus(
+      'That file is not a photo. Choose a picture of the notebook page.',
+      'Ese archivo no es una foto. Elijan una imagen de la página del cuaderno.',
+      'warn');
+    input.value = '';
+    return;
+  }
+  setPhotoboothStatus('Loading your photo…', 'Cargando la foto…', 'info');
+
+  var reader = new FileReader();
+  reader.onerror = function() {
+    setPhotoboothStatus(
+      'That photo could not be read. Try choosing it again.',
+      'No se pudo leer esa foto. Intenten elegirla de nuevo.',
+      'warn');
+    input.value = '';
+  };
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onerror = function() {
+      setPhotoboothStatus(
+        'That photo could not be opened. Try a different picture.',
+        'No se pudo abrir esa foto. Prueben con otra imagen.',
+        'warn');
+      input.value = '';
+    };
+    img.onload = function() {
+      var canvas = pbEl('pb_canvas');
+      if (!canvas) return;
+      var maxDim = 1200;
+      var w = img.naturalWidth || img.width;
+      var h = img.naturalHeight || img.height;
+      if (!w || !h) {
+        setPhotoboothStatus(
+          'That photo could not be opened. Try a different picture.',
+          'No se pudo abrir esa foto. Prueben con otra imagen.',
+          'warn');
+        input.value = '';
+        return;
+      }
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      pbState.capturedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      stopPhotoboothStream({ keepStage: true });
+      renderPhotoboothComposite();
+      // Without this, picking the same file twice fires no change event and
+      // the second upload silently does nothing.
+      input.value = '';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+window.uploadPhotoboothImage = uploadPhotoboothImage;
+
+/* Canvas has no text wrapping, so anything that could overflow the frame gets
+   measured and ellipsised rather than running off the edge of the photo. */
+function pbFitText(ctx, text, maxWidth) {
+  var t = String(text == null ? '' : text);
+  if (maxWidth <= 0) return '';
+  if (ctx.measureText(t).width <= maxWidth) return t;
+  while (t.length > 1 && ctx.measureText(t + '…').width > maxWidth) {
+    t = t.slice(0, -1);
+  }
+  while (t.length > 1 && t.charAt(t.length - 1) === ' ') t = t.slice(0, -1);
+  return t + '…';
+}
+
+function renderPhotoboothComposite() {
+  if (!pbState.capturedDataUrl) return;
+  var img = new Image();
+  img.onload = function() {
+    var canvas = pbEl('pb_canvas');
+    if (!canvas) return;
+    var w = img.naturalWidth || img.width;
+    var h = img.naturalHeight || img.height;
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+
+    var frameColor = '#f59e0b';
+    if (pbState.frame === 'notebook') frameColor = '#0284c7';
+    else if (pbState.frame === 'stars') frameColor = '#8b5cf6';
+    else if (pbState.frame === 'polaroid') frameColor = '#ffffff';
+
+    var borderW = Math.max(12, Math.round(w * 0.025));
+    ctx.lineWidth = borderW;
+    ctx.strokeStyle = frameColor;
+    ctx.strokeRect(borderW / 2, borderW / 2, w - borderW, h - borderW);
+
+    var pad = borderW + 8;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+
+    var bannerH = Math.max(36, Math.round(h * 0.08));
+    ctx.fillStyle = frameColor;
+    ctx.fillRect(0, 0, w, bannerH);
+    ctx.fillStyle = (pbState.frame === 'polaroid') ? '#0f172a' : '#ffffff';
+    ctx.font = 'bold ' + Math.round(bannerH * 0.5) + 'px system-ui, sans-serif';
+    var displayId = pbDisplayId();
+    var banner = '🏆 MATH CHAMPION' + (displayId ? ' · LESSON ' + displayId.toUpperCase() : '');
+    ctx.fillText(pbFitText(ctx, banner, w - pad * 2), pad, bannerH / 2);
+
+    var footH = Math.max(44, Math.round(h * 0.1));
+    var footMid = h - footH / 2;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    ctx.fillRect(0, h - footH, w, footH);
+
+    // Stickers claim the right end of the footer first; the caption is then
+    // fitted to whatever is left, so the two can never overlap.
+    var stickerW = 0;
+    if (pbState.stickers.length) {
+      var stickerSize = Math.round(footH * 0.6);
+      var stickerStep = Math.round(footH * 0.72);
+      ctx.font = stickerSize + 'px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+      ctx.textAlign = 'right';
+      var stX = w - pad;
+      for (var s = pbState.stickers.length - 1; s >= 0; s--) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(pbState.stickers[s], stX, footMid);
+        stX -= stickerStep;
+      }
+      ctx.textAlign = 'left';
+      stickerW = pbState.stickers.length * stickerStep;
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold ' + Math.round(footH * 0.42) + 'px system-ui, sans-serif';
+    var caption = pbState.caption || "Tonight's Math Work Done Together!";
+    ctx.fillText(pbFitText(ctx, caption, w - pad * 2 - stickerW), pad, footMid);
+
+    var compositeUrl = canvas.toDataURL('image/jpeg', 0.9);
+    var resImg = pbEl('pb_captured_img');
+    if (resImg) resImg.src = compositeUrl;
+    currentWorkPhotoData = compositeUrl;
+    preparePhotoboothDownload(canvas, compositeUrl);
+    renderPhotoboothStage('captured');
+    setPhotoboothStatus(
+      'Looking good! Download it, print it, or attach it to the parent sign-off.',
+      '¡Se ve muy bien! Descárguenla, imprímanla o adjúntenla a la firma del adulto.',
+      'ok');
+  };
+  img.onerror = function() {
+    setPhotoboothStatus(
+      'That photo could not be opened. Try taking or choosing it again.',
+      'No se pudo abrir esa foto. Intenten tomarla o elegirla de nuevo.',
+      'warn');
+  };
+  img.src = pbState.capturedDataUrl;
+}
+
+function retakePhotobooth() {
+  pbState.exportRequestId++;
+  if (pbState.downloadUrl) URL.revokeObjectURL(pbState.downloadUrl);
+  pbState.downloadUrl = '';
+  var downloadLink = pbEl('pb_download_link');
+  if (downloadLink) downloadLink.removeAttribute('href');
+  pbState.capturedDataUrl = '';
+  currentWorkPhotoData = '';
+  var resImg = pbEl('pb_captured_img');
+  if (resImg) resImg.removeAttribute('src');
+  var attachBtn = pbEl('pb_attach_btn');
+  if (attachBtn) {
+    attachBtn.innerHTML = '📎 <span class="lang-en">Attach to Parent Sign-off</span><span class="lang-es" lang="es">Adjuntar a la Firma</span>';
+    attachBtn.disabled = false;
+  }
+  setPhotoboothStatus('', '', '');
+  renderPhotoboothStage('idle');
+  startPhotoboothCamera();
+}
+window.retakePhotobooth = retakePhotobooth;
+
+// Prepare the file before the tap. A synthetic click inside toBlob's async
+// callback loses the browser's user gesture and is blocked by some webviews.
+function preparePhotoboothDownload(canvas, fallbackUrl) {
+  var link = pbEl('pb_download_link');
+  if (!link) return;
+  var requestId = ++pbState.exportRequestId;
+  if (pbState.downloadUrl) URL.revokeObjectURL(pbState.downloadUrl);
+  pbState.downloadUrl = '';
+  link.href = fallbackUrl;
+  link.download = 'Math-Work-Photobooth-' + (window.LESSON_ID || 'night') + '.jpg';
+  if (canvas.toBlob && URL.createObjectURL) {
+    canvas.toBlob(function(blob) {
+      if (!blob || requestId !== pbState.exportRequestId) return;
+      pbState.downloadUrl = URL.createObjectURL(blob);
+      link.href = pbState.downloadUrl;
+    }, 'image/jpeg', 0.92);
+  }
+}
+
+function downloadPhotoboothPhoto() {
+  var link = pbEl('pb_download_link');
+  if (link && link.getAttribute('href')) link.click();
+}
+window.downloadPhotoboothPhoto = downloadPhotoboothPhoto;
+
+function printPhotoboothPhoto() {
+  var canvas = pbEl('pb_canvas');
+  if (!canvas || !pbState.capturedDataUrl) {
+    setPhotoboothStatus(
+      'Take or upload a photo first, then print it.',
+      'Primero tomen o suban una foto, y luego imprímanla.',
+      'warn');
+    return;
+  }
+
+  // The print sheet is built now and hung directly off <body>. Built in place
+  // it would sit inside the tab panel, where "print only this" can only be
+  // expressed as visibility:hidden — which leaves every other stop of the
+  // homework occupying blank pages behind the photo.
+  var existing = pbEl('pb_print_portal');
+  if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+  var sec = pbSection();
+  var lessonLine = sec ? (sec.getAttribute('data-pb-lesson-line') || '') : '';
+
+  var portal = document.createElement('div');
+  portal.id = 'pb_print_portal';
+  portal.className = 'pb-print-portal';
+  portal.setAttribute('aria-hidden', 'true');
+
+  var inner = document.createElement('div');
+  inner.className = 'pb-print-inner';
+
+  var title = document.createElement('h2');
+  title.className = 'pb-print-title';
+  title.textContent = 'EduWonderLab Family Math Champion · Grade 6';
+
+  var meta = document.createElement('p');
+  meta.className = 'pb-print-meta';
+  meta.textContent = lessonLine;
+
+  var wrap = document.createElement('div');
+  wrap.className = 'pb-print-img-wrap';
+  var photo = document.createElement('img');
+  photo.className = 'pb-print-img';
+  photo.alt = 'Student math work printout';
+  wrap.appendChild(photo);
+
+  var cap = document.createElement('p');
+  cap.className = 'pb-print-caption';
+  cap.textContent = pbState.caption || 'Student Math Notebook & Family Verification';
+
+  var foot = document.createElement('div');
+  foot.className = 'pb-print-footer';
+  var footLeft = document.createElement('span');
+  footLeft.textContent = 'Verified Family Practice · eduwonderlab.com';
+  var footRight = document.createElement('span');
+  footRight.textContent = new Date().toLocaleDateString();
+  foot.appendChild(footLeft);
+  foot.appendChild(footRight);
+
+  inner.appendChild(title);
+  if (lessonLine) inner.appendChild(meta);
+  inner.appendChild(wrap);
+  inner.appendChild(cap);
+  inner.appendChild(foot);
+  portal.appendChild(inner);
+  document.body.appendChild(portal);
+
+  var printed = false;
+  var go = function() {
+    if (printed) return;
+    printed = true;
+    document.body.classList.add('print-photobooth-only');
+    try { window.print(); } catch(e) {}
+    setTimeout(function() {
+      document.body.classList.remove('print-photobooth-only');
+      if (portal.parentNode) portal.parentNode.removeChild(portal);
+    }, 600);
+  };
+
+  // window.print() is synchronous: fire it before the data: URL has decoded
+  // and the sheet prints with an empty box where the photo should be.
+  photo.onload = go;
+  photo.onerror = go;
+  photo.src = canvas.toDataURL('image/jpeg', 0.92);
+  setTimeout(go, 2000);
+}
+window.printPhotoboothPhoto = printPhotoboothPhoto;
+
+function attachPhotoboothToSignoff() {
+  if (!currentWorkPhotoData) {
+    setPhotoboothStatus(
+      'Take or upload a photo first, then attach it to the sign-off.',
+      'Primero tomen o suban una foto, y luego adjúntenla a la firma.',
+      'warn');
+    return;
+  }
+  var previewImg = pbEl('work_photo_preview');
+  var previewWrap = pbEl('work_photo_preview_wrap');
+  if (previewImg) previewImg.src = currentWorkPhotoData;
+  if (previewWrap) previewWrap.hidden = false;
+
+  var attachBtn = pbEl('pb_attach_btn');
+  if (attachBtn) {
+    attachBtn.innerHTML = '✅ <span class="lang-en">Attached!</span><span class="lang-es" lang="es">¡Adjuntado!</span>';
+  }
+  var certPhoto = pbEl('display_family_photo');
+  var certPhotoBox = pbEl('display_family_photo_box');
+  if (certPhoto) certPhoto.src = currentWorkPhotoData;
+  if (certPhotoBox) certPhotoBox.hidden = false;
+
+  setTimeout(function() {
+    switchHomeworkTab('done');
+    var formEl = pbEl('signoff_form_wrapper');
+    if (formEl) {
+      var extras = formEl.closest('details');
+      if (extras) extras.open = true;
+      editParentSignoff();
+      formEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, 600);
+}
+window.attachPhotoboothToSignoff = attachPhotoboothToSignoff;
+
+// Leaving the page with a live camera leaves the indicator light on. Hiding
+// the tab (backgrounding the browser on a phone) counts as leaving.
+window.addEventListener('pagehide', function() { stopPhotoboothStream({ keepStage: true }); });
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) stopPhotoboothStream({ keepStage: true });
+});
 `;
 
 export const GUIDED_NOTES_CSS = `
@@ -7684,7 +11219,7 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
 .step-badge .lang-en, .step-badge .lang-es { color: inherit; }
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
-.learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
+.learning-big { font-size: 20px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.5; }
 .learning-words { margin-top: 12px; }
 .learning-words-label {
   display: block;
@@ -7747,10 +11282,10 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
   font-family: var(--font-display); font-weight: 800; color: var(--white);
   flex-shrink: 0;
 }
-.step-color-1 .step-dot, .step-color-1.step-badge { background: #5b8def; }
-.step-color-2 .step-dot, .step-color-2.step-badge { background: var(--success); }
-.step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
-.step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
+.step-color-1 .step-dot, .step-color-1.step-badge, .step-color-1.guided-step-num { background: #5b8def; }
+.step-color-2 .step-dot, .step-color-2.step-badge, .step-color-2.guided-step-num { background: var(--success); }
+.step-color-3 .step-dot, .step-color-3.step-badge, .step-color-3.guided-step-num { background: var(--amber); color: var(--navy); }
+.step-color-4 .step-dot, .step-color-4.step-badge, .step-color-4.guided-step-num { background: var(--coral); }
 
 .concept-quick-wrap {
   margin: 0 0 16px;
@@ -7975,9 +11510,93 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
    grid and never scrolls, wraps or hides a stop behind a fade. */
 .homework-tab-bar {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* Six numbered stops, then the photobooth sized to its own content — it is
+     beside Done, not one more equal share of tonight's path. */
+  grid-template-columns: repeat(6, minmax(0, 1fr)) auto;
   gap: 4px;
   padding: 0 0 8px;
+}
+.homework-tab-extra {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 62px;
+  padding: 7px 10px 6px;
+  margin-left: 6px;
+  border: 1.5px dashed var(--teal);
+  border-radius: var(--radius-sm);
+  background: var(--teal-light);
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--teal-ink);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+/* A rule between the path and the tool, so the camera does not read as stop 7. */
+.homework-tab-extra::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 10px;
+  bottom: 10px;
+  border-left: 1px solid var(--line);
+}
+.homework-tab-extra:hover { background: var(--white); }
+.homework-tab-extra:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.homework-tab-extra.is-active {
+  background: var(--teal);
+  border-style: solid;
+  border-color: var(--teal);
+  color: var(--white);
+}
+.tab-extra-blurb {
+  display: block;
+  max-width: 132px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  opacity: .85;
+}
+.tab-extra-blurb .lang-en + .lang-es::before { content: none; }
+.homework-tab-extra-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0 0 8px;
+  padding: 7px 10px;
+  border-left: 3px solid var(--teal);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--teal-light);
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.homework-tab-extra-note strong { color: var(--teal-ink); }
+
+@media (max-width: 720px) {
+  /* The camera gets its own full-width row rather than a 40px sliver next to
+     six stops. Still beside Done — directly under it, and out of the numbers. */
+  .homework-tab-bar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .homework-tab-extra {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+  .homework-tab-extra::before { display: none; }
+  /* In the row layout the label is a shrinkable flex item, and at 390px it
+     shrank until "Photobooth" broke mid-word ("Photobo / oth"). */
+  .homework-tab-extra .tab-label { flex: none; white-space: nowrap; }
+  .tab-extra-blurb { max-width: none; text-align: left; }
 }
 .homework-tab-btn {
   position: relative;
@@ -8056,6 +11675,15 @@ body:not(.lang-mode-es) .tab-es { display: none; }
   /* Minutes are the first thing to go: the stop number, the name and the tick
      all still fit, and the hero states the total. */
   .tab-min { display: none; }
+  /* A stop's name is one word, and a sixth of a phone is narrower than the
+     longest of them: "Together" broke mid-word and set "Togeth / er" under the
+     handshake. The name shrinks to fit its column rather than splitting — it
+     is the label the family taps, so it has to read as a word. */
+  .homework-tab-btn .tab-label { white-space: nowrap; }
+  .homework-tab-btn .tab-en, .homework-tab-btn .tab-es { font-size: 10px; }
+}
+@media (max-width: 400px) {
+  .homework-tab-btn .tab-en, .homework-tab-btn .tab-es { font-size: 9.5px; }
 }
 
 .help-pop-btn {
@@ -8274,6 +11902,22 @@ body.lang-mode-en .vocab-def-es,
 body.lang-mode-en .ext-title-es,
 body.lang-mode-en [lang="es"],
 body.lang-mode-en .bilingual-col.lang-es {
+  display: none !important;
+}
+
+/* A label goes with its value. The glossary popup's translation row is
+   "Español:" + a <span lang="es"> holding the term, so the blanket [lang="es"]
+   rule above hid the term and left the chip reading "ESPAÑOL:" with nothing
+   after it on every vocabulary word in English mode. Hide the whole row. */
+body.lang-mode-en .obj-popup-translation {
+  display: none !important;
+}
+
+/* Same row, same reason, second way in: openPopup() sets .hidden on it for a
+   term that carries no Spanish at all, and the later .obj-popup-translation
+   rule declares display:inline-flex !important, which outranks a plain
+   [hidden]. Without this the empty chip comes back for those terms. */
+.obj-popup-translation[hidden] {
   display: none !important;
 }
 
@@ -8909,6 +12553,12 @@ body.lang-mode-es .bilingual-grid {
   padding: 3px 10px;
   border-radius: 99px;
   white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.powerup-badge-star.is-unlocked {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #10b981;
 }
 .powerup-choices-grid {
   display: flex;
@@ -9806,10 +13456,63 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
 .hw-quickplan-summary .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
 .hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: #f2c15b; }
 .hw-quickplan[open] .hw-quickplan-chevron { transform: rotate(180deg); }
-.hw-quickplan-steps { margin: 0; padding: 0 18px 4px 36px; font-size: 14px; color: #e4eef7; }
+.hw-quickplan-lead { margin: 0; padding: 0 18px 8px; font-size: 13.5px; color: #cfe1f1; }
+.hw-quickplan-steps { margin: 0; padding: 0 14px 4px; font-size: 14px; color: #e4eef7; list-style: none; }
 .hw-quickplan-steps li { margin-bottom: 8px; }
 .hw-quickplan-steps .lang-es, .hw-quickplan-note .lang-es { color: #e4eef7; }
+/* Each step is a full-width tap target: this is the control a family reaches
+   for one-handed, on a phone, while standing up. */
+.hw-quickplan-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 14px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid rgba(242,193,91,.42);
+  border-radius: 12px;
+  background: rgba(255,255,255,.05);
+  color: #e4eef7;
+  font: inherit;
+  font-size: 14px;
+}
+.hw-quickplan-step:hover { background: rgba(242,193,91,.16); border-color: rgba(242,193,91,.75); }
+.hw-quickplan-step:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+.hw-quickplan-min {
+  flex: none;
+  min-width: 52px;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: #f2c15b;
+  color: #12355b;
+  font-weight: 800;
+  font-size: 12.5px;
+  text-align: center;
+}
+.hw-quickplan-what { flex: 1 1 auto; }
+.hw-quickplan-go { flex: none; font-size: 12.5px; font-weight: 700; color: #f2c15b; }
+@media (max-width: 560px) {
+  /* The destination label wraps under the task rather than squeezing it. */
+  .hw-quickplan-step { flex-wrap: wrap; }
+  .hw-quickplan-go { width: 100%; padding-left: 64px; }
+}
 .hw-quickplan-note { margin: 0; padding: 8px 18px 15px; font-size: 13.5px; color: #cfe1f1; }
+
+/* Where the plan just sent you. Outline only — a background change on an
+   arbitrary target would fight whatever that element already paints. */
+.hw-quickplan-flash {
+  animation: hwQuickPlanFlash 2.6s ease-out 1;
+  border-radius: 12px;
+}
+@keyframes hwQuickPlanFlash {
+  0%, 55% { box-shadow: 0 0 0 3px #f2c15b, 0 0 0 9px rgba(242,193,91,.3); }
+  100% { box-shadow: 0 0 0 3px rgba(242,193,91,0), 0 0 0 9px rgba(242,193,91,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hw-quickplan-flash { animation: none; box-shadow: 0 0 0 3px #f2c15b; }
+}
 
 @media (max-width: 700px) {
   .hw-hero { padding: 24px 20px 22px; border-radius: 20px; }
@@ -9922,6 +13625,227 @@ body.hw-drawer-open { overflow: hidden; }
 .workbench-drawer-chevron { color: var(--teal-ink); transition: transform .2s ease; }
 .workbench-drawer[open] .workbench-drawer-chevron { transform: rotate(180deg); }
 .workbench-drawer-body { padding: 4px 16px 18px; background: #fff; }
+
+/* ── Workbench and Quick Launch Styling ── */
+.workbench-quick-launch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin: 18px 0;
+}
+.wb-launch-content { display: flex; align-items: center; gap: 14px; }
+.wb-launch-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+.wb-launch-text strong { display: block; color: var(--navy); font-size: 14.5px; margin-bottom: 2px; }
+.wb-launch-text p { margin: 0; font-size: 13px; color: var(--ink); line-height: 1.4; }
+.wb-launch-btn { flex-shrink: 0; white-space: nowrap; font-weight: 700; }
+@media (max-width: 600px) {
+  .workbench-quick-launch { flex-direction: column; align-items: flex-start; }
+}
+
+.wb-tool-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0 14px;
+  border-bottom: 1.5px solid var(--line);
+  overflow-x: auto;
+}
+.wb-tool-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #f8fafc;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.wb-tool-tab:hover { background: #e2e8f0; }
+.wb-tool-tab.is-active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+.tool-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 8px 12px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+.tool-presets-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.wb-preset-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #94a3b8;
+  background: #fff;
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.wb-preset-btn:hover {
+  background: var(--teal-light);
+  border-color: var(--teal);
+  color: var(--teal-ink);
+}
+
+.fraction-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.fraction-stage-canvas {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.fraction-row {
+  display: flex;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.frac-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  border-right: 1px solid rgba(255,255,255,.4);
+  user-select: none;
+}
+.frac-tile:last-child { border-right: none; }
+.tile-1 { background: #1e293b; }
+.tile-2 { background: #0284c7; }
+.tile-3 { background: #059669; }
+.tile-4 { background: #d97706; }
+.tile-6 { background: #7c3aed; }
+.tile-8 { background: #dc2626; }
+.tile-12 { background: #db2777; }
+
+.tape-diagram-render {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.tape-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tape-label {
+  min-width: 90px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--navy);
+}
+.tape-blocks {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.tape-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 38px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  border: 2px solid rgba(0,0,0,.15);
+}
+.tape-block-a { background: #0b8f87; }
+.tape-block-b { background: #ff775f; }
+
+.dec-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.dec-grid-table th {
+  padding: 8px 6px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+.dec-grid-table th small {
+  font-weight: 500;
+  opacity: .8;
+  display: block;
+}
+.dec-grid-table td {
+  padding: 6px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+.dec-grid-table .dec-pt {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--navy);
+  width: 20px;
+  padding: 0 4px;
+}
+.dg-cell {
+  width: 38px;
+  height: 38px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  color: var(--navy);
+}
+.dg-cell:focus {
+  outline: 3px solid var(--teal);
+  border-color: var(--teal);
+}
 
 /* ============================================================
    Family Activity Corner — hands-on activity cards on the Together tab.
@@ -10528,29 +14452,36 @@ body.lang-mode-es .concept-title-es { display: inline; }
 .big-idea .concept-quick-step .lang-es { font-size: 14px; color: var(--muted); }
 
 /* 4. Guided steps. A large numeral carries the order so a parent can follow
-   the sequence without reading a word of it first. */
-.big-idea .guided-steps { gap: 16px; }
+   the sequence without reading a word of it first. Compact cards, colored
+   left border + numeral per step (matching the quick-path above) so the
+   sequence reads as a scannable trail rather than four tall blocks. */
+.big-idea .guided-steps { gap: 10px; }
 .big-idea .guided-step {
-  padding: 22px 24px;
-  border: 2px solid var(--line);
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--line);
   border-radius: var(--radius-md);
 }
-.big-idea .guided-step-head { gap: 14px; margin-bottom: 14px; align-items: center; }
+.big-idea .guided-step.step-color-1 { border-left-color: #5b8def; }
+.big-idea .guided-step.step-color-2 { border-left-color: var(--success); }
+.big-idea .guided-step.step-color-3 { border-left-color: var(--amber); }
+.big-idea .guided-step.step-color-4 { border-left-color: var(--coral); }
+.big-idea .guided-step-head { gap: 10px; margin-bottom: 6px; align-items: center; }
 .guided-step-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
   border-radius: 50%;
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--white);
   background: var(--navy);
 }
-.big-idea .step-cue-label { font-size: 21px; }
+.big-idea .step-cue-label { font-size: 16px; }
 .big-idea .guided-step-icon {
   display: inline;
   width: auto;
@@ -10558,8 +14489,8 @@ body.lang-mode-es .concept-title-es { display: inline; }
   flex: none;
   background: none;
   border-radius: 0;
-  font-size: 24px;
-  margin-right: 8px;
+  font-size: 19px;
+  margin-right: 6px;
 }
 /* The big numeral already states the order, so the "Step 1 / Paso 1" pill is
    pure repetition here — it only competed with the cue label for attention. */
@@ -10590,18 +14521,19 @@ body.lang-mode-es .concept-title-es { display: inline; }
   border-left: 0;
 }
 .big-idea .guided-step .step-lead {
-  font-size: 22px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.4;
   font-weight: 600;
   margin: 0;
 }
 .big-idea .guided-step .step-lead.lang-es {
-  margin-top: 12px;
-  padding-left: 14px;
-  border-left: 4px solid var(--teal);
+  margin-top: 6px;
+  padding-left: 10px;
+  border-left: 3px solid var(--teal);
 }
-.big-idea .step-detail summary { font-size: 17px; }
-.big-idea .step-detail p { font-size: 19px; line-height: 1.5; }
+.big-idea .step-detail { margin-top: 6px; padding-top: 6px; }
+.big-idea .step-detail summary { font-size: 13px; }
+.big-idea .step-detail p { font-size: 14.5px; line-height: 1.45; }
 
 /* 5. Watch-for cues read at the same weight as the steps they support. */
 .big-idea .watch-for-list { padding: 18px 20px; margin-top: 20px; }
@@ -10619,15 +14551,15 @@ body.lang-mode-es .concept-title-es { display: inline; }
    still fits a 375px viewport without a horizontal scroll. */
 @media (max-width: 620px) {
   .big-idea .key-idea-banner p { font-size: 20px; }
-  .big-idea .guided-step { padding: 18px 16px; }
-  .big-idea .guided-step .step-lead { font-size: 20px; }
+  .big-idea .guided-step { padding: 12px 14px; }
+  .big-idea .guided-step .step-lead { font-size: 16px; }
   .big-idea .concept-visual-caption { font-size: 18px; }
   /* Give the drawing back the frame's side padding — on a 375px phone that is
      the difference between a 301px and a 341px picture. */
   .big-idea .concept-visual-wrap { padding: 14px 8px; }
   .big-idea .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .big-idea .concept-quick-step:not(:last-child)::after { content: none; }
-  .guided-step-num { width: 48px; height: 48px; flex: 0 0 48px; font-size: 26px; }
+  .guided-step-num { width: 34px; height: 34px; flex: 0 0 34px; font-size: 16px; }
 }
 
 @media print {
@@ -10826,4 +14758,930 @@ export const ARENA_CSS = `
   .btn, .btn-primary { box-shadow: none !important; }
   .bottom-status-bar { display: none !important; }
 }
+
+/* ── Upgrades: Read-aloud, Feeling pulse, Work photo, Refrigerator Sheet ──── */
+.btn-read-aloud {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--teal-light, #dff2ee);
+  color: var(--teal-ink, #0c6f6b);
+  border: 1px solid rgba(31, 166, 162, 0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all 0.15s ease;
+}
+.btn-read-aloud:hover {
+  background: var(--teal, #1fa6a2);
+  color: #fff;
+}
+.btn-read-aloud.is-speaking {
+  background: var(--coral, #d9795d);
+  color: #fff;
+  animation: pulseSpeaking 1.5s infinite;
+}
+@keyframes pulseSpeaking {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.feeling-options .btn-feeling {
+  transition: all 0.15s ease;
+}
+.feeling-options .btn-feeling:hover {
+  border-color: #94a3b8;
+}
+.feeling-options .btn-feeling.is-selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.work-photo-preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.refrigerator-sheet-print-container {
+  display: none;
+}
+
+@media print {
+  body.print-refrigerator-sheet * {
+    visibility: hidden !important;
+  }
+  body.print-refrigerator-sheet .refrigerator-sheet-print-container,
+  body.print-refrigerator-sheet .refrigerator-sheet-print-container * {
+    visibility: visible !important;
+  }
+  body.print-refrigerator-sheet .refrigerator-sheet-print-container {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  body.print-refrigerator-sheet .rf-sheet-page {
+    border: 2px dashed #0284c7;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  body.print-refrigerator-sheet .rf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-title-area h2 {
+    font-size: 18px;
+    margin: 0;
+    color: #0f172a;
+  }
+  body.print-refrigerator-sheet .rf-title-area p {
+    font-size: 13px;
+    margin: 2px 0 0;
+    color: #475569;
+  }
+  body.print-refrigerator-sheet .rf-qr-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  body.print-refrigerator-sheet .rf-qr-box svg {
+    width: 68px;
+    height: 68px;
+  }
+  body.print-refrigerator-sheet .rf-qr-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #475569;
+    margin-top: 2px;
+  }
+  body.print-refrigerator-sheet .rf-big-idea-box {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-section-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #0369a1;
+    margin-bottom: 4px;
+  }
+  body.print-refrigerator-sheet .rf-big-idea-text {
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+    color: #0c4a6e;
+  }
+  body.print-refrigerator-sheet .rf-table-talk-box {
+    background: #fdf4ff;
+    border: 1px solid #f5d0fe;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-talk-prompts {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    font-size: 11.5px;
+    line-height: 1.35;
+    color: #581c87;
+  }
+  body.print-refrigerator-sheet .rf-practice-section {
+    margin-bottom: 12px;
+  }
+  body.print-refrigerator-sheet .rf-practice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  body.print-refrigerator-sheet .rf-prob-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #ffffff;
+  }
+  body.print-refrigerator-sheet .rf-prob-head {
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 4px;
+  }
+  body.print-refrigerator-sheet .rf-prob-stem {
+    font-size: 11.5px;
+    line-height: 1.35;
+    margin: 0 0 6px;
+    color: #0f172a;
+  }
+  body.print-refrigerator-sheet .rf-work-box {
+    height: 70px;
+    border: 1px dashed #94a3b8;
+    border-radius: 6px;
+    background: #fafafa;
+    position: relative;
+  }
+  body.print-refrigerator-sheet .rf-work-box-label {
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    font-size: 9px;
+    color: #94a3b8;
+  }
+  body.print-refrigerator-sheet .rf-signoff-strip {
+    border-top: 2px dashed #cbd5e1;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+  }
+  body.print-refrigerator-sheet .rf-sig-lines {
+    display: flex;
+    gap: 16px;
+  }
+  body.print-refrigerator-sheet .rf-sig-line {
+    border-bottom: 1px solid #0f172a;
+    width: 140px;
+    height: 16px;
+    display: inline-block;
+  }
+}
+
+/* ── Photobooth Studio with Math Work ─────────────────────────────────── */
+/* An author display: declaration beats the UA stylesheet's [hidden] rule, so
+   every layer in here that JS toggles with .hidden needs [hidden] to win
+   outright. Without this the countdown overlay and the review buttons render
+   on top of an idle viewfinder before a photo is ever taken. */
+.section-photobooth [hidden] { display: none !important; }
+.section-photobooth {
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--line, #d7e2ed);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+.photobooth-header {
+  margin-bottom: 20px;
+}
+.photobooth-badge {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+.photobooth-sub {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+.next-photobooth-banner {
+  margin: 24px 0;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+.btn-next-photobooth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  text-align: left;
+}
+.pb-banner-icon {
+  font-size: 38px;
+}
+.pb-banner-labels strong {
+  display: block;
+  font-size: 18px;
+  color: #78350f;
+}
+.pb-banner-labels small {
+  display: block;
+  font-size: 13.5px;
+  color: #92400e;
+  margin-top: 2px;
+}
+.photobooth-container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .photobooth-container {
+    grid-template-columns: 1fr;
+  }
+}
+.pb-stage-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pb-viewfinder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #0f172a;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* .card-ish is a content card: white, padded, with a bottom margin, all of it
+   !important. On the viewfinder that painted a white gutter around the picture
+   and — because the frame overlay is inset:0 against the padding box — hung the
+   live frame 28px outside the video it is supposed to be framing. */
+.pb-viewfinder.card-ish {
+  background: #0f172a !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+#pb_video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Mirrored for the selfie camera only. Mirroring the rear camera turns the
+   notebook page the family is photographing into backwards writing. */
+#pb_video.is-mirrored { transform: scaleX(-1); }
+#pb_captured_img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: transparent;
+}
+.pb-frame-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.frame-champion {
+  border: 14px solid #f59e0b;
+}
+.frame-champion .pb-frame-header {
+  background: #f59e0b;
+  color: #fff;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-champion .pb-frame-footer {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.frame-notebook {
+  border: 14px solid #0284c7;
+}
+.frame-notebook .pb-frame-header {
+  background: #0284c7;
+  color: #fff;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-notebook .pb-frame-footer {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.frame-stars {
+  border: 14px solid #8b5cf6;
+}
+.frame-stars .pb-frame-header {
+  background: #8b5cf6;
+  color: #fff;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-stars .pb-frame-footer {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.frame-polaroid {
+  border: 16px solid #ffffff;
+  border-bottom-width: 44px;
+}
+.frame-polaroid .pb-frame-header {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 14px;
+}
+.frame-polaroid .pb-frame-footer {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 4px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+}
+.pb-stickers-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 48px 24px;
+  gap: 12px;
+}
+.pb-sticker-stamp {
+  font-size: 36px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+.pb-idle-placeholder {
+  position: absolute;
+  inset: 0;
+  background: #1e293b;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+.pb-idle-icon {
+  font-size: 54px;
+  margin-bottom: 12px;
+}
+.pb-idle-sub {
+  font-size: 13.5px;
+  color: #94a3b8;
+  max-width: 280px;
+  margin-bottom: 18px;
+}
+.pb-countdown-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  color: #ffffff;
+  font-size: 96px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: pbCountPulse 1s infinite;
+}
+@keyframes pbCountPulse {
+  0% { transform: scale(1.4); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.pb-flash-layer {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+}
+.pb-flash-layer.is-active {
+  animation: pbFlashAnim 0.4s ease-out;
+}
+@keyframes pbFlashAnim {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+.pb-status {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.pb-status.is-warn {
+  border-color: #fcd34d;
+  background: #fffbeb;
+  color: #92400e;
+}
+.pb-status.is-ok {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #065f46;
+}
+.pb-controls-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pb-actions-live, .pb-actions-review {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.pb-btn-snap {
+  flex: 2;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 16px;
+  background: #0f7c4a;
+  border-color: #0f7c4a;
+}
+.pb-btn-flip, .pb-btn-upload {
+  flex: 1;
+  font-size: 14px;
+}
+.pb-btn-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+}
+.pb-btn-snap, .pb-btn-flip {
+  justify-content: center;
+  text-align: center;
+}
+/* Phone layout. The booth is used one-handed, standing over a notebook, so at
+   this width the frame chrome gets out of the picture's way and every action
+   becomes a full-width tap target instead of a ragged wrapped row. */
+@media (max-width: 560px) {
+  .pb-frame-overlay { border-width: 8px !important; }
+  .frame-polaroid { border-bottom-width: 28px !important; }
+  .pb-frame-header,
+  .pb-frame-footer {
+    gap: 10px;
+    font-size: 11.5px;
+    padding: 5px 10px;
+  }
+  .pb-frame-lesson,
+  .pb-frame-date { flex-shrink: 0; }
+  .pb-stickers-layer { padding: 34px 14px; }
+  .pb-sticker-stamp { font-size: 28px; }
+  .pb-actions-live > *,
+  .pb-actions-review > * {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .pb-countdown-overlay { font-size: 68px; }
+}
+.pb-customizer {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+}
+.pb-custom-title {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.pb-custom-section {
+  margin-bottom: 16px;
+}
+.pb-custom-label {
+  display: block;
+  font-size: 13px;
+  color: #334155;
+  margin-bottom: 6px;
+}
+.pb-frame-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.pb-frame-btn {
+  padding: 6px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pb-frame-btn.is-selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.pb-stickers-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pb-sticker-chip {
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+}
+.pb-sticker-chip.is-selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.pb-tip-box {
+  display: flex;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 14px;
+}
+.pb-tip-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.pb-tip-text {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #1e40af;
+  margin: 0;
+}
+.pb-print-portal { display: none; }
+@media print {
+  /* Only the portaled sheet prints. It is a direct child of <body>, so its
+     siblings can simply be removed from the print layout. */
+  body.print-photobooth-only > * { display: none !important; }
+  body.print-photobooth-only .pb-print-portal { display: block !important; }
+  body.print-photobooth-only .pb-print-inner {
+    border: 3px solid #0f172a;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    background: #ffffff;
+    color: #0f172a;
+  }
+  body.print-photobooth-only .pb-print-title {
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+  body.print-photobooth-only .pb-print-meta {
+    font-size: 14px;
+    color: #475569;
+    margin: 0 0 16px;
+  }
+  body.print-photobooth-only .pb-print-img {
+    max-width: 80%;
+    max-height: 520px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+  }
+  body.print-photobooth-only .pb-print-caption {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 14px 0;
+  }
+  body.print-photobooth-only .pb-print-footer {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
+    font-size: 12px;
+    color: #64748b;
+  }
+}
+
+/* ============================================================
+   Family Homework 2026 — route, coach ladder, and home mission.
+   One strong navigation decision, then quiet instructional support.
+   ============================================================ */
+html [hidden] { display: none !important; }
+.hw-route-chooser {
+  margin-top: 16px;
+  padding: 16px;
+  color: #102a43;
+  background: #f8fbff;
+  border: 1px solid #bfd7ee;
+  border-radius: 16px;
+}
+.hw-route-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.hw-route-icon { font-size: 25px; line-height: 1; }
+.hw-route-heading h2 { margin: 0 0 2px; font-size: 18px; color: #12355b; }
+.hw-route-heading p { margin: 0; color: #486581; font-size: 13.5px; }
+.hw-route-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.hw-route-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 76px;
+  padding: 10px 12px;
+  text-align: left;
+  color: #243b53;
+  background: #fff;
+  border: 1.5px solid #b8c9d9;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.hw-route-option:hover { border-color: #1fa6a2; background: #f0fdfa; }
+.hw-route-option:focus-visible,
+.family-mission-picker:focus-visible,
+.fam-mission-complete:focus-visible,
+.coach-ladder-step > button:focus-visible,
+.coach-scratchpad-btn:focus-visible {
+  outline: 3px solid #f2c15b;
+  outline-offset: 2px;
+}
+.hw-route-option.is-active {
+  color: #0f4f4d;
+  background: #e7f7f3;
+  border-color: #138a86;
+  box-shadow: inset 0 0 0 1px #138a86;
+}
+.hw-route-time {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 48px;
+  min-height: 48px;
+  font: 800 22px/1 var(--font-display);
+  color: #fff;
+  background: #12355b;
+  border-radius: 50%;
+}
+.hw-route-option.is-active .hw-route-time { background: #0f766e; }
+.hw-route-time small { display: block; margin-top: 2px; font-size: 9px; font-weight: 700; }
+.hw-route-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.hw-route-copy strong { font: 800 14px/1.2 var(--font-display); }
+.hw-route-copy small { color: #5d7285; font-size: 11.5px; line-height: 1.3; }
+.hw-route-note { margin: 10px 2px 0; font-size: 12.5px; color: #486581; }
+.hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.2); }
+
+/* The 10-minute route is genuinely shorter, not the full page with a shorter
+   promise. The essential idea, first guided step, two warm-ups, and sign-off
+   remain; all hidden material returns immediately when another route is picked. */
+body[data-homework-route="quick"] .learn-summary-block,
+body[data-homework-route="quick"] .learn-extended-block,
+body[data-homework-route="quick"] .learn-big-idea-block .guided-steps,
+body[data-homework-route="quick"] .learn-big-idea-block .watch-for-list,
+body[data-homework-route="quick"] #hw_panel_together .huddle-hook-banner,
+body[data-homework-route="quick"] #hw_panel_together .parent-coach-prompt,
+body[data-homework-route="quick"] #hw_panel_together .try-scenario,
+body[data-homework-route="quick"] #hw_panel_together .try-together-note,
+body[data-homework-route="quick"] #hw_panel_together .together-steps > li:nth-child(n+2),
+body[data-homework-route="quick"] #hw_panel_together .together-ladder,
+body[data-homework-route="quick"] #hw_panel_together .math-talk-hub,
+body[data-homework-route="quick"] #hw_panel_together .fam-act-corner,
+body[data-homework-route="quick"] #hw_panel_together .scratchpad-inline-toggle,
+body[data-homework-route="quick"] #hw_panel_together .workbench-drawer {
+  display: none !important;
+}
+body[data-homework-route="quick"] .quick-check-extra-copy { display: none !important; }
+body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-note {
+  display: none !important;
+}
+.homework-tab-btn[hidden],
+.homework-tab-extra[hidden],
+.problem-section[hidden],
+.practice-tier[hidden],
+.more-practice[hidden] { display: none !important; }
+
+/* Graduated coaching: three short nudges, each stronger than the last. */
+.problem-coach-ladder {
+  width: 100%;
+  border: 1px solid #b9d6d3;
+  border-radius: 12px;
+  background: #f4fbfa;
+  overflow: hidden;
+}
+.problem-coach-ladder > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px;
+  color: #0f5f5b;
+  cursor: pointer;
+  font-weight: 800;
+  list-style: none;
+}
+.problem-coach-ladder > summary::-webkit-details-marker { display: none; }
+.problem-coach-ladder > summary small { color: #557a78; font-size: 11px; font-weight: 600; }
+.coach-ladder-list { margin: 0; padding: 0 12px 12px; list-style: none; }
+.coach-ladder-step { border-top: 1px solid #d6e9e7; }
+.coach-ladder-step > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  padding: 7px 0;
+  text-align: left;
+  color: #244e4b;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-weight: 750;
+}
+.coach-step-number {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  color: #fff;
+  background: #0f766e;
+  border-radius: 50%;
+  font-size: 12px;
+}
+.coach-step-help { padding: 0 0 11px 33px; color: #243b53; }
+.coach-step-help p { margin: 0; font-size: 14px; line-height: 1.5; }
+.coach-ladder-step.is-revealed > button { color: #0f766e; }
+.coach-scratchpad-btn {
+  margin-top: 8px;
+  padding: 7px 10px;
+  color: #12355b;
+  background: #fff;
+  border: 1px solid #9fb3c8;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* Hands-on activities become a shared mission with a visible finish. */
+.fam-act-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.family-mission-picker,
+.fam-mission-complete {
+  min-height: 42px;
+  padding: 8px 12px;
+  color: #0f5f5b;
+  background: #fff;
+  border: 1.5px solid #138a86;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.family-mission-picker { flex: 0 0 auto; }
+.family-mission-status {
+  margin: -4px 0 12px;
+  padding: 8px 10px;
+  color: #486581;
+  background: #f6f9fc;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+.fam-mission-complete { margin-top: 12px; }
+.fam-mission-check { margin-right: 5px; }
+.fam-act-card.is-mission-picked { box-shadow: 0 0 0 3px rgba(31,166,162,.2); }
+.fam-act-card.is-mission-complete { border-color: #15803d; background: #f0fdf4; }
+.fam-mission-complete.is-complete { color: #fff; background: #15803d; border-color: #15803d; }
+.achievement-shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+@media (max-width: 760px) {
+  .hw-route-options { grid-template-columns: 1fr; }
+  .hw-route-option { min-height: 64px; }
+  .fam-act-head { display: block; }
+  .family-mission-picker { width: 100%; margin-top: 12px; }
+  .achievement-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hw-route-chooser.route-just-changed { box-shadow: 0 0 0 3px #1fa6a2; }
+}
+@media print {
+  .hw-route-chooser,
+  .problem-coach-ladder,
+  .family-mission-picker,
+  .fam-mission-complete,
+  .family-mission-status { display: none !important; }
+}
+
+/* A short finish and tools that stay out of the reading column. */
+.hw-tools-menu { margin: 14px 0; }
+.hw-tools-menu > summary, .homework-optional-extras > summary, .family-mission-alternatives > summary { cursor:pointer; min-height:44px; padding:10px 0; font-size:16px; font-weight:750; }
+.hw-hero-titles h1 { margin:0; font-size:clamp(26px,5vw,44px); }
+.hw-hero-titles h1 .welcome-title-es { font-size:inherit; }
+.homework-message-action { margin:16px 0; }
+.homework-message-action p, .homework-optional-extras > p, .family-roles { font-size:16px; line-height:1.55; }
+.homework-optional-extras { margin-top:24px; border-top:1px solid #cbd5e1; }
+.hw-utility-controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.hw-utility-controls .hw-stuck-fab { position:static; margin:0; box-shadow:none; min-height:44px; }
+.hw-utility-controls #nsr-root { position:static !important; inset:auto !important; margin:0 !important; }
+.hw-utility-controls #nsr-launcher, .hw-utility-controls #nsr-workbench { min-height:44px; font-size:14px; }
+.hw-utility-controls #nsr-panel { position:fixed; top:16px; bottom:auto; right:16px; max-height:calc(100dvh - 32px); }
+@media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
+@media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
 `;

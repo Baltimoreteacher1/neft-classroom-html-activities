@@ -28,6 +28,11 @@
   <!-- nsr-injected:end -->
 </head>
   <body class="mode-hub">
+    <script>
+      if (/^\/access-practice-lab\/?$/.test(location.pathname)) {
+        document.body.dataset.hubScope = "root";
+      }
+    </script>
     <a class="skip-link" href="#mainContent">Skip to content</a>
     <div class="lab-shell">
       <header class="site-header">
@@ -41,11 +46,11 @@
 
       <div id="hubView" class="hub-view">
         <header class="hub-hero" id="labHero">
-          <p class="eyebrow" id="hubEyebrow">Teacher dashboard</p>
+          <p class="eyebrow" id="hubEyebrow">WIDA ACCESS-style practice</p>
           <h1 id="hubTitle">ACCESS Practice Lab</h1>
           <p class="hub-lead" id="hubLead">
-            Pick a domain and level, then share a direct practice link with
-            students.
+            Choose a domain, choose your support level, practice, check your
+            work, and print a classroom practice report.
           </p>
           <div class="hero-stats" aria-hidden="true">
             <span class="stat">🎧 Listening</span>
@@ -67,7 +72,9 @@
             Choose a domain. Practice one task. Check your work. Print your
             report.
           </p>
-          <div class="domain-overview-grid" id="domainOverviewGrid"></div>
+          <div class="domain-overview-grid" id="domainOverviewGrid">
+            <p class="muted">Loading practice domains…</p>
+          </div>
         </section>
 
         <section

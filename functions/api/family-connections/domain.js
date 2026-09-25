@@ -55,6 +55,12 @@ function normalizeDay(input, expectedDay) {
     lessonId: status === "lesson" ? id : "",
     note: text(input?.note, 180),
     noteEs: text(input?.noteEs, 180),
+    dueDate:
+      /^\d{4}-\d{2}-\d{2}$/.test(input?.dueDate ?? "") &&
+      Number.isFinite(Date.parse(`${input.dueDate}T12:00:00Z`)) &&
+      new Date(`${input.dueDate}T12:00:00Z`).toISOString().slice(0, 10) === input.dueDate
+        ? input.dueDate
+        : "",
   };
 }
 

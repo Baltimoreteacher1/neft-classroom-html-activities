@@ -621,7 +621,7 @@
         planRows(sec, [
           ["WIDA 1–2 (entering/emerging)", support.wida12],
           ["WIDA 3–4 (developing/expanding)", support.wida34],
-          ["SPED access", support.sped],
+          ["Access supports", support.sped],
           ["Enrichment", support.extension],
         ]);
       }),
@@ -874,7 +874,7 @@
       _kv("Teacher response", readiness.responseMove),
       _kv("WIDA 1–2", support.wida12),
       _kv("WIDA 3–4", support.wida34),
-      _kv("SPED access", support.sped),
+      _kv("Access supports", support.sped),
       _kv("Extension", support.extension),
     );
     readinessCard.appendChild(readinessGrid);

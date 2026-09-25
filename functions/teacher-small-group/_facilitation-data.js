@@ -1133,8 +1133,8 @@ export const FACILITATION_BY_LESSON = {
     ],
     listenFor: [
       "Students choose Player A as more consistent and recognize that equal means hide different spreads.",
-      "A strong answer explains deviations above and below the mean would cancel to zero, so absolute value keeps each as a positive distance.",
-      "Students pick Keeper A and explain a smaller MAD (0.67) means goals allowed stay close to the mean, so performance is more reliable.",
+      "A strong answer explains that signed deviations above and below the mean cancel to zero; absolute value keeps their nonnegative distances, including zero.",
+      "Students pick Keeper A and explain that a smaller MAD means a smaller average distance from the mean in these games.",
       "Students compute absolute deviations 2, 2, 0, 4, 4 (sum 12), divide by 5, and report MAD = 2.4.",
       'Listen for students naming a specific strategy tied to 6.DS.6c — not just "I multiplied." They should connect steps to the key idea.',
     ],
@@ -1158,8 +1158,8 @@ export const FACILITATION_BY_LESSON = {
     ],
     listenFor: [
       "Students choose Player A as more consistent and recognize that equal means hide different spreads.",
-      "A strong answer explains deviations above and below the mean would cancel to zero, so absolute value keeps each as a positive distance.",
-      "Students pick Keeper A and explain a smaller MAD (0.67) means goals allowed stay close to the mean, so performance is more reliable.",
+      "A strong answer explains that signed deviations above and below the mean cancel to zero; absolute value keeps their nonnegative distances, including zero.",
+      "Students pick Keeper A and explain that a smaller MAD means a smaller average distance from the mean in these games.",
       "Students compute absolute deviations 2, 2, 0, 4, 4 (sum 12), divide by 5, and report MAD = 2.4.",
       'Listen for students naming a specific strategy tied to 6.DS.6c — not just "I multiplied." They should connect steps to the key idea.',
     ],
@@ -3144,7 +3144,7 @@ export const FACILITATION_BY_LESSON = {
       "Student places -1 1/2 between -1 and -2, halfway, reasoning from the value of the fraction part.",
       "Student explains converting to a common form (both decimals or both fractions) makes comparison and ordering easier.",
       "Student explains integers are rational (write as a fraction over 1) but rationals like 1/2 are not integers.",
-      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I guessed." They should name finding the two whole numbers the value falls between and partitioning that space into equal parts.',
+      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I guessed." They should name finding the two integers the value falls between and partitioning that space into equal parts.',
     ],
   },
   "7-2-group2": {
@@ -3169,7 +3169,7 @@ export const FACILITATION_BY_LESSON = {
       "Student places -1 1/2 between -1 and -2, halfway, reasoning from the value of the fraction part.",
       "Student explains converting to a common form (both decimals or both fractions) makes comparison and ordering easier.",
       "Student explains integers are rational (write as a fraction over 1) but rationals like 1/2 are not integers.",
-      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I guessed." They should name finding the two whole numbers the value falls between and partitioning that space into equal parts.',
+      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I guessed." They should name finding the two integers the value falls between and partitioning that space into equal parts.',
     ],
   },
   "7-3-group1": {

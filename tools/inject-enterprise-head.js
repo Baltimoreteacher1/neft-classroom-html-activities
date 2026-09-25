@@ -30,8 +30,6 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { basename, dirname, join } from "path";
 import { fileURLToPath } from "url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
 import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 const SITE = "https://eduwonderlab.com";
@@ -59,6 +57,8 @@ const PAGE_FILES = new Set([
   "worksheet-answer-key.html",
   "worksheet-2.html",
   "worksheet-2-answer-key.html",
+  "worksheet-level-0.html",
+  "worksheet-level-0-answer-key.html",
   "practice.html",
   "practice-answer-key.html",
   "handout.html",

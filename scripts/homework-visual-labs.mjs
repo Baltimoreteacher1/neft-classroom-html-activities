@@ -19,6 +19,25 @@ const LABS = {
     nameEs: "Constructor de exponentes",
     prompt: "Change the base and exponent. Watch repeated multiplication grow.",
     promptEs: "Cambia la base y el exponente. Observa cómo crece la multiplicación repetida.",
+    coachEn: "Ask: 'Which number is being multiplied, and which number tells how many times?'",
+    coachEs: "Pregunta: '¿Qué número se multiplica y qué número indica cuántas veces?'",
+    legend: [
+      { color: "teal", labelEn: "Base factor", labelEs: "Factor base" },
+      { color: "coral", labelEn: "Repeated factor", labelEs: "Factor repetido" },
+    ],
+    presets: [
+      { labelEn: "Doubling (2³ = 8)", labelEs: "Duplicar (2³ = 8)", values: { base: 2, power: 3 } },
+      {
+        labelEn: "Tripling (3² = 9)",
+        labelEs: "Triplicar (3² = 9)",
+        values: { base: 3, power: 2 },
+      },
+      {
+        labelEn: "Powers of 4 (4² = 16)",
+        labelEs: "Potencias de 4 (4² = 16)",
+        values: { base: 4, power: 2 },
+      },
+    ],
     controls: [
       ["base", "Base", "Base", 2, 5, 2],
       ["power", "Exponent", "Exponente", 1, 4, 3],
@@ -29,6 +48,29 @@ const LABS = {
     nameEs: "Mezclador de razones",
     prompt: "Build equivalent batches and compare the two colors.",
     promptEs: "Construye lotes equivalentes y compara los dos colores.",
+    coachEn: "Ask: 'If we make twice as many batches, what happens to both colors?'",
+    coachEs: "Pregunta: 'Si preparamos el doble de lotes, ¿qué les pasa a ambos colores?'",
+    legend: [
+      { color: "teal", labelEn: "Blue parts", labelEs: "Partes azules" },
+      { color: "coral", labelEn: "Coral parts", labelEs: "Partes corales" },
+    ],
+    presets: [
+      {
+        labelEn: "Single batch (1 : 3)",
+        labelEs: "Lote individual (1 : 3)",
+        values: { batches: 1, blue: 1 },
+      },
+      {
+        labelEn: "Double batch (2 : 3)",
+        labelEs: "Doble lote (2 : 3)",
+        values: { batches: 2, blue: 2 },
+      },
+      {
+        labelEn: "Triple batch (3 : 3)",
+        labelEs: "Triple lote (3 : 3)",
+        values: { batches: 3, blue: 3 },
+      },
+    ],
     controls: [
       ["batches", "Batches", "Lotes", 1, 5, 2],
       ["blue", "Blue per batch", "Azules por lote", 1, 4, 2],
@@ -39,6 +81,17 @@ const LABS = {
     nameEs: "Equilibra la ecuación",
     prompt: "Change the unknown and the added blocks. Both pans stay equal.",
     promptEs: "Cambia la incógnita y los bloques añadidos. Ambos lados quedan iguales.",
+    coachEn: "Ask: 'What do we need to remove from both pans to leave x all by itself?'",
+    coachEs: "Pregunta: '¿Qué debemos quitar de ambos lados para que x quede sola?'",
+    legend: [
+      { color: "teal", labelEn: "Left pan (x + add)", labelEs: "Plato izquierdo (x + suma)" },
+      { color: "coral", labelEn: "Right pan (total)", labelEs: "Plato derecho (total)" },
+    ],
+    presets: [
+      { labelEn: "x + 3 = 8", labelEs: "x + 3 = 8", values: { unknown: 5, add: 3 } },
+      { labelEn: "x + 6 = 10", labelEs: "x + 6 = 10", values: { unknown: 4, add: 6 } },
+      { labelEn: "x + 4 = 11", labelEs: "x + 4 = 11", values: { unknown: 7, add: 4 } },
+    ],
     controls: [
       ["unknown", "Unknown x", "Incógnita x", 1, 12, 5],
       ["add", "Add to x", "Suma a x", 1, 10, 3],
@@ -49,6 +102,29 @@ const LABS = {
     nameEs: "Recta de desigualdades",
     prompt: "Move the boundary and test a point in the shaded solution set.",
     promptEs: "Mueve el límite y prueba un punto en el conjunto sombreado.",
+    coachEn: "Ask: 'Is our test point inside the shaded solution set? What does that prove?'",
+    coachEs: "Pregunta: '¿Está el punto de prueba en el conjunto sombreado? ¿Qué demuestra eso?'",
+    legend: [
+      { color: "teal", labelEn: "Solution set", labelEs: "Conjunto solución" },
+      { color: "coral", labelEn: "Boundary point", labelEs: "Punto límite" },
+    ],
+    presets: [
+      {
+        labelEn: "Above zero (x > 0)",
+        labelEs: "Mayor que cero (x > 0)",
+        values: { boundary: 0, test: 3 },
+      },
+      {
+        labelEn: "Freezing (x > -2)",
+        labelEs: "Congelación (x > -2)",
+        values: { boundary: -2, test: 1 },
+      },
+      {
+        labelEn: "Outside set (x > 2)",
+        labelEs: "Fuera de rango (x > 2)",
+        values: { boundary: 2, test: 0 },
+      },
+    ],
     controls: [
       ["boundary", "Boundary", "Límite", -5, 5, 1],
       ["test", "Test point", "Punto de prueba", -5, 5, 3],
@@ -59,6 +135,17 @@ const LABS = {
     nameEs: "Arreglo distributivo",
     prompt: "Split one array into two parts without changing its total area.",
     promptEs: "Divide un arreglo en dos partes sin cambiar su área total.",
+    coachEn: "Ask: 'Does splitting the array into two pieces change the total number of squares?'",
+    coachEs: "Pregunta: '¿Dividir el arreglo en dos partes cambia el número total de cuadrados?'",
+    legend: [
+      { color: "teal", labelEn: "Left section", labelEs: "Sección izquierda" },
+      { color: "coral", labelEn: "Right section", labelEs: "Sección derecha" },
+    ],
+    presets: [
+      { labelEn: "3 × (2 + 3)", labelEs: "3 × (2 + 3)", values: { rows: 3, left: 2, right: 3 } },
+      { labelEn: "4 × (3 + 3)", labelEs: "4 × (3 + 3)", values: { rows: 4, left: 3, right: 3 } },
+      { labelEn: "2 × (5 + 2)", labelEs: "2 × (5 + 2)", values: { rows: 2, left: 5, right: 2 } },
+    ],
     controls: [
       ["rows", "Rows", "Filas", 1, 6, 3],
       ["left", "Left columns", "Columnas izquierdas", 1, 6, 2],
@@ -70,6 +157,30 @@ const LABS = {
     nameEs: "Constructor de fichas algebraicas",
     prompt: "Change the coefficient and constant to build an expression.",
     promptEs: "Cambia el coeficiente y la constante para construir una expresión.",
+    coachEn: "Ask: 'Which tiles can change value when x changes, and which stay fixed?'",
+    coachEs:
+      "Pregunta: '¿Qué fichas pueden cambiar de valor cuando cambia x y cuáles quedan fijas?'",
+    legend: [
+      { color: "teal", labelEn: "Variable tiles (x)", labelEs: "Fichas de variable (x)" },
+      { color: "coral", labelEn: "Unit tiles", labelEs: "Fichas de unidad" },
+    ],
+    presets: [
+      {
+        labelEn: "Expression 3x + 2",
+        labelEs: "Expresión 3x + 2",
+        values: { coefficient: 3, constant: 2 },
+      },
+      {
+        labelEn: "Expression 2x + 5",
+        labelEs: "Expresión 2x + 5",
+        values: { coefficient: 2, constant: 5 },
+      },
+      {
+        labelEn: "Expression 4x + 1",
+        labelEs: "Expresión 4x + 1",
+        values: { coefficient: 4, constant: 1 },
+      },
+    ],
     controls: [
       ["coefficient", "x tiles", "Fichas x", 1, 6, 3],
       ["constant", "Unit tiles", "Fichas de unidad", 0, 10, 5],
@@ -80,6 +191,27 @@ const LABS = {
     nameEs: "Cuadrícula de área",
     prompt: "Resize the rectangle. Count rows and columns of square units.",
     promptEs: "Cambia el rectángulo. Cuenta filas y columnas de unidades cuadradas.",
+    coachEn: "Ask: 'How can we find the total squares quickly using multiplication?'",
+    coachEs:
+      "Pregunta: '¿Cómo podemos calcular los cuadrados rápidamente usando la multiplicación?'",
+    legend: [{ color: "teal", labelEn: "Square units", labelEs: "Unidades cuadradas" }],
+    presets: [
+      {
+        labelEn: "Living room (6 × 4)",
+        labelEs: "Habitación (6 × 4)",
+        values: { width: 6, height: 4 },
+      },
+      {
+        labelEn: "Square patio (4 × 4)",
+        labelEs: "Patio cuadrado (4 × 4)",
+        values: { width: 4, height: 4 },
+      },
+      {
+        labelEn: "Narrow path (8 × 2)",
+        labelEs: "Sendero estrecho (8 × 2)",
+        values: { width: 8, height: 2 },
+      },
+    ],
     controls: [
       ["width", "Width", "Ancho", 1, 10, 6],
       ["height", "Height", "Altura", 1, 7, 4],
@@ -90,6 +222,30 @@ const LABS = {
     nameEs: "Constructor de capas de volumen",
     prompt: "Resize a prism and see how many unit cubes fill each layer.",
     promptEs: "Cambia un prisma y observa cuántos cubos llenan cada capa.",
+    coachEn: "Ask: 'How many cubes are in one flat layer? How many layers make the full height?'",
+    coachEs:
+      "Pregunta: '¿Cuántos cubos hay en una capa plana? ¿Cuántas capas forman la altura total?'",
+    legend: [
+      { color: "teal", labelEn: "Base layer cubes", labelEs: "Cubos de capa base" },
+      { color: "coral", labelEn: "Stacked layers", labelEs: "Capas apiladas" },
+    ],
+    presets: [
+      {
+        labelEn: "Box (4 × 3 × 2)",
+        labelEs: "Caja (4 × 3 × 2)",
+        values: { length: 4, width: 3, height: 2 },
+      },
+      {
+        labelEn: "Cube (3 × 3 × 3)",
+        labelEs: "Cubo (3 × 3 × 3)",
+        values: { length: 3, width: 3, height: 3 },
+      },
+      {
+        labelEn: "Flat tray (5 × 4 × 1)",
+        labelEs: "Bandeja plana (5 × 4 × 1)",
+        values: { length: 5, width: 4, height: 1 },
+      },
+    ],
     controls: [
       ["length", "Length", "Largo", 1, 6, 4],
       ["width", "Width", "Ancho", 1, 5, 3],
@@ -101,6 +257,30 @@ const LABS = {
     nameEs: "Estudio de redes de prismas",
     prompt: "Resize the prism. Watch all six faces change in its net.",
     promptEs: "Cambia el prisma. Observa cómo cambian las seis caras de su red.",
+    coachEn: "Ask: 'Which matching pairs of opposite faces share the exact same area?'",
+    coachEs: "Pregunta: '¿Qué parejas de caras opuestas tienen exactamente la misma área?'",
+    legend: [
+      { color: "teal", labelEn: "Front and back", labelEs: "Frente y dorso" },
+      { color: "gold", labelEn: "Top and bottom", labelEs: "Arriba y abajo" },
+      { color: "coral", labelEn: "Left and right", labelEs: "Izquierda y derecha" },
+    ],
+    presets: [
+      {
+        labelEn: "Solid brick (4 × 3 × 2)",
+        labelEs: "Ladrillo (4 × 3 × 2)",
+        values: { length: 4, width: 3, height: 2 },
+      },
+      {
+        labelEn: "Equal cube (3 × 3 × 3)",
+        labelEs: "Cubo igual (3 × 3 × 3)",
+        values: { length: 3, width: 3, height: 3 },
+      },
+      {
+        labelEn: "Flat carton (5 × 3 × 1)",
+        labelEs: "Caja plana (5 × 3 × 1)",
+        values: { length: 5, width: 3, height: 1 },
+      },
+    ],
     controls: [
       ["length", "Length", "Largo", 1, 6, 4],
       ["width", "Width", "Ancho", 1, 5, 3],
@@ -112,6 +292,30 @@ const LABS = {
     nameEs: "Estudio de forma de datos",
     prompt: "Change the center and spread. Watch the dot plot reshape.",
     promptEs: "Cambia el centro y la dispersión. Observa cómo cambia el diagrama.",
+    coachEn: "Ask: 'Where is the center point, and how widely spread are the outer dots?'",
+    coachEs:
+      "Pregunta: '¿Dónde está el centro y qué tan dispersos están los puntos de los extremos?'",
+    legend: [
+      { color: "coral", labelEn: "Center value", labelEs: "Valor central" },
+      { color: "teal", labelEn: "Data points", labelEs: "Puntos de datos" },
+    ],
+    presets: [
+      {
+        labelEn: "Balanced center (5)",
+        labelEs: "Centro equilibrado (5)",
+        values: { center: 5, spread: 2 },
+      },
+      {
+        labelEn: "Clustered tight (6)",
+        labelEs: "Muy agrupados (6)",
+        values: { center: 6, spread: 1 },
+      },
+      {
+        labelEn: "Wide spread (5)",
+        labelEs: "Gran dispersión (5)",
+        values: { center: 5, spread: 4 },
+      },
+    ],
     controls: [
       ["center", "Center", "Centro", 3, 8, 5],
       ["spread", "Spread", "Dispersión", 1, 4, 2],
@@ -122,6 +326,18 @@ const LABS = {
     nameEs: "Punto móvil de coordenadas",
     prompt: "Move x and y. Track the ordered pair across the four quadrants.",
     promptEs: "Mueve x y y. Sigue el par ordenado por los cuatro cuadrantes.",
+    coachEn: "Ask: 'Which number tells us left/right (x), and which tells us up/down (y)?'",
+    coachEs: "Pregunta: '¿Qué número indica izquierda/derecha (x) y cuál indica arriba/abajo (y)?'",
+    legend: [{ color: "coral", labelEn: "Point (x, y)", labelEs: "Punto (x, y)" }],
+    presets: [
+      { labelEn: "Quadrant I (3, 2)", labelEs: "Cuadrante I (3, 2)", values: { x: 3, y: 2 } },
+      { labelEn: "Quadrant II (-4, 3)", labelEs: "Cuadrante II (-4, 3)", values: { x: -4, y: 3 } },
+      {
+        labelEn: "Quadrant III (-3, -2)",
+        labelEs: "Cuadrante III (-3, -2)",
+        values: { x: -3, y: -2 },
+      },
+    ],
     controls: [
       ["x", "x-coordinate", "Coordenada x", -5, 5, 3],
       ["y", "y-coordinate", "Coordenada y", -5, 5, 2],
@@ -132,6 +348,30 @@ const LABS = {
     nameEs: "Recta de enteros",
     prompt: "Move the point and change its distance from zero.",
     promptEs: "Mueve el punto y cambia su distancia desde cero.",
+    coachEn: "Ask: 'When we add a positive number, does the jump move to the right or left?'",
+    coachEs:
+      "Pregunta: 'Cuando sumamos un número positivo, ¿el salto va a la derecha o a la izquierda?'",
+    legend: [
+      { color: "teal", labelEn: "Start point", labelEs: "Punto de partida" },
+      { color: "coral", labelEn: "Landing point", labelEs: "Punto de llegada" },
+    ],
+    presets: [
+      {
+        labelEn: "Jump right (-4 + 7)",
+        labelEs: "Salto derecha (-4 + 7)",
+        values: { point: -4, jump: 7 },
+      },
+      {
+        labelEn: "Jump left (3 − 6)",
+        labelEs: "Salto izquierda (3 − 6)",
+        values: { point: 3, jump: -6 },
+      },
+      {
+        labelEn: "Crossing zero (-2 + 5)",
+        labelEs: "Cruzar el cero (-2 + 5)",
+        values: { point: -2, jump: 5 },
+      },
+    ],
     controls: [
       ["point", "Point", "Punto", -10, 10, -4],
       ["jump", "Jump", "Salto", -5, 5, 3],
@@ -142,6 +382,29 @@ const LABS = {
     nameEs: "Constructor de barras de fracciones",
     prompt: "Change the numerator and denominator. Watch the part-whole model.",
     promptEs: "Cambia el numerador y el denominador. Observa el modelo parte-todo.",
+    coachEn: "Ask: 'What does the bottom number (denominator) tell us about each whole bar?'",
+    coachEs: "Pregunta: '¿Qué nos dice el número de abajo (denominador) sobre cada barra entera?'",
+    legend: [
+      { color: "teal", labelEn: "Shaded fraction parts", labelEs: "Partes sombreadas" },
+      { color: "gold", labelEn: "Remaining parts", labelEs: "Partes restantes" },
+    ],
+    presets: [
+      {
+        labelEn: "One half (1/2)",
+        labelEs: "Un medio (1/2)",
+        values: { numerator: 1, denominator: 2 },
+      },
+      {
+        labelEn: "Three fourths (3/4)",
+        labelEs: "Tres cuartos (3/4)",
+        values: { numerator: 3, denominator: 4 },
+      },
+      {
+        labelEn: "Over a whole (5/4)",
+        labelEs: "Más de un entero (5/4)",
+        values: { numerator: 5, denominator: 4 },
+      },
+    ],
     controls: [
       ["numerator", "Numerator", "Numerador", 0, 12, 3],
       ["denominator", "Denominator", "Denominador", 2, 12, 4],
@@ -154,6 +417,30 @@ const LABS = {
       "Follow the standard algorithm: Divide (D) → Multiply (M) → Subtract (S) → Bring down (B) to find the quotient.",
     promptEs:
       "Sigue el algoritmo estándar: Divide (D) → Multiplica (M) → Resta (S) → Baja (B) para hallar el cociente.",
+    coachEn: "Ask: 'Can you name the 4 algorithm steps: Divide, Multiply, Subtract, Bring down?'",
+    coachEs:
+      "Pregunta: '¿Recuerdas los 4 pasos del algoritmo: Dividir, Multiplicar, Restar, Bajar?'",
+    legend: [
+      { color: "gold", labelEn: "Completed steps", labelEs: "Pasos completados" },
+      { color: "coral", labelEn: "Active step", labelEs: "Paso activo" },
+    ],
+    presets: [
+      {
+        labelEn: "Exact division (144 ÷ 12)",
+        labelEs: "División exacta (144 ÷ 12)",
+        values: { dividend: 144, divisor: 12, step: 4 },
+      },
+      {
+        labelEn: "With remainder (125 ÷ 10)",
+        labelEs: "Con residuo (125 ÷ 10)",
+        values: { dividend: 125, divisor: 10, step: 4 },
+      },
+      {
+        labelEn: "Step 1: Divide (D)",
+        labelEs: "Paso 1: Dividir (D)",
+        values: { dividend: 1344, divisor: 12, step: 1 },
+      },
+    ],
     controls: [
       ["dividend", "Dividend (Total)", "Dividendo (Total)", 100, 2400, 1344],
       ["divisor", "Divisor (Groups)", "Divisor (Grupos)", 2, 25, 12],
@@ -165,6 +452,22 @@ const LABS = {
     nameEs: "Cuadrícula de cien",
     prompt: "Shade hundredths and connect the picture, decimal, and percent.",
     promptEs: "Sombrea centésimos y conecta el dibujo, decimal y porcentaje.",
+    coachEn: "Ask: 'How many small squares make up one full column of ten?'",
+    coachEs: "Pregunta: '¿Cuántos cuadritos forman una columna completa de diez?'",
+    legend: [{ color: "teal", labelEn: "Shaded hundredths", labelEs: "Centésimos sombreados" }],
+    presets: [
+      {
+        labelEn: "Quarter: 0.25 (25%)",
+        labelEs: "Un cuarto: 0.25 (25%)",
+        values: { hundredths: 25 },
+      },
+      { labelEn: "Half: 0.50 (50%)", labelEs: "Mitad: 0.50 (50%)", values: { hundredths: 50 } },
+      {
+        labelEn: "Three quarters: 0.75 (75%)",
+        labelEs: "Tres cuartos: 0.75 (75%)",
+        values: { hundredths: 75 },
+      },
+    ],
     controls: [["hundredths", "Hundredths", "Centésimos", 0, 100, 37]],
   },
   factors: {
@@ -172,6 +475,26 @@ const LABS = {
     nameEs: "Laboratorio de arreglos de factores",
     prompt: "Arrange dots in equal rows. A complete rectangle shows a factor pair.",
     promptEs: "Ordena puntos en filas iguales. Un rectángulo completo muestra un par de factores.",
+    coachEn: "Ask: 'Does this form a complete rectangle, or are there dots left over?'",
+    coachEs: "Pregunta: '¿Forma esto un rectángulo completo o sobran puntos?'",
+    legend: [{ color: "teal", labelEn: "Complete rows", labelEs: "Filas completas" }],
+    presets: [
+      {
+        labelEn: "Array for 12 (3 × 4)",
+        labelEs: "Arreglo de 12 (3 × 4)",
+        values: { number: 12, columns: 4 },
+      },
+      {
+        labelEn: "Square for 16 (4 × 4)",
+        labelEs: "Cuadrado de 16 (4 × 4)",
+        values: { number: 16, columns: 4 },
+      },
+      {
+        labelEn: "Prime 13 (no rectangle)",
+        labelEs: "Primo 13 (sin rectángulo)",
+        values: { number: 13, columns: 4 },
+      },
+    ],
     controls: [
       ["number", "Number of dots", "Número de puntos", 2, 36, 24],
       ["columns", "Columns", "Columnas", 1, 12, 6],
@@ -182,6 +505,14 @@ const LABS = {
     nameEs: "Constructor de modelos matemáticos",
     prompt: "Change the groups and items. Explain what stays the same.",
     promptEs: "Cambia los grupos y los objetos. Explica qué permanece igual.",
+    coachEn: "Ask: 'How many equal groups are there, and how many items are in each group?'",
+    coachEs: "Pregunta: '¿Cuántos grupos iguales hay y cuántos objetos hay en cada grupo?'",
+    legend: [{ color: "teal", labelEn: "Equal group items", labelEs: "Objetos de grupo igual" }],
+    presets: [
+      { labelEn: "3 groups of 4", labelEs: "3 grupos de 4", values: { groups: 3, items: 4 } },
+      { labelEn: "4 groups of 5", labelEs: "4 grupos de 5", values: { groups: 4, items: 5 } },
+      { labelEn: "2 groups of 6", labelEs: "2 grupos de 6", values: { groups: 2, items: 6 } },
+    ],
     controls: [
       ["groups", "Groups", "Grupos", 1, 6, 3],
       ["items", "Items per group", "Objetos por grupo", 1, 8, 4],
@@ -202,34 +533,104 @@ function initialPreview() {
 function renderSharedLessonModel(topic, config, lessonModel) {
   const kind = lessonModel.kind || "interactive model";
   const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
-  const modelName =
-    lessonModel.title || (isFactorTree ? "Factor Tree Builder" : "Interactive Lesson Model");
-  const modelNameEs = isFactorTree
-    ? "Constructor de árboles de factores"
-    : "Modelo interactivo de la lección";
+  let modelName = lessonModel.title;
+  let modelNameEs = "";
+  let icon = isFactorTree ? "🌳" : kind === "fraction-divide" ? "🥞" : "🖐️";
+
+  if (kind === "fraction-divide") {
+    modelName = "Fraction Division Visualizer & Lab";
+    modelNameEs = "Visualizador interactivo de división de fracciones";
+    icon = "🥞";
+  } else if (!modelName || modelName === "Interactive Lesson Model") {
+    if (kind === "unit-rate-builder") {
+      modelName = "Unit Rate & Price Calculator";
+      modelNameEs = "Calculadora de tasa unitaria y precios";
+      icon = "⚖️";
+    } else if (kind === "ratio-table-builder") {
+      modelName = "Ratio Table Builder";
+      modelNameEs = "Constructor de tablas de razones";
+      icon = "📊";
+    } else if (kind === "line-grapher") {
+      modelName = "Ratio Line Grapher";
+      modelNameEs = "Graficador de razones";
+      icon = "📈";
+    } else if (kind === "tape-diagram") {
+      modelName = "Equal Batches Tape Diagram";
+      modelNameEs = "Diagrama de cinta de lotes iguales";
+      icon = "📏";
+    } else if (isFactorTree) {
+      modelName = "Factor Tree Builder";
+      modelNameEs = "Constructor de árboles de factores";
+      icon = "🌳";
+    } else {
+      modelName = config.title ? `${config.title} Model` : "Interactive Lesson Model";
+      modelNameEs = "Modelo interactivo de la lección";
+    }
+  } else {
+    modelNameEs = lessonModel.titleEs || "Modelo interactivo de la lección";
+  }
+
   const prompt = isFactorTree
     ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
-    : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
+    : kind === "fraction-divide"
+      ? "Choose a division problem. Watch how the total amount is cut into equal fraction pieces."
+      : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
   const promptEs = isFactorTree
     ? "Escribe dos factores para cada círculo compuesto. Sigue dividiendo hasta que cada hoja sea prima."
-    : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.";
+    : kind === "fraction-divide"
+      ? "Elige un problema de división. Observa cómo la cantidad total se divide en partes fraccionarias iguales."
+      : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.";
   const idea =
     config.launch?.conceptIntro?.keyIdea ||
     config.explore?.conceptIntro?.keyIdea ||
     config.contentObjective ||
     config.title;
 
+  /* The three TOUCH & TRY cards default to text that is IDENTICAL on all 164
+     family homeworks — "Move, type, tap, or drag in the model" tells a family
+     nothing about tonight's mathematics. A lesson whose model shows more than
+     one idea cannot ask for either one without saying so, which is how 3-1
+     ended up with a tape diagram that can show part-to-part AND part-to-whole
+     and a prompt that named neither. A lesson authors its own in the
+     family-note sidecar under `touchAndTry`; everything unset falls back. */
+  const authored = config.familyNotes?.touchAndTry || {};
+  const touch = {
+    touchEn:
+      authored.touchEn ||
+      (isFactorTree
+        ? "Choose two factors that multiply to the number in the circle."
+        : "Move, type, tap, or drag in the model. Watch what changes."),
+    touchEs:
+      authored.touchEs ||
+      (isFactorTree
+        ? "Elige dos factores cuyo producto sea el número del círculo."
+        : "Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia."),
+    mathEn: authored.mathEn || "Record one equation, value, or relationship you can see.",
+    mathEs: authored.mathEs || "Escribe una ecuación, un valor o una relación que puedas ver.",
+    explainEn: authored.explainEn || "I notice ___ changes when ___ changes. This shows ___.",
+    explainEs: authored.explainEs || "Noto que ___ cambia cuando ___ cambia. Esto muestra ___.",
+  };
+
   return `<section class="family-visual-lab" data-visual-lab="${esc(topic)}" data-lesson-model="${esc(kind)}" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
       <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
-      <h2 id="visual_lab_title"><span aria-hidden="true">${isFactorTree ? "🌳" : "🖐️"}</span> <span class="lang-en">${esc(modelName)}</span><span class="lang-es" lang="es">${esc(modelNameEs)}</span></h2></div>
+      <h2 id="visual_lab_title"><span aria-hidden="true">${icon}</span> <span class="lang-en">${esc(modelName)}</span><span class="lang-es" lang="es">${esc(modelNameEs)}</span></h2></div>
       <p><span class="lang-en">${esc(prompt)}</span><span class="lang-es" lang="es">${esc(promptEs)}</span></p>
     </div>
     <div class="visual-lab-stage" data-lesson-model-host>${lessonModel.html}</div>
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
-      <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">${isFactorTree ? "Choose two factors that multiply to the number in the circle." : "Move, type, tap, or drag in the model. Watch what changes."}</span><span class="lang-es" lang="es">${isFactorTree ? "Elige dos factores cuyo producto sea el número del círculo." : "Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia."}</span></p></article>
-      <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">${esc(idea)}</p></details></article>
+      <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">${esc(touch.touchEn)}</span><span class="lang-es" lang="es">${esc(touch.touchEs)}</span></p></article>
+      <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">${esc(touch.mathEn)}</span><span class="lang-es" lang="es">${esc(touch.mathEs)}</span></p></article>
+      <article class="visual-representation-card visual-representation-words">
+        <span class="representation-number">3</span>
+        <h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3>
+        <p><span class="lang-en">${esc(touch.explainEn)}</span><span class="lang-es" lang="es">${esc(touch.explainEs)}</span></p>
+        <div class="visual-coach-box">
+          <strong>💬 <span class="lang-en">Family conversation:</span><span class="lang-es" lang="es">Conversación familiar:</span></strong>
+          <p class="visual-coach-q"><span class="lang-en">Ask: "Where do you see the numbers from tonight&#039;s math in this model?"</span><span class="lang-es" lang="es">Pregunta: "¿Dónde ves los números de la tarea de hoy en este modelo?"</span></p>
+        </div>
+        <details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">${esc(idea)}</p></details>
+      </article>
     </div>
   </section>`;
 }
@@ -252,6 +653,23 @@ export function renderVisualMathLab(topic, config, lessonModel = null) {
       </label>`,
     )
     .join("");
+  const presetsHtml = (lab.presets || [])
+    .map(
+      (
+        p,
+      ) => `<button type="button" class="preset-pill-btn" data-preset="${esc(JSON.stringify(p.values))}">
+        <span class="lang-en">${esc(p.labelEn)}</span><span class="lang-es" lang="es">${esc(p.labelEs)}</span>
+      </button>`,
+    )
+    .join("");
+
+  const legendHtml = (lab.legend || [])
+    .map(
+      (l) =>
+        `<span class="legend-chip"><span class="legend-swatch swatch-${esc(l.color)}"></span> <span class="lang-en">${esc(l.labelEn)}</span><span class="lang-es" lang="es">${esc(l.labelEs)}</span></span>`,
+    )
+    .join("");
+
   const idea =
     config.launch?.conceptIntro?.keyIdea ||
     config.explore?.conceptIntro?.keyIdea ||
@@ -268,9 +686,11 @@ export function renderVisualMathLab(topic, config, lessonModel = null) {
     <div class="visual-lab-layout">
       <div class="visual-lab-canvas-wrap">
         <div class="visual-lab-stage" data-lab-stage>${initialPreview()}</div>
+        ${legendHtml ? `<div class="visual-lab-legend" aria-label="Visual model color guide">${legendHtml}</div>` : ""}
         <p class="visual-lab-status" data-lab-status role="status" aria-live="polite"></p>
       </div>
       <div class="visual-lab-controls" aria-label="Interactive math controls">
+        ${presetsHtml ? `<div class="visual-lab-presets" role="group" aria-label="Quick scenarios"><span class="presets-label"><span class="lang-en">⚡ Quick Try:</span><span class="lang-es" lang="es">⚡ Prueba rápida:</span></span><div class="preset-pill-group">${presetsHtml}</div></div>` : ""}
         ${controls}
         <div class="visual-lab-actions">
           <button type="button" class="visual-lab-button" data-lab-random><span class="lang-en">🎲 Try another</span><span class="lang-es" lang="es">🎲 Prueba otro</span></button>
@@ -281,7 +701,16 @@ export function renderVisualMathLab(topic, config, lessonModel = null) {
     <div class="visual-representation-grid" aria-label="Three ways to understand the math">
       <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Picture it</span><span class="lang-es" lang="es">Dibújalo</span></h3><div class="mini-model" data-lab-mini aria-hidden="true"></div></article>
       <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p data-lab-equation>—</p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Say what you notice</span><span class="lang-es" lang="es">Di lo que notas</span></h3><p data-lab-observation>—</p><details><summary><span class="lang-en">Sentence frame</span><span class="lang-es" lang="es">Marco de oración</span></summary><p><span class="lang-en">I notice ___ changes when ___ changes.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia.</span></p><p class="visual-source-idea">${esc(idea)}</p></details></article>
+      <article class="visual-representation-card visual-representation-words">
+        <span class="representation-number">3</span>
+        <h3><span class="lang-en">Say what you notice</span><span class="lang-es" lang="es">Di lo que notas</span></h3>
+        <p data-lab-observation>—</p>
+        <div class="visual-coach-box">
+          <strong>💬 <span class="lang-en">Family conversation:</span><span class="lang-es" lang="es">Conversación familiar:</span></strong>
+          <p class="visual-coach-q"><span class="lang-en">${esc(lab.coachEn || "What stays the same when you change the numbers?")}</span><span class="lang-es" lang="es">${esc(lab.coachEs || "¿Qué permanece igual cuando cambias los números?")}</span></p>
+        </div>
+        <details><summary><span class="lang-en">Sentence frame</span><span class="lang-es" lang="es">Marco de oración</span></summary><p><span class="lang-en">I notice ___ changes when ___ changes.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia.</span></p><p class="visual-source-idea">${esc(idea)}</p></details>
+      </article>
     </div>
   </section>`;
 }
@@ -290,6 +719,22 @@ export const VISUAL_LABS_CSS = String.raw`
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
 .visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
+.visual-lab-presets{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:rgba(255,255,255,.1);border-radius:14px;border:1px solid rgba(255,255,255,.2);margin-bottom:4px}
+.presets-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--lab-sun)}
+.preset-pill-group{display:flex;flex-wrap:wrap;gap:6px}
+.preset-pill-btn{padding:5px 10px;border-radius:999px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s ease;display:inline-flex;align-items:center}
+.preset-pill-btn:hover{background:var(--lab-sun);color:var(--lab-ink);border-color:var(--lab-sun);transform:translateY(-1px)}
+.preset-pill-btn.is-active{background:var(--lab-coral);color:#fff;border-color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.preset-pill-btn:focus-visible{outline:3px solid var(--lab-sun);outline-offset:2px}
+.visual-lab-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 6px 2px}
+.legend-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:8px;background:rgba(255,255,255,.88);border:1px solid rgba(23,58,94,.18);font-size:12px;font-weight:700;color:var(--lab-ink)}
+.legend-swatch{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.25)}
+.legend-swatch.swatch-teal{background:var(--lab-teal)}
+.legend-swatch.swatch-coral{background:var(--lab-coral)}
+.legend-swatch.swatch-gold{background:var(--lab-sun)}
+.visual-coach-box{margin-top:10px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.85);border:1.5px solid rgba(23,58,94,.14)}
+.visual-coach-box strong{display:block;margin-bottom:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--lab-ink)}
+.visual-coach-q{margin:0!important;font-size:13.5px!important;font-weight:700!important;line-height:1.35!important;color:#183654!important;font-style:italic}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
 .lab-label{font:800 16px "Outfit",sans-serif;fill:#173a5e}.lab-small{font:700 12px "Hanken Grotesk",sans-serif;fill:#173a5e}.lab-big{font:800 24px "Outfit",sans-serif;fill:#173a5e}.lab-grid{stroke:#bcd7d0;stroke-width:1}.lab-axis{stroke:#173a5e;stroke-width:3}.lab-accent{fill:#ff775f;stroke:#173a5e;stroke-width:2}.lab-teal{fill:#0b8f87;stroke:#173a5e;stroke-width:2}.lab-sun{fill:#f6c94c;stroke:#173a5e;stroke-width:2}
@@ -334,7 +779,7 @@ export const VISUAL_LABS_JS = String.raw`
   }
   function values(lab){var out={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){out[input.getAttribute('data-lab-input')]=Number(input.value);});return out;}
   function update(lab){var v=values(lab),topic=lab.getAttribute('data-visual-lab')||'fallback',r=render(topic,v);lab.querySelector('[data-lab-stage]').innerHTML=r.svg;lab.querySelector('[data-lab-equation]').textContent=r.equation;lab.querySelector('[data-lab-observation]').textContent=r.observation;lab.querySelector('[data-lab-status]').textContent=r.status;lab.querySelectorAll('[data-lab-output]').forEach(function(o){o.value=v[o.getAttribute('data-lab-output')];o.textContent=v[o.getAttribute('data-lab-output')];});var mini=lab.querySelector('[data-lab-mini]');mini.innerHTML='';for(var i=0;i<r.mini;i++){var dot=document.createElement('span');dot.className='mini-dot';mini.appendChild(dot);}}
-  function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){update(lab);});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
+  function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});update(lab);});});lab.querySelectorAll('[data-preset]').forEach(function(btn){btn.addEventListener('click',function(){try{var vals=JSON.parse(btn.getAttribute('data-preset'));lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});btn.classList.add('is-active');Object.keys(vals).forEach(function(k){var inp=lab.querySelector('[data-lab-input="'+k+'"]');if(inp)inp.value=vals[k];});update(lab);}catch(e){}});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-preset]').forEach(function(b){b.classList.remove('is-active');});lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
   function initAll(){document.querySelectorAll('[data-visual-lab]').forEach(function(lab){if(lab.getAttribute('data-visual-ready')||lab.querySelector('[data-lesson-model-host]'))return;lab.setAttribute('data-visual-ready','1');init(lab);});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAll);else initAll();
 })();

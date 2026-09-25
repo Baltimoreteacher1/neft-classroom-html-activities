@@ -64,7 +64,11 @@ const SKIP_TOPLEVEL = new Set([
 
 // student-board is a teacher-authored class display (not a lesson/activity), so
 // it opts out of the global floating launcher — Joel asked to keep it link-free.
-const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b|(^|[/\\])math[/\\]student-board[/\\]/i;
+// Family homework now embeds at most one lesson-matched manipulative. Injecting
+// the global launcher there would put every unrelated workbench tool back on
+// the page and defeat that alignment guarantee.
+const SKIP_FILE_RE =
+  /(^|[/\\])(404|sitemap|robots)\b|(^|[/\\])math[/\\]student-board[/\\]|^lessons[/\\][^/\\]+[/\\]homework\.html$/i;
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");

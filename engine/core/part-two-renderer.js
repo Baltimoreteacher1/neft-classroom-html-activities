@@ -577,21 +577,28 @@ function renderProblem(host, state, ctx, config) {
   // single column on a phone with no separate mobile rule.
   const steps = el("div", "p2-solve-steps");
   steps.append(
-    field(state, 1, "know", "1 · What I KNOW", "The numbers and facts the problem gives me…"),
+    field(
+      state,
+      1,
+      "know",
+      "1 · What I know & need",
+      "Key numbers, what the question asks, and my plan…",
+      3,
+    ),
   );
-  steps.append(
-    field(state, 1, "need", "2 · What I NEED to find", "What is the problem actually asking for?"),
-  );
-  steps.append(field(state, 1, "plan", "3 · My plan", "First I will… then I will…"));
   // My work is where the arithmetic actually goes, so it spans the full row
-  // rather than being squeezed into a column — a six-row textarea at a third of
-  // the width is not somewhere a student can show every step.
-  const work = field(state, 1, "work", "4 · My work", "Show every step.", 6);
+  const work = field(state, 1, "work", "2 · My work", "Show every step.", 5);
   work.classList.add("p2-solve-wide");
   steps.append(work);
-  steps.append(field(state, 1, "answer", "5 · My answer", "Include the units.", 2));
   steps.append(
-    field(state, 1, "why", "6 · How I know it is reasonable", "Compare it to an estimate.", 3),
+    field(
+      state,
+      1,
+      "answer",
+      "3 · My answer & check",
+      "Final answer with units, and why it makes sense.",
+      3,
+    ),
   );
   think.append(steps);
   host.append(think);
@@ -635,18 +642,14 @@ function renderGroups(host, state, _ctx, config) {
   // words, and the Socratic tutor. Passing no `problem` is deliberate — the bar
   // falls back to config.revealWordProblem, which IS what is being solved here.
   mountStuckSupport(solve, { config, state });
-  solve.append(
-    field(state, 2, "estimate", "🎯 Our estimate (before solving)", "We think it is about…", 2),
-  );
-  solve.append(field(state, 2, "work", "✏️ Our steps", "Step 1… Step 2… Step 3…", 5));
-  solve.append(field(state, 2, "answer", "✅ Our answer", "Include the units.", 2));
+  solve.append(field(state, 2, "work", "✏️ Our plan & steps", "Step 1… Step 2… Step 3…", 5));
   solve.append(
     field(
       state,
       2,
-      "why",
-      "🔍 How we know it is reasonable",
-      "Compare it to the estimate, and to the problem.",
+      "answer",
+      "✅ Our answer & check",
+      "Our agreed answer with units, and how we checked it.",
       3,
     ),
   );

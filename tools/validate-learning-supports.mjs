@@ -387,8 +387,15 @@ function runValidation() {
     );
     process.exit(1);
   }
-  if (!hubHtml.includes("no IEP data is stored") && !hubHtml.includes("no IEP data")) {
-    console.error("FAIL: curriculum/index.html missing 'no IEP data is stored' copy");
+  // The privacy promise must stay on the page. Its wording changed on
+  // 2026-09-20 ("no student data is stored") so the public hub carries no
+  // IEP/accommodation labels; either form satisfies the check.
+  if (
+    !hubHtml.includes("no student data is stored") &&
+    !hubHtml.includes("no IEP data is stored") &&
+    !hubHtml.includes("no IEP data")
+  ) {
+    console.error("FAIL: curriculum/index.html missing 'no student data is stored' privacy copy");
     process.exit(1);
   }
   if (

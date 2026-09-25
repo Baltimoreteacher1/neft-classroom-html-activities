@@ -55,7 +55,6 @@ function process(rel) {
   if (!fs.existsSync(file)) return;
   const before = fs.readFileSync(file, "utf8");
   if (!before.includes("pro-projects")) return;
-  if (!before.includes("lvl2-block")) return; // nothing to declutter
   let after = addHead(before);
   after = addClass(after);
   after = addBody(after);

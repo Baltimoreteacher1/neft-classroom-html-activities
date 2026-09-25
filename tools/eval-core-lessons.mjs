@@ -25,6 +25,7 @@
 // firing reports a flawless curriculum, which is worse than no gate at all.
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 import {
   CHECKS,
   checkChoiceFeedback,
@@ -32,10 +33,6 @@ import {
   checkGiveAway,
   checkOperatorConsistency,
 } from "./lib/practice-detectors.mjs";
-
-const root = join(import.meta.dirname, "..");
-
-import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
 
 const CORE_RE = /^\d+-\d+$/;
 

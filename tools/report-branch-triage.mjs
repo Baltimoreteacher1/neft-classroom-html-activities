@@ -1,0 +1,191 @@
+#!/usr/bin/env node
+/**
+ * report-branch-triage.mjs — which branches still hold work that is not on main.
+ *
+ * WHY NOT `git cherry`. This repo deploys with `scripts/ship.sh`, which
+ * cherry-picks onto a throwaway worktree, so a shipped commit reaches `main`
+ * with a DIFFERENT sha and usually with later edits on top of it. Patch-id
+ * comparison therefore reports live, shipped work as "unmerged" — measured
+ * here, it claims ~40 branches hold unmerged commits when most of their content
+ * is already serving. The 2026-08-01 triage hit the same wall and solved it the
+ * same way: ask whether the LINES the branch adds are present in `origin/main`.
+ *
+ * WHAT THE VERDICTS MEAN. `presence` is the share of a branch's added lines
+ * (sampled per file) that already appear in main's copy of the same file.
+ *
+ *   superseded  >= 80%   the work is on main by another route
+ *   partial     40-79%   some landed, some did not — read it before deciding
+ *   unshipped   <  40%   genuinely still only on this branch
+ *
+ * IT IS EVIDENCE, NOT A VERDICT, AND IT DELETES NOTHING. A high score can also
+ * mean a branch re-added boilerplate that main already had. Only two branches
+ * in this repo are PROVABLY merged (ancestors of origin/main); everything else
+ * is a heuristic, and 16 of these branches have no remote copy — deleting one
+ * on a sampled line count can destroy the only copy of real work. Retiring a
+ * branch stays a human decision. Branches are free; lost work is not.
+ *
+ *   node tools/report-branch-triage.mjs            → reports/branch-triage.md
+ *   node tools/report-branch-triage.mjs --stdout
+ */
+import { execFileSync } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const OUT = join(ROOT, "reports", "branch-triage.md");
+const STDOUT = process.argv.includes("--stdout");
+const BASE = "origin/main";
+/** Lines per file, and files per branch. Sampling keeps a 170-commit branch
+ *  from costing minutes; the verdict bands are coarse enough to survive it. */
+const FILES_PER_BRANCH = 40;
+const LINES_PER_FILE = 25;
+
+const git = (...args) => {
+  try {
+    /* stdio "pipe" on stderr: `git show main:<file>` for a file the branch ADDED
+       writes "fatal: path ... does not exist" to the terminal, hundreds of times.
+       That file's absence from main is a legitimate answer here, not an error. */
+    return execFileSync("git", args, {
+      cwd: ROOT,
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return "";
+  }
+};
+
+const branches = git(
+  "for-each-ref",
+  "--format=%(refname:short)",
+  "refs/heads/",
+  "refs/remotes/origin",
+)
+  .split("\n")
+  .map((b) => b.trim())
+  .filter((b) => b && b !== BASE && b !== "origin/HEAD" && b !== "main");
+
+const rows = [];
+let considered = 0;
+for (const branch of branches) {
+  const ahead = Number(git("rev-list", "--count", `${BASE}..${branch}`).trim() || 0);
+  if (!ahead) continue;
+  considered++;
+
+  /* NO COMMON ANCESTOR. `git merge-base` EXITS 1 when two histories are
+     unrelated, and an early `continue` on that dropped 15 of 159 branches from
+     this report in silence — `haftarah-trope-words-and-accent`,
+     `noam-school-v9-upgrade`, `calendar-customization-classroom-sync` and the
+     rest, which are other PROJECTS' histories that were pushed to this remote.
+     They are not stale feature branches and they never branched from main, so
+     they get their own verdict rather than a presence score: there is no shared
+     file history to compare against. A report that quietly omits its hardest
+     cases is worse than no report. */
+  const mergeBase = git("merge-base", BASE, branch).trim();
+  if (!mergeBase) {
+    rows.push({
+      branch,
+      ahead,
+      tip: git("log", "-1", "--format=%ad", "--date=short", branch).trim(),
+      base: "—",
+      presence: null,
+      sampled: 0,
+      verdict: "unrelated history",
+    });
+    continue;
+  }
+
+  const files = git("diff", "--name-only", `${mergeBase}..${branch}`)
+    .split("\n")
+    .filter((f) => /\.(mjs|js|json|html|css|md)$/.test(f))
+    .slice(0, FILES_PER_BRANCH);
+
+  let present = 0;
+  let total = 0;
+  for (const file of files) {
+    const mainCopy = git("show", `${BASE}:${file}`);
+    if (!mainCopy) continue;
+    const mainLines = new Set(mainCopy.split("\n").map((l) => l.trim()));
+    const added = [
+      ...new Set(
+        git("diff", `${mergeBase}..${branch}`, "--", file)
+          .split("\n")
+          .filter((l) => l.startsWith("+") && !l.startsWith("+++"))
+          .map((l) => l.slice(1).trim())
+          .filter((l) => l.length >= 12),
+      ),
+    ].slice(0, LINES_PER_FILE);
+    for (const line of added) {
+      total++;
+      if (mainLines.has(line)) present++;
+    }
+  }
+
+  const presence = total ? Math.round((present / total) * 100) : null;
+  rows.push({
+    branch,
+    ahead,
+    tip: git("log", "-1", "--format=%ad", "--date=short", branch).trim(),
+    base: git("log", "-1", "--format=%ad", "--date=short", mergeBase).trim(),
+    presence,
+    sampled: total,
+    verdict:
+      presence === null
+        ? "no comparable lines"
+        : presence >= 80
+          ? "superseded"
+          : presence >= 40
+            ? "partial"
+            : "unshipped",
+  });
+}
+
+const order = {
+  unshipped: 0,
+  partial: 1,
+  superseded: 2,
+  "no comparable lines": 3,
+  "unrelated history": 4,
+};
+rows.sort((a, b) => order[a.verdict] - order[b.verdict] || (a.presence ?? 0) - (b.presence ?? 0));
+const count = (v) => rows.filter((r) => r.verdict === v).length;
+
+const lines = [
+  "# Branch triage — what is still only on a branch?",
+  "",
+  `_Generated by \`tools/report-branch-triage.mjs\` against \`${BASE}\`. ${rows.length} branches with commits ahead._`,
+  "",
+  `- **${count("unshipped")} unshipped** (<40% of added lines on main)`,
+  `- **${count("partial")} partial** (40–79%)`,
+  `- **${count("superseded")} superseded** (≥80%)`,
+  `- **${count("unrelated history")} unrelated history** — no common ancestor with \`${BASE}\`; other projects' branches living on this remote, not work pending here.`,
+  "",
+  "`ahead` is a commit count and **overstates** — ship.sh cherry-picks, so shipped work reaches main with a different sha. `presence` is the real signal. Neither is proof: this report deletes nothing and recommends nothing be deleted on its number alone.",
+  "",
+  "| branch | verdict | presence | ahead | branched | tip |",
+  "| --- | --- | ---: | ---: | --- | --- |",
+  ...rows.map(
+    (r) =>
+      `| \`${r.branch}\` | ${r.verdict} | ${r.presence === null ? "—" : `${r.presence}%`} | ${r.ahead} | ${r.base} | ${r.tip} |`,
+  ),
+  "",
+];
+if (rows.length !== considered) {
+  throw new Error(
+    `branch-triage dropped ${considered - rows.length} of ${considered} branches — every branch with commits ahead must appear`,
+  );
+}
+
+const text = lines.join("\n");
+
+if (STDOUT) {
+  console.log(text);
+} else {
+  mkdirSync(dirname(OUT), { recursive: true });
+  writeFileSync(OUT, text);
+}
+console.log(
+  `branch-triage: ${count("unshipped")} unshipped, ${count("partial")} partial, ${count("superseded")} superseded (${rows.length} branches)`,
+);

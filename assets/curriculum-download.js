@@ -26,7 +26,7 @@ const MANIFEST_URL = "/data/curriculum-download-manifest.json";
 // is what a student opens first on a school Chromebook, so a teacher-only
 // downloader must cost that page nothing until a teacher actually opens it.
 // tools/validate-download-manifest.mjs pins this ?v= to the file's content hash.
-const STYLES_URL = "/assets/curriculum-download.css?v=cfda810f";
+const STYLES_URL = "/assets/curriculum-download.css?v=8426118a";
 const SELECTION_KEY = "nt-download-selection";
 const FETCH_CONCURRENCY = 4;
 // A stored zip is assembled in memory before it is handed to the browser, so the
@@ -34,6 +34,56 @@ const FETCH_CONCURRENCY = 4;
 // for a cross-unit cart while still refusing to try something that would crash
 // the tab on a 4 GB Chromebook.
 const SIZE_WARN_BYTES = 250 * 1024 * 1024;
+/** Worksheets in one print pack past which the teacher is asked to confirm. */
+const PRINT_PACK_WARN = 40;
+/** Server-side renderer; absent on a deployment without the Browser binding. */
+const PDF_ENDPOINT = "/api/worksheet-pdf";
+
+/**
+ * What the teacher gets. Every practice worksheet on this site is an HTML page,
+ * which prints well one at a time and is awkward everywhere else: you cannot
+ * hand a folder of .html files to a sub, upload it to Canvas as a document, or
+ * edit a question in it. Two conversions run in the browser (assets/lib/
+ * worksheet-export.js), on the files the teacher already selected:
+ *
+ *   pdf  — every selected worksheet stitched into ONE document and rendered to
+ *          a real .pdf file by /api/worksheet-pdf (Browser Run), so it saves to
+ *          Downloads like the other formats. Same rendering engine as the
+ *          worksheet itself, so the PDF is exactly what the page looks like.
+ *          Falls back to the in-browser print view if that endpoint is absent.
+ *   word — one editable .doc per worksheet, inside the same zip.
+ *
+ * Both are conversions of the HTML pages; anything already a PDF, DOCX or PPTX
+ * is passed through untouched (word) or left out with a note (pdf).
+ */
+const FORMATS = [
+  {
+    id: "zip",
+    label: "Web pages",
+    hint: "The original .html files, exactly as the site serves them.",
+  },
+  {
+    id: "pdf",
+    label: "One PDF",
+    hint: "Every worksheet in one .pdf file, saved to Downloads.",
+  },
+  {
+    id: "word",
+    label: "Word (.doc)",
+    hint: "An editable Word copy of each worksheet, zipped.",
+  },
+];
+
+/** A page this module can convert — a worksheet, not an already-made file. */
+const isConvertibleHtml = (res) => res.delivery === "file" && /\.html?($|\?)/i.test(res.url);
+
+let exportLib = null;
+// Loaded only when a teacher picks PDF or Word, for the same reason the whole
+// downloader is on demand: /curriculum/ opens on a school Chromebook long
+// before anyone asks for a worksheet pack. tools/validate-download-manifest.mjs
+// pins this ?v= to the file's content hash.
+const EXPORT_URL = "/assets/lib/worksheet-export.js?v=6ec16a31";
+const loadExportLib = () => (exportLib = exportLib || import(EXPORT_URL));
 
 /* ------------------------------------------------------------------ state */
 
@@ -49,6 +99,8 @@ let refs = {};
 let view = "packages";
 let activeUnit = null;
 let activePreset = "complete";
+/** "zip" | "pdf" | "word" — see FORMATS. */
+let format = "zip";
 let cancelled = false;
 let busy = false;
 
@@ -187,6 +239,13 @@ function ensureDialog() {
     </div>
     <footer class="ntdl__bar">
       <p class="ntdl__count" role="status" aria-live="polite"></p>
+      <div class="ntdl__format" role="radiogroup" aria-label="Download format">
+        ${FORMATS.map(
+          (f) =>
+            `<button type="button" class="ntdl__fmt" role="radio" data-act="format" data-format="${f.id}"
+                     aria-checked="${f.id === "zip"}" title="${esc(f.hint)}">${esc(f.label)}</button>`,
+        ).join("")}
+      </div>
       <div class="ntdl__actions">
         <button type="button" class="ntdl__btn ntdl__btn--ghost" data-act="clear">Clear selection</button>
         <button type="button" class="ntdl__btn ntdl__btn--go" data-act="download">Download ZIP</button>
@@ -208,6 +267,7 @@ function ensureDialog() {
     progressLabel: dialog.querySelector(".ntdl__progress-label"),
     meterFill: dialog.querySelector(".ntdl__meter-fill"),
     tabs: [...dialog.querySelectorAll(".ntdl__tab")],
+    formatHint: null,
   };
 
   dialog.addEventListener("click", onDialogClick);
@@ -483,13 +543,31 @@ function selectedResources() {
 
 function renderBar() {
   const list = view === "packages" ? currentPackageList() : selectedResources();
-  const n = list.length;
+  const pages = list.filter(isConvertibleHtml).length;
+  const n = format === "pdf" ? pages : list.length;
+
   refs.count.textContent =
-    view === "packages"
-      ? `${n} resource${n === 1 ? "" : "s"} in this package`
-      : `${n} resource${n === 1 ? "" : "s"} selected`;
+    format === "pdf"
+      ? `${pages} worksheet${pages === 1 ? "" : "s"} in this PDF`
+      : view === "packages"
+        ? `${n} resource${n === 1 ? "" : "s"} in this package`
+        : `${n} resource${n === 1 ? "" : "s"} selected`;
+
+  for (const button of dialog.querySelectorAll("[data-format]")) {
+    const on = button.dataset.format === format;
+    button.setAttribute("aria-checked", String(on));
+    button.classList.toggle("is-on", on);
+  }
+
   const go = dialog.querySelector('[data-act="download"]');
-  go.textContent = view === "packages" ? "Download Unit ZIP" : "Download Selected";
+  go.textContent =
+    format === "pdf"
+      ? "Download PDF"
+      : format === "word"
+        ? "Download Word ZIP"
+        : view === "packages"
+          ? "Download Unit ZIP"
+          : "Download Selected";
   go.disabled = n === 0 || busy;
   dialog.querySelector('[data-act="clear"]').hidden = view === "packages";
 }
@@ -511,6 +589,13 @@ function onDialogClick(event) {
     case "preset":
       activePreset = target.dataset.preset;
       render();
+      break;
+    case "format":
+      format = target.dataset.format;
+      // The print view must open inside the click that asked for it or the
+      // popup blocker eats it, so the window is opened by startDownload, not
+      // here; this only records the choice.
+      renderBar();
       break;
     case "gocustom":
       setView("custom");
@@ -607,6 +692,7 @@ async function startDownload() {
   if (busy) return;
   const list = view === "packages" ? currentPackageList() : selectedResources();
   if (!list.length) return;
+  if (format === "pdf") return startPrintPack(list);
 
   const bytes = list.reduce((n, r) => n + (r.bytes || 0), 0);
   if (bytes > SIZE_WARN_BYTES) {
@@ -731,8 +817,12 @@ async function collect(list, rootName) {
     while (queue.length && !cancelled) {
       const res = queue.shift();
       try {
-        const bytes = await fetchResource(res);
+        let bytes = await fetchResource(res);
         let path = entryPath(res, rootName, multiUnit, strip);
+        if (format === "word" && isConvertibleHtml(res)) {
+          bytes = await toWordDocument(bytes, res);
+          path = path.replace(/\.html?$/i, ".doc");
+        }
         // zipPaths are unique per generated manifest, but a cross-unit cart and
         // an on-the-fly rename can still collide; a duplicate entry silently
         // overwrites, so make it impossible rather than unlikely.
@@ -761,6 +851,169 @@ async function fetchResource(res) {
   const buffer = await response.arrayBuffer();
   if (!buffer.byteLength) throw new Error("empty file");
   return new Uint8Array(buffer);
+}
+
+/** One fetched worksheet page, parsed into { title, css, body }. */
+async function readSheet(bytes, res) {
+  const { parseWorksheet } = await loadExportLib();
+  const html = new TextDecoder("utf-8").decode(bytes);
+  // res.title is already "<lesson> — <resource>", set by decorate().
+  return parseWorksheet(html, { title: res.title, url: res.url });
+}
+
+async function toWordDocument(bytes, res) {
+  const { wordHtml } = await loadExportLib();
+  const sheet = await readSheet(bytes, res);
+  const doc = wordHtml(sheet, { sourceUrl: new URL(res.url, location.origin).href });
+  return new TextEncoder().encode(doc);
+}
+
+/**
+ * Stitch every selected worksheet into ONE print-ready document and hand it to
+ * the browser's print dialog, where the teacher picks "Save as PDF".
+ *
+ * The tab is opened BEFORE the first await: a window.open after an async hop has
+ * left the user gesture behind and is blocked as a popup. It starts on
+ * about:blank, which inherits this page's origin and base URL, so the pack's
+ * relative stylesheet links resolve against the site.
+ */
+async function startPrintPack(list) {
+  const pages = list.filter(isConvertibleHtml);
+  if (!pages.length) {
+    window.alert(
+      "None of the selected resources is a worksheet page, so there is nothing to put in a PDF.\n\n" +
+        "PDFs, DOCX and slide files are already documents — download them as web pages instead.",
+    );
+    return;
+  }
+
+  // A whole unit is ~100 worksheets and ~500 printed pages. That is a legitimate
+  // thing to want, and it is also what an unwary click on "Complete Unit" would
+  // produce — so it is confirmed, not refused.
+  if (pages.length > PRINT_PACK_WARN) {
+    const ok = window.confirm(
+      `This will build one PDF with ${pages.length} worksheets in it — several hundred pages, ` +
+        `and up to a minute to render. Continue?`,
+    );
+    if (!ok) return;
+  }
+
+  const unit = view === "packages" ? manifest.units.find((u) => u.unit === activeUnit) : null;
+  const title = unit ? `Unit ${unit.unit} — Practice Worksheets` : "Practice Worksheets";
+
+  busy = true;
+  cancelled = false;
+  renderBar();
+  setProgress(`Rendering ${pages.length} worksheets into one PDF…`, 1, 3);
+
+  try {
+    const response = await fetch(PDF_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        title,
+        sheets: pages.map((res) => ({
+          path: new URL(res.url, location.origin).pathname,
+          title: res.title,
+        })),
+      }),
+    });
+
+    if (!response.ok) {
+      // 503 means this deployment has no Browser binding. Everything the pack
+      // needs still works in the browser, so offer that rather than dead-end.
+      const reason = await response
+        .json()
+        .then((data) => data?.error)
+        .catch(() => null);
+      if (response.status === 503) return openPrintView(pages, title, reason);
+      throw new Error(reason || `HTTP ${response.status}`);
+    }
+
+    setProgress("Saving the PDF…", 2, 3);
+    const blob = await response.blob();
+    if (cancelled) return;
+    saveBlob(blob, `${safeName(title, "Practice-Worksheets")}.pdf`);
+  } catch (error) {
+    if (!cancelled) {
+      window.alert(
+        `The PDF could not be built: ${error?.message || error}\n\n` +
+          `Opening the print view instead — choose “Save as PDF” there.`,
+      );
+      await openPrintView(pages, title);
+    }
+  } finally {
+    busy = false;
+    endProgress();
+    renderBar();
+  }
+}
+
+/**
+ * The in-browser fallback: stitch the pack locally and hand it to the print
+ * dialog. Used when the renderer is unavailable, so a deployment without the
+ * Browser binding still gets the teacher a PDF, one dialog further away.
+ */
+async function openPrintView(pages, title, reason) {
+  const tab = window.open("", "_blank");
+  if (!tab) {
+    window.alert(
+      "The print view needs a new tab, and the browser blocked it.\n\n" +
+        "Allow pop-ups for this site and try again.",
+    );
+    return;
+  }
+  tab.document.write(
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Preparing worksheets…</title></head>` +
+      `<body style="font:16px/1.6 system-ui;padding:2rem;color:#14223a">` +
+      `<p>Preparing ${pages.length} worksheet${pages.length === 1 ? "" : "s"}…</p></body></html>`,
+  );
+
+  try {
+    const { printPackHtml } = await loadExportLib();
+    const sheets = [];
+    const failures = [];
+    let done = 0;
+    setProgress(`Preparing… 0 of ${pages.length} worksheets`, 0, pages.length);
+
+    const queue = pages.slice();
+    await Promise.all(
+      Array.from({ length: Math.min(FETCH_CONCURRENCY, queue.length) }, async () => {
+        while (queue.length && !cancelled) {
+          const res = queue.shift();
+          const at = pages.indexOf(res);
+          try {
+            sheets[at] = await readSheet(await fetchResource(res), res);
+          } catch (error) {
+            failures.push({ res, message: error?.message || String(error) });
+          }
+          done++;
+          setProgress(`Preparing… ${done} of ${pages.length} worksheets`, done, pages.length);
+        }
+      }),
+    );
+    if (cancelled) {
+      tab.close();
+      return;
+    }
+
+    const ready = sheets.filter(Boolean);
+    if (!ready.length) throw new Error("no worksheet could be loaded");
+
+    const subtitle =
+      `${ready.length} worksheet${ready.length === 1 ? "" : "s"} · choose “Save as PDF”` +
+      (reason ? ` · ${reason}` : "") +
+      (failures.length ? ` · ${failures.length} could not be loaded` : "");
+
+    tab.document.open();
+    tab.document.write(printPackHtml(ready, { title, subtitle, baseHref: `${location.origin}/` }));
+    tab.document.close();
+    tab.focus();
+  } catch (error) {
+    tab.close();
+    window.alert(`The print view could not be built: ${error?.message || error}`);
+  }
 }
 
 /** Link-only resources grouped by the folder their LINKS.html belongs in. */
@@ -884,12 +1137,19 @@ function linksPage(entries, folder) {
 }
 
 /** The packaged files, grouped by the folder they landed in. */
+/** The name a resource ends up under, once the chosen format has been applied. */
+function wordEntryName(name, res) {
+  return format === "word" && isConvertibleHtml(res) ? name.replace(/\.html?$/i, ".doc") : name;
+}
+
 function fileListMarkup(files) {
   if (!files.length) return "";
   const byFolder = new Map();
   for (const res of files) {
     const parts = res.zipPath.split("/");
-    const name = parts.pop();
+    // The Word pass renamed the entry on the way into the zip, so the index has
+    // to name the file that is actually there.
+    const name = wordEntryName(parts.pop(), res);
     const folder = parts.join("/") || ".";
     if (!byFolder.has(folder)) byFolder.set(folder, []);
     byFolder.get(folder).push({ name, res });
@@ -928,7 +1188,9 @@ function startHerePage({ list, failures, unit, preset }) {
     `<h1>${esc(heading)}</h1>
      <p class="lede">${preset ? `${esc(preset.label)} · ` : ""}${list.length} resource${
        list.length === 1 ? "" : "s"
-} requested — ${packaged.length} saved into this folder, ${links.length} listed as link${
+} requested${
+       format === "word" ? ", converted to editable Word (.doc) files" : ""
+} — ${packaged.length} saved into this folder, ${links.length} listed as link${
        links.length === 1 ? "" : "s"
 }${failures.length ? `, ${failures.length} could not be included` : ""}.</p>
 
@@ -1054,9 +1316,11 @@ async function open(options = {}) {
     }
   }
 
-  if (options.unit) {
-    activeUnit = Number(options.unit);
-    activePreset = options.preset || "complete";
+  if (options.format && FORMATS.some((f) => f.id === options.format)) format = options.format;
+
+  if (options.unit || options.preset) {
+    if (options.unit) activeUnit = Number(options.unit);
+    activePreset = options.preset || activePreset;
     setView("packages");
   } else {
     setView(options.view || "packages");
@@ -1179,6 +1443,8 @@ function wire() {
       unit: trigger.dataset.ntDownloadUnit,
       lesson: trigger.dataset.ntDownloadLesson,
       view: trigger.dataset.ntDownloadView,
+      preset: trigger.dataset.ntDownloadPreset,
+      format: trigger.dataset.ntDownloadFormat,
     });
   });
 }

@@ -49,6 +49,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Statistical Question Sort",
         href: "/lessons/2-1/downloads/printables/8-1-activity.pdf",
         isPrintable: true,
@@ -78,6 +83,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-2/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-2/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -113,6 +123,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Center Measure Card Game",
         href: "/lessons/2-3/downloads/printables/8-2-activity.pdf",
         isPrintable: true,
@@ -142,6 +157,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-4/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-4/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -177,6 +197,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Distribution Shape Gallery",
         href: "/lessons/2-5/downloads/printables/8-7-activity.pdf",
         isPrintable: true,
@@ -206,6 +231,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-6/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-6/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -241,6 +271,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-7/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Decimal Division Road Trip",
         href: "/lessons/2-7/downloads/printables/1-7-activity.pdf",
         isPrintable: true,
@@ -270,6 +305,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-9/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-9/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -305,6 +345,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-10/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Best Measure of Center Court",
         href: "/lessons/2-10/downloads/printables/8-4-activity.pdf",
         isPrintable: true,
@@ -337,6 +382,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-11/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Decimal Bank Ledger",
         href: "/lessons/2-11/downloads/printables/1-5-activity.pdf",
         isPrintable: true,
@@ -359,6 +409,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/2-12/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Decimal Product Shop",
         href: "/lessons/2-12/downloads/printables/1-6-activity.pdf",
         isPrintable: true,
@@ -378,6 +433,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-1/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-1/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -413,6 +473,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Unit Rate Shopping War",
         href: "/lessons/3-2/downloads/printables/4-1-activity.pdf",
         isPrintable: true,
@@ -442,6 +507,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-3/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-3/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -477,6 +547,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Coordinate Recipe Plot",
         href: "/lessons/3-4/downloads/printables/3-3-activity.pdf",
         isPrintable: true,
@@ -506,6 +581,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-5/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-5/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -541,6 +621,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Scale-It-Up Blueprint",
         href: "/lessons/3-6/downloads/printables/3-6-activity.pdf",
         isPrintable: true,
@@ -560,6 +645,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-7/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-7/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -585,6 +675,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-8/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Unit Rate Decision Tournament",
         href: "/lessons/3-8/downloads/printables/4-7-activity.pdf",
         isPrintable: true,
@@ -607,6 +702,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Equivalent Ratio Card Capture",
         href: "/lessons/3-9/downloads/printables/3-4-activity.pdf",
         isPrintable: true,
@@ -626,6 +726,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-10/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/3-10/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -661,6 +766,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/4-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Extreme Percent Headline Sort",
         href: "/lessons/4-1/downloads/printables/4-3-activity.pdf",
         isPrintable: true,
@@ -680,6 +790,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/4-2/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/4-2/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -715,6 +830,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/4-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Percent Target Grid",
         href: "/lessons/4-4/downloads/printables/4-4-activity.pdf",
         isPrintable: true,
@@ -744,6 +864,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/4-5/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/4-5/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -779,6 +904,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Parallelogram Cut-and-Slide Lab",
         href: "/lessons/5-1/downloads/printables/5-1-activity.pdf",
         isPrintable: true,
@@ -808,6 +938,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-2/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-2/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -843,6 +978,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Trapezoid Formula Builder Puzzle",
         href: "/lessons/5-3/downloads/printables/5-2-activity.pdf",
         isPrintable: true,
@@ -872,6 +1012,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-4/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-4/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -907,6 +1052,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Volume Cube Stack Task Cards",
         href: "/lessons/5-5/downloads/printables/10-1-activity.pdf",
         isPrintable: true,
@@ -926,6 +1076,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-6/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-6/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -961,6 +1116,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-7/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Prism Surface Area Wrap",
         href: "/lessons/5-7/downloads/printables/10-4-activity.pdf",
         isPrintable: true,
@@ -990,6 +1150,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-8/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-8/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1025,6 +1190,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Polygon Decompose Gallery",
         href: "/lessons/5-9/downloads/printables/5-4-activity.pdf",
         isPrintable: true,
@@ -1044,6 +1214,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-10/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/5-10/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1079,6 +1254,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Fraction Division Model Match",
         href: "/lessons/6-1/downloads/printables/2-1-activity.pdf",
         isPrintable: true,
@@ -1101,6 +1281,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Reciprocal Card Duel",
         href: "/lessons/6-2/downloads/printables/2-3-activity.pdf",
         isPrintable: true,
@@ -1120,6 +1305,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-3/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-3/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1155,6 +1345,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Expression Substitution Menu",
         href: "/lessons/6-4/downloads/printables/6-2-activity.pdf",
         isPrintable: true,
@@ -1184,6 +1379,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-5/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-5/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1219,6 +1419,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Equivalent Expression Maze",
         href: "/lessons/6-6/downloads/printables/6-6-activity.pdf",
         isPrintable: true,
@@ -1248,6 +1453,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-7/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-7/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1283,6 +1493,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-8/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Property Sorting Court",
         href: "/lessons/6-8/downloads/printables/6-4-activity.pdf",
         isPrintable: true,
@@ -1302,6 +1517,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-9/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-9/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1337,6 +1557,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-10/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Mixed Number Conversion Trail",
         href: "/lessons/6-10/downloads/printables/2-4-activity.pdf",
         isPrintable: true,
@@ -1369,6 +1594,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-11/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Fraction Division Story Court",
         href: "/lessons/6-11/downloads/printables/2-5-activity.pdf",
         isPrintable: true,
@@ -1388,6 +1618,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-12/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-12/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1413,6 +1648,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-13/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Factor Tree Relay",
         href: "/lessons/6-13/downloads/printables/1-1-activity.pdf",
         isPrintable: true,
@@ -1432,6 +1672,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-14/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-14/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1467,6 +1712,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/6-15/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Like Terms Color Sort",
         href: "/lessons/6-15/downloads/printables/6-7-activity.pdf",
         isPrintable: true,
@@ -1486,6 +1736,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-2/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/7-2/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1521,6 +1776,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/7-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Integer & Absolute Value Battle",
         href: "/lessons/7-3/downloads/printables/9-2-activity.pdf",
         isPrintable: true,
@@ -1550,6 +1810,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-4/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/7-4/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1585,6 +1850,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/7-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Coordinate Treasure Hunt",
         href: "/lessons/7-5/downloads/printables/9-1-activity.pdf",
         isPrintable: true,
@@ -1614,6 +1884,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-6/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/7-6/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1649,6 +1924,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/7-8/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Four-Quadrant Battleship",
         href: "/lessons/7-8/downloads/printables/9-5-activity.pdf",
         isPrintable: true,
@@ -1671,6 +1951,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/7-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Reflection Mirror Map",
         href: "/lessons/7-9/downloads/printables/9-7-activity.pdf",
         isPrintable: true,
@@ -1690,6 +1975,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-1/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/8-1/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1725,6 +2015,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/8-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Balance Scale Inverse Cards",
         href: "/lessons/8-2/downloads/printables/7-2-activity.pdf",
         isPrintable: true,
@@ -1754,6 +2049,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-3/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/8-3/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1789,6 +2089,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/8-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Inequality Statement Sort",
         href: "/lessons/8-4/downloads/printables/7-4-activity.pdf",
         isPrintable: true,
@@ -1818,6 +2123,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-5/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/8-5/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -1853,6 +2163,11 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/8-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
         text: "🎲 Solve-and-Graph Relay",
         href: "/lessons/8-6/downloads/printables/7-6-activity.pdf",
         isPrintable: true,
@@ -1872,6 +2187,11 @@
       {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-7/worksheet-2.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support)",
+        href: "/lessons/8-7/worksheet-level-0.html",
         isPrintable: true,
       },
       {
@@ -2196,6 +2516,10 @@
       keywords: ["notes", "handout"],
     },
     {
+      title: "🔬 Interactive Learning Labs",
+      keywords: ["interactive learning lab"],
+    },
+    {
       title: "🏠 At Home · Continue",
       keywords: ["homework", "family", "forms"],
     },
@@ -2351,6 +2675,70 @@
     return bodyEl;
   }
 
+  function openFamilyHwQrModal(href, title) {
+    var modal = document.getElementById("hw_quick_qr_modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "hw_quick_qr_modal";
+      modal.className = "hw-quick-qr-modal";
+      modal.style.cssText =
+        "position:fixed;inset:0;background:rgba(15,23,42,0.65);display:flex;align-items:center;justify-content:center;z-index:99999;padding:16px;";
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal || e.target.classList.contains("hw-qr-close")) {
+          modal.hidden = true;
+        }
+      });
+      document.body.appendChild(modal);
+    }
+    var fullUrl = location.origin + href;
+    var qrApi =
+      "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+      encodeURIComponent(fullUrl);
+    modal.innerHTML =
+      '<div class="hw-qr-sheet" style="background:#fff;border-radius:16px;max-width:380px;width:100%;padding:20px;box-shadow:0 12px 32px rgba(0,0,0,0.2);position:relative;text-align:center;">' +
+      '<div class="hw-qr-head" style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:10px;margin-bottom:14px;">' +
+      '<h3 style="margin:0;font-size:16px;color:#0f172a;">📱 ' +
+      (title || "Family Homework") +
+      "</h3>" +
+      '<button type="button" class="hw-qr-close" aria-label="Close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;padding:4px;">✕</button>' +
+      "</div>" +
+      '<div class="hw-qr-body">' +
+      '<p style="font-size:13px;color:#475569;margin:0 0 12px;">Scan with your phone camera or project for families:</p>' +
+      '<div style="background:#f8fafc;border-radius:12px;padding:12px;display:inline-block;border:1px solid #e2e8f0;margin-bottom:12px;">' +
+      '<img src="' +
+      qrApi +
+      '" alt="QR Code" width="220" height="220" style="display:block;border-radius:8px;" />' +
+      "</div>" +
+      '<p style="font-size:11.5px;color:#64748b;word-break:break-all;margin:0 0 14px;"><a href="' +
+      href +
+      '" target="_blank" style="color:#0284c7;">' +
+      fullUrl +
+      "</a></p>" +
+      '<div style="display:flex;gap:8px;justify-content:center;">' +
+      '<button type="button" class="btn btn-sm btn-primary hw-qr-copy-btn" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12.5px;background:#0284c7;color:#fff;border:none;cursor:pointer;">📋 Copy Link</button>' +
+      '<a href="' +
+      href +
+      '" target="_blank" class="btn btn-sm btn-outline-secondary" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12.5px;border:1px solid #cbd5e1;color:#334155;text-decoration:none;background:#f8fafc;">🚀 Open Homework</a>' +
+      "</div>" +
+      "</div>" +
+      "</div>";
+    var copyBtn = modal.querySelector(".hw-qr-copy-btn");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function () {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(fullUrl).then(function () {
+            copyBtn.textContent = "✅ Copied!";
+            setTimeout(function () {
+              copyBtn.textContent = "📋 Copy Link";
+            }, 2000);
+          });
+        }
+      });
+    }
+    modal.hidden = false;
+  }
+  window.openFamilyHwQrModal = openFamilyHwQrModal;
+
   function makeOutlineItem(act, isProject, scormTitlePrefix) {
     var li = document.createElement("li");
     li.className = "lesson-outline-item";
@@ -2364,6 +2752,22 @@
     }
     a.innerHTML = outlineItemIcon(act, isProject) + " " + act.text;
     li.appendChild(a);
+    if (act.isFamilyHomework) {
+      var qrBtn = document.createElement("button");
+      qrBtn.type = "button";
+      qrBtn.className = "btn-hw-quick-qr";
+      qrBtn.style.cssText =
+        "margin-left:6px;padding:1px 6px;font-size:11px;font-weight:700;border-radius:6px;background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;cursor:pointer;vertical-align:middle;";
+      qrBtn.title = "Show QR Code for families";
+      qrBtn.setAttribute("aria-label", "Show QR Code for " + act.text);
+      qrBtn.textContent = "📱 QR";
+      qrBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openFamilyHwQrModal(act.href, act.text);
+      });
+      li.appendChild(qrBtn);
+    }
     if (canPackageForScorm(act.href)) {
       ensureOutlineMore(li).appendChild(
         makeScormLink(
@@ -2598,6 +3002,22 @@
       if (familyHw) {
         activities.push(familyHw);
       }
+      // A lesson taught over more than one session sends a night of practice
+      // home for each, keyed on its own `-part2` / `-part3` id. There is no
+      // separate hub row for those sessions — the row already links
+      // /lessons/<id>-part2/ as "Part 2 · Apply" — so each extra tile is looked
+      // up explicitly and sits beside the first. Falls back through
+      // baseLessonId the same way, so the group1/group2 twins inherit every
+      // night rather than only the first. `-part3` exists for lesson 3-2 alone;
+      // a lesson without one simply has no key here and adds no tile.
+      ["-part2", "-part3"].forEach(function (suffix) {
+        var extra =
+          LESSON_FAMILY_HOMEWORK[lessonId + suffix] ||
+          LESSON_FAMILY_HOMEWORK[baseLessonId + suffix];
+        if (extra && extra !== familyHw && activities.indexOf(extra) === -1) {
+          activities.push(extra);
+        }
+      });
 
       // Printables — paper game, color-by-number, word search, MCAP packet.
       var printables = LESSON_PRINTABLES[lessonId] || LESSON_PRINTABLES[baseLessonId];
@@ -2855,6 +3275,17 @@
         resRow.appendChild(a);
       });
       if (u.unitIndex) {
+        var projPath =
+          UNIT_CULMINATING_PROJECT[u.unitIndex] || "/math/unit-" + u.unitIndex + "/projects/";
+        var openProjBtn = document.createElement("a");
+        openProjBtn.className = "unit-resource-btn";
+        openProjBtn.href = projPath;
+        openProjBtn.innerHTML = "🚀 " + (u.num ? u.num + " Project" : "Unit Project");
+        openProjBtn.style.background = "#1a6fb5";
+        openProjBtn.style.color = "#ffffff";
+        openProjBtn.style.fontWeight = "700";
+        resRow.appendChild(openProjBtn);
+
         resRow.appendChild(
           makeScormLink(
             "/math/games/practice-arcade/?unit=" + u.unitIndex,
@@ -2869,7 +3300,7 @@
         // the live unit projects page, the same path the review-game chip
         // above uses, so there is nothing to keep in sync.
         var zipBtn = makeScormLink(
-          "/math/unit-" + u.unitIndex + "/projects/",
+          projPath,
           u.num + " Project",
           "📦 Unit Project — Canvas SCORM",
           "unit-resource-btn scorm-dl",

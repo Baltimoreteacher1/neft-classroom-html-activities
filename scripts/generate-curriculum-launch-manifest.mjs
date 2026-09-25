@@ -14,6 +14,7 @@ const SAFE_RESOURCE_KEYS = [
   "handout",
   "worksheet",
   "worksheet2",
+  "worksheetLevel0",
   "mstarWorksheet",
   "homework",
   "familyPage",
@@ -98,6 +99,14 @@ const GROUP_PRINTABLES = [
   // went unreachable before 2026-08-24.
   ["worksheet2", "worksheet-2.html"],
   ["practice", "practice.html"],
+  // The night that follows the session. Only Part 2 has one — a lesson taught
+  // over two days teaches different mathematics on each, so it ships its own
+  // family homework rather than repeating night one's — and small groups and
+  // catch-ups have no homework.html, so this key is simply absent for them.
+  // Without it the 76 Part 2 family homeworks are live, linked from
+  // /curriculum/units/, and unreachable from /curriculum/, which is the page
+  // the teacher actually opens: the 2026-08-24 small-group defect exactly.
+  ["homework", "homework.html"],
 ];
 
 function groupResources(id) {

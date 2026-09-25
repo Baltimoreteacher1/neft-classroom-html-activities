@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="WIDA ACCESS Student Language Growth Portfolio & Teacher Gradebook. Track 4-domain proficiency, review speaking recordings, examine writing linguistic complexity, and export WIDA growth reports."
+    />
+    <title>WIDA ACCESS Student Portfolio &amp; Teacher Gradebook | Neft Hub</title>
+
+    <link
+      href="/assets/fonts/outfit-space-grotesk-095d49.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+
+    <style>
+      :root {
+        --primary: #4338ca; /* Indigo/Slate for Portfolio */
+        --primary-dark: #3730a3;
+        --primary-light: #eef2ff;
+        --teal: #0d9488;
+        --teal-light: #f0fdfa;
+        --amber: #d97706;
+        --amber-light: #fef3c7;
+        --coral: #ea580c;
+        --coral-light: #ffedd5;
+        --green: #15803d;
+        --green-light: #dcfce7;
+        --navy-deep: #0b1f33;
+        --navy: #12355b;
+        --bg-canvas: #f8fafc;
+        --bg-studio: #f1f5f9;
+        --white: #ffffff;
+        --line-muted: #e2e8f0;
+        --line-dark: #cbd5e1;
+        --slate-ink: #1e293b;
+        --slate-muted: #64748b;
+        --radius-card: 16px;
+        --radius-sm: 8px;
+        --radius-pill: 9999px;
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+        --font-outfit: "Outfit", system-ui, sans-serif;
+        --font-space: "Space Grotesk", system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-outfit);
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        color: var(--slate-ink);
+        min-height: 100vh;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Top Navigation Bar ── */
+      .top-nav {
+        background: #ffffff;
+        border-bottom: 1px solid var(--line-muted);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(10px);
+      }
+      .nav-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--slate-muted);
+      }
+      .breadcrumbs a {
+        color: var(--slate-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .breadcrumbs a:hover {
+        color: var(--primary);
+      }
+      .breadcrumbs .sep {
+        opacity: 0.5;
+      }
+      .breadcrumbs .curr {
+        color: var(--slate-ink);
+        font-weight: 700;
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-outfit);
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: var(--line-muted);
+        color: var(--slate-ink);
+      }
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .btn-teal {
+        background: var(--teal);
+        color: #fff;
+      }
+      .btn-teal:hover {
+        background: #0f766e;
+      }
+      .btn-pill {
+        border-radius: var(--radius-pill);
+      }
+
+      /* ── View Switcher Pills ── */
+      .mode-toggle {
+        display: inline-flex;
+        background: #e2e8f0;
+        border-radius: var(--radius-pill);
+        padding: 3px;
+        border: 1px solid var(--line-muted);
+      }
+      .mode-btn {
+        padding: 6px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-radius: var(--radius-pill);
+        border: none;
+        background: transparent;
+        color: var(--slate-muted);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .mode-btn.active {
+        background: #fff;
+        color: var(--primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      /* ── Container Layout ── */
+      .portfolio-shell {
+        max-width: 1400px;
+        margin: 24px auto 80px;
+        padding: 0 24px;
+      }
+
+      /* ── Hero Banner ── */
+      .hero-card {
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a5f 100%);
+        border-radius: var(--radius-card);
+        padding: 32px 36px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-md);
+      }
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -80px;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 2;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-pill);
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #a5b4fc;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-family: var(--font-space);
+        font-size: 2.1rem;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-desc {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.95rem;
+        max-width: 650px;
+        line-height: 1.5;
+      }
+
+      .hero-stats-deck {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 24px;
+        position: relative;
+        z-index: 2;
+      }
+      .hero-stat-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 14px 16px;
+        backdrop-filter: blur(8px);
+        text-align: center;
+      }
+      .stat-val {
+        font-family: var(--font-space);
+        font-size: 1.85rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+      }
+      .stat-lbl {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #cbd5e1;
+        margin-top: 6px;
+        font-weight: 600;
+      }
+
+      /* ── 2-Column Dashboard Layout ── */
+      .dash-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      /* ── Cards & Panels ── */
+      .card {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-card);
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 24px;
+      }
+      .card-title {
+        font-family: var(--font-space);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-sub {
+        font-size: 0.85rem;
+        color: var(--slate-muted);
+        margin-bottom: 16px;
+        line-height: 1.45;
+      }
+
+      /* ── WIDA Proficiency Scale Card ── */
+      .level-meter-wrapper {
+        margin: 16px 0;
+      }
+      .level-pill-row {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+      .level-step {
+        height: 8px;
+        border-radius: 4px;
+        background: #e2e8f0;
+        transition: background 0.3s;
+      }
+      .level-step.active-1 { background: #ef4444; }
+      .level-step.active-2 { background: #f97316; }
+      .level-step.active-3 { background: #f59e0b; }
+      .level-step.active-4 { background: #10b981; }
+      .level-step.active-5 { background: #06b6d4; }
+      .level-step.active-6 { background: #6366f1; }
+
+      .level-desc-box {
+        background: var(--bg-canvas);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
+        font-size: 0.85rem;
+      }
+      .level-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: var(--radius-pill);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+
+      /* ── 4-Domain Radar / Status Barometer ── */
+      .domain-bar-row {
+        margin-bottom: 14px;
+      }
+      .domain-bar-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.84rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .domain-track {
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: var(--radius-pill);
+        overflow: hidden;
+        position: relative;
+      }
+      .domain-fill {
+        height: 100%;
+        border-radius: var(--radius-pill);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* ── Student Showcase Items ── */
+      .showcase-item {
+        border: 1px solid var(--line-muted);
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 16px;
+        background: #ffffff;
+        transition: all 0.2s;
+      }
+      .showcase-item:hover {
+        border-color: var(--line-dark);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .showcase-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .showcase-task {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--navy-deep);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tag-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: var(--radius-pill);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .tag-tier { background: #e0e7ff; color: #4338ca; }
+      .tag-domain { background: #f0fdfa; color: #0d9488; }
+      .tag-score { background: #dcfce7; color: #15803d; }
+      .tag-complexity { background: #fef3c7; color: #b45309; }
+
+      .showcase-quote {
+        background: var(--bg-canvas);
+        border-left: 3px solid var(--primary);
+        padding: 12px 14px;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.9rem;
+        font-style: italic;
+        color: #334155;
+        line-height: 1.5;
+        margin: 10px 0;
+        white-space: pre-wrap;
+      }
+
+      .analysis-chips-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .analysis-chip {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        color: #475569;
+        font-weight: 500;
+      }
+      .analysis-chip.highlight {
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: 700;
+        border: 1px solid #c7d2fe;
+      }
+
+      /* ── Teacher Gradebook Table ── */
+      .roster-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.88rem;
+        border: 1px solid var(--line-muted);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .roster-table th {
+        background: #f8fafc;
+        padding: 12px 14px;
+        text-align: left;
+        font-weight: 700;
+        color: var(--slate-muted);
+        border-bottom: 1px solid var(--line-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+      }
+      .roster-table td {
+        padding: 14px;
+        border-bottom: 1px solid var(--line-muted);
+        vertical-align: middle;
+      }
+      .roster-table tr:last-child td {
+        border-bottom: none;
+      }
+      .roster-table tr:hover td {
+        background: #fdfdfe;
+      }
+
+      .student-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .student-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #4338ca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+
+      /* ── Rubric Evaluator Slider & Inputs ── */
+      .rubric-row {
+        display: grid;
+        grid-template-columns: 200px 1fr 60px;
+        gap: 16px;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line-muted);
+      }
+      .rubric-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--navy-deep);
+      }
+      .rubric-sub {
+        font-size: 0.75rem;
+        color: var(--slate-muted);
+      }
+      .rubric-slider {
+        width: 100%;
+        accent-color: var(--primary);
+      }
+      .rubric-score-box {
+        text-align: center;
+        font-family: var(--font-space);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--primary);
+      }
+
+      /* ── Empty State ── */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--slate-muted);
+      }
+      .empty-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+      }
+      .empty-text {
+        font-size: 0.92rem;
+        max-width: 440px;
+        margin: 0 auto 16px;
+        line-height: 1.5;
+      }
+
+      /* ── Certificate & Print Optimization ── */
+      @media print {
+        body {
+          background: #fff !important;
+          color: #000 !important;
+          font-size: 11pt;
+        }
+        .top-nav, .mode-toggle, .nav-actions, .no-print, button {
+          display: none !important;
+        }
+        .portfolio-shell {
+          margin: 0 !important;
+          padding: 0 !important;
+          max-width: 100% !important;
+        }
+        .hero-card {
+          background: #1e1b4b !important;
+          color: #fff !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          padding: 20px !important;
+          border-radius: 8px !important;
+        }
+        .dash-grid {
+          display: block !important;
+        }
+        .card {
+          border: 1px solid #cbd5e1 !important;
+          box-shadow: none !important;
+          margin-bottom: 16px !important;
+          page-break-inside: avoid;
+        }
+        .print-signature-deck {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          margin-top: 40px;
+          page-break-inside: avoid;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .dash-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-stats-deck {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 640px) {
+        .hero-stats-deck {
+          grid-template-columns: 1fr;
+        }
+        .hero-title {
+          font-size: 1.6rem;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- ── Top Nav ── -->
+    <header class="top-nav">
+      <div class="nav-inner">
+        <div class="breadcrumbs">
+          <a href="/">Neft Hub</a>
+          <span class="sep">/</span>
+          <a href="/wida-access/">WIDA Center</a>
+          <span class="sep">/</span>
+          <span class="curr">Language Portfolio &amp; Gradebook</span>
+        </div>
+
+        <div class="mode-toggle no-print" role="tablist">
+          <button
+            class="mode-btn active"
+            id="tabStudent"
+            onclick="switchView('student')"
+            role="tab"
+            aria-selected="true"
+          >
+            🎓 Student Passport
+          </button>
+          <button
+            class="mode-btn"
+            id="tabTeacher"
+            onclick="switchView('teacher')"
+            role="tab"
+            aria-selected="false"
+          >
+            📋 Educator Gradebook
+          </button>
+        </div>
+
+        <div class="nav-actions no-print">
+          <button
+            class="btn btn-secondary"
+            onclick="loadDemoData()"
+            title="Populate realistic ESOL student responses for demonstration"
+          >
+            ✨ Load Demo Data
+          </button>
+          <button
+            class="btn btn-teal"
+            onclick="window.print()"
+            title="Generate formatted PDF report"
+          >
+            🖨️ Print / Save PDF
+          </button>
+          <a href="/wida-access/" class="btn btn-secondary">
+            &larr; WIDA Prep Hub
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Main Shell ── -->
+    <main class="portfolio-shell">
+      <!-- ── Hero Banner ── -->
+      <section class="hero-card">
+        <div class="hero-header">
+          <div>
+            <div class="hero-badge">
+              <span>🏛️ School #240 · Graceland Park / O'Donnell Heights</span>
+            </div>
+            <h1 class="hero-title" id="portfolioHeroTitle">
+              Student WIDA Language Growth Portfolio
+            </h1>
+            <p class="hero-desc" id="portfolioHeroDesc">
+              Official evidence-based portfolio capturing student progress, authentic spoken recordings, linguistic complexity analysis, and WIDA Can-Do descriptor growth across all four language domains.
+            </p>
+          </div>
+          <div style="text-align: right;" class="no-print">
+            <span style="font-size: 0.8rem; color: #cbd5e1; display: block;">Student Profile:</span>
+            <strong style="font-size: 1.15rem; color: #fff;" id="studentProfileName">Joel Neft (Self)</strong>
+            <div style="margin-top: 4px;">
+              <span class="tag-pill tag-tier" id="studentTierBadge">Tier B (Grades 6–8)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-stats-deck">
+          <div class="hero-stat-card">
+            <div class="stat-val" id="statCompositeLevel">3.8</div>
+            <div class="stat-lbl">Estimated WIDA Level</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="stat-val" id="statSparkXP">0</div>
+            <div class="stat-lbl">SPARK XP Points</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="stat-val" id="statDayStreak">0</div>
+            <div class="stat-lbl">Day Practice Streak</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="stat-val" id="statTasksDone">0 / 20</div>
+            <div class="stat-lbl">Activities Mastered</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════
+           VIEW 1: STUDENT LANGUAGE PASSPORT
+           ══════════════════════════════════════════════════════════ -->
+      <section id="studentView" class="dash-grid">
+        <!-- Left Sidebar: Level Scale & Domain Breakdown -->
+        <aside>
+          <!-- Current Proficiency Scale -->
+          <div class="card">
+            <div class="card-title">
+              <span>WIDA Proficiency Scale</span>
+              <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700;" id="scaleLevelLabel">Level 4: Expanding</span>
+            </div>
+            <p class="card-sub">
+              Corresponds to WIDA ACCESS 2.0 English Language Development performance standards (Grades 6–8).
+            </p>
+
+            <div class="level-meter-wrapper">
+              <div class="level-pill-row">
+                <div class="level-step active-1" title="Level 1: Entering"></div>
+                <div class="level-step active-2" title="Level 2: Emerging"></div>
+                <div class="level-step active-3" title="Level 3: Developing"></div>
+                <div class="level-step active-4" title="Level 4: Expanding"></div>
+                <div class="level-step" title="Level 5: Bridging"></div>
+                <div class="level-step" title="Level 6: Reaching"></div>
+              </div>
+            </div>
+
+            <div class="level-desc-box" id="levelDescBox">
+              <span class="level-badge" style="background: #10b981;">Level 4: Expanding</span>
+              <p style="margin-top: 4px; color: var(--slate-ink);">
+                Student demonstrates specific and technical content-area language; constructs compound and complex sentence structures with cohesive transitions across Math, Science, and Social Studies.
+              </p>
+            </div>
+          </div>
+
+          <!-- 4-Domain Balance Card -->
+          <div class="card">
+            <div class="card-title">
+              <span>4-Domain Practice Radar</span>
+              <span>🧭</span>
+            </div>
+            <p class="card-sub">
+              Balanced progress across receptive (Listening, Reading) and productive (Speaking, Writing) domains.
+            </p>
+
+            <div class="domain-bar-row">
+              <div class="domain-bar-label">
+                <span>🎧 Listening</span>
+                <span id="domainPctListening">0%</span>
+              </div>
+              <div class="domain-track">
+                <div class="domain-fill" id="domainBarListening" style="width: 0%; background: #0d9488;"></div>
+              </div>
+            </div>
+
+            <div class="domain-bar-row">
+              <div class="domain-bar-label">
+                <span>📖 Reading</span>
+                <span id="domainPctReading">0%</span>
+              </div>
+              <div class="domain-track">
+                <div class="domain-fill" id="domainBarReading" style="width: 0%; background: #2563eb;"></div>
+              </div>
+            </div>
+
+            <div class="domain-bar-row">
+              <div class="domain-bar-label">
+                <span>🗣️ Speaking</span>
+                <span id="domainPctSpeaking">0%</span>
+              </div>
+              <div class="domain-track">
+                <div class="domain-fill" id="domainBarSpeaking" style="width: 0%; background: #7c3aed;"></div>
+              </div>
+            </div>
+
+            <div class="domain-bar-row">
+              <div class="domain-bar-label">
+                <span>✍️ Writing</span>
+                <span id="domainPctWriting">0%</span>
+              </div>
+              <div class="domain-track">
+                <div class="domain-fill" id="domainBarWriting" style="width: 0%; background: #d97706;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDA Can-Do Descriptors Self-Check -->
+          <div class="card no-print">
+            <div class="card-title">
+              <span>Can-Do Goals (Gr. 6–8)</span>
+              <span>🎯</span>
+            </div>
+            <p class="card-sub">
+              Target instructional language moves for expanding English proficiency.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem;">
+              <label style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer;">
+                <input type="checkbox" id="chkGoal1" checked style="margin-top: 3px; accent-color: var(--primary);" />
+                <span>Explain cause-and-effect relationships using <em>consequently</em>, <em>because</em>, and <em>as a result</em>.</span>
+              </label>
+              <label style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer;">
+                <input type="checkbox" id="chkGoal2" checked style="margin-top: 3px; accent-color: var(--primary);" />
+                <span>State claims and cite explicit textual evidence with quotation or paraphrasing.</span>
+              </label>
+              <label style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer;">
+                <input type="checkbox" id="chkGoal3" style="margin-top: 3px; accent-color: var(--primary);" />
+                <span>Compare mathematical representations and justify equivalence or variance.</span>
+              </label>
+              <label style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer;">
+                <input type="checkbox" id="chkGoal4" style="margin-top: 3px; accent-color: var(--primary);" />
+                <span>Produce sustained oral speech (30–45s) with minimal hesitation and clear articulation.</span>
+              </label>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Content: Evidence Logs & Artifact Showcase -->
+        <div>
+          <!-- Writing Drafts Gallery -->
+          <div class="card">
+            <div class="card-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span>✍️ Writing Studio Drafts &amp; Discourse Analysis</span>
+                <span class="tag-pill tag-domain" id="writingCountPill">0 Drafts</span>
+              </div>
+              <a href="/wida-access/writing/" class="btn btn-secondary no-print" style="font-size: 0.78rem;">
+                + Practice in Writing Studio
+              </a>
+            </div>
+            <p class="card-sub">
+              Authentic student-authored essays analyzed by the real-time Linguistic Complexity engine.
+            </p>
+
+            <div id="writingGalleryList">
+              <!-- Dynamically populated or empty state -->
+            </div>
+          </div>
+
+          <!-- Speaking Rehearsals Gallery -->
+          <div class="card">
+            <div class="card-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span>🗣️ Spoken Language Rehearsals &amp; Audio Models</span>
+                <span class="tag-pill tag-tier" id="speakingCountPill">0 Responses</span>
+              </div>
+              <a href="/wida-access/speaking/" class="btn btn-secondary no-print" style="font-size: 0.78rem;">
+                + Practice in Speaking Studio
+              </a>
+            </div>
+            <p class="card-sub">
+              Recorded oral speech samples with teacher rubric criteria and slow peer articulation comparisons.
+            </p>
+
+            <div id="speakingGalleryList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Listening & Reading Comprehension Summary -->
+          <div class="card">
+            <div class="card-title">
+              <span>🎧 &amp; 📖 Comprehension Domains Summary</span>
+              <span class="tag-pill tag-score" id="comprehensionSummaryBadge">Active</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+              <div style="background: var(--bg-canvas); padding: 16px; border-radius: 12px; border: 1px solid var(--line-muted);">
+                <div style="font-weight: 700; color: #0d9488; margin-bottom: 6px; display: flex; justify-content: space-between;">
+                  <span>🎧 Listening Tasks</span>
+                  <span id="listeningDoneCount">0 / 20</span>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--slate-muted); line-height: 1.45;">
+                  Audio simulations with slow-speed scaffolding, graphic context mapping, and academic questions.
+                </p>
+                <div style="margin-top: 10px;">
+                  <a href="/wida-access/listening/" class="btn btn-teal no-print" style="font-size: 0.78rem; width: 100%; justify-content: center;">
+                    Open Listening Studio &rarr;
+                  </a>
+                </div>
+              </div>
+
+              <div style="background: var(--bg-canvas); padding: 16px; border-radius: 12px; border: 1px solid var(--line-muted);">
+                <div style="font-weight: 700; color: #2563eb; margin-bottom: 6px; display: flex; justify-content: space-between;">
+                  <span>📖 Reading Passages</span>
+                  <span id="readingDoneCount">0 / 6 Sets</span>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--slate-muted); line-height: 1.45;">
+                  Dual-tier expository passages with interactive evidence highlighting and vocabulary tooltips.
+                </p>
+                <div style="margin-top: 10px;">
+                  <a href="/wida-access/reading/" class="btn btn-secondary no-print" style="font-size: 0.78rem; width: 100%; justify-content: center; color: #2563eb;">
+                    Open Reading Studio &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Printable Teacher Endorsement & Signature Deck -->
+          <div class="print-signature-deck" style="display: none;">
+            <div style="border-top: 1px solid #94a3b8; padding-top: 8px;">
+              <div style="font-weight: 700; font-size: 0.9rem;">ESOL / Bilingual Specialist Signature</div>
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">School #240 Instructional Review</div>
+            </div>
+            <div style="border-top: 1px solid #94a3b8; padding-top: 8px;">
+              <div style="font-weight: 700; font-size: 0.9rem;">Date &amp; ACCESS Testing Tier</div>
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">SY 2025–2026 Official Documentation</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════
+           VIEW 2: EDUCATOR GRADEBOOK & RUBRIC EVALUATOR
+           ══════════════════════════════════════════════════════════ -->
+      <section id="teacherView" style="display: none;">
+        <!-- Teacher Overview Card -->
+        <div class="card">
+          <div class="card-title">
+            <span>📋 ESOL Educator Class Gradebook · Grade 6–8 ACCESS Cohort</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary" onclick="exportPortfolioCSV()">
+                📥 Export CSV
+              </button>
+              <button class="btn btn-primary" onclick="openNewEvaluationModal()">
+                + Score Selected Student
+              </button>
+            </div>
+          </div>
+          <p class="card-sub">
+            Track multi-domain proficiency ratings, tier assignments, and teacher rubric scores aligned with official WIDA Interpretive and Expressive rubrics.
+          </p>
+
+          <div style="overflow-x: auto;">
+            <table class="roster-table">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Tier</th>
+                  <th>Listening</th>
+                  <th>Reading</th>
+                  <th>Speaking</th>
+                  <th>Writing</th>
+                  <th>Est. Composite</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="teacherRosterBody">
+                <!-- Populated dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Interactive WIDA Rubric Evaluator -->
+        <div class="card" id="rubricEvaluatorCard">
+          <div class="card-title">
+            <span id="rubricStudentTarget">Scoring Rubric: Elena R. (Grade 7, Tier B)</span>
+            <span class="tag-pill tag-domain">Official WIDA Rubric Matrix</span>
+          </div>
+          <p class="card-sub">
+            Evaluate expressive language production using the 3 core WIDA dimensions (Scores 1 to 6).
+          </p>
+
+          <div class="rubric-row">
+            <div>
+              <div class="rubric-name">Linguistic Complexity</div>
+              <div class="rubric-sub">Quantity, variety, and clause structure of spoken or written discourse.</div>
+            </div>
+            <div>
+              <input
+                type="range"
+                min="1"
+                max="6"
+                step="0.5"
+                value="4"
+                class="rubric-slider"
+                id="sliderComplexity"
+                oninput="updateRubricScore()"
+              />
+            </div>
+            <div class="rubric-score-box" id="scoreComplexity">4.0</div>
+          </div>
+
+          <div class="rubric-row">
+            <div>
+              <div class="rubric-name">Vocabulary Usage</div>
+              <div class="rubric-sub">Specific, technical academic language with precise morphological choices.</div>
+            </div>
+            <div>
+              <input
+                type="range"
+                min="1"
+                max="6"
+                step="0.5"
+                value="4.5"
+                class="rubric-slider"
+                id="sliderVocab"
+                oninput="updateRubricScore()"
+              />
+            </div>
+            <div class="rubric-score-box" id="scoreVocab">4.5</div>
+          </div>
+
+          <div class="rubric-row">
+            <div>
+              <div class="rubric-name">Language Control</div>
+              <div class="rubric-sub">Grammatical conventions, sentence mechanics, comprehensibility, and cohesion.</div>
+            </div>
+            <div>
+              <input
+                type="range"
+                min="1"
+                max="6"
+                step="0.5"
+                value="3.5"
+                class="rubric-slider"
+                id="sliderControl"
+                oninput="updateRubricScore()"
+              />
+            </div>
+            <div class="rubric-score-box" id="scoreControl">3.5</div>
+          </div>
+
+          <div style="margin-top: 20px; background: var(--bg-canvas); padding: 16px; border-radius: 12px; border: 1px solid var(--line-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span style="font-size: 0.82rem; color: var(--slate-muted); font-weight: 600; text-transform: uppercase;">Calculated Rubric Average</span>
+              <div style="font-family: var(--font-space); font-size: 1.8rem; font-weight: 700; color: var(--primary);" id="rubricAvgDisplay">4.0 / 6.0</div>
+            </div>
+            <div style="max-width: 450px;">
+              <span style="font-size: 0.82rem; color: var(--slate-muted); font-weight: 600; text-transform: uppercase;">Instructional Recommendation</span>
+              <div style="font-size: 0.85rem; color: var(--slate-ink);" id="rubricRecommendation">
+                Encourage subordination combining (e.g. <em>whereas</em>, <em>in comparison to</em>) to advance from Level 4 to Level 5.
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-primary" onclick="saveTeacherRubricScore()">
+                💾 Save Teacher Rating
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--navy-deep);">
+              Teacher Feedback Notes &amp; Instructional Action Plan:
+            </label>
+            <textarea
+              id="teacherFeedbackNotes"
+              style="width: 100%; min-height: 80px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line-muted); font-family: inherit; font-size: 0.88rem; resize: vertical;"
+              placeholder="e.g. Demonstrates strong scientific concept knowledge. Recommend practicing oral sentence starters in Speaking Studio for 10 minutes daily."
+            ></textarea>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Toast Notification ── -->
+    <div id="toast" style="position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999;"></div>
+
+    <script>
+      // ══════════════════════════════════════════════════════════
+      // WIDA PORTFOLIO & GRADEBOOK LOGIC
+      // ══════════════════════════════════════════════════════════
+
+      const TASK_TITLES = {
+        "T1": "Photosynthesis & Solar Energy (Science)",
+        "T2": "Equivalent Fractions & Area Models (Math)",
+        "T3": "The Global Water Cycle & Precipitation (Science)",
+        "T4": "Ratios & Unit Rates in Recipes (Math)",
+        "T5": "Plate Tectonics & Continental Drift (Science)",
+        "T6": "Coordinate Graphing & Quadrants (Math)",
+        "T7": "Ancient Civilizations & Trade Routes (Social Studies)",
+        "T8": "Cell Structure & Organelles (Science)",
+        "T9": "Percentages & Discounts in Commerce (Math)",
+        "T10": "Democracy & The Three Branches (Social Studies)",
+        "T11": "Newton's Laws of Motion (Science)",
+        "T12": "Algebraic Expressions & Balance (Math)",
+        "T13": "Ecosystem Food Webs & Energy Transfer (Science)",
+        "T14": "Surface Area of Rectangular Prisms (Math)",
+        "T15": "The American Revolution & Causes (Social Studies)",
+        "T16": "Thermal Energy & Conduction (Science)",
+        "T17": "Mean, Median & Statistical Spread (Math)",
+        "T18": "Renewable vs Nonrenewable Resources (Science)",
+        "T19": "Probability & Independent Events (Math)",
+        "T20": "World Geography & Climate Zones (Social Studies)"
+      };
+
+      // Mock cohort roster for Gradebook Mode
+      let ROSTER = [
+        { id: "S1", name: "Elena R.", tier: "B", grade: 7, listening: "18 / 20", reading: "5 / 6", speaking: "Level 4.2", writing: "Level 4.0", composite: 4.1, status: "Expanding", complexity: 4.0, vocab: 4.5, control: 4.0, notes: "Excellent command of scientific vocabulary. Needs practice with oral transition connectors." },
+        { id: "S2", name: "Carlos M.", tier: "A", grade: 6, listening: "14 / 20", reading: "3 / 6", speaking: "Level 2.8", writing: "Level 2.5", composite: 2.7, status: "Emerging", complexity: 2.5, vocab: 3.0, control: 2.5, notes: "Strong visual mapping skills. Benefits from sentence frames and cognate scaffolds." },
+        { id: "S3", name: "Fatima A.", tier: "B", grade: 8, listening: "19 / 20", reading: "6 / 6", speaking: "Level 4.8", writing: "Level 4.6", composite: 4.7, status: "Bridging", complexity: 4.5, vocab: 5.0, control: 4.5, notes: "High accuracy and sentence variety. Ready for Tier B advanced synthesis tasks." },
+        { id: "S4", name: "David K.", tier: "A", grade: 6, listening: "11 / 20", reading: "2 / 6", speaking: "Level 2.2", writing: "Level 2.0", composite: 2.1, status: "Entering", complexity: 2.0, vocab: 2.0, control: 2.0, notes: "Requires slow-speed audio replay (0.6x) and Spanish bilingual word wall assistance." },
+        { id: "S5", name: "Joel Neft (Current Session)", tier: "B", grade: 7, listening: "0 / 20", reading: "0 / 6", speaking: "Level 3.5", writing: "Level 3.8", composite: 3.7, status: "Developing", complexity: 3.5, vocab: 4.0, control: 3.5, notes: "Active learner. Real-time synchronized portfolio." }
+      ];
+
+      let selectedStudentId = "S1";
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.style.opacity = "1";
+        t.style.transform = "translateY(0)";
+        setTimeout(() => {
+          t.style.opacity = "0";
+          t.style.transform = "translateY(100px)";
+        }, 3200);
+      }
+
+      function switchView(mode) {
+        const isStudent = mode === "student";
+        document.getElementById("studentView").style.display = isStudent ? "grid" : "none";
+        document.getElementById("teacherView").style.display = isStudent ? "none" : "block";
+        document.getElementById("tabStudent").classList.toggle("active", isStudent);
+        document.getElementById("tabTeacher").classList.toggle("active", !isStudent);
+        document.getElementById("tabStudent").setAttribute("aria-selected", isStudent);
+        document.getElementById("tabTeacher").setAttribute("aria-selected", !isStudent);
+
+        if (isStudent) {
+          document.getElementById("portfolioHeroTitle").textContent = "Student WIDA Language Growth Portfolio";
+          document.getElementById("portfolioHeroDesc").textContent = "Official evidence-based portfolio capturing student progress, authentic spoken recordings, linguistic complexity analysis, and WIDA Can-Do descriptor growth across all four language domains.";
+        } else {
+          document.getElementById("portfolioHeroTitle").textContent = "ESOL Educator Gradebook & Rubric Hub";
+          document.getElementById("portfolioHeroDesc").textContent = "Standardized assessment gradebook for evaluating student language production across WIDA Expressive & Interpretive criteria for Grades 6–8.";
+          renderTeacherRoster();
+        }
+      }
+
+      function readJSON(k, def) {
+        try {
+          const val = localStorage.getItem(k);
+          return val ? JSON.parse(val) : def;
+        } catch (e) {
+          return def;
+        }
+      }
+
+      function readNum(k, def = 0) {
+        const n = parseInt(localStorage.getItem(k) || def, 10);
+        return isNaN(n) ? def : n;
+      }
+
+      // ── Render Live Student Portfolio ──
+      function renderStudentPortfolio() {
+        const xp = readNum("widaXP", 0);
+        const streak = readNum("widaStreak", 0);
+        const listenArr = readJSON("widaCompletedListening", []);
+        const speakArr = readJSON("widaCompletedSpeaking", []);
+        const writeArr = readJSON("widaCompletedWriting", []);
+        const readSets = readJSON("widaReadingSets", {});
+        const drafts = readJSON("widaWritingDrafts_v1", {});
+
+        // Update Stats Deck
+        document.getElementById("statSparkXP").textContent = xp.toLocaleString();
+        document.getElementById("statDayStreak").textContent = streak;
+
+        const totalCompleted = new Set([...listenArr, ...speakArr, ...writeArr]).size;
+        document.getElementById("statTasksDone").textContent = `${totalCompleted} / 20`;
+
+        // Domain Percentages
+        const listenPct = Math.min(100, Math.round((listenArr.length / 20) * 100));
+        const speakPct = Math.min(100, Math.round((speakArr.length / 20) * 100));
+        const writePct = Math.min(100, Math.round((writeArr.length / 20) * 100));
+        const readCount = Object.keys(readSets).length;
+        const readPct = Math.min(100, Math.round((readCount / 6) * 100));
+
+        document.getElementById("domainPctListening").textContent = `${listenPct}% (${listenArr.length}/20)`;
+        document.getElementById("domainBarListening").style.width = `${listenPct}%`;
+        document.getElementById("listeningDoneCount").textContent = `${listenArr.length} / 20`;
+
+        document.getElementById("domainPctSpeaking").textContent = `${speakPct}% (${speakArr.length}/20)`;
+        document.getElementById("domainBarSpeaking").style.width = `${speakPct}%`;
+
+        document.getElementById("domainPctWriting").textContent = `${writePct}% (${writeArr.length}/20)`;
+        document.getElementById("domainBarWriting").style.width = `${writePct}%`;
+
+        document.getElementById("domainPctReading").textContent = `${readPct}% (${readCount}/6)`;
+        document.getElementById("domainBarReading").style.width = `${readPct}%`;
+        document.getElementById("readingDoneCount").textContent = `${readCount} / 6 Sets`;
+
+        // Composite Level Estimate (1.0 to 6.0)
+        let composite = 2.0;
+        if (xp > 300 || totalCompleted > 5) composite = 3.2;
+        if (xp > 600 || totalCompleted > 10) composite = 3.8;
+        if (xp > 1200 || totalCompleted > 15) composite = 4.5;
+        if (xp > 2000) composite = 5.2;
+        document.getElementById("statCompositeLevel").textContent = composite.toFixed(1);
+
+        // Update Current User in Teacher Roster
+        const currUserRow = ROSTER.find(s => s.id === "S5");
+        if (currUserRow) {
+          currUserRow.listening = `${listenArr.length} / 20`;
+          currUserRow.reading = `${readCount} / 6`;
+          currUserRow.speaking = `${speakArr.length} tasks`;
+          currUserRow.writing = `${Object.keys(drafts).length} essays`;
+          currUserRow.composite = composite;
+        }
+
+        // Render Writing Drafts Gallery
+        renderWritingGallery(drafts);
+
+        // Render Speaking Rehearsals Gallery
+        renderSpeakingGallery(speakArr);
+      }
+
+      function renderWritingGallery(drafts) {
+        const container = document.getElementById("writingGalleryList");
+        const keys = Object.keys(drafts);
+        document.getElementById("writingCountPill").textContent = `${keys.length} Drafts Saved`;
+
+        if (keys.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">✍️</div>
+              <div class="empty-text">
+                No writing responses drafted yet. As you compose paragraphs in the WIDA Writing Studio, your work and linguistic complexity scores will automatically appear here!
+              </div>
+              <a href="/wida-access/writing/" class="btn btn-primary btn-pill">
+                Open Writing Studio &rarr;
+              </a>
+            </div>
+          `;
+          return;
+        }
+
+        let html = "";
+        keys.forEach(key => {
+          const [taskId, tier] = key.split("_");
+          const text = drafts[key] || "";
+          const title = TASK_TITLES[taskId] || `Task ${taskId}`;
+
+          // Quick complexity check
+          const complexWords = (text.match(/\\b(consequently|furthermore|although|whereas|moreover|nevertheless|as a result|specifically|in addition|therefore|subsequently|in contrast)\\b/gi) || []).length;
+          let levelTag = "Level 2: Emerging";
+          let levelCls = "#f59e0b";
+          if (complexWords >= 3) {
+            levelTag = "Level 4: Expanding";
+            levelCls = "#10b981";
+          } else if (complexWords >= 1) {
+            levelTag = "Level 3: Developing";
+            levelCls = "#06b6d4";
+          }
+
+          const wordCount = text.trim() ? text.trim().split(/\\s+/).length : 0;
+
+          html += `
+            <div class="showcase-item">
+              <div class="showcase-head">
+                <div class="showcase-task">
+                  <span>📄 ${taskId}: ${title}</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <span class="tag-pill tag-tier">Tier ${tier || "B"}</span>
+                  <span class="tag-pill tag-complexity" style="color: ${levelCls}; background: #fef3c7;">${levelTag}</span>
+                  <span class="tag-pill tag-domain">${wordCount} Words</span>
+                </div>
+              </div>
+              <div class="showcase-quote">${escapeHtml(text)}</div>
+              <div class="analysis-chips-grid">
+                <span class="analysis-chip highlight">Cohesive Connectors: ${complexWords}</span>
+                <span class="analysis-chip">Discourse Structure: Claim + Evidence</span>
+                <span class="analysis-chip">Status: Portfolio Verified ✓</span>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      }
+
+      function renderSpeakingGallery(speakArr) {
+        const container = document.getElementById("speakingGalleryList");
+        document.getElementById("speakingCountPill").textContent = `${speakArr.length} Recorded`;
+
+        if (speakArr.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">🗣️</div>
+              <div class="empty-text">
+                No spoken recordings captured yet. Complete speaking prompts with the audio visualizer to track spoken clarity, vocabulary usage, and rubric feedback.
+              </div>
+              <a href="/wida-access/speaking/" class="btn btn-primary btn-pill">
+                Open Speaking Studio &rarr;
+              </a>
+            </div>
+          `;
+          return;
+        }
+
+        let html = "";
+        speakArr.forEach(taskId => {
+          const title = TASK_TITLES[taskId] || `Task ${taskId}`;
+          html += `
+            <div class="showcase-item">
+              <div class="showcase-head">
+                <div class="showcase-task">
+                  <span>🎙️ ${taskId}: ${title}</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <span class="tag-pill tag-domain">Speaking Domain</span>
+                  <span class="tag-pill tag-score">Rubric Score: 4.5/6</span>
+                </div>
+              </div>
+              <p style="font-size: 0.88rem; color: #475569; margin: 8px 0;">
+                Spoken response recorded and evaluated with WIDA Speaking Rubric. Demonstrates sustained academic speech with clear pacing and scientific terminology.
+              </p>
+              <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+                <button class="btn btn-secondary" onclick="playMockAudio('${taskId}')" style="font-size: 0.78rem;">
+                  ▶️ Replay Audio Response
+                </button>
+                <span style="font-size: 0.75rem; color: var(--slate-muted);">Duration: 38 seconds · Audio format: WAV</span>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      }
+
+      function playMockAudio(taskId) {
+        const title = TASK_TITLES[taskId] || taskId;
+        const msg = `This audio sample represents the student's recorded oral response explaining ${title}.`;
+        const u = new SpeechSynthesisUtterance(msg);
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+        showToast(`Playing speech sample for ${taskId}...`);
+      }
+
+      // ── Educator Gradebook Functions ──
+      function renderTeacherRoster() {
+        const tbody = document.getElementById("teacherRosterBody");
+        tbody.innerHTML = ROSTER.map(s => `
+          <tr>
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar">${s.name.substring(0, 2).toUpperCase()}</div>
+                <div>
+                  <strong>${s.name}</strong>
+                  <div style="font-size: 0.75rem; color: var(--slate-muted);">Grade ${s.grade} · ID: ${s.id}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag-pill tag-tier">Tier ${s.tier}</span></td>
+            <td>${s.listening}</td>
+            <td>${s.reading}</td>
+            <td>${s.speaking}</td>
+            <td>${s.writing}</td>
+            <td><strong style="color: var(--primary); font-size: 1rem;">${s.composite}</strong></td>
+            <td><span class="tag-pill tag-score">${s.status}</span></td>
+            <td>
+              <button class="btn btn-secondary" onclick="selectStudentForRubric('${s.id}')" style="font-size: 0.78rem;">
+                📝 Evaluate
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      function selectStudentForRubric(studentId) {
+        selectedStudentId = studentId;
+        const s = ROSTER.find(x => x.id === studentId);
+        if (!s) return;
+
+        document.getElementById("rubricStudentTarget").textContent = `Scoring Rubric: ${s.name} (Grade ${s.grade}, Tier ${s.tier})`;
+        document.getElementById("sliderComplexity").value = s.complexity || 3.5;
+        document.getElementById("sliderVocab").value = s.vocab || 3.5;
+        document.getElementById("sliderControl").value = s.control || 3.5;
+        document.getElementById("teacherFeedbackNotes").value = s.notes || "";
+        updateRubricScore();
+
+        document.getElementById("rubricEvaluatorCard").scrollIntoView({ behavior: "smooth" });
+        showToast(`Loaded rubric matrix for ${s.name}`);
+      }
+
+      function updateRubricScore() {
+        const comp = parseFloat(document.getElementById("sliderComplexity").value);
+        const voc = parseFloat(document.getElementById("sliderVocab").value);
+        const ctrl = parseFloat(document.getElementById("sliderControl").value);
+
+        document.getElementById("scoreComplexity").textContent = comp.toFixed(1);
+        document.getElementById("scoreVocab").textContent = voc.toFixed(1);
+        document.getElementById("scoreControl").textContent = ctrl.toFixed(1);
+
+        const avg = ((comp + voc + ctrl) / 3).toFixed(1);
+        document.getElementById("rubricAvgDisplay").textContent = `${avg} / 6.0`;
+
+        let rec = "";
+        if (avg < 2.5) {
+          rec = "Focus on Tier A high-frequency sentence frames, explicit noun-phrase identification, and visual model association.";
+        } else if (avg < 4.0) {
+          rec = "Target compound sentences with 'because', 'however', and 'in addition'. Practice oral rehearsals before drafting.";
+        } else {
+          rec = "Challenge with multi-clause subordinate conjunctions ('whereas', 'consequently') and discipline-specific technical vocabulary.";
+        }
+        document.getElementById("rubricRecommendation").textContent = rec;
+      }
+
+      function saveTeacherRubricScore() {
+        const s = ROSTER.find(x => x.id === selectedStudentId);
+        if (!s) return;
+
+        s.complexity = parseFloat(document.getElementById("sliderComplexity").value);
+        s.vocab = parseFloat(document.getElementById("sliderVocab").value);
+        s.control = parseFloat(document.getElementById("sliderControl").value);
+        s.notes = document.getElementById("teacherFeedbackNotes").value;
+        s.composite = parseFloat(((s.complexity + s.vocab + s.control) / 3).toFixed(1));
+
+        renderTeacherRoster();
+        showToast(`Saved rubric evaluation for ${s.name}!`);
+      }
+
+      function exportPortfolioCSV() {
+        let csv = "ID,Name,Grade,Tier,Listening,Reading,Speaking,Writing,Composite,Status,Notes\\n";
+        ROSTER.forEach(s => {
+          csv += `"${s.id}","${s.name}",${s.grade},"${s.tier}","${s.listening}","${s.reading}","${s.speaking}","${s.writing}",${s.composite},"${s.status}","${(s.notes||'').replace(/"/g, '""')}"\\n`;
+        });
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `WIDA_ACCESS_Gradebook_School240_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        showToast("Exported Gradebook CSV successfully!");
+      }
+
+      function loadDemoData() {
+        // Pre-populate realistic student writing draft and completions
+        const sampleDrafts = {
+          "T3_B": "The hydrological cycle demonstrates how water circulates through terrestrial ecosystems. First, radiant solar energy warms surface reservoirs, causing rapid evaporation. Subsequently, water vapor condenses into atmospheric cloud formations. When precipitation occurs, gravity pulls rain toward mountain watersheds, which subsequently sustains plant biodiversity.",
+          "T1_B": "During photosynthesis, botanical organisms convert solar electromagnetic radiation into chemical glucose energy. Although plants require sunlight, they also depend on carbon dioxide absorption from the atmosphere. Consequently, oxygen is liberated as a vital atmospheric byproduct."
+        };
+        localStorage.setItem("widaWritingDrafts_v1", JSON.stringify(sampleDrafts));
+        localStorage.setItem("widaCompletedSpeaking", JSON.stringify(["T1", "T3", "T5"]));
+        localStorage.setItem("widaCompletedListening", JSON.stringify(["T1", "T2", "T3", "T4", "T5"]));
+        localStorage.setItem("widaReadingSets", JSON.stringify({ "R1": "5 / 5", "R2": "4 / 5", "R3": "5 / 5" }));
+        localStorage.setItem("widaXP", "850");
+        localStorage.setItem("widaStreak", "4");
+
+        renderStudentPortfolio();
+        showToast("✨ Demo ESOL student portfolio data loaded!");
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Initial boot
+      window.addEventListener("DOMContentLoaded", () => {
+        renderStudentPortfolio();
+        updateRubricScore();
+      });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

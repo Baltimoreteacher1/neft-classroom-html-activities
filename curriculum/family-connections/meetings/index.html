@@ -1,0 +1,143 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Family meetings · EduWonderLab</title><link rel="stylesheet" href="../homework-hub.css"><link rel="stylesheet" href="../family-scheduler.css"></head><body><a class="skip-link" href="#family-scheduler">Skip to meetings</a><main><div class="toolbar"><a href="../">This week’s homework / Tareas de esta semana</a><button type="button" id="meeting-language-toggle">Español</button></div>      <section class="scheduler-section" id="family-scheduler" aria-labelledby="scheduler-title">
+        <div class="scheduler-heading">
+          <div>
+            <p class="eyebrow" data-scheduler-key="eyebrow">Family meetings</p>
+            <h2 id="scheduler-title" data-scheduler-key="title">Meet with Mr. Neft</h2>
+            <p data-scheduler-key="intro">
+              Choose an available time for a short conversation about how we can support your
+              student.
+            </p>
+          </div>
+          <span class="timezone-chip" data-scheduler-key="timezone">Eastern Time</span>
+        </div>
+        <a
+          class="button button-secondary scheduler-dojo-link"
+          id="scheduler-classdojo-link"
+          data-classdojo-link
+          data-scheduler-key="dojo"
+          href="https://home.classdojo.com/"
+          target="_blank"
+          rel="noopener"
+          >Open ClassDojo · sign in <span aria-hidden="true">↗</span></a
+        >
+        <p class="scheduler-status" id="meeting-status" role="status" aria-live="polite">
+          Loading available times…
+        </p>
+        <div class="meeting-slots" id="meeting-slots"></div>
+
+        <div class="meeting-request-panel" id="meeting-request-panel" hidden>
+          <div>
+            <p class="eyebrow">Book this time</p>
+            <h3 id="selected-meeting-time">Meeting time</h3>
+            <p>Your meeting is booked immediately when you submit this form.</p>
+          </div>
+          <form id="meeting-request-form">
+            <input id="meeting-slot-id" name="slotId" type="hidden" />
+            <div class="meeting-form-grid">
+              <label
+                ><span data-scheduler-key="guardian">Parent or guardian name</span
+                ><input name="guardianName" maxlength="80" autocomplete="name" required
+              /></label>
+              <label
+                ><span data-scheduler-key="student">Student first name only</span
+                ><input
+                  id="meeting-student-first-name"
+                  name="studentFirstName"
+                  maxlength="40"
+                  autocomplete="off"
+                  required
+              /></label>
+              <label
+                ><span data-scheduler-key="email">Email for the reply</span
+                ><input name="email" type="email" maxlength="160" autocomplete="email" required
+              /></label>
+              <label
+                ><span data-scheduler-key="meetLanguage">Language for the meeting</span
+                ><select id="meeting-language" name="meetingLanguage">
+                  <option value="">English</option>
+                  <option value="Español">Español</option>
+                  <option value="Other">Other</option>
+                </select></label
+              >
+              <label
+                ><span data-scheduler-key="phone">Best phone number (optional)</span
+                ><input
+                  id="meeting-phone"
+                  name="meetingPhone"
+                  type="tel"
+                  maxlength="30"
+                  autocomplete="tel"
+              /></label>
+              <label class="meeting-interpreter"
+                ><input id="meeting-interpreter" name="interpreter" type="checkbox" />
+                <span data-scheduler-key="interpreter">Please arrange an interpreter</span></label
+              >
+              <label class="meeting-note"
+                ><span data-scheduler-key="note"
+                  >Anything you would like Mr. Neft to know? (optional)</span
+                ><textarea name="note" maxlength="400" rows="3"></textarea>
+              </label>
+            </div>
+            <label class="meeting-honeypot" aria-hidden="true"
+              >Website<input name="website" tabindex="-1" autocomplete="off"
+            /></label>
+            <label class="meeting-consent"
+              ><input id="meeting-consent" name="consent" type="checkbox" required />
+              <span data-scheduler-key="consent"
+                >I am booking this time and will use only the student's first name.</span
+              ></label
+            >
+            <div class="meeting-form-actions">
+              <button class="button" type="submit" data-scheduler-key="send">Book meeting</button>
+              <button
+                class="text-link meeting-cancel"
+                type="button"
+                id="meeting-request-cancel"
+                data-scheduler-key="chooseAnother"
+              >
+                Choose another time
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="meeting-confirmation" id="meeting-confirmation" hidden>
+          <p class="eyebrow">Confirmed</p>
+          <h3 id="meeting-confirmation-title" tabindex="-1" data-scheduler-key="bookedTitle">
+            Meeting booked
+          </h3>
+          <p id="meeting-confirmation-detail"></p>
+          <p>Confirmation: <strong id="meeting-confirmation-reference"></strong></p>
+          <div class="meeting-form-actions">
+            <button
+              class="button"
+              id="add-meeting-calendar"
+              type="button"
+              data-scheduler-key="addCalendar"
+            >
+              Add to calendar
+            </button>
+            <button
+              class="button button-secondary"
+              id="meeting-confirmation-close"
+              type="button"
+              data-scheduler-key="backToTimes"
+            >
+              View other times
+            </button>
+          </div>
+        </div>
+
+        <div class="meeting-response-panel" id="meeting-response-panel" hidden>
+          <p class="eyebrow">Meeting invitation</p>
+          <h3>Can your family meet at the proposed time?</h3>
+          <p>Choose one response. The private invitation link works only once.</p>
+          <div class="meeting-form-actions">
+            <button class="button" id="meeting-accept" type="button">Yes, this works</button>
+            <button class="button button-secondary" id="meeting-decline" type="button">
+              No, we need another time
+            </button>
+          </div>
+        </div>
+      </section>
+</main><script type="module" src="./meeting-page.js"></script></body></html>

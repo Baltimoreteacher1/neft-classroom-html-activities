@@ -55,8 +55,6 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-
 import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
 
 const DRY = process.argv.includes("--dry-run");

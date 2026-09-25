@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const root = new URL("./", import.meta.url);
-const html = await readFile(new URL("index.html", root), "utf8");
+const html = await readFile(new URL("advanced.html", root), "utf8");
 for (const expected of [
   'id="meeting-scheduler-tools"',
   'id="teacher-slot-form"',
@@ -145,10 +145,15 @@ for (const contract of [
 
 assert.match(html, /Draft → Preview → Publish/);
 assert.match(html, /sign-in protected/i);
-assert.match(html, />Edit Family Connections</i);
+assert.match(html, />Family homework &amp; practice</i);
 assert.match(html, /href="\/curriculum\/"[^>]*>[^<]*Curriculum Hub/i);
 assert.match(html, /href="\/curriculum\/family-connections\/"[^>]*>[^<]*View live family page/i);
-assert.match(html, /separate from regular homework/i);
+assert.match(html, /id="weekly-plan"[\s\S]*?hidden[\s\S]*?inert/i);
+assert.match(html, /id="homework-tools" open/i);
+assert.ok(
+  html.indexOf('id="homework-tools"') < html.indexOf('id="family-response-tools"'),
+  "family practice should appear before optional reporting",
+);
 assert.match(html, /families cannot edit/i);
 assert.match(html, /<meta name="robots" content="noindex,nofollow"\s*\/>/i);
 assert.doesNotMatch(html, /name=".*(?:token|password|secret)/i);
@@ -175,6 +180,7 @@ assert.match(schedulerAdmin, /downloadCalendarEvent/);
 assert.match(schedulerAdmin, /Add to calendar/);
 assert.match(app, /\["week-label", "weekLabel"\]/, "week label must not overwrite the class label");
 assert.match(app, /renderPreview\(false\)/, "initialization must not move the teacher away from the first editor");
+assert.match(app, /renderHomeworkHub/, "advanced preview should use the current family homework view");
 assert.match(editors, /weekHasMeaningfulContent/);
 assert.match(editors, /preview-empty-week/);
 assert.match(editors, /preview-summary/);

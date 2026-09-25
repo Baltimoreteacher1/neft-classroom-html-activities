@@ -10,6 +10,7 @@ import {
   safeExternalUrl,
 } from "../shared/model.js";
 import { loadDraft, loadHistory, publishDraft, saveDraft } from "../shared/api-client.js";
+import { renderHomeworkHub } from "../shared/homework-hub.js";
 import { resolveYear } from "../../../shared/pacing/engine.js";
 import { buildWeekFromPacing, pacingWeekStarts, weekStartFor } from "../shared/pacing-week.js";
 import { buildFamilyWeekNote } from "../shared/family-week-note.js";
@@ -24,7 +25,6 @@ import { weekLessonIds } from "../shared/family-week-note.js";
 import {
   renderCollection,
   renderCopyEditor,
-  renderFamilyPreview,
   renderLessonPicker,
   renderSectionEditor,
   renderWeekdayEditors,
@@ -464,7 +464,9 @@ function addResource() {
 }
 
 function renderPreview(scroll = true) {
-  renderFamilyPreview(byId("family-preview"), state.draft, state.lessons, state.sectionId);
+  renderHomeworkHub(byId("family-preview"), state.draft, state.lessons, state.sectionId, "en", {
+    preview: true,
+  });
   state.previewed = true;
   byId("publish-status").textContent = "Preview ready — not live";
   if (scroll) byId("preview-plan").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -702,7 +704,6 @@ async function initialize() {
     byId("classdojo-url").value = state.draft.integrations.classDojoUrl;
     byId("canvas-url").value = state.draft.integrations.canvasUrl;
     renderWeekEditor();
-    renderPacingWeeks();
     renderFamilyResponse(byId("family-response-report"), null, {
       message: teacherKey()
         ? "Choose a window and show family activity."

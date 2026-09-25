@@ -1,0 +1,1324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="WIDA Academic Word Builder · Morphology & Syntax Quest. Combine prefixes, base roots, and suffixes to forge academic vocabulary for Grades 6–8 ACCESS test prep."
+    />
+    <title>WIDA Word Builder Quest · Morphology Lab | Neft Hub</title>
+
+    <link
+      href="/assets/fonts/outfit-space-grotesk-095d49.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+
+    <style>
+      :root {
+        --primary: #0284c7; /* Sky / Cyan Blue for Word Builder */
+        --primary-dark: #0369a1;
+        --primary-light: #f0f9ff;
+        --teal: #0d9488;
+        --teal-light: #f0fdfa;
+        --amber: #d97706;
+        --amber-light: #fef3c7;
+        --purple: #7c3aed;
+        --purple-light: #f5f3ff;
+        --green: #15803d;
+        --green-light: #dcfce7;
+        --navy-deep: #082f49;
+        --navy: #0f172a;
+        --bg-canvas: #f8fafc;
+        --bg-studio: #f1f5f9;
+        --white: #ffffff;
+        --line-muted: #e2e8f0;
+        --slate-ink: #0f172a;
+        --slate-muted: #64748b;
+        --radius-card: 16px;
+        --radius-sm: 8px;
+        --radius-pill: 9999px;
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 10px 25px rgba(2, 132, 199, 0.1);
+        --font-outfit: "Outfit", system-ui, sans-serif;
+        --font-space: "Space Grotesk", system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-outfit);
+        background: linear-gradient(180deg, #f0f9ff 0%, #f8fafc 50%, #f1f5f9 100%);
+        color: var(--slate-ink);
+        min-height: 100vh;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Header ── */
+      .top-nav {
+        background: #ffffff;
+        border-bottom: 1px solid var(--line-muted);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .nav-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--slate-muted);
+      }
+      .breadcrumbs a {
+        color: var(--slate-muted);
+        text-decoration: none;
+      }
+      .breadcrumbs a:hover {
+        color: var(--primary);
+      }
+      .breadcrumbs .curr {
+        color: var(--slate-ink);
+        font-weight: 700;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-outfit);
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: #fff;
+        border-color: var(--line-muted);
+        color: var(--slate-ink);
+      }
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .btn-amber {
+        background: var(--amber);
+        color: #fff;
+      }
+      .btn-pill {
+        border-radius: var(--radius-pill);
+      }
+
+      .shell {
+        max-width: 1400px;
+        margin: 24px auto 80px;
+        padding: 0 24px;
+      }
+
+      /* ── Hero Banner ── */
+      .hero-card {
+        background: linear-gradient(135deg, #082f49 0%, #0369a1 60%, #0284c7 100%);
+        border-radius: var(--radius-card);
+        padding: 32px 36px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-md);
+      }
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        right: -60px;
+        top: -60px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-pill);
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #bae6fd;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-family: var(--font-space);
+        font-size: 2.1rem;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-desc {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+        max-width: 700px;
+        line-height: 1.5;
+      }
+
+      .hero-stats-row {
+        display: flex;
+        gap: 24px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+      .hero-stat {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 10px 18px;
+        text-align: center;
+      }
+      .stat-val {
+        font-family: var(--font-space);
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+      }
+      .stat-lbl {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #e0f2fe;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+
+      /* ── 2-Column Grid Layout ── */
+      .layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--white);
+        border: 1px solid var(--line-muted);
+        border-radius: var(--radius-card);
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 24px;
+      }
+      .card-title {
+        font-family: var(--font-space);
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-sub {
+        font-size: 0.86rem;
+        color: var(--slate-muted);
+        margin-bottom: 20px;
+        line-height: 1.45;
+      }
+
+      /* ── Morphology Forge Anvil ── */
+      .forge-anvil {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 16px;
+        padding: 24px;
+        color: #fff;
+        margin-bottom: 24px;
+        border: 1.5px solid #334155;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      }
+      .anvil-slots {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .anvil-slot {
+        background: rgba(255, 255, 255, 0.06);
+        border: 2px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 16px 12px;
+        text-align: center;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s;
+      }
+      .anvil-slot.filled {
+        background: rgba(2, 132, 199, 0.2);
+        border-style: solid;
+        border-color: #38bdf8;
+      }
+      .slot-tag {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .slot-value {
+        font-family: var(--font-space);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #f0f9ff;
+      }
+      .anvil-plus {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #64748b;
+      }
+
+      /* ── Tile Banks ── */
+      .bank-section {
+        margin-bottom: 18px;
+      }
+      .bank-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--slate-muted);
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .tiles-deck {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .m-tile {
+        font-family: var(--font-space);
+        font-size: 0.88rem;
+        font-weight: 700;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1.5px solid var(--line-muted);
+        background: var(--bg-canvas);
+        color: var(--slate-ink);
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .m-tile:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(2, 132, 199, 0.15);
+      }
+      .m-tile.selected {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary-dark);
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      }
+
+      /* ── Word Result Card ── */
+      .word-result-card {
+        background: #ffffff;
+        border: 1px solid var(--line-muted);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+        display: none;
+        animation: slideIn 0.3s ease-out forwards;
+      }
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .word-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .word-term {
+        font-family: var(--font-space);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--navy-deep);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .pos-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 10px;
+        border-radius: var(--radius-pill);
+        background: var(--teal-light);
+        color: var(--teal);
+        border: 1px solid #99f6e4;
+      }
+      .pos-badge.noun { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+      .pos-badge.verb { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+      .pos-badge.adjective { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+      .pos-badge.adverb { background: #f3e8ff; color: #7e22ce; border-color: #e9d5ff; }
+
+      .cognate-chip {
+        font-size: 0.78rem;
+        background: #f1f5f9;
+        border-radius: 6px;
+        padding: 4px 10px;
+        color: #475569;
+      }
+
+      .word-context {
+        background: var(--bg-canvas);
+        border-left: 3px solid var(--primary);
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.92rem;
+        color: #334155;
+        margin: 14px 0;
+      }
+
+      /* ── Cloze Challenge Section ── */
+      .cloze-box {
+        background: var(--bg-canvas);
+        border: 1px solid var(--line-muted);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .cloze-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: var(--slate-ink);
+        margin-bottom: 16px;
+      }
+      .cloze-drop {
+        display: inline-block;
+        min-width: 140px;
+        padding: 2px 12px;
+        border-bottom: 2px solid var(--primary);
+        background: #ffffff;
+        font-weight: 700;
+        color: var(--primary);
+        text-align: center;
+        border-radius: 4px;
+        margin: 0 4px;
+      }
+      .cloze-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .cloze-opt-btn {
+        background: #ffffff;
+        border: 1px solid var(--line-muted);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .cloze-opt-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .cloze-opt-btn.correct {
+        background: var(--green-light);
+        border-color: var(--green);
+        color: var(--green);
+      }
+      .cloze-opt-btn.wrong {
+        background: #fee2e2;
+        border-color: #ef4444;
+        color: #b91c1c;
+      }
+
+      /* ── Lexicon Vault Sidebar ── */
+      .vault-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 480px;
+        overflow-y: auto;
+      }
+      .vault-card {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--line-muted);
+        background: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.15s;
+      }
+      .vault-card:hover {
+        background: var(--bg-canvas);
+      }
+
+      @media (max-width: 992px) {
+        .layout-grid {
+          grid-template-columns: 1fr;
+        }
+        .anvil-slots {
+          grid-template-columns: 1fr;
+        }
+        .anvil-plus {
+          display: none;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <!-- ── Top Nav ── -->
+    <header class="top-nav">
+      <div class="nav-inner">
+        <div class="breadcrumbs">
+          <a href="/">Neft Hub</a>
+          <span style="opacity:0.5;">/</span>
+          <a href="/wida-access/">WIDA Center</a>
+          <span style="opacity:0.5;">/</span>
+          <span class="curr">Academic Word Builder</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <a href="/wida-access/" class="btn btn-secondary">
+            &larr; WIDA Prep Hub
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <!-- ── Hero Banner ── -->
+      <section class="hero-card">
+        <div class="hero-tag">
+          <span>🧬 WIDA Vocabulary Architecture &amp; Morphology</span>
+        </div>
+        <h1 class="hero-title">WIDA Academic Word Builder Quest</h1>
+        <p class="hero-desc">
+          Master the building blocks of academic English. Forge high-impact nouns, verbs, and adjectives by combining Latin and Greek roots with academic prefixes and suffixes across science, mathematics, and social studies.
+        </p>
+
+        <div class="hero-stats-row">
+          <div class="hero-stat">
+            <div class="stat-val" id="valSparkXP">0</div>
+            <div class="stat-lbl">SPARK XP Earned</div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-val" id="valWordsForged">0</div>
+            <div class="stat-lbl">Words in Vault</div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-val" id="valClozeDone">0 / 6</div>
+            <div class="stat-lbl">Syntax Quests</div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-val" id="valStreak">0</div>
+            <div class="stat-lbl">Day Streak</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Main Grid ── -->
+      <div class="layout-grid">
+        <!-- Left Column: Word Forge & Cloze Quests -->
+        <div>
+          <!-- The Forge -->
+          <div class="card">
+            <div class="card-title">
+              <span>⚡ The Morphology Forge</span>
+              <button class="btn btn-secondary" onclick="resetAnvil()" style="font-size: 0.78rem;">
+                🔄 Reset Tiles
+              </button>
+            </div>
+            <p class="card-sub">
+              Select one Prefix (optional), one Base Root, and one Suffix to synthesize an authentic academic word.
+            </p>
+
+            <div class="forge-anvil">
+              <div class="anvil-slots">
+                <div class="anvil-slot" id="slotPrefix">
+                  <div class="slot-tag">Prefix</div>
+                  <div class="slot-value" id="valSlotPrefix">[None]</div>
+                </div>
+                <div class="anvil-plus">+</div>
+                <div class="anvil-slot filled" id="slotRoot">
+                  <div class="slot-tag">Base Root</div>
+                  <div class="slot-value" id="valSlotRoot">evapor</div>
+                </div>
+                <div class="anvil-plus">+</div>
+                <div class="anvil-slot filled" id="slotSuffix">
+                  <div class="slot-tag">Suffix</div>
+                  <div class="slot-value" id="valSlotSuffix">-ation</div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: center; gap: 12px;">
+                <button class="btn btn-primary btn-pill" onclick="forgeWord()" style="font-size: 1rem; padding: 10px 24px; box-shadow: 0 4px 14px rgba(2,132,199,0.4);">
+                  ⚡ Forge Academic Word (+25 XP)
+                </button>
+              </div>
+            </div>
+
+            <!-- Prefix Bank -->
+            <div class="bank-section">
+              <div class="bank-title">
+                <span>1. Select Prefix (Meaning modifier)</span>
+                <span style="font-weight: normal; color: var(--slate-muted);">Optional</span>
+              </div>
+              <div class="tiles-deck" id="prefixDeck">
+                <button class="m-tile selected" onclick="pickPrefix('', this)">[None]</button>
+                <button class="m-tile" onclick="pickPrefix('un-', this)">un- (not)</button>
+                <button class="m-tile" onclick="pickPrefix('re-', this)">re- (again)</button>
+                <button class="m-tile" onclick="pickPrefix('in-', this)">in- (into/not)</button>
+                <button class="m-tile" onclick="pickPrefix('inter-', this)">inter- (between)</button>
+                <button class="m-tile" onclick="pickPrefix('trans-', this)">trans- (across)</button>
+                <button class="m-tile" onclick="pickPrefix('dis-', this)">dis- (apart/away)</button>
+                <button class="m-tile" onclick="pickPrefix('sub-', this)">sub- (under)</button>
+              </div>
+            </div>
+
+            <!-- Root Bank -->
+            <div class="bank-section">
+              <div class="bank-title">
+                <span>2. Select Base Root (Core semantic meaning)</span>
+                <span style="color: var(--primary);">Required</span>
+              </div>
+              <div class="tiles-deck" id="rootDeck">
+                <button class="m-tile selected" onclick="pickRoot('evapor', this)">evapor (vapor/steam)</button>
+                <button class="m-tile" onclick="pickRoot('predict', this)">predict (declare/foretell)</button>
+                <button class="m-tile" onclick="pickRoot('conclud', this)">conclud (close/finish)</button>
+                <button class="m-tile" onclick="pickRoot('depend', this)">depend (hang upon/rely)</button>
+                <button class="m-tile" onclick="pickRoot('sustain', this)">sustain (hold up/endure)</button>
+                <button class="m-tile" onclick="pickRoot('differ', this)">differ (bear apart/vary)</button>
+                <button class="m-tile" onclick="pickRoot('equat', this)">equat (make equal)</button>
+                <button class="m-tile" onclick="pickRoot('vari', this)">vari (changeable)</button>
+                <button class="m-tile" onclick="pickRoot('connect', this)">connect (join together)</button>
+                <button class="m-tile" onclick="pickRoot('struct', this)">struct (build/pile)</button>
+                <button class="m-tile" onclick="pickRoot('migrat', this)">migrat (move/travel)</button>
+                <button class="m-tile" onclick="pickRoot('absorb', this)">absorb (swallow up)</button>
+              </div>
+            </div>
+
+            <!-- Suffix Bank -->
+            <div class="bank-section">
+              <div class="bank-title">
+                <span>3. Select Suffix (Determines Part of Speech)</span>
+                <span style="color: var(--primary);">Required</span>
+              </div>
+              <div class="tiles-deck" id="suffixDeck">
+                <button class="m-tile selected" onclick="pickSuffix('-ation', this)">-ation / -tion (Noun)</button>
+                <button class="m-tile" onclick="pickSuffix('-ment', this)">-ment (Noun)</button>
+                <button class="m-tile" onclick="pickSuffix('-able', this)">-able / -ible (Adjective)</button>
+                <button class="m-tile" onclick="pickSuffix('-ity', this)">-ity (Noun state)</button>
+                <button class="m-tile" onclick="pickSuffix('-ic', this)">-ic / -ical (Adjective)</button>
+                <button class="m-tile" onclick="pickSuffix('-ly', this)">-ly (Adverb)</button>
+                <button class="m-tile" onclick="pickSuffix('-ate', this)">-ate (Verb action)</button>
+                <button class="m-tile" onclick="pickSuffix('-ous', this)">-ous (Adjective)</button>
+              </div>
+            </div>
+
+            <!-- Forge Result Display -->
+            <div class="word-result-card" id="wordResultCard">
+              <div class="word-head">
+                <div class="word-term">
+                  <span id="resWordName">evaporation</span>
+                  <span class="pos-badge noun" id="resWordPos">Noun</span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button class="btn btn-secondary" onclick="speakResultWord(1.0)" title="Pronounce at normal speed">
+                    🔊 Pronounce
+                  </button>
+                  <button class="btn btn-secondary" onclick="speakResultWord(0.6)" title="Pronounce slowly for clarity">
+                    🐢 Slow (0.6x)
+                  </button>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                <span class="cognate-chip" id="resCognateSpanish">🇪🇸 Spanish: evaporación</span>
+                <span class="cognate-chip" id="resCognateFrench">🇫🇷 French: évaporation</span>
+                <span class="cognate-chip" id="resCognateArabic">🇸🇦 Arabic: تبخر (tabakhkhur)</span>
+              </div>
+
+              <p style="font-size: 0.95rem; color: #1e293b; line-height: 1.5;" id="resDefinition">
+                The physical process by which water changes from a liquid into an invisible gas (water vapor) when thermal heat energy is added.
+              </p>
+
+              <div class="word-context">
+                <strong>Academic Context Sentence:</strong>
+                <p style="margin-top: 4px;" id="resSentence">
+                  "During summer droughts, radiant solar energy causes rapid <em>evaporation</em> from surface reservoirs, decreasing local water tables."
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Syntax Cloze Quest -->
+          <div class="card">
+            <div class="card-title">
+              <span>🧩 Academic Syntax Cloze Quest</span>
+              <span class="pos-badge verb" id="clozeScoreBadge">Question 1 of 6</span>
+            </div>
+            <p class="card-sub">
+              Test your syntactic intuition: insert the forged academic word that grammatically fits the discourse context.
+            </p>
+
+            <div class="cloze-box">
+              <div class="cloze-text" id="clozePrompt">
+                Because the tectonic plates collided with intense pressure, geologists observed significant crustal
+                <span class="cloze-drop" id="clozeSlot">________</span>
+                along the fault line, eventually forming mountain ranges.
+              </div>
+
+              <div class="cloze-options" id="clozeOptions">
+                <!-- Injected via JS -->
+              </div>
+
+              <div id="clozeFeedback" style="margin-top: 14px; font-size: 0.88rem; display: none;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button class="btn btn-primary" id="btnNextCloze" onclick="nextCloze()" style="display: none;">
+                Next Syntax Quest &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Lexicon Vault & Daily Quest Goals -->
+        <aside>
+          <!-- Daily Quest Goals -->
+          <div class="card">
+            <div class="card-title">
+              <span>🎯 Daily Morphologist Quest</span>
+              <span style="font-size: 0.8rem; color: var(--amber); font-weight: 700;">+100 XP Bonus</span>
+            </div>
+            <p class="card-sub">
+              Complete today's academic word forging objectives.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.86rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
+                  <span>Forge 3 Academic Nouns</span>
+                  <span id="questNounCount">0 / 3</span>
+                </div>
+                <div style="height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                  <div id="questNounBar" style="height: 100%; width: 0%; background: var(--primary);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
+                  <span>Forge 2 Academic Adjectives</span>
+                  <span id="questAdjCount">0 / 2</span>
+                </div>
+                <div style="height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                  <div id="questAdjBar" style="height: 100%; width: 0%; background: var(--teal);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
+                  <span>Solve 2 Syntax Clozes</span>
+                  <span id="questClozeCount">0 / 2</span>
+                </div>
+                <div style="height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                  <div id="questClozeBar" style="height: 100%; width: 0%; background: var(--amber);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Lexicon Vault -->
+          <div class="card">
+            <div class="card-title">
+              <span>📚 Personal Lexicon Vault</span>
+              <span class="pos-badge noun" id="vaultCountBadge">0 Words</span>
+            </div>
+            <p class="card-sub">
+              Your catalog of discovered academic vocabulary. Click any word to hear its pronunciation.
+            </p>
+
+            <div class="vault-list" id="vaultList">
+              <div style="text-align: center; padding: 24px 10px; color: var(--slate-muted); font-size: 0.85rem;">
+                No words forged yet. Forge your first word on the left!
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      // ══════════════════════════════════════════════════════════
+      // MORPHOLOGY DICTIONARY & GAME STATE
+      // ══════════════════════════════════════════════════════════
+
+      const VALID_WORDS = {
+        "evaporation": {
+          term: "evaporation",
+          pos: "noun",
+          prefix: "",
+          root: "evapor",
+          suffix: "-ation",
+          def: "The transformation of liquid water into atmospheric water vapor through thermal energy absorption.",
+          spanish: "evaporación",
+          french: "évaporation",
+          arabic: "تبخر",
+          sentence: "During the heat of midsummer, solar radiation accelerates water evaporation from lakes."
+        },
+        "evaporate": {
+          term: "evaporate",
+          pos: "verb",
+          prefix: "",
+          root: "evapor",
+          suffix: "-ate",
+          def: "To change or convert from a liquid state into vapor.",
+          spanish: "evaporar",
+          french: "évaporer",
+          arabic: "يتبخر",
+          sentence: "If left under direct sunlight, puddle water will quickly evaporate."
+        },
+        "prediction": {
+          term: "prediction",
+          pos: "noun",
+          prefix: "",
+          root: "predict",
+          suffix: "-ation",
+          def: "A reasoned statement or hypothesis estimating what will happen in an experiment or future event.",
+          spanish: "predicción",
+          french: "prédiction",
+          arabic: "تنبؤ",
+          sentence: "Scientists developed an accurate weather prediction using radar barometric measurements."
+        },
+        "predictable": {
+          term: "predictable",
+          pos: "adjective",
+          prefix: "",
+          root: "predict",
+          suffix: "-able",
+          def: "Able to be foretold, expected, or anticipated based on observed patterns.",
+          spanish: "predecible",
+          french: "prévisible",
+          arabic: "قابل للتنبؤ",
+          sentence: "The cyclic orbit of the planets produces highly predictable seasonal weather."
+        },
+        "unpredictable": {
+          term: "unpredictable",
+          pos: "adjective",
+          prefix: "un-",
+          root: "predict",
+          suffix: "-able",
+          def: "Not able to be anticipated; irregular and varying in behavior or outcome.",
+          spanish: "impredecible",
+          french: "imprévisible",
+          arabic: "غير متوقع",
+          sentence: "Sudden volcanic seismic disturbances can cause unpredictable oceanic tsunami waves."
+        },
+        "conclusion": {
+          term: "conclusion",
+          pos: "noun",
+          prefix: "",
+          root: "conclud",
+          suffix: "-ation",
+          def: "A judgment or final synthesis reached by evaluating reasoning and empirical evidence.",
+          spanish: "conclusión",
+          french: "conclusion",
+          arabic: "استنتاج",
+          sentence: "Based on three repeated laboratory trials, the researchers supported their final conclusion."
+        },
+        "conclusive": {
+          term: "conclusive",
+          pos: "adjective",
+          prefix: "",
+          root: "conclud",
+          suffix: "-ic",
+          def: "Serving to settle an issue or establish evidence beyond reasonable doubt.",
+          spanish: "concluyente",
+          french: "concluant",
+          arabic: "حاسم",
+          sentence: "The microscopic cell sample provided conclusive evidence of bacterial infection."
+        },
+        "sustainable": {
+          term: "sustainable",
+          pos: "adjective",
+          prefix: "",
+          root: "sustain",
+          suffix: "-able",
+          def: "Able to be maintained at a certain rate or level without depleting natural resources.",
+          spanish: "sostenible",
+          french: "durable",
+          arabic: "مستدام",
+          sentence: "Solar and wind infrastructure offer sustainable energy solutions for modern cities."
+        },
+        "sustainability": {
+          term: "sustainability",
+          pos: "noun",
+          prefix: "",
+          root: "sustain",
+          suffix: "-ity",
+          def: "The quality of not being harmful to the environment or depleting natural resources.",
+          spanish: "sostenibilidad",
+          french: "durabilité",
+          arabic: "استدامة",
+          sentence: "Urban environmental engineers focus on long-term agricultural sustainability."
+        },
+        "equation": {
+          term: "equation",
+          pos: "noun",
+          prefix: "",
+          root: "equat",
+          suffix: "-ation",
+          def: "A mathematical statement asserting that two expressions are equivalent in value.",
+          spanish: "ecuación",
+          french: "équation",
+          arabic: "معادلة",
+          sentence: "Students solved the two-step linear equation to determine the missing variable."
+        },
+        "variable": {
+          term: "variable",
+          pos: "noun",
+          prefix: "",
+          root: "vari",
+          suffix: "-able",
+          def: "An element, feature, or factor that is liable to vary or change within an experiment.",
+          spanish: "variable",
+          french: "variable",
+          arabic: "متغير",
+          sentence: "In this biology experiment, ambient water temperature was the manipulated independent variable."
+        },
+        "variation": {
+          term: "variation",
+          pos: "noun",
+          prefix: "",
+          root: "vari",
+          suffix: "-ation",
+          def: "A difference or change in condition, level, amount, or genetic trait.",
+          spanish: "variación",
+          french: "variation",
+          arabic: "تباين",
+          sentence: "Genetic variation within a species enhances survival when climates change."
+        },
+        "dependent": {
+          term: "dependent",
+          pos: "adjective",
+          prefix: "",
+          root: "depend",
+          suffix: "-able",
+          def: "Relying on or determined by something else.",
+          spanish: "dependiente",
+          french: "dépendant",
+          arabic: "تابع",
+          sentence: "Photosynthesis rates are directly dependent upon the intensity of available sunlight."
+        },
+        "differentiation": {
+          term: "differentiation",
+          pos: "noun",
+          prefix: "",
+          root: "differ",
+          suffix: "-ation",
+          def: "The action or process of distinguishing between two or more things or developing specialized traits.",
+          spanish: "diferenciación",
+          french: "différenciation",
+          arabic: "تمايز",
+          sentence: "Cellular differentiation enables simple stem cells to develop into specialized tissues."
+        },
+        "interconnected": {
+          term: "interconnected",
+          pos: "adjective",
+          prefix: "inter-",
+          root: "connect",
+          suffix: "-able",
+          def: "Having all constituent parts linked or related together as an integrated system.",
+          spanish: "interconectado",
+          french: "interconnecté",
+          arabic: "مترابط",
+          sentence: "The marine food web consists of deeply interconnected trophic relationships."
+        },
+        "substructure": {
+          term: "substructure",
+          pos: "noun",
+          prefix: "sub-",
+          root: "struct",
+          suffix: "-ation",
+          def: "An underlying or supporting framework or foundation.",
+          spanish: "subestructura",
+          french: "infrastructure",
+          arabic: "بنية تحتية",
+          sentence: "Civil engineers inspected the reinforced steel substructure of the suspension bridge."
+        },
+        "migration": {
+          term: "migration",
+          pos: "noun",
+          prefix: "",
+          root: "migrat",
+          suffix: "-ation",
+          def: "Seasonal movement of animals or populations from one geographical region to another.",
+          spanish: "migración",
+          french: "migration",
+          arabic: "هجرة",
+          sentence: "Monarch butterflies undertake a multi-generational continental migration southward."
+        },
+        "absorption": {
+          term: "absorption",
+          pos: "noun",
+          prefix: "",
+          root: "absorb",
+          suffix: "-ation",
+          def: "The process by which one substance takes in or assimilates another substance or energy.",
+          spanish: "absorción",
+          french: "absorption",
+          arabic: "امتصاص",
+          sentence: "Dark surfaces exhibit higher heat absorption compared to reflective white glaciers."
+        }
+      };
+
+      // Cloze syntax challenges
+      const CLOZE_DECK = [
+        {
+          id: 1,
+          prompt: "Because the tectonic plates collided with intense pressure, geologists observed significant crustal ________ along the fault line, eventually forming mountain ranges.",
+          correct: "deformation",
+          options: ["deformation (Noun)", "deformable (Adjective)", "deform (Verb)"],
+          correctWord: "deformation (Noun)",
+          explanation: "The adjective 'crustal' modifies a noun. Here, 'deformation' is the correct noun naming the geological process."
+        },
+        {
+          id: 2,
+          prompt: "In order to safeguard clean drinking water for future generations, the municipal council enacted ________ resource conservation policies.",
+          correct: "sustainable",
+          options: ["sustainable (Adjective)", "sustainability (Noun)", "sustain (Verb)"],
+          correctWord: "sustainable (Adjective)",
+          explanation: "'Policies' is a noun; therefore, it requires an adjective ('sustainable') to describe what kind of policies were enacted."
+        },
+        {
+          id: 3,
+          prompt: "When ambient temperatures plummet below freezing, moisture in the clouds undergoes rapid ________ into crystalline snow.",
+          correct: "condensation",
+          options: ["condense (Verb)", "condensation (Noun)", "condensable (Adjective)"],
+          correctWord: "condensation (Noun)",
+          explanation: "Following the adjective 'rapid', we require a noun to serve as the direct object of the verb 'undergoes'."
+        },
+        {
+          id: 4,
+          prompt: "The laboratory experiment yielded results that were consistent across four separate trials, making the scientific conclusions highly ________.",
+          correct: "predictable",
+          options: ["prediction (Noun)", "predictable (Adjective)", "predictably (Adverb)"],
+          correctWord: "predictable (Adjective)",
+          explanation: "Following the linking verb phrase 'making the conclusions highly...', an adjective ('predictable') is required as an objective complement."
+        },
+        {
+          id: 5,
+          prompt: "In algebra, if two expressions have identical quantities on both sides of the equal sign, they form an authentic ________.",
+          correct: "equation",
+          options: ["equation (Noun)", "equate (Verb)", "equatable (Adjective)"],
+          correctWord: "equation (Noun)",
+          explanation: "The article 'an' and adjective 'authentic' introduce a singular noun: 'equation'."
+        },
+        {
+          id: 6,
+          prompt: "Biologists observed that the organism's unique traits were deeply ________ upon the specific mineral content of its ecosystem.",
+          correct: "dependent",
+          options: ["dependent (Adjective)", "dependence (Noun)", "dependently (Adverb)"],
+          correctWord: "dependent (Adjective)",
+          explanation: "The predicate adjective 'dependent' pairs with the preposition 'upon' following the linking verb 'were'."
+        }
+      ];
+
+      // Current Selection State
+      let selectedPrefix = "";
+      let selectedRoot = "evapor";
+      let selectedSuffix = "-ation";
+      let currentClozeIdx = 0;
+
+      // Stats
+      let forgedWordsSet = new Set();
+      let questNouns = 0;
+      let questAdjs = 0;
+      let questClozes = 0;
+
+      function pickPrefix(pfx, el) {
+        selectedPrefix = pfx;
+        document.querySelectorAll("#prefixDeck .m-tile").forEach(b => b.classList.remove("selected"));
+        el.classList.add("selected");
+        document.getElementById("valSlotPrefix").textContent = pfx || "[None]";
+        document.getElementById("slotPrefix").classList.toggle("filled", !!pfx);
+      }
+
+      function pickRoot(rt, el) {
+        selectedRoot = rt;
+        document.querySelectorAll("#rootDeck .m-tile").forEach(b => b.classList.remove("selected"));
+        el.classList.add("selected");
+        document.getElementById("valSlotRoot").textContent = rt;
+        document.getElementById("slotRoot").classList.add("filled");
+      }
+
+      function pickSuffix(sfx, el) {
+        selectedSuffix = sfx;
+        document.querySelectorAll("#suffixDeck .m-tile").forEach(b => b.classList.remove("selected"));
+        el.classList.add("selected");
+        document.getElementById("valSlotSuffix").textContent = sfx;
+        document.getElementById("slotSuffix").classList.add("filled");
+      }
+
+      function resetAnvil() {
+        pickPrefix("", document.querySelector("#prefixDeck .m-tile"));
+        pickRoot("evapor", document.querySelector("#rootDeck .m-tile"));
+        pickSuffix("-ation", document.querySelector("#suffixDeck .m-tile"));
+      }
+
+      function forgeWord() {
+        // Find matching word
+        let match = null;
+        for (const k in VALID_WORDS) {
+          const w = VALID_WORDS[k];
+          if (w.prefix === selectedPrefix && w.root === selectedRoot && w.suffix === selectedSuffix) {
+            match = w;
+            break;
+          }
+        }
+
+        if (!match) {
+          // Check if root + suffix exists without prefix
+          alert(`⚠️ Not quite an academic combination! Try adjusting your suffix or prefix for root "${selectedRoot}".\n\nHint: Roots like 'evapor' combine with '-ation' (Noun) or '-ate' (Verb).`);
+          return;
+        }
+
+        // Show Word Card
+        const card = document.getElementById("wordResultCard");
+        card.style.display = "block";
+        document.getElementById("resWordName").textContent = match.term;
+        const posEl = document.getElementById("resWordPos");
+        posEl.textContent = match.pos.toUpperCase();
+        posEl.className = `pos-badge ${match.pos}`;
+
+        document.getElementById("resCognateSpanish").textContent = `🇪🇸 Spanish: ${match.spanish}`;
+        document.getElementById("resCognateFrench").textContent = `🇫🇷 French: ${match.french}`;
+        document.getElementById("resCognateArabic").textContent = `🇸🇦 Arabic: ${match.arabic}`;
+        document.getElementById("resDefinition").textContent = match.def;
+        document.getElementById("resSentence").innerHTML = `"${match.sentence}"`;
+
+        // Pronounce automatically
+        speakResultWord(1.0);
+
+        // Add to vault
+        if (!forgedWordsSet.has(match.term)) {
+          forgedWordsSet.add(match.term);
+          saveVault();
+
+          // Award XP
+          awardXP(25);
+
+          // Update quest
+          if (match.pos === "noun" && questNouns < 3) questNouns++;
+          if (match.pos === "adjective" && questAdjs < 2) questAdjs++;
+          updateQuestUI();
+        }
+
+        renderVault();
+      }
+
+      function speakResultWord(rate = 1.0) {
+        const word = document.getElementById("resWordName").textContent;
+        if (!word) return;
+        const u = new SpeechSynthesisUtterance(word);
+        u.rate = rate;
+        u.lang = "en-US";
+        window.speechSynthesis.speak(u);
+      }
+
+      function awardXP(pts) {
+        let xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
+        xp += pts;
+        localStorage.setItem("widaXP", xp);
+        document.getElementById("valSparkXP").textContent = xp.toLocaleString();
+
+        let streak = parseInt(localStorage.getItem("widaStreak") || "0", 10);
+        if (streak === 0) {
+          streak = 1;
+          localStorage.setItem("widaStreak", streak);
+        }
+        document.getElementById("valStreak").textContent = streak;
+      }
+
+      function updateQuestUI() {
+        document.getElementById("questNounCount").textContent = `${questNouns} / 3`;
+        document.getElementById("questNounBar").style.width = `${(questNouns / 3) * 100}%`;
+
+        document.getElementById("questAdjCount").textContent = `${questAdjs} / 2`;
+        document.getElementById("questAdjBar").style.width = `${(questAdjs / 2) * 100}%`;
+
+        document.getElementById("questClozeCount").textContent = `${questClozes} / 2`;
+        document.getElementById("questClozeBar").style.width = `${(questClozes / 2) * 100}%`;
+
+        if (questNouns >= 3 && questAdjs >= 2 && questClozes >= 2) {
+          awardXP(100);
+          alert("🎉 Daily Morphologist Quest Complete! You earned +100 Bonus SPARK XP!");
+        }
+      }
+
+      function renderVault() {
+        const list = document.getElementById("vaultList");
+        const words = Array.from(forgedWordsSet);
+        document.getElementById("valWordsForged").textContent = words.length;
+        document.getElementById("vaultCountBadge").textContent = `${words.length} Words`;
+
+        if (words.length === 0) {
+          list.innerHTML = `<div style="text-align: center; padding: 24px 10px; color: var(--slate-muted); font-size: 0.85rem;">No words forged yet. Forge your first word on the left!</div>`;
+          return;
+        }
+
+        list.innerHTML = words.map(term => {
+          const w = VALID_WORDS[term] || { pos: "noun" };
+          return `
+            <div class="vault-card">
+              <div>
+                <strong>${term}</strong>
+                <span class="pos-badge ${w.pos}" style="font-size: 0.68rem; margin-left: 6px;">${w.pos}</span>
+              </div>
+              <button class="btn btn-secondary" onclick="speakVaultWord('${term}')" style="font-size: 0.72rem; padding: 4px 8px;">
+                🔊 Play
+              </button>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function speakVaultWord(term) {
+        const u = new SpeechSynthesisUtterance(term);
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+      }
+
+      function saveVault() {
+        localStorage.setItem("widaVaultWords", JSON.stringify(Array.from(forgedWordsSet)));
+      }
+
+      function loadVault() {
+        try {
+          const arr = JSON.parse(localStorage.getItem("widaVaultWords") || "[]");
+          forgedWordsSet = new Set(arr);
+        } catch (e) {
+          forgedWordsSet = new Set();
+        }
+      }
+
+      // ── Cloze Quest Functions ──
+      function renderCloze() {
+        const item = CLOZE_DECK[currentClozeIdx];
+        document.getElementById("clozeScoreBadge").textContent = `Question ${currentClozeIdx + 1} of ${CLOZE_DECK.length}`;
+        document.getElementById("clozePrompt").innerHTML = item.prompt.replace("________", `<span class="cloze-drop" id="clozeSlot">________</span>`);
+        document.getElementById("clozeFeedback").style.display = "none";
+        document.getElementById("btnNextCloze").style.display = "none";
+
+        const opts = document.getElementById("clozeOptions");
+        opts.innerHTML = item.options.map(opt => `
+          <button class="cloze-opt-btn" onclick="checkCloze('${opt.replace(/'/g, "\\'")}', this)">
+            ${opt}
+          </button>
+        `).join("");
+      }
+
+      function checkCloze(chosen, btn) {
+        const item = CLOZE_DECK[currentClozeIdx];
+        const isRight = chosen === item.correctWord;
+
+        document.querySelectorAll("#clozeOptions .cloze-opt-btn").forEach(b => b.disabled = true);
+
+        const slot = document.getElementById("clozeSlot");
+        slot.textContent = chosen.split(" ")[0];
+
+        const fb = document.getElementById("clozeFeedback");
+        fb.style.display = "block";
+
+        if (isRight) {
+          btn.classList.add("correct");
+          fb.style.color = "var(--green)";
+          fb.innerHTML = `<strong>✓ Correct!</strong> ${item.explanation}`;
+          awardXP(20);
+          if (questClozes < 2) {
+            questClozes++;
+            updateQuestUI();
+          }
+        } else {
+          btn.classList.add("wrong");
+          fb.style.color = "#dc2626";
+          fb.innerHTML = `<strong>Not quite.</strong> ${item.explanation}`;
+        }
+
+        document.getElementById("btnNextCloze").style.display = "inline-flex";
+        document.getElementById("valClozeDone").textContent = `${currentClozeIdx + 1} / ${CLOZE_DECK.length}`;
+      }
+
+      function nextCloze() {
+        currentClozeIdx = (currentClozeIdx + 1) % CLOZE_DECK.length;
+        renderCloze();
+      }
+
+      // Initial boot
+      window.addEventListener("DOMContentLoaded", () => {
+        loadVault();
+        renderVault();
+        renderCloze();
+
+        const xp = parseInt(localStorage.getItem("widaXP") || "0", 10);
+        document.getElementById("valSparkXP").textContent = xp.toLocaleString();
+        const streak = parseInt(localStorage.getItem("widaStreak") || "0", 10);
+        document.getElementById("valStreak").textContent = streak;
+      });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

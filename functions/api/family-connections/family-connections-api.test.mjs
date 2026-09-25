@@ -118,3 +118,8 @@ assert.match(middleware, /teacherAuthorized/);
 assert.match(middleware, /isPublicFamilySchedulingApi/);
 
 console.log("Family Connections API tests passed.");
+
+// A teacher cannot publish a different draft than the one they previewed.
+assert.equal((await invoke('POST', 'publish', {expectedRevision: 1}, true)).status, 409);
+assert.equal((await (await invoke('GET', 'published')).json()).published.revision, 2);
+assert.equal((await invoke('POST', 'publish', {expectedRevision: 2}, true)).status, 200);

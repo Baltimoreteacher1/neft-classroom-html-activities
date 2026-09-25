@@ -18,7 +18,7 @@ cd "$ROOT" || exit 1
 # full gate, so it can never be less safe than running everything, only faster
 # when coverage is provable. The full sweep still runs on push (qa:loop) and in
 # CI, which is where it belongs.
-if npm run --silent qa:fast >/dev/null 2>&1; then
+if node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts['qa:fast'] ? 0 : 1)" 2>/dev/null; then
   npm run qa:fast
 elif [[ -x scripts/codex/codex-verify.sh ]]; then
   scripts/codex/codex-verify.sh
