@@ -2371,7 +2371,7 @@ export function renderQuickPlan() {
         <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
           <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
             <span class="hw-route-time">10 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Essentials</span><span class="lang-es" lang="es">Lo esencial</span></strong><small><span class="lang-en">Big idea · 1 guided step · 2 warm-ups</span><span class="lang-es" lang="es">Idea principal · 1 paso · 2 ejercicios</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Essentials</span><span class="lang-es" lang="es">Lo esencial</span></strong><small><span class="lang-en">Big idea · guided Together steps · 2 warm-ups</span><span class="lang-es" lang="es">Idea principal · pasos guiados juntos · 2 ejercicios</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
             <span class="hw-route-time">20 <small>min</small></span>
@@ -15526,18 +15526,15 @@ html [hidden] { display: none !important; }
 .hw-route-note { margin: 10px 2px 0; font-size: 12.5px; color: #486581; }
 .hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.2); }
 
-/* The 10-minute route is genuinely shorter, not the full page with a shorter
-   promise. The essential idea, first guided step, two warm-ups, and sign-off
-   remain; all hidden material returns immediately when another route is picked. */
+/* The 10-minute route keeps the situation and all three guided Together steps.
+   Hiding them left Step 1 referring to a scenario families could not see.
+   Extended practice and tools return when a longer route is picked. */
 body[data-homework-route="quick"] .learn-summary-block,
 body[data-homework-route="quick"] .learn-extended-block,
 body[data-homework-route="quick"] .learn-big-idea-block .guided-steps,
 body[data-homework-route="quick"] .learn-big-idea-block .watch-for-list,
 body[data-homework-route="quick"] #hw_panel_together .huddle-hook-banner,
 body[data-homework-route="quick"] #hw_panel_together .parent-coach-prompt,
-body[data-homework-route="quick"] #hw_panel_together .try-scenario,
-body[data-homework-route="quick"] #hw_panel_together .try-together-note,
-body[data-homework-route="quick"] #hw_panel_together .together-steps > li:nth-child(n+2),
 body[data-homework-route="quick"] #hw_panel_together .together-ladder,
 body[data-homework-route="quick"] #hw_panel_together .math-talk-hub,
 body[data-homework-route="quick"] #hw_panel_together .fam-act-corner,

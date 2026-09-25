@@ -84,6 +84,46 @@ test("actual family view renders selected homework, due date and Spanish action,
     dom.window.close();
   }
 });
+test("family homework keeps all five weekdays in order, including repeated lessons and empty days", () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  const previous = globalThis.document;
+  globalThis.document = dom.window.document;
+  try {
+    const snapshot = createDefaultSnapshot();
+    snapshot.sections[0].week.startDate = "2026-09-21";
+    for (const [day, id] of [["Monday", "3-2"], ["Tuesday", "3-3"], ["Wednesday", "3-2"]]) {
+      Object.assign(snapshot.sections[0].week.days.find((entry) => entry.day === day), {
+        status: "lesson", lessonId: id,
+      });
+    }
+    const lessons = [
+      { id: "3-2", title: "Unit rates", homeworkPath: "/lessons/3-2/homework.html" },
+      { id: "3-3", title: "Ratio tables", homeworkPath: "/lessons/3-3/homework.html" },
+    ];
+    const root = document.getElementById("root");
+    renderHomeworkHub(root, snapshot, lessons, "all-families", "en", {
+      now: new Date("2026-09-24T12:00:00Z"),
+    });
+    const cards = [...root.querySelectorAll(".homework-card")];
+    assert.deepEqual(cards.map((card) => card.querySelector("h3").textContent), [
+      "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+    ]);
+    assert.deepEqual(cards.map((card) => card.querySelector("a")?.getAttribute("href") || ""), [
+      "/lessons/3-2/homework.html?route=quick&lang=en",
+      "/lessons/3-3/homework.html?route=quick&lang=en",
+      "/lessons/3-2/homework.html?route=quick&lang=en",
+      "", "",
+    ]);
+    assert.match(cards[3].textContent, /No homework posted/);
+    renderHomeworkHub(root, snapshot, lessons, "all-families", "es", {
+      now: new Date("2026-09-24T12:00:00Z"),
+    });
+    assert.equal(root.querySelector(".homework-card h3").textContent, "Lunes");
+  } finally {
+    globalThis.document = previous;
+    dom.window.close();
+  }
+});
 test("service worker removes only its own cache and never caches authenticated pages", async () => {
   const sw = await readFile(new URL("./sw.js", import.meta.url), "utf8");
   assert.match(sw, /startsWith\(["']family-connections-["']\)/);

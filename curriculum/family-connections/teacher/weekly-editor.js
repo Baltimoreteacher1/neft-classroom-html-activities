@@ -62,40 +62,53 @@ function valid() {
 }
 function renderDays() {
   byId("weekday-editors").replaceChildren();
-  for (const day of DAYS) {
+  for (const [index, day] of DAYS.entries()) {
     const entry = section().week.days.find((item) => item.day === day);
-    const card = node("div");
+    const card = node("section");
     card.className = "weekday-editor";
-    card.append(node("strong", day));
+    const heading = node("h3", day);
+    heading.id = `day-${index}`;
+    card.setAttribute("aria-labelledby", heading.id);
+    card.append(heading);
+    const date = section().week.startDate && addDays(section().week.startDate, index);
+    if (date) card.append(node("p", new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`))));
     const title = lessons.find((item) => item.id === entry.lessonId);
-    card.append(
-      node(
-        "p",
-        title && entry.status === "lesson"
-          ? `${title.id} · ${title.title}`
-          : "No homework assigned",
-      ),
-    );
-    const actions = node("div");
-    actions.className = "actions";
-    const choose = node("button", "Choose homework");
-    choose.type = "button";
-    choose.className = "button-secondary";
-    choose.addEventListener("click", () => {
-      byId("assignment-day").value = day;
-      byId("lesson-search").focus();
-      byId("lesson-search").scrollIntoView({ block: "center" });
-    });
-    const remove = node("button", "Clear");
-    remove.type = "button";
-    remove.className = "button-secondary";
-    remove.addEventListener("click", () => {
-      Object.assign(entry, { status: "no-class", lessonId: "", dueDate: "", note: "", noteEs: "" });
-      markDirty();
-      renderDays();
-    });
-    actions.append(choose, remove);
-    card.append(actions);
+    const assignment = node("p", title && entry.status === "lesson"
+      ? `Family homework: Lesson ${title.id} · ${title.title}`
+      : "No family homework assigned");
+    assignment.className = "day-assignment";
+    card.append(assignment);
+    if (title && entry.status === "lesson") {
+      const link = node("a", "Open family homework ↗");
+      link.href = title.homeworkPath;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      card.append(link);
+    }
+    const label = node("label", `Find family homework for ${day}`);
+    const search = node("input");
+    search.type = "search";
+    search.id = `lesson-search-${index}`;
+    search.placeholder = "Lesson number or title, e.g. 3-2";
+    search.autocomplete = "off";
+    label.htmlFor = search.id;
+    const results = node("div");
+    results.className = "lesson-results";
+    results.id = `lesson-results-${index}`;
+    search.setAttribute("aria-controls", results.id);
+    search.addEventListener("input", () => renderLessons(day, search.value, results));
+    card.append(label, search, results);
+    if (entry.status === "lesson") {
+      const remove = node("button", `Clear ${day} homework`);
+      remove.type = "button";
+      remove.className = "button-secondary";
+      remove.addEventListener("click", () => {
+        Object.assign(entry, { status: "no-class", lessonId: "", dueDate: "", note: "", noteEs: "" });
+        markDirty();
+        renderDays();
+      });
+      card.append(remove);
+    }
     if (entry.status === "lesson") {
       const due = node("label", "Due date (optional)");
       const input = node("input");
@@ -130,25 +143,27 @@ function renderDays() {
     byId("weekday-editors").append(card);
   }
 }
-function renderLessons() {
-  const query = byId("lesson-search").value.trim().toLowerCase();
+function renderLessons(day, searchText, results) {
+  const query = searchText.trim().toLowerCase();
+  results.replaceChildren();
+  if (!query) return;
   const matches = lessons.filter((item) =>
     `${item.id} ${item.title}`.toLowerCase().includes(query),
-  );
-  byId("lesson-results").replaceChildren();
+  ).slice(0, 8);
   for (const item of matches) {
-    const button = node("button", `${item.id} · ${item.title}`);
+    const button = node("button", `Assign Lesson ${item.id} · ${item.title} to ${day}`);
     button.type = "button";
     button.addEventListener("click", () => {
-      const entry = section().week.days.find((item) => item.day === byId("assignment-day").value);
+      const entry = section().week.days.find((item) => item.day === day);
       Object.assign(entry, { status: "lesson", lessonId: item.id });
       markDirty();
       renderDays();
-      notify(`Lesson ${item.id} assigned to ${entry.day}. Homework link added automatically.`);
+      byId(`lesson-search-${DAYS.indexOf(day)}`).focus();
+      notify(`Lesson ${item.id} assigned to ${day}. Its family homework link was added automatically.`);
     });
-    byId("lesson-results").append(button);
+    results.append(button);
   }
-  if (!matches.length) byId("lesson-results").append(node("p", "No lessons match that search."));
+  if (!matches.length) results.append(node("p", "No homework lessons match that search."));
 }
 function renderEditor() {
   byId("section-editor").replaceChildren(
@@ -168,7 +183,6 @@ function renderEditor() {
     byId("copy-targets").append(label);
   }
   renderDays();
-  renderLessons();
 }
 function shiftWeek(newStart) {
   const oldStart = section().week.startDate;
@@ -220,7 +234,6 @@ for (const [id, key] of [
     section().week[key] = event.target.value;
     markDirty();
   });
-byId("lesson-search").addEventListener("input", renderLessons);
 byId("preview-draft").addEventListener("click", preview);
 byId("preview-language").addEventListener("click", () => {
   language = language === "en" ? "es" : "en";

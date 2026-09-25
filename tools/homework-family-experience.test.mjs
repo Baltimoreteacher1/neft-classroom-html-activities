@@ -79,6 +79,20 @@ test("new family starts on essentials, keeps saved choice, and explicit valid UR
   dom.window.close();
 });
 
+test("10-minute Together route keeps the problem situation and all guided steps", () => {
+  const page = readFileSync(lessonPath("3-3", "homework.html"), "utf8");
+  const quickRules = page.match(
+    /\/\* The 10-minute route[\s\S]*?display: none !important;\s*}/,
+  )?.[0];
+  assert.ok(quickRules, "generated 3-3 homework must contain the quick-route rules");
+  assert.doesNotMatch(quickRules, /\.try-scenario|\.try-together-note|\.together-steps/);
+  const dom = new JSDOM(page);
+  const together = dom.window.document.querySelector("#hw_panel_together");
+  assert.match(together.querySelector(".try-scenario.lang-en").textContent, /drink uses 1 cup/);
+  assert.equal(together.querySelectorAll(".together-steps > li").length, 3);
+  dom.window.close();
+});
+
 test("Done is brief; all signatures, media and extra activity live in closed optional details", () => {
   const dom = runtime();
   const d = dom.window.document;
