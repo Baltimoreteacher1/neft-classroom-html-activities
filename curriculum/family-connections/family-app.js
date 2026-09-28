@@ -22,7 +22,7 @@ let editDraft = null;
 let editDirty = false;
 let editReviewed = false;
 let editBusy = false;
-const editRequested = query.get("edit") === "1";
+const editRequested = location.pathname.toLowerCase().endsWith("/teacher/homework.html");
 const byId = (id) => document.getElementById(id);
 const editingSection = () => resolveSection(editDraft, sectionId);
 const editStatus = (message) => { byId("editor-status").textContent = message; };
@@ -32,6 +32,8 @@ function editorLoginUrl() {
   if (language === "es") url.searchParams.set("lang", "es");
   return url.href;
 }
+// Old bookmarks enter through the same server-protected teacher route.
+if (!editRequested && query.get("edit") === "1") location.replace(editorLoginUrl());
 function renderFamilyView() {
   renderHomeworkHub(byId("family-homework"), editDraft || snapshot, lessons, sectionId, language, {
     preview: Boolean(editDraft),
@@ -133,10 +135,13 @@ function render() {
   document.documentElement.lang = language;
   document.body.classList.toggle("large-text", Boolean(preferences.largeText));
   document.body.classList.toggle("high-contrast", Boolean(preferences.highContrast));
+  byId("edition-label").textContent = editRequested
+    ? es ? "Espacio docente" : "Teacher workspace"
+    : es ? "Una nota semanal del Sr. Neft" : "A weekly note from Mr. Neft";
   byId("hub-title").textContent = es ? "Tareas para la familia" : "Family homework";
   byId("hub-intro").textContent = es
-    ? "Las tareas de la semana y cómo contactar al Sr. Neft."
-    : "Your week’s homework and a way to reach Mr. Neft.";
+    ? editRequested ? "Elige las tareas que las familias verán cada noche." : "Un lugar para ver las tareas de matemáticas de cada noche escolar."
+    : editRequested ? "Choose the homework families will see each night." : "One place to see the math homework for each school night.";
   byId("class-label").textContent = es ? "Clase" : "Class";
   byId("language-toggle").textContent = es ? "English" : "Español";
   byId("language-toggle").setAttribute("aria-pressed", String(es));
@@ -144,17 +149,19 @@ function render() {
   byId("contrast-toggle").textContent = es ? "Contraste" : "Contrast";
   byId("text-size-toggle").setAttribute("aria-pressed", String(Boolean(preferences.largeText)));
   byId("contrast-toggle").setAttribute("aria-pressed", String(Boolean(preferences.highContrast)));
-  byId("teacher-access").textContent = editDraft
-    ? es ? "Terminar de editar" : "Done editing"
-    : es ? "Acceso docente / Editar" : "Teacher Login / Edit";
-  byId("teacher-access").href = editDraft ? familyLink(sectionId, language, location.origin) : editorLoginUrl();
+  byId("teacher-access").textContent = editRequested
+    ? es ? "Ver la página familiar" : "View family page"
+    : es ? "Acceso docente" : "Teacher sign in";
+  byId("teacher-access").href = editRequested ? familyLink(sectionId, language, location.origin) : editorLoginUrl();
   byId("section-select").replaceChildren(
     ...visible.sections
       .filter((s) => s.visible !== false)
       .map((s) => new Option(s.label, s.id, false, s.id === sectionId)),
   );
-  byId("teacher-inline").hidden = !editDraft;
-  byId("draft-preview-label").hidden = !editDraft;
+  if (editRequested) {
+    byId("teacher-inline").hidden = !editDraft;
+    byId("draft-preview-label").hidden = !editDraft;
+  }
   if (editDraft) renderEditor();
   renderFamilyView();
   preferences = { ...preferences, language, sectionId };
@@ -162,8 +169,9 @@ function render() {
     localStorage.setItem(key, JSON.stringify(preferences));
   } catch {}
   if (loaded) {
-    const url = new URL(familyLink(sectionId, language, location.origin));
-    if (editDraft || editRequested) url.searchParams.set("edit", "1");
+    const url = new URL(editRequested ? location.pathname : familyLink(sectionId, language, location.origin), location.origin);
+    url.searchParams.set("section", sectionId);
+    if (language === "es") url.searchParams.set("lang", "es");
     history.replaceState(null, "", url);
   }
 }
@@ -211,6 +219,7 @@ async function withEditorBusy(action) {
     byId("inline-editor-fields").disabled = false;
   }
 }
+if (editRequested) {
 byId("inline-week-start").addEventListener("change", (event) => {
   if (!editDraft) return;
   const week = editingSection().week;
@@ -253,6 +262,7 @@ byId("inline-week-form").addEventListener("submit", (event) => {
     editStatus("Published. Families can now see this week's homework.");
   });
 });
+}
 window.addEventListener("beforeunload", (event) => {
   if (!editDirty) return;
   event.preventDefault();
