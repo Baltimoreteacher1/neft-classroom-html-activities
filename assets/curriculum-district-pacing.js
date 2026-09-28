@@ -455,6 +455,68 @@
     setTimeout(() => a.remove(), 2000);
   };
 
+  /**
+   * The lesson the dropdown is pointing at, as a /lessons/<id>/ folder name.
+   *
+   * The option values are prefixed by pathway (sg1_/sg2_/catchup_/…), and the
+   * prefix is not decoration: "sg1_3-1" is lesson 3-1's Extra Support group,
+   * which lives at /lessons/3-1-group1/ and has its own worksheets. Reading the
+   * id without the prefix would quietly hand back the core lesson instead.
+   *
+   * Returns "" when the selection is not a lesson at all (a unit project, a
+   * quick action), so a caller can fall back to the unit.
+   */
+  const selectedLessonId = () => {
+    const select = document.getElementById("district-lesson-select");
+    const val = select ? select.value : "";
+    if (!val) return "";
+    if (val.startsWith("lesson_")) return val.slice(7);
+    if (val.startsWith("sg1_")) return `${val.slice(4)}-group1`;
+    if (val.startsWith("sg2_")) return `${val.slice(4)}-group2`;
+    // A bridge id and a catch-up id ARE the folder name already.
+    if (val.startsWith("bridge_")) return val.slice(7);
+    if (val.startsWith("catchup_")) return val.slice(8);
+    return "";
+  };
+
+  /**
+   * The downloader is not on this page until a teacher asks for it: /curriculum/
+   * is held to a 60-request budget (scripts/perf-curriculum.mjs) and is what a
+   * student opens first on a school Chromebook. The hub's own
+   * `[data-nt-download]` shim cannot serve this button — the shim passes the
+   * trigger's dataset straight through, and the lesson this packages is
+   * whatever the dropdown is pointing at right now — so the module is imported
+   * here instead. tools/validate-download-manifest.mjs pins this ?v= to the
+   * file's content hash, exactly as it pins the shim's copy.
+   */
+  const DOWNLOADER_URL = "/assets/curriculum-download.js?v=cc543142";
+  let downloaderPromise = null;
+  const loadDownloader = () => {
+    if (window.NTCurriculumDownload) return Promise.resolve();
+    downloaderPromise = downloaderPromise || import(DOWNLOADER_URL);
+    return downloaderPromise;
+  };
+
+  /**
+   * Everything the students of this lesson write on, as editable Word files, in
+   * one zip — the companion to the SCORM button beside it. SCORM is what a
+   * teacher uploads to Canvas; this is what they print, edit, or hand to a sub.
+   *
+   * The downloader owns the inventory and the packaging (it is the same module
+   * behind "⬇️ Download Resources"), so nothing about which files count as
+   * student work is decided here.
+   */
+  const downloadLessonWork = (item) => {
+    const lessonId = selectedLessonId() || (item.lessons[0] ? item.lessons[0].id : "");
+    if (!lessonId) {
+      window.alert("Pick a lesson first — the work pack is built one lesson at a time.");
+      return;
+    }
+    loadDownloader().then(function () {
+      window.NTCurriculumDownload.open({ work: lessonId });
+    });
+  };
+
   window.executeQuickAction = function (actionType) {
     const item = window.getActiveDistrictSeq();
     const seq = item.sequence;
@@ -473,6 +535,8 @@
       goToTool("/neft-math-lab-studio/?seq=" + seq + "&unit=" + unitTitle);
     } else if (actionType === "scorm") {
       downloadUnitScorm(item);
+    } else if (actionType === "lesson_work") {
+      downloadLessonWork(item);
     } else if (actionType === "project") {
       if (item.project && item.project.path) window.open(item.project.path, "_blank");
     } else if (actionType === "family_hw") {

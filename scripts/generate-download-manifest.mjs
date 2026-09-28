@@ -264,6 +264,10 @@ function parseUnitsPage() {
 // ---------------------------------------------------------------------------
 const SG_LEVEL = { group1: "Extra Support", group2: "Challenge" };
 
+/** How a lesson pathway names itself beside a sibling from the same lesson. */
+const PATHWAY_LABEL = (id) =>
+  /-part3$/.test(id) ? "Apply Day 2" : /-part2$/.test(id) ? "Apply Day" : "Core Lesson";
+
 function lessonFolder(id) {
   const core = id.replace(/-(group[12]|catchup|flagship)$/, "");
   return `Lesson-${core}`;
@@ -604,6 +608,48 @@ function main() {
               }),
             );
           }
+        }
+      }
+
+      // 4. Practice workbooks — the editable DOCX and its print-ready PDF that
+      //    scripts/generate-practice-workbooks.mjs writes beside every authored
+      //    worksheet.html. They are injected into the units page at runtime by
+      //    assets/practice-workbook-links.js, so they are on disk but in no
+      //    page this generator parses; derive them from the same rule the
+      //    generator and tools/validate-practice-workbooks.mjs use.
+      //
+      //    An Apply Day (-part2/-part3) is not a lesson of its own here — its
+      //    worksheet already rides under the lesson it applies — so its
+      //    workbooks join the parent lesson rather than going missing.
+      //    Which pathways exist is not asked separately: fileFor() already
+      //    answers it, and asking the lessons/ tree directly would make this a
+      //    new direct reader of curriculum content
+      //    (tools/curriculum-source-ratchet.test.mjs).
+      const workbookIds =
+        isSmallGroup || isCatchUp ? [pl.id] : [pl.id, `${pl.id}-part2`, `${pl.id}-part3`];
+      const present = workbookIds.filter((wid) =>
+        fileFor(`/lessons/${wid}/downloads/${wid}-practice-workbook.docx`),
+      );
+      for (const wid of workbookIds) {
+        for (const [ext, type] of [
+          ["docx", "practice-workbook-docx"],
+          ["pdf", "practice-workbook-pdf"],
+        ]) {
+          const rel = `/lessons/${wid}/downloads/${wid}-practice-workbook.${ext}`;
+          if (!fileFor(rel)) continue;
+          add(
+            makeResource({
+              unit: pu.unit,
+              lessonId: pl.id,
+              lessonTitle: title,
+              type,
+              url: rel,
+              // Only when the lesson really has two pathways. A lone workbook
+              // named "Core" would say nothing; a pair named neither would
+              // collide and fall back to the file slug in the zip.
+              note: present.length > 1 ? PATHWAY_LABEL(wid) : undefined,
+            }),
+          );
         }
       }
 

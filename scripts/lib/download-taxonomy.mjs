@@ -74,6 +74,25 @@ export const TYPES = [
     folder: "MSTAR-Practice",
   },
 
+  // Practice workbook — the one-page "Reinforce Understanding" rehearsal
+  // generated from each authored worksheet.html by
+  // scripts/generate-practice-workbooks.mjs, in the two forms a teacher
+  // actually hands out: a DOCX they can retype before class and the PDF that
+  // same document renders to. Every other student sheet on this site is an
+  // HTML page, so these are the only ones that arrive already editable.
+  {
+    id: "practice-workbook-docx",
+    label: "Practice Workbook DOCX",
+    group: "worksheets",
+    folder: "Practice-Workbook",
+  },
+  {
+    id: "practice-workbook-pdf",
+    label: "Practice Workbook PDF",
+    group: "worksheets",
+    folder: "Practice-Workbook",
+  },
+
   // --- unit level ---
   { id: "pre-test", label: "Pre-Test", group: "assessments", folder: "Assessments" },
   { id: "post-test", label: "Post-Test", group: "assessments", folder: "Assessments" },
@@ -156,6 +175,8 @@ export const PRESETS = [
       "homework",
       "homework-docx",
       "student-practice",
+      "practice-workbook-docx",
+      "practice-workbook-pdf",
       "activity-pack",
       "sub-plan",
       "small-group-worksheet",
@@ -170,10 +191,33 @@ export const PRESETS = [
       "Every practice sheet for the unit — as web pages, one PDF, or editable Word files.",
     types: [
       "student-practice",
+      "practice-workbook-docx",
+      "practice-workbook-pdf",
       "small-group-worksheet",
       "small-group-practice",
       "mstar-practice",
       "handout",
+    ],
+  },
+  {
+    id: "lesson-work",
+    label: "Student Work · Word",
+    description:
+      "Every sheet a student writes on — worksheets, practice sets, handouts, guided notes and homework — as editable Word files.",
+    // Ordered so the DOCX of a pair comes first; the downloader packages the
+    // editable original and drops the HTML twin when both are present (see
+    // WORK_DOCX_SIBLING in assets/curriculum-download.js).
+    types: [
+      "practice-workbook-docx",
+      "notes-docx",
+      "homework-docx",
+      "small-group-homework",
+      "handout",
+      "student-practice",
+      "small-group-worksheet",
+      "small-group-practice",
+      "guided-notes",
+      "homework",
     ],
   },
   {

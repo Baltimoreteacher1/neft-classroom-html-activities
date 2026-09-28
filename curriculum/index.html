@@ -519,6 +519,31 @@
           >
             🎓 Download SCORM Package
           </button>
+          <!-- The print-side twin of the SCORM button. SCORM is what goes into
+               Canvas; this is every sheet the selected lesson's students write
+               on — worksheets, practice, handouts, guided notes, homework — as
+               editable Word files in one zip. Packaged by the same downloader
+               behind "⬇️ Download Resources", so it needs no inventory of its
+               own. -->
+          <button
+            type="button"
+            onclick="executeQuickAction('lesson_work')"
+            class="ewl-linkgen-scorm"
+            title="Every worksheet, practice set and handout for the selected lesson, as editable Word files"
+            style="
+              border: 1px solid #7c3aed;
+              color: #6d28d9;
+              background: #f5f3ff;
+              min-height: 42px;
+              padding: 0 16px;
+              font-size: 13.5px;
+              border-radius: 9px;
+              font-weight: 800;
+              cursor: pointer;
+            "
+          >
+            📝 Download All Work (Word)
+          </button>
           <button
             type="button"
             onclick="executeQuickAction('family_hw')"
@@ -4330,7 +4355,7 @@
             var trigger = target && target.closest && target.closest("[data-nt-download]");
             if (!trigger || window.NTCurriculumDownload) return;
             event.preventDefault();
-            loading = loading || import("/assets/curriculum-download.js?v=0d02bf58");
+            loading = loading || import("/assets/curriculum-download.js?v=cc543142");
             loading.then(function () {
               window.NTCurriculumDownload.open({
                 unit: trigger.dataset.ntDownloadUnit,
