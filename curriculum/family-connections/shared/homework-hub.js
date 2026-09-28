@@ -84,6 +84,7 @@ export function renderHomeworkHub(
   const t = (en, spanish) => (es ? spanish : en);
   const section = resolveSection(snapshot, sectionId);
   const phase = weekPhase(section.week?.startDate, now);
+  const today = schoolDate(now);
   root.replaceChildren();
   const week = el("section", undefined, "hub-panel");
   week.id = "family-week";
@@ -91,12 +92,14 @@ export function renderHomeworkHub(
   week.append(
     el(
       "h2",
-      phase === "upcoming"
-        ? t("Upcoming homework", "Próximas tareas")
-        : t("This week’s homework", "Tareas de esta semana"),
+      phase === "past" && !preview
+        ? t("Waiting for this week’s homework", "Esperando las tareas de esta semana")
+        : phase === "upcoming"
+          ? t("Upcoming homework", "Próximas tareas")
+          : t("This week’s homework", "Tareas de esta semana"),
     ),
   );
-  if (phase !== "empty")
+  if (phase !== "empty" && (phase !== "past" || preview))
     week.append(
       el(
         "p",
@@ -110,10 +113,17 @@ export function renderHomeworkHub(
       el(
         "p",
         t(
-          "A new week has not been posted yet. These dates are from the last posted week. Please check ClassDojo for an update.",
-          "Aún no se ha publicado la nueva semana. Estas fechas son de la última semana publicada. Consulta ClassDojo para ver novedades.",
+          "Mr. Neft has not posted a new plan yet. Check ClassDojo for the latest update.",
+          "El Sr. Neft aún no ha publicado un plan nuevo. Consulta ClassDojo para ver novedades.",
         ),
         "empty-state",
+      ),
+    );
+    week.append(
+      el(
+        "p",
+        `${t("Last posted", "Última publicación")}: ${dateLabel(section.week.startDate, lang)} – ${dateLabel(addDays(section.week.startDate, 4), lang)}`,
+        "quiet last-posted",
       ),
     );
   } else if (phase === "empty" || !assignments.length) {
@@ -143,10 +153,23 @@ export function renderHomeworkHub(
     if (note) week.append(el("p", note));
     const list = el("div", undefined, "homework-list");
     const byDay = new Map(assignments.map((item) => [item.entry.day, item]));
-    for (const day of DAYS) {
+    for (const [index, day] of DAYS.entries()) {
       const item = byDay.get(day);
       const card = el("article", undefined, "homework-card");
-      card.append(el("h3", t(day, { Monday: "Lunes", Tuesday: "Martes", Wednesday: "Miércoles", Thursday: "Jueves", Friday: "Viernes" }[day])));
+      const dayDate = addDays(section.week.startDate, index);
+      const dayHeading = el("div", undefined, "day-heading");
+      dayHeading.append(
+        el(
+          "h3",
+          t(day, { Monday: "Lunes", Tuesday: "Martes", Wednesday: "Miércoles", Thursday: "Jueves", Friday: "Viernes" }[day]),
+        ),
+      );
+      dayHeading.append(el("span", dateLabel(dayDate, lang), "day-date"));
+      if (phase === "current" && dayDate === today) {
+        card.classList.add("is-today");
+        dayHeading.append(el("span", t("Today", "Hoy"), "today-badge"));
+      }
+      card.append(dayHeading);
       const content = el("div", undefined, "day-work");
       if (!item) {
         content.append(el("p", t("No homework posted for this day.", "No hay tarea publicada para este día."), "quiet"));
@@ -193,9 +216,10 @@ export function renderHomeworkHub(
       ),
     );
   }
-  const message = el("section", undefined, "hub-panel message-panel");
-  message.append(el("h2", t("Message Mr. Neft", "Enviar un mensaje al Sr. Neft")));
-  message.append(
+  const message = el("section", undefined, "message-panel");
+  const messageCopy = el("div", undefined, "message-copy");
+  messageCopy.append(el("h2", t("Need to reach Mr. Neft?", "¿Necesitas contactar al Sr. Neft?")));
+  messageCopy.append(
     el(
       "p",
       t(
@@ -212,6 +236,6 @@ export function renderHomeworkHub(
   link.href = messageDestination(snapshot);
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  message.append(link);
+  message.append(messageCopy, link);
   root.append(week, message);
 }

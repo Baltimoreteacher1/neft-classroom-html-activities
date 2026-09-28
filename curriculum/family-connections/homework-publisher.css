@@ -1,121 +1,153 @@
 @import url('/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css');
 
 :root {
-  font-family: 'Hanken Grotesk', sans-serif;
-  color: #20313a;
-  background: #f5f2eb;
-  font-size: 18px;
-  line-height: 1.5;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.48;
+  color: #203139;
+  background: #f6f6f2;
   color-scheme: light;
-  --ink: #20313a;
-  --muted: #4c6269;
-  --teal: #145d59;
-  --line: #d6ded9;
-  --paper: #fffefb;
+  --ink: #203139;
+  --muted: #52636a;
+  --accent: #165b54;
+  --line: #dce2de;
+  --paper: #fff;
 }
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 90% -10%, #e5eee6 0, transparent 35%), #f5f2eb; }
-main, .hub-header { width: min(960px, calc(100% - 40px)); margin-inline: auto; }
-main { padding-bottom: 64px; }
-.hub-header { padding: 31px 0 26px; border-bottom: 1px solid #cbd8d1; }
-.hub-topline { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-.eyebrow { margin: 0; color: var(--teal); font-size: .79rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.hub-topline .eyebrow span { margin: 0 .45em; color: #79908b; }
+body { min-width: 280px; min-height: 100vh; margin: 0; border-top: 5px solid var(--accent); }
+.hub-header, .toolbar, main { width: min(1000px, calc(100% - 48px)); margin-inline: auto; }
+.hub-header { padding: 22px 0 24px; }
+.hub-topline, .toolbar, .toolbar-actions, .message-panel, .editor-actions { display: flex; align-items: center; }
+.hub-topline { justify-content: space-between; gap: 18px; padding-bottom: 21px; border-bottom: 1px solid var(--line); }
+.eyebrow, .edition-label { color: var(--accent); font-size: .76rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.eyebrow { margin: 0; }
+.hub-topline .eyebrow span { margin: 0 .45em; color: #859590; }
 .hub-topline .eyebrow strong { color: var(--ink); }
-.edition-label { margin: 38px 0 7px; color: var(--teal); font-size: .81rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-h1, h2, h3, h4, p { overflow-wrap: anywhere; }
-h1, h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; letter-spacing: -.035em; line-height: 1.13; }
-h1 { margin: 0; font-size: clamp(2.65rem, 7vw, 4.25rem); }
-h2 { margin: 0; font-size: clamp(1.55rem, 3vw, 2.15rem); }
+.edition-label { margin: 25px 0 4px; }
+h1, h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; letter-spacing: -.035em; line-height: 1.13; }
+h1 { margin: 0; font-size: clamp(2.35rem, 5vw, 3.55rem); }
+h2 { margin: 0; font-size: clamp(1.5rem, 3vw, 2rem); }
 h3, h4 { margin: 0; line-height: 1.3; }
-#hub-intro { margin: 10px 0 0; color: var(--muted); font-size: 1.12rem; }
-.teacher-login { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 6px 15px; border: 1px solid #aac5bb; border-radius: 999px; color: var(--teal); background: var(--paper); font-size: .84rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
-.teacher-login:hover { background: #e8f0e9; }
-.toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 31px; }
-.toolbar label { display: flex; align-items: center; gap: 10px; margin-right: auto; color: var(--ink); font-size: .87rem; font-weight: 700; }
-button, .button { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 9px 17px; border: 1px solid var(--teal); border-radius: 8px; color: white; background: var(--teal); font: inherit; font-size: .91rem; font-weight: 750; text-align: center; text-decoration: none; cursor: pointer; }
-button:hover, .button:hover { background: #0f4744; color: white; }
-.toolbar button, .button-secondary { color: var(--teal); background: var(--paper); }
-.toolbar button:hover, .button-secondary:hover, .toolbar button[aria-pressed="true"] { color: var(--teal); background: #e7f0e9; }
-.toolbar button { min-height: 42px; padding: 6px 14px; border-color: #b5c9c1; font-size: .85rem; }
-input, select, textarea { min-height: 46px; padding: 8px 12px; border: 1px solid #819a94; border-radius: 7px; color: var(--ink); background: white; font: inherit; font-size: .95rem; }
-select { max-width: 220px; }
-.toolbar select { min-height: 42px; padding: 5px 11px; font-weight: 700; }
+h1, h2, h3, h4, p { overflow-wrap: anywhere; }
+#hub-intro { margin: 8px 0 0; color: var(--muted); font-size: 1.06rem; }
+.teacher-login { display: inline-flex; align-items: center; min-height: 40px; padding: 7px 12px; color: var(--accent); font-size: .85rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.teacher-login:hover { text-decoration: underline; }
+.toolbar { justify-content: space-between; gap: 16px; padding: 0 0 20px; border-bottom: 1px solid var(--line); }
+.toolbar label { display: flex; align-items: center; gap: 12px; font-size: .88rem; font-weight: 750; }
+.toolbar-actions { gap: 8px; }
+button, .button, .display-options summary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 9px 15px; border: 1px solid var(--accent); border-radius: 7px; color: white; background: var(--accent); font: inherit; font-size: .9rem; font-weight: 750; text-align: center; text-decoration: none; cursor: pointer; }
+button:hover, .button:hover { color: white; background: #0f4842; }
+.toolbar button, .button-secondary, .display-options summary { border-color: #bccdc5; color: var(--accent); background: white; }
+.toolbar button:hover, .button-secondary:hover, .display-options summary:hover, .toolbar button[aria-pressed="true"] { color: var(--accent); background: #edf5f0; }
+.display-options { position: relative; margin: 0; }
+.display-options summary { list-style: none; }
+.display-options summary::-webkit-details-marker { display: none; }
+.display-options summary::after { content: '⌄'; margin-left: 11px; font-size: 1.05em; }
+.display-options[open] summary::after { content: '⌃'; }
+.display-options-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 5; display: flex; gap: 8px; min-width: max-content; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: white; box-shadow: 0 12px 24px #2031391c; }
+input, select, textarea { min-height: 44px; padding: 7px 11px; border: 1px solid #809891; border-radius: 7px; color: var(--ink); background: white; font: inherit; font-size: .95rem; }
+.toolbar select { width: min(220px, 45vw); font-weight: 700; }
 label { font-weight: 700; }
-.status { margin: 14px 0; color: var(--teal); font-weight: 700; }
-.status:empty { display: none; }
-.hub-panel { margin-top: 22px; padding: clamp(24px, 4vw, 42px); border: 1px solid #d8dfda; border-radius: 12px; background: var(--paper); box-shadow: 0 14px 38px rgba(37, 58, 51, .045); }
-#family-week > .eyebrow { margin-bottom: 8px; }
-.week-dates { margin: 8px 0 0; color: var(--teal); font-size: .91rem; font-weight: 800; letter-spacing: .02em; }
-.empty-state { margin: 24px 0 0; padding: 17px 20px; border-left: 4px solid #bd8336; background: #faf2e2; color: #5a462a; }
-.homework-list { margin: 30px 0 21px; border-top: 2px solid var(--teal); }
-.homework-card { display: grid; grid-template-columns: 134px minmax(0, 1fr) auto; align-items: center; gap: 20px; min-height: 104px; padding: 20px 0; border-bottom: 1px solid var(--line); }
-.homework-card h3 { color: var(--teal); font-size: 1.08rem; font-weight: 800; }
-.homework-card .day-work { min-width: 0; }
-.homework-card .day-work p { margin: .2rem 0; }
-.homework-card .day-work .eyebrow { color: var(--muted); font-size: .71rem; letter-spacing: .08em; }
-.homework-card h4 { margin: 4px 0; font-size: 1.06rem; font-weight: 800; }
-.homework-card .button { white-space: nowrap; }
-.quiet { color: var(--muted); font-size: .92rem; }
-.due-date { color: var(--teal); font-size: .9rem; font-weight: 700; }
-.message-panel { margin-top: 18px; padding-top: 29px; padding-bottom: 29px; background: #e8efea; }
-.message-panel h2 { font-size: clamp(1.45rem, 3vw, 1.8rem); }
-.message-panel p { max-width: 680px; margin: 10px 0 20px; }
-.message-panel .button { background: var(--paper); color: var(--teal); }
-.message-panel .button:hover { background: #f5fbf6; }
-[hidden] { display: none !important; }
-:focus-visible { outline: 3px solid #ac5b20; outline-offset: 3px; }
+main { padding: 24px 0 56px; }
+.status { margin: 0 0 12px; color: var(--accent); font-weight: 700; }
+.status:empty, [hidden] { display: none !important; }
+.hub-panel { padding: clamp(24px, 4vw, 38px); border: 1px solid var(--line); border-radius: 13px; background: var(--paper); }
+#family-week > .eyebrow { margin-bottom: 5px; }
+.week-dates { margin: 7px 0 0; color: var(--muted); font-size: .98rem; font-weight: 700; }
+.empty-state { max-width: 680px; margin: 21px 0 0; color: var(--ink); font-size: 1.05rem; }
+.last-posted { margin: 16px 0 0; font-size: .85rem; }
+.homework-list { margin: 23px 0 14px; border-top: 1px solid var(--line); }
+.homework-card { display: grid; grid-template-columns: 136px minmax(0, 1fr) auto; align-items: center; gap: 20px; min-height: 94px; padding: 17px 10px; border-bottom: 1px solid var(--line); }
+.homework-card.is-today { margin-inline: -12px; padding-inline: 18px 22px; border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; background: #edf5ef; }
+.day-heading { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.day-heading h3 { color: var(--ink); font-size: 1rem; font-weight: 800; }
+.day-date { color: var(--muted); font-size: .86rem; }
+.today-badge { margin-top: 5px; padding: 2px 8px; border-radius: 4px; color: #fff; background: var(--accent); font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.day-work { min-width: 0; }
+.day-work p { margin: .12rem 0; }
+.day-work .eyebrow { color: var(--muted); font-size: .72rem; letter-spacing: .06em; }
+.day-work h4 { margin: 4px 0; font-size: 1.08rem; font-weight: 800; }
+.homework-card .button { min-width: 139px; white-space: nowrap; }
+.quiet { color: var(--muted); font-size: .9rem; }
+.due-date { color: var(--accent); font-size: .9rem; font-weight: 700; }
+.message-panel { justify-content: space-between; gap: 24px; padding: 26px 6px 0; }
+.message-panel h2 { font-family: 'Hanken Grotesk', sans-serif; font-size: 1.07rem; font-weight: 800; letter-spacing: 0; }
+.message-panel p { max-width: 600px; margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
+.message-panel .button { flex: none; color: var(--accent); background: transparent; }
+.message-panel .button:hover { background: #edf5f0; }
+:focus-visible { outline: 3px solid #b3521d; outline-offset: 3px; }
 .skip-link { position: absolute; top: -90px; left: 16px; z-index: 10; padding: 10px 14px; background: white; }
 .skip-link:focus { top: 8px; }
-.large-text { font-size: 1.2rem; }
-.high-contrast { --ink: #111; --muted: #222; --teal: #074c48; --line: #555; --paper: #fff; color: #111; background: #fff; }
-.high-contrast .hub-panel { border-color: #333; box-shadow: none; }
-.high-contrast .message-panel { background: #f2f2f2; }
+html.large-text { font-size: 20px; }
+.high-contrast { --ink: #111; --muted: #222; --accent: #064842; --line: #555; --paper: #fff; color: #111; background: #fff; }
+.high-contrast .hub-panel { border-width: 2px; }
+.high-contrast .homework-card.is-today { background: #edf4ee; }
 
-/* The protected teacher page shares the family preview and adds an editor. */
-.teacher-page .hub-header { border-bottom-color: #9bbdb2; }
-.teacher-inline { background: #f9fbf9; }
-.editor-heading p:last-child { max-width: 700px; margin: 8px 0 24px; color: var(--muted); }
+/* The editor keeps the family preview available without repeating it on load. */
+.teacher-page .hub-header { padding-bottom: 18px; }
+.teacher-inline { padding-bottom: 28px; }
+.editor-heading p:last-child { max-width: 670px; margin: 7px 0 16px; color: var(--muted); }
 .teacher-inline fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
-.teacher-inline #inline-week-start { display: block; width: min(100%, 270px); margin: 7px 0 22px; }
-.inline-days { border-top: 2px solid var(--teal); }
-.inline-day { display: grid; grid-template-columns: 134px minmax(0, 1fr); gap: 0 20px; align-items: center; padding: 17px 0; border-bottom: 1px solid var(--line); }
-.inline-day h3 { grid-column: 1; grid-row: 1; color: var(--teal); font-size: 1rem; }
+.teacher-inline #inline-week-start { display: block; width: min(100%, 270px); margin: 6px 0 16px; }
+.inline-days { border-top: 1px solid var(--line); }
+.inline-day { display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 0 20px; align-items: center; padding: 14px 10px; border-bottom: 1px solid var(--line); }
+.inline-day h3 { grid-column: 1; grid-row: 1; font-size: 1rem; }
 .inline-day .day-date { grid-column: 1; grid-row: 2; }
 .day-choice { grid-column: 2; grid-row: 1 / span 2; }
-.day-choice label { display: block; margin-bottom: 5px; font-size: .85rem; }
-.day-choice select { width: 100%; max-width: none; }
-.day-options { grid-column: 2; margin: 7px 0 0; }
-.day-options summary { min-height: 42px; padding: 8px 0; color: var(--teal); font-weight: 700; cursor: pointer; }
+.day-choice label { display: block; margin-bottom: 4px; font-size: .82rem; }
+.day-choice select { width: 100%; }
+.selection-preview { display: none; }
+.day-options { grid-column: 2; margin: 4px 0 0; }
+.day-options summary { min-height: 38px; padding: 8px 0; color: var(--accent); font-size: .85rem; font-weight: 700; cursor: pointer; }
 .day-options label { display: block; margin: 10px 0; font-size: .87rem; }
 .day-options input { display: block; width: 100%; margin-top: 4px; }
-.editor-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 10px; }
-.draft-preview-label { display: inline-block; margin: 24px 0 0; padding: 8px 12px; border-radius: 6px; color: var(--teal); background: #e3efe8; font-size: .83rem; font-weight: 800; }
+.editor-actions { flex-wrap: wrap; gap: 10px; margin: 19px 0 8px; }
+.preview-disclosure { margin-top: 20px; }
+.preview-disclosure > summary { min-height: 54px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 8px; background: #eaf2ed; color: var(--accent); font-weight: 800; cursor: pointer; }
+.preview-disclosure > summary span { margin-left: 8px; color: var(--muted); font-size: .86rem; font-weight: 500; }
+.preview-disclosure[open] > summary { border-radius: 8px 8px 0 0; }
+.preview-disclosure[open] #family-homework { padding: 0 18px 18px; border: 1px solid var(--line); border-block: 0; background: white; }
+.preview-disclosure .hub-panel { border: 0; padding: 24px 0; }
+.preview-disclosure .message-panel { padding: 15px 0 0; }
+.preview-action { padding: 0 18px 22px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px; background: white; }
 button:disabled { opacity: .6; cursor: wait; }
 
-@media (max-width: 660px) {
-  main, .hub-header { width: min(100% - 28px, 960px); }
-  .hub-header { padding-top: 22px; }
-  .hub-topline { align-items: flex-start; }
-  .hub-topline .eyebrow { max-width: 170px; line-height: 1.5; }
-  .teacher-login { max-width: 150px; white-space: normal; text-align: center; }
-  .edition-label { margin-top: 32px; }
-  .toolbar label { flex-basis: 100%; justify-content: space-between; }
-  .toolbar select { flex: 1; max-width: 250px; }
-  .toolbar button { flex: 1; }
-  .hub-panel { padding: 22px 20px; }
-  .homework-card { grid-template-columns: 1fr; gap: 6px; padding: 18px 0; }
-  .homework-card .button { width: 100%; margin-top: 7px; }
-  .inline-day { grid-template-columns: 1fr; gap: 3px; }
+@media (max-width: 700px) {
+  .hub-header, .toolbar, main { width: min(100% - 30px, 1000px); }
+  .hub-header { padding-top: 15px; padding-bottom: 19px; }
+  .hub-topline { padding-bottom: 14px; }
+  .hub-topline .eyebrow { max-width: 180px; line-height: 1.5; }
+  .teacher-login { padding-inline: 4px; white-space: normal; text-align: right; }
+  .edition-label { margin-top: 20px; }
+  .toolbar { align-items: flex-start; flex-wrap: wrap; padding-bottom: 16px; }
+  .toolbar label { flex: 1 1 100%; justify-content: space-between; }
+  .toolbar select { width: min(72vw, 270px); }
+  .toolbar-actions { width: 100%; }
+  .toolbar-actions > button, .display-options { flex: 1; }
+  .display-options summary { width: 100%; }
+  .display-options-menu { right: 0; flex-direction: column; min-width: 180px; }
+  main { padding-top: 16px; }
+  .hub-panel { padding: 21px 18px; }
+  .homework-card { grid-template-columns: 1fr; gap: 8px; padding: 15px 0; }
+  .homework-card.is-today { margin-inline: -8px; padding-inline: 12px; }
+  .day-heading { flex-direction: row; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+  .today-badge { margin: 0; }
+  .homework-card .button { width: 100%; min-width: 0; margin-top: 3px; }
+  .message-panel { align-items: flex-start; flex-direction: column; gap: 14px; padding: 24px 2px 0; }
+  .message-panel .button { width: 100%; }
+  .inline-day { grid-template-columns: 1fr; gap: 3px; padding: 13px 0; }
   .inline-day h3, .inline-day .day-date, .day-choice, .day-options { grid-column: 1; grid-row: auto; }
-  .day-choice { margin-top: 7px; }
+  .day-choice { margin-top: 5px; }
+  .selection-preview { display: block; margin: 5px 0 0; color: var(--muted); font-size: .83rem; line-height: 1.35; }
+  .preview-disclosure > summary span { display: block; margin: 0; }
 }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
 @media print {
-  body { background: white; font-size: 12pt; }
-  main, .hub-header { width: 100%; }
-  .hub-header { padding: 0 0 16px; }
-  .toolbar, .teacher-login, .teacher-inline, .draft-preview-label, .message-panel { display: none !important; }
-  .hub-panel { margin: 0; padding: 0; border: 0; box-shadow: none; }
+  body { border: 0; background: white; font-size: 12pt; }
+  .hub-header, .toolbar, main { width: 100%; }
+  .hub-header { padding: 0 0 14px; }
+  .toolbar, .teacher-login, .teacher-inline, .preview-disclosure, .message-panel { display: none !important; }
+  .hub-panel { padding: 0; border: 0; }
   .homework-card { break-inside: avoid; }
   .homework-card .button { border: 0; color: black; background: white; }
   .homework-card .button::after { content: ' (' attr(href) ')'; font-size: 9pt; }

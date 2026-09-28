@@ -40,6 +40,7 @@ test("teacher editor lives only on a password-gated teacher route", async () => 
   assert.doesNotMatch(html, /id="teacher-inline"|id="inline-days"/);
   assert.match(teacherHtml, /id="teacher-inline"[^>]*hidden/);
   assert.match(teacherHtml, /id="inline-days"/);
+  assert.match(teacherHtml, /id="draft-preview-panel"[^>]*hidden/);
   assert.match(html, /Teacher sign in/);
   assert.match(app, /if \(editRequested\) \{\s*try \{\s*editDraft = await loadDraft\(\)/);
   assert.match(app, /query\.get\("edit"\) === "1"\) location\.replace\(editorLoginUrl\(\)\)/);
@@ -102,7 +103,9 @@ test("actual family view renders selected homework, due date and Spanish action,
       now: new Date("2026-10-01T12:00:00Z"),
     });
     assert.equal(root.querySelector(".homework-card"), null);
-    assert.match(root.textContent, /not been posted/);
+    assert.match(root.querySelector("#family-week h2").textContent, /Waiting for this week/);
+    assert.match(root.textContent, /Last posted: Sep 21 – Sep 25/);
+    assert.equal(root.querySelector(".week-dates"), null);
   } finally {
     globalThis.document = previous;
     dom.window.close();
@@ -139,6 +142,8 @@ test("family homework keeps all five weekdays in order, including repeated lesso
       "", "",
     ]);
     assert.match(cards[3].textContent, /No homework posted/);
+    assert.equal(cards[3].querySelector(".today-badge")?.textContent, "Today");
+    assert.equal(cards[0].querySelector(".day-date")?.textContent, "Sep 21");
     assert.equal(cards[0].querySelector(".day-work h4")?.textContent, "Unit rates");
     renderHomeworkHub(root, snapshot, lessons, "all-families", "es", {
       now: new Date("2026-09-24T12:00:00Z"),

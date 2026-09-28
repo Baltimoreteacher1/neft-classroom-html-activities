@@ -15,8 +15,8 @@
     <p id="edition-label" class="edition-label">Teacher workspace</p>
     <h1 id="hub-title">Family homework</h1>
     <p id="hub-intro">Choose the homework families will see each night.</p>
-    <div class="toolbar" aria-label="Page settings"><label><span id="class-label">Class</span><select id="section-select" aria-labelledby="class-label"></select></label><button id="language-toggle" type="button">Español</button><button id="text-size-toggle" type="button" aria-pressed="false">Larger text</button><button id="contrast-toggle" type="button" aria-pressed="false">Contrast</button></div>
   </header>
+  <div class="toolbar" role="group" aria-label="Page settings"><label><span id="class-label">Class</span><select id="section-select" aria-labelledby="class-label"></select></label><div class="toolbar-actions"><button id="language-toggle" type="button">Español</button><details class="display-options"><summary id="display-options-label">Display options</summary><div class="display-options-menu"><button id="text-size-toggle" type="button" aria-pressed="false">Larger text</button><button id="contrast-toggle" type="button" aria-pressed="false">Contrast</button></div></details></div></div>
   <main id="main">
     <p id="family-status" class="status" role="status" aria-live="polite">Loading this week’s homework…</p>
     <section id="teacher-inline" class="hub-panel teacher-inline" aria-labelledby="teacher-inline-title" hidden>
@@ -24,8 +24,7 @@
       <p id="editor-status" class="status" role="status" aria-live="polite"></p>
       <form id="inline-week-form"><fieldset id="inline-editor-fields"><label for="inline-week-start">Week beginning (Monday)</label><input id="inline-week-start" type="date" required><div id="inline-days" class="inline-days"></div><div class="actions editor-actions"><button id="inline-save" type="button" class="button-secondary">Save draft</button><button id="inline-publish" type="submit">Publish homework</button></div><p class="quiet">Saving keeps changes private. Publishing updates the family page for every class in this draft.</p></fieldset></form>
     </section>
-    <p id="draft-preview-label" class="draft-preview-label" hidden>Teacher preview · Review the family view below</p>
-    <div id="family-homework"></div>
+    <details id="draft-preview-panel" class="preview-disclosure" hidden><summary id="draft-preview-label">Family preview <span>Review before publishing</span></summary><div id="family-homework"></div><div class="preview-action"><button id="inline-publish-confirm" type="submit" form="inline-week-form" hidden>Confirm publish</button></div></details>
   </main>
   <script type="module" src="../family-app.js"></script>
 </body>

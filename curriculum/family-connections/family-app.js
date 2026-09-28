@@ -42,6 +42,7 @@ function renderFamilyView() {
 function markEditDirty() {
   editDirty = true;
   editReviewed = false;
+  byId("inline-publish-confirm").hidden = true;
   editStatus("Draft changed. Check the family preview below, then save or publish.");
 }
 function renderEditor() {
@@ -95,6 +96,15 @@ function renderEditor() {
       byId(`inline-day-select-${index}`).focus();
     });
     field.append(label, select);
+    if (entry.status === "lesson") {
+      const selectedLesson = lessonChoices.find((lesson) => lesson.id === entry.lessonId);
+      if (selectedLesson) {
+        const selectionPreview = document.createElement("p");
+        selectionPreview.className = "selection-preview";
+        selectionPreview.textContent = `Lesson ${selectedLesson.id} · ${selectedLesson.title}`;
+        field.append(selectionPreview);
+      }
+    }
     row.append(field);
     if (entry.status === "lesson") {
       const options = document.createElement("details");
@@ -133,6 +143,7 @@ function render() {
   const section = resolveSection(visible, sectionId);
   sectionId = section.id;
   document.documentElement.lang = language;
+  document.documentElement.classList.toggle("large-text", Boolean(preferences.largeText));
   document.body.classList.toggle("large-text", Boolean(preferences.largeText));
   document.body.classList.toggle("high-contrast", Boolean(preferences.highContrast));
   byId("edition-label").textContent = editRequested
@@ -143,6 +154,7 @@ function render() {
     ? editRequested ? "Elige las tareas que las familias verán cada noche." : "Un lugar para ver las tareas de matemáticas de cada noche escolar."
     : editRequested ? "Choose the homework families will see each night." : "One place to see the math homework for each school night.";
   byId("class-label").textContent = es ? "Clase" : "Class";
+  byId("display-options-label").textContent = es ? "Opciones de lectura" : "Display options";
   byId("language-toggle").textContent = es ? "English" : "Español";
   byId("language-toggle").setAttribute("aria-pressed", String(es));
   byId("text-size-toggle").textContent = es ? "Texto grande" : "Larger text";
@@ -160,7 +172,8 @@ function render() {
   );
   if (editRequested) {
     byId("teacher-inline").hidden = !editDraft;
-    byId("draft-preview-label").hidden = !editDraft;
+    byId("draft-preview-panel").hidden = !editDraft;
+    byId("inline-publish-confirm").hidden = !editReviewed;
   }
   if (editDraft) renderEditor();
   renderFamilyView();
@@ -177,6 +190,7 @@ function render() {
 }
 byId("section-select").addEventListener("change", (e) => {
   sectionId = e.target.value;
+  editReviewed = false;
   render();
 });
 byId("language-toggle").addEventListener("click", () => {
@@ -208,6 +222,7 @@ async function withEditorBusy(action) {
   if (editBusy) return;
   editBusy = true;
   byId("inline-editor-fields").disabled = true;
+  byId("inline-publish-confirm").disabled = true;
   try {
     await action();
   } catch (error) {
@@ -217,6 +232,7 @@ async function withEditorBusy(action) {
   } finally {
     editBusy = false;
     byId("inline-editor-fields").disabled = false;
+    byId("inline-publish-confirm").disabled = false;
   }
 }
 if (editRequested) {
@@ -246,10 +262,12 @@ byId("inline-save").addEventListener("click", () => {
 byId("inline-week-form").addEventListener("submit", (event) => {
   event.preventDefault();
   if (!editDraft || !validEditor()) return;
-  if (!editReviewed) {
+  if (!editReviewed || !byId("draft-preview-panel").open) {
     editReviewed = true;
-    editStatus("Review the family preview below, then choose Publish homework again.");
-    byId("draft-preview-label").scrollIntoView({ block: "start", behavior: "smooth" });
+    editStatus("Review the family preview below, then choose Confirm publish.");
+    byId("draft-preview-panel").open = true;
+    byId("inline-publish-confirm").hidden = false;
+    byId("draft-preview-panel").scrollIntoView({ block: "start", behavior: "smooth" });
     return;
   }
   withEditorBusy(async () => {
