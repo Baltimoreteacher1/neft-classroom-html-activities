@@ -81,6 +81,7 @@ test("family homework stays public while its editor needs the site password", as
   for (const path of [
     "/curriculum/family-connections/teacher/login.html",
     "/curriculum/family-connections/teacher/homework.html",
+    "/curriculum/family-connections/teacher/homework",
   ]) {
     assert.equal((await call(path)).status, 401);
     assert.equal((await call(path, { env: {} })).status, 503);

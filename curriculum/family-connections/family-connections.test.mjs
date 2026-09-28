@@ -8,6 +8,7 @@ import {
   weekPhase,
   schoolDate,
   familyLink,
+  isHomeworkEditorPath,
   messageDestination,
   renderHomeworkHub,
 } from "./shared/homework-hub.js";
@@ -45,7 +46,14 @@ test("teacher editor lives only on a password-gated teacher route", async () => 
   assert.match(login, /family-connections\/teacher\/homework\.html/);
   assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/login.html"), true);
   assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/homework.html"), true);
+  assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/homework"), true);
   assert.equal(isTeacherSurface("/curriculum/family-connections/"), false);
+});
+test("Cloudflare's extensionless editor URL stays in teacher mode", () => {
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/teacher/homework.html"), true);
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/teacher/homework"), true);
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/teacher/homework/"), true);
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/"), false);
 });
 test("freshness uses school date, handles missing/stale/future weeks and Sunday boundary", () => {
   assert.equal(schoolDate(new Date("2026-09-28T01:00:00Z")), "2026-09-27");

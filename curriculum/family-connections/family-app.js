@@ -1,6 +1,6 @@
 import { DAYS, createDefaultSnapshot, normalizeLessons, resolveSection } from "./shared/model.js";
 import { loadDraft, publishDraft, saveDraft } from "./shared/api-client.js";
-import { addDays, familyLink, renderHomeworkHub } from "./shared/homework-hub.js";
+import { addDays, familyLink, isHomeworkEditorPath, renderHomeworkHub } from "./shared/homework-hub.js";
 const query = new URL(location.href).searchParams;
 // Old invitations and Canvas meeting anchors keep their existing destination.
 if (query.has("meeting") || location.hash === "#family-scheduler") {
@@ -22,7 +22,7 @@ let editDraft = null;
 let editDirty = false;
 let editReviewed = false;
 let editBusy = false;
-const editRequested = location.pathname.toLowerCase().endsWith("/teacher/homework.html");
+const editRequested = isHomeworkEditorPath(location.pathname);
 const byId = (id) => document.getElementById(id);
 const editingSection = () => resolveSection(editDraft, sectionId);
 const editStatus = (message) => { byId("editor-status").textContent = message; };

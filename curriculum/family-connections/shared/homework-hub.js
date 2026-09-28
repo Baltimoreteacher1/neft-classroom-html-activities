@@ -25,6 +25,9 @@ export function familyLink(sectionId, lang = "en", origin = "https://eduwonderla
   if (lang === "es") url.searchParams.set("lang", "es");
   return url.href;
 }
+export function isHomeworkEditorPath(pathname) {
+  return /^\/curriculum\/family-connections\/teacher\/homework(?:\.html)?\/?$/i.test(pathname);
+}
 export function messageDestination(snapshot) {
   const candidate = snapshot?.integrations?.classDojoUrl;
   if (safeExternalUrl(candidate)) {
