@@ -1576,6 +1576,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/fluency/teacher/",
+    title: "Reveal Math · Grade 6 · Fluency & Diagnostic Guide",
+    category: "Activity",
+    unit: null,
+  },
+  {
+    path: "/curriculum/fluency/teacher/printables/",
+    title: "Grade 6 Fluency · Printable Library",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/learning-labs/algebra-workshop/",
     title: "Algebra Workshop",
     category: "Activity",
@@ -3708,6 +3720,12 @@ export const ACTIVITIES = [
   {
     path: "/curriculum/family-letter/",
     title: "Family Math Letter · Carta de Matemáticas",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/fluency/",
+    title: "Fluency Practice",
     category: "Hub",
     unit: null,
   },

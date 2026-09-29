@@ -809,6 +809,11 @@
         "ctw-warmup",
       ),
     );
+    var fluency = window.NT_FLUENCY && window.NT_FLUENCY.resourcesFor(lesson.id);
+    if (fluency) {
+      actions.appendChild(link("Fluency & readiness", fluency.teacher));
+      actions.appendChild(link("Fluency student practice", fluency.student, "ctw-student"));
+    }
     actions.appendChild(generatorLink(lesson));
     actions.appendChild(
       button(
