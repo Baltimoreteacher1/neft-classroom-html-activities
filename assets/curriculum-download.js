@@ -1156,7 +1156,7 @@ function linksPage(entries, folder) {
     `<h1>Live &amp; Google resources</h1>
      <p class="lede">${entries.length} resource${
        entries.length === 1 ? "" : "s"
-} in this folder open on the website or in Google Drive rather than as a saved file.
+     } in this folder open on the website or in Google Drive rather than as a saved file.
      Each link below goes to the real thing.</p>
      <ul>${entries.map(linkItem).join("")}</ul>`,
   );
@@ -1214,11 +1214,11 @@ function startHerePage({ list, failures, unit, preset }) {
     `<h1>${esc(heading)}</h1>
      <p class="lede">${preset ? `${esc(preset.label)} · ` : ""}${list.length} resource${
        list.length === 1 ? "" : "s"
-} requested${
+     } requested${
        format === "word" ? ", converted to editable Word (.doc) files" : ""
-} — ${packaged.length} saved into this folder, ${links.length} listed as link${
+     } — ${packaged.length} saved into this folder, ${links.length} listed as link${
        links.length === 1 ? "" : "s"
-}${failures.length ? `, ${failures.length} could not be included` : ""}.</p>
+     }${failures.length ? `, ${failures.length} could not be included` : ""}.</p>
 
      <h2>What's in this download</h2>
      <ul class="counts">${[...counts.entries()]
@@ -1237,7 +1237,7 @@ function startHerePage({ list, failures, unit, preset }) {
             and interactive parts load from eduwonderlab.com when you are online.</p>`
          : `<p class="note">Nothing in this selection could be saved as a file — every item is a
             live page or a Google resource. They are all listed below.</p>`
-}
+     }
 
      ${
        scorm.length
@@ -1246,7 +1246,7 @@ function startHerePage({ list, failures, unit, preset }) {
             activity. Canvas imports SCORM one package per assignment, so upload each
             <code>.zip</code> as it is — do not unzip them first.</p>`
          : ""
-}
+     }
 
      ${
        links.length
@@ -1256,7 +1256,7 @@ function startHerePage({ list, failures, unit, preset }) {
             internet connection.</p>
             <ul>${links.map(linkItem).join("")}</ul>`
          : ""
-}
+     }
 
      ${
        failures.length
@@ -1274,7 +1274,7 @@ function startHerePage({ list, failures, unit, preset }) {
               .join("")}</ul>`
          : `<h2>Nothing was left out</h2>
             <p>Every file in this selection was packaged successfully.</p>`
-}`,
+     }`,
   );
 }
 

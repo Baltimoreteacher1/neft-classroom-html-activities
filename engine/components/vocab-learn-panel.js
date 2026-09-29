@@ -1711,7 +1711,7 @@ export function renderLearnItPanel(container, config, options = {}) {
     ? `<div class="vl-cycle">
          <span class="vl-formula-label">🪜 ${
            isEs ? "Estos son los pasos — en este orden" : "These are the steps — in this order"
-}</span>
+         }</span>
          <ol class="vl-cycle-steps">${stepCycle.steps
            .map(
              (step) => `<li class="vl-cycle-step">
