@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
 /**
  * generate-catalog.mjs
  *
@@ -691,6 +692,7 @@ if (existsSync(resolve(TT_DIR, "index.html"))) {
 
 // Student-facing surfaces that live under /curriculum/ but are not teacher tools.
 const CURRICULUM_STUDENT = new Set([
+  "fluency",
   "learning-labs",
   "my-progress",
   "student-launch",
@@ -740,7 +742,7 @@ if (existsSync(curriculumDir)) {
         path: `/curriculum/${d.name}/${rel}/`,
         section,
         category: "Activity",
-        audience,
+        audience: isTeacherSurface(`/curriculum/${d.name}/${rel}/`) ? "teacher" : audience,
         keywords: `curriculum ${d.name} ${child.name} ${descFromHtml(childIdx)}`,
       });
     }

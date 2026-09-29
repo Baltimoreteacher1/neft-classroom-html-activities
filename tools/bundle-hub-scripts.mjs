@@ -71,6 +71,7 @@ const RUN = [
   "/assets/curriculum-teacher-planning.js",
   "/assets/curriculum-live-signal.js",
   "/assets/curriculum-next-move.js",
+  "/assets/curriculum-fluency.js",
   "/assets/curriculum-teacher-workflow.js",
   "/assets/curriculum-guided-path.js",
   "/assets/curriculum-studio-journey.js",
