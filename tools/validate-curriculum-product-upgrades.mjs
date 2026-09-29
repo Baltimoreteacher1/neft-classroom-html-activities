@@ -73,7 +73,8 @@ check(
   "mobile supports use a non-overlapping bottom sheet",
 );
 check(
-  launcher.includes("function querySupports()") && launcher.includes('url.hash = "supports="'),
+  launcher.includes("function querySupports()") &&
+    launcher.includes('url.searchParams.set("supports", supports.join(","))'),
   "student launcher safely propagates learning supports",
 );
 check(

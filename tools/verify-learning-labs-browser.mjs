@@ -291,7 +291,9 @@ try {
     await hub.goto(origin + "/curriculum/units/");
     await hub.locator(".unit-card").first().waitFor();
     report.curriculumLinks = 0;
-    for (const item of catalog)
+    for (const item of catalog) {
+      // Navigate through the public unit picker before using that unit's lessons.
+      await hub.locator("#units-browser-select").selectOption(String(item.unit));
       for (const lesson of item.lessons) {
         const card = hub.locator(".unit-card").nth(item.unit - 1);
         const options = await card
@@ -310,6 +312,7 @@ try {
         );
         report.curriculumLinks++;
       }
+    }
     await hub.locator('[data-filter="learninglabs"]').click();
     assert.equal(
       await hub.locator('[data-filter="learninglabs"]').getAttribute("aria-pressed"),

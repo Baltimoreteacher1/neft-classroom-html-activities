@@ -74,6 +74,20 @@ const FORMATS = [
   },
 ];
 
+/**
+ * "📝 Download Lesson Work · Word" on /curriculum/ — one click, one zip, every
+ * sheet a student writes on for the lesson the teacher has selected.
+ *
+ * The preset names the resource types (scripts/lib/download-taxonomy.mjs); this
+ * module only decides which half of a pair to take. Guided notes and homework
+ * exist twice — as the HTML page the site serves and as a real .docx beside it —
+ * and packaging both puts the same assignment in the folder twice under two
+ * extensions. The .docx wins whenever it exists: it is the editable original,
+ * where the HTML twin would only be converted to Word on the way in.
+ */
+const WORK_PRESET = "lesson-work";
+const WORK_DOCX_SIBLING = { "guided-notes": "notes-docx", homework: "homework-docx" };
+
 /** A page this module can convert — a worksheet, not an already-made file. */
 const isConvertibleHtml = (res) => res.delivery === "file" && /\.html?($|\?)/i.test(res.url);
 
@@ -688,9 +702,18 @@ function endProgress() {
   refs.bar.hidden = false;
 }
 
-async function startDownload() {
+/**
+ * @param {Array|null} explicitList A list built by the caller rather than by the
+ *   open dialog — the one-click lesson-work pack. It never reads or writes the
+ *   teacher's cart, so a teacher three lessons into a custom selection can use
+ *   the button without losing it.
+ * @param {string} explicitName The folder that list unzips to. The cart's own
+ *   naming would call a lesson-work pack "Unit-3_Lesson-3-1", which is what a
+ *   full lesson download is also called.
+ */
+async function startDownload(explicitList = null, explicitName = "") {
   if (busy) return;
-  const list = view === "packages" ? currentPackageList() : selectedResources();
+  const list = explicitList || (view === "packages" ? currentPackageList() : selectedResources());
   if (!list.length) return;
   if (format === "pdf") return startPrintPack(list);
 
@@ -706,9 +729,12 @@ async function startDownload() {
   cancelled = false;
   renderBar();
 
-  const unit = view === "packages" ? manifest.units.find((u) => u.unit === activeUnit) : null;
-  const preset = view === "packages" ? manifest.presetById.get(activePreset) : null;
-  const rootName = packageName(list, unit, preset);
+  const scoped = !explicitList && view === "packages";
+  const unit = scoped ? manifest.units.find((u) => u.unit === activeUnit) : null;
+  const preset = scoped ? manifest.presetById.get(activePreset) : null;
+  const rootName = explicitName
+    ? safeName(explicitName, "Lesson-Work")
+    : packageName(list, unit, preset);
 
   try {
     const { files, failures } = await collect(list, rootName);
@@ -1281,12 +1307,56 @@ function saveBlob(blob, filename) {
 
 /* -------------------------------------------------------------------- api */
 
+/**
+ * Every file the students of one lesson actually write on, newest-first by the
+ * preset's own order. Resources the site only links (a Google Form, a teacher
+ * surface) are left out: this pack is files, and a link in a zip is not work.
+ */
+function lessonWorkList(lessonId) {
+  const preset = manifest.presetById.get(WORK_PRESET);
+  const lesson = manifest.units.flatMap((u) => u.lessons).find((l) => l.id === lessonId);
+  if (!preset || !lesson) return [];
+  const wanted = new Set(preset.types);
+  const present = new Set(lesson.resources.map((r) => r.type));
+  return lesson.resources
+    .filter((res) => {
+      if (res.delivery !== "file" || !wanted.has(res.type)) return false;
+      const docx = WORK_DOCX_SIBLING[res.type];
+      return !(docx && present.has(docx));
+    })
+    .sort((a, b) => a.order - b.order);
+}
+
 async function open(options = {}) {
   ensureDialog();
   try {
     await loadManifest();
   } catch (error) {
     window.alert(`The resource list could not be loaded: ${error?.message || error}`);
+    return;
+  }
+
+  // One click, one file. The dialog still opens — it owns the progress meter,
+  // and a teacher who asked for "all the work" should see what is being
+  // packaged rather than watch a button do nothing for eight seconds — but
+  // nothing is pre-selected and the cart is not touched.
+  if (options.work) {
+    const list = lessonWorkList(options.work);
+    if (!list.length) {
+      window.alert(
+        `No editable student work is published for lesson ${options.work} yet. ` +
+          `Open ⬇️ Download Resources to see everything this lesson does have.`,
+      );
+      return;
+    }
+    format = "word";
+    activeUnit = list[0].unitRef.unit;
+    // The panels behind the meter have never been rendered on a first open, so
+    // render before showing — an empty modal reads as a failure.
+    setView(view);
+    if (!dialog.open) dialog.showModal();
+    await startDownload(list, `Lesson-${options.work}_Student-Work`);
+    if (dialog.open) dialog.close();
     return;
   }
 

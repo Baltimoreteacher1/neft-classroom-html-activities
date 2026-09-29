@@ -197,7 +197,9 @@
       document.body.firstElementChild;
     if (target && target.parentNode) {
       var container = renderPresetBarContainer();
-      target.parentNode.insertBefore(container, target.nextSibling);
+      var collection = document.getElementById("hub-manipulatives");
+      if (collection) collection.appendChild(container);
+      else target.parentNode.insertBefore(container, target.nextSibling);
     }
   }
 

@@ -76,6 +76,8 @@ const RUN = [
   "/assets/curriculum-studio-journey.js",
   "/assets/curriculum-lesson-merge.js",
   "/assets/curriculum-product-upgrades.js",
+  "/assets/curriculum-navigator.js",
+  "/assets/curriculum-home.js",
   "/assets/futures-lab.js",
   "/assets/gradebook-embed.js",
 ];

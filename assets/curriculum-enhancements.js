@@ -1899,7 +1899,7 @@
       clearBtn.hidden = false;
     }
 
-    if (!hubHasBrowser()) {
+    if (!hubHasBrowser() && !document.getElementById("curriculum-navigator")) {
       buildHandoffSearch(box, search, qParam);
     }
 

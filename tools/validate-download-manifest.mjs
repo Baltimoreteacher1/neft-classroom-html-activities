@@ -277,21 +277,33 @@ for (const { res, unit } of everyResource) {
     );
   }
 
+  // Every file that imports the downloader, not just the two pages: the hub's
+  // "📝 Download All Work" button loads it from the pacing module, and a stamp
+  // that is pinned in two places and checked in one is a stamp that drifts.
+  // EVERY reference in a file is checked, not the first — a second, stale
+  // import in the same file is exactly the drift this guards against.
   const jsWant = stamp("assets/curriculum-download.js");
-  const pages = ["curriculum/index.html", "curriculum/units/index.html"];
+  const pages = [
+    "curriculum/index.html",
+    "curriculum/units/index.html",
+    "assets/curriculum-district-pacing.js",
+  ];
   for (const page of pages) {
-    const html = readFileSync(resolve(ROOT, page), "utf8");
-    const found = /\/assets\/curriculum-download\.js\?v=([a-f0-9]+)/.exec(html);
-    if (!found) {
+    const source = readFileSync(resolve(ROOT, page), "utf8");
+    const found = [...source.matchAll(/\/assets\/curriculum-download\.js\?v=([a-f0-9]+)/g)];
+    if (!found.length) {
       fail(`${page} does not load /assets/curriculum-download.js?v=<hash>`);
-    } else if (found[1] !== jsWant) {
+      continue;
+    }
+    for (const [, hash] of found) {
+      if (hash === jsWant) continue;
       fail(
-        `curriculum-download.js changed but ${page} still says ?v=${found[1]} — ` +
+        `curriculum-download.js changed but ${page} still says ?v=${hash} — ` +
           `replace it with ?v=${jsWant}`,
       );
     }
   }
-  console.log(`   hub wiring          : ${pages.length} pages ✓`);
+  console.log(`   hub wiring          : ${pages.length} files ✓`);
 }
 
 if (failures) {

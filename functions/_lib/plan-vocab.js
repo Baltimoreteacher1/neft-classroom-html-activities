@@ -3766,6 +3766,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/practice-workbooks/",
+    title: "Practice Workbook Library",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/projects/",
     title: "Culminating Projects — Curriculum Hub",
     category: "Hub",

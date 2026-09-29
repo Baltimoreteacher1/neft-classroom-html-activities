@@ -3,10 +3,12 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { JSDOM } from "jsdom";
 import { createDefaultSnapshot } from "./shared/model.js";
+import { isTeacherSurface } from "../../functions/_lib/teacher-surface.js";
 import {
   weekPhase,
   schoolDate,
   familyLink,
+  isHomeworkEditorPath,
   messageDestination,
   renderHomeworkHub,
 } from "./shared/homework-hub.js";
@@ -30,6 +32,29 @@ test("family entry has only homework and messaging; legacy meetings keep their p
   const app = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
   assert.match(app, /query\.get\(["']section["']\) \|\| preferences\.sectionId/);
   assert.match(app, /location\.replace/);
+});
+test("teacher editor lives only on a password-gated teacher route", async () => {
+  const app = await readFile(new URL("./family-app.js", import.meta.url), "utf8");
+  const login = await readFile(new URL("./teacher/login.html", import.meta.url), "utf8");
+  const teacherHtml = await readFile(new URL("./teacher/homework.html", import.meta.url), "utf8");
+  assert.doesNotMatch(html, /id="teacher-inline"|id="inline-days"/);
+  assert.match(teacherHtml, /id="teacher-inline"[^>]*hidden/);
+  assert.match(teacherHtml, /id="inline-days"/);
+  assert.match(teacherHtml, /id="draft-preview-panel"[^>]*hidden/);
+  assert.match(html, /Teacher sign in/);
+  assert.match(app, /if \(editRequested\) \{\s*try \{\s*editDraft = await loadDraft\(\)/);
+  assert.match(app, /query\.get\("edit"\) === "1"\) location\.replace\(editorLoginUrl\(\)\)/);
+  assert.match(login, /family-connections\/teacher\/homework\.html/);
+  assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/login.html"), true);
+  assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/homework.html"), true);
+  assert.equal(isTeacherSurface("/curriculum/family-connections/teacher/homework"), true);
+  assert.equal(isTeacherSurface("/curriculum/family-connections/"), false);
+});
+test("Cloudflare's extensionless editor URL stays in teacher mode", () => {
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/teacher/homework.html"), true);
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/teacher/homework"), true);
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/teacher/homework/"), true);
+  assert.equal(isHomeworkEditorPath("/curriculum/family-connections/"), false);
 });
 test("freshness uses school date, handles missing/stale/future weeks and Sunday boundary", () => {
   assert.equal(schoolDate(new Date("2026-09-28T01:00:00Z")), "2026-09-27");
@@ -78,7 +103,52 @@ test("actual family view renders selected homework, due date and Spanish action,
       now: new Date("2026-10-01T12:00:00Z"),
     });
     assert.equal(root.querySelector(".homework-card"), null);
-    assert.match(root.textContent, /not been posted/);
+    assert.match(root.querySelector("#family-week h2").textContent, /Waiting for this week/);
+    assert.match(root.textContent, /Last posted: Sep 21 – Sep 25/);
+    assert.equal(root.querySelector(".week-dates"), null);
+  } finally {
+    globalThis.document = previous;
+    dom.window.close();
+  }
+});
+test("family homework keeps all five weekdays in order, including repeated lessons and empty days", () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  const previous = globalThis.document;
+  globalThis.document = dom.window.document;
+  try {
+    const snapshot = createDefaultSnapshot();
+    snapshot.sections[0].week.startDate = "2026-09-21";
+    for (const [day, id] of [["Monday", "3-2"], ["Tuesday", "3-3"], ["Wednesday", "3-2"]]) {
+      Object.assign(snapshot.sections[0].week.days.find((entry) => entry.day === day), {
+        status: "lesson", lessonId: id,
+      });
+    }
+    const lessons = [
+      { id: "3-2", title: "Unit rates", homeworkPath: "/lessons/3-2/homework.html" },
+      { id: "3-3", title: "Ratio tables", homeworkPath: "/lessons/3-3/homework.html" },
+    ];
+    const root = document.getElementById("root");
+    renderHomeworkHub(root, snapshot, lessons, "all-families", "en", {
+      now: new Date("2026-09-24T12:00:00Z"),
+    });
+    const cards = [...root.querySelectorAll(".homework-card")];
+    assert.deepEqual(cards.map((card) => card.querySelector("h3").textContent), [
+      "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+    ]);
+    assert.deepEqual(cards.map((card) => card.querySelector("a")?.getAttribute("href") || ""), [
+      "/lessons/3-2/homework.html?route=quick&lang=en",
+      "/lessons/3-3/homework.html?route=quick&lang=en",
+      "/lessons/3-2/homework.html?route=quick&lang=en",
+      "", "",
+    ]);
+    assert.match(cards[3].textContent, /No homework posted/);
+    assert.equal(cards[3].querySelector(".today-badge")?.textContent, "Today");
+    assert.equal(cards[0].querySelector(".day-date")?.textContent, "Sep 21");
+    assert.equal(cards[0].querySelector(".day-work h4")?.textContent, "Unit rates");
+    renderHomeworkHub(root, snapshot, lessons, "all-families", "es", {
+      now: new Date("2026-09-24T12:00:00Z"),
+    });
+    assert.equal(root.querySelector(".homework-card h3").textContent, "Lunes");
   } finally {
     globalThis.document = previous;
     dom.window.close();

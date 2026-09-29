@@ -100,6 +100,37 @@ console.log("curriculum JSON cache");
     await w2.NTJsonCache.json("/data/x.json").catch(() => {});
     const retried = await w2.NTJsonCache.json("/data/x.json").catch(() => null);
     if (!retried) fail("a failed fetch was cached — later callers can never recover");
+
+    // HTTP failures and a truncated/HTML response are retryable too. A fetch
+    // promise resolves for 503, so testing only rejected fetches missed these.
+    for (const first of [
+      { ok: false, status: 503, text: () => Promise.resolve("unavailable") },
+      { ok: true, status: 200, text: () => Promise.resolve("<html>offline</html>") },
+    ]) {
+      let attempts = 0;
+      const w3 = {};
+      new Function("window", "fetch", source)(w3, () => {
+        attempts++;
+        return Promise.resolve(
+          attempts === 1
+            ? first
+            : {
+                ok: true,
+                status: 200,
+                text: () => Promise.resolve(payload),
+              },
+        );
+      });
+      const initial = await Promise.allSettled([
+        w3.NTJsonCache.json("/retry.json"),
+        w3.NTJsonCache.json("/retry.json"),
+      ]);
+      if (initial.some((r) => r.status !== "rejected")) fail("bad JSON response was accepted");
+      const recovered = await w3.NTJsonCache.json("/retry.json").catch(() => null);
+      if (attempts !== 2 || recovered?.lessons?.[0]?.id !== "1-1") {
+        fail(`HTTP ${first.status} or malformed JSON remained cached after failure`);
+      }
+    }
   }
 }
 

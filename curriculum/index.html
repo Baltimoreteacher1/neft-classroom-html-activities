@@ -120,7 +120,7 @@
     <script src="/curriculum/lesson-bonus-activities.js"></script>
     <script src="/curriculum/lesson-family-homework.js"></script>
     <script src="/curriculum/lesson-mstar-worksheets.js"></script>
-    <script src="/assets/math-workbench-presets.js" defer></script>
+    <script src="/assets/math-workbench-presets.js?v=1f0427db" defer></script>
     <script src="/assets/project-readiness-pathways.js" defer></script>
     <style>
       /* small-group-injected */
@@ -201,46 +201,84 @@
         letter-spacing: 0.02em;
       }
     </style>
+    <link rel="stylesheet" href="/assets/curriculum-navigator.css?v=67cb1b82" />
+    <link rel="stylesheet" href="/assets/curriculum-home.css?v=0178f524" />
   </head>
-  <body class="light-theme">
+  <body class="light-theme curriculum-home">
     <header class="curriculum-guide" id="curriculum-start">
       <a class="skip-link" href="#main-content">Skip to main content</a>
-      <p class="curriculum-guide__eyebrow">EduWonderLab Mathematics · Grade 6 Core Program</p>
+      <p class="curriculum-guide__eyebrow">EduWonderLab Mathematics · Grade 6</p>
       <h1>Curriculum Hub</h1>
       <!-- Static on purpose. This banner and the audience nav below used to be
            built by JS after load and pushed the 1,000px-tall actions nav down
            the page: CLS 0.52 on mobile (Lighthouse, 2026-09-20). The scripts
            now bind to these nodes instead of creating them. -->
       <p id="hub-mode-banner" class="hub-mode-banner hub-student-only">
-        <span>🎒 You're in Student view — teacher tools are hidden. </span>
+        <span>Student view </span>
         <button type="button" class="hub-hint-link" id="hub-mode-banner-switch">
           Switch to Teacher view
         </button>
       </p>
+      <p id="hub-teacher-banner" class="hub-teacher-only"><span>Teacher view</span><button type="button" class="hub-hint-link" data-home-mode>Preview student view</button></p>
       <p class="curriculum-guide__lede hub-teacher-only">
-        Start with the next teaching decision. The full library stays available, but today’s lesson,
-        the weekly plan, and the unit sequence come first.
+        Find a lesson, prepare its materials, and share the student link. Your planning tools are one click away.
       </p>
       <p class="curriculum-guide__lede hub-student-only">
-        Every lesson, game, project, and practice set for Grade 6 math. Pick your unit below to see
-        what to work on.
+        Find your lesson by name, number, or topic. Open the lesson, practice, or get help with the same math.
       </p>
 
-      <!-- Search & Filtering Toolbar (Lifted out of #hub-side for full visibility) -->
-      <div class="controls" id="hub-content" role="search">
-        <div class="search">
-          <label for="curr-search">Search</label>
-          <input
-            id="curr-search"
-            type="search"
-            placeholder="Filter by lesson, standard, or topic…"
-            aria-label="Filter lessons by title, standard, or topic"
-            autocomplete="off"
-          />
+<nav class="hub-shortcuts" aria-label="Curriculum shortcuts"><button
+          class="curriculum-guide__action hub-teacher-only"
+          type="button"
+          data-guide-teacher-view="today"
+        >
+          <strong>Teach today</strong>
+          <span>Open the selected lesson, student link, readiness, and supports.</span>
+        </button><button
+          class="curriculum-guide__action hub-teacher-only"
+          type="button"
+          data-guide-teacher-view="week"
+        >
+          <strong>Plan the week</strong>
+          <span>Sequence lessons, pacing, practice, and checks for understanding.</span>
+        </button><button
+          class="curriculum-guide__action hub-teacher-only"
+          type="button"
+          data-nt-download
+          data-nt-download-view="packages"
+        >
+          <strong>⬇️ Download Resources</strong>
+          <span
+            >Package a whole unit, a preset pack, or any set of lessons and files into one
+            zip.</span
+          >
+        </button><a class="curriculum-guide__action" href="/curriculum/units/">
+          <strong>Explore by unit</strong>
+          <span>Choose one unit and see only the lesson and resources you need.</span>
+        </a><a href="/curriculum/practice-workbooks/">Practice workbooks</a><a href="/curriculum/family-connections/">For families</a><a href="#hub-library-collection">All tools</a></nav>
+    </header>
+
+    <main id="main-content" class="hub-page">
+      <section id="curriculum-navigator" aria-labelledby="navigator-title">
+        <div class="cn-heading"><div><h2 id="navigator-title">Find a lesson</h2><p>Search across the course, then choose what to open.</p></div><a href="/curriculum/units/">Full unit browser</a></div>
+        <div id="nav-recent" role="navigation" aria-label="Recently viewed lessons"></div>
+        <div class="cn-layout">
+          <div class="cn-browser">
+            <div class="controls" id="hub-content" role="search">
+              <div class="search"><label for="curr-search">Search lessons</label><input id="curr-search" type="search" placeholder="Try ratios, 3.2, or a standard…" aria-label="Search lessons by title, number, standard, or topic" autocomplete="off" /></div>
+            </div>
+            <div class="cn-filters"><label for="nav-unit">Unit</label><select id="nav-unit"><option value="">All units</option></select><button type="button" id="nav-saved" aria-pressed="false">Saved lessons</button><button type="button" id="nav-reset">Reset filters</button></div>
+            <p id="nav-results-status" role="status" aria-live="polite">Loading lessons…</p>
+            <ol id="nav-results" aria-label="Matching lessons"></ol>
+            <button type="button" id="nav-more" hidden>Show more lessons</button>
+            <button type="button" id="nav-retry" hidden>Try loading lessons again</button>
+            <noscript><p>JavaScript is needed for this lesson finder. <a href="/curriculum/units/">Browse all units and lesson links</a> without it.</p></noscript>
+          </div>
+          <section id="nav-preview" tabindex="-1" aria-labelledby="nav-lesson-title"><h3 id="nav-lesson-title">Your lesson, ready to open</h3><p>Choose a lesson to see its learning target, practice, notes, and support options together.</p><div class="cn-starter-links"><a href="/curriculum/arcade/">Practice with a game</a><a href="/curriculum/learning-labs/">Explore a learning lab</a><a href="/curriculum/my-progress/">Check my progress</a></div><p>Save useful lessons on this device with the Save lesson button. No sign-in needed.</p></section>
         </div>
-      </div>
-      <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
-      <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
+        <p id="nav-message" role="status" aria-live="polite"></p>
+      </section>
+      <details class="hub-collection" id="hub-workflows"><summary>Teaching workflows &amp; classroom activities <span>Planning, games, projects, and more ways to learn</span></summary>
 
 
 
@@ -519,6 +557,31 @@
           >
             🎓 Download SCORM Package
           </button>
+          <!-- The print-side twin of the SCORM button. SCORM is what goes into
+               Canvas; this is every sheet the selected lesson's students write
+               on — worksheets, practice, handouts, guided notes, homework — as
+               editable Word files in one zip. Packaged by the same downloader
+               behind "⬇️ Download Resources", so it needs no inventory of its
+               own. -->
+          <button
+            type="button"
+            onclick="executeQuickAction('lesson_work')"
+            class="ewl-linkgen-scorm"
+            title="Every worksheet, practice set and handout for the selected lesson, as editable Word files"
+            style="
+              border: 1px solid #7c3aed;
+              color: #6d28d9;
+              background: #f5f3ff;
+              min-height: 42px;
+              padding: 0 16px;
+              font-size: 13.5px;
+              border-radius: 9px;
+              font-weight: 800;
+              cursor: pointer;
+            "
+          >
+            📝 Download All Work (Word)
+          </button>
           <button
             type="button"
             onclick="executeQuickAction('family_hw')"
@@ -576,7 +639,7 @@
         </div>
       </section>
       <script src="/assets/pacing-unit-dates.generated.js"></script>
-      <script src="/assets/curriculum-district-pacing.js"></script>
+      <script type="module" src="/assets/curriculum-district-pacing.js"></script>
 
       <nav
         class="cpu-audiences"
@@ -602,34 +665,9 @@
       </nav>
 
       <nav class="curriculum-guide__actions" aria-label="Start with a curriculum workflow">
-        <button
-          class="curriculum-guide__action hub-teacher-only"
-          type="button"
-          data-guide-teacher-view="today"
-        >
-          <strong>Teach today</strong>
-          <span>Open the selected lesson, student link, readiness, and supports.</span>
-        </button>
-        <button
-          class="curriculum-guide__action hub-teacher-only"
-          type="button"
-          data-guide-teacher-view="week"
-        >
-          <strong>Plan the week</strong>
-          <span>Sequence lessons, pacing, practice, and checks for understanding.</span>
-        </button>
-        <button
-          class="curriculum-guide__action hub-teacher-only"
-          type="button"
-          data-nt-download
-          data-nt-download-view="packages"
-        >
-          <strong>⬇️ Download Resources</strong>
-          <span
-            >Package a whole unit, a preset pack, or any set of lessons and files into one
-            zip.</span
-          >
-        </button>
+
+
+
         <button
           class="curriculum-guide__action hub-teacher-only"
           type="button"
@@ -643,10 +681,11 @@
             the web pages.</span
           >
         </button>
-        <a class="curriculum-guide__action" href="/curriculum/units/">
-          <strong>Explore by unit</strong>
-          <span>Choose one unit and see only the lesson and resources you need.</span>
+        <a class="curriculum-guide__action" href="/curriculum/practice-workbooks/">
+          <strong>Practice Workbook Library · DOCX &amp; PDF</strong>
+          <span>Browse and download a print-ready practice sheet for every lesson and pathway.</span>
         </a>
+
         <a class="curriculum-guide__action" href="/math/fluency-lab/">
           <strong>Math Fluency Lab · Grades 1–8</strong>
           <span>Visual lessons, fresh daily practice, and teacher assignments for school and home.</span>
@@ -658,8 +697,7 @@
         >
           <strong style="color: #075985">Small-Group Studio 💡</strong>
           <span
-            >Google Innovator dynamic micro-clustering, Socratic surgical cards & dual-coding
-            manipulatives.</span
+            >Plan small groups, explore visual models, and use prompts that help students explain their thinking.</span
           >
         </a>
         <a
@@ -761,7 +799,12 @@
           >Student Experience Preview ↗</a
         >
       </nav>
-    </header>
+
+      </details>
+      <details class="hub-collection" id="hub-manipulatives"><summary>Visual math tools <span>Models, manipulatives, and 3D explorations</span></summary></details>
+      <details class="hub-collection" id="hub-library-collection"><summary>Complete tool library &amp; curriculum information <span>All existing resources, teaching tools, and course references</span></summary>
+      <div id="hub-planning-workspace"></div>
+
 
     <style>
       /* The teacher toolbelt below replaces the old redundant tool bands. Hide the
@@ -1092,7 +1135,7 @@
         if (!el || !window.matchMedia) return;
         var wide = window.matchMedia("(min-width: 769px)");
         function sync() {
-          el.open = wide.matches;
+          el.open = false;
         }
         sync();
         if (wide.addEventListener) wide.addEventListener("change", sync);
@@ -1100,7 +1143,9 @@
       })();
     </script>
 
-    <main class="wrap" id="main-content">
+    <div class="wrap" id="curriculum-library">
+      <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
+      <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
 
       <div class="hub-side" id="hub-side">
         <!-- Unit 0 · one-time mentor choice. Static markup and a plain flex child
@@ -2243,7 +2288,7 @@
             }
           </style>
 
-          
+
           <!-- ==========================================================================
                MASTER 180-DAY COURSE PACING MATRIX & INSTRUCTIONAL DESIGN (GATEWAY 1)
                ========================================================================== -->
@@ -2256,7 +2301,7 @@
             <span class="mf-icon" style="background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff;" aria-hidden="true">📅</span>
             <div class="mf-body">
               <span class="mf-tag" style="color: #4338ca; background: rgba(99, 102, 241, 0.12);">EdReports Gateway 1 · Master Pacing Model</span>
-              <h2 id="pacing-matrix-title">Master 180-Day Instructional Architecture</h2>
+              <h2 id="pacing-matrix-title">Course pacing reference</h2>
               <p class="mf-sub">
                 A rigorous, standards-aligned scope and sequence accounting for every instructional day of the 36-week academic year.
               </p>
@@ -4111,7 +4156,7 @@
         })();
       </script>
 
-    
+
       <!-- ==========================================================================
            PUBLISHER & ADOPTION EVALUATION SHOWCASE (Unrestricted Evaluator Access)
            ========================================================================== -->
@@ -4133,17 +4178,17 @@
             <span style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid #0284c7; padding: 4px 12px; border-radius: 999px; font-weight: 800; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;">
               🏛️ Publisher &amp; Adoption Evaluator Showcase
             </span>
-            <span style="font-size: 12.5px; color: #94a3b8; font-weight: 600;">EdReports Gateways 1–3 · State Adoption Ready</span>
+            <span style="font-size: 12.5px; color: #94a3b8; font-weight: 600;">Curriculum samples &amp; review resources</span>
           </div>
           <span style="font-size: 11.5px; background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 3px 10px; border-radius: 6px; font-weight: 700;">
-            ✓ Open Evaluator Access (No Password Required)
+            Public samples · Teacher resources require access
           </span>
         </div>
         <h2 style="font-family: Nunito, sans-serif; font-size: 20px; font-weight: 800; color: #ffffff; margin: 0 0 6px 0;">
-          Instructional Architecture &amp; Evaluation Sandbox
+          Explore the curriculum design
         </h2>
         <p style="margin: 0 0 16px 0; font-size: 13.5px; line-height: 1.6; color: #cbd5e1; max-width: 960px;">
-          Welcome district adoption committee members, state review panels, and educational publishers. To ensure full compliance with EdReports usability and evaluation standards without compromising live classroom security, explore our turnkey curriculum assets below — including sample lesson blueprints, teacher facilitation guides, UDL 3.0 matrices, and standards crosswalks.
+          Welcome district adoption committee members, state review panels, and educational publishers. Explore sample lessons, teacher facilitation guides, learning supports, and standards crosswalks. Teacher guides and answer keys use the site’s teacher access controls.
         </p>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
           <a href="/lessons/1-1/learn.html" class="eval-card" style="background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); padding: 12px 14px; border-radius: 12px; text-decoration: none; color: #f8fafc; transition: all 0.2s ease;">
@@ -4180,22 +4225,22 @@
           >
             <span class="mf-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff;" aria-hidden="true">🛡️</span>
             <div class="mf-body">
-              <span class="mf-tag" style="color: #0369a1; background: rgba(2, 132, 199, 0.12);">1EdTech · CAST UDL 3.0 · WIDA ELD · Student Privacy</span>
-              <h2 id="enterprise-standards-title">Enterprise Interoperability &amp; Inclusivity Charter</h2>
+              <span class="mf-tag" style="color: #0369a1; background: rgba(2, 132, 199, 0.12);">Classroom integrations · Learning supports · Data privacy</span>
+              <h2 id="enterprise-standards-title">Platform &amp; learning supports</h2>
               <p class="mf-sub">
-                Designed for seamless district integration, universal access for diverse learners, and gold-standard data protection.
+                Explore the available classroom integrations, learning supports, and data settings.
               </p>
 
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0;">
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
                   <strong style="color: #0284c7; font-size: 13.5px; display: flex; align-items: center; gap: 6px;">
-                    🔌 1EdTech &amp; LMS Architecture
+                    🔌 Classroom integrations
                   </strong>
                   <ul style="margin: 8px 0 0 0; padding-left: 18px; font-size: 12px; line-height: 1.5; color: #475569;">
                     <li><strong>LTI 1.3 Advantage:</strong> Grade passback (AGS) &amp; Deep Linking (DL) support</li>
-                    <li><strong>SCORM 1.2 / 2004:</strong> Self-grading deployable packages</li>
-                    <li><strong>Common Cartridge:</strong> IMS CC export for Canvas, Schoology, and Classroom</li>
-                    <li><strong>OneRoster 1.2:</strong> Automated SIS section and roster ingestion</li>
+                    <li><strong>SCORM 1.2:</strong> Self-grading deployable packages</li>
+                    <li><strong>Common Cartridge:</strong> IMS CC export for Canvas</li>
+                    <li><strong>Teacher setup:</strong> <a href="/teacher-tools/canvas-console/">Open the Canvas package tools</a></li>
                   </ul>
                 </div>
 
@@ -4217,27 +4262,29 @@
                   <ul style="margin: 8px 0 0 0; padding-left: 18px; font-size: 12px; line-height: 1.5; color: #475569;">
                     <li><strong>Levels 1–5 Scaffolding:</strong> Structured supports from Entering to Bridging</li>
                     <li><strong>Language Objectives:</strong> Explicit linguistic targets paired with math standards</li>
-                    <li><strong>Dual-Language Assets:</strong> Full Spanish translation preserving cognitive demand</li>
+                    <li><strong>Dual-Language Assets:</strong> English and Spanish supports where available</li>
                     <li><strong>Tier 2/3 Cognates:</strong> Illustrated mathematical vocabulary anchors</li>
                   </ul>
                 </div>
 
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
                   <strong style="color: #16a34a; font-size: 13.5px; display: flex; align-items: center; gap: 6px;">
-                    🔒 Privacy &amp; Legal Compliance
+                    🔒 Data &amp; access
                   </strong>
                   <ul style="margin: 8px 0 0 0; padding-left: 18px; font-size: 12px; line-height: 1.5; color: #475569;">
-                    <li><strong>FERPA &amp; COPPA:</strong> Zero student PII collected or stored on remote servers</li>
-                    <li><strong>Local-First Storage:</strong> Cryptographic client-side save codes</li>
-                    <li><strong>Student Privacy Pledge:</strong> Strict non-commercialization of student data</li>
-                    <li><strong>VPAT / Section 508:</strong> Full screen-reader and keyboard navigability</li>
+                    <li><strong>Data privacy:</strong> See the data privacy guide for what each feature stores</li>
+                    <li><strong>Local-First Storage:</strong> Device progress and optional save-code recovery</li>
+                    <li><strong>Privacy guide:</strong> <a href="/curriculum/data-privacy/">Read feature-specific storage and sharing details</a></li>
+                    <li><strong>Accessibility features:</strong> Keyboard navigation, readable type, and lesson supports</li>
                   </ul>
                 </div>
               </div>
             </div>
           </section>
 
-</main>
+</div>
+      </details>
+    </main>
 
     <!-- OUTSIDE the role="main" wrapper above, deliberately. A contentinfo
          landmark nested inside another landmark is not exposed as the page
@@ -4301,13 +4348,13 @@
          fetched the same two /data manifests, which is what put this page over
          its 60-request budget. Memoizes the response text so each still parses
          its own copy. See assets/curriculum-json-cache.js. -->
-    <script src="/assets/curriculum-json-cache.js?v=msaoy7gp" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=learning-labs-1" defer></script>
+    <script src="/assets/curriculum-json-cache.js?v=03a7d804" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=51bc51d1" defer></script>
     <!-- Readiness chips: joins the Nervous System prerequisite graph with this
          device's local progress to show "ready" / "warm up first" per lesson.
          Additive and fail-silent; stamp is the content hash (see
          tools/curriculum-hub-assets.test.mjs). -->
-    <script defer src="/assets/curriculum-ready-next.js?v=64f28172"></script>
+    <script defer src="/assets/curriculum-ready-next.js?v=ccb8b7b3"></script>
     <script src="/assets/curriculum-audit-badges.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-sidebar.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-top1.js?v=msaoy7gp" defer></script>
@@ -4326,7 +4373,7 @@
             var trigger = target && target.closest && target.closest("[data-nt-download]");
             if (!trigger || window.NTCurriculumDownload) return;
             event.preventDefault();
-            loading = loading || import("/assets/curriculum-download.js?v=0d02bf58");
+            loading = loading || import("/assets/curriculum-download.js?v=cc543142");
             loading.then(function () {
               window.NTCurriculumDownload.open({
                 unit: trigger.dataset.ntDownloadUnit,
@@ -4341,14 +4388,16 @@
         );
       })();
     </script>
-    <script src="/assets/curriculum-teacher-planning.js?v=19f36278" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=e3260ee5" defer></script>
     <script src="/assets/curriculum-live-signal.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-next-move.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-teacher-workflow.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-guided-path.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-studio-journey.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-lesson-merge.js?v=msaoy7gp" defer></script>
-    <script src="/assets/curriculum-product-upgrades.js?v=msaoy7gp" defer></script>
+    <script src="/assets/curriculum-product-upgrades.js?v=6e40e501" defer></script>
+    <script src="/assets/curriculum-navigator.js?v=d5d60ea5" defer></script>
+    <script src="/assets/curriculum-home.js?v=d8857968" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 
@@ -4615,11 +4664,13 @@
           tab.type = "button";
           tab.className = "hub-supports-tab";
           tab.setAttribute("aria-expanded", "false");
+          tab.setAttribute("aria-controls", "hub-supports-panel");
           tab.innerHTML =
             '<span class="hst-icon" aria-hidden="true">🛠️</span><span class="hst-label">Prepare Supports</span>';
 
           var panel = document.createElement("div");
           panel.className = "hub-supports-panel";
+          panel.id = "hub-supports-panel";
           panel.appendChild(sup); // move the fully-wired builder in
           var det = sup.querySelector("details.ewl-linkgen");
           if (det) det.setAttribute("open", ""); // tab is the control now
@@ -4628,7 +4679,15 @@
           dock.appendChild(tab);
           document.body.appendChild(dock);
 
-          function setOpen(open) {
+          function setOpen(open, moveFocus) {
+            panel.hidden = !open;
+            panel.inert = !open;
+            if (moveFocus) {
+              if (open) {
+                var firstControl = panel.querySelector("button, select, input, a[href]");
+                if (firstControl) firstControl.focus();
+              } else tab.focus();
+            }
             dock.setAttribute("data-open", open ? "true" : "false");
             tab.setAttribute("aria-expanded", open ? "true" : "false");
             try {
@@ -4636,10 +4695,10 @@
             } catch (e) {}
           }
           tab.addEventListener("click", function () {
-            setOpen(dock.getAttribute("data-open") !== "true");
+            setOpen(dock.getAttribute("data-open") !== "true", true);
           });
           document.addEventListener("keydown", function (e) {
-            if (e.key === "Escape" && dock.getAttribute("data-open") === "true") setOpen(false);
+            if (e.key === "Escape" && dock.getAttribute("data-open") === "true") setOpen(false, true);
           });
 
           var saved = null;
@@ -4662,31 +4721,16 @@
          roster setup. Additive and self-gating — with no roster and no Teacher
          Mode it renders nothing at all.
          shared-identity.js must load first; `defer` keeps document order. -->
-    <link rel="stylesheet" href="/assets/curriculum-supports-identity.css" />
+    <link rel="stylesheet" href="/assets/curriculum-supports-identity.css?v=7a84b207" />
     <script src="/assets/shared-identity.js" defer></script>
     <script src="/assets/curriculum-supports-identity.js" defer></script>
     <script src="/assets/class-board-strip.js" defer></script>
     <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- ==========================================================================
-         AWARD-WINNING PEDAGOGY SHOWCASE MODAL & UDL 3.0 SUITE
+         TEACHING OVERVIEW AND READING SUPPORTS
          ========================================================================== -->
-    <div
-      id="awardShowcaseOverlay"
-      style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(15, 23, 42, 0.75);
-        backdrop-filter: blur(8px);
-        z-index: 99999;
-        display: none;
-        align-items: center;
-        justify-content: center;
-      "
-    >
+    <dialog id="awardShowcaseOverlay" aria-labelledby="awardModalTitle" aria-describedby="awardModalSubtitle">
       <div
         style="
           background: #ffffff;
@@ -4729,12 +4773,12 @@
             </div>
           </div>
           <button
-            onclick="closeAwardShowcaseModal()"
+            type="button" aria-label="Close teaching overview" onclick="closeAwardShowcaseModal()"
             style="
               background: #f1f5f9;
               border: none;
-              width: 36px;
-              height: 36px;
+              width: 44px;
+              height: 44px;
               border-radius: 50%;
               font-size: 1.2rem;
               cursor: pointer;
@@ -4759,7 +4803,7 @@
           "
         >
           <button
-            onclick="closeAwardShowcaseModal()"
+            type="button" aria-label="Close teaching overview" onclick="closeAwardShowcaseModal()"
             style="
               padding: 10px 20px;
               background: #0284c7;
@@ -4775,7 +4819,7 @@
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
 
     <!-- A complementary landmark, so the launcher and its popover are
          reachable by landmark navigation instead of being loose content. -->
@@ -4810,19 +4854,21 @@
       onmouseover="this.style.transform = 'scale(1.05)'"
       onmouseout="this.style.transform = 'scale(1)'"
     >
-      <span>⚡ Pedagogy & UDL</span>
+      <span>Reading supports</span>
       </button>
 
     <!-- Floating UDL Menu Popover -->
     <div
-      id="udlMenuPopover"
+      id="udlMenuPopover" role="region" aria-labelledby="udlMenuTitle"
       style="
         position: fixed;
         bottom: 74px;
         right: 24px;
         z-index: 99991;
         background: #ffffff;
-        width: 320px;
+        width: min(320px, calc(100vw - 32px));
+        max-height: calc(100dvh - 120px);
+        overflow-y: auto;
         border-radius: 18px;
         padding: 18px 20px;
         box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
@@ -4831,7 +4877,7 @@
         font-family: &quot;Nunito&quot;, sans-serif;
       "
     >
-      <h4
+      <h2 id="udlMenuTitle"
         style="
           margin: 0 0 12px;
           font-size: 0.98rem;
@@ -4841,8 +4887,8 @@
           padding-bottom: 8px;
         "
       >
-        ♿ UDL 3.0 & Accessibility Suite
-      </h4>
+        Reading and language supports
+      </h2>
       <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.86rem">
         <label
           style="
@@ -4854,7 +4900,7 @@
             font-weight: 700;
           "
         >
-          <span>🧠 Dyslexia-Friendly Font</span>
+          <span>Atkinson headings and controls</span>
           <input type="checkbox" id="chkDyslexiaFont" onchange="toggleDyslexiaFont(this.checked)" />
         </label>
         <label
@@ -4867,27 +4913,16 @@
             font-weight: 700;
           "
         >
-          <span>🌗 High Contrast Ambient Mode</span>
+          <span>High contrast</span>
           <input type="checkbox" id="chkHighContrast" onchange="toggleHighContrast(this.checked)" />
         </label>
-        <label
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            color: #334155;
-            font-weight: 700;
-          "
-        >
-          <span>🌐 Dual-Language Hints</span>
-          <input type="checkbox" id="chkEsolMode" onchange="toggleEsolOverlay(this.checked)" />
-        </label>
+        <a href="/esol/">Open language supports</a>
       </div>
     </div>
     </aside>
 
-    <script src="/assets/curriculum-hub-pedagogy.js" defer></script>
+    <script src="/assets/practice-workbook-links.js" defer></script>
+    <script src="/assets/curriculum-hub-pedagogy.js?v=1867d7a5" defer></script>
     <script src="/assets/formula-popup.js" defer></script>
   </body>
 </html>

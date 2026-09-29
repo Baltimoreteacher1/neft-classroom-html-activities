@@ -1,4 +1,4 @@
-import { normalizeLessons, resolveSection, pickLang, weekNote, safeExternalUrl } from "./model.js";
+import { DAYS, normalizeLessons, resolveSection, pickLang, weekNote, safeExternalUrl } from "./model.js";
 
 export function schoolDate(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -25,6 +25,9 @@ export function familyLink(sectionId, lang = "en", origin = "https://eduwonderla
   if (lang === "es") url.searchParams.set("lang", "es");
   return url.href;
 }
+export function isHomeworkEditorPath(pathname) {
+  return /^\/curriculum\/family-connections\/teacher\/homework(?:\.html)?\/?$/i.test(pathname);
+}
 export function messageDestination(snapshot) {
   const candidate = snapshot?.integrations?.classDojoUrl;
   if (safeExternalUrl(candidate)) {
@@ -40,8 +43,10 @@ export function messageDestination(snapshot) {
 export function assignedHomework(snapshot, lessons, sectionId) {
   const section = resolveSection(snapshot, sectionId);
   const byId = new Map(normalizeLessons(lessons).map((item) => [item.id, item]));
-  const seen = new Map();
-  for (const entry of section.week?.days || []) {
+  const assignments = [];
+  for (const day of DAYS) {
+    const entry = section.week?.days?.find((item) => item.day === day);
+    if (!entry) continue;
     const lesson = byId.get(entry.lessonId);
     if (
       entry.status !== "lesson" ||
@@ -49,10 +54,9 @@ export function assignedHomework(snapshot, lessons, sectionId) {
       snapshot.homeworkOverrides?.[lesson.id]?.visible === false
     )
       continue;
-    if (!seen.has(lesson.id)) seen.set(lesson.id, { ...lesson, entries: [] });
-    seen.get(lesson.id).entries.push(entry);
+    assignments.push({ ...lesson, entry });
   }
-  return [...seen.values()];
+  return assignments;
 }
 const el = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -80,6 +84,7 @@ export function renderHomeworkHub(
   const t = (en, spanish) => (es ? spanish : en);
   const section = resolveSection(snapshot, sectionId);
   const phase = weekPhase(section.week?.startDate, now);
+  const today = schoolDate(now);
   root.replaceChildren();
   const week = el("section", undefined, "hub-panel");
   week.id = "family-week";
@@ -87,12 +92,14 @@ export function renderHomeworkHub(
   week.append(
     el(
       "h2",
-      phase === "upcoming"
-        ? t("Upcoming homework", "Próximas tareas")
-        : t("This week’s homework", "Tareas de esta semana"),
+      phase === "past" && !preview
+        ? t("Waiting for this week’s homework", "Esperando las tareas de esta semana")
+        : phase === "upcoming"
+          ? t("Upcoming homework", "Próximas tareas")
+          : t("This week’s homework", "Tareas de esta semana"),
     ),
   );
-  if (phase !== "empty")
+  if (phase !== "empty" && (phase !== "past" || preview))
     week.append(
       el(
         "p",
@@ -106,10 +113,17 @@ export function renderHomeworkHub(
       el(
         "p",
         t(
-          "A new week has not been posted yet. These dates are from the last posted week. Please check ClassDojo for an update.",
-          "Aún no se ha publicado la nueva semana. Estas fechas son de la última semana publicada. Consulta ClassDojo para ver novedades.",
+          "Mr. Neft has not posted a new plan yet. Check ClassDojo for the latest update.",
+          "El Sr. Neft aún no ha publicado un plan nuevo. Consulta ClassDojo para ver novedades.",
         ),
         "empty-state",
+      ),
+    );
+    week.append(
+      el(
+        "p",
+        `${t("Last posted", "Última publicación")}: ${dateLabel(section.week.startDate, lang)} – ${dateLabel(addDays(section.week.startDate, 4), lang)}`,
+        "quiet last-posted",
       ),
     );
   } else if (phase === "empty" || !assignments.length) {
@@ -138,9 +152,32 @@ export function renderHomeworkHub(
     const note = weekNote(section.week, lang);
     if (note) week.append(el("p", note));
     const list = el("div", undefined, "homework-list");
-    for (const item of assignments) {
+    const byDay = new Map(assignments.map((item) => [item.entry.day, item]));
+    for (const [index, day] of DAYS.entries()) {
+      const item = byDay.get(day);
       const card = el("article", undefined, "homework-card");
-      card.append(
+      const dayDate = addDays(section.week.startDate, index);
+      const dayHeading = el("div", undefined, "day-heading");
+      dayHeading.append(
+        el(
+          "h3",
+          t(day, { Monday: "Lunes", Tuesday: "Martes", Wednesday: "Miércoles", Thursday: "Jueves", Friday: "Viernes" }[day]),
+        ),
+      );
+      dayHeading.append(el("span", dateLabel(dayDate, lang), "day-date"));
+      if (phase === "current" && dayDate === today) {
+        card.classList.add("is-today");
+        dayHeading.append(el("span", t("Today", "Hoy"), "today-badge"));
+      }
+      card.append(dayHeading);
+      const content = el("div", undefined, "day-work");
+      if (!item) {
+        content.append(el("p", t("No homework posted for this day.", "No hay tarea publicada para este día."), "quiet"));
+        card.append(content);
+        list.append(card);
+        continue;
+      }
+      content.append(
         el(
           "p",
           `${t("Lesson", "Lección")} ${item.id} · ${t("About 10 minutes", "Unos 10 minutos")}`,
@@ -148,21 +185,15 @@ export function renderHomeworkHub(
         ),
       );
       const override = snapshot.homeworkOverrides?.[item.id];
-      card.append(
-        el("h3", pickLang(override?.title || item.title, override?.titleEs || item.titleEs, lang)),
-      );
-      for (const entry of item.entries) {
-        const noteText = pickLang(entry.note, entry.noteEs, lang);
-        if (noteText) card.append(el("p", noteText));
-        if (
-          entry.dueDate &&
-          /^\d{4}-\d{2}-\d{2}$/.test(entry.dueDate) &&
-          addDays(entry.dueDate, 0) === entry.dueDate
-        )
-          card.append(
-            el("p", `${t("Due", "Entrega")}: ${dateLabel(entry.dueDate, lang)}`, "due-date"),
-          );
-      }
+      content.append(el("h4", pickLang(override?.title || item.title, override?.titleEs || item.titleEs, lang)));
+      const noteText = pickLang(item.entry.note, item.entry.noteEs, lang);
+      if (noteText) content.append(el("p", noteText));
+      if (
+        item.entry.dueDate &&
+        /^\d{4}-\d{2}-\d{2}$/.test(item.entry.dueDate) &&
+        addDays(item.entry.dueDate, 0) === item.entry.dueDate
+      )
+        content.append(el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"));
       const link = el("a", t("Open homework", "Abrir tarea"), "button");
       const path = /^\/lessons\/\d{1,2}-\d{1,2}(?:-flagship)?\/homework(?:\.html)?\/?$/.test(
         item.homeworkPath,
@@ -170,7 +201,7 @@ export function renderHomeworkHub(
         ? item.homeworkPath
         : `/lessons/${item.id}/homework.html`;
       link.href = `${path}?route=quick&lang=${lang}`;
-      card.append(link);
+      card.append(content, link);
       list.append(card);
     }
     week.append(list);
@@ -185,9 +216,10 @@ export function renderHomeworkHub(
       ),
     );
   }
-  const message = el("section", undefined, "hub-panel message-panel");
-  message.append(el("h2", t("Message Mr. Neft", "Enviar un mensaje al Sr. Neft")));
-  message.append(
+  const message = el("section", undefined, "message-panel");
+  const messageCopy = el("div", undefined, "message-copy");
+  messageCopy.append(el("h2", t("Need to reach Mr. Neft?", "¿Necesitas contactar al Sr. Neft?")));
+  messageCopy.append(
     el(
       "p",
       t(
@@ -204,6 +236,6 @@ export function renderHomeworkHub(
   link.href = messageDestination(snapshot);
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  message.append(link);
+  message.append(messageCopy, link);
   root.append(week, message);
 }

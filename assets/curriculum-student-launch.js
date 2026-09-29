@@ -68,7 +68,9 @@
     var url = new URL(path, window.location.origin);
     url.searchParams.set("student", "1");
     var supports = querySupports();
-    if (supports.length) url.hash = "supports=" + supports.join(",");
+    // Keep section anchors such as #reflect: the supports engine accepts both
+    // query and fragment transport, so use the query when linking to a lesson.
+    if (supports.length) url.searchParams.set("supports", supports.join(","));
     return url.pathname + url.search + url.hash;
   }
 

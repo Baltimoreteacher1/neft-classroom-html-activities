@@ -11,7 +11,7 @@
  */
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createContext, runInContext } from "node:vm";
@@ -129,6 +129,78 @@ test("the Complete Unit preset covers every type except SCORM", () => {
 
 test("the SCORM preset selects nothing but SCORM", () => {
   assert.deepEqual(PRESETS.find((p) => p.id === "scorm").types, ["scorm"]);
+});
+
+/* ------------------------------------------------- one-click lesson work */
+
+/* "📝 Download All Work (Word)" on /curriculum/ is a preset plus one rule the
+ * preset cannot express: guided notes and homework each exist twice, as the
+ * HTML page the site serves and as a real .docx beside it, and the pack takes
+ * the .docx. The rule lives in the browser module and the pairs live in the
+ * taxonomy, so nothing but a test holds the two together — drop "homework-docx"
+ * from the preset and the button starts shipping the same assignment twice. */
+const workPreset = () => PRESETS.find((p) => p.id === "lesson-work");
+const workSiblings = () => {
+  const source = readFileSync(resolve(ROOT, "assets/curriculum-download.js"), "utf8");
+  const literal = /const WORK_DOCX_SIBLING = (\{[^}]*\});/.exec(source);
+  assert.ok(literal, "assets/curriculum-download.js no longer declares WORK_DOCX_SIBLING");
+  const pairs = runInContext(`(${literal[1]})`, createContext({}));
+  // An empty literal would make the pairing test pass by having nothing to
+  // check, which is the one result it must never report.
+  assert.ok(Object.keys(pairs).length, "WORK_DOCX_SIBLING is empty");
+  return pairs;
+};
+
+test("the lesson-work preset packages the sheets students write on", () => {
+  const preset = workPreset();
+  assert.ok(preset, "the lesson-work preset is gone — the hub button has nothing to package");
+  // A PDF is not work a teacher can edit, and a SCORM package is the other
+  // button. Either one in here means the pack silently changed meaning.
+  for (const type of preset.types) {
+    assert.ok(!/-pdf$/.test(type), `${type} is a PDF; the work pack is editable files`);
+    assert.notEqual(type, "scorm", "SCORM belongs to the button next door");
+  }
+  assert.ok(
+    preset.types.includes("practice-workbook-docx"),
+    "the practice workbook is the one sheet that is born editable; it must be in the pack",
+  );
+});
+
+test("every HTML sheet with a DOCX twin is paired in the work preset", () => {
+  const preset = workPreset();
+  for (const [html, docx] of Object.entries(workSiblings())) {
+    assert.ok(TYPE_BY_ID.has(html), `WORK_DOCX_SIBLING names unknown type ${html}`);
+    assert.ok(TYPE_BY_ID.has(docx), `WORK_DOCX_SIBLING names unknown type ${docx}`);
+    // Both halves must be in the preset. With only the HTML half the pack ships
+    // a converted copy where an editable original exists; with only the DOCX
+    // half the lessons that have no .docx lose the sheet entirely.
+    assert.ok(preset.types.includes(html), `lesson-work is missing ${html}`);
+    assert.ok(preset.types.includes(docx), `lesson-work is missing its DOCX twin ${docx}`);
+  }
+});
+
+test("the practice workbooks on disk are all in the manifest", () => {
+  // Mirrors tools/validate-practice-workbooks.mjs: a workbook exists for every
+  // lesson folder that has an authored worksheet.html. They are linked into the
+  // units page at RUNTIME (assets/practice-workbook-links.js), so the manifest
+  // generator finds them on disk or not at all.
+  const manifest = JSON.parse(
+    readFileSync(resolve(ROOT, "data/curriculum-download-manifest.json"), "utf8"),
+  );
+  const lessons = manifest.units.flatMap((u) => u.lessons);
+  const packaged = new Set(lessons.flatMap((l) => l.resources.map((r) => r.url)));
+  const orphans = [];
+  for (const lesson of lessons) {
+    for (const id of [lesson.id, `${lesson.id}-part2`, `${lesson.id}-part3`]) {
+      const url = `/lessons/${id}/downloads/${id}-practice-workbook.docx`;
+      if (existsSync(resolve(ROOT, url.slice(1))) && !packaged.has(url)) orphans.push(id);
+    }
+  }
+  assert.deepEqual(
+    orphans,
+    [],
+    `practice workbooks exist on disk but are in no download package: ${orphans.join(", ")}`,
+  );
 });
 
 /* ---------------------------------------------------------- determinism */

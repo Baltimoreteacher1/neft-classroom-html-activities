@@ -78,7 +78,10 @@
 
   function audiencePortals() {
     var guide = document.querySelector(".curriculum-guide");
-    var actions = guide?.querySelector(".curriculum-guide__actions");
+    var actions =
+      guide?.querySelector(".curriculum-guide__actions") ||
+      (document.getElementById("curriculum-navigator") &&
+        document.querySelector(".curriculum-guide__actions"));
     if (!guide || !actions) return;
     // The hub ships the nav statically (curriculum/index.html) so the header
     // does not reflow after load — bind to it. Other pages get it built here.

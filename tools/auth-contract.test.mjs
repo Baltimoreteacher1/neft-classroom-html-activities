@@ -76,6 +76,19 @@ test("a teacher page challenges with Basic and the expected realm", async () => 
   assert.match(res.headers.get("www-authenticate") || "", /^Basic realm="EduWonderLab"/);
 });
 
+test("family homework stays public while its editor needs the site password", async () => {
+  assert.equal((await call("/curriculum/family-connections/?edit=1")).status, 200);
+  for (const path of [
+    "/curriculum/family-connections/teacher/login.html",
+    "/curriculum/family-connections/teacher/homework.html",
+    "/curriculum/family-connections/teacher/homework",
+  ]) {
+    assert.equal((await call(path)).status, 401);
+    assert.equal((await call(path, { env: {} })).status, 503);
+    assert.equal((await call(path, { headers: basic(PW) })).status, 200);
+  }
+});
+
 test("the correct password opens it, and any username is accepted", async () => {
   for (const user of ["teacher", "neft", ""]) {
     const res = await call("/teacher-tools/", { headers: basic(PW, user) });

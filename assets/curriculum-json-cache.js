@@ -41,6 +41,7 @@
     var promise = fetch(url, init || { credentials: "same-origin" })
       .then(function (response) {
         return response.text().then(function (body) {
+          if (!response.ok && pending[url] === promise) delete pending[url];
           return { ok: response.ok, status: response.status, text: body };
         });
       })
@@ -53,7 +54,8 @@
   }
 
   function json(url, init) {
-    return text(url, init).then(function (result) {
+    var request = text(url, init);
+    return request.then(function (result) {
       if (!result.ok) {
         // Carry the status on the error so a caller debugging in the console
         // can tell a 404 (file genuinely missing) from a 503 (worth retrying).
@@ -63,7 +65,12 @@
         error.status = result.status;
         throw error;
       }
-      return JSON.parse(result.text);
+      try {
+        return JSON.parse(result.text);
+      } catch (error) {
+        if (pending[url] === request) delete pending[url];
+        throw error;
+      }
     });
   }
 
