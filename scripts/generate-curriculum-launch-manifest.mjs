@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,6 +10,7 @@ const OUTPUT = resolve(ROOT, "data/curriculum-launch-manifest.json");
 
 const SAFE_RESOURCE_KEYS = [
   "lesson",
+  "readiness",
   "guidedNotes",
   "handout",
   "worksheet",
@@ -46,7 +47,45 @@ function safeResources(resources, lessonId) {
   return output;
 }
 
+/** Join authored labs to known lessons. Exact routes reject external URLs,
+ * encoded traversal, query overrides, and paths to teacher tools. Exported for
+ * contract tests; importing this generator never writes generated data. */
+export function learningLabResources(registry, coreLessons, root = ROOT) {
+  if (!registry || !Array.isArray(registry.labs)) throw new Error("Invalid learning-lab registry");
+  const knownLessons = new Set(coreLessons.map((lesson) => lesson.id));
+  const labIds = new Set();
+  const result = new Map();
+  for (const lab of registry.labs) {
+    if (!lab || typeof lab.id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(lab.id)) {
+      throw new Error("Invalid learning-lab ID");
+    }
+    if (labIds.has(lab.id)) throw new Error(`Duplicate learning-lab ID: ${lab.id}`);
+    labIds.add(lab.id);
+    const expected = `/curriculum/learning-labs/${lab.id}/`;
+    if (lab.href !== expected) throw new Error(`Unsafe learning-lab path: ${lab.id}`);
+    const file = resolve(root, expected.slice(1), "index.html");
+    if (!existsSync(file) || !statSync(file).isFile()) {
+      throw new Error(`Missing learning-lab page: ${lab.id}`);
+    }
+    if (!Array.isArray(lab.lessons) || !lab.lessons.length) {
+      throw new Error(`Learning lab has no lessons: ${lab.id}`);
+    }
+    for (const lessonId of lab.lessons) {
+      if (typeof lessonId !== "string" || !knownLessons.has(lessonId)) {
+        throw new Error(`Unknown learning-lab lesson: ${lessonId}`);
+      }
+      if (result.has(lessonId)) throw new Error(`Duplicate learning-lab assignment: ${lessonId}`);
+      result.set(lessonId, expected);
+    }
+  }
+  return result;
+}
+
 const source = JSON.parse(readFileSync(SOURCE, "utf8"));
+const labResources = learningLabResources(
+  JSON.parse(readFileSync(resolve(ROOT, "data/learning-labs.json"), "utf8")),
+  source.lessons || [],
+);
 const lessons = (source.lessons || []).map((lesson) => ({
   id: cleanText(lesson.id),
   unit: Number(lesson.unit),
@@ -62,7 +101,10 @@ const lessons = (source.lessons || []).map((lesson) => ({
   sentenceFrames: Array.isArray(lesson.supports?.sentenceFrames)
     ? lesson.supports.sentenceFrames.map(cleanText).filter(Boolean)
     : [],
-  resources: safeResources(lesson.resources, lesson.id),
+  resources: {
+    ...safeResources(lesson.resources, lesson.id),
+    ...(labResources.has(lesson.id) ? { learningLab: labResources.get(lesson.id) } : {}),
+  },
 }));
 
 if (!lessons.length || lessons.some((lesson) => !lesson.id || !lesson.title)) {
@@ -257,5 +299,7 @@ if (FORBIDDEN_RESOURCE.test(serialized)) {
   throw new Error("Generated launch manifest contains a forbidden teacher-only resource");
 }
 
-writeFileSync(OUTPUT, serialized);
-console.log(`Wrote ${lessons.length} student-safe lessons to ${OUTPUT}`);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  writeFileSync(OUTPUT, serialized);
+  console.log(`Wrote ${lessons.length} student-safe lessons to ${OUTPUT}`);
+}

@@ -22,6 +22,7 @@
     const selections = new Map();
     let active = String(units[0].unitIndex);
     let restoring = false;
+    let previousSelectionUrl = "";
 
     const unitFor = (number) => units.find((unit) => String(unit.unitIndex) === String(number));
     const cards = () => Array.from(hub.querySelectorAll(".unit-card"));
@@ -31,6 +32,97 @@
     const isSearching = () => search.value.trim().length > 0;
     const isFiltering = () =>
       !!document.querySelector('.hub-filter-chip[aria-pressed="true"]:not([data-filter="all"])');
+
+    function compactControls() {
+      const toolbar = document.getElementById("hub-toolbar-sticky");
+      if (!toolbar || toolbar.querySelector(".units-refine")) return;
+      const optional = Array.from(toolbar.children).filter((element) =>
+        element.matches(".hub-enhance-controls, .hub-filter-chips, #hub-progress-summary"),
+      );
+      if (!optional.length) return;
+      const details = document.createElement("details");
+      details.className = "units-refine";
+      const summary = document.createElement("summary");
+      summary.textContent = "Filter resources & view options";
+      details.append(summary, ...optional);
+      toolbar.appendChild(details);
+    }
+
+    function compactUnitCards() {
+      cards().forEach((card) => {
+        const resources = card.querySelector(".unit-resources-row");
+        if (!resources || resources.closest(".units-resource-drawer")) return;
+        const details = document.createElement("details");
+        details.className = "units-resource-drawer";
+        const summary = document.createElement("summary");
+        summary.textContent = "Unit resources & downloads";
+        resources.before(details);
+        details.append(summary, resources);
+      });
+    }
+
+    function compactResults() {
+      const panel = /** @type {HTMLElement} */ (hub.querySelector(".search-results-panel"));
+      const items = panel ? Array.from(panel.querySelectorAll(".search-result-item")) : [];
+      if (!panel || !items.length || panel.dataset.compactResults) return;
+      panel.dataset.compactResults = "true";
+      panel.classList.add("units-compact-results");
+      const title = panel.querySelector("h2");
+      const filter = document.querySelector('.hub-filter-chip[aria-pressed="true"]');
+      if (title && !isSearching())
+        title.textContent = (filter?.textContent || "Resources") + " across all units";
+      const grid = document.createElement("div");
+      grid.className = "units-results-grid";
+      items.forEach((item) => {
+        const oldHeading = item.querySelector(".search-result-header");
+        if (oldHeading && oldHeading.tagName !== "H3") {
+          const heading = document.createElement("h3");
+          heading.className = oldHeading.className;
+          heading.append(...Array.from(oldHeading.childNodes));
+          oldHeading.replaceWith(heading);
+        }
+        const details = document.createElement("details");
+        details.className = "units-result-details";
+        const summary = document.createElement("summary");
+        const count = item.querySelectorAll(
+          ".lesson-outline-list > .lesson-outline-item > a",
+        ).length;
+        summary.textContent = "Materials · " + count + (count === 1 ? " resource" : " resources");
+        details.appendChild(summary);
+        Array.from(item.children).forEach((child) => {
+          if (!child.matches(".search-result-unit, .search-result-header, .lesson-standard-line"))
+            details.appendChild(child);
+        });
+        item.appendChild(details);
+        grid.appendChild(item);
+      });
+      const resultStatus = document.createElement("p");
+      resultStatus.className = "units-results-status";
+      resultStatus.setAttribute("role", "status");
+      const more = document.createElement("button");
+      more.type = "button";
+      more.className = "units-results-more";
+      let visibleCount = Math.min(8, items.length);
+      const update = () => {
+        items.forEach((item, index) => item.toggleAttribute("hidden", index >= visibleCount));
+        resultStatus.textContent =
+          "Showing " +
+          visibleCount +
+          " of " +
+          items.length +
+          " matching lessons and pathways. Expand Materials to choose a resource.";
+        more.hidden = visibleCount >= items.length;
+        more.textContent = "Show " + Math.min(8, items.length - visibleCount) + " more results";
+      };
+      more.addEventListener("click", () => {
+        const next = visibleCount;
+        visibleCount = Math.min(items.length, visibleCount + 8);
+        update();
+        /** @type {HTMLElement} */ (items[next]?.querySelector("summary"))?.focus();
+      });
+      update();
+      panel.append(resultStatus, grid, more);
+    }
 
     function remember() {
       cards().forEach((card, index) => {
@@ -63,17 +155,19 @@
           select.selectedIndex = lessonIndex;
           select.dispatchEvent(new Event("change", { bubbles: true }));
         }
+        // A history entry with no activity must clear a later activity too.
+        card.querySelectorAll(".activity-select").forEach((other) => {
+          /** @type {HTMLSelectElement} */ (other).selectedIndex = 0;
+        });
+        const launch = /** @type {HTMLAnchorElement} */ (card.querySelector(".btn-launch"));
+        if (launch) launch.style.display = "none";
         if (state.activity) {
           for (const element of card.querySelectorAll(".activity-select")) {
             const activity = /** @type {HTMLSelectElement} */ (element);
             if (Array.from(activity.options).some((option) => option.value === state.activity)) {
-              card.querySelectorAll(".activity-select").forEach((other) => {
-                /** @type {HTMLSelectElement} */ (other).selectedIndex = 0;
-              });
               activity.value = state.activity;
               // A synthetic activity change would open the launch dialog on
               // every async refresh. Restore its visible state without launching.
-              const launch = /** @type {HTMLAnchorElement} */ (card.querySelector(".btn-launch"));
               if (launch) {
                 launch.href = state.activity;
                 launch.textContent = "Launch: " + activity.selectedOptions[0].textContent + " →";
@@ -102,6 +196,12 @@
         ? "Searching and filtering across all 10 units. Choose a unit to return to browsing."
         : unit.num + " · " + count + " lessons. Choose a lesson below, then open an activity.";
       if (status.textContent !== text) status.textContent = text;
+      const refineSummary = document.querySelector(".units-refine > summary");
+      const filter = document.querySelector('.hub-filter-chip[aria-pressed="true"]');
+      if (refineSummary)
+        refineSummary.textContent = isFiltering()
+          ? "Filter: " + filter.textContent + " · View options"
+          : "Filter resources & view options";
       document.querySelectorAll("[data-unit-step]").forEach((button) => {
         const index =
           units.indexOf(unit) + Number(/** @type {HTMLElement} */ (button).dataset.unitStep);
@@ -156,15 +256,21 @@
       const params = new URLSearchParams(location.search);
       const hash = /^#unit-(\d+)$/.exec(location.hash);
       const number = hash?.[1] || params.get("u") || params.get("l")?.split("-")[0];
-      if (unitFor(number)) active = String(number);
+      active = unitFor(number) ? String(number) : String(units[0].unitIndex);
+      const requestedLesson = params.get("l");
+      const lesson = unitFor(active).lessons.find((item) => item.lessonId === requestedLesson);
+      // A bare URL is the first unit/lesson, even after visiting other units.
+      // Resolve exact IDs so small-group and catch-up deep links stay distinct.
+      const requestedState = {
+        lesson: lesson?.lessonId || unitFor(active).lessons[0].lessonId,
+        activity: lesson ? params.get("a") || "" : "",
+      };
       const query = params.get("q") || "";
       search.value = query;
       if (query) api.renderSearchResults(query.trim().toLowerCase());
       else api.renderHub();
-      if (params.get("l") && String(number) === params.get("l").split("-")[0]) {
-        selections.set(active, { lesson: params.get("l"), activity: params.get("a") || "" });
-        restore();
-      }
+      selections.set(active, requestedState);
+      restore();
       sync();
       search.dispatchEvent(new Event("input", { bubbles: true }));
     }
@@ -198,8 +304,10 @@
     const renderHub = api.renderHub;
     api.renderHub = function () {
       remember();
+      if (isFiltering() && !isSearching()) return api.renderSearchResults("");
       const result = renderHub.apply(this, arguments);
       restore();
+      compactUnitCards();
       sync();
       return result;
     };
@@ -207,6 +315,7 @@
     api.renderSearchResults = function () {
       remember();
       const result = renderSearch.apply(this, arguments);
+      compactResults();
       sync();
       return result;
     };
@@ -214,6 +323,13 @@
     picker.addEventListener("change", () => choose(picker.value));
     document.addEventListener("click", (event) => {
       const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest(".hub-clear-filters")) {
+        // The shared empty-state button changes the field directly. Notify all
+        // input listeners so the URL, clear control, and visible results agree.
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        search.focus();
+        return;
+      }
       const step = target?.closest("[data-unit-step]");
       if (step) {
         const index =
@@ -238,6 +354,18 @@
       const current = document.getElementById("unit-" + active);
       getSelect(current)?.focus();
     });
+    // The shared renderer replaces query parameters in its target handler.
+    // Capture the previous URL first, then keep explicit selections as separate
+    // history entries so Back can return to the previous lesson or activity.
+    hub.addEventListener(
+      "change",
+      (event) => {
+        if (restoring || !(event.target instanceof Element)) return;
+        if (!event.target.matches(".lesson-select, .activity-select")) return;
+        previousSelectionUrl = location.href;
+      },
+      true,
+    );
     hub.addEventListener("change", (event) => {
       if (restoring || !(event.target instanceof Element)) return;
       const card = event.target.closest(".unit-card");
@@ -251,6 +379,12 @@
         url.hash = "unit-" + active;
         history.replaceState(history.state, "", url);
       }
+      const currentUrl = location.href;
+      if (previousSelectionUrl && currentUrl !== previousSelectionUrl) {
+        history.replaceState(history.state, "", previousSelectionUrl);
+        history.pushState(null, "", currentUrl);
+      }
+      previousSelectionUrl = "";
       sync();
     });
     search.addEventListener("input", () => {
@@ -277,6 +411,7 @@
       disclosure.append(summary, gallery);
       document.querySelector(".units-page-head").appendChild(disclosure);
     }
+    compactControls();
     applyLocation();
   }
 

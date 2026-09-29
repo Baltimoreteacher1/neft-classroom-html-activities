@@ -63,7 +63,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=msaoy7gp" />
     <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=msaoy7gp" />
-    <link rel="stylesheet" href="/assets/curriculum-product-upgrades.css?v=msaoy7gp" />
+    <link rel="stylesheet" href="/assets/curriculum-product-upgrades.css?v=739a15fc" />
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
@@ -201,8 +201,8 @@
         letter-spacing: 0.02em;
       }
     </style>
-    <link rel="stylesheet" href="/assets/curriculum-navigator.css?v=67cb1b82" />
-    <link rel="stylesheet" href="/assets/curriculum-home.css?v=0178f524" />
+    <link rel="stylesheet" href="/assets/curriculum-navigator.css?v=7d4bbcc6" />
+    <link rel="stylesheet" href="/assets/curriculum-home.css?v=71846447" />
   </head>
   <body class="light-theme curriculum-home">
     <header class="curriculum-guide" id="curriculum-start">
@@ -255,7 +255,15 @@
         </button><a class="curriculum-guide__action" href="/curriculum/units/">
           <strong>Explore by unit</strong>
           <span>Choose one unit and see only the lesson and resources you need.</span>
-        </a><a href="/curriculum/practice-workbooks/">Practice workbooks</a><a href="/curriculum/family-connections/">For families</a><a href="#hub-library-collection">All tools</a></nav>
+        </a><a href="/curriculum/practice-workbooks/">Practice workbooks</a><a href="/curriculum/family-connections/">For families</a><a href="#hub-library-collection">All tools</a><aside class="hub-reading-control" aria-label="Reading preferences">
+          <button id="udlFloatingLauncher" type="button" aria-expanded="false" aria-controls="udlMenuPopover" onclick="toggleUdlMenu()">Reading supports</button>
+          <div id="udlMenuPopover" role="region" aria-labelledby="udlMenuTitle" style="display: none">
+            <h2 id="udlMenuTitle">Reading and language supports</h2>
+            <label><span>Atkinson headings and controls</span><input type="checkbox" id="chkDyslexiaFont" onchange="toggleDyslexiaFont(this.checked)" /></label>
+            <label><span>High contrast</span><input type="checkbox" id="chkHighContrast" onchange="toggleHighContrast(this.checked)" /></label>
+            <a href="/esol/">Open language supports</a>
+          </div>
+        </aside></nav>
     </header>
 
     <main id="main-content" class="hub-page">
@@ -4349,7 +4357,7 @@
          its 60-request budget. Memoizes the response text so each still parses
          its own copy. See assets/curriculum-json-cache.js. -->
     <script src="/assets/curriculum-json-cache.js?v=03a7d804" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=51bc51d1" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=b363be47" defer></script>
     <!-- Readiness chips: joins the Nervous System prerequisite graph with this
          device's local progress to show "ready" / "warm up first" per lesson.
          Additive and fail-silent; stamp is the content hash (see
@@ -4388,15 +4396,15 @@
         );
       })();
     </script>
-    <script src="/assets/curriculum-teacher-planning.js?v=e3260ee5" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=ffbc4061" defer></script>
     <script src="/assets/curriculum-live-signal.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-next-move.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-teacher-workflow.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-guided-path.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-studio-journey.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-lesson-merge.js?v=msaoy7gp" defer></script>
-    <script src="/assets/curriculum-product-upgrades.js?v=6e40e501" defer></script>
-    <script src="/assets/curriculum-navigator.js?v=d5d60ea5" defer></script>
+    <script src="/assets/curriculum-product-upgrades.js?v=a1d332a0" defer></script>
+    <script src="/assets/curriculum-navigator.js?v=2bc3d431" defer></script>
     <script src="/assets/curriculum-home.js?v=d8857968" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
@@ -4821,105 +4829,7 @@
       </div>
     </dialog>
 
-    <!-- A complementary landmark, so the launcher and its popover are
-         reachable by landmark navigation instead of being loose content. -->
-    <aside aria-label="Pedagogy and UDL controls">
-      <!-- Floating UDL 3.0 & Pedagogy Control Launcher -->
-      <button
-        id="udlFloatingLauncher"
-        type="button"
-        aria-expanded="false"
-        aria-controls="udlMenuPopover"
-      onclick="toggleUdlMenu()"
-      style="
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 99990;
-        background: linear-gradient(135deg, #0284c7, #6366f1);
-        color: #fff;
-        font-family: &quot;Nunito&quot;, sans-serif;
-        font-weight: 900;
-        font-size: 0.88rem;
-        padding: 10px 18px;
-        border-radius: 30px;
-        box-shadow: 0 8px 30px rgba(2, 132, 199, 0.4);
-        cursor: pointer;
-        border: none;
-        transition: transform 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      "
-      onmouseover="this.style.transform = 'scale(1.05)'"
-      onmouseout="this.style.transform = 'scale(1)'"
-    >
-      <span>Reading supports</span>
-      </button>
 
-    <!-- Floating UDL Menu Popover -->
-    <div
-      id="udlMenuPopover" role="region" aria-labelledby="udlMenuTitle"
-      style="
-        position: fixed;
-        bottom: 74px;
-        right: 24px;
-        z-index: 99991;
-        background: #ffffff;
-        width: min(320px, calc(100vw - 32px));
-        max-height: calc(100dvh - 120px);
-        overflow-y: auto;
-        border-radius: 18px;
-        padding: 18px 20px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
-        border: 1px solid #cbd5e1;
-        display: none;
-        font-family: &quot;Nunito&quot;, sans-serif;
-      "
-    >
-      <h2 id="udlMenuTitle"
-        style="
-          margin: 0 0 12px;
-          font-size: 0.98rem;
-          font-weight: 900;
-          color: #0f172a;
-          border-bottom: 1px solid #e2e8f0;
-          padding-bottom: 8px;
-        "
-      >
-        Reading and language supports
-      </h2>
-      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.86rem">
-        <label
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            color: #334155;
-            font-weight: 700;
-          "
-        >
-          <span>Atkinson headings and controls</span>
-          <input type="checkbox" id="chkDyslexiaFont" onchange="toggleDyslexiaFont(this.checked)" />
-        </label>
-        <label
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            color: #334155;
-            font-weight: 700;
-          "
-        >
-          <span>High contrast</span>
-          <input type="checkbox" id="chkHighContrast" onchange="toggleHighContrast(this.checked)" />
-        </label>
-        <a href="/esol/">Open language supports</a>
-      </div>
-    </div>
-    </aside>
 
     <script src="/assets/practice-workbook-links.js" defer></script>
     <script src="/assets/curriculum-hub-pedagogy.js?v=1867d7a5" defer></script>

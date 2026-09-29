@@ -3,7 +3,7 @@
   "use strict";
 
   /** @typedef {{path:string, applicable:boolean, exists:boolean}} CatalogResource */
-  /** @typedef {{id:string, unit:number, lesson:number, title:string, standard?:string, topic?:string, objective?:string, languageObjective?:string, timeEstimate?:string, resources:Record<string,CatalogResource>, supports?:{vocabulary?:string[],sentenceFrames?:string[]}}} CatalogLesson */
+  /** @typedef {{id:string, unit:number, lesson:number, title:string, titleEs?:string, standard?:string, topic?:string, objective?:string, languageObjective?:string, timeEstimate?:string, resources:Record<string,CatalogResource>, supports?:{vocabulary?:string[],sentenceFrames?:string[]}}} CatalogLesson */
   /** @typedef {{id:string, parent?:string, title:string, unit:number, group?:number, resources:Record<string,string>, vocabulary?:string[], sentenceFrames?:string[]}} LaunchLesson */
   /** @typedef {{lessons:LaunchLesson[], partTwo?:LaunchLesson[], smallGroups?:LaunchLesson[], catchUps?:LaunchLesson[]}} LaunchManifest */
 
@@ -79,8 +79,9 @@
   }
 
   /** Only same-origin curriculum resources; never accept executable/external URLs.
-   * @param {unknown} path */
-  function safePath(path) {
+   * Learning labs are allowed only for the explicitly authored learningLab key.
+   * @param {unknown} path @param {string} [key] */
+  function safePath(path, key) {
     if (
       typeof path !== "string" ||
       !path.startsWith("/") ||
@@ -90,16 +91,19 @@
       return "";
     try {
       var url = new URL(path, window.location.origin);
-      if (url.origin !== window.location.origin || !url.pathname.startsWith("/lessons/")) return "";
+      if (url.origin !== window.location.origin) return "";
+      if (key === "learningLab") {
+        if (!/^\/curriculum\/learning-labs\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(path)) return "";
+      } else if (!url.pathname.startsWith("/lessons/")) return "";
       return url.pathname + url.search + url.hash;
     } catch (_error) {
       return "";
     }
   }
 
-  /** @param {string} path @param {string} label @param {boolean} [student] */
-  function resourceLink(path, label, student) {
-    var clean = safePath(path);
+  /** @param {string} path @param {string} label @param {boolean} [student] @param {string} [key] */
+  function resourceLink(path, label, student, key) {
+    var clean = safePath(path, key);
     if (!clean) return null;
     var link = document.createElement("a");
     var url = new URL(clean, window.location.origin);
@@ -144,20 +148,31 @@
     }
   }
 
+  /** Keep action feedback alongside the action, rather than below the lesson.
+   * @param {string} text */
+  function actionMessage(text) {
+    var local = document.getElementById("nav-action-message");
+    if (local) local.textContent = text;
+    else message.textContent = text;
+  }
+
   /** @param {string} id */
   function toggleSaved(id) {
     var next = new Set(saved);
     if (next.has(id)) next.delete(id);
     else next.add(id);
     if (!storeIds(SAVED_KEY, Array.from(next))) {
-      message.textContent =
-        "This browser could not save your lesson. Allow site storage or bookmark the lesson URL instead.";
+      actionMessage(
+        "This browser could not save your lesson. Allow site storage or bookmark the lesson URL instead.",
+      );
       return;
     }
     saved = next;
-    message.textContent = saved.has(id)
-      ? "Lesson saved on this device."
-      : "Lesson removed from saved lessons on this device.";
+    actionMessage(
+      saved.has(id)
+        ? "Lesson saved on this device."
+        : "Lesson removed from saved lessons on this device.",
+    );
     renderResults();
     // Update in place so keyboard focus stays on the save action.
     var saveButton = preview.querySelector("[data-save-lesson]");
@@ -189,26 +204,88 @@
       : [];
   }
 
+  function searchQuery() {
+    var query = normalize(search.value)
+      .replace(
+        /\b(?:unit|unidad)\s*[:#]?\s*(\d{1,2})\s+(?:lesson|leccion)\s*[:#]?\s*(\d{1,2})\b/g,
+        "$1-$2",
+      )
+      .replace(/\b(?:lessons?|leccion)\s*[:#]?\s*(\d{1,2})\s*-\s*(\d{1,2})\b/g, "$1-$2");
+    var requestedUnit = "";
+    query = query.replace(
+      /\b(?:unit|unidad)\s*[:#]?\s*(\d{1,2})(?![\d-])\b/g,
+      function (_match, number) {
+        requestedUnit = String(Number(number));
+        return "";
+      },
+    );
+    return { unit: requestedUnit, words: query.split(/\s+/).filter(Boolean) };
+  }
+
+  /** @param {CatalogLesson} lesson @param {{unit:string, words:string[]}} query @param {boolean} [spanish] */
+  function matchesQuery(lesson, query, spanish = true) {
+    if (query.unit && String(lesson.unit) !== query.unit) return false;
+    var haystack = normalize(
+      [
+        lesson.id,
+        lesson.title,
+        spanish && typeof lesson.titleEs === "string" ? lesson.titleEs : "",
+        lesson.standard,
+        lesson.topic,
+        lesson.objective,
+        lesson.languageObjective,
+        strings(lesson.supports?.vocabulary).join(" "),
+      ].join(" "),
+    );
+    return query.words.every(function (word) {
+      return /^\d{1,2}-\d{1,2}$/.test(word) ? lesson.id === word : haystack.includes(word);
+    });
+  }
+
   function matching() {
-    var words = normalize(search.value).split(/\s+/).filter(Boolean);
+    var query = searchQuery();
     return lessons.filter(function (lesson) {
       if (unit.value && String(lesson.unit) !== unit.value) return false;
       if (onlySaved && !saved.has(lesson.id)) return false;
-      var haystack = normalize(
-        [
-          lesson.id,
-          lesson.title,
-          lesson.standard,
-          lesson.topic,
-          lesson.objective,
-          lesson.languageObjective,
-          strings(lesson.supports?.vocabulary).join(" "),
-        ].join(" "),
-      );
-      return words.every(function (word) {
-        return haystack.includes(word);
-      });
+      return matchesQuery(lesson, query);
     });
+  }
+
+  function syncSearchControls() {
+    var clear = document.getElementById("curr-search-clear");
+    if (clear) clear.hidden = !search.value;
+  }
+
+  /** Include a selected lesson past the initial page without dropping filters.
+   * @param {string} id */
+  function includeResult(id) {
+    var index = matching().findIndex(function (lesson) {
+      return lesson.id === id;
+    });
+    if (index >= limit) limit = Math.ceil((index + 1) / PAGE_SIZE) * PAGE_SIZE;
+  }
+
+  function backToResults() {
+    includeResult(selected);
+    renderResults();
+    var target =
+      /** @type {HTMLElement} */ (results.querySelector('[data-lesson-id="' + selected + '"]')) ||
+      search;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: "nearest", behavior: "auto" });
+  }
+
+  /** A recent lesson may be outside current results. Retain every compatible filter.
+   * @param {string} id */
+  function openRecent(id) {
+    var lesson = byId.get(id);
+    if (!lesson) return;
+    window.clearTimeout(searchTimer);
+    if (unit.value && unit.value !== String(lesson.unit)) unit.value = "";
+    if (onlySaved && !saved.has(id)) onlySaved = false;
+    if (!matchesQuery(lesson, searchQuery())) search.value = "";
+    includeResult(id);
+    select(id, true, true);
   }
 
   /** @param {boolean} [replace] */
@@ -249,7 +326,7 @@
       var item = button(
         id.replace("-", ".") + " · " + lesson.title,
         function () {
-          select(id, true, true);
+          openRecent(id);
         },
         "cn-recent-link",
       );
@@ -258,6 +335,7 @@
   }
 
   function renderResults() {
+    syncSearchControls();
     if (!lessons.length) return;
     var matches = matching();
     var shown = matches.slice(0, limit);
@@ -298,6 +376,15 @@
         node("strong", "cn-result-title", lesson.title),
         node("span", "cn-result-standard", lesson.standard || "Math practices"),
       );
+      if (
+        typeof lesson.titleEs === "string" &&
+        matchesQuery(lesson, searchQuery()) &&
+        !matchesQuery(lesson, searchQuery(), false)
+      ) {
+        var translation = node("span", "cn-result-translation", lesson.titleEs);
+        translation.lang = "es";
+        pick.appendChild(translation);
+      }
       if (lesson.id === selected) pick.appendChild(node("span", "cn-selected-label", "Viewing"));
       item.appendChild(pick);
       results.appendChild(item);
@@ -336,7 +423,7 @@
           : ""
         : studentLesson?.resources?.[key];
       if (!teacher && catalog && (!catalog.exists || !catalog.applicable)) return;
-      var link = resourceLink(path, entry[1], !teacher);
+      var link = resourceLink(path, entry[1], !teacher, key);
       if (link) {
         var item = node("li", "");
         item.appendChild(link);
@@ -402,14 +489,16 @@
     try {
       if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
       await navigator.clipboard.writeText(studentUrl(id));
-      message.textContent =
+      if (selected !== id || !fallback.isConnected) return;
+      actionMessage(
         "Student link copied. It opens the student launch page for lesson " +
-        id.replace("-", ".") +
-        ".";
+          id.replace("-", ".") +
+          ".",
+      );
       fallback.hidden = true;
     } catch (_error) {
-      message.textContent =
-        "Copy is unavailable in this browser. Select and copy the student link below.";
+      if (selected !== id || !fallback.isConnected) return;
+      actionMessage("Copy is unavailable in this browser. Select and copy the student link below.");
       fallback.hidden = false;
       var field = fallback.querySelector("input");
       field?.focus();
@@ -420,6 +509,9 @@
   /** @param {CatalogLesson} lesson */
   function renderPreview(lesson) {
     preview.replaceChildren();
+    var back = button("← Back to results", backToResults, "cn-button cn-back");
+    back.setAttribute("aria-controls", "nav-results");
+    preview.appendChild(back);
     var top = node("div", "cn-preview-heading");
     top.appendChild(
       node("p", "cn-eyebrow", "Unit " + lesson.unit + " / Lesson " + lesson.id.replace("-", ".")),
@@ -427,6 +519,15 @@
     var title = node("h3", "cn-preview-title", lesson.title);
     title.id = "nav-lesson-title";
     top.appendChild(title);
+    if (
+      typeof lesson.titleEs === "string" &&
+      matchesQuery(lesson, searchQuery()) &&
+      !matchesQuery(lesson, searchQuery(), false)
+    ) {
+      var translation = node("p", "cn-preview-translation", lesson.titleEs);
+      translation.lang = "es";
+      top.appendChild(translation);
+    }
     top.appendChild(
       node(
         "p",
@@ -472,6 +573,34 @@
     saveButton.dataset.saveLesson = lesson.id;
     saveButton.setAttribute("aria-pressed", String(saved.has(lesson.id)));
     actions.appendChild(saveButton);
+    var teachControl = /** @type {HTMLButtonElement} */ (
+      document.querySelector('[data-guide-teacher-view="today"]')
+    );
+    if (teachControl) {
+      actions.appendChild(
+        button(
+          "Teach this lesson",
+          function () {
+            if (!document.body.classList.contains("teacher-mode")) return;
+            if (
+              !window.CurriculumCockpit?.select ||
+              window.CurriculumCockpit.select(lesson.id, { scroll: false }) === false
+            ) {
+              actionMessage("The teaching tools are still loading. Try again in a moment.");
+              return;
+            }
+            teachControl.click();
+          },
+          "cn-button cn-teach hub-teacher-only",
+        ),
+      );
+    }
+    var actionStatus = node("p", "cn-action-message");
+    actionStatus.id = "nav-action-message";
+    actionStatus.setAttribute("role", "status");
+    actionStatus.setAttribute("aria-live", "polite");
+    actionStatus.setAttribute("aria-atomic", "true");
+    actions.insertAdjacentElement("afterend", actionStatus);
     var target = node("div", "cn-target");
     target.appendChild(node("h4", "cn-group-title", "Learning target"));
     target.appendChild(
@@ -511,6 +640,10 @@
       }
       preview.appendChild(supports);
     }
+    resourceGroup(lesson, "Get ready & explore", [
+      ["readiness", "Readiness check"],
+      ["learningLab", "Interactive learning lab"],
+    ]);
     resourceGroup(lesson, "Learn & practice", [
       ["lesson", "Interactive lesson"],
       ["guidedNotes", "Guided notes"],
@@ -570,8 +703,7 @@
       if (storeIds(RECENT_KEY, nextRecent)) {
         recent = nextRecent;
         renderRecent();
-      } else
-        message.textContent = "Lesson opened. This browser could not save your recent lessons.";
+      } else actionMessage("Lesson opened. This browser could not save your recent lessons.");
       updateUrl(false);
     }
     if (!fromCockpit && window.CurriculumCockpit?.select && !syncing) {
@@ -600,6 +732,7 @@
     if (byId.has(requested)) {
       selected = requested;
       explicitSelection = true;
+      includeResult(requested);
       renderPreview(byId.get(requested));
     } else {
       selected = "";
@@ -621,7 +754,7 @@
         ["/curriculum/arcade/", "Practice with a game"],
         ["/curriculum/my-progress/", "Check my progress"],
       ].forEach(function (entry) {
-        var link = node("a", "cn-button", entry[1]);
+        var link = /** @type {HTMLAnchorElement} */ (node("a", "cn-button", entry[1]));
         link.href = entry[0];
         starters.appendChild(link);
       });

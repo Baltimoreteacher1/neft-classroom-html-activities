@@ -900,7 +900,9 @@
        * is [manifest resource key, button label]. Nothing is rendered for a key
        * the manifest does not carry — see the note on dead buttons below. */
       var TEACH_PARTS = [
+        ["readiness", "Get ready"],
         ["guidedNotes", "Guided notes"],
+        ["learningLab", "Interactive learning lab"],
         ["handout", "Student handout"],
         ["worksheet", "Worksheet"],
         ["worksheet2", "Worksheet B"],

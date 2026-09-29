@@ -2,6 +2,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { learningLabResources } from "../scripts/generate-curriculum-launch-manifest.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -153,6 +154,12 @@ if (workflowData && supportData && launchData) {
 
 if (launchData) {
   const lessons = launchData.lessons || [];
+  let labRoutes = new Map();
+  try {
+    labRoutes = learningLabResources(JSON.parse(read("data/learning-labs.json")), lessons);
+  } catch (error) {
+    failures.push(`invalid learning-lab assignments: ${error.message}`);
+  }
   check(lessons.length >= 64, "launch manifest contains all curriculum lessons");
   check(
     new Set(lessons.map((lesson) => lesson.id)).size === lessons.length,
@@ -176,11 +183,15 @@ if (launchData) {
   }
   check(
     lessons.every((lesson) =>
-      Object.values(lesson.resources || {}).every(
-        (path) => typeof path === "string" && path.startsWith("/lessons/"),
+      Object.entries(lesson.resources || {}).every(
+        ([key, path]) =>
+          typeof path === "string" &&
+          (key === "learningLab"
+            ? path === labRoutes.get(lesson.id)
+            : path.startsWith(`/lessons/${lesson.id}/`)),
       ),
     ),
-    "every launch resource uses a canonical lesson route",
+    "every launch resource uses its canonical lesson route or exact assigned learning lab",
   );
 }
 

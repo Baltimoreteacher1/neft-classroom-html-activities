@@ -1026,7 +1026,7 @@
     var launch = card.querySelector(".btn-launch");
     var aHref = launch && launch.style.display !== "none" ? launch.getAttribute("href") : "";
     if (aHref && aHref !== "#") qs += "&a=" + encodeURIComponent(aHref);
-    return CANONICAL_ORIGIN + "/curriculum/" + qs;
+    return CANONICAL_ORIGIN + "/curriculum/units/" + qs;
   }
 
   // Student-safe launch URL used by /curriculum/student-launch/ — no teacher
@@ -1093,10 +1093,12 @@
         ta.style.opacity = "0";
         document.body.appendChild(ta);
         ta.select();
-        document.execCommand("copy");
+        var copied = document.execCommand("copy");
         document.body.removeChild(ta);
-        resolve();
+        if (copied) resolve();
+        else reject(new Error("Clipboard copy was unavailable"));
       } catch (e) {
+        if (ta && ta.parentNode) ta.parentNode.removeChild(ta);
         reject(e);
       }
     });
@@ -1246,7 +1248,8 @@
           }, 1600);
         },
         function () {
-          btn.innerHTML = "Press ⌘/Ctrl+C";
+          window.prompt("Copy this lesson link:", link);
+          btn.innerHTML = "Copy link manually";
           setTimeout(function () {
             btn.innerHTML = "🔗 Copy link";
           }, 2000);
@@ -1296,7 +1299,8 @@
           }, 1600);
         },
         function () {
-          btn.innerHTML = "Press ⌘/Ctrl+C";
+          window.prompt("Copy this lesson link:", link);
+          btn.innerHTML = "Copy link manually";
           setTimeout(function () {
             btn.innerHTML = "🎒 Copy student launch";
           }, 2000);

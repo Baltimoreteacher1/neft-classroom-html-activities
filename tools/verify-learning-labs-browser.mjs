@@ -313,12 +313,19 @@ try {
         report.curriculumLinks++;
       }
     }
+    await hub.locator(".units-refine > summary").click();
     await hub.locator('[data-filter="learninglabs"]').click();
     assert.equal(
       await hub.locator('[data-filter="learninglabs"]').getAttribute("aria-pressed"),
       "true",
     );
-    assert.equal(await hub.locator(".unit-card").count(), 10);
+    // Resource filters use paginated lesson cards; all matching lessons remain
+    // in the result set and their materials expand through the public control.
+    assert.equal(await hub.locator(".search-result-item").count(), report.curriculumLinks);
+    assert.equal(await hub.locator(".search-result-item:visible").count(), 8);
+    const firstResult = hub.locator(".search-result-item:visible").first();
+    await firstResult.locator(".units-result-details > summary").click();
+    await firstResult.locator('a[href^="/curriculum/learning-labs/"]:visible').first().waitFor();
     await hub.screenshot({
       path: join(artifactDir, "curriculum-learning-labs.png"),
       fullPage: false,

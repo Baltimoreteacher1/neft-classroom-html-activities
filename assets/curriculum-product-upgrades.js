@@ -6,13 +6,12 @@
   var LAUNCH_URL = "/data/curriculum-launch-manifest.json";
 
   // Routed through /assets/curriculum-json-cache.js so the hub fetches each
-  // data file once instead of once per feature script. The original chain here
-  // called response.json() without checking response.ok, so a 404 rejected on
-  // the HTML body; that rejection shape is preserved by letting json() throw.
+  // data file once instead of once per feature script.
   function loadJson(url) {
     var cache = window.NTJsonCache;
     if (cache) return cache.json(url);
     return fetch(url).then(function (response) {
+      if (!response.ok) throw new Error("Catalog request failed");
       return response.json();
     });
   }
@@ -50,7 +49,9 @@
 
   function writeStore(name, value) {
     try {
-      browserStore()?.setItem(name, JSON.stringify(value));
+      var store = browserStore();
+      if (!store) return false;
+      store.setItem(name, JSON.stringify(value));
       return true;
     } catch (_error) {
       return false;
@@ -175,51 +176,92 @@
   }
 
   function portableProgress() {
-    var payload = { v: 1, progress: readStore(progressName, {}), lastLesson: selectedLessonId() };
-    return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
+    try {
+      var store = browserStore();
+      if (!store) return null;
+      var progress = JSON.parse(store.getItem(progressName) || "{}");
+      if (!progress || typeof progress !== "object" || Array.isArray(progress)) return null;
+      var payload = { v: 1, progress: progress, lastLesson: selectedLessonId() };
+      return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+    } catch (_error) {
+      return null;
+    }
   }
 
   function restoreProgress(raw) {
+    var data;
     try {
       var normalized = raw.trim().replace(/-/g, "+").replace(/_/g, "/");
       while (normalized.length % 4) normalized += "=";
-      var data = JSON.parse(decodeURIComponent(escape(atob(normalized))));
-      if (data.v !== 1 || !data.progress || typeof data.progress !== "object") throw new Error();
-      writeStore(progressName, data.progress);
-      var workflow = readStore(workflowName, {});
-      if (/^\d{1,2}-\d{1,2}(?:-flagship)?$/.test(data.lastLesson || "")) {
-        workflow.selected = data.lastLesson;
-        writeStore(workflowName, workflow);
-      }
-      return true;
+      data = JSON.parse(decodeURIComponent(escape(atob(normalized))));
+      if (
+        data.v !== 1 ||
+        !data.progress ||
+        typeof data.progress !== "object" ||
+        Array.isArray(data.progress)
+      )
+        return "invalid";
     } catch (_error) {
-      return false;
+      return "invalid";
+    }
+    if (!writeStore(progressName, data.progress)) return "unavailable";
+    var workflow = readStore(workflowName, {});
+    if (!workflow || typeof workflow !== "object" || Array.isArray(workflow)) workflow = {};
+    if (/^\d{1,2}-\d{1,2}(?:-flagship)?$/.test(data.lastLesson || "")) {
+      workflow.selected = data.lastLesson;
+      if (!writeStore(workflowName, workflow)) return "progress-only";
+    }
+    return "restored";
+  }
+
+  function clearManualCopy() {
+    document.getElementById("cpu-manual-copy")?.remove();
+  }
+
+  async function copyValue(value, status) {
+    clearManualCopy();
+    if (value == null) {
+      status.textContent =
+        "Saved progress is unavailable on this device. A continuity code could not be created.";
+      return;
+    }
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(value);
+      status.textContent = "Copied. Paste this only on a trusted device.";
+    } catch (_error) {
+      var label = el("label", "cpu-manual-copy", "Continuity code — copy to a trusted device");
+      label.id = "cpu-manual-copy";
+      var field = el("textarea");
+      field.readOnly = true;
+      field.rows = 3;
+      field.value = value;
+      label.appendChild(field);
+      status.insertAdjacentElement("afterend", label);
+      status.textContent =
+        "Automatic copying is unavailable. Copy the selected code with your keyboard or device’s Copy command.";
+      field.focus();
+      field.select();
     }
   }
 
-  function copyValue(value, status) {
-    var done = function () {
-      if (status) status.textContent = "Copied. Paste this only on a trusted device.";
-    };
-    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(value).then(done, done);
-    else {
-      window.prompt("Copy this value:", value);
-      done();
-    }
-  }
-
-  function saveOffline(status) {
+  async function saveOffline(status) {
     if (!("caches" in window)) {
-      status.textContent = "Offline saving is unavailable. Use Print lesson plan.";
+      status.textContent = "Recovery-file saving is unavailable. Use Print lesson plan.";
       return;
     }
     var id = selectedLessonId();
     var lesson = manifest?.lessons?.find(function (entry) {
       return entry.id === id;
     });
+    if (!lesson) {
+      status.textContent =
+        "Lesson resources are not available yet. Check your connection and try again.";
+      return;
+    }
     var urls = [
       "/curriculum/",
       studentLaunch(id),
@@ -228,30 +270,37 @@
       "/assets/curriculum-student-launch.css",
       "/assets/curriculum-student-launch.js",
     ];
-    if (lesson?.resources?.guidedNotes?.exists) urls.push(lesson.resources.guidedNotes.path);
-    if (lesson?.resources?.handout?.exists) urls.push(lesson.resources.handout.path);
-    status.textContent = "Saving the selected lesson for offline recovery…";
-    caches
-      .open("eduwonderlab-user-offline-v1")
-      .then(function (cache) {
-        return Promise.all(
-          urls.map(function (url) {
-            return fetch(url, { credentials: "same-origin" })
-              .then(function (response) {
-                return response.ok ? cache.put(url, response) : null;
-              })
-              .catch(function () {
-                return null;
-              });
-          }),
-        );
-      })
-      .then(function () {
-        status.textContent = "Offline recovery saved for lesson " + id + ".";
-      })
-      .catch(function () {
-        status.textContent = "Offline save could not finish. Print the lesson plan as a backup.";
-      });
+    if (lesson.resources?.guidedNotes?.exists) urls.push(lesson.resources.guidedNotes.path);
+    if (lesson.resources?.handout?.exists) urls.push(lesson.resources.handout.path);
+    status.textContent = "Saving recovery files for lesson " + id + "…";
+    try {
+      var cache = await caches.open("eduwonderlab-user-offline-v1");
+      var results = await Promise.all(
+        urls.map(async function (url) {
+          try {
+            var response = await fetch(url, { credentials: "same-origin" });
+            if (!response.ok) return false;
+            await cache.put(url, response);
+            return true;
+          } catch (_error) {
+            return false;
+          }
+        }),
+      );
+      var saved = results.filter(Boolean).length;
+      status.textContent = saved
+        ? saved +
+          " of " +
+          urls.length +
+          " recovery files cached for lesson " +
+          id +
+          ". " +
+          (saved < urls.length ? "Some files could not be saved. " : "") +
+          "Activities may still need internet; keep a printed lesson plan as backup."
+        : "No recovery files were saved. Check your connection or print the lesson plan as a backup.";
+    } catch (_error) {
+      status.textContent = "Recovery files could not be saved. Print the lesson plan as a backup.";
+    }
   }
 
   function resultScore(lesson, terms) {
@@ -335,10 +384,15 @@
 
   function paletteActions(container, status) {
     var actions = el("div", "cpu-quick-actions");
-    var offline = el("button", null, "Save selected lesson offline");
+    var offline = el("button", null, "Save lesson recovery files");
     offline.type = "button";
-    offline.addEventListener("click", function () {
-      saveOffline(status);
+    offline.addEventListener("click", async function () {
+      offline.disabled = true;
+      try {
+        await saveOffline(status);
+      } finally {
+        offline.disabled = false;
+      }
     });
     var copy = el("button", null, "Copy continuity code");
     copy.type = "button";
@@ -350,12 +404,20 @@
     restore.addEventListener("click", function () {
       var raw = window.prompt("Paste the continuity code from the other device:");
       if (!raw) return;
-      if (restoreProgress(raw)) {
-        status.textContent = "Progress restored. Reloading the curriculum…";
+      var result = restoreProgress(raw);
+      if (result === "restored" || result === "progress-only") {
+        status.textContent =
+          result === "restored"
+            ? "Progress restored. Reloading the curriculum…"
+            : "Progress restored; the selected lesson could not be saved. Reloading the curriculum…";
         setTimeout(function () {
           location.reload();
         }, 500);
-      } else status.textContent = "That continuity code is not valid.";
+      } else
+        status.textContent =
+          result === "unavailable"
+            ? "Progress could not be saved on this device. Allow site storage, then try importing again."
+            : "That continuity code is not valid.";
     });
     var privacy = el("a", null, "Open data and privacy map");
     privacy.href = "/curriculum/data-privacy/";
@@ -394,6 +456,7 @@
     dialog.addEventListener("click", function (event) {
       if (event.target === dialog) dialog.close();
     });
+    dialog.addEventListener("close", clearManualCopy);
     dialog.append(head, label, status, list);
     paletteActions(dialog, status);
     document.body.appendChild(dialog);
