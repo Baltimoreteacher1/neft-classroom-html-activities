@@ -1,0 +1,59 @@
+/* Scoped public units browser. Shared teacher-hub styling stays independent. */
+/* The adjacent mode toggle already states the current audience and offers the
+   same teacher switch. Keep that control, remove only its duplicate notice. */
+.curriculum-units-page.units-nav-ready #hub-student-hint { display: none; }
+.curriculum-units-page .units-page-sub { max-width: 70ch; font-size: 17px; }
+.units-page-links { display: flex; flex-wrap: wrap; gap: 10px 24px; margin: 14px 0 18px; }
+.units-page-links a { color: #164a75; font-weight: 700; text-underline-offset: 3px; }
+.units-overview, .units-visual-tools { border: 1px solid #c5d4df; border-radius: 12px; background: #fff; margin: 10px 0; }
+.units-overview > summary, .units-visual-tools > summary { padding: 14px 16px; min-height: 48px; color: #193e5b; font-weight: 700; cursor: pointer; }
+.units-overview .unit-jump-bar { margin: 0; border: 0; box-shadow: none; padding: 0 14px 14px; }
+.units-overview .unit-jump-label { display: none; }
+.units-overview .unit-jump-pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.units-overview .unit-jump-pill { min-height: 48px; white-space: normal; border-radius: 9px; font-size: 16px; line-height: 1.4; justify-content: flex-start; }
+.units-visual-tools .ewl-preset-bar { margin: 0; box-shadow: none; }
+.units-browser-nav { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: end; margin: 20px 0 12px; padding: 18px; border: 1px solid #a8c1d7; border-left: 5px solid #196699; border-radius: 12px; background: #f3f8fc; scroll-margin-top: 16px; }
+.units-browser-nav[hidden] { display: none; }
+.units-browser-field { flex: 1 1 360px; min-width: 0; }
+.units-browser-field label { display: block; color: #244a67; font-weight: 700; font-size: 16px; margin-bottom: 7px; }
+.units-browser-field select { width: 100%; max-width: 100%; min-height: 48px; padding: 10px 30px 10px 12px; background: #fff; border: 1px solid #7495ae; border-radius: 8px; color: #173850; font: inherit; font-size: 17px; }
+.units-browser-paging { display: flex; gap: 8px; }
+.units-browser-paging button { min-height: 48px; padding: 10px 16px; border: 1px solid #809aaf; border-radius: 8px; background: #fff; font: inherit; font-weight: 700; font-size: 16px; color: #164a75; cursor: pointer; }
+.units-browser-paging button:hover:not(:disabled) { background: #e3edf6; border-color: #164a75; }
+.units-browser-paging button:disabled { color: #637589; border-color: #c0ccd6; background: #edf1f5; cursor: default; }
+#units-browser-status { width: 100%; margin: 0; color: #354f64; font-size: 16px; line-height: 1.45; }
+.units-browser-nav :focus-visible, .units-overview :focus-visible, .units-visual-tools :focus-visible { outline: 3px solid #176d9c; outline-offset: 3px; }
+.units-nav-ready #interactive-hub > .units-grid { grid-template-columns: minmax(0, 1fr); }
+.units-nav-ready #interactive-hub .unit-card[hidden] { display: none !important; }
+.units-nav-ready #interactive-hub .unit-card { scroll-margin-top: 20px; }
+.units-nav-ready #interactive-hub .unit-card:hover { transform: none; }
+.units-nav-ready .unit-card-name { font-size: 22px; color: #183d5b; font-weight: 800; }
+.units-nav-ready .unit-card-num { font-size: 16px; font-weight: 700; color: #41627a; }
+.units-nav-ready .unit-card-blurb { font-size: 16px; }
+.units-nav-ready .select-control { min-height: 48px; font-size: 16px; }
+.units-nav-ready .unit-jump-bar--bottom { display: none; }
+.units-nav-ready .bottom-lesson-jump { margin-top: 20px; }
+/* The legacy global stylesheet hides these even when scripts fail. Keep the
+   authored curriculum usable until the enhanced browser actually succeeds. */
+@media screen {
+  .curriculum-units-page:not(.units-nav-ready) details.unit { display: block !important; }
+  .curriculum-units-page.units-nav-ready details.unit { display: none !important; }
+}
+@media (min-width: 900px) {
+  .units-overview .unit-jump-pills { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .units-nav-ready .lesson-outline > .lesson-outline-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 16px; }
+  .units-nav-ready .lesson-outline-group { min-width: 0; }
+}
+@media (max-width: 600px) {
+  .units-browser-nav { padding: 14px 12px; }
+  .units-browser-field { flex-basis: 100%; }
+  .units-browser-paging { width: 100%; }
+  .units-browser-paging button { flex: 1; }
+  .units-nav-ready .unit-card-header { flex-direction: column; }
+  .units-nav-ready .unit-card-meta { align-items: flex-start; text-align: left; }
+  .units-nav-ready .unit-card-blurb { text-align: left; }
+  .units-nav-ready .unit-card { padding: 16px 12px; }
+}
+@media print {
+  .units-browser-nav, .units-overview, .units-visual-tools, .units-page-links { display: none !important; }
+}

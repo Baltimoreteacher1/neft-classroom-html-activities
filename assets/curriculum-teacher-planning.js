@@ -1480,7 +1480,10 @@
       var header = document.querySelector("header.curriculum-guide");
       var afterTitle =
         header && (header.querySelector(".curriculum-guide__lede") || header.querySelector("h1"));
-      if (afterTitle && afterTitle.parentNode) {
+      var workspaceMount = document.getElementById("hub-planning-workspace");
+      if (workspaceMount) {
+        workspaceMount.appendChild(workspace);
+      } else if (afterTitle && afterTitle.parentNode) {
         afterTitle.insertAdjacentElement("afterend", workspace);
       } else {
         var anchor = planner && planner.parentNode ? planner : details;

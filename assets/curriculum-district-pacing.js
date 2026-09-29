@@ -493,7 +493,8 @@
   let downloaderPromise = null;
   const loadDownloader = () => {
     if (window.NTCurriculumDownload) return Promise.resolve();
-    downloaderPromise = downloaderPromise || import(DOWNLOADER_URL);
+    // Keep the versioned downloader as an on-demand native module import.
+    downloaderPromise = downloaderPromise || import(/* @vite-ignore */ DOWNLOADER_URL);
     return downloaderPromise;
   };
 

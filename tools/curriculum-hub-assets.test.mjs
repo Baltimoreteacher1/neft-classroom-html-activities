@@ -37,6 +37,10 @@ const ASSETS = [
   "curriculum-hub-options.js",
   "curriculum-hub-search.js",
   "curriculum-ready-next.js",
+  "curriculum-navigator.js",
+  "curriculum-navigator.css",
+  "curriculum-home.js",
+  "curriculum-home.css",
 ];
 
 const hub = readFileSync(HUB_PATH, "utf8");
@@ -88,9 +92,9 @@ for (const name of ASSETS) {
 // script tag would run them BEFORE the page finished parsing, and each one
 // reads DOM that sits above it.
 for (const name of ASSETS.filter((n) => n.endsWith(".js"))) {
-  const tag = new RegExp(`<script([^>]*)src="/assets/${name.replace(/[.]/g, "\\.")}\\?v=`).exec(
-    hub,
-  );
+  const tag = new RegExp(
+    `<script([^>]*src="/assets/${name.replace(/[.]/g, "\\.")}\\?v=[^>]+)>`,
+  ).exec(hub);
   if (!tag) {
     fail(`no <script> tag loading /assets/${name}`);
     continue;

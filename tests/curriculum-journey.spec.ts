@@ -12,23 +12,9 @@ import { expect, test, type Page } from "@playwright/test";
  * second click was needed).
  */
 
-/**
- * Open the teacher console.
- *
- * /curriculum/ IS the console now (AUTH_CONTRACT §2b): the middleware serves it
- * only to a request that passed the password gate and redirects everyone else to
- * /curriculum/units/, so the page boots in Teacher Mode with no toggle and no
- * PIN. These specs run against the static `dist/` build, where no middleware
- * runs, so a plain goto() reaches it exactly as an authorized browser would.
- *
- * Anchored to the body class, NOT to the button's words — and no longer to the
- * toggle at all, because there is no toggle. `applyTeacherMode()` sets
- * `body.teacher-mode` from the same `teacherMode` boolean that drives every
- * teacher panel, on every mode change AND at boot, so it cannot drift from the
- * state it reports. It is also language-independent, which visible prose is not:
- * this assertion used to read `toContainText("Teacher Mode")` and went red on a
- * deliberate copy change.
- */
+/** Enable the existing local Teacher view preference before loading the public
+ * hub. Server authorization is a separate contract; these tests cover presentation
+ * and navigation using an empty browser profile. */
 async function enterTeacherMode(page: Page) {
   await page.addInitScript(() => {
     try {
@@ -51,7 +37,8 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
     await enterTeacherMode(page);
 
     const workflowEl = page.locator("#curriculum-teacher-workflow");
-    await expect(workflowEl).toBeVisible();
+    // The lesson desk leads the page; the planning collection opens on request.
+    await expect(workflowEl).toBeAttached();
     // Move OFF Today first. The workflow opens on Today by default, so clicking
     // "Teach today" from that state would pass even if guide routing were
     // completely broken — the regression is only observable as a real switch.
@@ -122,8 +109,7 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
     // the units page settles in ~840ms. The assertion below is still the better
     // one — state over rendering — but not for the reason first given.)
     // The DESTINATION is the student surface, and it must render as one even
-    // though the console the click came from is in Teacher Mode: /curriculum/
-    // writes the shared key, and /curriculum/units/ must not inherit the teacher
+    // though the hub can persist Teacher Mode, /curriculum/units/ must not inherit its teacher
     // workflow panel from it.
     await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
     // Nothing is asserted about the units page's RENDERED content. The claim in
@@ -147,8 +133,7 @@ test("the guide header is keyboard operable", async ({ page }) => {
 
 test("mobile student layout is student-safe and does not scroll sideways", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  // The STUDENT page, not the console. /curriculum/ is teacher-only now, so the
-  // "is a student safe here?" question moved to the page a student can reach.
+  // Verify the unit browser in its default student view.
   await page.goto("/curriculum/units/");
   await expect(page.locator("button[data-guide-teacher-view='today']")).toBeHidden();
   await expect(page.locator("button[data-guide-teacher-view='week']")).toBeHidden();
@@ -171,18 +156,27 @@ test("mobile teacher layout keeps the guide actions usable", async ({ page }) =>
 });
 
 test("the public curriculum landing is accessible", async ({ page }) => {
-  // This used to scan `/curriculum/`'s #curriculum-start. That page is the
-  // TEACHER CONSOLE now (AUTH_CONTRACT §2b) and no student can reach it, so the
-  // claim in this test's name moved with the audience: /curriculum/units/ is
-  // where a student lands. Scoped to #interactive-hub, the unit browser itself.
-  //
-  // NOT re-pointed at the console. Scanning it in Teacher view surfaces 208 axe
-  // violations — almost entirely colour contrast inside teacher-only panels that
-  // this test could never see while the hub defaulted to Student view. Those are
-  // real and pre-existing, and fixing them is its own piece of work; adding a
-  // gate here that fails on day one would only teach people to ignore it.
+  // Scan the unit browser itself; the full hub is covered by the audit matrix.
   await page.goto("/curriculum/units/");
   await expect(page.locator("#interactive-hub")).toBeVisible();
   const results = await new AxeBuilder({ page }).include("#interactive-hub").analyze();
   expect(results.violations).toEqual([]);
+});
+
+
+test("weekly plan print keeps the selected view visible inside the library", async ({ page }) => {
+  await enterTeacherMode(page);
+  await page.locator("button[data-guide-teacher-view='week']").click();
+  await expect(page.getByLabel("Monday lesson")).toBeVisible();
+  await page.evaluate(() => { window.print = () => {}; });
+  await page.getByRole("button", { name: "Print week", exact: true }).click();
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator("body")).toHaveClass(/ctw-printing/);
+  await expect(page.locator("#curriculum-teacher-workflow .ctw-stage")).toBeVisible();
+  await expect(page.getByLabel("Monday lesson")).toBeVisible();
+  await expect(page.locator("#curriculum-navigator")).toBeHidden();
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await page.emulateMedia({ media: "screen" });
+  await expect(page.locator("body")).not.toHaveClass(/ctw-printing/);
+  await expect(page.locator("#curriculum-navigator")).toBeVisible();
 });

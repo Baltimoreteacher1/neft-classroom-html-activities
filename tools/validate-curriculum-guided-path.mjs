@@ -72,7 +72,7 @@ check(
 );
 check(
   launcher.includes("function querySupports()") &&
-    launcher.includes('url.hash = "supports=" + supports.join(",")'),
+    launcher.includes('url.searchParams.set("supports", supports.join(","))'),
   "student launcher safely carries teacher-selected supports into lessons",
 );
 check(launcher.includes("updateNextStep"), "student progress produces a next instructional move");

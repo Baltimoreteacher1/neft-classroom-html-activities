@@ -103,7 +103,7 @@
         kind: "ready",
         html:
           '<span class="nt-ready-ico" aria-hidden="true">✅</span> ' +
-          "You’re ready for this lesson — every skill it builds on has work recorded.",
+          "Work is recorded for the earlier skills on this device. A quick check can help you decide what to review.",
       };
     }
     var pre = unmet[0];
@@ -113,7 +113,7 @@
       kind: "review",
       html:
         '<span class="nt-ready-ico" aria-hidden="true">🧭</span> ' +
-        "Warm up first: <strong>" +
+        "No work recorded here yet for <strong>" +
         escapeHtml(preNode && preNode.shortLabel ? preNode.shortLabel : pre) +
         '</strong> — try <a href="' +
         escapeHtml(target.path) +
