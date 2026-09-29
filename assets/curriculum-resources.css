@@ -1,0 +1,41 @@
+/* A visible resource shelf, scoped to the curriculum hub. */
+#curriculum-resources { color: #14365b; font-family: "Atkinson Hyperlegible", sans-serif; padding: 24px 0 28px; border-top: 2px solid #b5cfda; scroll-margin-top: 24px; }
+#curriculum-resources *, #curriculum-resources *::before, #curriculum-resources *::after { box-sizing: border-box; }
+#curriculum-resources [hidden] { display: none !important; }
+#curriculum-resources :is(a, button, input):focus-visible { outline: 3px solid #175da0; outline-offset: 4px; }
+#curriculum-resources h2 { font-family: "Nunito", sans-serif; font-size: 26px; line-height: 1.2; margin: 0 0 8px; }
+#curriculum-resources p { font-size: 16px; line-height: 1.5; }
+#curriculum-resources .cr-intro { max-width: 74ch; margin: 0 0 20px; color: #475c71; }
+#curriculum-resources a { color: #15518a; text-underline-offset: 3px; }
+#curriculum-resources .cr-search-row { display: flex; align-items: end; gap: 10px; flex-wrap: wrap; }
+#curriculum-resources .cr-search-field { flex: 1 1 340px; }
+#curriculum-resources label { display: block; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+#curriculum-resources input { display: block; width: 100%; min-height: 48px; font: inherit; font-size: 16px; color: #14365b; background: #fff; border: 1px solid #728ba3; border-radius: 8px; padding: 10px 12px; }
+#curriculum-resources button { font: inherit; font-size: 16px; line-height: 1.35; min-height: 44px; padding: 9px 13px; border: 1px solid #9ab0c5; border-radius: 8px; background: #fff; color: #14365b; cursor: pointer; }
+#curriculum-resources button:hover { background: #edf4f7; border-color: #11675d; }
+#curriculum-resources button[aria-pressed="true"] { color: #fff; background: #11675d; border-color: #11675d; }
+#curriculum-resources button:disabled { opacity: .65; cursor: default; }
+#cr-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+#curriculum-resources #cr-status { color: #475c71; margin: 12px 0; }
+#cr-results { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+#cr-results > li { min-width: 0; padding: 18px; border: 1px solid #c9d6e2; border-radius: 10px; background: #f7fafc; display: flex; flex-direction: column; }
+#curriculum-resources .cr-kind { color: #11675d; margin: 0 0 8px; font-size: 16px; }
+#cr-results h3 { font-family: "Nunito", sans-serif; font-size: 21px; line-height: 1.3; margin: 0 0 10px; }
+#cr-results h3 a { display: inline-block; padding: 3px 0; }
+#curriculum-resources .cr-description { margin: 0 0 16px; color: #334b61; }
+#curriculum-resources .cr-card-actions { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-top: auto; }
+#curriculum-resources .cr-card-actions a { min-height: 44px; display: inline-flex; align-items: center; font-size: 16px; font-weight: 700; }
+#curriculum-resources .cr-card-actions button { margin-left: auto; }
+#cr-results .cr-empty { grid-column: 1 / -1; font-size: 17px; line-height: 1.5; }
+#cr-more { margin-top: 16px; }
+#curriculum-resources #cr-notice { color: #11675d; margin: 12px 0; }
+#curriculum-resources #cr-notice:empty { margin: 0; }
+#curriculum-resources .cr-footer { display: flex; gap: 8px 24px; flex-wrap: wrap; margin: 16px 0 0; }
+#curriculum-resources .cr-footer a { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; }
+#cr-fallback { display: flex; flex-wrap: wrap; gap: 10px 20px; padding: 0; list-style: none; }
+#cr-fallback a { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; }
+.curriculum-home .hub-shortcuts .hub-resource-shortcut { background: #e7f3ef; color: #0f5b52; border-color: #78a69e; }
+@media (max-width: 1000px) { #cr-results { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { #cr-results { grid-template-columns: minmax(0, 1fr); } #curriculum-resources .cr-search-field { flex-basis: 100%; } #curriculum-resources h2 { font-size: 24px; } }
+@media print { #curriculum-resources { display: none !important; } }
+#curriculum-navigator .cn-heading p a[href="#curriculum-resources"] { text-decoration: underline; text-underline-offset: 3px; }

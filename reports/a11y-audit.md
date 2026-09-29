@@ -1,6 +1,6 @@
 # Accessibility audit — 2026-09-29
 
-Target: `http://127.0.0.1:8769` · 24 pages · axe-core WCAG 2.1 A/AA
+Target: `http://127.0.0.1:8771` · 24 pages · axe-core WCAG 2.1 A/AA
 
 **0** violations — critical 0, serious 0, moderate 0, minor 0.
 
@@ -24,7 +24,7 @@ visually once; they are not counted as violations above.
 | Page | Focusable elements | Focus visibility | Positive tabindex |
 | --- | ---: | --- | ---: |
 | Home portal | 143 | custom (UA ring replaced) | 0 |
-| Curriculum hub | 109 | custom (UA ring replaced) | 0 |
+| Curriculum hub | 135 | custom (UA ring replaced) | 0 |
 | Activity directory | 760 | custom | 0 |
 | Lesson 1-1 (flagship interior) | 41 | custom (UA ring replaced) | 0 |
 | Lesson 6-13 (standard interior) | 57 | custom (UA ring replaced) | 0 |

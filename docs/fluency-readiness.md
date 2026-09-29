@@ -2,7 +2,7 @@
 
 ## Access
 
-In Teacher view, open Curriculum Hub → Teach today, select a lesson, then choose Fluency & readiness or Fluency student practice. The full-library card is under All tools → Teacher Tools & Featured Resources → More teacher tools and featured resources → Fluency & Readiness.
+In Teacher view, use the Fluency & Readiness shortcut at the top of Curriculum Hub. It is also featured under Resources & tools, where it can be pinned on this device. For a specific lesson, open Teach today, select the lesson, then choose Fluency & readiness or Fluency student practice.
 
 - Teacher: `/curriculum/fluency/teacher/` (existing teacher access gate).
 - Student: `/curriculum/fluency/` (public practice with worked feedback).

@@ -203,6 +203,7 @@
     </style>
     <link rel="stylesheet" href="/assets/curriculum-navigator.css?v=7d4bbcc6" />
     <link rel="stylesheet" href="/assets/curriculum-home.css?v=71846447" />
+    <link rel="stylesheet" href="/assets/curriculum-resources.css?v=3df5282b" />
   </head>
   <body class="light-theme curriculum-home">
     <header class="curriculum-guide" id="curriculum-start">
@@ -227,7 +228,7 @@
         Find your lesson by name, number, or topic. Open the lesson, practice, or get help with the same math.
       </p>
 
-<nav class="hub-shortcuts" aria-label="Curriculum shortcuts"><button
+<nav class="hub-shortcuts" aria-label="Curriculum shortcuts"><a class="hub-resource-shortcut" href="#curriculum-resources">Resources &amp; tools</a><button
           class="curriculum-guide__action hub-teacher-only"
           type="button"
           data-guide-teacher-view="today"
@@ -255,7 +256,7 @@
         </button><a class="curriculum-guide__action" href="/curriculum/units/">
           <strong>Explore by unit</strong>
           <span>Choose one unit and see only the lesson and resources you need.</span>
-        </a><a href="/curriculum/practice-workbooks/">Practice workbooks</a><a href="/curriculum/family-connections/">For families</a><a href="#hub-library-collection">All tools</a><aside class="hub-reading-control" aria-label="Reading preferences">
+        </a><a href="/curriculum/practice-workbooks/">Practice workbooks</a><a href="/curriculum/family-connections/">For families</a><a class="hub-teacher-only" href="/curriculum/fluency/teacher/#view=studio">Fluency &amp; Readiness</a><a class="hub-student-only" href="/curriculum/fluency/">Fluency practice</a><aside class="hub-reading-control" aria-label="Reading preferences">
           <button id="udlFloatingLauncher" type="button" aria-expanded="false" aria-controls="udlMenuPopover" onclick="toggleUdlMenu()">Reading supports</button>
           <div id="udlMenuPopover" role="region" aria-labelledby="udlMenuTitle" style="display: none">
             <h2 id="udlMenuTitle">Reading and language supports</h2>
@@ -268,7 +269,7 @@
 
     <main id="main-content" class="hub-page">
       <section id="curriculum-navigator" aria-labelledby="navigator-title">
-        <div class="cn-heading"><div><h2 id="navigator-title">Find a lesson</h2><p>Search across the course, then choose what to open.</p></div><a href="/curriculum/units/">Full unit browser</a></div>
+        <div class="cn-heading"><div><h2 id="navigator-title">Find a lesson</h2><p>Search across the course, then choose what to open. For worksheets and teaching tools, <a href="#curriculum-resources">browse resources</a>.</p></div><a href="/curriculum/units/">Full unit browser</a></div>
         <div id="nav-recent" role="navigation" aria-label="Recently viewed lessons"></div>
         <div class="cn-layout">
           <div class="cn-browser">
@@ -285,6 +286,34 @@
           <section id="nav-preview" tabindex="-1" aria-labelledby="nav-lesson-title"><h3 id="nav-lesson-title">Your lesson, ready to open</h3><p>Choose a lesson to see its learning target, practice, notes, and support options together.</p><div class="cn-starter-links"><a href="/curriculum/arcade/">Practice with a game</a><a href="/curriculum/learning-labs/">Explore a learning lab</a><a href="/curriculum/my-progress/">Check my progress</a></div><p>Save useful lessons on this device with the Save lesson button. No sign-in needed.</p></section>
         </div>
         <p id="nav-message" role="status" aria-live="polite"></p>
+      </section>
+      <section id="curriculum-resources" aria-labelledby="resources-title">
+        <h2 id="resources-title">Resources &amp; tools</h2>
+        <p class="cr-intro">Find a worksheet collection, teaching studio, or classroom activity by what you need to do. Pin useful resources to find them quickly next time on this device.</p>
+        <div id="cr-controls" hidden>
+          <div class="cr-search-row">
+            <div class="cr-search-field"><label for="cr-search">Search resources and tools</label><input id="cr-search" type="search" placeholder="Try fluency, worksheets, small groups, or Canvas…" autocomplete="off" aria-controls="cr-results" /></div>
+            <button id="cr-pinned" type="button" aria-pressed="false">Pinned (0)</button>
+            <button id="cr-reset" type="button">Clear filters</button>
+          </div>
+          <div id="cr-filters" role="group" aria-label="Filter resources by teaching need"></div>
+        </div>
+        <p id="cr-status" role="status" aria-live="polite">Open a resource below, or use the searchable guide when it loads.</p>
+        <ul id="cr-fallback" aria-label="Direct resource links">
+          <li class="hub-teacher-only"><a href="/curriculum/fluency/teacher/#view=studio">Fluency &amp; Readiness</a></li>
+          <li class="hub-student-only"><a href="/curriculum/fluency/">Fluency practice</a></li>
+          <li><a href="/math/fluency-lab/">Math Fluency Lab</a></li>
+          <li class="hub-teacher-only"><a href="/curriculum/practice-workbooks/">Practice workbooks</a></li>
+          <li><a href="/curriculum/learning-labs/">Learning labs</a></li>
+          <li><a href="/mstar-practice/">MSTAR practice</a></li>
+          <li><a href="/curriculum/manipulatives/">Printable manipulatives</a></li>
+        </ul>
+        <ul id="cr-results" aria-label="Matching resources"></ul>
+        <button id="cr-more" type="button" hidden>Show more resources</button>
+        <button id="cr-retry" type="button" hidden>Try loading resources again</button>
+        <p id="cr-notice" role="status" aria-live="polite"></p>
+        <p class="cr-footer"><a id="cr-directory" href="/directory/">Search the full site directory</a><a href="#hub-library-collection">Open the complete tool library</a><a href="#curriculum-navigator">Find a specific lesson</a></p>
+        <noscript><p>The direct links work without JavaScript. Enable it to search and pin resources.</p></noscript>
       </section>
       <details class="hub-collection" id="hub-workflows"><summary>Teaching workflows &amp; classroom activities <span>Planning, games, projects, and more ways to learn</span></summary>
 
@@ -4417,6 +4446,7 @@
     <script src="/assets/curriculum-lesson-merge.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-product-upgrades.js?v=a1d332a0" defer></script>
     <script src="/assets/curriculum-navigator.js?v=2bc3d431" defer></script>
+    <script src="/assets/curriculum-resources.js?v=7b688655" defer></script>
     <script src="/assets/curriculum-home.js?v=d8857968" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>

@@ -41,6 +41,8 @@ const ASSETS = [
   "curriculum-navigator.css",
   "curriculum-home.js",
   "curriculum-home.css",
+  "curriculum-resources.js",
+  "curriculum-resources.css",
 ];
 
 const hub = readFileSync(HUB_PATH, "utf8");
