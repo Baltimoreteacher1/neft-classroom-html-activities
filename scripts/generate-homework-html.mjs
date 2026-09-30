@@ -619,8 +619,17 @@ function lessonConfigs() {
 // Neutral drawing space: the authored question supplies the mathematical method.
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
+/* Sidecar `graphPresets` (data/family-homework-notes/<id>.json): one-tap
+   example point sets for a problem's coordinate plane, matched to the problem
+   by a phrase from its stem so they follow the problem, not its position. */
+function graphPresetsFor(it, graphPresets = []) {
+  const stem = it.stem || "";
+  const hit = graphPresets.find((g) => g.stemIncludes && stem.includes(g.stemIncludes));
+  return hit ? hit.presets : [];
+}
+
 // Visual model + "show your work" space. Persists (saveState) and prints with lines.
-function renderWorkspace(pIdx, g, topic, isQuadrant1 = false) {
+function renderWorkspace(pIdx, g, topic, isQuadrant1 = false, graphPresets = []) {
   const visual = SVG_GRID;
   // Restore the graphing surfaces while keeping the corrected question-specific
   // coaching. Do not use number lines for fraction division or statistics.
@@ -636,7 +645,7 @@ function renderWorkspace(pIdx, g, topic, isQuadrant1 = false) {
   // SVG is hydrated into a tap-to-graph widget by NeftGraph. A hidden input lets
   // the answer persist through the existing saveState()/loadState() pipeline.
   const visualBlock = itype
-    ? `<div class="hw-visual-frame hw-interactive" data-interactive="${itype}" data-pidx="${pIdx}"${isQuadrant1 ? ' data-quadrant="1"' : ""}>
+    ? `<div class="hw-visual-frame hw-interactive" data-interactive="${itype}" data-pidx="${pIdx}"${isQuadrant1 ? ' data-quadrant="1"' : ""}${graphPresets.length ? ` data-graph-presets='${esc(JSON.stringify(graphPresets))}'` : ""}>
             ${visual}
             <div class="hw-graph-controls" data-graph-controls></div>
             <button type="button" class="hw-graph-reset" data-graph-reset><span class="lang-en">↺ Reset</span><span class="lang-es" lang="es">↺ Reiniciar</span></button>
@@ -1020,7 +1029,9 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     "open-response",
   ].includes(type);
   const guide = questionGuide(it);
-  const scaffold = computational ? renderWorkspace(pIdx, guide, topic, opts.isQuadrant1) : "";
+  const scaffold = computational
+    ? renderWorkspace(pIdx, guide, topic, opts.isQuadrant1, graphPresetsFor(it, opts.graphPresets))
+    : "";
   const coachLadder = {
     strategyEn: guide.coach,
     strategyEs: guide.coachEs,
@@ -1136,9 +1147,11 @@ function generateHtml(lessonId, config) {
   const lessonModel = selectLessonInteractiveModel(config);
 
   const unitNum = parseInt(config.unit || String(lessonId).split("-")[0] || 1, 10);
-  const isQuadrant1 =
-    topic === "coordinate-plane" &&
-    (unitNum === 3 || String(lessonId).startsWith("3-") || /ratio/i.test(config.title || ""));
+  /* Unit 3 is ratios and rates: every quantity it graphs is positive, so its
+     coordinate planes open on Quadrant 1. Keyed on the unit, never the title —
+     /ratio/ also matches "Rational", and 7-5 plots all four quadrants. */
+  const isQuadrant1 = topic === "coordinate-plane" && unitNum === 3;
+  const graphPresets = config.familyNotes?.graphPresets || [];
   const theme = getUnitTheme(unitNum);
   const themeCss = renderUnitThemeCss(theme);
 
@@ -1151,6 +1164,7 @@ function generateHtml(lessonId, config) {
         badgeEs: "Calentamiento",
         num: idx + 1,
         isQuadrant1,
+        graphPresets,
       }),
     )
     .join("\n");
@@ -1161,6 +1175,7 @@ function generateHtml(lessonId, config) {
         badgeEs: "Reto",
         num: idx + 1,
         isQuadrant1,
+        graphPresets,
       }),
     )
     .join("\n");
@@ -1171,6 +1186,7 @@ function generateHtml(lessonId, config) {
         badgeEs: "Más",
         num: idx + 1,
         isQuadrant1,
+        graphPresets,
       }),
     )
     .join("\n");
@@ -5631,11 +5647,11 @@ var NeftGraph = (function () {
 
   // ----- Coordinate plane: tap a lattice point to plot/remove an ordered pair -----
   function initCoordinatePlane(frame) {
-    var isQuadrant1 = frame.getAttribute("data-quadrant") === "1" || (typeof STORAGE_KEY !== "undefined" && /3-4/.test(STORAGE_KEY)) || (typeof window !== "undefined" && window.location && /3-4/.test(window.location.href)) || (typeof document !== "undefined" && /ratio/i.test(document.title || ""));
-    var pidx = frame.getAttribute("data-pidx");
+    var isQuadrant1 = frame.getAttribute("data-quadrant") === "1";
     var problemCard = frame.closest(".problem-section");
     var fillTable = problemCard ? problemCard.querySelector(".fill-table") : null;
-    var isRatioContext = isQuadrant1 && (fillTable || (typeof STORAGE_KEY !== "undefined" && /3-4/.test(STORAGE_KEY)) || (typeof window !== "undefined" && window.location && /3-4/.test(window.location.href)) || (typeof document !== "undefined" && /ratio/i.test(document.title || "")));
+    var graphPresets = [];
+    try { graphPresets = JSON.parse(frame.getAttribute("data-graph-presets") || "[]"); } catch (e) { graphPresets = []; }
 
     var MIN = isQuadrant1 ? 0 : -5, MAX = 5;
     var Ox = isQuadrant1 ? 36 : 120, Oy = isQuadrant1 ? 204 : 120;
@@ -5731,45 +5747,12 @@ var NeftGraph = (function () {
       });
     }
 
-    if (isRatioContext) {
-      if (pidx === "0") {
-        controls.appendChild(makeBtn(bi("Line through (0, 0)", "Recta por (0, 0)"), function() {
-          state.pts = [[1, 2], [2, 4], [3, 6]];
-          render();
-        }));
-        controls.appendChild(makeBtn(bi("Crooked (not equal)", "Torcida (no igual)"), function() {
-          state.pts = [[1, 2], [2, 5], [3, 6]];
-          render();
-        }));
-      } else if (pidx === "2") {
-        controls.appendChild(makeBtn(bi("Student A: y = 2x", "Estudiante A: y = 2x"), function() {
-          state.pts = [[1, 2], [2, 4], [3, 6]];
-          render();
-        }));
-        controls.appendChild(makeBtn(bi("Student B: y = 3x (Steeper)", "Estudiante B: y = 3x (Más inclinada)"), function() {
-          state.pts = [[1, 3], [2, 6], [3, 9]];
-          render();
-        }));
-        controls.appendChild(makeBtn(bi("Compare both", "Comparar ambas"), function() {
-          state.pts = [[1, 2], [2, 4], [3, 6], [1, 3], [2, 6], [3, 9]];
-          render();
-        }));
-      } else if (pidx === "3") {
-        controls.appendChild(makeBtn(bi("Plot student's points (1,3), (2,6), (3,9), (4,15)", "Graficar puntos del estudiante"), function() {
-          state.pts = [[1, 3], [2, 6], [3, 9], [4, 15]];
-          render();
-        }));
-      } else if (pidx === "8") {
-        controls.appendChild(makeBtn(bi("Smoothie line: y = 2x", "Recta de batido: y = 2x"), function() {
-          state.pts = [[1, 2], [4, 8], [5, 10]];
-          render();
-        }));
-        controls.appendChild(makeBtn(bi("Test off-line points", "Probar puntos fuera"), function() {
-          state.pts = [[1, 2], [4, 8], [5, 10], [2, 3], [3, 5], [1, 4]];
-          render();
-        }));
-      }
-    }
+    graphPresets.forEach(function(preset) {
+      controls.appendChild(makeBtn(bi(preset.en, preset.es || preset.en), function() {
+        state.pts = preset.pts.map(function(p) { return [p[0], p[1]]; });
+        render();
+      }));
+    });
 
     function drawGrid() {
       if (isQuadrant1) {
@@ -5778,13 +5761,17 @@ var NeftGraph = (function () {
           maxCoordX = Math.max.apply(null, state.pts.map(function(p) { return p[0]; }));
           maxCoordY = Math.max.apply(null, state.pts.map(function(p) { return p[1]; }));
         }
-        if (fillTable && pidx === "1") {
-          maxCoordX = Math.max(maxCoordX, 6);
-          maxCoordY = Math.max(maxCoordY, 30);
-        }
-        if (pidx === "3" && state.pts.length) {
-          maxCoordX = Math.max(maxCoordX, 5);
-          maxCoordY = Math.max(maxCoordY, 16);
+        if (fillTable) {
+          // Open wide enough for every row of the table, answered or not.
+          fillTable.querySelectorAll("tbody tr").forEach(function(tr) {
+            var tds = tr.querySelectorAll("td");
+            if (tds.length < 2) return;
+            var x = parseFloat(tds[0].textContent.trim());
+            var yInp = tds[1].querySelector("input");
+            var y = parseFloat(yInp ? yInp.dataset.correct || "" : tds[1].textContent.trim());
+            if (Number.isFinite(x)) maxCoordX = Math.max(maxCoordX, x);
+            if (Number.isFinite(y)) maxCoordY = Math.max(maxCoordY, y);
+          });
         }
         if (maxCoordY > 12 && maxCoordX <= 8) {
           maxX = Math.max(6, Math.ceil(maxCoordX / 2) * 2);
