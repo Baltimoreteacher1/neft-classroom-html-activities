@@ -620,7 +620,7 @@ function lessonConfigs() {
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
 // Visual model + "show your work" space. Persists (saveState) and prints with lines.
-function renderWorkspace(pIdx, g, topic) {
+function renderWorkspace(pIdx, g, topic, isQuadrant1 = false) {
   const visual = SVG_GRID;
   // Restore the graphing surfaces while keeping the corrected question-specific
   // coaching. Do not use number lines for fraction division or statistics.
@@ -636,7 +636,7 @@ function renderWorkspace(pIdx, g, topic) {
   // SVG is hydrated into a tap-to-graph widget by NeftGraph. A hidden input lets
   // the answer persist through the existing saveState()/loadState() pipeline.
   const visualBlock = itype
-    ? `<div class="hw-visual-frame hw-interactive" data-interactive="${itype}" data-pidx="${pIdx}">
+    ? `<div class="hw-visual-frame hw-interactive" data-interactive="${itype}" data-pidx="${pIdx}"${isQuadrant1 ? ' data-quadrant="1"' : ""}>
             ${visual}
             <div class="hw-graph-controls" data-graph-controls></div>
             <button type="button" class="hw-graph-reset" data-graph-reset><span class="lang-en">↺ Reset</span><span class="lang-es" lang="es">↺ Reiniciar</span></button>
@@ -1020,7 +1020,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     "open-response",
   ].includes(type);
   const guide = questionGuide(it);
-  const scaffold = computational ? renderWorkspace(pIdx, guide, topic) : "";
+  const scaffold = computational ? renderWorkspace(pIdx, guide, topic, opts.isQuadrant1) : "";
   const coachLadder = {
     strategyEn: guide.coach,
     strategyEs: guide.coachEs,
@@ -1136,6 +1136,9 @@ function generateHtml(lessonId, config) {
   const lessonModel = selectLessonInteractiveModel(config);
 
   const unitNum = parseInt(config.unit || String(lessonId).split("-")[0] || 1, 10);
+  const isQuadrant1 =
+    topic === "coordinate-plane" &&
+    (unitNum === 3 || String(lessonId).startsWith("3-") || /ratio/i.test(config.title || ""));
   const theme = getUnitTheme(unitNum);
   const themeCss = renderUnitThemeCss(theme);
 
@@ -1143,7 +1146,12 @@ function generateHtml(lessonId, config) {
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length, moreSelected.length > 0);
   const warmupHtml = warmup
     .map((p, idx) =>
-      renderProblem(p, idx, topic, { badgeEn: "Warm-up", badgeEs: "Calentamiento", num: idx + 1 }),
+      renderProblem(p, idx, topic, {
+        badgeEn: "Warm-up",
+        badgeEs: "Calentamiento",
+        num: idx + 1,
+        isQuadrant1,
+      }),
     )
     .join("\n");
   const challengeHtml = challenge
@@ -1152,6 +1160,7 @@ function generateHtml(lessonId, config) {
         badgeEn: "Level up",
         badgeEs: "Reto",
         num: idx + 1,
+        isQuadrant1,
       }),
     )
     .join("\n");
@@ -1161,6 +1170,7 @@ function generateHtml(lessonId, config) {
         badgeEn: "Bonus",
         badgeEs: "Más",
         num: idx + 1,
+        isQuadrant1,
       }),
     )
     .join("\n");
@@ -5559,20 +5569,15 @@ var NeftGraph = (function () {
 
   // ----- Coordinate plane: tap a lattice point to plot/remove an ordered pair -----
   function initCoordinatePlane(frame) {
-    var MIN = -5, MAX = 5, O = 120, STEP = 20; // origin at (120,120); 5*20=100 -> 20..220
+    var isQuadrant1 = frame.getAttribute("data-quadrant") === "1" || (typeof STORAGE_KEY !== "undefined" && /3-4/.test(STORAGE_KEY)) || (typeof window !== "undefined" && window.location && /3-4/.test(window.location.href)) || (typeof document !== "undefined" && /ratio/i.test(document.title || ""));
+    var MIN = isQuadrant1 ? 0 : -5, MAX = 5;
+    var Ox = isQuadrant1 ? 36 : 120, Oy = isQuadrant1 ? 204 : 120;
+    var STEP = isQuadrant1 ? 175 / MAX : 20;
     var state = readState(frame) || { pts: [] };
     var oldSvg = frame.querySelector(".hw-visual-svg");
-    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive coordinate plane" });
-    function sx(x) { return O + x * STEP; }
-    function sy(yv) { return O - yv * STEP; }
-    for (var i = MIN; i <= MAX; i++) {
-      svg.appendChild(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: "#d6e2ee", "stroke-width": 1 }));
-      svg.appendChild(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: "#d6e2ee", "stroke-width": 1 }));
-    }
-    svg.appendChild(el("line", { x1: O, y1: sy(MAX) - 6, x2: O, y2: sy(MIN) + 6, stroke: "#12355b", "stroke-width": 2 }));
-    svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
-    var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
-    var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
+    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "group", "aria-label": isQuadrant1 ? "Interactive positive coordinate plane (Quadrant 1)" : "Interactive coordinate plane" });
+    function sx(x) { return Ox + x * STEP; }
+    function sy(yv) { return Oy - yv * STEP; }
     var plotLayer = el("g"), hitLayer = el("g");
     svg.appendChild(hitLayer);
     svg.appendChild(plotLayer);
@@ -5581,40 +5586,90 @@ var NeftGraph = (function () {
     var controls = frame.querySelector("[data-graph-controls]");
     var xInput = graphNumberInput(controls, "x", 0);
     var yInput = graphNumberInput(controls, "y", 0);
+    if (isQuadrant1) {
+      xInput.min = "0";
+      yInput.min = "0";
+    }
     controls.appendChild(makeBtn(bi("Plot / remove point", "Marcar / quitar punto"), function() {
       if (xInput.value === "" || yInput.value === "") return;
       var x = Number(xInput.value), y = Number(yInput.value);
+      if (isQuadrant1 && (x < 0 || y < 0)) return;
       if (Number.isFinite(x) && Number.isFinite(y)) toggle(x,y);
     }));
     function drawGrid() {
-      MAX = Math.max(5, ...state.pts.flat().map(function(v) { return Math.ceil(Math.abs(v)/5)*5; }));
-      MIN = -MAX; STEP = 100/MAX;
+      if (isQuadrant1) {
+        var maxCoord = state.pts.length ? Math.max.apply(null, state.pts.flat()) : 5;
+        MAX = Math.max(5, Math.ceil(maxCoord / 5) * 5);
+        MIN = 0;
+        Ox = 36;
+        Oy = 204;
+        STEP = 175 / MAX;
+      } else {
+        MAX = Math.max(5, ...state.pts.flat().map(function(v) { return Math.ceil(Math.abs(v)/5)*5; }));
+        MIN = -MAX;
+        Ox = 120;
+        Oy = 120;
+        STEP = 100 / MAX;
+      }
       // Remove the old fixed grid and labels, keeping the plot and hit layers.
       Array.from(svg.children).forEach(function(child) {
         if (child !== plotLayer && child !== hitLayer) child.remove();
       });
       hitLayer.replaceChildren();
       var tickStep = Math.max(1, Math.ceil(MAX/5));
-      for (var i=MIN; i<=MAX; i+=tickStep) {
-        var shade = i === 0 ? "#12355b" : "#d6e2ee";
-        svg.insertBefore(el("line", {x1:sx(i),y1:sy(MAX),x2:sx(i),y2:sy(MIN),stroke:shade}), hitLayer);
-        svg.insertBefore(el("line", {x1:sx(MIN),y1:sy(i),x2:sx(MAX),y2:sy(i),stroke:shade}), hitLayer);
-        var label = el("text", {x:sx(i), y:O+14, "class":"ng-tick-lbl", "text-anchor":"middle"});
-        label.textContent = i; svg.insertBefore(label,hitLayer);
-        if (i) {
-          var yLabel = el("text", {x:O+4,y:sy(i)-3,"class":"ng-tick-lbl"});
-          yLabel.textContent=i; svg.insertBefore(yLabel,hitLayer);
+      if (isQuadrant1) {
+        for (var i = 0; i <= MAX; i += tickStep) {
+          svg.insertBefore(el("line", { x1: sx(i), y1: Oy, x2: sx(i), y2: sy(MAX), stroke: "#d6e2ee", "stroke-width": 1 }), hitLayer);
         }
-        for (var j=MIN; j<=MAX; j+=tickStep) {
-          (function(x,y) {
-            var hit = el("circle", {cx:sx(x),cy:sy(y),r:8,"class":"ng-hit"});
-            graphHit(hit,"Plot / Marcar ("+x+", "+y+")",function(){toggle(x,y);});
-            hitLayer.appendChild(hit);
-          })(i,j);
+        for (var j = 0; j <= MAX; j += tickStep) {
+          svg.insertBefore(el("line", { x1: Ox, y1: sy(j), x2: sx(MAX), y2: sy(j), stroke: "#d6e2ee", "stroke-width": 1 }), hitLayer);
         }
+        svg.insertBefore(el("line", { x1: Ox, y1: Oy, x2: sx(MAX) + 8, y2: Oy, stroke: "#12355b", "stroke-width": 2 }), hitLayer);
+        svg.insertBefore(el("line", { x1: Ox, y1: Oy, x2: Ox, y2: sy(MAX) - 8, stroke: "#12355b", "stroke-width": 2 }), hitLayer);
+        var xlbl = el("text", { x: sx(MAX) + 12, y: Oy + 4, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.insertBefore(xlbl, hitLayer);
+        var ylbl = el("text", { x: Ox, y: sy(MAX) - 10, "class": "ng-axis-lbl", "text-anchor": "middle" }); ylbl.textContent = "y"; svg.insertBefore(ylbl, hitLayer);
+        var oLabel = el("text", { x: Ox - 6, y: Oy + 14, "class": "ng-tick-lbl", "text-anchor": "end" });
+        oLabel.textContent = "0"; svg.insertBefore(oLabel, hitLayer);
+        for (var i = tickStep; i <= MAX; i += tickStep) {
+          var label = el("text", { x: sx(i), y: Oy + 14, "class": "ng-tick-lbl", "text-anchor": "middle" });
+          label.textContent = i; svg.insertBefore(label, hitLayer);
+          var yLabel = el("text", { x: Ox - 6, y: sy(i) + 4, "class": "ng-tick-lbl", "text-anchor": "end" });
+          yLabel.textContent = i; svg.insertBefore(yLabel, hitLayer);
+        }
+        for (var i = 0; i <= MAX; i += tickStep) {
+          for (var j = 0; j <= MAX; j += tickStep) {
+            (function(x, y) {
+              var hit = el("circle", { cx: sx(x), cy: sy(y), r: 8, "class": "ng-hit" });
+              graphHit(hit, "Plot / Marcar (" + x + ", " + y + ")", function() { toggle(x, y); });
+              hitLayer.appendChild(hit);
+            })(i, j);
+          }
+        }
+      } else {
+        for (var i = MIN; i <= MAX; i += tickStep) {
+          var shade = i === 0 ? "#12355b" : "#d6e2ee";
+          svg.insertBefore(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: shade }), hitLayer);
+          svg.insertBefore(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: shade }), hitLayer);
+          var label = el("text", { x: sx(i), y: Oy + 14, "class": "ng-tick-lbl", "text-anchor": "middle" });
+          label.textContent = i; svg.insertBefore(label, hitLayer);
+          if (i) {
+            var yLabel = el("text", { x: Ox + 4, y: sy(i) - 3, "class": "ng-tick-lbl" });
+            yLabel.textContent = i; svg.insertBefore(yLabel, hitLayer);
+          }
+          for (var j = MIN; j <= MAX; j += tickStep) {
+            (function(x, y) {
+              var hit = el("circle", { cx: sx(x), cy: sy(y), r: 8, "class": "ng-hit" });
+              graphHit(hit, "Plot / Marcar (" + x + ", " + y + ")", function() { toggle(x, y); });
+              hitLayer.appendChild(hit);
+            })(i, j);
+          }
+        }
+        var xlbl = el("text", { x: sx(MAX) + 2, y: Oy + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.insertBefore(xlbl, hitLayer);
+        var ylbl = el("text", { x: Ox + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.insertBefore(ylbl, hitLayer);
       }
     }
     function toggle(x, y) {
+      if (isQuadrant1 && (x < 0 || y < 0)) return;
       var idx = -1;
       for (var i = 0; i < state.pts.length; i++) { if (state.pts[i][0] === x && state.pts[i][1] === y) { idx = i; break; } }
       if (idx >= 0) state.pts.splice(idx, 1); else state.pts.push([x, y]);

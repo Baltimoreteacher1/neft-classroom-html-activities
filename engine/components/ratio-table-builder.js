@@ -85,12 +85,128 @@ export function doubleNumberLineSVG(a, b, steps, labelA, labelB) {
   );
 }
 
+/**
+ * Coordinate plane graphing for equivalent ratio tables.
+ * Plots table columns as ordered pairs (x, y) in Quadrant 1 (positive numbers only).
+ * Connects the points with a straight proportional line starting at the origin (0, 0).
+ */
+export function ratioGraphSVG(a, b, steps, labelA, labelB, activeK = null) {
+  const W = 560;
+  const H = 340;
+  const padLeft = 65;
+  const padRight = 35;
+  const padTop = 30;
+  const padBottom = 50;
+  const usableW = W - padLeft - padRight;
+  const usableH = H - padTop - padBottom;
+
+  const gridK = steps + 1;
+  const axisXMax = a * gridK;
+  const axisYMax = b * gridK;
+
+  const sx = (x) => padLeft + (x / axisXMax) * usableW;
+  const sy = (y) => H - padBottom - (y / axisYMax) * usableH;
+  const ox = sx(0);
+  const oy = sy(0);
+  const esc2 = (s) =>
+    String(s).replace(
+      /[&<>"]/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+    );
+
+  let gridLines = "";
+  let xTicks = "";
+  let yTicks = "";
+
+  for (let k = 0; k <= gridK; k++) {
+    const xVal = a * k;
+    const px = sx(xVal);
+    gridLines += `<line x1="${px.toFixed(1)}" y1="${sy(axisYMax).toFixed(1)}" x2="${px.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`;
+    xTicks += `<line x1="${px.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${px.toFixed(1)}" y2="${(oy + 5).toFixed(1)}" stroke="${C.navy}" stroke-width="1.5"/>`;
+    xTicks += `<text x="${px.toFixed(1)}" y="${(oy + 18).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="${C.navy}">${fmt(xVal)}</text>`;
+
+    const yVal = b * k;
+    const py = sy(yVal);
+    gridLines += `<line x1="${ox.toFixed(1)}" y1="${py.toFixed(1)}" x2="${sx(axisXMax).toFixed(1)}" y2="${py.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`;
+    if (k > 0) {
+      yTicks += `<line x1="${(ox - 5).toFixed(1)}" y1="${py.toFixed(1)}" x2="${ox.toFixed(1)}" y2="${py.toFixed(1)}" stroke="${C.navy}" stroke-width="1.5"/>`;
+      yTicks += `<text x="${(ox - 8).toFixed(1)}" y="${(py + 4).toFixed(1)}" text-anchor="end" font-size="12" font-weight="700" fill="${C.navy}">${fmt(yVal)}</text>`;
+    }
+  }
+
+  const endX = sx(axisXMax) + 12;
+  const endY = sy(axisYMax) - 12;
+  const axes =
+    `<line x1="${ox.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${endX.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${C.navy}" stroke-width="2.5"/>` +
+    `<polygon points="${endX.toFixed(1)},${oy.toFixed(1)} ${(endX - 8).toFixed(1)},${(oy - 4).toFixed(1)} ${(endX - 8).toFixed(1)},${(oy + 4).toFixed(1)}" fill="${C.navy}"/>` +
+    `<text x="${(endX - 10).toFixed(1)}" y="${(oy + 36).toFixed(1)}" text-anchor="end" font-size="13" font-weight="800" fill="${C.navy}">${esc2(labelA)} →</text>` +
+    `<line x1="${ox.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${ox.toFixed(1)}" y2="${endY.toFixed(1)}" stroke="${C.navy}" stroke-width="2.5"/>` +
+    `<polygon points="${ox.toFixed(1)},${endY.toFixed(1)} ${(ox - 4).toFixed(1)},${(endY + 8).toFixed(1)} ${(ox + 4).toFixed(1)},${(endY + 8).toFixed(1)}" fill="${C.navy}"/>` +
+    `<text x="${ox.toFixed(1)}" y="${(endY - 8).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="800" fill="${C.navy}">↑ ${esc2(labelB)}</text>`;
+
+  const propLine = `<line x1="${ox.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${sx(axisXMax).toFixed(1)}" y2="${sy(axisYMax).toFixed(1)}" stroke="${C.teal}" stroke-width="3" stroke-linecap="round"/>`;
+
+  const originDot =
+    `<circle cx="${ox.toFixed(1)}" cy="${oy.toFixed(1)}" r="5" fill="${C.navy}"/>` +
+    `<text x="${(ox - 8).toFixed(1)}" y="${(oy + 18).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="${C.muted}">(0, 0)</text>`;
+
+  let points = "";
+  const pairDescriptions = [];
+  for (let k = 1; k <= steps; k++) {
+    const x = a * k;
+    const y = b * k;
+    const px = sx(x);
+    const py = sy(y);
+    const isActive = activeK === k;
+    pairDescriptions.push(`(${fmt(x)}, ${fmt(y)})`);
+
+    const pointColor = isActive ? C.accent : C.teal;
+    const glow = isActive
+      ? `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="13" fill="none" stroke="${C.accent}" stroke-width="2" stroke-dasharray="3 3"/>`
+      : "";
+
+    const lblX = (px + 8).toFixed(1);
+    const lblY = (py - 8).toFixed(1);
+    const unitBadge =
+      k === 1 && a === 1
+        ? `<text x="${lblX}" y="${(py + 16).toFixed(1)}" font-size="10" font-weight="800" fill="${C.teal}">UNIT RATE</text>`
+        : "";
+
+    const tagW = Math.max(48, (String(fmt(x)).length + String(fmt(y)).length) * 8 + 18);
+    points +=
+      `<g class="rtlab-point${isActive ? " is-active" : ""}" data-point-k="${k}" role="button" tabindex="0" aria-label="Point (${fmt(x)}, ${fmt(y)}) from column ×${k}">` +
+      glow +
+      `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${isActive ? 7 : 5.5}" fill="${pointColor}" stroke="#ffffff" stroke-width="2.5"/>` +
+      `<rect x="${lblX}" y="${(py - 20).toFixed(1)}" width="${tagW}" height="17" rx="4" fill="rgba(255,255,255,0.92)" stroke="${isActive ? C.accent : C.line}" stroke-width="1"/>` +
+      `<text x="${(px + 12).toFixed(1)}" y="${lblY}" font-size="11" font-weight="800" fill="${isActive ? C.accent : C.navy}">(${fmt(x)}, ${fmt(y)})</text>` +
+      unitBadge +
+      `</g>`;
+  }
+
+  const aria = `Coordinate graph of equivalent ratios for ${esc2(labelA)} and ${esc2(labelB)}. Plotted ordered pairs: ${pairDescriptions.join(", ")}. All points form a straight line passing through the origin (0, 0).`;
+
+  return (
+    `<svg class="rtlab-graph" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc2(aria)}">` +
+    `<rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="#ffffff"/>` +
+    gridLines +
+    axes +
+    xTicks +
+    yTicks +
+    propLine +
+    originDot +
+    points +
+    `</svg>`
+  );
+}
+
 export function renderRatioTableBuilder(container, cfg = {}) {
-  const labelA = cfg.labelA || "A";
-  const labelB = cfg.labelB || "B";
+  const labelA = cfg.labelA || "x";
+  const labelB = cfg.labelB || "y";
   const STEPS = Math.max(3, Math.min(8, cfg.steps || 6));
-  let a = clamp(cfg.a ?? 2);
-  let b = clamp(cfg.b ?? 3);
+  let a = clamp(cfg.a ?? 1);
+  let b = clamp(cfg.b ?? 4);
+  let activeK = null;
+  let currentView = "graph";
 
   function clamp(v) {
     v = Math.floor(Number(v) || 0);
@@ -98,20 +214,20 @@ export function renderRatioTableBuilder(container, cfg = {}) {
   }
 
   const presets =
-    Array.isArray(cfg.presets) && cfg.presets.length ? cfg.presets : ["2:3", "3:4", "5:2", "1:4"];
+    Array.isArray(cfg.presets) && cfg.presets.length ? cfg.presets : ["1:4", "2:5", "1:3", "3:5"];
 
   injectStyles();
 
   const root = document.createElement("div");
   root.className = "rtlab";
   root.innerHTML =
-    `<div class="rtlab-title">Ratio Table Lab</div>` +
-    `<p class="rtlab-hint">Multiply <strong>both</strong> numbers by the same factor to build equivalent ratios. Type a ratio to fill the table.</p>` +
+    `<div class="rtlab-title">Determine Equivalent Ratios Using Graphs</div>` +
+    `<p class="rtlab-hint">Build an equivalent ratio table with positive numbers, then plot the ordered pairs on the coordinate graph. Notice how they form a straight line through the origin (0, 0).</p>` +
     `<div class="rtlab-controls">` +
-    `<label class="rtlab-field"><span>${esc(labelA)}</span><input type="number" min="1" max="99" value="${a}" data-inp="a" aria-label="${esc(labelA)} part of the ratio"/></label>` +
+    `<label class="rtlab-field"><span>${esc(labelA)} (x)</span><input type="number" min="1" max="99" value="${a}" data-inp="a" aria-label="${esc(labelA)} (x) part of the ratio"/></label>` +
     `<span class="rtlab-colon">:</span>` +
-    `<label class="rtlab-field"><span>${esc(labelB)}</span><input type="number" min="1" max="99" value="${b}" data-inp="b" aria-label="${esc(labelB)} part of the ratio"/></label>` +
-    `<button type="button" class="rtlab-go">Build table →</button></div>` +
+    `<label class="rtlab-field"><span>${esc(labelB)} (y)</span><input type="number" min="1" max="99" value="${b}" data-inp="b" aria-label="${esc(labelB)} (y) part of the ratio"/></label>` +
+    `<button type="button" class="rtlab-go">Build &amp; graph →</button></div>` +
     `<div class="rtlab-presets" role="group" aria-label="Quick-pick ratios">` +
     presets
       .map((p) => `<button type="button" class="rtlab-chip" data-p="${esc(p)}">${esc(p)}</button>`)
@@ -127,31 +243,89 @@ export function renderRatioTableBuilder(container, cfg = {}) {
   const stage = root.querySelector(".rtlab-stage");
   const result = root.querySelector(".rtlab-result");
 
+  function renderVisuals() {
+    let head = `<tr><th class="rtlab-corner">×</th>`;
+    let rowA = `<tr><th class="rtlab-rowlab" style="background:${C.headA}">${esc(labelA)} (x)</th>`;
+    let rowB = `<tr><th class="rtlab-rowlab" style="background:${C.headB}">${esc(labelB)} (y)</th>`;
+    for (let k = 1; k <= STEPS; k++) {
+      const isColActive = activeK === k;
+      const colClass = isColActive ? " rtlab-col-active" : "";
+      head += `<th class="${colClass}" data-col-k="${k}" role="button" tabindex="0" title="Click to highlight point (${a * k}, ${b * k})">×${k}</th>`;
+      rowA += `<td class="${k === 1 ? "rtlab-base" : ""}${colClass}" data-col-k="${k}">${a * k}</td>`;
+      rowB += `<td class="${k === 1 ? "rtlab-base" : ""}${colClass}" data-col-k="${k}">${b * k}</td>`;
+    }
+    head += `</tr>`;
+    rowA += `</tr>`;
+    rowB += `</tr>`;
+
+    const detailText = activeK
+      ? `<strong>Column ×${activeK}:</strong> (${a * activeK}, ${b * activeK}) → ${a * activeK} ${esc(labelA)} pairs with ${b * activeK} ${esc(labelB)}. (${a * activeK} ÷ ${activeK} = ${a}, ${b * activeK} ÷ ${activeK} = ${b}).`
+      : `💡 Tap any column or point on the graph to inspect its ordered pair (x, y).`;
+
+    stage.innerHTML =
+      `<div class="rtlab-table-wrap"><table class="rtlab-table"><thead>${head}</thead><tbody>${rowA}${rowB}</tbody></table></div>` +
+      `<div class="rtlab-view-tabs" role="tablist">` +
+      `<button type="button" class="rtlab-tab${currentView === "graph" ? " is-active" : ""}" data-view="graph" role="tab" aria-selected="${currentView === "graph"}">📈 Coordinate Graph</button>` +
+      `<button type="button" class="rtlab-tab${currentView === "dnl" ? " is-active" : ""}" data-view="dnl" role="tab" aria-selected="${currentView === "dnl"}">📏 Double Number Line</button>` +
+      `</div>` +
+      `<div class="rtlab-visual-area">` +
+      `<div class="rtlab-view-graph"${currentView === "graph" ? "" : ' style="display:none;"'}>` +
+      ratioGraphSVG(a, b, STEPS, labelA, labelB, activeK) +
+      `</div>` +
+      `<div class="rtlab-view-dnl"${currentView === "dnl" ? "" : ' style="display:none;"'}>` +
+      doubleNumberLineSVG(a, b, STEPS, labelA, labelB) +
+      `</div>` +
+      `</div>` +
+      `<div class="rtlab-point-detail">${detailText}</div>`;
+
+    // Wire view switcher
+    stage.querySelectorAll(".rtlab-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        currentView = tab.dataset.view;
+        renderVisuals();
+      });
+    });
+
+    // Wire table column clicks
+    stage.querySelectorAll("[data-col-k]").forEach((cell) => {
+      cell.addEventListener("click", () => {
+        const k = Number(cell.dataset.colK);
+        activeK = activeK === k ? null : k;
+        renderVisuals();
+      });
+    });
+
+    // Wire graph point clicks
+    stage.querySelectorAll(".rtlab-point").forEach((pt) => {
+      pt.addEventListener("click", () => {
+        const k = Number(pt.dataset.pointK);
+        activeK = activeK === k ? null : k;
+        renderVisuals();
+      });
+      pt.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const k = Number(pt.dataset.pointK);
+          activeK = activeK === k ? null : k;
+          renderVisuals();
+        }
+      });
+    });
+  }
+
   function build() {
     a = clamp(inA.value);
     b = clamp(inB.value);
     inA.value = a;
     inB.value = b;
+    activeK = null;
 
-    let head = `<tr><th class="rtlab-corner">×</th>`;
-    let rowA = `<tr><th class="rtlab-rowlab" style="background:${C.headA}">${esc(labelA)}</th>`;
-    let rowB = `<tr><th class="rtlab-rowlab" style="background:${C.headB}">${esc(labelB)}</th>`;
-    for (let k = 1; k <= STEPS; k++) {
-      head += `<th>×${k}</th>`;
-      rowA += `<td class="${k === 1 ? "rtlab-base" : ""}">${a * k}</td>`;
-      rowB += `<td class="${k === 1 ? "rtlab-base" : ""}">${b * k}</td>`;
-    }
-    head += `</tr>`;
-    rowA += `</tr>`;
-    rowB += `</tr>`;
-    stage.innerHTML =
-      `<table class="rtlab-table"><thead>${head}</thead><tbody>${rowA}${rowB}</tbody></table>` +
-      doubleNumberLineSVG(a, b, STEPS, labelA, labelB);
+    renderVisuals();
 
     const unit = fmt(b / a);
     result.innerHTML =
-      `<div class="rtlab-answer">${a} : ${b}  →  1 : ${unit}</div>` +
-      `<p class="rtlab-explain">Every column is the same ratio as ${a} : ${b}. The <strong>unit rate</strong> is ${unit} ${esc(labelB)} for each 1 ${esc(labelA)} (divide both by ${a}).</p>`;
+      `<div class="rtlab-answer">${a} : ${b}  →  (1, ${unit})</div>` +
+      `<p class="rtlab-explain">Every column in the table forms an ordered pair <strong>(x, y)</strong>. When plotted, equivalent ratios always form a <strong>straight line that passes through the origin (0, 0)</strong>. The <strong>unit rate point</strong> is (1, ${unit}).</p>`;
   }
 
   root.querySelector(".rtlab-go").addEventListener("click", build);
@@ -186,31 +360,40 @@ function injectStyles() {
   const s = document.createElement("style");
   s.id = "rtlab-styles";
   s.textContent = `
-  .rtlab{max-width:600px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .rtlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
+  .rtlab{max-width:620px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
+  .rtlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.1rem;}
   .rtlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.4;}
   .rtlab-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;}
   .rtlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;}
   .rtlab-field input{width:76px;padding:8px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
   .rtlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
   .rtlab-colon{align-self:center;padding-bottom:9px;font-weight:700;color:${C.navy};font-size:1.2rem;}
-  .rtlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
-  .rtlab-go:hover{filter:brightness(1.08);}
+  .rtlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#1d4ed8,#0d7a76);border:0;border-radius:10px;cursor:pointer;transition:transform .1s;}
+  .rtlab-go:hover{filter:brightness(1.08);transform:translateY(-1px);}
   .rtlab-go:focus-visible,.rtlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .rtlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;}
   .rtlab-chip{padding:5px 12px;font-size:.9rem;font-weight:600;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
   .rtlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
-  .rtlab-stage{margin:14px 0 8px;padding:8px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;overflow-x:auto;}
-  /* The double number line sits directly under the table it mirrors, so the
-     eye can travel from column ×3 to the third pair of ticks. */
-  .rtlab-dnl{display:block;width:100%;height:auto;margin-top:10px;}
+  .rtlab-stage{margin:14px 0 8px;padding:10px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;overflow-x:auto;}
+  .rtlab-table-wrap{overflow-x:auto;padding-bottom:4px;}
   .rtlab-table{width:100%;border-collapse:collapse;font-size:.95rem;text-align:center;min-width:340px;}
-  .rtlab-table th{padding:6px 8px;font-size:.8rem;color:${C.muted};font-weight:600;}
-  .rtlab-corner{color:${C.navy};}
-  .rtlab-rowlab{color:${C.navy};font-weight:700;}
-  .rtlab-table td{padding:7px 8px;border:1px solid ${C.line};font-weight:600;color:${C.navy};}
+  .rtlab-table th{padding:6px 8px;font-size:.8rem;color:${C.muted};font-weight:600;cursor:pointer;user-select:none;}
+  .rtlab-corner{color:${C.navy};cursor:default;}
+  .rtlab-rowlab{color:${C.navy};font-weight:700;cursor:default;}
+  .rtlab-table td{padding:7px 8px;border:1px solid ${C.line};font-weight:600;color:${C.navy};cursor:pointer;user-select:none;}
   .rtlab-base{background:#eef4ff;color:${C.accent};}
-  .rtlab-result{text-align:center;}
+  .rtlab-col-active{background:#dbeafe!important;color:${C.accent}!important;outline:2px solid ${C.accent};}
+  .rtlab-view-tabs{display:flex;gap:8px;margin:12px 0 8px;justify-content:center;}
+  .rtlab-tab{padding:6px 14px;font-size:.85rem;font-weight:700;border:1.5px solid ${C.line};border-radius:999px;background:#ffffff;color:${C.muted};cursor:pointer;}
+  .rtlab-tab.is-active{background:${C.navy};color:#ffffff;border-color:${C.navy};}
+  .rtlab-visual-area{display:flex;justify-content:center;}
+  .rtlab-graph{display:block;width:100%;max-width:560px;height:auto;border-radius:8px;}
+  .rtlab-dnl{display:block;width:100%;height:auto;margin-top:6px;}
+  .rtlab-point{cursor:pointer;transition:transform .12s;}
+  .rtlab-point:hover{filter:brightness(1.15);}
+  .rtlab-point:focus-visible{outline:2px solid ${C.accent};outline-offset:2px;}
+  .rtlab-point-detail{margin-top:8px;padding:8px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:.85rem;color:#166534;text-align:center;}
+  .rtlab-result{text-align:center;margin-top:8px;}
   .rtlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.2rem;color:${C.teal};}
   .rtlab-explain{margin:6px auto 0;max-width:520px;color:${C.ink};font-size:.9rem;line-height:1.5;}
   `;
