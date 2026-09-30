@@ -501,6 +501,17 @@ const COVERAGE = [
   [/^\.github\/workflows\//, ["validate:workflow-yaml", "test"]],
   [/^data\/ccss-standards\.json$/, ["validate:ccss", "validate:scope"]],
   [/^data\/routes\.json$/, ["test", "validate:static", "audit:links"]],
+  // The sitemap's own inputs. `data/catalog.json` is what generate-sitemap reads,
+  // so a catalog change can leave the committed sitemap stale, and
+  // `seo-canonical-review.json` is validate:seo's own ratchet. Both would
+  // otherwise fall through to the broad `data/` rule below and never run the
+  // gate that reads them. Stated as a SUPERSET of that rule — COVERAGE is
+  // first-match-wins, so naming these paths here without carrying its checks
+  // forward would drop validate:data-contracts and validate:nervous-system.
+  [
+    /^data\/(catalog|seo-canonical-review)\.json$/,
+    ["validate:seo", "validate:data-contracts", "validate:nervous-system", "test", "check"],
+  ],
   [/^data\//, ["validate:data-contracts", "validate:nervous-system"]],
   [/^tools\/inject-/, ["validate:injection", "validate:supports"]],
   [/^(tools|scripts)\/lib\/small-group/, ["validate:small-groups", "eval:small-groups"]],

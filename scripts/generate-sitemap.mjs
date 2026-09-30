@@ -4,7 +4,7 @@
 //   then global tools / practice / games.
 // Run after generate-catalog.mjs:
 //   node scripts/generate-sitemap.mjs
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
@@ -134,9 +134,46 @@ const xml =
   lines.join("\n") +
   `\n</urlset>\n`;
 
-writeFileSync(join(root, "sitemap.xml"), xml);
-console.log(`Wrote sitemap.xml with ${emitted.size} URLs on ${BASE}.`);
-if (refused.size) {
+function reportRefused() {
+  if (!refused.size) return;
   console.log(`Excluded ${refused.size} teacher-gated path(s) (they answer 401):`);
   for (const p of [...refused].sort()) console.log(`  ${p}`);
+}
+
+const target = join(root, "sitemap.xml");
+
+/*
+ * `--check` compares instead of writing, the same shape as
+ * `generate-plan-vocab --check` and `import-pacing-baseline --check`.
+ *
+ * WHY IT EXISTS. Nothing regenerates this file. It is not a build step, so
+ * `build-injectors-idempotent` cannot see it drift, and until validate:seo was
+ * written no gate read it at all — which is how it reached 267 URLs against a
+ * catalog of 1,242 and spent months submitting the wrong host. Correcting the
+ * content fixed the symptom; a file with a generator, no build wiring and no
+ * freshness check drifts again the moment the catalog moves, and it did:
+ * publishing new pages on main left the committed sitemap 2 entries short of
+ * the site within a day.
+ *
+ * The counted difference is printed rather than a diff: a sitemap regenerates
+ * whole, so a one-page change rewrites every line after it and a diff says
+ * nothing useful about what actually changed.
+ */
+if (process.argv.includes("--check")) {
+  const current = existsSync(target) ? readFileSync(target, "utf8") : "";
+  if (current === xml) {
+    console.log(`sitemap.xml is current — ${emitted.size} URLs on ${BASE}.`);
+    reportRefused();
+  } else {
+    const was = (current.match(/<loc>/g) || []).length;
+    console.error(
+      `FAIL sitemap.xml is stale: committed ${was} URL(s), the catalog now yields ${emitted.size}.\n` +
+        "  Run `node scripts/generate-sitemap.mjs` and commit the result.",
+    );
+    process.exit(1);
+  }
+} else {
+  writeFileSync(target, xml);
+  console.log(`Wrote sitemap.xml with ${emitted.size} URLs on ${BASE}.`);
+  reportRefused();
 }

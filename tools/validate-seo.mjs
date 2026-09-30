@@ -423,6 +423,30 @@ if (blockedInSitemap.length) {
   );
 }
 
+/*
+ * The sitemap must be CURRENT, not merely internally consistent.
+ *
+ * Every other check here asks whether the entries that are present hold up.
+ * None of them can see a sitemap that is simply short: the committed file sat
+ * at 267 URLs against a catalog of 1,242 and every single one of those 267
+ * resolved, was ungated and was on the right host. Nothing regenerates this
+ * file — it is not a build step, so `build-injectors-idempotent` cannot see it
+ * drift either — so freshness has to be asserted, exactly as
+ * `validate:plan-notes` asserts it for the compiled plan vocabulary.
+ */
+try {
+  execFileSync("node", [join(root, "scripts", "generate-sitemap.mjs"), "--check"], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: "pipe",
+  });
+} catch (error) {
+  const detail = String(error.stderr || error.stdout || error.message)
+    .trim()
+    .split("\n")[0];
+  fail("sitemap-fresh", `${detail} (run \`node scripts/generate-sitemap.mjs\`)`);
+}
+
 const unresolvable = sitemapPaths.filter((p) => {
   const rel = p.replace(/^\//, "");
   return ![rel, `${rel}index.html`, `${rel.replace(/\/$/, "")}/index.html`].some(
