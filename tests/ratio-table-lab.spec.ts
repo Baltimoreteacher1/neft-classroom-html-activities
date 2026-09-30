@@ -67,3 +67,26 @@ test("the lab teaches, graphs, and compares equivalent ratios", async ({ page })
   await expect(page.locator("#feedback")).toContainText("not equivalent");
   expect(errors).toEqual([]);
 });
+
+test("students can build their own table and graph it", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(labPath);
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.getByRole("button", { name: "Graph", exact: true }).click();
+  await page.getByRole("button", { name: "Make your own table" }).first().click();
+  await page.getByLabel("First quantity of the ratio").fill("2");
+  await page.getByLabel("Second quantity of the ratio").fill("5");
+  await page.getByRole("button", { name: "Fill my table" }).click();
+  const hit = (x: number, y: number) => page.locator(`#studio-board .hit[data-x="${x}"][data-y="${y}"]`);
+  for (const [x, y] of [[2, 5], [4, 10], [6, 15], [8, 20]]) await hit(x, y).click();
+  await expect(page.locator("#studio-verdict")).toContainText("Equivalent ratios");
+  await expect(page.locator("#studio-verdict")).toContainText("(1, 2.5)");
+  await page.locator("#studio-y-2").fill("16");
+  await page.locator("#act-studio-plot-all").click();
+  await expect(page.locator("#studio-verdict")).toContainText("Not all equivalent");
+  await page.reload();
+  await expect(page.locator("#studio-y-2")).toHaveValue("16");
+  expect(errors).toEqual([]);
+});

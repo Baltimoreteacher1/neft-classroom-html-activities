@@ -26,7 +26,8 @@ function clipLine(rate, xMax, yMax) {
 /**
  * @param {object} o
  * @param {string} o.id           svg id (needed for interactive boards)
- * @param {number} o.xMax         last x tick (x steps by 1)
+ * @param {number} o.xMax         last x tick
+ * @param {number} o.xStep        x tick spacing (default 1)
  * @param {number} o.yMax         last y tick
  * @param {number} o.yStep        y tick spacing
  * @param {Array}  o.points       [{x, y, cls, label}]
@@ -40,6 +41,7 @@ export function coordGraph({
   xMax = 6,
   yMax = 36,
   yStep = 6,
+  xStep = 1,
   xLabel = "Bags (x)",
   yLabel = "Soccer balls (y)",
   points = [],
@@ -52,7 +54,7 @@ export function coordGraph({
 }) {
   const { px, py } = scaleFor({ xMax, yMax });
   const parts = [];
-  for (let x = 0; x <= xMax; x++) {
+  for (let x = 0; x <= xMax; x += xStep) {
     parts.push(
       `<path class="grid" d="M${px(x)} ${py(yMax)}V${py(0)}"/><text x="${px(x)}" y="${py(0) + 24}" text-anchor="middle">${x}</text>`,
     );
@@ -83,7 +85,7 @@ export function coordGraph({
   }
 
   if (interactive) {
-    for (let x = 0; x <= xMax; x++) {
+    for (let x = 0; x <= xMax; x += xStep) {
       for (let y = 0; y <= yMax; y += yStep) {
         parts.push(
           `<circle class="hit" cx="${px(x)}" cy="${py(y)}" r="13" data-action="plot" data-x="${x}" data-y="${y}"/>`,
@@ -118,10 +120,10 @@ export function coordGraph({
 }
 
 /** Arrow-key movement across the lattice. Returns the new cursor or null. */
-export function moveCursor(cursor, key, { xMax, yMax, yStep }) {
+export function moveCursor(cursor, key, { xMax, yMax, yStep, xStep = 1 }) {
   const next = { ...cursor };
-  if (key === "ArrowRight") next.x = Math.min(xMax, next.x + 1);
-  else if (key === "ArrowLeft") next.x = Math.max(0, next.x - 1);
+  if (key === "ArrowRight") next.x = Math.min(xMax, next.x + xStep);
+  else if (key === "ArrowLeft") next.x = Math.max(0, next.x - xStep);
   else if (key === "ArrowUp") next.y = Math.min(yMax, next.y + yStep);
   else if (key === "ArrowDown") next.y = Math.max(0, next.y - yStep);
   else if (key === "Home") Object.assign(next, { x: 0, y: 0 });

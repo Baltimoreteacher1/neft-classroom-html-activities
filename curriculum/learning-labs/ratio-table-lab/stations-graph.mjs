@@ -5,6 +5,7 @@
 
 import { coordGraph, moveCursor, PLOT_HELP } from "./graph.mjs";
 import { bool, int, intSet, obj, oneOf, str } from "./sanitize.mjs";
+import { studioAction, studioBoard, studioCoach, studioFill, studioFresh, studioInput, studioKey, studioPlot, studioRestore } from "./studio.mjs";
 import {
   btn,
   choiceList,
@@ -50,10 +51,15 @@ function plotMessage(x, y, plotted) {
   return [`(${x}, ${y}) would mean ${x} ${x === 1 ? "bag holds" : "bags hold"} ${y} balls. ${x} ${x === 1 ? "bag holds" : "bags hold"} ${x * RATE} balls. Go right ${x}, then up to ${x * RATE}.`, "error"];
 }
 
+function modeTabs(s) {
+  const tab = (mode, label) => `<button type="button" class="mode-tab" id="mode-${mode}" data-action="graph-mode-${mode}" aria-pressed="${s.mode === mode}">${label}</button>`;
+  return `<div class="mode-tabs" role="group" aria-label="Graph mode">${tab("guided", "Guided graph")}${tab("create", "Make your own table")}</div>`;
+}
+
 export const graphStation = {
   id: "graph",
   label: "Graph",
-  fresh: () => ({ phase: 0, plotted: [], cursor: { x: 0, y: 0 }, line: false, origin: "", read: "", unit: "" }),
+  fresh: () => ({ phase: 0, plotted: [], cursor: { x: 0, y: 0 }, line: false, origin: "", read: "", unit: "", mode: "guided", studio: studioFresh() }),
   restore(s) {
     const c = obj(s.cursor);
     return {
@@ -64,11 +70,16 @@ export const graphStation = {
       origin: oneOf(s.origin, ORIGIN_CHOICES.map(([v]) => v)),
       read: str(s.read),
       unit: oneOf(s.unit, UNIT_CHOICES.map(([v]) => v)),
+      mode: oneOf(s.mode, ["guided", "create"], "guided"),
+      studio: studioRestore(obj(s.studio)),
     };
   },
   done: (s) => s.phase >= 4,
   render(ctx) {
     const s = ctx.s;
+    if (s.mode === "create") {
+      return header("Make your own table.", "Name two quantities, fill the table, then plot every column. The graph shows whether your ratios are equivalent.", "Table studio") + workbench(modeTabs(s) + studioBoard(s.studio), studioCoach());
+    }
     const points = s.plotted.map((x) => ({ x, y: x * RATE, cls: "plotted", label: s.phase === 0 ? `(${x}, ${x * RATE})` : "" }));
     if (s.phase >= 1 && s.line) points.push({ x: 0, y: 0, cls: "origin", label: s.phase >= 2 ? "(0, 0)" : "" });
     if (s.phase >= 3) points.push({ x: 4, y: 24, cls: "new", label: "(4, 24)" });
@@ -104,7 +115,7 @@ export const graphStation = {
       coach = `<h3>Find the amount for one.</h3><p>The unit rate point shows how many balls go with exactly 1 bag.</p>${submitBtn("unit-form", "Check the point")}`;
     } else {
       task = '<div class="finish compact"><h3>This is a proportional relationship.</h3><ul class="checklist"><li>The points form a <strong>straight line</strong>.</li><li>The line passes through the <strong>origin (0, 0)</strong>.</li><li>The <strong>unit rate point (1, 6)</strong> shows 6 balls per bag.</li><li>Any point on the line, like (4, 24), is an <strong>equivalent ratio</strong>.</li></ul></div>';
-      coach = `<h3>Graph complete.</h3><p>“The points line up because every bag holds ___ balls.”</p>${btn("next", "Go to Compare", "success")}`;
+      coach = `<h3>Graph complete.</h3><p>“The points line up because every bag holds ___ balls.”</p>${btn("graph-mode-create", "Make your own table", "primary")}${btn("next", "Go to Compare", "success")}`;
     }
     const counters = ["Plot 4 points", "Find the start", "Read the line", "Unit rate point", "Graph complete"];
     const titles = ["A column becomes a point.", "Connect the points.", "Use the line.", "Name the unit rate point.", "Equivalent ratios make a line."];
@@ -115,11 +126,17 @@ export const graphStation = {
       "One point tells the amount for exactly one bag.",
       "Table, ordered pairs, and line all show 6 balls per bag.",
     ];
-    const board = `${table}<div class="graph-wrap">${graph}</div>${task}`;
+    const board = `${modeTabs(s)}${table}<div class="graph-wrap">${graph}</div>${task}`;
     return header(titles[s.phase], directions[s.phase], counters[s.phase]) + workbench(board, coach);
   },
   plot(x, y, ctx) {
     const s = ctx.s;
+    if (s.mode === "create") {
+      const [message, kind] = studioPlot(s.studio, x, y);
+      ctx.say(message, kind);
+      ctx.refresh("studio-board");
+      return;
+    }
     s.cursor = { x, y };
     const message = plotMessage(x, y, s.plotted);
     if (message) {
@@ -139,6 +156,25 @@ export const graphStation = {
     }
   },
   action(name, el, ctx) {
+    const s = ctx.s;
+    if (name === "graph-mode-guided" || name === "graph-mode-create") {
+      s.mode = name === "graph-mode-create" ? "create" : "guided";
+      ctx.hint = false;
+      ctx.say(s.mode === "create" ? "Table studio: change any label or number. Your guided graph is saved." : "");
+      ctx.refresh(s.mode === "create" ? "mode-create" : "mode-guided");
+      return true;
+    }
+    if (s.mode === "create") {
+      if (name === "plot") {
+        this.plot(Number(el.dataset.x), Number(el.dataset.y), ctx);
+        return true;
+      }
+      const done = studioAction(name, s.studio);
+      if (!done) return false;
+      ctx.say(done.message, done.message ? "success" : "");
+      ctx.refresh(done.focus);
+      return true;
+    }
     if (name === "plot" && ctx.s.phase === 0) {
       this.plot(Number(el.dataset.x), Number(el.dataset.y), ctx);
       return true;
@@ -152,6 +188,19 @@ export const graphStation = {
     return false;
   },
   key(e, ctx) {
+    const s = ctx.s;
+    if (e.target.id === "studio-board" && s.mode === "create") {
+      if (e.key === "Enter" || e.key === " ") {
+        this.plot(s.studio.cursor.x, s.studio.cursor.y, ctx);
+        return true;
+      }
+      const next = studioKey(e, s.studio);
+      if (!next) return false;
+      s.studio.cursor = next;
+      ctx.say(`Ring at (${next.x}, ${next.y}).`);
+      ctx.refresh("studio-board");
+      return true;
+    }
     if (e.target.id !== "plot-board" || ctx.s.phase !== 0) return false;
     if (e.key === "Enter" || e.key === " ") {
       this.plot(ctx.s.cursor.x, ctx.s.cursor.y, ctx);
@@ -166,6 +215,7 @@ export const graphStation = {
   },
   input(el, ctx) {
     const s = ctx.s;
+    if (s.mode === "create") return studioInput(el, s.studio);
     if (el.name === "origin") s.origin = el.value;
     else if (el.name === "unit") s.unit = el.value;
     else if (el.id === "read-answer") s.read = el.value;
@@ -174,6 +224,16 @@ export const graphStation = {
   },
   submit(id, ctx) {
     const s = ctx.s;
+    if (id === "studio-ratio-form") {
+      const error = studioFill(s.studio);
+      if (error) {
+        ctx.feedback(error, "error");
+        return true;
+      }
+      ctx.say(`Filled with equivalent ratios of ${s.studio.a} : ${s.studio.b}. Now plot each column.`, "success");
+      ctx.refresh("studio-board");
+      return true;
+    }
     if (id === "origin-form") {
       if (s.origin !== "origin") {
         ctx.feedback(s.origin === "six" ? "(0, 6) would mean 0 bags hold 6 balls. With no bags, there are no balls." : "The line keeps going below (1, 6). Where are 0 bags and 0 balls?", "error");
