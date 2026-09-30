@@ -47,3 +47,23 @@ test("unit rate badge appears when a = 1", () => {
   const svg = ratioGraphSVG(1, 6, 4, "x", "y");
   assert.ok(svg.includes("UNIT RATE"), "unit rate badge missing for unit ratio");
 });
+
+test("test point on line renders green marker with ON status", () => {
+  const svg = ratioGraphSVG(1, 3, 5, "sugar", "flour", null, { x: 2, y: 6, onLine: true });
+  assert.ok(svg.includes("rtlab-test-pt"), "test point group missing");
+  assert.ok(svg.includes("✓ ON line"), "ON line indicator missing");
+  assert.ok(svg.includes("#16a34a"), "green stroke missing for on-line test point");
+});
+
+test("test point off line renders red marker with OFF status", () => {
+  const svg = ratioGraphSVG(1, 3, 5, "sugar", "flour", null, { x: 4, y: 15, onLine: false });
+  assert.ok(svg.includes("rtlab-test-pt"), "test point group missing");
+  assert.ok(svg.includes("✗ OFF line"), "OFF line indicator missing");
+  assert.ok(svg.includes("#dc2626"), "red stroke missing for off-line test point");
+});
+
+test("active column renders projection guide lines to both axes", () => {
+  const svg = ratioGraphSVG(1, 3, 5, "sugar", "flour", 2);
+  assert.ok(svg.includes('stroke-dasharray="4 3"'), "projection dashed guide line missing");
+});
+

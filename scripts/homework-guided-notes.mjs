@@ -2556,6 +2556,72 @@ export function renderTryTogether(config, lessonId = "") {
       </div>`;
   }
 
+  let ratioStudioHtml = "";
+  if (String(lessonId) === "3-4") {
+    ratioStudioHtml = `
+      <div class="together-ratio-card">
+        <div class="together-ratio-head">
+          <span aria-hidden="true">🧁</span>
+          <strong><span class="lang-en">Recipe Ratio Chart &amp; Coordinate Graph: 1 Cup Sugar : 3 Cups Flour</span><span class="lang-es" lang="es">Tabla de razones y gráfica de la receta: 1 taza de azúcar : 3 tazas de harina</span></strong>
+        </div>
+        <div class="together-ratio-grid">
+          <div class="together-ratio-table-wrap">
+            <table class="together-ratio-table">
+              <thead>
+                <tr>
+                  <th scope="col"><span class="lang-en">Sugar (cups, x)</span><span class="lang-es" lang="es">Azúcar (tazas, x)</span></th>
+                  <th scope="col"><span class="lang-en">Flour (cups, y)</span><span class="lang-es" lang="es">Harina (tazas, y)</span></th>
+                  <th scope="col"><span class="lang-en">Ordered Pair (x, y)</span><span class="lang-es" lang="es">Par ordenado (x, y)</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>(0, 0) <small><span class="lang-en">(Origin)</span><span class="lang-es" lang="es">(Origen)</span></small></td></tr>
+                <tr class="is-unit"><td>1</td><td>3</td><td>(1, 3) <small>★ <span class="lang-en">Unit Rate</span><span class="lang-es" lang="es">Tasa unitaria</span></small></td></tr>
+                <tr><td>2</td><td>6</td><td>(2, 6) <small><span class="lang-en">(2 × 3)</span><span class="lang-es" lang="es">(2 × 3)</span></small></td></tr>
+                <tr><td>3</td><td>9</td><td>(3, 9) <small><span class="lang-en">(3 × 3)</span><span class="lang-es" lang="es">(3 × 3)</span></small></td></tr>
+                <tr><td>4</td><td>12</td><td>(4, 12) <small><span class="lang-en">(4 × 3)</span><span class="lang-es" lang="es">(4 × 3)</span></small></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="together-ratio-graph-wrap">
+            <svg viewBox="0 0 280 200" class="hw-visual-svg" role="img" aria-label="Coordinate graph showing line y = 3x through points (0,0), (1,3), (2,6), (3,9), (4,12)" style="max-width:320px;height:auto;display:block;margin:0 auto;background:#ffffff;border:1px solid #d6e2ee;border-radius:10px;">
+              <line x1="40" y1="20" x2="40" y2="165" stroke="#12355b" stroke-width="2"/>
+              <line x1="40" y1="165" x2="265" y2="165" stroke="#12355b" stroke-width="2"/>
+              <line x1="85" y1="20" x2="85" y2="165" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="130" y1="20" x2="130" y2="165" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="175" y1="20" x2="175" y2="165" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="220" y1="20" x2="220" y2="165" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="40" y1="130" x2="265" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="40" y1="95" x2="265" y2="95" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="40" y1="60" x2="265" y2="60" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="40" y1="25" x2="265" y2="25" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="260" y="180" font-size="11" font-weight="700" fill="#12355b" text-anchor="end">Sugar (x) →</text>
+              <text x="36" y="16" font-size="11" font-weight="700" fill="#12355b">↑ Flour (y)</text>
+              <text x="35" y="178" font-size="10" font-weight="700" fill="#5c768d" text-anchor="end">0</text>
+              <text x="85" y="178" font-size="10" font-weight="700" fill="#12355b" text-anchor="middle">1</text>
+              <text x="130" y="178" font-size="10" font-weight="700" fill="#12355b" text-anchor="middle">2</text>
+              <text x="175" y="178" font-size="10" font-weight="700" fill="#12355b" text-anchor="middle">3</text>
+              <text x="220" y="178" font-size="10" font-weight="700" fill="#12355b" text-anchor="middle">4</text>
+              <text x="35" y="134" font-size="10" font-weight="700" fill="#12355b" text-anchor="end">3</text>
+              <text x="35" y="99" font-size="10" font-weight="700" fill="#12355b" text-anchor="end">6</text>
+              <text x="35" y="64" font-size="10" font-weight="700" fill="#12355b" text-anchor="end">9</text>
+              <text x="35" y="29" font-size="10" font-weight="700" fill="#12355b" text-anchor="end">12</text>
+              <line x1="40" y1="165" x2="235" y2="13" stroke="#0d7a76" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="40" cy="165" r="4.5" fill="#12355b"/>
+              <circle cx="85" cy="130" r="5" fill="#0d7a76" stroke="#fff" stroke-width="1.5"/>
+              <text x="93" y="127" font-size="10" font-weight="800" fill="#0d7a76">(1, 3)</text>
+              <circle cx="130" cy="95" r="5" fill="#0d7a76" stroke="#fff" stroke-width="1.5"/>
+              <text x="138" y="92" font-size="10" font-weight="800" fill="#0d7a76">(2, 6)</text>
+              <circle cx="175" cy="60" r="5" fill="#0d7a76" stroke="#fff" stroke-width="1.5"/>
+              <text x="183" y="57" font-size="10" font-weight="800" fill="#0d7a76">(3, 9)</text>
+              <circle cx="220" cy="25" r="5" fill="#0d7a76" stroke="#fff" stroke-width="1.5"/>
+              <text x="228" y="22" font-size="10" font-weight="800" fill="#0d7a76">(4, 12)</text>
+            </svg>
+          </div>
+        </div>
+      </div>`;
+  }
+
   return `
     <section class="guided-section card section-together" aria-label="Try this together">
       <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
@@ -2567,6 +2633,7 @@ export function renderTryTogether(config, lessonId = "") {
              <p class="try-scenario lang-es" lang="es">${esc(activity.scenarioEs)}</p>`
           : ""
       }
+      ${ratioStudioHtml}
       <p class="try-together-note bilingual-block">
         <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
         <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>

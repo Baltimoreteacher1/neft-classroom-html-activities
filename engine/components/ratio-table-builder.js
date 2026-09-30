@@ -90,7 +90,7 @@ export function doubleNumberLineSVG(a, b, steps, labelA, labelB) {
  * Plots table columns as ordered pairs (x, y) in Quadrant 1 (positive numbers only).
  * Connects the points with a straight proportional line starting at the origin (0, 0).
  */
-export function ratioGraphSVG(a, b, steps, labelA, labelB, activeK = null) {
+export function ratioGraphSVG(a, b, steps, labelA, labelB, activeK = null, testPt = null) {
   const W = 560;
   const H = 340;
   const padLeft = 65;
@@ -100,7 +100,11 @@ export function ratioGraphSVG(a, b, steps, labelA, labelB, activeK = null) {
   const usableW = W - padLeft - padRight;
   const usableH = H - padTop - padBottom;
 
-  const gridK = steps + 1;
+  const reqK =
+    testPt && typeof testPt.x === "number" && typeof testPt.y === "number"
+      ? Math.max(steps + 1, Math.ceil(testPt.x / a), Math.ceil(testPt.y / b))
+      : steps + 1;
+  const gridK = Math.min(14, Math.max(steps + 1, reqK));
   const axisXMax = a * gridK;
   const axisYMax = b * gridK;
 
@@ -183,6 +187,37 @@ export function ratioGraphSVG(a, b, steps, labelA, labelB, activeK = null) {
       `</g>`;
   }
 
+  let activeGuides = "";
+  if (activeK && activeK >= 1 && activeK <= steps) {
+    const actX = a * activeK;
+    const actY = b * activeK;
+    const actPx = sx(actX);
+    const actPy = sy(actY);
+    activeGuides =
+      `<line x1="${actPx.toFixed(1)}" y1="${actPy.toFixed(1)}" x2="${actPx.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${C.accent}" stroke-width="2" stroke-dasharray="4 3"/>` +
+      `<line x1="${ox.toFixed(1)}" y1="${actPy.toFixed(1)}" x2="${actPx.toFixed(1)}" y2="${actPy.toFixed(1)}" stroke="${C.accent}" stroke-width="2" stroke-dasharray="4 3"/>` +
+      `<circle cx="${actPx.toFixed(1)}" cy="${oy.toFixed(1)}" r="4" fill="${C.accent}"/>` +
+      `<circle cx="${ox.toFixed(1)}" cy="${actPy.toFixed(1)}" r="4" fill="${C.accent}"/>`;
+  }
+
+  let testMarker = "";
+  if (testPt && typeof testPt.x === "number" && typeof testPt.y === "number") {
+    if (testPt.x >= 0 && testPt.x <= axisXMax && testPt.y >= 0 && testPt.y <= axisYMax) {
+      const tpx = sx(testPt.x);
+      const tpy = sy(testPt.y);
+      const tcolor = testPt.onLine ? "#16a34a" : "#dc2626";
+      const tstatus = testPt.onLine ? "✓ ON line" : "✗ OFF line";
+      testMarker =
+        `<g class="rtlab-test-pt">` +
+        `<line x1="${tpx.toFixed(1)}" y1="${tpy.toFixed(1)}" x2="${tpx.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${tcolor}" stroke-width="1.5" stroke-dasharray="3 3"/>` +
+        `<line x1="${ox.toFixed(1)}" y1="${tpy.toFixed(1)}" x2="${tpx.toFixed(1)}" y2="${tpy.toFixed(1)}" stroke="${tcolor}" stroke-width="1.5" stroke-dasharray="3 3"/>` +
+        `<circle cx="${tpx.toFixed(1)}" cy="${tpy.toFixed(1)}" r="8" fill="${tcolor}" stroke="#ffffff" stroke-width="2"/>` +
+        `<rect x="${(tpx + 10).toFixed(1)}" y="${(tpy - 24).toFixed(1)}" width="115" height="20" rx="4" fill="#ffffff" stroke="${tcolor}" stroke-width="1.5"/>` +
+        `<text x="${(tpx + 16).toFixed(1)}" y="${(tpy - 10).toFixed(1)}" font-size="11" font-weight="800" fill="${tcolor}">(${fmt(testPt.x)}, ${fmt(testPt.y)}) ${tstatus}</text>` +
+        `</g>`;
+    }
+  }
+
   const aria = `Coordinate graph of equivalent ratios for ${esc2(labelA)} and ${esc2(labelB)}. Plotted ordered pairs: ${pairDescriptions.join(", ")}. All points form a straight line passing through the origin (0, 0).`;
 
   return (
@@ -194,7 +229,9 @@ export function ratioGraphSVG(a, b, steps, labelA, labelB, activeK = null) {
     yTicks +
     propLine +
     originDot +
+    activeGuides +
     points +
+    testMarker +
     `</svg>`
   );
 }
@@ -206,6 +243,7 @@ export function renderRatioTableBuilder(container, cfg = {}) {
   let a = clamp(cfg.a ?? 1);
   let b = clamp(cfg.b ?? 4);
   let activeK = null;
+  let testPt = null;
   let currentView = "graph";
 
   function clamp(v) {
@@ -247,36 +285,66 @@ export function renderRatioTableBuilder(container, cfg = {}) {
     let head = `<tr><th class="rtlab-corner">×</th>`;
     let rowA = `<tr><th class="rtlab-rowlab" style="background:${C.headA}">${esc(labelA)} (x)</th>`;
     let rowB = `<tr><th class="rtlab-rowlab" style="background:${C.headB}">${esc(labelB)} (y)</th>`;
+    let rowPair = `<tr><th class="rtlab-rowlab" style="background:#e0e7ff;color:#1e3a8a;">Pair (x, y)</th>`;
     for (let k = 1; k <= STEPS; k++) {
       const isColActive = activeK === k;
       const colClass = isColActive ? " rtlab-col-active" : "";
       head += `<th class="${colClass}" data-col-k="${k}" role="button" tabindex="0" title="Click to highlight point (${a * k}, ${b * k})">×${k}</th>`;
       rowA += `<td class="${k === 1 ? "rtlab-base" : ""}${colClass}" data-col-k="${k}">${a * k}</td>`;
       rowB += `<td class="${k === 1 ? "rtlab-base" : ""}${colClass}" data-col-k="${k}">${b * k}</td>`;
+      rowPair += `<td class="${k === 1 ? "rtlab-base" : ""}${colClass}" data-col-k="${k}">(${a * k}, ${b * k})</td>`;
     }
     head += `</tr>`;
     rowA += `</tr>`;
     rowB += `</tr>`;
+    rowPair += `</tr>`;
 
     const detailText = activeK
       ? `<strong>Column ×${activeK}:</strong> (${a * activeK}, ${b * activeK}) → ${a * activeK} ${esc(labelA)} pairs with ${b * activeK} ${esc(labelB)}. (${a * activeK} ÷ ${activeK} = ${a}, ${b * activeK} ÷ ${activeK} = ${b}).`
       : `💡 Tap any column or point on the graph to inspect its ordered pair (x, y).`;
 
+    const testFeedbackHtml = testPt
+      ? testPt.onLine
+        ? `<div class="rtlab-test-feedback is-on">✓ <strong>(${testPt.x}, ${testPt.y}) is an EQUIVALENT RATIO!</strong> It lies directly on the straight line through (0, 0). Rate: ${testPt.y} ÷ ${testPt.x} = ${fmt(testPt.y / testPt.x)} (matches ${b} ÷ ${a} = ${fmt(b / a)}).</div>`
+        : `<div class="rtlab-test-feedback is-off">✗ <strong>(${testPt.x}, ${testPt.y}) is NOT equivalent to ${a}:${b}!</strong> It does not lie on the proportional line through the origin. Rate: ${testPt.y} ÷ ${testPt.x} = ${fmt(testPt.y / testPt.x)} ≠ ${fmt(b / a)}.</div>`
+      : "";
+
     stage.innerHTML =
-      `<div class="rtlab-table-wrap"><table class="rtlab-table"><thead>${head}</thead><tbody>${rowA}${rowB}</tbody></table></div>` +
+      `<div class="rtlab-table-wrap"><table class="rtlab-table"><thead>${head}</thead><tbody>${rowA}${rowB}${rowPair}</tbody></table></div>` +
       `<div class="rtlab-view-tabs" role="tablist">` +
       `<button type="button" class="rtlab-tab${currentView === "graph" ? " is-active" : ""}" data-view="graph" role="tab" aria-selected="${currentView === "graph"}">📈 Coordinate Graph</button>` +
       `<button type="button" class="rtlab-tab${currentView === "dnl" ? " is-active" : ""}" data-view="dnl" role="tab" aria-selected="${currentView === "dnl"}">📏 Double Number Line</button>` +
       `</div>` +
       `<div class="rtlab-visual-area">` +
       `<div class="rtlab-view-graph"${currentView === "graph" ? "" : ' style="display:none;"'}>` +
-      ratioGraphSVG(a, b, STEPS, labelA, labelB, activeK) +
+      ratioGraphSVG(a, b, STEPS, labelA, labelB, activeK, testPt) +
       `</div>` +
       `<div class="rtlab-view-dnl"${currentView === "dnl" ? "" : ' style="display:none;"'}>` +
       doubleNumberLineSVG(a, b, STEPS, labelA, labelB) +
       `</div>` +
       `</div>` +
-      `<div class="rtlab-point-detail">${detailText}</div>`;
+      `<div class="rtlab-point-detail">${detailText}</div>` +
+      `<div class="rtlab-test-panel">` +
+      `<div class="rtlab-test-header">` +
+      `<span class="rtlab-test-icon">🧪</span>` +
+      `<strong>Test Any Point on the Graph:</strong> ` +
+      `<span class="rtlab-test-sub">Does (x, y) form an equivalent ratio with ${a} : ${b}?</span>` +
+      `</div>` +
+      `<div class="rtlab-test-controls">` +
+      `<label class="rtlab-test-input-lbl"><span>x</span><input type="number" min="0" max="99" data-test-inp="x" value="${testPt ? testPt.x : ""}" placeholder="x" aria-label="Test x value" /></label>` +
+      `<span class="rtlab-test-comma">,</span>` +
+      `<label class="rtlab-test-input-lbl"><span>y</span><input type="number" min="0" max="99" data-test-inp="y" value="${testPt ? testPt.y : ""}" placeholder="y" aria-label="Test y value" /></label>` +
+      `<button type="button" class="rtlab-test-btn">Check Point on Graph →</button>` +
+      `${testPt ? `<button type="button" class="rtlab-test-clear">Clear</button>` : ""}` +
+      `</div>` +
+      `<div class="rtlab-test-quick" role="group" aria-label="Quick test points">` +
+      `<span class="rtlab-quick-lbl">Quick test:</span>` +
+      `<button type="button" class="rtlab-test-chip" data-tx="${a * 2}" data-ty="${b * 2}">(${a * 2}, ${b * 2}) [2×]</button>` +
+      `<button type="button" class="rtlab-test-chip" data-tx="${a * 4}" data-ty="${b * 4 + 3}">(${a * 4}, ${b * 4 + 3}) [Off line]</button>` +
+      `<button type="button" class="rtlab-test-chip" data-tx="${a * 5}" data-ty="${b * 5}">(${a * 5}, ${b * 5}) [5×]</button>` +
+      `</div>` +
+      testFeedbackHtml +
+      `</div>`;
 
     // Wire view switcher
     stage.querySelectorAll(".rtlab-tab").forEach((tab) => {
@@ -311,6 +379,50 @@ export function renderRatioTableBuilder(container, cfg = {}) {
         }
       });
     });
+
+    // Wire test point controls
+    const testBtn = stage.querySelector(".rtlab-test-btn");
+    const testInpX = stage.querySelector('[data-test-inp="x"]');
+    const testInpY = stage.querySelector('[data-test-inp="y"]');
+    const clearBtn = stage.querySelector(".rtlab-test-clear");
+
+    function runTest(tx, ty) {
+      if (!Number.isFinite(tx) || !Number.isFinite(ty) || tx < 0 || ty < 0) return;
+      const onLine = tx > 0 && Math.abs(ty * a - b * tx) < 0.0001;
+      testPt = { x: tx, y: ty, onLine };
+      renderVisuals();
+    }
+
+    if (testBtn && testInpX && testInpY) {
+      testBtn.addEventListener("click", () => {
+        const tx = Number(testInpX.value);
+        const ty = Number(testInpY.value);
+        runTest(tx, ty);
+      });
+      [testInpX, testInpY].forEach((inp) => {
+        inp.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            runTest(Number(testInpX.value), Number(testInpY.value));
+          }
+        });
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        testPt = null;
+        renderVisuals();
+      });
+    }
+
+    stage.querySelectorAll(".rtlab-test-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const tx = Number(chip.dataset.tx);
+        const ty = Number(chip.dataset.ty);
+        runTest(tx, ty);
+      });
+    });
   }
 
   function build() {
@@ -319,6 +431,7 @@ export function renderRatioTableBuilder(container, cfg = {}) {
     inA.value = a;
     inB.value = b;
     activeK = null;
+    testPt = null;
 
     renderVisuals();
 
@@ -393,6 +506,23 @@ function injectStyles() {
   .rtlab-point:hover{filter:brightness(1.15);}
   .rtlab-point:focus-visible{outline:2px solid ${C.accent};outline-offset:2px;}
   .rtlab-point-detail{margin-top:8px;padding:8px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:.85rem;color:#166534;text-align:center;}
+  .rtlab-test-panel{margin-top:12px;padding:12px 14px;background:#ffffff;border:1.5px solid ${C.line};border-radius:12px;}
+  .rtlab-test-header{font-size:.9rem;color:${C.navy};display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .rtlab-test-sub{color:${C.muted};font-size:.82rem;}
+  .rtlab-test-controls{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .rtlab-test-input-lbl{display:flex;align-items:center;gap:4px;font-size:.85rem;font-weight:700;color:${C.navy};}
+  .rtlab-test-input-lbl input{width:56px;padding:6px 8px;font-size:1rem;font-weight:700;border:1.5px solid ${C.line};border-radius:8px;text-align:center;}
+  .rtlab-test-comma{font-weight:800;color:${C.navy};font-size:1.1rem;}
+  .rtlab-test-btn{padding:7px 14px;font-size:.85rem;font-weight:700;color:#fff;background:${C.navy};border:0;border-radius:8px;cursor:pointer;}
+  .rtlab-test-btn:hover{background:${C.accent};}
+  .rtlab-test-clear{padding:6px 10px;font-size:.8rem;font-weight:600;color:${C.muted};background:#f1f5f9;border:1px solid ${C.line};border-radius:6px;cursor:pointer;}
+  .rtlab-test-quick{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .rtlab-quick-lbl{font-size:.78rem;font-weight:700;color:${C.muted};text-transform:uppercase;}
+  .rtlab-test-chip{padding:3px 10px;font-size:.82rem;font-weight:600;color:${C.navy};background:#f8fafc;border:1px solid ${C.line};border-radius:999px;cursor:pointer;}
+  .rtlab-test-chip:hover{background:#e2e8f0;border-color:${C.navy};}
+  .rtlab-test-feedback{margin-top:10px;padding:8px 12px;border-radius:8px;font-size:.88rem;line-height:1.45;}
+  .rtlab-test-feedback.is-on{background:#f0fdf4;border:1.5px solid #86efac;color:#166534;}
+  .rtlab-test-feedback.is-off{background:#fef2f2;border:1.5px solid #fca5a5;color:#991b1b;}
   .rtlab-result{text-align:center;margin-top:8px;}
   .rtlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.2rem;color:${C.teal};}
   .rtlab-explain{margin:6px auto 0;max-width:520px;color:${C.ink};font-size:.9rem;line-height:1.5;}
