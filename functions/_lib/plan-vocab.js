@@ -3676,6 +3676,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/3-4-activity/",
+    title: "3.4 Activity · Equivalent Ratio Tables & Graphs | Grade 6",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/ai-hub/",
     title: "AI Learning Hub",
     category: "Hub",
