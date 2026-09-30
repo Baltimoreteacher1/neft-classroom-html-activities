@@ -1,172 +1,134 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#315cde">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23315cde%27/%3E%3Cpath d=%27M8 8h16v16H8zm0 8h16M16 8v16%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27/%3E%3C/svg%3E">
-<title>Ratio table lab · Lesson 3.4</title>
-<style>
-:root{color-scheme:light;--ink:#182844;--muted:#526079;--blue:#315cde;--blue-light:#edf2ff;--green:#11684e;--green-light:#e7f5ee;--orange:#a64020;--orange-light:#fff0e6;--line:#d7deeb;--canvas:#f5f7fb;--error:#982d30}*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:"Avenir Next","Trebuchet MS",Arial,sans-serif;font-size:18px;line-height:1.5}button,input,select{font:inherit}button{cursor:pointer;color:inherit}button,input{touch-action:manipulation}button:disabled{cursor:default;opacity:.5}button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:4px}button,input{border-radius:10px}button{min-height:46px}h1,h2,h3,p{margin:0}h1{font-size:clamp(2rem,4vw,2.8rem);letter-spacing:-.04em;line-height:1.15}h2{font-size:clamp(1.6rem,3vw,2rem);letter-spacing:-.025em;line-height:1.2}h3{font-size:1.1rem;line-height:1.35}p{max-width:64ch}.small{font-size:.88rem}.muted{color:var(--muted)}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}.skip{position:fixed;z-index:20;top:1rem;left:1rem;background:#fff;padding:.7rem;color:var(--blue)}.skip:not(:focus){clip-path:inset(50%);width:1px;height:1px;overflow:hidden}.topbar{background:#fff;border-bottom:1px solid var(--line)}.topbar-inner{max-width:1240px;margin:auto;padding:.85rem 1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}.brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1rem}.brand svg{width:28px;height:28px}.meta{font-size:.83rem;color:var(--muted)}.quiet{border:0;background:transparent;color:var(--muted);padding:.4rem .7rem;font-size:.85rem;text-decoration:underline;text-underline-offset:4px}.shell{max-width:1240px;margin:auto;padding:1.7rem 1.5rem 1rem}.intro{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;margin-bottom:1.4rem}.intro p{margin-top:.45rem;color:var(--muted);font-size:1rem}.constant{display:flex;gap:.75rem;align-items:center;border:1px solid var(--line);background:#fff;border-radius:14px;padding:.65rem 1rem;flex-shrink:0}.constant .ball-icon{width:32px;height:32px}.constant strong{display:block;font-size:1rem}.constant span{font-size:.8rem;color:var(--muted)}.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.55rem;padding:0;margin:0 0 1.3rem;list-style:none}.step-link{border:1px solid var(--line);background:#fff;width:100%;display:flex;gap:.7rem;align-items:center;padding:.65rem .85rem;text-align:left;font-size:1rem;font-weight:700}.step-link:hover{border-color:var(--blue)}.step-link[aria-current=step]{color:var(--blue);border:2px solid var(--blue);padding:calc(.65rem - 1px) calc(.85rem - 1px);background:var(--blue-light)}.step-no{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--canvas);font-size:.8rem;flex-shrink:0;border:1px solid #b9c4d8}.step-link[aria-current=step] .step-no{background:var(--blue);color:#fff;border-color:var(--blue)}.step-link.done .step-no{background:var(--green);color:#fff;border-color:var(--green)}.lesson{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden}.stage-heading{padding:1.45rem 1.65rem 1.2rem;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:1rem}.stage-heading p{font-size:1rem;color:var(--muted);margin-top:.45rem}.stage-heading h2:focus{outline:none}.counter{font-size:.85rem;background:var(--canvas);color:var(--muted);border-radius:100px;padding:.45rem .8rem;white-space:nowrap}.workbench{display:grid;grid-template-columns:minmax(0,1fr) 290px;min-height:410px}.board{min-width:0;padding:1.65rem}.coach{background:#f8faff;padding:1.6rem;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:1rem;align-items:flex-start}.coach p{font-size:1rem}.coach .btn{width:100%}.coach .secondary{margin-top:auto}.btn{border:1px solid var(--blue);background:#fff;color:var(--blue);padding:.65rem 1rem;font-weight:700;font-size:1rem}.btn:hover{background:var(--blue-light)}.btn.primary{background:var(--blue);color:#fff}.btn.primary:hover{background:#2349bc}.btn.secondary{border-color:#a4b0c6;color:var(--muted);background:#fff}.btn.success{color:var(--green);border-color:var(--green);background:var(--green-light)}.table-scroll{overflow-x:auto;padding:4px 4px 12px;margin:-4px -4px 0}.ratio-table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-variant-numeric:tabular-nums}.ratio-table caption{text-align:left;color:var(--muted);font-size:.9rem;font-weight:700;padding-bottom:.85rem}.ratio-table th,.ratio-table td{height:82px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center;padding:.5rem .25rem}.ratio-table th{width:120px;font-size:.95rem;font-weight:700;text-align:left;padding:.6rem .85rem}.ratio-table td{font-size:clamp(1.3rem,2.7vw,2.05rem);font-weight:700}.ratio-table tr:last-child>*{border-bottom:0}.ratio-table tr>*:last-child{border-right:0}.ratio-table .bags-row th{background:var(--green-light);color:var(--green)}.ratio-table .balls-row th{background:var(--orange-light);color:var(--orange)}.ratio-table .bags-row .active{background:var(--green-light);box-shadow:inset 0 3px var(--green)}.ratio-table .balls-row .active{background:var(--orange-light);box-shadow:inset 0 -3px var(--orange)}.ratio-table .empty{color:#a3adc0;font-weight:400}.ratio-table .answer-cell{padding:.3rem}.number-input{width:100%;max-width:68px;min-width:48px;height:52px;text-align:center;border:2px solid var(--blue);background:white;color:var(--ink);font-size:1.5rem;font-weight:700;padding:.25rem;appearance:textfield;-moz-appearance:textfield}.number-input::-webkit-inner-spin-button,.number-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.number-input[aria-invalid=true]{border-color:var(--error);background:#fff6f5}.table-note{display:flex;gap:.6rem;align-items:center;justify-content:center;text-align:center;margin:1rem 0;color:var(--muted);font-size:.98rem;min-height:30px}.pair-chip{display:inline-block;border-radius:8px;background:var(--blue-light);color:#294db1;padding:.2rem .6rem;font-weight:700;white-space:nowrap}.rack{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;padding:1rem .2rem}.mini-bag{width:72px;flex-shrink:0;position:relative}.bag-drawing{width:100%;height:86px;border:2px solid #7d968a;border-radius:11px 11px 20px 20px;background:#f5fbf7;display:grid;grid-template-columns:repeat(3,1fr);align-content:center;gap:4px;padding:7px}.bag-drawing:before{content:"";position:absolute;top:-5px;left:22px;right:22px;height:5px;border:2px solid #7d968a;border-radius:5px;background:#fff}.ball-icon{width:100%;height:auto;display:block}.mini-bag small{display:block;text-align:center;font-size:.72rem;color:var(--muted);margin-top:.3rem}.math-strip{display:flex;justify-content:center;align-items:center;gap:.55rem;padding:.8rem;border-radius:10px;background:var(--canvas);font-size:1.15rem;flex-wrap:wrap}.math-strip .green{color:var(--green);font-weight:700}.math-strip .orange{color:var(--orange);font-weight:700}.notice{border-radius:10px;background:var(--green-light);padding:.85rem 1rem;color:var(--green);font-size:.95rem}.hint{border-radius:10px;background:#fff4d6;padding:.85rem 1rem;color:#644700;font-size:.95rem;width:100%}.feedback{max-width:none;padding:.9rem 1.65rem;background:var(--blue-light);border-top:1px solid var(--line);font-size:1rem;min-height:54px}.feedback.error{background:#fff0ed;color:var(--error)}.feedback.success{background:var(--green-light);color:var(--green)}.feedback:empty{display:none}.factor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;width:100%}.factor{font-weight:700;color:var(--blue);background:#fff;border:1px solid #879ac6;padding:.6rem .2rem;font-size:1.2rem}.factor[aria-pressed=true]{background:var(--blue);color:#fff;border-color:var(--blue)}.scale-table{table-layout:auto}.scale-table thead th{width:auto;text-align:center;background:var(--canvas);height:46px;font-size:.8rem;color:var(--muted);padding:.5rem}.scale-table thead th:first-child{width:115px}.scale-table tbody th{width:115px}.scale-table td{font-size:2rem}.scale-table td.multiplier{width:100px;font-size:1.15rem;color:var(--blue);background:#f8faff}.scale-table .number-input{max-width:85px}.scale-caption{margin-top:1.3rem;text-align:center;font-size:1rem;color:var(--muted)}.column-pick{border:0;background:transparent;color:var(--green);width:100%;padding:.3rem;font:inherit;border-radius:7px;min-height:52px}.column-pick:hover{background:#d7efe1}.column-pick:focus-visible{outline-offset:-3px}.connection{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:1.3rem;align-items:center;margin-top:1rem}.graph{width:100%;max-height:300px;display:block}.graph text{font-family:Arial,sans-serif;font-size:17px;fill:var(--ink)}.graph .grid{stroke:#d8e0ed;stroke-width:1}.graph .axis{stroke:#5b6b84;stroke-width:2}.point-story{font-size:1rem;display:flex;flex-direction:column;gap:.65rem}.point-story .pair-chip{font-size:1.65rem;align-self:flex-start}.points-note{font-size:.9rem;color:var(--muted)}.check-cell{background:#fff;border:1px solid #a4b0c6;font:inherit;min-width:55px;padding:.3rem}.check-cell:hover{background:var(--blue-light);border-color:var(--blue)}.check-cell:disabled{opacity:1;border-color:transparent;cursor:default}.option{display:flex;gap:.6rem;padding:.75rem;border:1px solid #9eabc3;border-radius:9px;font-size:.96rem;background:#fff;align-items:flex-start;cursor:pointer}.option:has(input:checked){border-color:var(--blue);background:var(--blue-light)}input[type=radio]{accent-color:var(--blue);width:20px;height:20px;margin:.12rem 0 0;flex-shrink:0}fieldset{padding:0;margin:0;border:0;min-width:0}legend{font-weight:700;margin-bottom:.65rem}.choice-list{display:grid;gap:.7rem;margin:1.1rem 0}.pair-inputs{display:flex;gap:.6rem;align-items:end;justify-content:center;margin:1.3rem 0}.pair-inputs .paren{font-size:2.5rem;line-height:1.2}.pair-inputs label{display:block;font-size:.85rem;margin-bottom:.3rem;color:var(--muted)}.pair-inputs .number-input{max-width:90px;width:90px}.finish{padding:1.5rem;border-radius:14px;background:var(--green-light);text-align:center;display:grid;justify-items:center;gap:.7rem}.finish-mark{width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:1.8rem}.finish h3{font-size:1.5rem}.finish p{font-size:1rem}.footer-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.15rem}.footer-progress{font-size:.85rem;color:var(--muted)}.footer-nav .btn{min-width:120px}.save-line{max-width:none;text-align:center;font-size:.75rem;color:var(--muted);margin-top:1rem}.save-error{color:var(--error)}dialog{border:1px solid var(--line);border-radius:18px;padding:1.8rem;max-width:520px;width:calc(100% - 2rem);color:var(--ink)}dialog::backdrop{background:#17254470}dialog p{margin:.8rem 0}dialog .actions{display:flex;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}dialog ul{padding-left:1.2rem;font-size:1rem}.pulse{animation:arrive .3s ease-out}@keyframes arrive{from{transform:translateY(5px)}to{transform:translateY(0)}}@media(prefers-reduced-motion:reduce){.pulse{animation:none}}@media(max-width:1050px){.workbench{grid-template-columns:minmax(0,1fr) 245px}.coach{padding:1.2rem}.board{padding:1.3rem}.ratio-table th{width:100px;padding:.5rem;font-size:.85rem}.connection{grid-template-columns:1fr}.point-story{flex-direction:row;align-items:center;flex-wrap:wrap}.graph{max-height:300px}.step-link{gap:.4rem;padding:.6rem;font-size:.9rem}.step-link[aria-current=step]{padding:calc(.6rem - 1px)}}@media(max-width:820px){.workbench{grid-template-columns:1fr;min-height:0}.coach{border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:.8rem 1.3rem}.coach h3,.coach .hint,.coach .notice,.coach .factor-grid,.coach .points-note{grid-column:1/-1}.coach p{grid-column:1/-1}.coach .secondary{margin:0}.connection{grid-template-columns:minmax(0,1fr) 210px}.ratio-table th{width:115px}.stage-heading{padding:1.2rem}.board{padding:1.3rem}.constant{padding:.5rem .7rem}.constant span{display:none}.intro{gap:1rem}.intro p{font-size:.92rem}}@media(max-width:560px){body{font-size:17px}.topbar-inner{padding:.5rem 1rem}.meta{display:none}.shell{padding:1.2rem .8rem 1rem}.intro{align-items:flex-start;gap:.5rem;margin-bottom:1rem}.intro h1{font-size:2rem}.intro p{max-width:240px}.constant{padding:.4rem;border:0;background:transparent}.constant .ball-icon{width:26px}.constant strong{font-size:.85rem}.constant .constant-copy{display:none}.steps{gap:.25rem;margin-bottom:1rem}.step-link{display:flex;flex-direction:column;justify-content:center;gap:.25rem;text-align:center;padding:.45rem .1rem;font-size:.73rem;min-height:70px;border-radius:9px}.step-link[aria-current=step]{padding:calc(.45rem - 1px) 0}.step-no{width:23px;height:23px;font-size:.72rem}.stage-heading{padding:1.1rem 1rem;align-items:flex-start;gap:.6rem}.stage-heading h2{font-size:1.55rem}.stage-heading p{font-size:.95rem}.counter{font-size:.72rem;padding:.3rem .5rem}.board{padding:1.1rem .7rem}.ratio-table{min-width:340px}.ratio-table th{width:88px;font-size:.8rem}.ratio-table td{font-size:1.55rem}.ratio-table td,.ratio-table th{height:70px}.number-input{min-width:40px;max-width:47px;height:48px;font-size:1.35rem}.table-note{font-size:.88rem}.coach{padding:1rem;gap:.75rem}.coach .btn{font-size:.92rem;padding:.6rem .65rem}.mini-bag{width:62px}.bag-drawing{height:76px;gap:3px;padding:6px}.rack{gap:.45rem;padding:.8rem 0}.math-strip{font-size:1rem;padding:.7rem}.feedback{max-width:none;padding:.8rem 1rem;font-size:.92rem}.scale-table{min-width:300px}.scale-table tbody th{width:77px}.scale-table thead th:first-child{width:77px}.scale-table thead th{font-size:.72rem}.scale-table td{font-size:1.65rem}.scale-table td.multiplier{font-size:1rem;width:65px}.scale-table .number-input{max-width:62px}.connection{grid-template-columns:1fr;gap:.4rem}.graph{max-height:300px}.point-story{font-size:.95rem;justify-content:center}.point-story .pair-chip{font-size:1.4rem}.check-table{min-width:290px}.check-cell{min-width:42px;padding:.15rem}.footer-nav{gap:.5rem}.footer-nav .btn{min-width:80px;font-size:.87rem;padding:.55rem .65rem}.footer-progress{font-size:.75rem;text-align:center}.save-line{font-size:.72rem}.finish{padding:1rem}.finish h3{font-size:1.3rem}.option{font-size:.95rem}.lesson{border-radius:15px}}@media print{.topbar,.intro,.steps,.coach,.footer-nav,.save-line,button{display:none!important}.shell{padding:0}.lesson{border:0}.workbench{display:block}.board{padding:1rem}.feedback{display:none}.ratio-table{min-width:0}.graph{max-height:350px}}@page{margin:15mm}
-@media(max-width:560px){.ratio-table,.scale-table,.check-table{min-width:0}.ratio-table th{width:74px}.ratio-table td{font-size:1.35rem}.ratio-table .answer-cell{padding:.15rem}.number-input{min-width:0;padding:0;font-size:1.2rem}.scale-table thead th:first-child,.scale-table tbody th{width:65px}.scale-table td.multiplier{width:58px}.scale-table td{font-size:1.5rem}.graph text{font-size:20px}}
-</style>
-</head>
-<body>
-<a class="skip" href="#lesson">Skip to activity</a>
-<header class="topbar"><div class="topbar-inner"><div class="brand"><svg viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#315cde"/><path d="M7 7h14v14H7zm0 7h14M14 7v14" stroke="white" stroke-width="1.7" fill="none"/></svg>EduWonderLab</div><div class="meta">Grade 6 · Lesson 3.4 · Section 1</div><button class="quiet" id="about-open" type="button">Lesson info</button></div></header>
-<div class="shell"><div class="intro"><div><h1>Ratio table lab</h1><p>Pack the bags. Build the table. Find the pattern.</p></div><div class="constant"><svg class="ball-icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="white" stroke="#182844" stroke-width="1.5"/><path d="m16 9 7 5-3 8h-8l-3-8zM16 2v7M3 12l6 2M8 27l4-5m12 5-4-5m9-10-6 2" fill="#182844" stroke="#182844"/></svg><div class="constant-copy"><strong>6 balls in every bag</strong><span>Our relationship stays the same.</span></div></div></div>
-<nav aria-label="Lesson activities"><ol class="steps" id="steps"></ol></nav>
-<main id="lesson" class="lesson" tabindex="-1"><div id="activity"></div><p id="feedback" class="feedback" role="status" aria-live="polite"></p></main>
-<div class="footer-nav"><button class="btn secondary" id="back" type="button">Back</button><span class="footer-progress" id="progress-text">0 of 5 complete</span><button class="btn primary" id="next" type="button">Next: Build</button></div>
-<p class="save-line" id="save-note">Your work saves in this browser. <button class="quiet" id="reset-open" type="button">Start over</button></p></div>
-<dialog id="about" aria-labelledby="about-title"><h2 id="about-title">About this lesson</h2><p><strong>Lesson 3.4 · Section 1</strong><br>Equivalent ratios using graphs</p><p>Based on Session 1, slides 1–22, of the supplied Reveal Math deck. The soccer-ball context, six-ball relationship, 10-bag application, and 4-bag check come from that source. The table activities and hints are adapted for this interactive lesson.</p><ul><li>Explore matching pairs, fill the table, and scale both quantities.</li><li>Connect table columns to graph points.</li><li>Find and repair a ratio-table mistake.</li></ul><p class="small">No name or sign-in is needed. Work stays in this browser; it is not sent to a teacher or server. Use “Start over” between learners on a shared device.</p><div class="actions"><button class="btn primary" id="about-close">Back to the lab</button></div></dialog>
-<dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">Start over?</h2><p>Clear this version’s answers and begin with one bag.</p><div class="actions"><button class="btn secondary" id="reset-cancel" autofocus>Keep my work</button><button class="btn primary" id="reset-confirm">Start over</button></div></dialog>
-<noscript><p style="padding:2rem">Enable JavaScript to use the interactive ratio table.</p></noscript>
-<script>
-'use strict';
-(() => {
- const $=id=>document.getElementById(id);
- const KEY='eduwonderlab-3.4-ratio-table-v3';
- const labels=['Explore','Build','Scale','Connect','Check'];
- const scales=[{bags:2,balls:12,target:6,factor:3},{bags:3,balls:18,target:6,factor:2},{bags:5,balls:30,target:10,factor:2}];
- const fresh=()=>({version:3,step:0,bags:1,buildIndex:0,buildSolved:[],buildValues:['','','',''],scaleIndex:0,scaleSolved:[],factors:[0,0,0],scaleValues:['','',''],graphSelected:1,graphSeen:[],line:false,checkPhase:0,repair:'',reason:'',pairX:'',pairY:''});
- let state=fresh(),storageOK=true,hint=false,message='',messageKind='';
- const clamp=(v,min,max,fallback)=>Number.isInteger(v)&&v>=min&&v<=max?v:fallback;
- const cleanString=v=>typeof v==='string'?v.slice(0,20):'';
- const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- try {
-  const saved=JSON.parse(localStorage.getItem(KEY));
-  if(saved?.version===3){
-   for(const [key,min,max] of [['step',0,4],['bags',1,6],['buildIndex',0,3],['scaleIndex',0,2],['graphSelected',1,6],['checkPhase',0,4]])state[key]=clamp(saved[key],min,max,state[key]);
-   for(const [key,length] of [['buildValues',4],['scaleValues',3]])if(Array.isArray(saved[key]))state[key]=Array.from({length},(_,i)=>cleanString(saved[key][i]));
-   for(const [key,max] of [['buildSolved',3],['scaleSolved',2],['graphSeen',6]])if(Array.isArray(saved[key]))state[key]=[...new Set(saved[key].filter(v=>Number.isInteger(v)&&v>=(key==='graphSeen'?1:0)&&v<=max))];
-   if(Array.isArray(saved.factors))state.factors=Array.from({length:3},(_,i)=>clamp(saved.factors[i],0,4,0));
-   for(const key of ['repair','reason','pairX','pairY'])state[key]=cleanString(saved[key]);
-   state.line=saved.line===true;
-  }
- } catch {storageOK=false;}
- function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{storageOK=false;}if(!storageOK){$('save-note').classList.add('save-error');$('save-note').firstChild.textContent='Saving is unavailable. Keep this tab open to keep your work. ';}}
- function complete(){return[state.bags>=3,state.buildSolved.length===4,state.scaleSolved.length===3,state.graphSeen.length>=3&&state.line,state.checkPhase===4];}
- function feedback(text,kind=''){message=text;messageKind=kind;$('feedback').textContent=text;$('feedback').className='feedback'+(kind?' '+kind:'');}
- function say(text,kind=''){message=text;messageKind=kind;}
- function updateNav(){const done=complete();$('steps').innerHTML=labels.map((label,i)=>'<li><button class="step-link'+(done[i]?' done':'')+'" data-go="'+i+'" '+(i===state.step?'aria-current="step" ':'')+'aria-label="'+label+(done[i]?', complete':'')+'"><span class="step-no" aria-hidden="true">'+(done[i]?'✓':i+1)+'</span>'+label+'</button></li>').join('');$('progress-text').textContent=done.filter(Boolean).length+' of 5 complete';$('back').disabled=state.step===0;$('next').hidden=state.step===4;$('next').textContent='Next: '+(labels[state.step+1]||'');}
- function go(index){state.step=Math.max(0,Math.min(4,index));hint=false;say('');save();render('stage-title');$('lesson').scrollIntoView({behavior:'instant',block:'start'});}
- const ball=()=>'<svg class="ball-icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="white" stroke="#294338" stroke-width="1.4"/><path d="m16 9 7 5-3 8h-8l-3-8zM16 2v7M3 12l6 2M8 27l4-5m12 5-4-5m9-10-6 2" fill="#294338" stroke="#294338"/></svg>';
- function bags(n){return '<div class="rack" aria-hidden="true">'+Array.from({length:n},(_,i)=>'<div class="mini-bag pulse"><div class="bag-drawing">'+Array(6).fill(ball()).join('')+'</div><small>Bag '+(i+1)+'</small></div>').join('')+'</div>';}
- function numberInput(id,value,label){return '<label class="sr-only" for="'+id+'">'+label+'</label><input class="number-input" id="'+id+'" type="number" inputmode="numeric" autocomplete="off" value="'+esc(value)+'">';}
- function header(title,instruction,counter){return '<div class="stage-heading"><div><h2 id="stage-title" tabindex="-1">'+title+'</h2><p>'+instruction+'</p></div><span class="counter">'+counter+'</span></div>';}
- function table(top,bottom,active=0,caption='Bags and soccer balls',extra=''){return '<div class="table-scroll"><table class="ratio-table '+extra+'"><caption>'+caption+'</caption><tbody><tr class="bags-row"><th scope="row">Bags</th>'+top.map((v,i)=>'<td'+(i+1===active?' class="active"':'')+'>'+v+'</td>').join('')+'</tr><tr class="balls-row"><th scope="row">Soccer<br>balls</th>'+bottom.map((v,i)=>'<td class="answer-cell'+(i+1===active?' active':'')+'">'+v+'</td>').join('')+'</tr></tbody></table></div>';}
- const button=(id,text,cls='primary',attrs='')=>'<button type="button" id="'+id+'" class="btn '+cls+'" '+attrs+'>'+text+'</button>';
- function hintBlock(text){return hint?'<div id="hint-content" class="hint">'+text+'</div>':'';}
- function hintButton(){return button('hint-toggle',hint?'Hide hint':'Give me a hint','secondary','aria-expanded="'+hint+'"');}
- function explore(){
-  const n=state.bags,top=[],bottom=[];for(let i=1;i<=6;i++){top.push(i<=n?i:'<span class="empty">—</span>');bottom.push(i<=n?i*6:'<span class="empty">—</span>');}
-  return header('Grow the table.','Add a bag. Watch both rows change together.',n+' / 6 bags')+'<div class="workbench"><div class="board">'+table(top,bottom,n)+'<p class="table-note">Read down the highlighted column: <strong>'+n+(n===1?' bag':' bags')+' goes with '+n*6+' balls.</strong></p>'+bags(n)+'<div class="math-strip"><span class="green">+ 1 bag</span><span>means</span><span class="orange">+ 6 balls</span></div></div><aside class="coach"><h3>One bag holds 6 balls.</h3><p>A new bag brings a new group of six. Keep each bag count with its matching ball count.</p>'+button('add-bag',n===6?'All 6 bags packed':'Add a bag','primary',n===6?'disabled':'')+(n>=3?'<div class="notice"><strong>Same relationship.</strong><br>The totals grow. Each bag still holds 6 balls.</div>':'<p class="points-note">Add at least 2 bags to explore the pattern.</p>')+'<p class="small muted">A ratio table keeps matching quantities in the same column.</p></aside></div>';
- }
- function build(){
-  const idx=state.buildIndex,n=idx+3,solved=state.buildSolved.includes(idx),top=[1,2,3,4,5,6],bottom=[6,12];
-  for(let i=0;i<4;i++)bottom.push(state.buildSolved.includes(i)?(i+3)*6:i===idx?numberInput('build-answer',state.buildValues[i],'Soccer balls for '+n+' bags'):'<span class="empty">?</span>');
-  return header('Fill the matching value.','How many balls go with the highlighted bag count?',(idx+1)+' / 4 columns')+'<div class="workbench"><div class="board"><form id="build-form" novalidate>'+table(top,bottom,n)+'</form><p class="table-note"><span class="pair-chip">'+n+' bags</span><span>× 6 balls per bag</span></p>'+(hint?bags(n):'<div class="math-strip"><span>Every column keeps</span><strong>6 balls in each bag.</strong></div>')+'</div><aside class="coach"><h3>'+n+' bags. How many balls?</h3><p>Type the missing value directly in the table.</p>'+(solved?button('build-next',idx===3?'Table complete · go to Scale':'Next column','success'):'<button class="btn primary" type="submit" form="build-form">Check this column</button>')+hintBlock(n+' groups of 6 means '+n+' × 6. Count the balls in the model, or add 6 a total of '+n+' times.')+hintButton()+'</aside></div>';
- }
- function scale(){
-  const idx=state.scaleIndex,q=scales[idx],factor=state.factors[idx],solved=state.scaleSolved.includes(idx);
-  const arrow=factor?'× '+factor+(solved?'':' ?'):'× ?';
-  const matrix='<div class="table-scroll"><table class="ratio-table scale-table"><caption>Scale a pair from the table</caption><thead><tr><th scope="col">Quantity</th><th scope="col">Known pair</th><th scope="col">Same factor</th><th scope="col">New pair</th></tr></thead><tbody><tr class="bags-row"><th scope="row">Bags</th><td>'+q.bags+'</td><td class="multiplier">'+arrow+'</td><td class="active">'+q.target+'</td></tr><tr class="balls-row"><th scope="row">Soccer<br>balls</th><td>'+q.balls+'</td><td class="multiplier">'+arrow+'</td><td class="active answer-cell">'+(solved?q.target*6:numberInput('scale-answer',state.scaleValues[idx],'Soccer balls for '+q.target+' bags'))+'</td></tr></tbody></table></div>';
-  return header('Multiply both by the same number.','Use the known pair to complete the new pair.',(idx+1)+' / 3 pairs')+'<div class="workbench"><div class="board"><form id="scale-form" novalidate>'+matrix+'</form><div class="scale-caption">'+(solved?'<strong>'+q.bags+' : '+q.balls+' and '+q.target+' : '+q.target*6+'</strong><br>Both describe 6 balls for every bag.':'Equivalent ratios keep the same relationship.<br>Use the same multiplier in <strong>both rows</strong>.')+'</div>'+(solved?'<div class="math-strip" style="margin-top:1rem"><span class="green">Bags × '+q.factor+'</span><span>and</span><span class="orange">Balls × '+q.factor+'</span></div>':'')+'</div><aside class="coach"><h3>'+q.bags+' bags → '+q.target+' bags</h3><p>Choose the multiplier. Then fill the ball count.</p><div class="factor-grid" role="group" aria-label="Choose the same multiplier for both rows">'+[2,3,4].map(n=>'<button class="factor" id="factor-'+n+'" data-factor="'+n+'" aria-pressed="'+(factor===n)+'" '+(solved?'disabled':'')+'>× '+n+'</button>').join('')+'</div>'+(solved?button('scale-next',idx===2?'Go to Connect':'Try another pair','success'):'<button class="btn primary" type="submit" form="scale-form">Check both rows</button>')+hintBlock(q.target+' ÷ '+q.bags+' = '+q.factor+'. Multiply the '+q.bags+' bags AND the '+q.balls+' balls by '+q.factor+'.')+hintButton()+'</aside></div>';
- }
- const px=x=>58+50*x,py=y=>270-y*6;
- function graph(){const n=state.graphSelected;let s='<title>Table column ('+n+', '+n*6+') on a graph</title><desc>The x-axis shows bags in steps of 1. The y-axis shows balls in steps of 6. The selected column is '+n+' bags and '+n*6+' balls.</desc>';
-  for(let i=0;i<=6;i++)s+='<path class="grid" d="M'+px(i)+' 54V270M58 '+py(i*6)+'H358" fill="none"/><text x="'+px(i)+'" y="292" text-anchor="middle">'+i+'</text><text x="45" y="'+(py(i*6)+5)+'" text-anchor="end">'+i*6+'</text>';
-  s+='<path class="axis" d="M58 45V270H367" fill="none"/><text x="208" y="321" text-anchor="middle" font-weight="bold">Bags (x)</text><text transform="translate(17 162) rotate(-90)" text-anchor="middle" font-weight="bold">Soccer balls (y)</text>';
-  if(state.line){s+='<path d="M58 270L358 54" fill="none" stroke="#11684e" stroke-width="2" stroke-dasharray="6 4"/>';for(let i=1;i<=6;i++)s+='<circle cx="'+px(i)+'" cy="'+py(i*6)+'" r="4" fill="#11684e"/>';}
-  s+='<path d="M58 270H'+px(n)+'V'+py(n*6)+'" fill="none" stroke="#315cde" stroke-width="2.5" stroke-dasharray="5 4"/><circle cx="'+px(n)+'" cy="'+py(n*6)+'" r="7" fill="#315cde" stroke="white" stroke-width="2"/>';
-  return '<svg class="graph" viewBox="0 0 390 335" role="img" aria-label="'+n+' bags and '+n*6+' balls plotted as ('+n+', '+n*6+')">'+s+'</svg>';
- }
- function connect(){
-  const n=state.graphSelected,seen=state.graphSeen.length;
-  const top=Array.from({length:6},(_,i)=>'<button class="column-pick" data-column="'+(i+1)+'" id="column-'+(i+1)+'" aria-label="Follow '+(i+1)+' bags and '+(i+1)*6+' balls" aria-pressed="'+(n===i+1)+'">'+(i+1)+'</button>');
-  return header('A column becomes a point.','Choose a bag count in the table. Follow its matching values.',Math.min(seen,3)+' / 3 columns')+'<div class="workbench"><div class="board">'+table(top,[6,12,18,24,30,36],n)+'<div class="connection">'+graph()+'<div class="point-story"><span class="pair-chip">('+n+', '+n*6+')</span><p><strong>'+n+' bags</strong> go with<br><strong>'+n*6+' soccer balls.</strong></p></div></div></div><aside class="coach"><h3>Same pair. New display.</h3><p>First number: bags on x.<br>Second number: balls on y.</p><p class="points-note">Each space right = 1 bag.<br>Each space up = 6 balls.</p><p class="notice">('+n+', '+n*6+') is '+n+' spaces right and '+n+' spaces up.</p>'+button('show-line',state.line?'Ratio line revealed':'Reveal the ratio line',state.line?'success':'primary',seen<3||state.line?'disabled':'')+'<p class="points-note">'+(seen<3?'Choose '+(3-seen)+' more different '+(3-seen===1?'column':'columns')+' to unlock the line.':'All these ratios keep 6 balls per bag. Their points line up through (0, 0).')+'</p></aside></div>';
- }
- function check(){
-  const phase=state.checkPhase,balls=[6,12,phase<2?20:24,60],top=[1,2,4,10];
-  const bottom=balls.map((n,i)=>phase===0?'<button class="check-cell" data-error-column="'+i+'" id="error-'+i+'" aria-label="Check '+top[i]+' bags and '+n+' balls">'+n+'</button>':phase===1&&i===2?numberInput('repair-answer',state.repair,'Correct soccer balls for 4 bags'):n);
-  const titles=['Find the table mistake.','Repair this column.','Why does the repaired table work?','Read the matching pair.','You connected the ideas.'];
-  const directions=['One ball count breaks the rule. Choose that value.','Keep 6 balls in each of the 4 bags.','Choose the rule that works for every column.','Turn the 4-bag column into an ordered pair.','A ratio table keeps matching quantities together.'];
-  let content='',coach='';
-  if(phase===0){coach='<h3>Be the table detective.</h3><p>Check one column at a time:<br><strong>bags × 6 = balls</strong>.</p>'+hintBlock('The columns for 1, 2, and 10 bags keep 6 balls per bag. Check the 4-bag column.')+hintButton();}
-  if(phase===1){coach='<h3>4 bags × 6 balls each</h3><p>Replace the incorrect value in the table.</p><button class="btn primary" type="submit" form="repair-form">Check my repair</button>'+hintBlock('Double the known pair 2 bags and 12 balls. Double both quantities: 4 bags and __ balls.')+hintButton();}
-  if(phase===2){content='<form id="reason-form"><fieldset class="choice-list"><legend>All four columns follow which rule?</legend>'+[['six','Multiply bags by 6 to find balls.'],['add','Add 6 to bags to find balls.'],['ten','Multiply both numbers by 10 every time.']].map(([value,label])=>'<label class="option" for="reason-'+value+'"><input type="radio" id="reason-'+value+'" name="reason" value="'+value+'" '+(state.reason===value?'checked':'')+'>'+label+'</label>').join('')+'</fieldset></form>';coach='<h3>Check the relationship.</h3><p>Try your rule on 1 bag, then on 4 bags.</p><button class="btn primary" type="submit" form="reason-form">Check the rule</button>';}
-  if(phase===3){content='<form id="pair-form" novalidate><div class="pair-inputs"><span class="paren">(</span><div><label for="pair-x">x · bags</label>'+numberInput('pair-x',state.pairX,'x-coordinate, bags').replace('<label class="sr-only" for="pair-x">x-coordinate, bags</label>','')+'</div><span class="paren">,</span><div><label for="pair-y">y · balls</label>'+numberInput('pair-y',state.pairY,'y-coordinate, balls').replace('<label class="sr-only" for="pair-y">y-coordinate, balls</label>','')+'</div><span class="paren">)</span></div></form>';coach='<h3>Use the highlighted column.</h3><p>Bags go first. Balls go second. Keep the values from the same column together.</p><button class="btn primary" type="submit" form="pair-form">Check my pair</button>';}
-  if(phase===4){const all=complete().every(Boolean);content='<div class="finish" style="margin-top:1.3rem"><div class="finish-mark" aria-hidden="true">✓</div><h3>'+(all?'Ratio table lab complete.':'Final check complete.')+'</h3><p><strong>4 bags → 24 balls → (4, 24)</strong></p><p>You kept the same relationship: 6 balls for every bag.</p>'+(all?'':'<p class="small">Visit the unfinished activities above to complete the lab.</p>')+'</div>';coach='<h3>Explain your table.</h3><p>“These ratios are equivalent because every bag has __ balls.”</p><div class="notice"><strong>Table → point</strong><br>One column gives both coordinates.</div>';}
-  const tab=table(top,bottom,phase>0?3:0,'Same relationship: 6 balls per bag','check-table');
-  return header(titles[phase],directions[phase],phase===4?'Check complete':(phase+1)+' / 4 checks')+'<div class="workbench"><div class="board">'+(phase===1?'<form id="repair-form" novalidate>'+tab+'</form>':tab)+content+'</div><aside class="coach">'+coach+'</aside></div>';
- }
- function render(focusId){
-  updateNav();$('activity').innerHTML=[explore,build,scale,connect,check][state.step]();feedback(message,messageKind);document.title=labels[state.step]+' · Ratio table lab';
-  if(focusId&&$(focusId))$(focusId).focus({preventScroll:true});
- }
- function refresh(focusId){save();render(focusId);}
- function numeric(value){return value.trim()===''?null:Number(value);}
- document.addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.go!==undefined){go(Number(b.dataset.go));return;}
-  if(b.dataset.factor!==undefined){const n=Number(b.dataset.factor);state.factors[state.scaleIndex]=n;say('Multiplier selected. Use it on both quantities.');refresh(b.id);return;}
-  if(b.dataset.column!==undefined){const n=Number(b.dataset.column);state.graphSelected=n;if(!state.graphSeen.includes(n))state.graphSeen.push(n);say('Column '+n+' becomes ('+n+', '+n*6+'): '+n+' bags and '+n*6+' balls.');refresh(b.id);return;}
-  if(b.dataset.errorColumn!==undefined){const i=Number(b.dataset.errorColumn);if(i===2){state.checkPhase=1;hint=false;say('You found it. Four bags with 6 balls each need more than 20 balls.','success');refresh('repair-answer');}else{const n=[1,2,4,10][i];feedback(n+' × 6 = '+n*6+'. This column fits the rule. Try another ball count.','error');}return;}
-  switch(b.id){
-   case 'back':go(state.step-1);break;
-   case 'next':go(state.step+1);break;
-   case 'add-bag':if(state.bags<6){state.bags++;say('Added 1 bag and 6 balls. '+state.bags+' bags now go with '+state.bags*6+' balls.','success');refresh(state.bags===6?'next':'add-bag');}break;
-   case 'hint-toggle':hint=!hint;render('hint-toggle');break;
-   case 'build-next':if(state.buildIndex===3)go(2);else{state.buildIndex++;hint=false;say('');refresh('build-answer');}break;
-   case 'scale-next':if(state.scaleIndex===2)go(3);else{state.scaleIndex++;hint=false;say('');refresh('factor-2');}break;
-   case 'show-line':state.line=true;say('The points form a straight line through (0, 0). Every positive-bag column keeps 6 balls per bag.','success');refresh('next');break;
-   case 'about-open':$('about').showModal();break;
-   case 'about-close':$('about').close();break;
-   case 'reset-open':$('reset-dialog').showModal();break;
-   case 'reset-cancel':$('reset-dialog').close();break;
-   case 'reset-confirm':state=fresh();hint=false;say('');save();$('reset-dialog').close();render('stage-title');break;
-  }
- });
- document.addEventListener('input',e=>{
-  const el=e.target;
-  if(el.id==='build-answer')state.buildValues[state.buildIndex]=el.value;
-  else if(el.id==='scale-answer')state.scaleValues[state.scaleIndex]=el.value;
-  else if(el.id==='repair-answer')state.repair=el.value;
-  else if(el.name==='reason')state.reason=el.value;
-  else if(el.id==='pair-x')state.pairX=el.value;
-  else if(el.id==='pair-y')state.pairY=el.value;
-  else return;
-  el.removeAttribute('aria-invalid');save();
- });
- document.addEventListener('submit',e=>{
-  if(!['build-form','scale-form','repair-form','reason-form','pair-form'].includes(e.target.id))return;e.preventDefault();
-  if(e.target.id==='build-form'){
-   const i=state.buildIndex,n=i+3,answer=numeric(state.buildValues[i]);
-   if(answer===n*6){if(!state.buildSolved.includes(i))state.buildSolved.push(i);say(n+' × 6 = '+answer+'. The column '+n+' : '+answer+' keeps 6 balls per bag.','success');refresh('build-next');}
-   else{$('build-answer').setAttribute('aria-invalid','true');feedback(answer===n+6?'Adding 6 to the bag count changes the relationship. Use '+n+' groups of 6 balls.':'Try '+n+' groups of 6. Multiply '+n+' × 6, then enter the ball count.','error');}
-  }
-  if(e.target.id==='scale-form'){
-   const i=state.scaleIndex,q=scales[i],factor=state.factors[i],answer=numeric(state.scaleValues[i]);
-   if(factor!==q.factor){feedback(factor?'That gives '+q.bags+' × '+factor+' = '+q.bags*factor+' bags. Which multiplier gives '+q.target+' bags?':'Choose a multiplier that takes '+q.bags+' bags to '+q.target+' bags.','error');return;}
-   if(answer!==q.target*6){$('scale-answer').setAttribute('aria-invalid','true');feedback('The multiplier is right. Use it on the balls too: '+q.balls+' × '+factor+' = ?','error');return;}
-   if(!state.scaleSolved.includes(i))state.scaleSolved.push(i);say('Both × '+factor+': '+q.bags+' : '+q.balls+' becomes '+q.target+' : '+answer+'. The ratios are equivalent.','success');refresh('scale-next');
-  }
-  if(e.target.id==='repair-form'){
-   if(numeric(state.repair)!==24){$('repair-answer').setAttribute('aria-invalid','true');feedback('Keep 6 balls in all 4 bags. Find 4 × 6.','error');return;}
-   state.checkPhase=2;hint=false;say('Repaired: 4 bags go with 24 balls. Now choose the rule that makes every column work.','success');refresh('reason-six');
-  }
-  if(e.target.id==='reason-form'){
-   if(state.reason!=='six'){feedback(state.reason==='add'?'Adding 6 would give 7 balls for 1 bag. This table shows 6 balls for 1 bag. Try a multiplication rule.':'Choose the rule that connects bags to balls in every column. Test it on 2 bags and 12 balls.','error');return;}
-   state.checkPhase=3;say('Yes. Balls = 6 × bags in every column. Read the 4-bag column as an ordered pair.','success');refresh('pair-x');
-  }
-  if(e.target.id==='pair-form'){
-   const x=numeric(state.pairX),y=numeric(state.pairY);$('pair-x').setAttribute('aria-invalid',String(x!==4));$('pair-y').setAttribute('aria-invalid',String(y!==24));
-   if(x!==4||y!==24){feedback(x===24&&y===4?'The values are reversed. Bags go on x first, and balls go on y second.':'Use the same column: x is 4 bags; y is the matching number of balls.','error');return;}
-   state.checkPhase=4;say('(4, 24) means 4 bags hold 24 balls. The ratio, table column, and graph point describe the same quantities.','success');refresh('stage-title');
-  }
- });
- save();render();
-})();
-</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#315cde" />
+    <meta
+      name="description"
+      content="Grade 6 Lesson 3.4: build ratio tables, make equivalent ratios, plot them on the coordinate plane, and practice in new contexts."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23315cde%27/%3E%3Cpath d=%27M8 8h16v16H8zm0 8h16M16 8v16%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27/%3E%3C/svg%3E"
+    />
+    <title>Ratio table lab · Lesson 3.4</title>
+    <link rel="stylesheet" href="lab.css" />
+    <script type="module" src="app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip" href="#lesson">Skip to activity</a>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <svg viewBox="0 0 28 28" aria-hidden="true">
+            <rect width="28" height="28" rx="7" fill="#315cde" />
+            <path
+              d="M7 7h14v14H7zm0 7h14M14 7v14"
+              stroke="white"
+              stroke-width="1.7"
+              fill="none"
+            /></svg
+          >EduWonderLab
+        </div>
+        <div class="meta">Grade 6 · Lesson 3.4 · Equivalent ratios using graphs</div>
+        <button class="quiet" id="about-open" type="button">Lesson info</button>
+      </div>
+    </header>
+    <div class="shell">
+      <div class="intro">
+        <div>
+          <h1>Ratio table lab</h1>
+          <p>Pack the bags. Build the table. Graph the pattern. Practice in new places.</p>
+          <ul class="goals" aria-label="Learning goals">
+            <li>Ratio tables</li>
+            <li>Equivalent ratios</li>
+            <li>Ordered pairs</li>
+            <li>Graphing ratios</li>
+          </ul>
+        </div>
+        <div class="constant">
+          <svg class="ball-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="16" r="14" fill="white" stroke="#182844" stroke-width="1.5" />
+            <path
+              d="m16 9 7 5-3 8h-8l-3-8zM16 2v7M3 12l6 2M8 27l4-5m12 5-4-5m9-10-6 2"
+              fill="#182844"
+              stroke="#182844"
+            />
+          </svg>
+          <div class="constant-copy">
+            <strong>6 balls in every bag</strong><span>Our relationship stays the same.</span>
+          </div>
+        </div>
+      </div>
+      <nav aria-label="Lab stations">
+        <ol class="steps" id="steps"></ol>
+        <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+      </nav>
+      <main id="lesson" class="lesson" tabindex="-1">
+        <div id="activity">
+          <noscript
+            ><p style="padding: 2rem">
+              Enable JavaScript to use the interactive ratio table.
+            </p></noscript
+          >
+        </div>
+        <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+      </main>
+      <div class="footer-nav">
+        <button class="btn secondary" id="back" type="button">Back</button
+        ><span class="footer-progress" id="progress-text">0 of 8 complete</span
+        ><button class="btn primary" id="next" type="button">Next: Explore</button>
+      </div>
+      <p class="save-line" id="save-note">
+        Your work saves in this browser.
+        <button class="quiet" id="reset-open" type="button">Start over</button>
+      </p>
+    </div>
+    <dialog id="about" aria-labelledby="about-title">
+      <h2 id="about-title">About this lab</h2>
+      <p><strong>Grade 6 · Lesson 3.4</strong><br />Determine equivalent ratios using graphs</p>
+      <p>
+        <strong>I can</strong> graph the values from a ratio table as points on the coordinate
+        plane, and explain my graph using the words
+        <em>coordinate plane, ordered pair, origin,</em> and <em>proportional</em>.
+      </p>
+      <h3>Eight stations</h3>
+      <ul>
+        <li><strong>Learn</strong> — one ratio in words, a table, and a graph; key vocabulary.</li>
+        <li><strong>Explore · Build</strong> — grow and complete the soccer-ball ratio table.</li>
+        <li><strong>Strategies</strong> — multiply, divide, add columns, and use the unit rate.</li>
+        <li>
+          <strong>Graph</strong> — plot columns as ordered pairs, find the origin, read the line,
+          name the unit rate point.
+        </li>
+        <li><strong>Compare</strong> — decide which tables show equivalent ratios.</li>
+        <li><strong>Check</strong> — find and repair a ratio-table mistake.</li>
+        <li>
+          <strong>Practice</strong> — new contexts at three levels, with hints and worked answers.
+        </li>
+      </ul>
+      <p class="small">
+        The soccer-ball context, six-ball relationship, 10-bag application, and 4-bag check come
+        from Session 1 of the Reveal Math Lesson 3.4 deck. The sundae and recipe practice contexts
+        follow the lesson's Explore and Practice. Activities and hints are adapted for this
+        interactive lab.
+      </p>
+      <p class="small">
+        No name or sign-in is needed. Work stays in this browser; it is not sent to a teacher or
+        server. Use “Start over” between learners on a shared device.
+      </p>
+      <div class="actions">
+        <button class="btn primary" id="about-close" type="button">Back to the lab</button>
+      </div>
+    </dialog>
+    <dialog id="reset-dialog" aria-labelledby="reset-title">
+      <h2 id="reset-title">Start over?</h2>
+      <p>Clear every station’s answers and begin again at Learn.</p>
+      <div class="actions">
+        <button class="btn secondary" id="reset-cancel" type="button" autofocus>Keep my work</button
+        ><button class="btn primary" id="reset-confirm" type="button">Start over</button>
+      </div>
+    </dialog>
+  </body>
 </html>
