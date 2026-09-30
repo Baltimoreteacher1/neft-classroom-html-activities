@@ -141,7 +141,7 @@ test("family homework keeps all five weekdays in order, including repeated lesso
       "/lessons/3-2/homework.html?route=quick&lang=en",
       "", "",
     ]);
-    assert.match(cards[3].textContent, /No homework posted/);
+    assert.match(cards[3].textContent, /Not posted yet/);
     assert.equal(cards[3].querySelector(".today-badge")?.textContent, "Today");
     assert.equal(cards[0].querySelector(".day-date")?.textContent, "Sep 21");
     assert.equal(cards[0].querySelector(".day-work h4")?.textContent, "Unit rates");

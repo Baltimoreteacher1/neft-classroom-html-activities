@@ -1,5 +1,5 @@
 export const DAYS = Object.freeze(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]);
-export const WEEK_STATUSES = Object.freeze(["lesson", "review", "assessment", "no-class"]);
+export const WEEK_STATUSES = Object.freeze(["lesson", "review", "assessment", "no-class", "pending"]);
 export const SNAPSHOT_SCHEMA_VERSION = 1;
 export const PUBLIC_ORIGIN = "https://eduwonderlab.com";
 
@@ -31,7 +31,7 @@ export function createDefaultSnapshot() {
           startDate: "",
           note: "Check back for this week's lesson plan and optional family practice.",
           noteEs: "Vuelva pronto para ver el plan de lecciones de esta semana y la práctica familiar opcional.",
-          days: DAYS.map((day) => ({ day, status: "no-class", lessonId: "", note: "", noteEs: "" })),
+          days: DAYS.map((day) => ({ day, status: "pending", lessonId: "", note: "", noteEs: "" })),
         },
       },
     ],
@@ -119,7 +119,7 @@ export const dayNote = (entry, lang) => pickLang(entry?.note, entry?.noteEs, lan
 export function weekHasMeaningfulContent(section) {
   return (section?.week?.days ?? []).some(
     (day) =>
-      day?.status !== "no-class" ||
+      !["no-class", "pending"].includes(day?.status) ||
       Boolean(day?.lessonId) ||
       Boolean(String(day?.note ?? "").trim()),
   );

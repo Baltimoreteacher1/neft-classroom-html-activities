@@ -1,3 +1,4 @@
+import { publicationChecks, renderPublicationChecks, homeworkLinkErrors, addHomeworkLinkErrors } from "../shared/publication-checks.js";
 import { DAYS, normalizeLessons } from "../shared/model.js";
 import { loadDraft, loadHistory, saveDraft, publishDraft } from "../shared/api-client.js";
 import { addDays, familyLink, renderHomeworkHub, schoolDate } from "../shared/homework-hub.js";
@@ -21,6 +22,7 @@ const markDirty = () => {
   dirty = true;
   previewed = false;
   byId("preview-panel").hidden = true;
+  byId("publication-checks").hidden = true;
   notify("Draft changed. Preview before publishing.");
 };
 const node = (tag, text) => {
@@ -28,8 +30,18 @@ const node = (tag, text) => {
   if (text) element.textContent = text;
   return element;
 };
+function reviewPublication() {
+  const checks = publicationChecks(draft, lessons);
+  renderPublicationChecks(byId("publication-checks"), checks);
+  if (checks.some((check) => check.errors.length)) {
+    notify("Fix the publication errors below before publishing.");
+    byId("publication-checks").scrollIntoView({ block: "start" });
+    return false;
+  }
+  return true;
+}
 function preview() {
-  if (!valid()) return;
+  if (!valid() || !reviewPublication()) return;
   renderHomeworkHub(byId("family-preview"), draft, lessons, sectionId, language, { preview: true });
   previewed = true;
   byId("preview-panel").hidden = false;
@@ -75,7 +87,7 @@ function renderDays() {
     const title = lessons.find((item) => item.id === entry.lessonId);
     const assignment = node("p", title && entry.status === "lesson"
       ? `Family homework: Lesson ${title.id} · ${title.title}`
-      : "No family homework assigned");
+      : entry.status === "no-class" ? "No family homework assigned" : "Homework not posted yet");
     assignment.className = "day-assignment";
     card.append(assignment);
     if (title && entry.status === "lesson") {
@@ -88,7 +100,7 @@ function renderDays() {
     const label = node("label", `Family homework for ${day}`);
     const select = node("select");
     select.id = `lesson-select-${index}`;
-    select.append(new Option("No homework", ""));
+    select.append(new Option("Not posted yet", ""), new Option("No homework assigned", "no-class"));
     let currentUnit = null;
     let group = null;
     for (const lesson of lessons) {
@@ -100,13 +112,15 @@ function renderDays() {
       }
       group.append(new Option(`Lesson ${lesson.id} · ${lesson.title}`, lesson.id));
     }
-    select.value = entry.status === "lesson" ? entry.lessonId : "";
+    select.value = entry.status === "lesson" ? entry.lessonId : entry.status === "no-class" ? "no-class" : "";
     label.htmlFor = select.id;
     select.addEventListener("change", () => {
-      const lessonId = select.value;
-      if (lessonId === entry.lessonId && entry.status === (lessonId ? "lesson" : "no-class")) return;
+      const choice = select.value;
+      const status = choice === "no-class" ? "no-class" : choice ? "lesson" : "pending";
+      const lessonId = status === "lesson" ? choice : "";
+      if (lessonId === entry.lessonId && entry.status === status) return;
       Object.assign(entry, {
-        status: lessonId ? "lesson" : "no-class",
+        status,
         lessonId,
         dueDate: "",
         note: "",
@@ -117,7 +131,7 @@ function renderDays() {
       byId(`lesson-select-${index}`).focus();
       notify(lessonId
         ? `Lesson ${lessonId} assigned to ${day}. Its family homework link was added automatically.`
-        : `${day} homework cleared.`);
+        : `${day}: ${status === "no-class" ? "no homework assigned" : "not posted yet"}.`);
     });
     card.append(label, select);
     if (entry.status === "lesson") {
@@ -238,13 +252,21 @@ byId("save-draft").addEventListener("click", () => {
 });
 byId("weekly-editor").addEventListener("submit", (event) => {
   event.preventDefault();
-  if (!valid()) return;
+  if (!valid() || !reviewPublication()) return;
   if (!previewed) {
     preview();
     notify("Review the family preview below, then choose Publish homework again.");
     return;
   }
   withBusy(async () => {
+    notify("Checking assigned homework links before publishing…");
+    const checks = addHomeworkLinkErrors(publicationChecks(draft, lessons), await homeworkLinkErrors(draft, lessons));
+    renderPublicationChecks(byId("publication-checks"), checks);
+    if (checks.some((check) => check.errors.length)) {
+      previewed = false;
+      notify("Not published. Fix the homework links or connection, then preview again.");
+      return;
+    }
     if (dirty) await persist();
     draft = await publishDraft(draft.revision);
     publishedSnapshot = structuredClone(draft);

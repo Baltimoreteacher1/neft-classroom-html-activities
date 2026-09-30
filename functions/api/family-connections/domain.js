@@ -46,7 +46,7 @@ function normalizeLinks(input, limit = 5) {
 }
 
 function normalizeDay(input, expectedDay) {
-  const status = WEEK_STATUSES.includes(input?.status) ? input.status : "no-class";
+  const status = WEEK_STATUSES.includes(input?.status) ? input.status : "pending";
   const id = lessonId(input?.lessonId);
   if (status === "lesson" && !id) fail(`${expectedDay} needs a valid lesson number.`);
   return {

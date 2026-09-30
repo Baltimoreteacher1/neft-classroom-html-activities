@@ -1,3 +1,4 @@
+import { publicationChecks, renderPublicationChecks, homeworkLinkErrors, addHomeworkLinkErrors } from "../shared/publication-checks.js";
 import {
   buildCanvasAnnouncement,
   buildCanvasExport,
@@ -510,11 +511,27 @@ async function persist() {
 }
 
 async function publish() {
+  if (state.publishing) return;
   if (!state.previewed) return notify("Preview the complete family page before publishing.");
-  if (state.dirty && !(await persist())) return;
-  if (!window.confirm("Publish this complete draft to Family Mode now?")) return;
+  state.publishing = true;
+  byId("publish-draft").disabled = true;
+  const reviewed = JSON.stringify(state.draft);
   try {
-    state.draft = await publishDraft();
+    const checks = addHomeworkLinkErrors(publicationChecks(state.draft, state.lessons), await homeworkLinkErrors(state.draft, state.lessons));
+    if (JSON.stringify(state.draft) !== reviewed || !state.previewed)
+      return notify("The draft changed during link checks. Preview it again before publishing.");
+    let panel = byId("advanced-publication-checks");
+    if (!panel) {
+      panel = document.createElement("section");
+      panel.id = "advanced-publication-checks";
+      panel.className = "publication-checks";
+      byId("family-preview").before(panel);
+    }
+    renderPublicationChecks(panel, checks);
+    if (checks.some((check) => check.errors.length)) return notify("Fix the publication errors in the preview before publishing.");
+    if (state.dirty && !(await persist())) return;
+    if (!window.confirm("Publish this complete draft to Family Mode now?\n" + checks.flatMap((check) => check.warnings.map((warning) => `${check.label}: ${warning}`)).join("\n"))) return;
+    state.draft = await publishDraft(state.draft.revision);
     state.dirty = false;
     state.previewed = false;
     state.history = await loadHistory();
@@ -523,6 +540,9 @@ async function publish() {
     notify("Published live. Families can now see this version.");
   } catch (error) {
     notify(error.message);
+  } finally {
+    state.publishing = false;
+    byId("publish-draft").disabled = false;
   }
 }
 

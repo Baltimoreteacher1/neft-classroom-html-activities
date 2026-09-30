@@ -193,6 +193,7 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
         review: t.statusReview,
         assessment: t.statusAssessment,
         "no-class": t.statusNoClass,
+        pending: lang === "es" ? "Aún no se ha publicado" : "Not posted yet",
       };
       card.append(element("strong", "lesson-number", labels[entry.status] ?? t.statusUpdateSoon));
       card.append(element("p", "day-note", dayNote(entry, lang) || t.checkBack));
@@ -414,6 +415,7 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
     review: es ? "Repaso y práctica" : "Review & practice",
     assessment: es ? "Evaluación" : "Learning check",
     "no-class": es ? "Sin lección" : "No lesson posted",
+    pending: es ? "Aún no se ha publicado" : "Not posted yet",
   };
   /* The practice link is the one thing a family needs after they leave the page,
    * so it travels with the week. One link per lesson, even when the lesson runs

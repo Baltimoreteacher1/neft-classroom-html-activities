@@ -1,11 +1,13 @@
+import { publicHomeworkWeeks } from "../../../curriculum/family-connections/shared/homework-weeks.js";
 import { buildCanvasRss } from "../../../curriculum/family-connections/shared/model.js";
+import { publicationChecks } from "../../../curriculum/family-connections/shared/publication-checks.js";
 import { handleCanvasDirectRequest } from "./canvas-direct.js";
 import { initialState, normalizeSnapshot } from "./domain.js";
 import { requestMeetingNotification } from "./meeting-notification.js";
 import { handleSchedulerRequest } from "./scheduler.js";
 import { createD1SchedulerStore } from "./scheduler-d1.js";
 
-const HISTORY_LIMIT = 5;
+const HISTORY_LIMIT = 52;
 const MAX_BODY_BYTES = 180_000;
 
 function json(data, status = 200, cache = "no-store") {
@@ -213,7 +215,11 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
   if (!store) return json({ ok: false, error: "publishing-unavailable" }, 503);
   if (path === "published" && method === "GET") {
     const state = await store.read();
-    return json({ ok: true, published: state.published });
+    return json({
+      ok: true,
+      published: state.published,
+      weeks: publicHomeworkWeeks(state.published, state.history),
+    });
   }
   if (path === "canvas-feed" && method === "GET") {
     const state = await store.read();
@@ -259,7 +265,14 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
         : {};
       if (body.expectedRevision !== undefined && !Number.isInteger(body.expectedRevision))
         return json({ ok: false, error: "invalid-revision" }, 400);
-      const published = await store.publish(body.expectedRevision);
+      const state = await store.read();
+      if (body.expectedRevision !== undefined && body.expectedRevision !== state.draft.revision)
+        return json({ ok: false, error: "revision-conflict" }, 409);
+      const errors = publicationChecks(state.draft).flatMap((check) =>
+        check.errors.map((message) => `${check.label}: ${message}`),
+      );
+      if (errors.length) return json({ ok: false, error: errors.join(" ") }, 400);
+      const published = await store.publish(state.draft.revision);
       return published
         ? json({ ok: true, published })
         : json({ ok: false, error: "revision-conflict" }, 409);

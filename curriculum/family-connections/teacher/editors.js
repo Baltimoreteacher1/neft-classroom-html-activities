@@ -41,7 +41,8 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
       ["lesson", "Lesson"],
       ["review", "Review & practice"],
       ["assessment", "Learning check"],
-      ["no-class", "No class / no post"],
+      ["no-class", "No homework assigned"],
+      ["pending", "Not posted yet"],
     ])
       status.append(option(value, label, entry.status === value));
     statusLabel.append(status);
@@ -159,7 +160,7 @@ export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
   // Same computation the family page runs, so this preview cannot over-promise.
   const homework = weekHomework(snapshot, inputLessons, snapshot.homeworkOverrides, section.id);
   const plannedDays = section.week.days.filter(
-    (day) => day.status !== "no-class" || day.lessonId || String(day.note ?? "").trim(),
+    (day) => !["no-class", "pending"].includes(day.status) || day.lessonId || String(day.note ?? "").trim(),
   ).length;
   const summary = node(
     "p",

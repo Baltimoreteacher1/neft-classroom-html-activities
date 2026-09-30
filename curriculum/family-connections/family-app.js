@@ -1,6 +1,8 @@
+import { publicHomeworkWeeks, weeksForSection, defaultHomeworkWeek, snapshotForWeek, homeworkWeekLabel } from "./shared/homework-weeks.js";
+import { publicationChecks, renderPublicationChecks, homeworkLinkErrors, addHomeworkLinkErrors } from "./shared/publication-checks.js";
 import { DAYS, createDefaultSnapshot, normalizeLessons, resolveSection } from "./shared/model.js";
 import { loadDraft, publishDraft, saveDraft } from "./shared/api-client.js";
-import { addDays, familyLink, isHomeworkEditorPath, renderHomeworkHub } from "./shared/homework-hub.js";
+import { addDays, familyLink, isHomeworkEditorPath, renderHomeworkHub, weekPhase } from "./shared/homework-hub.js";
 const query = new URL(location.href).searchParams;
 // Old invitations and Canvas meeting anchors keep their existing destination.
 if (query.has("meeting") || location.hash === "#family-scheduler") {
@@ -15,6 +17,8 @@ let language =
   query.get("lang") === "es" || (!query.has("lang") && preferences.language === "es") ? "es" : "en";
 let sectionId = query.get("section") || preferences.sectionId || "";
 let snapshot = createDefaultSnapshot();
+let publishedWeeks = [];
+let selectedWeek = query.get("week") || "";
 let lessons = [];
 let lessonChoices = [];
 let loaded = false;
@@ -35,14 +39,50 @@ function editorLoginUrl() {
 // Old bookmarks enter through the same server-protected teacher route.
 if (!editRequested && query.get("edit") === "1") location.replace(editorLoginUrl());
 function renderFamilyView() {
-  renderHomeworkHub(byId("family-homework"), editDraft || snapshot, lessons, sectionId, language, {
-    preview: Boolean(editDraft),
-  });
+  const root = byId("family-homework");
+  if (editDraft) {
+    renderHomeworkHub(root, editDraft, lessons, sectionId, language, { preview: true });
+    return;
+  }
+  const es = language === "es";
+  const weeks = weeksForSection(publishedWeeks, sectionId);
+  const explicit = weeks.find((item) => item.week.startDate === selectedWeek);
+  if (!explicit) selectedWeek = "";
+  const record = explicit || defaultHomeworkWeek(weeks);
+  renderHomeworkHub(root, snapshotForWeek(snapshot, record), lessons, sectionId, language, { archive: Boolean(explicit) });
+  if (weeks.length) {
+    const nav = document.createElement("div");
+    nav.className = "week-navigation";
+    const label = document.createElement("label");
+    label.htmlFor = "homework-week-select";
+    label.textContent = es ? "Semana de tareas" : "Homework week";
+    const select = document.createElement("select");
+    select.id = label.htmlFor;
+    select.append(new Option(es ? "Plan actual / próximo" : "Current / upcoming plan", ""));
+    for (const item of weeks) {
+      const phase = weekPhase(item.week.startDate);
+      const labels = es
+        ? { current: "Esta semana", upcoming: "Próximas", past: "Anteriores" }
+        : { current: "This week", upcoming: "Upcoming", past: "Previous" };
+      select.append(new Option(`${labels[phase]} · ${homeworkWeekLabel(item.week.startDate, language)}`, item.week.startDate));
+    }
+    select.value = selectedWeek;
+    select.addEventListener("change", () => {
+      selectedWeek = select.value;
+      render();
+      byId("homework-week-select").focus();
+    });
+    label.append(select);
+    nav.append(label);
+    root.prepend(nav);
+  }
 }
+
 function markEditDirty() {
   editDirty = true;
   editReviewed = false;
   byId("inline-publish-confirm").hidden = true;
+  byId("inline-publication-checks").hidden = true;
   editStatus("Draft changed. Check the family preview below, then save or publish.");
 }
 function renderEditor() {
@@ -74,7 +114,7 @@ function renderEditor() {
     label.textContent = `Family homework for ${day}`;
     const select = document.createElement("select");
     select.id = label.htmlFor;
-    select.append(new Option("No homework", ""));
+    select.append(new Option("Not posted yet", ""), new Option("No homework assigned", "no-class"));
     let currentUnit = null;
     let group = null;
     for (const lesson of lessonChoices) {
@@ -86,11 +126,13 @@ function renderEditor() {
       }
       group.append(new Option(`Lesson ${lesson.id} · ${lesson.title}`, lesson.id));
     }
-    select.value = entry.status === "lesson" ? entry.lessonId : "";
+    select.value = entry.status === "lesson" ? entry.lessonId : entry.status === "no-class" ? "no-class" : "";
     select.addEventListener("change", () => {
-      const lessonId = select.value;
-      if (lessonId === entry.lessonId && entry.status === (lessonId ? "lesson" : "no-class")) return;
-      Object.assign(entry, { status: lessonId ? "lesson" : "no-class", lessonId, dueDate: "", note: "", noteEs: "" });
+      const choice = select.value;
+      const status = choice === "no-class" ? "no-class" : choice ? "lesson" : "pending";
+      const lessonId = status === "lesson" ? choice : "";
+      if (lessonId === entry.lessonId && entry.status === status) return;
+      Object.assign(entry, { status, lessonId, dueDate: "", note: "", noteEs: "" });
       markEditDirty();
       render();
       byId(`inline-day-select-${index}`).focus();
@@ -185,11 +227,13 @@ function render() {
     const url = new URL(editRequested ? location.pathname : familyLink(sectionId, language, location.origin), location.origin);
     url.searchParams.set("section", sectionId);
     if (language === "es") url.searchParams.set("lang", "es");
+    if (!editRequested && selectedWeek) url.searchParams.set("week", selectedWeek);
     history.replaceState(null, "", url);
   }
 }
 byId("section-select").addEventListener("change", (e) => {
   sectionId = e.target.value;
+  selectedWeek = "";
   editReviewed = false;
   render();
 });
@@ -262,6 +306,13 @@ byId("inline-save").addEventListener("click", () => {
 byId("inline-week-form").addEventListener("submit", (event) => {
   event.preventDefault();
   if (!editDraft || !validEditor()) return;
+  const checks = publicationChecks(editDraft, lessons);
+  renderPublicationChecks(byId("inline-publication-checks"), checks);
+  if (checks.some((check) => check.errors.length)) {
+    editStatus("Fix the publication errors below, then review the family preview.");
+    byId("inline-publication-checks").scrollIntoView({ block: "start" });
+    return;
+  }
   if (!editReviewed || !byId("draft-preview-panel").open) {
     editReviewed = true;
     editStatus("Review the family preview below, then choose Confirm publish.");
@@ -271,8 +322,19 @@ byId("inline-week-form").addEventListener("submit", (event) => {
     return;
   }
   withEditorBusy(async () => {
+    editStatus("Checking assigned homework links before publishing…");
+    addHomeworkLinkErrors(checks, await homeworkLinkErrors(editDraft, lessons));
+    renderPublicationChecks(byId("inline-publication-checks"), checks);
+    if (checks.some((check) => check.errors.length)) {
+      editReviewed = false;
+      byId("inline-publish-confirm").hidden = true;
+      editStatus("Not published. Fix the homework links or connection, then review again.");
+      return;
+    }
     if (editDirty) editDraft = await saveDraft(editDraft);
+    const previous = snapshot;
     snapshot = await publishDraft(editDraft.revision);
+    publishedWeeks = publicHomeworkWeeks(snapshot, [previous]);
     editDraft = structuredClone(snapshot);
     editDirty = false;
     editReviewed = false;
@@ -296,6 +358,7 @@ async function load() {
     const manifest = await manifestResponse.json();
     const body = await publishedResponse.json();
     snapshot = body.published;
+    publishedWeeks = Array.isArray(body.weeks) ? body.weeks : publicHomeworkWeeks(snapshot);
     if (!Array.isArray(snapshot?.sections)) throw new Error("unavailable");
     lessons = manifest.lessons || [];
     lessonChoices = normalizeLessons(lessons);
