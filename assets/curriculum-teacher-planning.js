@@ -1024,6 +1024,14 @@
           row.appendChild(p2a);
         }
 
+        if (lesson.id === "3-4") {
+          var ratioLab = document.createElement("a");
+          ratioLab.className = "tws-btn ghost";
+          ratioLab.href = "/curriculum/learning-labs/ratio-table-lab/";
+          ratioLab.textContent = "Ratio Table Lab · Section 1";
+          row.appendChild(ratioLab);
+        }
+
         if (lesson.id === "3-2") {
           var simBtn = document.createElement("a");
           simBtn.className = "tws-btn ghost";

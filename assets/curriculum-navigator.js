@@ -563,6 +563,18 @@
     } else {
       preview.appendChild(actions);
     }
+    if (lesson.id === "3-4") {
+      var ratioLab = resourceLink(
+        "/curriculum/learning-labs/ratio-table-lab/",
+        "Ratio Table Lab · Section 1",
+        true,
+        "learningLab",
+      );
+      if (ratioLab) {
+        ratioLab.className = "cn-button";
+        actions.appendChild(ratioLab);
+      }
+    }
     var saveButton = button(
       saved.has(lesson.id) ? "Saved on this device" : "Save lesson",
       function () {

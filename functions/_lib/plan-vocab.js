@@ -1798,6 +1798,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/learning-labs/ratio-table-lab/",
+    title: "Ratio table lab · Lesson 3.4",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/learning-labs/recipe-remix/",
     title: "Recipe Remix Radio",
     category: "Activity",

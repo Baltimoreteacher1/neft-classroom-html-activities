@@ -82,6 +82,19 @@ async function using(options, action) {
   }
 }
 
+test("Lesson 3.4 has its own Section 1 ratio-table lab without replacing the student lesson", () =>
+  using({}, ({ $, pick }) => {
+    pick("3-4");
+    const lab = $("nav-preview").querySelector(
+      'a[href="/curriculum/learning-labs/ratio-table-lab/?student=1"]',
+    );
+    assert.ok(lab);
+    assert.equal(lab.textContent, "Ratio Table Lab · Section 1");
+    assert.ok($("nav-preview").querySelector('a[href$="/curriculum/student-launch/?lesson=3-4"]'));
+    pick("3-3");
+    assert.equal($("nav-preview").querySelector('a[href*="/ratio-table-lab/"]'), null);
+  }));
+
 test("all 84 real lessons load through the shared JSON cache and paginate", () =>
   using({}, ({ $, calls, window }) => {
     assert.equal(catalog.lessons.length, 84);
