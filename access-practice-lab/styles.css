@@ -1,7 +1,7 @@
 /* ACCESS Practice Lab — 2026-10 redesign.
    Calm, high-contrast, touch-first (44px+ targets), phone → Chromebook → projector.
-   All colors are tokens; dark mode and the text-size control (--lab-scale) are
-   handled here. No external fonts: the system UI stack renders everywhere. */
+   All colors are tokens; light theme only, even when the device is in dark mode.
+   The text-size control (--lab-scale) is handled here. No external fonts: the system UI stack renders everywhere. */
 
 :root {
   --lab-scale: 1;
@@ -29,28 +29,6 @@
   --font:
     system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #12171c;
-    --surface: #1a2128;
-    --surface-2: #222b33;
-    --ink: #e8edf1;
-    --ink-2: #a9b6c1;
-    --line: #33404b;
-    --brand: #4fb3a9;
-    --brand-ink: #9fe0d8;
-    --brand-soft: #1d3532;
-    --right: #6bd391;
-    --right-soft: #183324;
-    --wrong: #ff8a80;
-    --wrong-soft: #3a1f1d;
-    --hint: #f5c26b;
-    --hint-soft: #382c14;
-    --focus: #8ab4ff;
-    --shadow: none;
-    color-scheme: dark;
-  }
 }
 
 *,
@@ -279,11 +257,6 @@ h1:focus {
 .btn-primary:hover {
   background: var(--brand-ink);
   border-color: var(--brand-ink);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .btn-primary {
-    color: #08201d;
-  }
 }
 .btn[disabled],
 .ghost[disabled] {
