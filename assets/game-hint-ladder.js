@@ -176,6 +176,13 @@
       openPanel(false);
     });
     els.more.addEventListener("click", nextRung);
+    root.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !els.panel.hidden) {
+        event.preventDefault();
+        event.stopPropagation();
+        openPanel(false);
+      }
+    });
   }
 
   function showEmptyState() {
@@ -193,7 +200,11 @@
     ensureUi();
     els.panel.hidden = !open;
     els.fab.setAttribute("aria-expanded", open ? "true" : "false");
-    if (!open) return;
+    if (!open) {
+      if (els.panel.contains(doc.activeElement)) els.fab.focus();
+      return;
+    }
+    els.close.focus();
     // No active problem yet (title/menu/results screen): guide, don't fetch.
     if (!state.problem) {
       showEmptyState();

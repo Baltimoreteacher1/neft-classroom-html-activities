@@ -3248,9 +3248,9 @@
         '<span class="unit-card-num">' +
         u.num +
         "</span>" +
-        '<span class="unit-card-name">' +
+        '<h2 class="unit-card-name">' +
         u.name +
-        "</span>" +
+        "</h2>" +
         "</div>" +
         '<div class="unit-card-meta">' +
         '<span class="unit-card-blurb">' +
@@ -3378,8 +3378,7 @@
 
       var outline = document.createElement("div");
       outline.className = "lesson-outline";
-      outline.innerHTML =
-        '<span class="lesson-outline-title">Activities List (Outline Form)</span>';
+      outline.innerHTML = '<span class="lesson-outline-title">Lesson resources</span>';
       var outlineList = document.createElement("ul");
       outlineList.className = "lesson-outline-list";
       outline.appendChild(outlineList);

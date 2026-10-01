@@ -1,10 +1,12 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
+
 import { runComponentList } from "../components/activity-chooser.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { fireCelebrationFX } from "./celebration-picker.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
+import { createLessonCourseNav } from "./curriculum-nav.js";
 import { mountExportToolbar } from "./export.js";
 import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
 import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
@@ -686,6 +688,8 @@ function showIdentityScreen(root, config) {
       </div>
     </div>
   `;
+  const courseNav = createLessonCourseNav(config);
+  if (courseNav) screen.querySelector(".identity-card").prepend(courseNav);
   root.append(screen);
 
   // Cover objectives share the Launch/Objectives glossary popups: tapping an
@@ -1399,6 +1403,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // and in the teacher notes. Prepare Supports (right dock) is unaffected.
   // mountTeacherPanel(root, config, state);
 
+  const courseNav = createLessonCourseNav(config);
+  if (courseNav) main.append(courseNav);
   const lessonHero = buildLessonHero(config, state, phaseConfigs);
   main.append(lessonHero);
 
@@ -2755,7 +2761,7 @@ function buildLessonHero(config, _state, _phaseConfigs) {
   hero.innerHTML = `
     <div class="lesson-hero-top">
       <div>
-        <h2 class="lesson-hero-title">${escHtml(config.title)}</h2>
+        <h1 class="lesson-hero-title">${escHtml(config.title)}</h1>
         <div class="lesson-hero-meta">${escHtml(config.standard)} · Unit ${config.unit} · ${escHtml(lessonTimeEstimate(config))}</div>
       </div>
       <div class="lesson-hero-badges">

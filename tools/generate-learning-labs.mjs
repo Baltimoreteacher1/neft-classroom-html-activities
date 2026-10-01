@@ -5,6 +5,7 @@ import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs"
 import { esc } from "../curriculum/learning-labs/shared/model.mjs";
 import { blueprints, unitNames } from "./learning-labs/blueprints.mjs";
 import { originalPractice } from "./learning-labs/practice.mjs";
+import { withCurriculumShell } from "./lib/curriculum-shell.mjs";
 import {
   CORE_ID_RE,
   listLessonDirs,
@@ -251,7 +252,10 @@ const catalogBody = `<a class="skip-link" href="#catalog">Skip to labs</a><heade
   .join(
     "",
   )}</main><footer>EduWonderLab · Grade 6 mathematics · <a href="/curriculum/">Return to curriculum</a></footer>`;
-writeFileSync(join(destination, "index.html"), page("Interactive Learning Labs", catalogBody));
+writeFileSync(
+  join(destination, "index.html"),
+  withCurriculumShell(page("Interactive Learning Labs", catalogBody), "labs"),
+);
 
 // Additive splice: preserve hand-edited curriculum content and all other links.
 const unitPath = join(REPO_ROOT, "curriculum/units/index.html");

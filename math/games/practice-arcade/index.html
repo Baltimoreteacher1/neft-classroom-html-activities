@@ -17,11 +17,11 @@
       }
       body {
         background: #0f172a;
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
         font-family: "Segoe UI", system-ui, sans-serif;
-        /* Stop the browser from treating a drag as scroll/zoom on tablets, so
-           Phaser receives the touch-drag gestures (drag-sort works on touch). */
-        touch-action: none;
+        /* The page scrolls normally; the game canvas owns drag gestures. */
+        touch-action: pan-y;
       }
       canvas {
         display: block;
@@ -160,6 +160,7 @@
       </div>
     </div>
 
+    <main id="pa-stage" aria-label="Practice Arcade game" style="width:100%; min-height:300px; position:relative;"></main>
     <div id="loader">
       <div class="spinner"></div>
       <div id="loader-text">Loading Practice Arcade…</div>
@@ -802,12 +803,30 @@
 
           document.getElementById("loader").style.display = "none";
           const bgHex = "#" + PALETTE.bgBot.toString(16).padStart(6, "0");
+          const stage = document.getElementById("pa-stage");
+          function fitStage() {
+            stage.style.height = Math.max(300, innerHeight - stage.getBoundingClientRect().top - 92) + "px";
+            if (window.paGame) window.paGame.scale.refresh();
+          }
+          fitStage();
+          window.addEventListener("resize", fitStage);
+          const layoutObserver = new ResizeObserver(fitStage);
+          layoutObserver.observe(document.querySelector(".ewl-arcade-header-bar"));
+          const toolsObserver = new MutationObserver(() => {
+            const tools = document.querySelector(".game-tools-menu");
+            if (tools) {
+              layoutObserver.observe(tools);
+              toolsObserver.disconnect();
+              fitStage();
+            }
+          });
+          toolsObserver.observe(document.body, { childList: true });
           window.paGame = new Phaser.Game({
             type: Phaser.AUTO,
             width: W,
             height: H,
             backgroundColor: bgHex,
-            parent: document.body,
+            parent: "pa-stage",
             scale: {
               mode: Phaser.Scale.FIT,
               autoCenter: Phaser.Scale.CENTER_BOTH,

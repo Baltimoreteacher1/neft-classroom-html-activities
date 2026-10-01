@@ -2,6 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { createLessonCourseNav } from "./curriculum-nav.js";
 import { carriedDivisionFigures } from "./division-walk-figure.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
@@ -1344,6 +1345,8 @@ function renderStudio(config) {
   } else {
     heroNode.appendChild(roomChip);
   }
+  const courseNav = createLessonCourseNav(config);
+  if (courseNav) app.appendChild(courseNav);
   app.appendChild(heroNode);
   // Publisher-grade standards display: resolve the bare code to its full MCCRS
   // wording (best-effort) and fold it into the hero's objectives detail, so

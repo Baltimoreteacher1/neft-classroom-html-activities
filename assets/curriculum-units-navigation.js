@@ -48,6 +48,103 @@
       toolbar.appendChild(details);
     }
 
+    function compactLessonActions(card) {
+      const unit = unitOf(card);
+      const select = getSelect(card);
+      const lesson = unit?.lessons[select?.selectedIndex];
+      if (!lesson || !select) return;
+      const info = card.querySelector(".lesson-info");
+      if (!info) return;
+      let actions = card.querySelector(".units-lesson-actions");
+      if (!actions) {
+        actions = document.createElement("nav");
+        actions.className = "units-lesson-actions";
+        actions.setAttribute("aria-label", "Selected lesson resources");
+        const selector = card.querySelector(".selector-group--lesson");
+        if (selector) selector.after(actions);
+        else info.before(actions);
+      }
+      // Use the actual rendered resource links, never assume a file exists.
+      const links = Array.from(info.querySelectorAll(".lesson-outline-item a[href]"));
+      /** @type {[string, (path: string) => boolean][]} */
+      const entries = [
+        ["Open lesson", (path) => path === "/lessons/" + lesson.lessonId + "/"],
+        ["Practice", (path) => path === "/lessons/" + lesson.lessonId + "/worksheet.html"],
+        ["Homework", (path) => path === "/lessons/" + lesson.lessonId + "/homework.html"],
+      ];
+      const signature = lesson.lessonId + links.map((link) => link.getAttribute("href")).join("|");
+      if (actions.dataset.signature !== signature) {
+        actions.dataset.signature = signature;
+        actions.replaceChildren();
+        entries.forEach(([label, matches], index) => {
+          const source = links.find((link) => {
+            const url = new URL(link.getAttribute("href"), location.origin);
+            return url.origin === location.origin && matches(url.pathname);
+          });
+          if (!source) return;
+          const link = document.createElement("a");
+          const url = new URL(source.getAttribute("href"), location.origin);
+          url.searchParams.set("student", "1");
+          link.href = url.pathname + url.search + url.hash;
+          link.textContent = label;
+          if (index === 0) link.className = "units-open-lesson";
+          actions.appendChild(link);
+        });
+        actions.hidden = !actions.children.length;
+      }
+      const phases = card.querySelector(".phase-selectors");
+      if (phases && !phases.closest(".units-lesson-options")) {
+        const details = document.createElement("details");
+        details.className = "units-lesson-options";
+        const summary = document.createElement("summary");
+        summary.textContent = "More lesson resources";
+        phases.before(details);
+        details.append(summary, phases);
+      }
+      const options = card.querySelector(".units-lesson-options");
+      if (options && Array.from(card.querySelectorAll(".activity-select")).some((s) => s.value))
+        options.open = true;
+      let paging = card.querySelector(".units-lesson-paging");
+      if (!paging) {
+        paging = document.createElement("nav");
+        paging.className = "units-lesson-paging";
+        paging.setAttribute("aria-label", "Lesson sequence");
+        actions.after(paging);
+      }
+      if (paging.dataset.lessonId === String(lesson.lessonId)) return;
+      paging.dataset.lessonId = String(lesson.lessonId);
+      paging.replaceChildren();
+      const core = unit.lessons.filter((item) => /^\d+-\d+$/.test(item.lessonId));
+      const baseId = /^(\d+-\d+)/.exec(lesson.lessonId || "")?.[1];
+      const position = core.findIndex((item) => item.lessonId === baseId);
+      if (position < 0) {
+        paging.hidden = true;
+        return;
+      }
+      paging.hidden = false;
+      const count = document.createElement("span");
+      count.textContent = "Lesson " + (position + 1) + " of " + core.length;
+      paging.appendChild(count);
+      [-1, 1].forEach((step) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = step < 0 ? "Previous lesson" : "Next lesson";
+        const next = core[position + step];
+        button.disabled = !next;
+        button.addEventListener("click", () => {
+          if (!next) return;
+          select.value = String(unit.lessons.indexOf(next));
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          const replacement = card.querySelectorAll(".units-lesson-paging button")[
+            step < 0 ? 0 : 1
+          ];
+          if (replacement && !replacement.disabled) replacement.focus({ preventScroll: true });
+          else select.focus({ preventScroll: true });
+        });
+        paging.appendChild(button);
+      });
+    }
+
     function compactUnitCards() {
       cards().forEach((card) => {
         const resources = card.querySelector(".unit-resources-row");
@@ -188,13 +285,17 @@
         const number = String(units[index].unitIndex);
         card.id = "unit-" + number;
         card.toggleAttribute("hidden", !browsingAll && number !== active);
+        compactLessonActions(card);
       });
       picker.value = active;
       const unit = unitFor(active);
       const count = unit.lessons.filter((lesson) => /^\d+-\d+$/.test(lesson.lessonId)).length;
       const text = browsingAll
         ? "Searching and filtering across all 10 units. Choose a unit to return to browsing."
-        : unit.num + " · " + count + " lessons. Choose a lesson below, then open an activity.";
+        : unit.num +
+          " · " +
+          count +
+          " lessons. Choose a lesson, then select Open lesson, Practice, or Homework.";
       if (status.textContent !== text) status.textContent = text;
       const refineSummary = document.querySelector(".units-refine > summary");
       const filter = document.querySelector('.hub-filter-chip[aria-pressed="true"]');
@@ -409,8 +510,22 @@
       const summary = document.createElement("summary");
       summary.textContent = "Explore visual math tools";
       disclosure.append(summary, gallery);
-      document.querySelector(".units-page-head").appendChild(disclosure);
+      hub.after(disclosure);
     }
+    // Late resource enhancements append authored practice links after the
+    // initial render. Keep shortcuts in sync; changes to our nav are outside
+    // .lesson-info, so this observer cannot react to its own updates.
+    new MutationObserver((records) => {
+      const changed = new Set();
+      records.forEach((record) => {
+        const target = record.target instanceof Element ? record.target : null;
+        const info = target?.closest(".lesson-info");
+        if (info) changed.add(info.closest(".unit-card"));
+      });
+      changed.forEach((card) => {
+        if (card?.isConnected) compactLessonActions(card);
+      });
+    }).observe(hub, { childList: true, subtree: true });
     compactControls();
     applyLocation();
   }

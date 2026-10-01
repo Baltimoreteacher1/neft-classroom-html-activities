@@ -238,11 +238,10 @@ test.describe("shared lesson shell reflow", () => {
   //
   // Two assertions, because either alone can pass while the bug is present:
   //
-  //   • The hit test only proves something while the supports pill is actually
-  //     on screen, and whether it paints depends on what that student has been
-  //     assigned. Driven on /lessons/1-1/ WITHOUT `?sn=`, which is the route a
-  //     student takes and the one where the pill was measured; the test states
-  //     that precondition rather than assuming it.
+  //   • The hit test needs a visible neighboring tools pill. Lessons now move
+  //     assigned supports into the utility menu; the math tools dock remains
+  //     at the viewport centre. Test the visible dock rather than requiring
+  //     the retired supports pill to be painted.
   //   • The offset assertion needs no pill at all: the viewport's vertical
   //     centre is the slot the supports rail owns, so the dock must not be
   //     centred there. This is what catches a revert to plain `translateY(-50%)`
@@ -267,7 +266,10 @@ test.describe("shared lesson shell reflow", () => {
         if (!toggle) return null;
         const box = toggle.getBoundingClientRect();
         const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
-        const pill = document.querySelector<HTMLElement>(".ewl-supports-dock-reopen");
+        const pill = [...document.querySelectorAll<HTMLElement>(".ewl-supports-dock-reopen, .nt-tooldock")].find(element => {
+          const box = element.getBoundingClientRect();
+          return box.width > 0 && box.height > 0;
+        });
         const pillBox = pill?.getBoundingClientRect();
         return {
           clickable: top === toggle || toggle.contains(top),
@@ -280,7 +282,7 @@ test.describe("shared lesson shell reflow", () => {
       expect(reach, "every lesson mounts the mark-up dock").not.toBeNull();
       expect(
         reach?.pillOnScreen,
-        "this route must show the supports pill, or the hit test proves nothing",
+        "this route must show a neighboring tools pill, or the hit test proves nothing",
       ).toBe(true);
       expect(
         reach?.clickable,

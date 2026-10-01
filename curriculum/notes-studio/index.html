@@ -14,7 +14,7 @@
       --primary-accent: #2563eb;
       --primary-light: #eff6ff;
       --secondary: #0284c7;
-      --accent: #d97706;
+      --accent: #92400e;
       --accent-light: #fef3c7;
       --success: #16a34a;
       --success-light: #f0fdf4;
@@ -32,7 +32,7 @@
       --slate-200: #e2e8f0;
       --slate-300: #cbd5e1;
       --slate-400: #94a3b8;
-      --slate-500: #64748b;
+      --slate-500: #475569;
       --slate-600: #475569;
       --slate-700: #334155;
       --slate-800: #1e293b;
@@ -116,7 +116,7 @@
     }
     .btn-print { background: #2563eb; color: white; }
     .btn-print:hover { background: #1d4ed8; }
-    .btn-te { background: #0d9488; color: white; }
+    .btn-te { background: #0f766e; color: white; }
     .btn-te.active { background: #0f766e; }
     .btn-scorm { background: #7c3aed; color: white; }
     .btn-scorm:hover { background: #6d28d9; }
@@ -485,7 +485,7 @@
     .cer-body { flex: 1; padding: 6px 8px; color: var(--slate-800); background: #ffffff; min-height: 28px; }
     .cer-body.teacher-key-text { color: #1e40af; font-weight: 600; background: #eff6ff; }
 
-    .pub-footer { margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; font-size: 9.5px; color: var(--slate-400); text-transform: uppercase; }
+    .pub-footer { margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; font-size: 9.5px; color: var(--slate-500); text-transform: uppercase; }
 
     /* Modal for SCORM Download */
     .modal-overlay {
@@ -521,6 +521,21 @@
       word-break: break-all;
     }
 
+    @media screen and (max-width: 760px) {
+      .app-nav { position: static; flex-direction: column; align-items: stretch; gap: 12px; padding: 16px; }
+      .app-actions { width: 100%; min-width: 0; }
+      select.nav-select { width: 100%; max-width: 100%; min-height: 44px; font-size: 16px; }
+      .btn, .pill-btn { min-height: 44px; }
+      .toolbar-strip { margin-top: 0; padding: 12px 16px; }
+      .control-pill-group { flex-wrap: wrap; }
+      .page-sheet { padding: 20px 16px; }
+      .pub-top-row { flex-wrap: wrap; gap: 8px; }
+      .pub-main-title { flex-direction: column; align-items: stretch; gap: 12px; }
+      .pub-lesson-tag { overflow-wrap: anywhere; }
+      .student-info-box { min-width: 0; }
+    }
+    :is(button, select, a):focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
     @media print {
       body { background: #ffffff !important; padding: 0 !important; }
       .app-nav, .toolbar-strip, .manipulative-toolbar, .check-btn, .modal-overlay { display: none !important; }
@@ -542,7 +557,7 @@
       </div>
     </div>
     <div class="app-actions">
-      <select id="lessonSelectNav" class="nav-select" onchange="StudioApp.changeLesson(this.value)">
+      <select id="lessonSelectNav" aria-label="Choose a lesson" class="nav-select" onchange="StudioApp.changeLesson(this.value)">
         <optgroup label="Unit 1: Math Is... & Decimals">
           <option value="1-1">Lesson 1-1 · Prime Factorization & Division (6.NS.B.4)</option>
           <option value="1-3">Lesson 1-3 · Multi-Bar Tape Diagrams (6.NS.B.3)</option>
