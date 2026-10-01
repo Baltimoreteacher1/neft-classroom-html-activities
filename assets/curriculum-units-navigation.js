@@ -36,6 +36,15 @@
     function compactControls() {
       const toolbar = document.getElementById("hub-toolbar-sticky");
       if (!toolbar || toolbar.querySelector(".units-refine")) return;
+      // Keep the global search and unit selector together, before lesson content.
+      let desk = document.querySelector(".units-discovery");
+      if (!desk) {
+        desk = document.createElement("section");
+        desk.className = "units-discovery";
+        desk.setAttribute("aria-label", "Find a unit or lesson");
+        toolbar.before(desk);
+        desk.append(toolbar, nav);
+      }
       const optional = Array.from(toolbar.children).filter((element) =>
         element.matches(".hub-enhance-controls, .hub-filter-chips, #hub-progress-summary"),
       );
@@ -55,13 +64,20 @@
       if (!lesson || !select) return;
       const info = card.querySelector(".lesson-info");
       if (!info) return;
+      let heading = card.querySelector(".units-lesson-heading");
+      if (!heading) {
+        heading = document.createElement("h3");
+        heading.className = "units-lesson-heading";
+        card.querySelector(".selector-group--lesson").after(heading);
+      }
+      heading.textContent = lesson.title;
       let actions = card.querySelector(".units-lesson-actions");
       if (!actions) {
         actions = document.createElement("nav");
         actions.className = "units-lesson-actions";
         actions.setAttribute("aria-label", "Selected lesson resources");
         const selector = card.querySelector(".selector-group--lesson");
-        if (selector) selector.after(actions);
+        if (selector) heading.after(actions);
         else info.before(actions);
       }
       // Use the actual rendered resource links, never assume a file exists.
@@ -292,10 +308,7 @@
       const count = unit.lessons.filter((lesson) => /^\d+-\d+$/.test(lesson.lessonId)).length;
       const text = browsingAll
         ? "Searching and filtering across all 10 units. Choose a unit to return to browsing."
-        : unit.num +
-          " · " +
-          count +
-          " lessons. Choose a lesson, then select Open lesson, Practice, or Homework.";
+        : unit.num + " · " + count + " lessons";
       if (status.textContent !== text) status.textContent = text;
       const refineSummary = document.querySelector(".units-refine > summary");
       const filter = document.querySelector('.hub-filter-chip[aria-pressed="true"]');

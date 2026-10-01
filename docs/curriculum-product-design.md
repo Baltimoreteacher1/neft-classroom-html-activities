@@ -21,3 +21,38 @@ Automated accessibility scans are sampled checks, not a WCAG certification or a 
 The existing annotation hit-test fixture was updated to recognize the visible math-tools dock as well as the legacy supports pill; it continues to require a real neighboring dock and an unobscured annotation target.
 
 Final local evidence: 295/295 lesson/activity boots passed; all 84 core lesson content baselines were unchanged. The dashboard measured 100 ms LCP, 254 ms DOM ready, 534 KB transferred, and 55 requests on the local production build with 4× CPU throttling (network unthrottled), within existing budgets.
+
+## October 1 design refinement
+
+The second pass gives the discovery pages a shared Hanken Grotesk type system,
+warm neutral surfaces, restrained green accents, smaller corner radii, and fewer
+decorative boxes. The dashboard connects the lesson index and selected lesson in
+two panes, with a short orientation when nothing is selected. Secondary shortcuts
+remain links. Unit search and selection sit together above the lesson, whose
+heading and main lesson/practice/homework actions have a clear visual hierarchy.
+Catalogs use the same headings, spacing, cards, and navigation. Learning-lab
+directions are available in an optional disclosure; unit names agree with the
+course overview and the generator preserves that wording.
+
+Practice Arcade has a native phone launch screen with a labeled level selector
+and a large Start button. It calls the existing game functions and validators.
+Revealing the canvas re-measures Phaser's parent bounds; keyboard input on native
+controls cannot also start the game. The new entry controls retain the existing
+English/Spanish setting. Visual QA caught and corrected the zero-size canvas and
+a progress-page heading contrast regression before release.
+
+Refinement checks: 12 focused Playwright tests passed, including nine catalog
+routes at 360, 768, 1366, and 1920 pixels, sampled WCAG 2.2 AA-tagged axe checks,
+overflow, keyboard interactions, saved state, lesson sequencing, no-script
+navigation, LMS containment, and the phone arcade launch. The lesson finder passed
+31 behavior checks; the unit browser passed its existing behavior suite; all 84
+core lesson content baselines remained unchanged. Browser visual inspection
+covered the phone dashboard and arcade, tablet lesson selection, and Chromebook
+learning-lab catalog.
+
+The native phone launch improves entry to the existing canvas game. It does not
+make the canvas rounds equivalent to semantic HTML or establish full screen-reader
+accessibility. Canvas text and drag interactions still warrant device testing;
+the sampled automated checks do not establish compliance or a complete audit of
+every game round. Production release evidence is recorded by the guarded ship
+process separately from these local checks.

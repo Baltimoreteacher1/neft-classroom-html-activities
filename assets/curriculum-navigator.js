@@ -757,16 +757,29 @@
         node(
           "p",
           "cn-starter",
-          "Search a topic, standard, or lesson number. Select a lesson to see its learning target, student materials, and teaching resources in one place.",
+          "Choose a lesson from the list. Its activities and materials will appear here.",
         ),
       );
-      var starters = node("div", "cn-preview-actions");
+      var orientation = node("ol", "cn-orientation");
+      [
+        ["Find your lesson", "Search a topic or choose a unit."],
+        ["Open and learn", "Read the learning target, then open your lesson."],
+        ["Practice the same math", "Use the lesson’s practice and homework links."],
+      ].forEach(function (entry) {
+        var step = node("li", "");
+        var text = node("div", "");
+        text.append(node("strong", "", entry[0]), node("span", "", entry[1]));
+        step.appendChild(text);
+        orientation.appendChild(step);
+      });
+      preview.appendChild(orientation);
+      var starters = node("div", "cn-starter-links");
       [
         ["/curriculum/learning-labs/", "Explore a learning lab"],
         ["/curriculum/arcade/", "Practice with a game"],
         ["/curriculum/my-progress/", "Check my progress"],
       ].forEach(function (entry) {
-        var link = /** @type {HTMLAnchorElement} */ (node("a", "cn-button", entry[1]));
+        var link = /** @type {HTMLAnchorElement} */ (node("a", "", entry[1]));
         link.href = entry[0];
         starters.appendChild(link);
       });

@@ -101,14 +101,28 @@ test('review, notes, and support tools expose accessible controls on phones', as
 });
 
 test('Practice Arcade keeps its canvas visible and hints support keyboard dismissal', async ({ page }) => {
+  test.setTimeout(60_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/math/games/practice-arcade/?lesson=3-4', { waitUntil: 'networkidle' });
   const tools = page.locator('.game-tools-menu');
   await expect(tools).toBeVisible();
   await expect(tools).not.toHaveAttribute('open');
+  const phoneLaunch = page.locator('#pa-phone-launch');
+  await expect(phoneLaunch).toBeVisible();
+  await expect(phoneLaunch.getByRole('heading', { level: 1 })).toContainText('Equivalent Ratios');
+  await phoneLaunch.locator('#pa-phone-tier').selectOption('l1');
+  await phoneLaunch.locator('#pa-phone-tier').press('Enter');
+  await expect(phoneLaunch).toBeVisible();
+  const start = phoneLaunch.getByRole('button', { name: 'Start practice', exact: true });
+  expect((await start.boundingBox())!.height).toBeGreaterThanOrEqual(48);
+  await start.focus();
+  await page.keyboard.press('Enter');
+  await expect(phoneLaunch).toBeHidden();
   const canvas = page.locator('#pa-stage canvas');
   await expect(canvas).toBeVisible();
   const box = await canvas.boundingBox();
+  expect(box!.width).toBeGreaterThan(300);
+  expect(box!.height).toBeGreaterThan(200);
   expect(box!.y + box!.height).toBeLessThanOrEqual(844 - 76);
   const summary = tools.locator('summary');
   await summary.focus();
