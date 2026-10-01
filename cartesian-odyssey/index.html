@@ -1596,9 +1596,17 @@
         transitionState({ activePointId: id });
       }
 
-      // Move the active point one grid step on X or Y (no dragging needed)
+      // Move the active point one grid step on X or Y (no dragging needed).
+      // This is one of the two documented ways to play ("Use the − and +
+      // buttons... You can also drag the point"), so it must set studentActed
+      // exactly like handleStart() does for dragging — otherwise a student who
+      // plays entirely with the buttons never sets the flag, checkQuests()
+      // never calls NeftScore.tally(), and no score is EVER reported no matter
+      // how much they play. (Confirmed live 2026-08-24: 3 button clicks left
+      // NeftScore._state().attempts at 0.)
       function adjustCoord(axis, delta) {
         if (!STATE.activePointId) return;
+        studentActed = true;
         const pts = STATE.points.map((p) => ({ ...p }));
         const idx = pts.findIndex((p) => p.id === STATE.activePointId);
         if (idx === -1) return;
