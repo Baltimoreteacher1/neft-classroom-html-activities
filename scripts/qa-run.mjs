@@ -178,6 +178,15 @@ const COVERAGE = [
     ],
   ],
 
+  // ACCESS PRACTICE LAB — one content contract (access-practice-lab/CONTENT.md)
+  // read by the app, the teacher hub, printables and inventory. The gate pins
+  // answer-revealing visuals, on-screen listening scripts and "look at the
+  // picture" with no picture, all of which shipped in the pre-2026-10 lab.
+  [
+    /^(access-practice-lab\/|access-teacher\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|generate-access-printables|gen-access-inventory|sync-access-shell)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/access-lab[^/]*\.test\.mjs$)/,
+    ["validate:access-lab", "test", "validate:js-syntax", "check"],
+  ],
+
   // PRODUCT DECISIONS — the registry of choices a human made that a gate now
   // enforces, and the provenance test that keeps an agent's own default out of
   // it. Editing either is editing what the gates are ALLOWED to insist on.

@@ -2,7 +2,7 @@
 // level's skill strands as a folded list, and a tier picker. Replaces the old
 // wall of 28 cards.
 import { crumbsHTML, ringHTML, tierPickerHTML } from "../components.js";
-import { bandDomains, loadDomain } from "../content.js";
+import { bandDomains, loadDomain, ordered } from "../content.js";
 import { loadRecord } from "../store.js";
 import { BASE, DOMAIN_META, TIERS, bandLabel, html } from "../util.js";
 import { tierFor } from "./home.js";
@@ -55,7 +55,7 @@ export async function render(ctx) {
   const L = data.levels[level];
   const record = loadRecord(band, domain, level);
   const done = new Set(record.complete);
-  const list = L.activities;
+  const list = ordered(L);
   const next = list.find((a) => !done.has(a.id)) || list[0];
   const meta = DOMAIN_META[domain];
   const tier = TIERS[level];

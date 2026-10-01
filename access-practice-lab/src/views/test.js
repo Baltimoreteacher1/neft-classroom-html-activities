@@ -5,7 +5,7 @@
 import { listenPlayerHTML, recorderHTML, transcriptHTML } from "../components.js";
 import { loadTest } from "../content.js";
 import { band as bandOf, correctAnswerText, isAnswered, isAuto, isCorrect } from "../grade.js";
-import { inputHTML, reduceAnswer, seedAnswer } from "../items.js";
+import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { clearTestRecord, getStudentName, loadTestRecord, saveTestRecord } from "../store.js";
@@ -362,6 +362,13 @@ export function onClick(e, ctx) {
   if (!T) return;
   const t = e.target;
   const f = T.flat[T.rec.index];
+  const choice = T.rec.phase === "running" && f && choiceTarget(e);
+  if (choice) {
+    T.rec.answers[f.item.id] = reduceAnswer(f.item, T.rec.answers[f.item.id], choice);
+    persist();
+    ctx.rerender();
+    return true;
+  }
   if (T.rec.phase === "running" && f && ["sort", "order", "hotText"].includes(f.item.type)) {
     const next = reduceAnswer(f.item, T.rec.answers[f.item.id], t);
     if (next !== undefined && !t.matches("[data-ans-choice]")) {

@@ -80,15 +80,16 @@ export async function render(ctx) {
       <section class="panel">
         <h2>Try the official WIDA practice</h2>
         <p>
-          WIDA publishes free practice items that use the real test screens. Try them before test
-          day so the buttons feel familiar.
+          WIDA's free Test Demo (about 15 minutes) and Test Practice items use the real test
+          screens. Open the page, then choose <strong>Test Demo</strong> — or choose
+          <strong>WIDA ACCESS</strong>, then <strong>WIDA ACCESS Test Practice</strong>.
         </p>
         <a
           class="btn"
           href="${shared.widaPractice || "https://wida.wisc.edu"}"
           target="_blank"
           rel="noopener"
-          >Open WIDA's practice page ↗</a
+          >Open WIDA's Test Demo &amp; Practice ↗</a
         >
       </section>`,
   };

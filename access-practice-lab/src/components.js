@@ -229,7 +229,7 @@ export function tierPickerHTML(domain, level, hrefFor) {
 export function bandSwitchHTML(band, bands) {
   if (bands.length < 2) return "";
   return html`<div class="band-switch" role="group" aria-label="Grade band">
-    ${bands.map((b) => html`<button type="button" class="band-btn" data-band="${b}" aria-pressed="${b === band}">${bandLabel(b)}</button>`)}
+    ${bands.map((b) => html`<button type="button" class="band-btn" data-set-band="${b}" aria-pressed="${b === band}">${bandLabel(b)}</button>`)}
   </div>`;
 }
 

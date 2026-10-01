@@ -70,6 +70,22 @@ export function loadOptional(name, root = CONTENT_DIR) {
   return existsSync(file) ? readJson(file) : null;
 }
 
+/** Activities in teaching order: category strands first, then any unlisted ones. */
+export function orderedActivities(level) {
+  const list = level.activities || [];
+  const byId = new Map(list.map((a) => [a.id, a]));
+  const seen = new Set();
+  const out = [];
+  for (const c of level.categories || [])
+    for (const id of c.activityIds || [])
+      if (byId.has(id) && !seen.has(id)) {
+        seen.add(id);
+        out.push(byId.get(id));
+      }
+  for (const a of list) if (!seen.has(a.id)) out.push(a);
+  return out;
+}
+
 /** The generated index, computed from disk. */
 export function buildIndex(root = CONTENT_DIR) {
   const index = { schema: 3, bands: {}, tests: [] };
@@ -87,7 +103,7 @@ export function buildIndex(root = CONTENT_DIR) {
               tier: L.tier || null,
               // [id, title, type, skill] — enough for home, passport and teacher views
               // to render without fetching the full domain file.
-              activities: (L.activities || []).map((a) => [a.id, a.title, a.type, a.skill || ""]),
+              activities: orderedActivities(L).map((a) => [a.id, a.title, a.type, a.skill || ""]),
             },
           ]),
         ),

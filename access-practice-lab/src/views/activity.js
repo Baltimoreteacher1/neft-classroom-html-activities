@@ -8,7 +8,7 @@ import {
   transcriptHTML,
   vocabHTML,
 } from "../components.js";
-import { findActivity, loadDomain, loadShared } from "../content.js";
+import { findActivity, loadDomain, loadShared, ordered } from "../content.js";
 import {
   SPEAKING_CHECKS,
   analyzeWriting,
@@ -18,7 +18,7 @@ import {
   isCorrect,
   wordGoal,
 } from "../grade.js";
-import { inputHTML, reduceAnswer, seedAnswer } from "../items.js";
+import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
@@ -61,10 +61,12 @@ async function resolve(ctx) {
     const found = await findActivity(r.id, { domain: r.domain });
     return found ? { ...found, index: found.list.indexOf(found.activity) } : null;
   }
-  const list = L.activities;
-  let index = /^\d+$/.test(r.id)
-    ? Math.min(Number(r.id), list.length - 1)
-    : list.findIndex((a) => a.id === r.id);
+  const list = ordered(L);
+  // Numeric links (/Listening/A/3) predate strand ordering and counted in file order.
+  const wanted = /^\d+$/.test(r.id)
+    ? L.activities[Math.min(Number(r.id), L.activities.length - 1)]?.id
+    : r.id;
+  let index = list.findIndex((a) => a.id === wanted);
   if (index < 0) {
     const found = await findActivity(r.id, { domain: r.domain });
     if (found) return { ...found, index: found.list.indexOf(found.activity) };
@@ -376,6 +378,11 @@ export function onClick(e, ctx) {
   if (!cur) return;
   const a = cur.activity;
   const t = e.target;
+  const choice = !checked.get(a.id) && choiceTarget(e);
+  if (choice) {
+    setAnswer(a, reduceAnswer(a, answerOf(cur.record, a.id), choice), ctx);
+    return true;
+  }
   if (["sort", "order", "hotText"].includes(a.type) && !checked.get(a.id)) {
     const next = reduceAnswer(a, answerOf(cur.record, a.id), t);
     if (next !== undefined && !t.matches("[data-ans-choice]")) return setAnswer(a, next, ctx);

@@ -14,7 +14,9 @@ try {
 
 if (process.argv.includes("--check")) {
   if (current !== next) {
-    console.error("access-lab-index: content/index.json is stale — run `node tools/access-lab-index.mjs`.");
+    console.error(
+      "access-lab-index: content/index.json is stale — run `node tools/access-lab-index.mjs`.",
+    );
     process.exit(1);
   }
   console.log("access-lab-index: index.json is current.");

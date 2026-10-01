@@ -5,7 +5,7 @@
 // an answer control). Every control carries data-nsr-ignore so the site-wide
 // Save/Resume engine never captures or "restores" it — the lab keeps its own
 // progress, and the engine's generic restore used to click lab controls.
-import { BASE, esc, html, raw } from "./util.js";
+import { BASE, html, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
 
@@ -218,13 +218,16 @@ export function inputHTML(item, answer, opts = {}) {
 
 /** Next answer for an interaction, or undefined if `t` is not an answer control. */
 export function reduceAnswer(item, answer, t) {
-  if (t.matches("[data-ans-choice]")) {
+  // A choice can arrive as the input itself (keyboard → change event) or as a
+  // click anywhere on its card (handled directly; see choiceTarget()).
+  const choice = t.matches?.("[data-ans-choice]") ? t : null;
+  if (choice) {
     if (item.type === "multiSelect") {
       const set = new Set(answer || []);
-      t.checked ? set.add(t.value) : set.delete(t.value);
+      set.has(choice.value) ? set.delete(choice.value) : set.add(choice.value);
       return [...set];
     }
-    return t.value;
+    return choice.value;
   }
   const sortBtn = t.closest("[data-ans-sort]");
   if (sortBtn) return { ...(answer || {}), [sortBtn.dataset.ansSort]: sortBtn.dataset.cat };
@@ -248,7 +251,21 @@ export function reduceAnswer(item, answer, t) {
   return undefined;
 }
 
+/**
+ * The choice input for a click on its card, or null. Calls preventDefault so the
+ * browser's own label activation cannot also toggle it (a checkbox would flip
+ * twice). Must run synchronously inside the click event.
+ */
+export function choiceTarget(e) {
+  const card = e.target.closest?.("label.choice");
+  if (!card) return null;
+  const input = card.querySelector("[data-ans-choice]");
+  if (!input || input.disabled) return null;
+  e.preventDefault();
+  input.focus({ preventScroll: true });
+  return input;
+}
+
 /** True when an order item has never been touched (its answer is implicit). */
 export const needsOrderSeed = (item, answer) => item.type === "order" && !answer?.length;
 export const seedAnswer = (item) => (item.type === "order" ? initialOrder(item) : undefined);
-export { esc };

@@ -24,6 +24,23 @@ export const loadRoad = () => getJson("road.json").catch(() => ({}));
 export const loadFamily = () => getJson("family.json").catch(() => null);
 export const loadTest = (id) => getJson(`tests/${encodeURIComponent(id)}.json`);
 
+/** Activities in teaching order: category strands first, then any unlisted ones.
+ *  Mirrors tools/lib/access-lab-content.mjs orderedActivities(), which orders the index. */
+export function ordered(level) {
+  const list = level?.activities || [];
+  const byId = new Map(list.map((a) => [a.id, a]));
+  const seen = new Set();
+  const out = [];
+  for (const c of level?.categories || [])
+    for (const id of c.activityIds || [])
+      if (byId.has(id) && !seen.has(id)) {
+        seen.add(id);
+        out.push(byId.get(id));
+      }
+  for (const a of list) if (!seen.has(a.id)) out.push(a);
+  return out;
+}
+
 export async function loadDomain(band, domain) {
   const data = await getJson(`g${band}/${encodeURIComponent(domain)}.json`);
   return data;
@@ -52,7 +69,7 @@ export async function findActivity(id, hint = {}) {
     for (const [level, L] of Object.entries(levels)) {
       if (L.activities.some((row) => row[0] === id)) {
         const data = await loadDomain(band, domain);
-        const list = data.levels[level].activities;
+        const list = ordered(data.levels[level]);
         return { band, domain, level, data, list, activity: list.find((a) => a.id === id) };
       }
     }

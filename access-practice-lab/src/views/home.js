@@ -59,7 +59,7 @@ export async function render(ctx) {
           ><strong>${meta.room}</strong
           ><span>${TIERS[tier]?.name || tier} · ${done}/${total} done</span></span
         >
-        ${ringHTML(done, total, { size: 52, label: `${meta.room}: ${done} of ${total} done` })}
+        ${ringHTML(done, total, { size: 46, label: `${meta.room}: ${done} of ${total} done` })}
       </a>
       ${
         next
@@ -137,7 +137,7 @@ export async function render(ctx) {
           ><span>How to help at home, in English and Spanish.</span></a
         >
         <a class="door" href="${BASE}/tools"
-          ><span aria-hidden="true">🖱️</span><strong>Test tools warm-up</strong
+          ><span aria-hidden="true">🧰</span><strong>Test tools warm-up</strong
           ><span>Try the buttons you will use on test day.</span></a
         >
       </section>

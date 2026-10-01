@@ -133,7 +133,7 @@ function focusKey(el) {
     "data-rec-start",
     "data-rec-stop",
     "data-rate",
-    "data-band",
+    "data-set-band",
     "data-selfcheck",
     "data-tab-key",
   ]) {
@@ -176,8 +176,8 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   if (token !== app.rendering) return;
   root.innerHTML = toHtml(out.html);
   document.title = out.title ? `${out.title} · ACCESS Practice Lab` : "ACCESS Practice Lab";
-  document.body.dataset.view = route.view;
-  document.body.dataset.band = app.band;
+  document.body.dataset.labView = route.view;
+  document.body.dataset.labBand = app.band;
   view.mount?.(root, ctx);
   if (fk) root.querySelector(fk)?.focus({ preventScroll: true });
   else if (!keepFocus) {
@@ -210,9 +210,9 @@ async function common(e) {
     render({ keepFocus: true });
     return true;
   }
-  const band = t.closest("[data-band]");
+  const band = t.closest("[data-set-band]");
   if (band) {
-    ctx.setBand(band.dataset.band);
+    ctx.setBand(band.dataset.setBand);
     const url = new URL(location.href);
     url.searchParams.delete("grades");
     navigate(url.pathname + url.search, { replace: true });
@@ -278,10 +278,11 @@ function interceptLink(e) {
   return true;
 }
 
-document.addEventListener("click", async (e) => {
+document.addEventListener("click", (e) => {
   if (interceptLink(e)) return;
-  if (await common(e)) return;
-  app.view?.onClick?.(e, ctx);
+  // Views run first and synchronously, so they can preventDefault (answer cards).
+  if (app.view?.onClick?.(e, ctx) === true) return;
+  common(e);
 });
 document.addEventListener("change", (e) => app.view?.onChange?.(e, ctx));
 document.addEventListener("input", (e) => app.view?.onInput?.(e, ctx));

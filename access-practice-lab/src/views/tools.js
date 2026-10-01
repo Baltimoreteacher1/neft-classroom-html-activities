@@ -1,7 +1,7 @@
 // Test tools warm-up: try every control used on the practice tests (and the
 // real test) before test day — listen/replay, choose, flag, record, type.
 import { crumbsHTML, listenPlayerHTML, recorderHTML } from "../components.js";
-import { inputHTML, reduceAnswer } from "../items.js";
+import { choiceTarget, inputHTML, reduceAnswer } from "../items.js";
 import { isRecording } from "../recorder.js";
 import { BASE, html, raw } from "../util.js";
 
@@ -35,7 +35,7 @@ export async function render(ctx) {
       ])}
       <section class="room-hero">
         <div>
-          <h1 tabindex="-1">🖱️ Test tools warm-up</h1>
+          <h1 tabindex="-1">🧰 Test tools warm-up</h1>
           <p class="lead">
             Try each tool once. On test day, you will already know what every button does.
           </p>
@@ -104,6 +104,12 @@ export function onChange(e, ctx) {
   }
 }
 export function onClick(e, ctx) {
+  const choice = choiceTarget(e);
+  if (choice) {
+    state.answer = reduceAnswer(SAMPLE, state.answer, choice);
+    ctx.rerender();
+    return true;
+  }
   if (e.target.closest("[data-tool-flag]")) {
     state.flagged = !state.flagged;
     ctx.rerender();
