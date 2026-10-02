@@ -3850,6 +3850,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/unit-3-test-review/",
+    title: "Unit 3 Test Review | Grade 6 Family Homework",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/unit-rate-market-mission/",
     title: "Unit Rate Market Mission | Grade 6 Practice",
     category: "Hub",
