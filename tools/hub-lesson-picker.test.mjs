@@ -42,7 +42,9 @@ const DISTRICT_UNIT_ORDER = PACING.units
  *  placement of the appended rows is asserted separately below. */
 const PROJECT_IDS = new Set((MANIFEST.endOfUnit || []).map((p) => p.id));
 const ASSESSMENT_IDS = new Set((MANIFEST.unitAssessments || []).map((t) => t.id));
-const lessonsOnly = (values) => values.filter((v) => !PROJECT_IDS.has(v) && !ASSESSMENT_IDS.has(v));
+const RESOURCE_IDS = new Set((MANIFEST.unitResources || []).map((r) => r.id));
+const lessonsOnly = (values) =>
+  values.filter((v) => !PROJECT_IDS.has(v) && !ASSESSMENT_IDS.has(v) && !RESOURCE_IDS.has(v));
 
 let pass = 0;
 async function t(name, fn) {
@@ -551,7 +553,8 @@ await t(
       const values = p.values(p.lesson);
       if (!values.length) continue; // a unit this district does not pace
       const lastLessonIdx = values.reduce(
-        (acc, v, i) => (!PROJECT_IDS.has(v) && !ASSESSMENT_IDS.has(v) ? i : acc),
+        (acc, v, i) =>
+          !PROJECT_IDS.has(v) && !ASSESSMENT_IDS.has(v) && !RESOURCE_IDS.has(v) ? i : acc,
         -1,
       );
       for (const test of tests) {
@@ -671,5 +674,24 @@ await t("every control is labelled and keyboard-reachable", async () => {
     "Choose a lesson",
   );
 });
+
+await t(
+  "all end-of-unit resources can be selected and opened without lesson-only actions",
+  async () => {
+    const p = await mount();
+    assert.ok(MANIFEST.unitResources.length > 0);
+    for (const resource of MANIFEST.unitResources) {
+      p.change(p.unit, String(resource.unit));
+      assert.ok(p.values(p.lesson).includes(resource.id), resource.title);
+      p.change(p.lesson, resource.id);
+      assert.equal(
+        p.open.querySelector(".tws-open-actions a").getAttribute("href"),
+        resource.resources.lesson,
+      );
+      assert.equal(p.open.querySelector(".tws-open-actions a").textContent, "Open resource");
+      assert.equal(p.open.querySelectorAll(".tws-open-variants").length, 0);
+    }
+  },
+);
 
 console.log(`hub-lesson-picker: ${pass} assertions passed`);

@@ -32,7 +32,7 @@
    * Both are ADVISORY: unreadable means fall back to manifest order, never an
    * empty list. Teaching continues when planning data does not.
    */
-  function deriveUnitSequence(lessons, projects, pacing, authored, assessments) {
+  function deriveUnitSequence(lessons, projects, pacing, authored, assessments, resources) {
     var lessonsByUnit = Object.create(null);
     var manifestOrder = [];
     var byId = Object.create(null);
@@ -122,6 +122,13 @@
         var out = (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
           return { item: l, kind: "lesson" };
         });
+        (resources || [])
+          .filter(function (r) {
+            return String(r.unit) === key;
+          })
+          .forEach(function (r) {
+            out.push({ item: r, kind: "resource" });
+          });
         (assessmentsByUnit[key] || []).forEach(function (t) {
           out.push({ item: t, kind: "assessment" });
         });
@@ -851,7 +858,11 @@
       /* renderOpen resolves whatever the Lesson dropdown selected, and that is
        * now lessons AND projects. Looking only at `lessons` is why an option can
        * be selectable and expand to nothing. */
-      var openable = lessons.concat(manifest.endOfUnit || [], manifest.unitAssessments || []);
+      var openable = lessons.concat(
+        manifest.endOfUnit || [],
+        manifest.unitAssessments || [],
+        manifest.unitResources || [],
+      );
 
       /* The district's order, derived in ONE place this file shares with the
        * Unit Map — see deriveUnitSequence(). Class section does not appear in it
@@ -863,6 +874,7 @@
         pacing,
         authored,
         manifest.unitAssessments,
+        manifest.unitResources,
       );
       var unitOrder = sequence.order;
 
@@ -884,7 +896,7 @@
 
       function lessonsFor(unit) {
         return sequence.entriesFor(unit).map(function (entry) {
-          return entry.kind === "project" || entry.kind === "assessment"
+          return entry.kind !== "lesson"
             ? { value: entry.item.id, label: entry.item.title }
             : { value: entry.item.id, label: entry.item.id + " · " + entry.item.title };
         });
@@ -978,7 +990,8 @@
 
         var isProject = lesson.kind === "endOfUnit";
         var isAssessment = lesson.kind === "unitAssessment";
-        var isLesson = !isProject && !isAssessment;
+        var isResource = lesson.kind === "unitResource";
+        var isLesson = !isProject && !isAssessment && !isResource;
 
         var head = document.createElement("p");
         head.className = "tws-open-title";
@@ -1000,7 +1013,9 @@
             ? "Open culminating project"
             : isAssessment
               ? "Open practice test"
-              : "Open whole-group lesson";
+              : isResource
+                ? "Open resource"
+                : "Open whole-group lesson";
           row.appendChild(a);
         }
         /* The class travels with the lesson, so the supports surface opens on

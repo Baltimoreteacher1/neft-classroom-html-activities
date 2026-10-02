@@ -397,6 +397,17 @@
       groupLessons.appendChild(optProject);
     }
     lessonSelect.appendChild(groupLessons);
+    if (item.endOfUnit && item.endOfUnit.length) {
+      const groupEnd = document.createElement("optgroup");
+      groupEnd.label = "End of Unit · Review, tests & projects";
+      item.endOfUnit.forEach((resource) => {
+        const option = document.createElement("option");
+        option.value = `unit_resource_${resource.id}`;
+        option.textContent = resource.title.replace(/^End of Unit · /, "");
+        groupEnd.appendChild(option);
+      });
+      lessonSelect.appendChild(groupEnd);
+    }
   };
 
   // The four teacher-workspace actions navigate IN THIS TAB.
@@ -812,6 +823,11 @@
     } else if (val.startsWith("catchup_")) {
       // The manifest id IS the folder name (6-2-catchup → /lessons/6-2-catchup/).
       window.open("/lessons/" + val.replace("catchup_", "") + "/", "_blank");
+    } else if (val.startsWith("unit_resource_")) {
+      const resource = (window.getActiveDistrictSeq().endOfUnit || []).find(
+        (entry) => `unit_resource_${entry.id}` === val,
+      );
+      if (resource) window.open(resource.resources.lesson, "_blank", "noopener");
     } else {
       window.executeQuickAction(val);
     }
@@ -885,6 +901,13 @@
       const bySeq = new Map((data.units || []).map((u) => [u.sequence, u]));
       crosswalk.forEach(function (item) {
         const live = bySeq.get(item.sequence);
+        if (live && live.curriculumUnit != null) {
+          item.endOfUnit = (manifest.unitResources || [])
+            .concat(manifest.unitAssessments || [], manifest.endOfUnit || [])
+            .filter((resource) => resource.unit === live.curriculumUnit);
+          // The assembled Pre-Unit keeps its own project instead of Unit 1's.
+          if (item.project) item.endOfUnit = [];
+        }
         if (!live || !live.startDate || !live.endDate) return;
         item.start_date = usDate(live.startDate);
         item.end_date = usDate(live.endDate);
