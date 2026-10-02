@@ -127,6 +127,7 @@ const DOWNLOADABLE_EXT = new Set([
 // Ordered: first match wins. `text` is the visible label, `href` the target.
 // ---------------------------------------------------------------------------
 const LINK_RULES = [
+  [/\/downloads\/reveal\/|\/curriculum\/reveal-documents\//i, null, "reveal-document"],
   [/graphic-novels?\//i, null, "graphic-novel"],
   [/\/pre-test\//i, /pre-?test/i, "pre-test"],
   [/\/post-test\//i, /post-?test/i, "post-test"],

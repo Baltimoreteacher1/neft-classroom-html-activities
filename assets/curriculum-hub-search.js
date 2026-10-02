@@ -2538,6 +2538,7 @@
   }
 
   function outlineCategoryIndex(act) {
+    if (act.isRevealDocument) return OUTLINE_GROUPS.length;
     var name = (act.text || "").toLowerCase();
     for (var g = 0; g < OUTLINE_GROUPS.length; g++) {
       var kw = OUTLINE_GROUPS[g].keywords;
@@ -2745,6 +2746,10 @@
     var a = document.createElement("a");
     a.href = act.href;
     a.target = "_blank";
+    if (act.download != null) {
+      a.download = act.download;
+      a.removeAttribute("target");
+    }
     if (isProject) {
       a.className = "res-project";
     } else if (act.isBonus) {
@@ -2974,6 +2979,9 @@
         activities.push({
           text: a.textContent.trim(),
           href: a.getAttribute("href"),
+          download: a.getAttribute("download"),
+          isRevealDocument: a.hasAttribute("data-reveal-document"),
+          phaseIndex: a.hasAttribute("data-reveal-document") ? 1 : undefined,
         });
       });
 

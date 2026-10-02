@@ -945,6 +945,10 @@
             a.href = act.href;
             a.target = "_blank";
             a.rel = "noopener";
+            if (act.download != null) {
+              a.download = act.download;
+              a.removeAttribute("target");
+            }
             if (act.isBonus) a.className = "res-bonus";
             a.textContent = act.text;
             li.appendChild(a);
