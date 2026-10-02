@@ -220,7 +220,7 @@ function attachSceneHud(scenes, _fl) {
   const main = document.querySelector(".main");
   if (!main) return;
 
-  const hud = document.createElement("div");
+  const hud = document.createElement("details");
   hud.className = "flagship-scene-hud";
   hud.setAttribute("aria-live", "polite");
   main.prepend(hud);
@@ -233,9 +233,8 @@ function attachSceneHud(scenes, _fl) {
     }
     hud.style.display = "";
     hud.innerHTML = `
-      <div class="flagship-scene-icon">${esc(scene.icon || "✨")}</div>
+      <summary class="flagship-scene-name">${esc(scene.icon || "✨")} Story · ${esc(scene.name || "")}</summary>
       <div class="flagship-scene-body">
-        <div class="flagship-scene-name">${esc(scene.name || "")}</div>
         <div class="flagship-scene-text">${esc(scene.text || "")}</div>
       </div>
     `;

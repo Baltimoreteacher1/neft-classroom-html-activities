@@ -8,25 +8,97 @@
     @import url("/assets/fonts/fraunces-87aa83.css");
     @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
-    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; font-size: 17px; line-height: 1.55; }
+    main { max-width: 900px; margin: 0 auto; }
+    .resource-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .resource-toolbar a { color: #155f67; font-weight: 650; padding: 10px 0; }
+    .resource-toolbar button { min-height: 44px; border: 0; border-radius: 6px; background: #155f67; color: white; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
     .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
     .meta { color: #5a6b75; font-size: 0.9rem; }
     .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #dff2ee; }
+    .vocabulary-table { table-layout: fixed; overflow-wrap: break-word; }
+    .vocabulary-table th:first-child { width: 34%; }
     .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
     .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
     .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    .practice-box { background: #fff; }
+    .practice-box > h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } .bilingual, .notice-wonder { grid-template-columns: 1fr; } .name-line { min-width: 140px; } }
+    @page { size: Letter; margin: .55in; }
     @media print {
-      body { padding: 12px; }
+      body { padding: 0; font-size: 11.5pt; }
       .no-print { display: none; }
       .box { break-inside: avoid; }
+      .practice-box { break-inside: auto; border: 0; padding: 0; }
+      h1, h2, h3 { break-after: avoid; }
+      p { orphans: 3; widows: 3; }
+      .bilingual { display: block; }
     }
-    
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
+
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
    serif headings + paper ground + AA-safe ink. No layout/size changes. */
@@ -75,9 +147,10 @@ header.packet h1::after{
 </head>
 <body>
 <main>
-  <div class="no-print" style="text-align:right; margin-bottom:12px;">
-    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
-  </div>
+  <nav class="no-print resource-toolbar" aria-label="Handout actions">
+    <a href="/lessons/7-2/">← Back to lesson</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </nav>
   <header class="header">
     <h1>Represent Rational Numbers and Their Opposites on the Number Line</h1>
     <div class="meta">6.NOS.6 · Unit 7 · Lesson 2</div>
@@ -88,7 +161,7 @@ header.packet h1::after{
     <div class="box">
       <h2>Objectives / Objetivos</h2>
       <p lang="en"><strong>Content Objective:</strong> I can place rational numbers, including fractions and decimals, on a number line.</p>
-      
+
       <p lang="en"><strong>Language Objective:</strong> I can explain my reasoning using the words rational number, fraction, decimal, and number line.</p>
     </div>
     <div class="box">
@@ -104,15 +177,16 @@ header.packet h1::after{
 
   <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
-    <table>
-      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+    <table class="vocabulary-table">
+      <thead><tr><th scope="col">Term / Término</th><th scope="col">Definition / Definición</th></tr></thead>
       <tbody><tr><td><strong>Rational Numbers on the Number Line</strong><br><span lang="es">Números racionales en la recta numérica</span></td><td>Every rational number has one exact spot on the number line. Writing it as a fraction, a decimal, or an integer does not change where it sits.<br><span lang="es">Cada número racional tiene un lugar exacto en la recta numérica. Escribirlo como fracción, decimal o entero no cambia dónde queda.</span></td></tr><tr><td><strong>Rational number</strong><br><span lang="es">Número racional</span></td><td>A number that can be written as a fraction of two integers, with a bottom number that is not zero.<br><span lang="es">Un número que se puede escribir como una fracción de dos enteros, con un denominador que no sea cero.</span></td></tr><tr><td><strong>Fraction</strong><br><span lang="es">Fracción</span></td><td>A number that shows part of a whole, like 3/4.<br><span lang="es">Un número que muestra una parte de un todo, como 3/4.</span></td></tr><tr><td><strong>Decimal</strong><br><span lang="es">Decimal</span></td><td>A number with a dot, like 0.5, that shows a part less than one.<br><span lang="es">Un número con un punto, como 0.5, que muestra una parte menor que uno.</span></td></tr><tr><td><strong>Number line</strong><br><span lang="es">Recta numérica</span></td><td>A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.<br><span lang="es">Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.</span></td></tr><tr><td><strong>Equivalent</strong><br><span lang="es">Equivalente</span></td><td>Having the same value, just written a different way.<br><span lang="es">Tener el mismo valor, escrito de otra forma.</span></td></tr></tbody>
     </table>
   </div>
 
-  <div class="box" data-support-slot="practice">
+  <div class="box practice-box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
-    <ol><li>Which point is located between -1 and -2 on the number line?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>-2.5</li><li>-1.5</li><li>-0.5</li><li>1.5</li></ol><div class="work-space"></div></li><li>Plot these rational numbers: -3.5, -1/4, 2.75, -2, 1 1/2<div class="work-space"></div></li><li>Convert between fraction and decimal form. Then plot on a mental number line to compare.<div class="work-space"></div></li><li>Find the Plotting Error<ol style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li><strong>Step 1:</strong> Problem — <span style="font-family:monospace;">Plot -3/4 on the number line</span></li><li><strong>Step 2:</strong> Student thinking — <span style="font-family:monospace;">-3/4 has a 3 and a 4, so I go to -3 on the number line and then count 4 more to the left</span></li><li><strong>Step 3:</strong> Student answer — <span style="font-family:monospace;">Point plotted at -7</span></li></ol><p style="margin:6px 0 0; font-size:0.85rem;"><em>Which step has the mistake? Explain it and write the correct work.</em></p><div class="work-space"></div></li></ol>
+    <p>Read each task. Show your work in the spaces provided and explain how you know.</p>
+    <div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> Which point is located between -1 and -2 on the number line?</p><ol class="choices"><li><span class="ltr">A</span> -2.5</li><li><span class="ltr">B</span> -1.5</li><li><span class="ltr">C</span> -0.5</li><li><span class="ltr">D</span> 1.5</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="number-line"><p class="qtext"><span class="qnum">2.</span> Plot these rational numbers: -3.5, -1/4, 2.75, -2, 1 1/2</p><p class="hint-line">Mark and label: A; B; C; D; E</p><svg class="numline" viewBox="0 0 680 80" role="img" aria-label="Blank number line from -5 to 5; each tick represents 0.25"><line x1="24" y1="40" x2="656" y2="40" stroke="#333" stroke-width="2"/><line x1="24" y1="34" x2="24" y2="46" stroke="#333" stroke-width="1"/><text x="24" y="64" font-size="14" text-anchor="middle" fill="#333">-5</text><line x1="39.8" y1="34" x2="39.8" y2="46" stroke="#333" stroke-width="1"/><line x1="55.6" y1="34" x2="55.6" y2="46" stroke="#333" stroke-width="1"/><text x="55.6" y="64" font-size="14" text-anchor="middle" fill="#333">-4.5</text><line x1="71.4" y1="34" x2="71.4" y2="46" stroke="#333" stroke-width="1"/><line x1="87.2" y1="34" x2="87.2" y2="46" stroke="#333" stroke-width="1"/><text x="87.2" y="64" font-size="14" text-anchor="middle" fill="#333">-4</text><line x1="103" y1="34" x2="103" y2="46" stroke="#333" stroke-width="1"/><line x1="118.8" y1="34" x2="118.8" y2="46" stroke="#333" stroke-width="1"/><text x="118.8" y="64" font-size="14" text-anchor="middle" fill="#333">-3.5</text><line x1="134.6" y1="34" x2="134.6" y2="46" stroke="#333" stroke-width="1"/><line x1="150.4" y1="34" x2="150.4" y2="46" stroke="#333" stroke-width="1"/><text x="150.4" y="64" font-size="14" text-anchor="middle" fill="#333">-3</text><line x1="166.20000000000002" y1="34" x2="166.20000000000002" y2="46" stroke="#333" stroke-width="1"/><line x1="182" y1="34" x2="182" y2="46" stroke="#333" stroke-width="1"/><text x="182" y="64" font-size="14" text-anchor="middle" fill="#333">-2.5</text><line x1="197.8" y1="34" x2="197.8" y2="46" stroke="#333" stroke-width="1"/><line x1="213.6" y1="34" x2="213.6" y2="46" stroke="#333" stroke-width="1"/><text x="213.6" y="64" font-size="14" text-anchor="middle" fill="#333">-2</text><line x1="229.4" y1="34" x2="229.4" y2="46" stroke="#333" stroke-width="1"/><line x1="245.2" y1="34" x2="245.2" y2="46" stroke="#333" stroke-width="1"/><text x="245.2" y="64" font-size="14" text-anchor="middle" fill="#333">-1.5</text><line x1="261" y1="34" x2="261" y2="46" stroke="#333" stroke-width="1"/><line x1="276.8" y1="34" x2="276.8" y2="46" stroke="#333" stroke-width="1"/><text x="276.8" y="64" font-size="14" text-anchor="middle" fill="#333">-1</text><line x1="292.59999999999997" y1="34" x2="292.59999999999997" y2="46" stroke="#333" stroke-width="1"/><line x1="308.40000000000003" y1="34" x2="308.40000000000003" y2="46" stroke="#333" stroke-width="1"/><text x="308.40000000000003" y="64" font-size="14" text-anchor="middle" fill="#333">-0.5</text><line x1="324.2" y1="34" x2="324.2" y2="46" stroke="#333" stroke-width="1"/><line x1="340" y1="34" x2="340" y2="46" stroke="#333" stroke-width="1"/><text x="340" y="64" font-size="14" text-anchor="middle" fill="#333">0</text><line x1="355.8" y1="34" x2="355.8" y2="46" stroke="#333" stroke-width="1"/><line x1="371.6" y1="34" x2="371.6" y2="46" stroke="#333" stroke-width="1"/><text x="371.6" y="64" font-size="14" text-anchor="middle" fill="#333">0.5</text><line x1="387.4" y1="34" x2="387.4" y2="46" stroke="#333" stroke-width="1"/><line x1="403.2" y1="34" x2="403.2" y2="46" stroke="#333" stroke-width="1"/><text x="403.2" y="64" font-size="14" text-anchor="middle" fill="#333">1</text><line x1="419" y1="34" x2="419" y2="46" stroke="#333" stroke-width="1"/><line x1="434.8" y1="34" x2="434.8" y2="46" stroke="#333" stroke-width="1"/><text x="434.8" y="64" font-size="14" text-anchor="middle" fill="#333">1.5</text><line x1="450.6" y1="34" x2="450.6" y2="46" stroke="#333" stroke-width="1"/><line x1="466.4" y1="34" x2="466.4" y2="46" stroke="#333" stroke-width="1"/><text x="466.4" y="64" font-size="14" text-anchor="middle" fill="#333">2</text><line x1="482.2" y1="34" x2="482.2" y2="46" stroke="#333" stroke-width="1"/><line x1="498" y1="34" x2="498" y2="46" stroke="#333" stroke-width="1"/><text x="498" y="64" font-size="14" text-anchor="middle" fill="#333">2.5</text><line x1="513.8" y1="34" x2="513.8" y2="46" stroke="#333" stroke-width="1"/><line x1="529.6" y1="34" x2="529.6" y2="46" stroke="#333" stroke-width="1"/><text x="529.6" y="64" font-size="14" text-anchor="middle" fill="#333">3</text><line x1="545.4" y1="34" x2="545.4" y2="46" stroke="#333" stroke-width="1"/><line x1="561.1999999999999" y1="34" x2="561.1999999999999" y2="46" stroke="#333" stroke-width="1"/><text x="561.1999999999999" y="64" font-size="14" text-anchor="middle" fill="#333">3.5</text><line x1="577" y1="34" x2="577" y2="46" stroke="#333" stroke-width="1"/><line x1="592.8000000000001" y1="34" x2="592.8000000000001" y2="46" stroke="#333" stroke-width="1"/><text x="592.8000000000001" y="64" font-size="14" text-anchor="middle" fill="#333">4</text><line x1="608.6" y1="34" x2="608.6" y2="46" stroke="#333" stroke-width="1"/><line x1="624.4" y1="34" x2="624.4" y2="46" stroke="#333" stroke-width="1"/><text x="624.4" y="64" font-size="14" text-anchor="middle" fill="#333">4.5</text><line x1="640.1999999999999" y1="34" x2="640.1999999999999" y2="46" stroke="#333" stroke-width="1"/><line x1="656" y1="34" x2="656" y2="46" stroke="#333" stroke-width="1"/><text x="656" y="64" font-size="14" text-anchor="middle" fill="#333">5</text></svg><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">3.</span> Convert between fraction and decimal form. Then plot on a mental number line to compare.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Fraction</th><th scope="col">Decimal</th><th scope="col">Between Which Two Integers?</th></tr></thead><tbody><tr><td>3/4</td><td class="fill" aria-label="Your response: Decimal, row 1"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Between Which Two Integers?, row 1"><span class="paper-blank"></span></td></tr><tr><td>-7/2</td><td class="fill" aria-label="Your response: Decimal, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Between Which Two Integers?, row 2"><span class="paper-blank"></span></td></tr><tr><td class="fill" aria-label="Your response: Fraction, row 3"><span class="paper-blank"></span></td><td>0.6</td><td class="fill" aria-label="Your response: Between Which Two Integers?, row 3"><span class="paper-blank"></span></td></tr><tr><td class="fill" aria-label="Your response: Fraction, row 4"><span class="paper-blank"></span></td><td>-1.25</td><td class="fill" aria-label="Your response: Between Which Two Integers?, row 4"><span class="paper-blank"></span></td></tr><tr><td>2 1/5</td><td class="fill" aria-label="Your response: Decimal, row 5"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Between Which Two Integers?, row 5"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">4.</span> Find the Plotting Error</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Problem</span><span class="wa-work">Plot -3/4 on the number line</span></div><div class="wa-step"><span class="wa-lbl">Student thinking</span><span class="wa-work">-3/4 has a 3 and a 4, so I go to -3 on the number line and then count 4 more to the left</span></div><div class="wa-step"><span class="wa-lbl">Student answer</span><span class="wa-work">Point plotted at -7</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div>
   </div>
 
   <div class="box" data-support-slot="response">

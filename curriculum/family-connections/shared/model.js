@@ -1,5 +1,11 @@
 export const DAYS = Object.freeze(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]);
-export const WEEK_STATUSES = Object.freeze(["lesson", "review", "assessment", "no-class"]);
+export const WEEK_STATUSES = Object.freeze([
+  "lesson",
+  "review",
+  "assessment",
+  "no-class",
+  "pending",
+]);
 export const SNAPSHOT_SCHEMA_VERSION = 1;
 export const PUBLIC_ORIGIN = "https://eduwonderlab.com";
 
@@ -30,8 +36,9 @@ export function createDefaultSnapshot() {
           label: "This Week",
           startDate: "",
           note: "Check back for this week's lesson plan and optional family practice.",
-          noteEs: "Vuelva pronto para ver el plan de lecciones de esta semana y la práctica familiar opcional.",
-          days: DAYS.map((day) => ({ day, status: "no-class", lessonId: "", note: "", noteEs: "" })),
+          noteEs:
+            "Vuelva pronto para ver el plan de lecciones de esta semana y la práctica familiar opcional.",
+          days: DAYS.map((day) => ({ day, status: "pending", lessonId: "", note: "", noteEs: "" })),
         },
       },
     ],
@@ -52,10 +59,36 @@ export function createDefaultSnapshot() {
   };
 }
 
+/* The homework id and path contracts, held in ONE place. The publisher, the
+ * family hub, the publication checks and the API all used to carry their own
+ * copy of the lesson-id regex, so a new kind of homework had to land in five
+ * files at once. Two shapes are assignable:
+ *   - a lesson:      id `3-2` / `3-2-flagship`, homework at /lessons/<id>/homework.html
+ *   - a unit review: id `3-test-review`, an end-of-unit family homework page at
+ *                    /curriculum/<slug>/ — discovered by generate-curriculum-manifest
+ *                    from a <meta name="family-homework-id"> tag on the page. */
+export const HOMEWORK_ID_PATTERN =
+  /^\d{1,2}-(?:\d{1,2}(?:-flagship)?|[a-z][a-z0-9]*(?:-[a-z0-9]+)*)$/;
+export const HOMEWORK_PATH_PATTERN =
+  /^(?:\/lessons\/\d{1,2}-\d{1,2}(?:-flagship)?\/homework(?:\.html)?\/?|\/curriculum\/[a-z0-9-]+\/)$/;
+export const isUnitReviewId = (id) => /^\d{1,2}-[a-z]/.test(String(id ?? ""));
+
+/** "Lesson 3-2" or "Unit 3 Review" — the words a family sees in front of a title. */
+export function homeworkLabel(item, lang = "en") {
+  const id = String(item?.id ?? "");
+  if (isUnitReviewId(id)) {
+    const unit = id.split("-")[0];
+    return lang === "es" ? `Repaso de la Unidad ${unit}` : `Unit ${unit} Review`;
+  }
+  return `${lang === "es" ? "Lección" : "Lesson"} ${id}`;
+}
+
 function lessonNumber(lesson) {
   const unit = Number(lesson?.unit ?? String(lesson?.id ?? "").split("-")[0]);
   const number = Number(lesson?.lesson ?? String(lesson?.id ?? "").split("-")[1]);
-  return [Number.isFinite(unit) ? unit : 999, Number.isFinite(number) ? number : 999];
+  // A unit review sorts after every lesson in its unit.
+  const fallback = isUnitReviewId(lesson?.id) ? 99 : 999;
+  return [Number.isFinite(unit) ? unit : 999, Number.isFinite(number) ? number : fallback];
 }
 
 export function normalizeLessons(input) {
@@ -64,21 +97,26 @@ export function normalizeLessons(input) {
   for (const raw of lessons) {
     const id = cleanText(raw?.id, 20);
     const hasHomework = Boolean(raw?.homeworkPath || raw?.resources?.homework?.exists);
-    if (!/^\d{1,2}-\d{1,2}(?:-flagship)?$/.test(id) || !hasHomework) continue;
+    if (!HOMEWORK_ID_PATTERN.test(id) || !hasHomework) continue;
     const [unit, lesson] = lessonNumber(raw);
     const arcadePath = cleanText(raw?.arcade?.path, 240);
     const safeArcadePath = /^\/(?!\/)[^\\\s]*$/.test(arcadePath) ? arcadePath : "";
     byId.set(id, {
       id,
+      kind: isUnitReviewId(id) ? "unit-review" : "lesson",
       unit,
       lesson,
-      title: cleanText(raw.title, 120) || `Lesson ${id}`,
+      title: cleanText(raw.title, 120) || homeworkLabel({ id }),
       titleEs: cleanText(raw.titleEs, 160),
       objective: cleanText(raw.objective, 320),
       languageObjective: cleanText(raw.languageObjective, 320),
       standard: cleanText(raw.standard, 40),
+      // A unit review IS its own page, so its lesson link and homework link agree.
       lessonPath:
-        cleanText(raw.lessonPath || raw.resources?.lesson?.path, 240) || `/lessons/${id}/`,
+        cleanText(raw.lessonPath || raw.resources?.lesson?.path, 240) ||
+        (isUnitReviewId(id)
+          ? cleanText(raw.homeworkPath || raw.resources?.homework?.path, 240)
+          : `/lessons/${id}/`),
       homeworkPath:
         cleanText(raw.homeworkPath || raw.resources?.homework?.path, 240) ||
         `/lessons/${id}/homework.html`,
@@ -119,7 +157,7 @@ export const dayNote = (entry, lang) => pickLang(entry?.note, entry?.noteEs, lan
 export function weekHasMeaningfulContent(section) {
   return (section?.week?.days ?? []).some(
     (day) =>
-      day?.status !== "no-class" ||
+      !["no-class", "pending"].includes(day?.status) ||
       Boolean(day?.lessonId) ||
       Boolean(String(day?.note ?? "").trim()),
   );
@@ -237,9 +275,7 @@ function escapeXml(value) {
   return String(value ?? "").replace(
     /[&<>"']/g,
     (character) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[
-        character
-      ],
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[character],
   );
 }
 
@@ -257,7 +293,7 @@ export function buildCanvasModuleLinks(snapshot, lessons, sectionId) {
       return {
         day: entry.day,
         lessonId: lesson.id,
-        title: `Lesson ${lesson.id} · ${lesson.title}`,
+        title: `${homeworkLabel(lesson)} · ${lesson.title}`,
         lessonUrl: absolutePublicUrl(lesson.lessonPath),
         homeworkUrl: absolutePublicUrl(lesson.homeworkPath),
       };
@@ -330,7 +366,12 @@ export function buildCanvasRss(snapshot, sectionId) {
         const lessonId = encodeURIComponent(entry.lessonId);
         return `<li><strong>${day}:</strong> <a href="${PUBLIC_ORIGIN}/lessons/${lessonId}/">Lesson ${escapeHtml(entry.lessonId)}</a>${note ? ` — ${note}` : ""} · <a href="${PUBLIC_ORIGIN}/lessons/${lessonId}/homework.html">Optional family practice</a></li>`;
       }
-      const status = entry.status === "assessment" ? "Assessment" : entry.status === "review" ? "Review" : "No lesson posted";
+      const status =
+        entry.status === "assessment"
+          ? "Assessment"
+          : entry.status === "review"
+            ? "Review"
+            : "No lesson posted";
       return `<li><strong>${day}:</strong> ${status}${note ? ` — ${note}` : ""}</li>`;
     })
     .join("");

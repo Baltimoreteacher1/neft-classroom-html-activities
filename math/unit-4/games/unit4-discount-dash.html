@@ -53,6 +53,8 @@
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
 </head>
   <body>
 
@@ -124,19 +126,21 @@
           ? _mq.addEventListener("change", _onRM)
           : _mq.addListener && _mq.addListener(_onRM);
       } catch (e) {}
-      const reducedMotion = () => RM.reduce;
+      const reducedMotion = () => window.__flagshipReduced ?? (RM.reduce);
 
       class SFX {
         constructor() {
           this.ctx = null;
         }
         init() {
+          if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
           if (!this.ctx)
             try {
               this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         }
         tone(f, d, t = "sine", v = 0.06) {
+          if (window.__flagshipMuted) return;
           if (!this.ctx) return;
           try {
             const o = this.ctx.createOscillator(),
@@ -168,11 +172,11 @@
 
       // Build a deal-row: an item at one original price, with a different
       // percent-off in each lane. Exactly one lane is the best (lowest) deal.
-      function makeRow(round) {
+      function makeRow(round, tier = 2) {
         const items = ["👟", "🎧", "🧥", "🎒", "⌚", "📱", "🕹️", "👕", "🧢", "👜"];
-        const base = randInt(round < 4 ? 10 : 20, round < 4 ? 60 : 120);
+        const base = tier === 1 ? randInt(2, 12) * 10 : randInt(round < 4 ? 10 : 20, round < 4 ? 60 : 120);
         // percents get closer together as rounds climb (harder to compare)
-        const pcts = round < 3 ? [10, 25, 50] : round < 6 ? [15, 30, 45] : [20, 35, 40];
+        const pcts = tier === 1 ? [10, 25, 50] : round < 3 ? [10, 25, 50] : round < 6 ? [15, 30, 45] : [20, 35, 40];
         Phaser.Utils.Array.Shuffle(pcts);
         const emoji = Phaser.Utils.Array.GetRandom(items);
         // Pedagogy fix: give each lane its OWN original price (close to the row
@@ -181,7 +185,7 @@
         // larger price spread on later rounds keeps the comparison non-trivial.
         const spread = round < 4 ? 8 : 14;
         const cells = pcts.map((p) => {
-          const cellBase = Math.max(5, base + randInt(-spread, spread));
+          const cellBase = tier === 1 ? Math.max(10, base + randInt(-2, 2) * 10) : Math.max(5, base + randInt(-spread, spread));
           return {
             pct: p,
             base: cellBase,
@@ -536,7 +540,7 @@
         }
 
         spawnRow() {
-          const data = makeRow(this.round);
+          const data = makeRow(this.round, this.sys.settings.data?.studioTier || 2);
           // Mirror the deal row (given info only — never the sale prices)
           // into the hidden live region for assistive tech + the shared
           // hint ladder. Additive: never touches gameplay/scoring.
@@ -954,7 +958,7 @@
         },
         scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
-      const ddGame = new Phaser.Game(config);
+      const ddGame = window.__flagshipGame = new Phaser.Game(config);
 
       // ── Canvas accessibility (additive; no gameplay change) ──
       // Phaser renders to one <canvas> that is not in the tab order by default,
@@ -988,7 +992,6 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     
@@ -1023,57 +1026,9 @@
           <p id="ewl-coach-text" data-en="To find x% of a number, multiply by (x / 100)." data-es="Para hallar el x% de un número, multiplica por (x / 100).">To find x% of a number, multiply by (x / 100).</p>
         </div>
       </div>
-  
-  <script>
-    (function() {
-      window.ewlShowMasteryModal = function(opts) {
-        opts = opts || {};
-        const score = opts.score || 0;
-        const maxScore = opts.maxScore || 1000;
-        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
-        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
-        const gameTitle = opts.title || "Unit Game Complete!";
-        const nextUrl = opts.nextUrl || "/math/games/";
-
-        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-        
-        const modalHtml = `
-          <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
-            <div class="ewl-mastery-card">
-              <div class="ewl-mastery-stars">${starStr}</div>
-              <h2 class="ewl-mastery-title">${gameTitle}</h2>
-              <p class="ewl-mastery-subtitle">Grade 6 Math Review Mastery Achieved!</p>
-              <div class="ewl-mastery-stats">
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${score}</div>
-                  <div class="ewl-stat-lbl">Final Score</div>
-                </div>
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${accuracy}%</div>
-                  <div class="ewl-stat-lbl">Accuracy</div>
-                </div>
-              </div>
-              <div class="ewl-mastery-actions">
-                <button class="ewl-mastery-btn ewl-btn-secondary" onclick="location.reload()">🔄 Play Again</button>
-                <button class="ewl-mastery-btn ewl-btn-primary" onclick="location.href='${nextUrl}'">🎮 More Games</button>
-              </div>
-            </div>
-          </div>
-        `;
-        const existing = document.getElementById("ewl-mastery-modal");
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML("beforeend", modalHtml);
-        
-        if (window.GameFX && window.GameFX.AudioSynth) {
-          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
-        }
-        if (window.GameFX && window.GameFX.burst) {
-          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-        }
-      };
-    })();
-  </script>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+<script src="/assets/game-studio.js?v=20261002" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
 </body>
 </html>

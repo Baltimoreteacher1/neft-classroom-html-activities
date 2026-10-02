@@ -1,0 +1,20 @@
+/* Search and assignment building share the lab's existing visual vocabulary. */
+.library-set { border-top: 4px solid var(--brand); margin-bottom: 1.5rem; }
+.library-filters { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: .8rem; align-items: end; }
+.library-filters .field { margin: 0; min-width: 0; }
+.library-filters select { width: 100%; min-height: 48px; padding: .6rem; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink); background: var(--surface); font: inherit; }
+.library-count { font-weight: 700; }
+.library-results { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+.library-item { display: flex; gap: .7rem; justify-content: space-between; align-items: center; padding: 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); min-width: 0; }
+.library-item > div { min-width: 0; }
+.library-title { font-weight: 750; text-decoration-thickness: 1px; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.library-item .fine { margin: .4rem 0 0; }
+.library-add { flex-shrink: 0; }
+.library-add[aria-pressed="true"] { background: var(--brand-soft); color: var(--brand-ink); border-color: var(--brand); }
+.library-picked { padding-left: 1.5rem; }
+.library-picked li { padding: .25rem 0; }
+.library-picked li > span { margin-right: .6rem; }
+.library-set input { min-width: 0; width: 100%; }
+@media (max-width: 850px) { .library-filters { grid-template-columns: 1fr 1fr; } .library-results { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .library-search { grid-column: 1 / -1; } .library-item { flex-wrap: wrap; } .library-filters { grid-template-columns: 1fr; } }
+@media print { .library-filters, .library-add, .library-set .row-actions, .library-picked button { display: none; } .library-results { display: block; } .library-item { break-inside: avoid; margin: .5rem 0; } }

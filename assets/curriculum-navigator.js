@@ -3,7 +3,7 @@
   "use strict";
 
   /** @typedef {{path:string, applicable:boolean, exists:boolean}} CatalogResource */
-  /** @typedef {{id:string, unit:number, lesson:number, title:string, standard?:string, topic?:string, objective?:string, languageObjective?:string, timeEstimate?:string, resources:Record<string,CatalogResource>, supports?:{vocabulary?:string[],sentenceFrames?:string[]}}} CatalogLesson */
+  /** @typedef {{id:string, unit:number, lesson:number, title:string, titleEs?:string, standard?:string, topic?:string, objective?:string, languageObjective?:string, timeEstimate?:string, resources:Record<string,CatalogResource>, supports?:{vocabulary?:string[],sentenceFrames?:string[]}}} CatalogLesson */
   /** @typedef {{id:string, parent?:string, title:string, unit:number, group?:number, resources:Record<string,string>, vocabulary?:string[], sentenceFrames?:string[]}} LaunchLesson */
   /** @typedef {{lessons:LaunchLesson[], partTwo?:LaunchLesson[], smallGroups?:LaunchLesson[], catchUps?:LaunchLesson[]}} LaunchManifest */
 
@@ -36,6 +36,30 @@
     return;
 
   var PAGE_SIZE = 8;
+  var OVERLAY_KEY = "nt-pacing:overlay";
+  /** What opening a material gives you, shown as a small tag on each link. */
+  var RESOURCE_KINDS = {
+    readiness: "Check",
+    learningLab: "Interactive",
+    lesson: "Interactive",
+    guidedNotes: "Notes",
+    handout: "Printable",
+    worksheetLevel0: "Printable",
+    worksheet: "Printable",
+    worksheet2: "Printable",
+    mstarWorksheet: "Printable",
+    studentHelp: "Help",
+    exitTicket: "Check",
+    homework: "Practice",
+    familyPage: "Family",
+    slides: "Slides",
+    teacherNotes: "Teacher",
+    guidedNotesPdf: "PDF",
+    guidedNotesDocx: "Word",
+    mstarWorksheetPdf: "PDF",
+    homeworkDocx: "Word",
+    practice: "Printable",
+  };
   var SAVED_KEY = "ewl:curriculum:saved:v1";
   var RECENT_KEY = "ewl:curriculum:recent:v1";
   /** @type {CatalogLesson[]} */
@@ -79,8 +103,9 @@
   }
 
   /** Only same-origin curriculum resources; never accept executable/external URLs.
-   * @param {unknown} path */
-  function safePath(path) {
+   * Learning labs are allowed only for the explicitly authored learningLab key.
+   * @param {unknown} path @param {string} [key] */
+  function safePath(path, key) {
     if (
       typeof path !== "string" ||
       !path.startsWith("/") ||
@@ -90,24 +115,38 @@
       return "";
     try {
       var url = new URL(path, window.location.origin);
-      if (url.origin !== window.location.origin || !url.pathname.startsWith("/lessons/")) return "";
+      if (url.origin !== window.location.origin) return "";
+      if (key === "learningLab") {
+        if (!/^\/curriculum\/learning-labs\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(path)) return "";
+      } else if (!url.pathname.startsWith("/lessons/")) return "";
       return url.pathname + url.search + url.hash;
     } catch (_error) {
       return "";
     }
   }
 
-  /** @param {string} path @param {string} label @param {boolean} [student] */
-  function resourceLink(path, label, student) {
-    var clean = safePath(path);
+  /** @param {string} path @param {string} label @param {boolean} [student] @param {string} [key] @param {boolean} [tagged] */
+  function resourceLink(path, label, student, key, tagged) {
+    var clean = safePath(path, key);
     if (!clean) return null;
     var link = document.createElement("a");
     var url = new URL(clean, window.location.origin);
     if (student) url.searchParams.set("student", "1");
-    link.href = url.pathname + url.search + url.hash;
+    link.href = prettyPath(url.pathname) + url.search + url.hash;
     link.className = "cn-resource";
-    link.textContent = label;
+    var kind = tagged && key ? RESOURCE_KINDS[key] : "";
+    if (kind) {
+      link.dataset.kind = kind;
+      link.append(node("span", "cn-resource-label", label), node("span", "cn-kind", kind));
+    } else link.textContent = label;
     return link;
+  }
+
+  /** Cloudflare Pages answers `/x.html` with a redirect to `/x`; link to the
+   * final URL so every material opens in one request instead of two.
+   * @param {string} pathname */
+  function prettyPath(pathname) {
+    return pathname.replace(/\/index\.html$/, "/").replace(/\.html$/, "");
   }
 
   /** @param {string} key */
@@ -144,20 +183,31 @@
     }
   }
 
+  /** Keep action feedback alongside the action, rather than below the lesson.
+   * @param {string} text */
+  function actionMessage(text) {
+    var local = document.getElementById("nav-action-message");
+    if (local) local.textContent = text;
+    else message.textContent = text;
+  }
+
   /** @param {string} id */
   function toggleSaved(id) {
     var next = new Set(saved);
     if (next.has(id)) next.delete(id);
     else next.add(id);
     if (!storeIds(SAVED_KEY, Array.from(next))) {
-      message.textContent =
-        "This browser could not save your lesson. Allow site storage or bookmark the lesson URL instead.";
+      actionMessage(
+        "This browser could not save your lesson. Allow site storage or bookmark the lesson URL instead.",
+      );
       return;
     }
     saved = next;
-    message.textContent = saved.has(id)
-      ? "Lesson saved on this device."
-      : "Lesson removed from saved lessons on this device.";
+    actionMessage(
+      saved.has(id)
+        ? "Lesson saved on this device."
+        : "Lesson removed from saved lessons on this device.",
+    );
     renderResults();
     // Update in place so keyboard focus stays on the save action.
     var saveButton = preview.querySelector("[data-save-lesson]");
@@ -189,26 +239,112 @@
       : [];
   }
 
+  function searchQuery() {
+    var query = normalize(search.value)
+      .replace(
+        /\b(?:unit|unidad)\s*[:#]?\s*(\d{1,2})\s+(?:lesson|leccion)\s*[:#]?\s*(\d{1,2})\b/g,
+        "$1-$2",
+      )
+      .replace(/\b(?:lessons?|leccion)\s*[:#]?\s*(\d{1,2})\s*-\s*(\d{1,2})\b/g, "$1-$2");
+    var requestedUnit = "";
+    query = query.replace(
+      /\b(?:unit|unidad)\s*[:#]?\s*(\d{1,2})(?![\d-])\b/g,
+      function (_match, number) {
+        requestedUnit = String(Number(number));
+        return "";
+      },
+    );
+    return { unit: requestedUnit, words: query.split(/\s+/).filter(Boolean) };
+  }
+
+  /** @param {CatalogLesson} lesson @param {{unit:string, words:string[]}} query @param {boolean} [spanish] */
+  function matchesQuery(lesson, query, spanish = true) {
+    if (query.unit && String(lesson.unit) !== query.unit) return false;
+    var haystack = normalize(
+      [
+        lesson.id,
+        lesson.title,
+        spanish && typeof lesson.titleEs === "string" ? lesson.titleEs : "",
+        lesson.standard,
+        lesson.topic,
+        lesson.objective,
+        lesson.languageObjective,
+        strings(lesson.supports?.vocabulary).join(" "),
+      ].join(" "),
+    );
+    return query.words.every(function (word) {
+      return /^\d{1,2}-\d{1,2}$/.test(word) ? lesson.id === word : haystack.includes(word);
+    });
+  }
+
+  /** Curriculum-QA status, same rule as curriculum-audit-badges.js.
+   * @param {CatalogLesson & {status?:{needsReview?:boolean, missingResources?:unknown[], brokenLinks?:unknown[]}}} lesson */
+  function auditStatus(lesson) {
+    var st = lesson.status || {};
+    if (st.needsReview) return "review";
+    if (
+      (st.missingResources && st.missingResources.length) ||
+      (st.brokenLinks && st.brokenLinks.length)
+    )
+      return "missing";
+    return "ready";
+  }
+
+  /** The teacher-only status filter (set by curriculum-audit-badges.js). Ignored for students. */
+  function auditFilter() {
+    if (!document.body.classList.contains("teacher-mode")) return "";
+    return document.body.dataset.auditFilter || "";
+  }
+
   function matching() {
-    var words = normalize(search.value).split(/\s+/).filter(Boolean);
+    var query = searchQuery();
+    var status = auditFilter();
     return lessons.filter(function (lesson) {
       if (unit.value && String(lesson.unit) !== unit.value) return false;
       if (onlySaved && !saved.has(lesson.id)) return false;
-      var haystack = normalize(
-        [
-          lesson.id,
-          lesson.title,
-          lesson.standard,
-          lesson.topic,
-          lesson.objective,
-          lesson.languageObjective,
-          strings(lesson.supports?.vocabulary).join(" "),
-        ].join(" "),
-      );
-      return words.every(function (word) {
-        return haystack.includes(word);
-      });
+      if (status) {
+        var own = auditStatus(lesson);
+        if (status === "attention" ? own === "ready" : own !== status) return false;
+      }
+      return matchesQuery(lesson, query);
     });
+  }
+
+  function syncSearchControls() {
+    var clear = document.getElementById("curr-search-clear");
+    if (clear) clear.hidden = !search.value;
+  }
+
+  /** Include a selected lesson past the initial page without dropping filters.
+   * @param {string} id */
+  function includeResult(id) {
+    var index = matching().findIndex(function (lesson) {
+      return lesson.id === id;
+    });
+    if (index >= limit) limit = Math.ceil((index + 1) / PAGE_SIZE) * PAGE_SIZE;
+  }
+
+  function backToResults() {
+    includeResult(selected);
+    renderResults();
+    var target =
+      /** @type {HTMLElement} */ (results.querySelector('[data-lesson-id="' + selected + '"]')) ||
+      search;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: "nearest", behavior: "auto" });
+  }
+
+  /** A recent lesson may be outside current results. Retain every compatible filter.
+   * @param {string} id */
+  function openRecent(id) {
+    var lesson = byId.get(id);
+    if (!lesson) return;
+    window.clearTimeout(searchTimer);
+    if (unit.value && unit.value !== String(lesson.unit)) unit.value = "";
+    if (onlySaved && !saved.has(id)) onlySaved = false;
+    if (!matchesQuery(lesson, searchQuery())) search.value = "";
+    includeResult(id);
+    select(id, true, true);
   }
 
   /** @param {boolean} [replace] */
@@ -249,7 +385,7 @@
       var item = button(
         id.replace("-", ".") + " · " + lesson.title,
         function () {
-          select(id, true, true);
+          openRecent(id);
         },
         "cn-recent-link",
       );
@@ -258,6 +394,7 @@
   }
 
   function renderResults() {
+    syncSearchControls();
     if (!lessons.length) return;
     var matches = matching();
     var shown = matches.slice(0, limit);
@@ -298,6 +435,24 @@
         node("strong", "cn-result-title", lesson.title),
         node("span", "cn-result-standard", lesson.standard || "Math practices"),
       );
+      if (
+        typeof lesson.titleEs === "string" &&
+        matchesQuery(lesson, searchQuery()) &&
+        !matchesQuery(lesson, searchQuery(), false)
+      ) {
+        var translation = node("span", "cn-result-translation", lesson.titleEs);
+        translation.lang = "es";
+        pick.appendChild(translation);
+      }
+      var quality = auditStatus(lesson);
+      if (quality !== "ready")
+        pick.appendChild(
+          node(
+            "span",
+            "cn-status cn-status--" + quality + " hub-teacher-only",
+            quality === "review" ? "Needs review" : "Missing resources",
+          ),
+        );
       if (lesson.id === selected) pick.appendChild(node("span", "cn-selected-label", "Viewing"));
       item.appendChild(pick);
       results.appendChild(item);
@@ -336,7 +491,7 @@
           : ""
         : studentLesson?.resources?.[key];
       if (!teacher && catalog && (!catalog.exists || !catalog.applicable)) return;
-      var link = resourceLink(path, entry[1], !teacher);
+      var link = resourceLink(path, entry[1], !teacher, key, true);
       if (link) {
         var item = node("li", "");
         item.appendChild(link);
@@ -373,7 +528,7 @@
         ["practice", "More practice"],
         ["homework", "Homework"],
       ].forEach(function (entry) {
-        var resource = resourceLink(item.resources[entry[0]], entry[1], true);
+        var resource = resourceLink(item.resources[entry[0]], entry[1], true, entry[0], true);
         if (resource) {
           var li = node("li", "");
           li.appendChild(resource);
@@ -402,14 +557,16 @@
     try {
       if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
       await navigator.clipboard.writeText(studentUrl(id));
-      message.textContent =
+      if (selected !== id || !fallback.isConnected) return;
+      actionMessage(
         "Student link copied. It opens the student launch page for lesson " +
-        id.replace("-", ".") +
-        ".";
+          id.replace("-", ".") +
+          ".",
+      );
       fallback.hidden = true;
     } catch (_error) {
-      message.textContent =
-        "Copy is unavailable in this browser. Select and copy the student link below.";
+      if (selected !== id || !fallback.isConnected) return;
+      actionMessage("Copy is unavailable in this browser. Select and copy the student link below.");
       fallback.hidden = false;
       var field = fallback.querySelector("input");
       field?.focus();
@@ -417,9 +574,266 @@
     }
   }
 
+  /** Local calendar date as YYYY-MM-DD (not UTC, which flips a day early in the evening). */
+  function isoToday() {
+    var now = new Date();
+    return (
+      now.getFullYear() +
+      "-" +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(now.getDate()).padStart(2, "0")
+    );
+  }
+
+  /** @param {string} iso */
+  function dayLabel(iso) {
+    var parts = iso.split("-").map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  /** A pathway id ("3-3-catchup", "3-3-group1") belongs to its core lesson. @param {string} id */
+  function coreId(id) {
+    return String(id || "").replace(/-(?:group[12]|catchup|part2|flagship)$/, "");
+  }
+
+  /**
+   * Today's place in the pacing plan: the generated per-day schedule, with the
+   * teacher's own planner moves (saved on this device) layered on top, exactly
+   * as the weekly planner reads them. Returns the first school day on or after
+   * today, or null outside the school year or without pacing data.
+   * @returns {{date:string, isToday:boolean, lesson:CatalogLesson|null, dayType:string, planTitle:string, next:CatalogLesson|null} | null}
+   */
+  function pacingToday() {
+    var days = /** @type {unknown} */ (window.__NT_PACING_DAYS);
+    if (!Array.isArray(days) || !days.length) return null;
+    var today = isoToday();
+    var overlay = {};
+    try {
+      overlay = JSON.parse(window.localStorage.getItem(OVERLAY_KEY) || "{}") || {};
+    } catch (_error) {
+      overlay = {};
+    }
+    /** @param {unknown[]} row */
+    function planFor(row) {
+      var moved = overlay[String(row[0])]?.plan || {};
+      return {
+        lessonId: typeof moved.lessonId === "string" ? moved.lessonId : String(row[1] || ""),
+        dayType: typeof moved.dayType === "string" ? moved.dayType : String(row[2] || ""),
+        planTitle: typeof moved.planTitle === "string" ? moved.planTitle : String(row[3] || ""),
+      };
+    }
+    var index = days.findIndex(function (row) {
+      return Array.isArray(row) && String(row[0]) >= today;
+    });
+    if (index < 0) return null;
+    var plan = planFor(days[index]);
+    var lesson = byId.get(coreId(plan.lessonId)) || null;
+    var next = null;
+    for (var i = index + 1; i < days.length && !next; i++) {
+      var later = byId.get(coreId(planFor(days[i]).lessonId));
+      if (later && later !== lesson) next = later;
+    }
+    return {
+      date: String(days[index][0]),
+      isToday: String(days[index][0]) === today,
+      lesson: lesson,
+      dayType: plan.dayType,
+      planTitle: lesson ? "" : plan.planTitle,
+      next: next,
+    };
+  }
+
+  /** @param {string} text @param {string} audience */
+  function forAudience(text, audience) {
+    var el = node("span", audience === "teacher" ? "hub-teacher-only" : "hub-student-only", text);
+    return el;
+  }
+
+  /** @param {CatalogLesson} lesson @param {string} label @param {boolean} [primary] */
+  function openLessonButton(lesson, label, primary) {
+    var open = button(
+      "",
+      function () {
+        select(lesson.id, true, true);
+      },
+      "cn-button" + (primary ? " cn-primary" : ""),
+    );
+    open.append(label);
+    open.setAttribute("aria-controls", "nav-preview");
+    return open;
+  }
+
+  /** The panel before any lesson is chosen: today's lesson from the pacing plan. */
+  function renderIdle() {
+    root.classList.add("cn-idle");
+    preview.replaceChildren();
+    var plan = pacingToday();
+    var title;
+    if (plan && (plan.lesson || plan.planTitle)) {
+      var card = node("div", "cn-today");
+      var when = node("p", "cn-eyebrow");
+      when.append(
+        forAudience(
+          (plan.isToday ? "Today in class · " : "Next class · ") + dayLabel(plan.date),
+          "student",
+        ),
+        forAudience(
+          (plan.isToday ? "Teaching today · " : "Next teaching day · ") + dayLabel(plan.date),
+          "teacher",
+        ),
+      );
+      card.appendChild(when);
+      title = node("h3", "cn-preview-title", plan.lesson ? plan.lesson.title : plan.planTitle);
+      title.id = "nav-lesson-title";
+      card.appendChild(title);
+      if (plan.lesson) {
+        var detail = "Lesson " + plan.lesson.id.replace("-", ".") + " · Unit " + plan.lesson.unit;
+        if (plan.dayType === "Continued Lesson") detail += " · second day";
+        else if (plan.dayType === "Catch-Up") detail += " · catch-up day";
+        card.appendChild(node("p", "cn-lesson-meta", detail));
+        if (plan.lesson.objective)
+          card.appendChild(node("p", "cn-today-target", plan.lesson.objective));
+        var actions = node("div", "cn-preview-actions");
+        var studentOpen = openLessonButton(plan.lesson, "Open today’s lesson", true);
+        studentOpen.classList.add("hub-student-only");
+        var teacherOpen = openLessonButton(plan.lesson, "Prepare this lesson", true);
+        teacherOpen.classList.add("hub-teacher-only");
+        actions.append(studentOpen, teacherOpen);
+        if (plan.next) {
+          actions.appendChild(
+            openLessonButton(
+              plan.next,
+              "Up next: " + plan.next.id.replace("-", ".") + " " + plan.next.title,
+            ),
+          );
+        }
+        card.appendChild(actions);
+        // The materials a class reaches for first, one click from the panel
+        // instead of behind "Prepare this lesson". Same links, same safePath
+        // checks, as the full preview — resourceGroup appends to the preview,
+        // so the card goes in first and the groups follow it.
+        preview.appendChild(card);
+        resourceGroup(plan.lesson, "Today’s materials", [
+          ["lesson", "Interactive lesson"],
+          ["guidedNotes", "Guided notes"],
+          ["handout", "Handout"],
+          ["homework", "Homework"],
+          ["familyPage", "Family guide"],
+          ["learningLab", "Interactive learning lab"],
+        ]);
+        resourceGroup(
+          plan.lesson,
+          "Teacher preparation",
+          [
+            ["slides", "Teaching slides"],
+            ["teacherNotes", "Teacher notes"],
+            ["exitTicket", "Final check"],
+          ],
+          true,
+        );
+      } else {
+        card.appendChild(
+          node(
+            "p",
+            "cn-lesson-meta",
+            plan.dayType ? plan.dayType + " day — no new lesson." : "No new lesson on this day.",
+          ),
+        );
+        if (plan.next) {
+          var upcoming = node("div", "cn-preview-actions");
+          upcoming.appendChild(
+            openLessonButton(
+              plan.next,
+              "Next lesson: " + plan.next.id.replace("-", ".") + " " + plan.next.title,
+              true,
+            ),
+          );
+          card.appendChild(upcoming);
+        }
+      }
+      if (!card.isConnected) preview.appendChild(card);
+      var other = node("p", "cn-starter");
+      other.append(
+        forAudience(
+          "Looking for a different lesson? Search or pick a unit from the list.",
+          "student",
+        ),
+        forAudience("Teaching something else? Search or pick a unit from the list.", "teacher"),
+      );
+      preview.appendChild(other);
+    } else {
+      title = node("h3", "cn-preview-title", "Choose your next lesson");
+      title.id = "nav-lesson-title";
+      var starter = node("p", "cn-starter");
+      starter.append(
+        forAudience(
+          "Choose a lesson from the list. Its activities and materials will appear here.",
+          "student",
+        ),
+        forAudience(
+          "Choose a lesson from the list to see its materials, student link, and teacher notes.",
+          "teacher",
+        ),
+      );
+      preview.append(title, starter);
+      var orientation = node("ol", "cn-orientation");
+      [
+        ["student", "Find your lesson", "Search a topic or choose a unit."],
+        ["student", "Open and learn", "Read the learning target, then open your lesson."],
+        ["student", "Practice the same math", "Use the lesson’s practice and homework links."],
+        ["teacher", "Find the lesson", "Search a topic, a standard, or a lesson number."],
+        ["teacher", "Prepare it", "Check the learning target, slides, and teacher notes."],
+        ["teacher", "Share the student link", "Copy the link students open in class."],
+      ].forEach(function (entry) {
+        var step = node("li", entry[0] === "teacher" ? "hub-teacher-only" : "hub-student-only");
+        var text = node("div", "");
+        text.append(node("strong", "", entry[1]), node("span", "", entry[2]));
+        step.appendChild(text);
+        orientation.appendChild(step);
+      });
+      preview.appendChild(orientation);
+    }
+    var starters = node("div", "cn-starter-links");
+    [
+      ["/curriculum/learning-labs/", "Explore a learning lab", "student"],
+      ["/curriculum/arcade/", "Practice with a game", "student"],
+      ["/curriculum/my-progress/", "Check my progress", "student"],
+      ["/curriculum/planning/", "Open the pacing planner", "teacher"],
+      ["/curriculum/practice-workbooks/", "Practice workbooks", "teacher"],
+    ].forEach(function (entry) {
+      var link = /** @type {HTMLAnchorElement} */ (
+        node("a", entry[2] === "teacher" ? "hub-teacher-only" : "hub-student-only", entry[1])
+      );
+      link.href = entry[0];
+      starters.appendChild(link);
+    });
+    preview.appendChild(starters);
+    var note = node("p", "cn-local-note");
+    note.append(
+      forAudience(
+        "Save useful lessons on this device with the Save lesson button. No sign-in needed.",
+        "student",
+      ),
+      forAudience(
+        "Saved lessons and planner moves stay on this device. Nothing here records student work.",
+        "teacher",
+      ),
+    );
+    preview.appendChild(note);
+  }
+
   /** @param {CatalogLesson} lesson */
   function renderPreview(lesson) {
+    root.classList.remove("cn-idle");
     preview.replaceChildren();
+    var back = button("← Back to results", backToResults, "cn-button cn-back");
+    back.setAttribute("aria-controls", "nav-results");
+    preview.appendChild(back);
     var top = node("div", "cn-preview-heading");
     top.appendChild(
       node("p", "cn-eyebrow", "Unit " + lesson.unit + " / Lesson " + lesson.id.replace("-", ".")),
@@ -427,6 +841,15 @@
     var title = node("h3", "cn-preview-title", lesson.title);
     title.id = "nav-lesson-title";
     top.appendChild(title);
+    if (
+      typeof lesson.titleEs === "string" &&
+      matchesQuery(lesson, searchQuery()) &&
+      !matchesQuery(lesson, searchQuery(), false)
+    ) {
+      var translation = node("p", "cn-preview-translation", lesson.titleEs);
+      translation.lang = "es";
+      top.appendChild(translation);
+    }
     top.appendChild(
       node(
         "p",
@@ -462,6 +885,18 @@
     } else {
       preview.appendChild(actions);
     }
+    if (lesson.id === "3-4") {
+      var ratioLab = resourceLink(
+        "/curriculum/learning-labs/ratio-table-lab/",
+        "Ratio Table Lab · Section 1",
+        true,
+        "learningLab",
+      );
+      if (ratioLab) {
+        ratioLab.className = "cn-button";
+        actions.appendChild(ratioLab);
+      }
+    }
     var saveButton = button(
       saved.has(lesson.id) ? "Saved on this device" : "Save lesson",
       function () {
@@ -472,6 +907,34 @@
     saveButton.dataset.saveLesson = lesson.id;
     saveButton.setAttribute("aria-pressed", String(saved.has(lesson.id)));
     actions.appendChild(saveButton);
+    var teachControl = /** @type {HTMLButtonElement} */ (
+      document.querySelector('[data-guide-teacher-view="today"]')
+    );
+    if (teachControl) {
+      actions.appendChild(
+        button(
+          "Teach this lesson",
+          function () {
+            if (!document.body.classList.contains("teacher-mode")) return;
+            if (
+              !window.CurriculumCockpit?.select ||
+              window.CurriculumCockpit.select(lesson.id, { scroll: false }) === false
+            ) {
+              actionMessage("The teaching tools are still loading. Try again in a moment.");
+              return;
+            }
+            teachControl.click();
+          },
+          "cn-button cn-teach hub-teacher-only",
+        ),
+      );
+    }
+    var actionStatus = node("p", "cn-action-message");
+    actionStatus.id = "nav-action-message";
+    actionStatus.setAttribute("role", "status");
+    actionStatus.setAttribute("aria-live", "polite");
+    actionStatus.setAttribute("aria-atomic", "true");
+    actions.insertAdjacentElement("afterend", actionStatus);
     var target = node("div", "cn-target");
     target.appendChild(node("h4", "cn-group-title", "Learning target"));
     target.appendChild(
@@ -511,6 +974,10 @@
       }
       preview.appendChild(supports);
     }
+    resourceGroup(lesson, "Get ready & explore", [
+      ["readiness", "Readiness check"],
+      ["learningLab", "Interactive learning lab"],
+    ]);
     resourceGroup(lesson, "Learn & practice", [
       ["lesson", "Interactive lesson"],
       ["guidedNotes", "Guided notes"],
@@ -570,8 +1037,7 @@
       if (storeIds(RECENT_KEY, nextRecent)) {
         recent = nextRecent;
         renderRecent();
-      } else
-        message.textContent = "Lesson opened. This browser could not save your recent lessons.";
+      } else actionMessage("Lesson opened. This browser could not save your recent lessons.");
       updateUrl(false);
     }
     if (!fromCockpit && window.CurriculumCockpit?.select && !syncing) {
@@ -600,39 +1066,12 @@
     if (byId.has(requested)) {
       selected = requested;
       explicitSelection = true;
+      includeResult(requested);
       renderPreview(byId.get(requested));
     } else {
       selected = "";
       explicitSelection = false;
-      preview.replaceChildren();
-      var title = node("h3", "cn-preview-title", "Choose your next lesson");
-      title.id = "nav-lesson-title";
-      preview.append(
-        title,
-        node(
-          "p",
-          "cn-starter",
-          "Search a topic, standard, or lesson number. Select a lesson to see its learning target, student materials, and teaching resources in one place.",
-        ),
-      );
-      var starters = node("div", "cn-preview-actions");
-      [
-        ["/curriculum/learning-labs/", "Explore a learning lab"],
-        ["/curriculum/arcade/", "Practice with a game"],
-        ["/curriculum/my-progress/", "Check my progress"],
-      ].forEach(function (entry) {
-        var link = node("a", "cn-button", entry[1]);
-        link.href = entry[0];
-        starters.appendChild(link);
-      });
-      preview.appendChild(starters);
-      preview.appendChild(
-        node(
-          "p",
-          "cn-local-note",
-          "Save useful lessons on this device with the Save lesson button. No sign-in needed.",
-        ),
-      );
+      renderIdle();
       if (requested)
         message.textContent =
           "That lesson is not in this catalog. Choose a lesson from the results.";
@@ -798,6 +1237,10 @@
     updateUrl(false);
   });
   reset.addEventListener("click", resetFilters);
+  document.addEventListener("ewl:audit-filter", function () {
+    limit = PAGE_SIZE;
+    renderResults();
+  });
   more.addEventListener("click", function () {
     var firstNew = results.querySelectorAll("[data-lesson-id]").length;
     limit += PAGE_SIZE;

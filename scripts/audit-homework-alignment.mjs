@@ -104,7 +104,8 @@ const REQUIRED_MARKERS = [
     id: "family-route",
     test: (h) =>
       h.includes('class="hw-route-chooser"') &&
-      ["quick", "core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
+      ["core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
+      !h.includes('data-route-mode="quick"') &&
       h.includes("setHomeworkRoute") &&
       h.includes("goNextHomeworkStop"),
   },

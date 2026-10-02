@@ -1,13 +1,13 @@
 /* Curriculum landing: a lesson desk first, optional collections below it. */
-body.curriculum-home { background: #eef3f8; color: #14365b; }
-.curriculum-home .curriculum-guide { padding: 28px 32px 22px; margin: 20px auto 0; border-radius: 20px 20px 0 0; box-shadow: none; border-bottom: 1px solid #d4e0ec; }
+body.curriculum-home { background: #f5f6f3; color: #14365b; }
+.curriculum-home .curriculum-guide { position: relative; padding: 28px 32px 22px; margin: 20px auto 0; border-radius: 20px 20px 0 0; box-shadow: none; border-bottom: 1px solid #d4e0ec; }
 .curriculum-home .curriculum-guide h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; margin: 6px 0 12px; }
 .curriculum-home .curriculum-guide__eyebrow { letter-spacing: .02em; text-transform: none; color: #11675d; font-size: 16px; margin: 0; }
 .curriculum-home .curriculum-guide__lede { font-size: 18px; line-height: 1.5; margin: 8px 0 16px; max-width: 76ch; }
 .curriculum-home #hub-mode-banner { background: none; border: 0; border-radius: 0; padding: 0; margin: 0 0 8px; font-size: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: #475569; }
 .curriculum-home.teacher-mode #hub-mode-banner { display: none; }
 .curriculum-home .hub-shortcuts { display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch; }
-.curriculum-home .hub-shortcuts > :is(a,button) { font: inherit; font-size: 16px; font-weight: 700; min-height: 44px; border: 1px solid #c4d3e2; background: #f7fafd; color: #15487f; border-radius: 8px; padding: 10px 14px; display: inline-flex; align-items: center; text-decoration: none; cursor: pointer; box-shadow: none; width: auto; }
+.curriculum-home .hub-shortcuts > :is(a,button), .curriculum-home .hub-reading-control > button { font: inherit; font-size: 16px; font-weight: 700; min-height: 44px; border: 1px solid #c4d3e2; background: #f7fafd; color: #15487f; border-radius: 8px; padding: 10px 14px; display: inline-flex; align-items: center; text-decoration: none; cursor: pointer; box-shadow: none; width: auto; }
 .curriculum-home .hub-shortcuts > :is(a,button):hover { background: #e7f0fa; border-color: #175da0; }
 .curriculum-home .hub-shortcuts .curriculum-guide__action span { display: none; }
 .curriculum-home .hub-shortcuts strong { font: inherit; color: inherit; }
@@ -49,16 +49,17 @@ body.curriculum-home { background: #eef3f8; color: #14365b; }
 }
 @media (prefers-reduced-motion: reduce) { .curriculum-home { scroll-behavior: auto; } }
 @media print {
-  .curriculum-home .hub-shortcuts, .curriculum-home #hub-mode-banner, .curriculum-home .hub-collection, .curriculum-home .hub-supports-dock { display: none !important; }
+  .curriculum-home .hub-shortcuts, .curriculum-home .hub-reading-control, .curriculum-home #hub-mode-banner, .curriculum-home .hub-collection, .curriculum-home .hub-supports-dock { display: none !important; }
   .curriculum-home, .hub-page, .curriculum-home .curriculum-guide { background: #fff; padding: 0; margin: 0; max-width: none; border: 0; }
 }
 
 .curriculum-home .hub-supports-panel[hidden] { display: none !important; }
-.curriculum-home #udlFloatingLauncher { min-height: 44px; background: #175da0 !important; }
-.curriculum-home #udlMenuPopover { right: 16px !important; font-size: 16px; }
+.curriculum-home .hub-reading-control { margin: 0; padding: 0; }
+.curriculum-home #udlFloatingLauncher { min-height: 44px; background: #f7fafd; }
+.curriculum-home #udlMenuPopover { position: absolute; right: 16px; z-index: 100; margin-top: 8px; width: min(340px, calc(100% - 32px)); max-height: 70vh; overflow-y: auto; padding: 18px; border: 1px solid #b3c7dc; border-radius: 12px; background: #fff; color: #14365b; box-shadow: 0 12px 30px rgb(15 23 42 / 18%); font-size: 16px; }
 .curriculum-home #udlMenuPopover :is(label,a) { min-height: 44px; display: flex; align-items: center; gap: 12px; font-size: 16px; }
 .curriculum-home #udlMenuPopover input[type="checkbox"] { width: 22px; height: 22px; flex-shrink: 0; }
-.curriculum-home #udlMenuPopover h2 { font-size: 18px !important; }
+.curriculum-home #udlMenuPopover h2 { font-size: 18px !important; margin: 0 0 12px; }
 .curriculum-home #hub-teacher-banner { display: flex; gap: 8px; align-items: center; margin: 4px 0; color: #475569; }
 @media (min-width: 900px) {
   .curriculum-home .curriculum-guide { position: relative; padding-top: 24px; }
@@ -81,4 +82,52 @@ body.curriculum-home { background: #eef3f8; color: #14365b; }
   body.curriculum-home.ctw-printing #hub-library-collection > :not(.ctw-panel) {
     display: none !important;
   }
+}
+
+/* Header mode controls already expose this action; keep the legacy JS bridge. */
+.curriculum-home #hub-mode-toggle { display: none; }
+
+/* A compact course masthead; shortcuts read as supporting navigation. */
+.curriculum-product.curriculum-home .curriculum-guide { background: transparent; border: 0; max-width: 1180px; padding-block: 30px 22px; }
+.curriculum-product.curriculum-home .curriculum-guide h1 { font-size: clamp(2rem,4vw,3rem); font-weight: 650; letter-spacing: -.04em; margin-block: 6px 12px; }
+.curriculum-product.curriculum-home .curriculum-guide__eyebrow { font-weight: 600; }
+.curriculum-product.curriculum-home .curriculum-guide__lede { font-size: 18px; color: var(--course-muted); max-width: 64ch; margin-bottom: 16px; }
+.curriculum-product.curriculum-home .hub-page { background: transparent; }
+.curriculum-product.curriculum-home .hub-shortcuts { gap: 4px 20px; }
+.curriculum-product.curriculum-home .hub-shortcuts > a,
+.curriculum-product.curriculum-home .hub-reading-control > button { padding: 8px 0; border: 0; border-radius: 0; background: transparent; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.curriculum-product.curriculum-home .hub-reading-control { margin-left: auto; }
+.curriculum-product.curriculum-home .hub-shortcuts > a:hover,
+.curriculum-product.curriculum-home .hub-reading-control > button:hover { color: #0d4941; }
+@media (max-width: 780px) {
+  .curriculum-product.curriculum-home .curriculum-guide { padding: 20px 16px 16px; }
+  .curriculum-product.curriculum-home .hub-reading-control { margin-left: 0; }
+  .curriculum-product.curriculum-home .curriculum-guide__lede { font-size: 17px; }
+}
+
+/* Phones: the shortcuts are one scrollable row of same-shaped chips. Mixed
+   underlined links and boxed buttons wrapped into four uneven rows; the fade
+   at the right edge says there is more. */
+@media (max-width: 780px) {
+  .curriculum-product.curriculum-home .hub-shortcuts {
+    display: flex; flex-wrap: nowrap; gap: 8px; align-items: stretch; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity; scroll-padding-inline: 16px; scrollbar-width: none; margin: 0 -16px; padding: 4px 16px 8px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+  }
+  .curriculum-product.curriculum-home .hub-shortcuts::-webkit-scrollbar { display: none; }
+  .curriculum-product.curriculum-home .hub-shortcuts > :is(a, button),
+  .curriculum-product.curriculum-home .hub-shortcuts .hub-reading-control > button {
+    flex: none; scroll-snap-align: start; white-space: nowrap; min-height: 44px; padding: 9px 14px;
+    border: 1px solid #c4d3e2; border-radius: 999px; background: #fff; color: #15487f; font-weight: 700; text-decoration: none;
+  }
+  .curriculum-product.curriculum-home .hub-shortcuts [data-guide-teacher-view="today"] { color: #fff; background: #175da0; border-color: #175da0; }
+  .curriculum-product.curriculum-home .hub-reading-control { flex: none; margin-left: 0; }
+  .curriculum-product.curriculum-home .hub-shortcuts .hub-reading-control > button { max-width: none; }
+  .curriculum-home #udlMenuPopover { right: 16px; left: 16px; width: auto; }
+}
+/* The docked Prepare Supports bar is fixed to the bottom edge on phones;
+   leave room so the last control on the page is never under it. */
+@media (max-width: 640px) {
+  body.curriculum-home.teacher-mode .hub-page { padding-bottom: 96px; }
 }

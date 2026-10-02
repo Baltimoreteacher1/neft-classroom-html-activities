@@ -369,7 +369,7 @@ export function renderNumberLine(container, config) {
       showFb(
         feedbackSlot,
         "success",
-        `All ${targets.length} points placed correctly! Snapped to the tick marks — each mark is one unit on this line.`,
+        `All ${targets.length} points placed correctly! Each point matches its value on this number line.`,
       );
       if (onComplete) onComplete(correct, targets.length);
     } else {
@@ -1186,7 +1186,7 @@ function round(n) {
 
 function formatNum(n) {
   if (Number.isInteger(n)) return String(n);
-  return n.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+  return n.toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
 }
 
 function showFb(slot, type, msg) {

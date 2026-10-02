@@ -26,7 +26,7 @@
       "padding:1rem 1.25rem;display:flex;flex-wrap:wrap;align-items:center;" +
       "justify-content:center;gap:.4rem .9rem;font-size:.8rem;line-height:1.4;" +
       "font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;" +
-      "color:#64748b;background:rgba(15,23,42,.04);border-top:1px solid rgba(15,23,42,.08);" +
+      "color:#526278;background:#f1f5f9;border-top:1px solid rgba(15,23,42,.08);" +
       "text-align:center}" +
       ".nt-chrome-footer a{color:#475569;text-decoration:none;font-weight:600}" +
       ".nt-chrome-footer a:hover,.nt-chrome-footer a:focus-visible{color:#1e3a8a;text-decoration:underline}" +

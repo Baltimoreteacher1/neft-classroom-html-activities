@@ -32,7 +32,7 @@
    * Both are ADVISORY: unreadable means fall back to manifest order, never an
    * empty list. Teaching continues when planning data does not.
    */
-  function deriveUnitSequence(lessons, projects, pacing, authored, assessments) {
+  function deriveUnitSequence(lessons, projects, pacing, authored, assessments, resources) {
     var lessonsByUnit = Object.create(null);
     var manifestOrder = [];
     var byId = Object.create(null);
@@ -122,6 +122,13 @@
         var out = (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
           return { item: l, kind: "lesson" };
         });
+        (resources || [])
+          .filter(function (r) {
+            return String(r.unit) === key;
+          })
+          .forEach(function (r) {
+            out.push({ item: r, kind: "resource" });
+          });
         (assessmentsByUnit[key] || []).forEach(function (t) {
           out.push({ item: t, kind: "assessment" });
         });
@@ -851,7 +858,11 @@
       /* renderOpen resolves whatever the Lesson dropdown selected, and that is
        * now lessons AND projects. Looking only at `lessons` is why an option can
        * be selectable and expand to nothing. */
-      var openable = lessons.concat(manifest.endOfUnit || [], manifest.unitAssessments || []);
+      var openable = lessons.concat(
+        manifest.endOfUnit || [],
+        manifest.unitAssessments || [],
+        manifest.unitResources || [],
+      );
 
       /* The district's order, derived in ONE place this file shares with the
        * Unit Map — see deriveUnitSequence(). Class section does not appear in it
@@ -863,6 +874,7 @@
         pacing,
         authored,
         manifest.unitAssessments,
+        manifest.unitResources,
       );
       var unitOrder = sequence.order;
 
@@ -884,7 +896,7 @@
 
       function lessonsFor(unit) {
         return sequence.entriesFor(unit).map(function (entry) {
-          return entry.kind === "project" || entry.kind === "assessment"
+          return entry.kind !== "lesson"
             ? { value: entry.item.id, label: entry.item.title }
             : { value: entry.item.id, label: entry.item.id + " · " + entry.item.title };
         });
@@ -900,7 +912,9 @@
        * is [manifest resource key, button label]. Nothing is rendered for a key
        * the manifest does not carry — see the note on dead buttons below. */
       var TEACH_PARTS = [
+        ["readiness", "Get ready"],
         ["guidedNotes", "Guided notes"],
+        ["learningLab", "Interactive learning lab"],
         ["handout", "Student handout"],
         ["worksheet", "Worksheet"],
         ["worksheet2", "Worksheet B"],
@@ -976,7 +990,8 @@
 
         var isProject = lesson.kind === "endOfUnit";
         var isAssessment = lesson.kind === "unitAssessment";
-        var isLesson = !isProject && !isAssessment;
+        var isResource = lesson.kind === "unitResource";
+        var isLesson = !isProject && !isAssessment && !isResource;
 
         var head = document.createElement("p");
         head.className = "tws-open-title";
@@ -998,7 +1013,9 @@
             ? "Open culminating project"
             : isAssessment
               ? "Open practice test"
-              : "Open whole-group lesson";
+              : isResource
+                ? "Open resource"
+                : "Open whole-group lesson";
           row.appendChild(a);
         }
         /* The class travels with the lesson, so the supports surface opens on
@@ -1020,6 +1037,14 @@
           p2a.href = p2.resources.lesson;
           p2a.textContent = "Open Part 2 · Apply";
           row.appendChild(p2a);
+        }
+
+        if (lesson.id === "3-4") {
+          var ratioLab = document.createElement("a");
+          ratioLab.className = "tws-btn ghost";
+          ratioLab.href = "/curriculum/learning-labs/ratio-table-lab/";
+          ratioLab.textContent = "Ratio Table Lab · Section 1";
+          row.appendChild(ratioLab);
         }
 
         if (lesson.id === "3-2") {
@@ -1328,7 +1353,7 @@
       }
     });
     var summary = document.createElement("summary");
-    summary.textContent = "🧰 Teacher Tools & Featured Resources";
+    summary.textContent = "Teacher tools & featured resources";
     tools.parentNode.insertBefore(details, tools);
     details.appendChild(summary);
 

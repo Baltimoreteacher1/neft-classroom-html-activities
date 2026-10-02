@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { JSDOM } from "jsdom";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SOURCE = resolve(ROOT, "data/curriculum-manifest.json");
@@ -10,6 +12,7 @@ const OUTPUT = resolve(ROOT, "data/curriculum-launch-manifest.json");
 
 const SAFE_RESOURCE_KEYS = [
   "lesson",
+  "readiness",
   "guidedNotes",
   "handout",
   "worksheet",
@@ -46,7 +49,45 @@ function safeResources(resources, lessonId) {
   return output;
 }
 
+/** Join authored labs to known lessons. Exact routes reject external URLs,
+ * encoded traversal, query overrides, and paths to teacher tools. Exported for
+ * contract tests; importing this generator never writes generated data. */
+export function learningLabResources(registry, coreLessons, root = ROOT) {
+  if (!registry || !Array.isArray(registry.labs)) throw new Error("Invalid learning-lab registry");
+  const knownLessons = new Set(coreLessons.map((lesson) => lesson.id));
+  const labIds = new Set();
+  const result = new Map();
+  for (const lab of registry.labs) {
+    if (!lab || typeof lab.id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(lab.id)) {
+      throw new Error("Invalid learning-lab ID");
+    }
+    if (labIds.has(lab.id)) throw new Error(`Duplicate learning-lab ID: ${lab.id}`);
+    labIds.add(lab.id);
+    const expected = `/curriculum/learning-labs/${lab.id}/`;
+    if (lab.href !== expected) throw new Error(`Unsafe learning-lab path: ${lab.id}`);
+    const file = resolve(root, expected.slice(1), "index.html");
+    if (!existsSync(file) || !statSync(file).isFile()) {
+      throw new Error(`Missing learning-lab page: ${lab.id}`);
+    }
+    if (!Array.isArray(lab.lessons) || !lab.lessons.length) {
+      throw new Error(`Learning lab has no lessons: ${lab.id}`);
+    }
+    for (const lessonId of lab.lessons) {
+      if (typeof lessonId !== "string" || !knownLessons.has(lessonId)) {
+        throw new Error(`Unknown learning-lab lesson: ${lessonId}`);
+      }
+      if (result.has(lessonId)) throw new Error(`Duplicate learning-lab assignment: ${lessonId}`);
+      result.set(lessonId, expected);
+    }
+  }
+  return result;
+}
+
 const source = JSON.parse(readFileSync(SOURCE, "utf8"));
+const labResources = learningLabResources(
+  JSON.parse(readFileSync(resolve(ROOT, "data/learning-labs.json"), "utf8")),
+  source.lessons || [],
+);
 const lessons = (source.lessons || []).map((lesson) => ({
   id: cleanText(lesson.id),
   unit: Number(lesson.unit),
@@ -62,7 +103,10 @@ const lessons = (source.lessons || []).map((lesson) => ({
   sentenceFrames: Array.isArray(lesson.supports?.sentenceFrames)
     ? lesson.supports.sentenceFrames.map(cleanText).filter(Boolean)
     : [],
-  resources: safeResources(lesson.resources, lesson.id),
+  resources: {
+    ...safeResources(lesson.resources, lesson.id),
+    ...(labResources.has(lesson.id) ? { learningLab: labResources.get(lesson.id) } : {}),
+  },
 }));
 
 if (!lessons.length || lessons.some((lesson) => !lesson.id || !lesson.title)) {
@@ -235,6 +279,41 @@ const unitAssessments = units
     resources: { lesson: `/mstar-practice/${t.dir}/` },
   }));
 
+// Reuse the unit browser's authored end-of-unit links, including legacy routes
+// whose folder numbers differ from their curriculum unit. Never infer URLs.
+const unitDocument = new JSDOM(readFileSync(resolve(ROOT, "curriculum/units/index.html"), "utf8"))
+  .window.document;
+const unitResources = [];
+for (const unitNode of unitDocument.querySelectorAll("details.unit")) {
+  const unit = Number(unitNode.id.replace("unit-", ""));
+  const seen = new Set(endOfUnit.filter((p) => p.unit === unit).map((p) => p.resources.lesson));
+  for (const row of unitNode.querySelectorAll(":scope > .unit-body > .unit-res")) {
+    if (!/end of unit/i.test(row.querySelector(".unit-res-label")?.textContent || "")) continue;
+    for (const link of row.querySelectorAll("a.res[href]")) {
+      const href = link.getAttribute("href");
+      const title = link.textContent.replace(/\s+/g, " ").trim();
+      if (!href.startsWith("/") || href.startsWith("//") || seen.has(href)) continue;
+      if (
+        FORBIDDEN_RESOURCE.test(href + " " + title) ||
+        link.classList.contains("hub-teacher-only")
+      )
+        continue;
+      const target = href.split(/[?#]/)[0];
+      if (!existsSync(resolve(ROOT, target.slice(1), target.endsWith("/") ? "index.html" : ""))) {
+        throw new Error(`Missing end-of-unit resource: ${href}`);
+      }
+      seen.add(href);
+      unitResources.push({
+        id: `unit-${unit}-resource-${createHash("sha256").update(href).digest("hex").slice(0, 10)}`,
+        kind: "unitResource",
+        unit,
+        title: `End of Unit · ${title}`,
+        resources: { lesson: href },
+      });
+    }
+  }
+}
+
 const payload = {
   note: "GENERATED by scripts/generate-curriculum-launch-manifest.mjs — do not hand-edit.",
   schemaVersion: 2,
@@ -250,6 +329,7 @@ const payload = {
   partTwo,
   endOfUnit,
   unitAssessments,
+  unitResources,
 };
 
 const serialized = JSON.stringify(payload, null, 2) + "\n";
@@ -257,5 +337,7 @@ if (FORBIDDEN_RESOURCE.test(serialized)) {
   throw new Error("Generated launch manifest contains a forbidden teacher-only resource");
 }
 
-writeFileSync(OUTPUT, serialized);
-console.log(`Wrote ${lessons.length} student-safe lessons to ${OUTPUT}`);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  writeFileSync(OUTPUT, serialized);
+  console.log(`Wrote ${lessons.length} student-safe lessons to ${OUTPUT}`);
+}

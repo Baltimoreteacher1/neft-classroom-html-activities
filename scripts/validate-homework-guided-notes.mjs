@@ -113,8 +113,6 @@ const REQUIRED_MARKERS = [
   "Qué aprendemos hoy",
   "The big idea",
   "La idea principal",
-  "Follow the picture path",
-  "Sigan la ruta visual",
   "In one sentence",
   "En una frase",
   "Try this together",
@@ -130,7 +128,6 @@ const REQUIRED_MARKERS = [
   "Check This Problem",
   "NTAnswerMatch",
   'class="homework-tab-bar"',
-  'class="concept-quick-path"',
   'class="learning-word-chips"',
   'class="step-lead lang-en"',
   'class="family-visual-lab"',
@@ -161,7 +158,6 @@ const REQUIRED_MARKERS = [
   // be graduated without revealing answers, and the no-device activity must
   // be pickable and trackable on every generated page.
   'class="hw-route-chooser"',
-  'data-route-mode="quick"',
   'data-route-mode="core"',
   'data-route-mode="full"',
   "setHomeworkRoute",
@@ -298,10 +294,35 @@ for (const id of lessonIds) {
     };
   }
 
+  const ratioComparison = id === "3-5" || id === "3-5-part2";
+  const sharedModelMarkers = new Set([
+    'class="family-visual-lab"',
+    'data-visual-lab="',
+    'class="visual-lab-stage"',
+    'data-lesson-model="',
+    "data-lesson-model-host",
+    'class="interactive-visual"',
+    'class="visual-representation-grid"',
+  ]);
   for (const marker of REQUIRED_MARKERS) {
+    if (ratioComparison && sharedModelMarkers.has(marker)) continue;
     if (!html.includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
     }
+  }
+  if (ratioComparison) {
+    for (const marker of [
+      "data-ratio-compare",
+      "data-ratio-a-cocoa",
+      "data-ratio-b-cocoa",
+      "data-ratio-verdict",
+    ]) {
+      if (!html.includes(marker))
+        issues.push({ id, level: "CRITICAL", msg: `Missing ratio comparison control: ${marker}` });
+    }
+  }
+  if (html.includes('data-route-mode="quick"')) {
+    issues.push({ id, level: "CRITICAL", msg: "Retired 10-minute route is still offered" });
   }
 
   const wantedWorkbench = homeworkWorkbenchTool(config);
@@ -373,7 +394,7 @@ for (const id of lessonIds) {
     issues.push({ id, level: "HIGH", msg: "Learning summary has doubled punctuation" });
   }
 
-  const visualLabs = (html.match(/class="family-visual-lab"/g) || []).length;
+  const visualLabs = (html.match(/class="family-visual-lab(?: |")/g) || []).length;
   const lessonModels = (html.match(/data-lesson-model="/g) || []).length;
   const representationCards = (html.match(/class="visual-representation-card /g) || []).length;
   if (visualLabs !== 1) {
@@ -383,14 +404,14 @@ for (const id of lessonIds) {
       msg: `Expected one visual math lab, found ${visualLabs}`,
     });
   }
-  if (lessonModels !== 1) {
+  if (lessonModels !== (ratioComparison ? 0 : 1)) {
     issues.push({
       id,
       level: "CRITICAL",
       msg: `Expected one shared lesson model, found ${lessonModels}`,
     });
   }
-  if (representationCards !== 3) {
+  if (representationCards !== (ratioComparison ? 0 : 3)) {
     issues.push({
       id,
       level: "HIGH",

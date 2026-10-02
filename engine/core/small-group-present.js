@@ -29,7 +29,8 @@ const STYLE_ID = "sgp-styles";
 // Studio chrome that is never a beat: next-step buttons, the tool launcher, the
 // completion banner, and the problem pager (the presenter drives the pager, so
 // showing it as its own stop would be a beat that presents a button).
-const CHROME = ".sg-next, .nt-toolpoint, .sg-done, .sg-problem-nav, .sg-langbar";
+const CHROME =
+  ".sg-next, .nt-toolpoint, .sg-done, .sg-problem-nav, .sg-langbar, .reading-guide, .reading-cards, .sg-substep-next";
 
 // Teacher-only surfaces. These are hidden by CSS while presenting (see
 // injectStyles) — the list is repeated here so a beat is never built AROUND a
@@ -248,15 +249,21 @@ export function smallGroupBeats(doc = document) {
   tabs.forEach((tab) => {
     const panel = doc.getElementById(tab.getAttribute("aria-controls") || "");
     if (!panel) return;
-    for (const beat of panelBeats(panel, tabName(tab))) {
-      beats.push({
-        title: `${beats.length + 1} · ${beat.label}`,
-        activate: () => {
-          tab.click();
-          beat.run();
-        },
-      });
-    }
+    const substeps = [...panel.querySelectorAll(":scope > .sg-substep")];
+    const chips = [...panel.querySelectorAll(".sg-substep-chip")];
+    const sections = substeps.length ? substeps : [panel];
+    sections.forEach((section, index) => {
+      for (const beat of panelBeats(section, tabName(tab))) {
+        beats.push({
+          title: `${beats.length + 1} · ${beat.label}`,
+          activate: () => {
+            tab.click();
+            if (substeps.length) chips[index]?.click();
+            beat.run();
+          },
+        });
+      }
+    });
   });
   return beats;
 }
@@ -309,6 +316,7 @@ body.nt-present .nt-utility-menu,
 body.nt-present #nsr-launcher,
 body.nt-present .minimap-hud,
 body.nt-present .sg-mode,
+body.nt-present .sg-station-timer,
 body.nt-present #nt-present-widget{display:none!important}
 /* Read from across a table, not from a laptop keyboard. */
 body.nt-present #app{max-width:74rem;margin-inline:auto;font-size:1.35rem;line-height:1.6;color:#0f172a}

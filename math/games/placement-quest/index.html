@@ -147,9 +147,14 @@
           grid-template-columns: 1fr;
         }
       }
-    </style>
+          .quest-review-link {display:block;margin:10px 0;padding:12px;color:#bfe8ff;background:#102c43;border:1px solid #37627e;border-radius:10px;text-decoration:none;font-weight:650;}
+      .quest-review-link:focus-visible {outline:3px solid #ffd17b;outline-offset:3px;}
+      .stats-row {flex-wrap:wrap;font-size:16px;}.choice-btn {font-size:18px;min-height:52px;}.header-bar{flex-wrap:wrap;gap:14px;} #quest-next{margin-top:16px;background:#14664e;} [hidden]{display:none!important;}
+      @media(max-width:600px){body{padding:12px}.container{padding:16px}.question-box{padding:16px}.quest-map{padding:8px}}
+     .nt-chrome-dock{display:none!important;}
+</style>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <link rel="stylesheet" href="/assets/game-fx.css" />
+
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
@@ -163,29 +168,18 @@
     <!-- uifr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
+    <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
   <body>
 
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
-      </div>
-  
     <div class="container">
       <div class="header-bar">
         <h1>🧭 Math Placement Quest</h1>
         <div class="stats-row">
-          <span>Question: <span id="q-num">1</span>/10</span>
+          <span>Question: <span id="q-num">1</span>/<span id="q-total">11</span></span>
           <span>Score: <span id="q-score">0</span></span>
         </div>
       </div>
@@ -379,6 +373,8 @@
         },
       ];
 
+      questions.push({q: "A rectangular prism is 4 cm long, 3 cm wide, and 5 cm high. What is its volume?", c: ["12 cm³", "20 cm³", "60 cm³", "47 cm³"], a: 2, domain: "Unit 10: Volume", why: "Volume counts cubic units: 4 × 3 × 5 = 60 cm³."});
+
       // Coordinate nodes mapped to stones (start + stone-1..stone-10)
       const coordinates = [
         { x: 40, y: 40 },
@@ -397,6 +393,7 @@
       let currentIdx = 0;
       let score = 0;
       let correctCount = 0;
+      let questPaused = false;
       let answered = false; // one graded answer per question (real diagnostic)
       const missedDomains = [];
 
@@ -406,6 +403,7 @@
           return;
         }
         answered = false;
+        document.getElementById("quest-next").hidden = true;
 
         document.getElementById("q-num").textContent = currentIdx + 1;
 
@@ -419,11 +417,14 @@
         const container = document.getElementById("choices-container");
         container.innerHTML = "";
 
-        q.c.forEach((choice, index) => {
+        const order = q.c.map((choice, index) => ({choice, index}));
+        for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+        order.forEach(({choice, index}, position) => {
           const btn = document.createElement("button");
           btn.className = "choice-btn";
           btn.type = "button";
-          btn.textContent = choice;
+          btn.textContent = (position + 1) + ". " + choice;
+          btn.dataset.option = index;
           btn.onclick = () => selectChoice(index, btn);
           container.appendChild(btn);
         });
@@ -437,7 +438,7 @@
       // record the domain to review. Nobody is forced to retry until "right,"
       // so the final Level Badge reflects real readiness.
       function selectChoice(index, btn) {
-        if (answered) return;
+        if (answered || questPaused) return;
         answered = true;
 
         const q = questions[currentIdx];
@@ -447,7 +448,7 @@
         );
         buttons.forEach((b, i) => {
           b.disabled = true;
-          if (i === q.a) {
+          if (Number(b.dataset.option) === q.a) {
             b.style.borderColor = "#10b981";
             b.style.background = "rgba(16,185,129,0.18)";
           }
@@ -485,21 +486,17 @@
         }
 
         // Advance the explorer icon on every answer (right or wrong).
-        const nextCoord =
-          coordinates[Math.min(currentIdx + 1, coordinates.length - 1)];
+        const nextCoord = {x: 40 + (currentIdx + 1) * 520 / questions.length, y: 40};
         const player = document.getElementById("map-player");
         if (player) {
           player.setAttribute("cx", nextCoord.x);
           player.setAttribute("cy", nextCoord.y);
         }
 
-        setTimeout(
-          () => {
-            currentIdx++;
-            loadQuestion();
-          },
-          correct ? 900 : 3400, // wrong answers linger so the "why" is readable
-        );
+        document.dispatchEvent(new CustomEvent("game:feedback", {detail: {correct, message: feedback.textContent}}));
+        const next = document.getElementById("quest-next");
+        next.hidden = false;
+        next.focus();
       }
 
       function showResults() {
@@ -507,13 +504,14 @@
         document.getElementById("results-screen").style.display = "flex";
 
         const total = questions.length;
-        const stars = correctCount >= 9 ? 3 : correctCount >= 5 ? 2 : 1;
+        const rate = correctCount / total;
+        const stars = rate >= .9 ? 3 : rate >= .5 ? 2 : 1;
 
         let placement = "Explorer";
-        if (correctCount >= 9) placement = "Math Overlord";
-        else if (correctCount >= 7) placement = "Equation Knight";
-        else if (correctCount >= 5) placement = "Fraction Champion";
-        else if (correctCount >= 3) placement = "Ratio Scout";
+        if (rate >= .9) placement = "Math Overlord";
+        else if (rate >= .7) placement = "Equation Knight";
+        else if (rate >= .5) placement = "Fraction Champion";
+        else if (rate >= .3) placement = "Ratio Scout";
 
         // De-duplicate the domains that were missed → concrete review targets.
         const focus = missedDomains.filter(
@@ -544,6 +542,8 @@
               stars: stars,
               standard: "Grade 6 Diagnostic",
               problemsAttempted: total,
+              problemsCorrect: correctCount,
+              percent: Math.round(rate * 100),
             });
         } catch (e) {}
 
@@ -553,30 +553,55 @@
             {
               type: "game_completed",
               score: score,
-              maxScore: 10000,
+              maxScore: questions.length * 1000,
               completed: true,
             },
             "*",
           );
         }
 
-        // Celebrate!
+        document.dispatchEvent(new CustomEvent("game:complete", {detail: {score, correct: correctCount, total, accuracy: Math.round(correctCount / total * 100), message: "Diagnostic complete: " + correctCount + " of " + total + " correct."}}));
+        const routes = ["u1-factor-frenzy", "u1-decimal-dash", "u2-fraction-frenzy", "u3-ratio-rush", "u4-percent-power", "u5-area-attack", "u6-expression-express", "u7-equation-quest", "u8-data-dash", "u9-coordinate-quest", "u10-volume-blast"];
+        const review = document.getElementById("quest-review");
+        review.replaceChildren();
+        questions.forEach((question, index) => {
+          if (!focus.includes(question.domain)) return;
+          const link = document.createElement("a"); link.href = "/math/games/" + routes[index] + "/";
+          link.className = "quest-review-link"; link.textContent = "Practice " + question.domain;
+          review.append(link);
+        });
         document.body.classList.add("won");
       }
 
-      window.addEventListener("DOMContentLoaded", loadQuestion);
+      window.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("q-total").textContent = questions.length;
+        const next = document.createElement("button"); next.id = "quest-next"; next.className = "choice-btn"; next.type = "button"; next.textContent = "Continue expedition →"; next.hidden = true;
+        document.getElementById("choices-container").after(next);
+        next.addEventListener("click", () => { if (!answered || questPaused) return; currentIdx++; loadQuestion(); });
+        const review = document.createElement("div"); review.id = "quest-review"; document.getElementById("feedback-text").after(review);
+        const svg = document.querySelector(".quest-map svg");
+        svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Expedition progress across all 11 math topics");
+        document.querySelectorAll('[id^="stone-"]').forEach((node) => node.remove());
+        questions.forEach((_, index) => { const node = document.createElementNS("http://www.w3.org/2000/svg", "circle"); node.id = "stone-" + (index + 1); node.setAttribute("cx", 40 + (index + 1) * 520 / questions.length); node.setAttribute("cy", 40); node.setAttribute("r", 10); node.setAttribute("fill", "#334155"); svg.insertBefore(node, svg.querySelector("#map-player")); });
+        window.GameStudio && window.GameStudio.register({title: "Placement Quest", instructions: ["Answer one question for each math topic. Choose with the buttons or keys 1–4.", "Each answer is graded once. Read the explanation, then choose Continue.", "Your result includes links to practice topics you want to review."], pause() {questPaused = true;}, resume() {questPaused = false;}});
+        document.addEventListener("keydown", event => {
+          if (questPaused || event.target.closest('dialog, .studio-toolbar')) return;
+          if (/^[1-4]$/.test(event.key) && !answered) document.querySelectorAll("#choices-container button")[Number(event.key)-1]?.click();
+        });
+        loadQuestion();
+      });
     </script>
     <!-- EduPulse reporting (sends the diagnostic result to the gradebook). -->
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
+
     <!-- gfx-injected:end -->
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  
+
   <!-- mwb-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>
@@ -590,56 +615,8 @@
           <p id="ewl-coach-text" data-en="Calm self-paced review lab: practice, match, sort, and solve at your own pace!" data-es="Práctica a tu propio ritmo: clasifica, empareja y resuelve.">Calm self-paced review lab: practice, match, sort, and solve at your own pace!</p>
         </div>
       </div>
-  
-  <script>
-    (function() {
-      window.ewlShowMasteryModal = function(opts) {
-        opts = opts || {};
-        const score = opts.score || 0;
-        const maxScore = opts.maxScore || 1000;
-        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
-        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
-        const gameTitle = opts.title || "Unit Game Complete!";
-        const nextUrl = opts.nextUrl || "/math/games/";
 
-        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-        
-        const modalHtml = `
-          <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
-            <div class="ewl-mastery-card">
-              <div class="ewl-mastery-stars">${starStr}</div>
-              <h2 class="ewl-mastery-title">${gameTitle}</h2>
-              <p class="ewl-mastery-subtitle">Grade 6 Math Review Mastery Achieved!</p>
-              <div class="ewl-mastery-stats">
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${score}</div>
-                  <div class="ewl-stat-lbl">Final Score</div>
-                </div>
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${accuracy}%</div>
-                  <div class="ewl-stat-lbl">Accuracy</div>
-                </div>
-              </div>
-              <div class="ewl-mastery-actions">
-                <button class="ewl-mastery-btn ewl-btn-secondary" onclick="location.reload()">🔄 Play Again</button>
-                <button class="ewl-mastery-btn ewl-btn-primary" onclick="location.href='${nextUrl}'">🎮 More Games</button>
-              </div>
-            </div>
-          </div>
-        `;
-        const existing = document.getElementById("ewl-mastery-modal");
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML("beforeend", modalHtml);
-        
-        if (window.GameFX && window.GameFX.AudioSynth) {
-          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
-        }
-        if (window.GameFX && window.GameFX.burst) {
-          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-        }
-      };
-    })();
-  </script>
+
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
   <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->

@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/1-1/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Math is Mine</h1>
   <p class="doc-meta">MPP.3 · Unit 1 · Lesson 1</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can describe the ways we are all doers of math, and compare my math story with a classmate's.</p><p><strong>Language:</strong> I can tell my math story using the words strength, challenge, and I use math when ___ .</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">A Ferris wheel turns slowly against the evening sky. Each car is filling with riders as the line moves forward.</p>
+         <figure class="notice-figure"><img src="/lessons/1-1/reveal-assets/notice-wonder.jpg" alt="Four scenes of people doing math in daily life: a basketball game, students in band, a park clean-up, and two people playing chess." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>doer of math</strong><br><span class="es">persona que hace matemáticas</span></td><td>Anyone who uses mathematical thinking — which is everyone, every day.<br><span class="es">Cualquiera que use el pensamiento matemático, es decir, todos, todos los días.</span></td><td>Working out you need to leave at 7:40 to catch the 7:55 bus — You used numbers and reasoning to make a decision.</td></tr><tr><td><strong>math story</strong><br><span class="es">historia matemática</span></td><td>Your own history with mathematics — what you have done, felt, and learned so far.<br><span class="es">Tu propia historia con las matemáticas: lo que has hecho, sentido y aprendido.</span></td><td>“Math felt scary until I learned to draw the problem.” — It describes how your thinking changed over time.</td></tr><tr><td><strong>strength</strong><br><span class="es">fortaleza</span></td><td>Something you already do well and can share with others.<br><span class="es">Algo que ya haces bien y puedes compartir con otros.</span></td><td>Explaining your steps so a partner can follow them — It is something you do well that helps the group.</td></tr><tr><td><strong>decompose</strong><br><span class="es">descomponer</span></td><td>To break a number into parts that add, subtract, multiply, or divide back to it.<br><span class="es">Separar un número en partes que se combinan para volver a formarlo.</span></td><td>105.76 = 100 + 5.76 — The parts add back to exactly the original number.</td></tr><tr><td><strong>estimate</strong><br><span class="es">estimar</span></td><td>A reasoned answer that is close enough to be useful, without counting every one.<br><span class="es">Una respuesta razonada, lo bastante cercana para ser útil, sin contar todo.</span></td><td>“About 80 riders” when the true count is 78 — Close enough to plan with, and it took no counting.</td></tr></table></section>
@@ -95,11 +166,12 @@
         <p class="hint-line">Word bank: Equal groups, Multiply, Estimate</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">You have been doing math your whole life — at home, in school, and in your neighborhood — often without calling it math. This year starts by naming what you already do. Today you will take a Strengths Inventory — naming one thing you can already do well and one area you want to grow — and you will write your own math story. Then you will read a classmate’s story and find one thing that is the same as yours and one thing that is different. Estimating the riders on that Ferris wheel is math. So is deciding whether an answer is reasonable.</p><h3>We are all doers of math</h3><p>Before any new mathematics, the book asks a different question: where does math already live in your day?</p><p class="keyidea"><strong>Key idea:</strong> Math Practices: Mindset &amp; Problem Solving. 1. Make sense of the problem and persevere in solving it. 2. Look for entry points and decompose complex tasks into manageable parts. 3. Use estimation and mental math to check for reasonableness</p><div class="cistep"><p class="cititle">Watch me estimate the Ferris wheel</p><ul><li>The Ferris wheel has 20 cars, and about 4 people fit in each car. About how many people can ride at one time?</li><li>I count the cars: 20. Then I estimate how many riders fit in one car: about 4.</li><li>I do not count every person — an estimate is a reasoned answer that is close enough to be useful.</li><li>20 × 4 = 80, so I would say “about 80 people.”</li></ul></div><div class="cistep"><p class="cititle">Let's decompose 78.5 together</p><ul><li>78.5 = 70 + 8.5.</li><li>78.5 = 78 + 0.5.</li><li>78.5 = 80 − 1.5.</li><li>Every one of those is the same number wearing different clothes. Find two more.</li></ul></div><div class="cistep"><p class="cititle">Now you try</p><ul><li>Name three ways you used math this week outside of school.</li><li>Then tell a classmate one math strength you already have.</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><p class="context">Every card belongs on the left. That is the point of this lesson — you are already doing far more math than you get credit for. After sorting, say which one surprised you.</p><div class="item" data-practice-item><p class="qtext">Which of these are doing math? Sort them.</p><div class="wordbank"><strong>Word bank:</strong> </div><div class="sortboxes"><div class="sortbox"><div class="sorthd"></div></div><div class="sortbox"><div class="sorthd"></div></div></div></div><p class="frame">You and your partner each put a card in a different column. Take the one you disagreed about: what has to be true about an activity for it to count as doing math, even when nobody calls it math? — ___ is doing math because the person has to ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> Which decomposition of 78.5 uses multiplication correctly?</p><ol class="choices"><li><span class="ltr">A</span> 39 × 2</li><li><span class="ltr">B</span> 39.25 × 2</li><li><span class="ltr">C</span> 39.25 × 3</li><li><span class="ltr">D</span> 78.5 × 2</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> A Ferris wheel holds about 78 riders per turn and makes 6 turns an hour. About how many riders per hour?</p><ol class="choices"><li><span class="ltr">A</span> About 13</li><li><span class="ltr">B</span> About 84</li><li><span class="ltr">C</span> About 468</li><li><span class="ltr">D</span> About 780</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> Describe three different situations where you use math in your life. Say how the math is the SAME in each one.</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> Which statement matches this lesson's big idea?</p><ol class="choices"><li><span class="ltr">A</span> Only people who are fast at math are doers of math</li><li><span class="ltr">B</span> Math only counts when it happens in a classroom</li><li><span class="ltr">C</span> Everyone is a doer of math, and we do it in different ways</li><li><span class="ltr">D</span> There is one right way to think about a math problem</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> Ask a family member, classmate, or trusted adult about their math story. How is it different from yours? Working alone: compare your math story now with an earlier memory.</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">6.</span> You estimate 80 riders and the true count is 78. Was your estimate useful?</p><ol class="choices"><li><span class="ltr">A</span> No — an estimate is only useful if it is exact</li><li><span class="ltr">B</span> No — you should never estimate</li><li><span class="ltr">C</span> Yes — it was close enough to plan with</li><li><span class="ltr">D</span> Yes — because any answer is fine</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">7.</span> What do you want math to be like for you this year?</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">8.</span> Use mental math to complete each Ferris wheel estimate.</p><table class="grid"><tr><th>Situation</th><th>Estimate</th><th>Answer</th></tr><tr><td>20 cars, each holding about 4 riders</td><td>20 × 4</td><td class="fill"></td></tr><tr><td>About 80 riders each turn, 6 turns in an hour</td><td>80 × 6</td><td class="fill"></td></tr><tr><td>About 480 riders each hour, for 2 hours</td><td>480 × 2</td><td class="fill"></td></tr></table></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext">Which of these are doing math? Sort them.</p><p class="task-directions">Every card belongs on the left. That is the point of this lesson — you are already doing far more math than you get credit for. After sorting, say which one surprised you.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">Checking whether $12 is enough for two snacks</span> <span class="chip">Keeping score in a game</span> <span class="chip">Following a recipe and doubling it</span> <span class="chip">Guessing how many people fit on a Ferris wheel</span> <span class="chip">Choosing the shorter of two lines at the store</span> <span class="chip">Packing a bag so everything fits</span> <span class="chip">Splitting a pizza so everyone gets a fair share</span> <span class="chip">Deciding if you have enough time to walk or need to run</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">This is doing math</div></div><div class="sortbox"><div class="sorthd">Most people don't call this math</div></div></div></div><p class="frame">You and your partner each put a card in a different column. Take the one you disagreed about: what has to be true about an activity for it to count as doing math, even when nobody calls it math? — ___ is doing math because the person has to ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> Which decomposition of 78.5 uses multiplication correctly?</p><ol class="choices"><li><span class="ltr">A</span> 39 × 2</li><li><span class="ltr">B</span> 39.25 × 2</li><li><span class="ltr">C</span> 39.25 × 3</li><li><span class="ltr">D</span> 78.5 × 2</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">2.</span> A Ferris wheel holds about 78 riders per turn and makes 6 turns an hour. About how many riders per hour?</p><ol class="choices"><li><span class="ltr">A</span> About 13</li><li><span class="ltr">B</span> About 84</li><li><span class="ltr">C</span> About 468</li><li><span class="ltr">D</span> About 780</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="open-response"><p class="qtext"><span class="qnum">3.</span> Describe three different situations where you use math in your life. Say how the math is the SAME in each one.</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">4.</span> Which statement matches this lesson's big idea?</p><ol class="choices"><li><span class="ltr">A</span> Only people who are fast at math are doers of math</li><li><span class="ltr">B</span> Math only counts when it happens in a classroom</li><li><span class="ltr">C</span> Everyone is a doer of math, and we do it in different ways</li><li><span class="ltr">D</span> There is one right way to think about a math problem</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="open-response"><p class="qtext"><span class="qnum">5.</span> Ask a family member, classmate, or trusted adult about their math story. How is it different from yours? Working alone: compare your math story now with an earlier memory.</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">6.</span> You estimate 80 riders and the true count is 78. Was your estimate useful?</p><ol class="choices"><li><span class="ltr">A</span> No — an estimate is only useful if it is exact</li><li><span class="ltr">B</span> No — you should never estimate</li><li><span class="ltr">C</span> Yes — it was close enough to plan with</li><li><span class="ltr">D</span> Yes — because any answer is fine</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="open-response"><p class="qtext"><span class="qnum">7.</span> What do you want math to be like for you this year?</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">8.</span> Use mental math to complete each Ferris wheel estimate.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Situation</th><th scope="col">Estimate</th><th scope="col">Answer</th></tr></thead><tbody><tr><td>20 cars, each holding about 4 riders</td><td class="fill" aria-label="Your response: Estimate, row 1"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Answer, row 1"><span class="paper-blank"></span></td></tr><tr><td>About 80 riders each turn, 6 turns in an hour</td><td class="fill" aria-label="Your response: Estimate, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Answer, row 2"><span class="paper-blank"></span></td></tr><tr><td>About 480 riders each hour, for 2 hours</td><td class="fill" aria-label="Your response: Estimate, row 3"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Answer, row 3"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">What we believe about ourselves, about others, and about what we are learning shapes us. Your classmate has a math story too, and it is not the same as yours.</p><p class="qtext">What do you believe are your math strengths, and which area do you most want to grow this year?</p><p class="hint-line">Try to use: strength, grow, story, classmate</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">Which statement best shows what this lesson means by “we are all doers of math”?</p><ol class="choices"><li><span class="ltr">A</span> Everyone gets the same score if they try hard enough</li><li><span class="ltr">B</span> Everyone must solve problems the same way to be correct</li><li><span class="ltr">C</span> Only the fastest students are really doing math</li><li><span class="ltr">D</span> Everyone uses mathematical thinking daily, in different ways, and sharing those ways helps us grow</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 1-1 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

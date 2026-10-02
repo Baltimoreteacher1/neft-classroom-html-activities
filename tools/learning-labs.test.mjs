@@ -9,7 +9,12 @@ import {
   puzzle,
   statistics,
 } from "../curriculum/learning-labs/shared/math.mjs";
-import { visual } from "../curriculum/learning-labs/shared/model.mjs";
+import { guidance, visual } from "../curriculum/learning-labs/shared/model.mjs";
+import {
+  activityStatus,
+  overview,
+  parseKeyIdea,
+} from "../curriculum/learning-labs/shared/progress.mjs";
 import { blueprints } from "./learning-labs/blueprints.mjs";
 import {
   CORE_ID_RE,
@@ -71,6 +76,40 @@ for (const item of catalogue.labs) {
   assert.ok(Number.isFinite(result.value));
   const diagram = new JSDOM(visual(lab.model, lab.model.values, result)).window.document;
   assert.ok(diagram.querySelector('svg[role="img"][aria-label]'));
+  const tips = guidance(lab.model);
+  assert.ok(tips.show.length > 30 && tips.tip.length > 20, `${item.id} needs model guidance`);
+  for (const lesson of lab.lessons) {
+    const key = parseKeyIdea(lesson.concept.keyIdea);
+    assert.ok(key.points.length >= 2, `${lesson.id} key idea must split into points`);
+    assert.ok(
+      lesson.concept.worked.linesEs?.length === lesson.concept.worked.lines.length,
+      `${lesson.id} Spanish worked example`,
+    );
+  }
+  const blank = {
+    level: "core",
+    practice: {},
+    notes: {},
+    steps: {},
+    games: {},
+    models: {},
+    created: "",
+    checklist: [],
+    investigated: [],
+  };
+  const fresh = overview(lab, blank);
+  assert.equal(fresh.done, 0);
+  assert.equal(fresh.next, "brief");
+  assert.ok(fresh.items.every((i) => i.status === "new"));
+  const practiced = structuredClone(blank);
+  for (const q of lab.practice.core)
+    practiced.practice[q.id] =
+      q.type === "explain"
+        ? { reviewed: true, input: "x" }
+        : { correct: true, attempts: 1, input: "1" };
+  assert.equal(activityStatus(lab, practiced, "practice").status, "done");
+  practiced.notes.prediction = "I know";
+  assert.equal(overview(lab, practiced).next, "learn");
   for (let tier = 0; tier < 3; tier++)
     for (let round = 0; round < 3; round++) {
       const p = puzzle(lab.model, round, tier);
@@ -86,6 +125,35 @@ for (const item of catalogue.labs) {
       gameGoals++;
     }
 }
+const wide = new JSDOM(
+  visual(
+    { kind: "data", mode: "histogram" },
+    [1, 2, 48, 50, 3, 4, 5, 6],
+    evaluate({ kind: "data", mode: "histogram", values: [1, 2, 48, 50, 3, 4, 5, 6] }),
+  ),
+).window.document;
+assert.equal(
+  wide.querySelectorAll("rect").length,
+  11,
+  "histogram bins extend to the last occupied interval",
+);
+const narrow = new JSDOM(
+  visual(
+    { kind: "data", mode: "histogram" },
+    [1, 2, 3, 4, 5, 6, 7, 8],
+    evaluate({ kind: "data", mode: "histogram", values: [1, 2, 3, 4, 5, 6, 7, 8] }),
+  ),
+).window.document;
+assert.equal(
+  narrow.querySelectorAll("rect").length,
+  4,
+  "histogram never shows fewer than four intervals",
+);
+assert.deepEqual(parseKeyIdea("Title. 1. First 2. Second 3. Third"), {
+  title: "Title",
+  points: ["First", "Second", "Third"],
+});
+assert.deepEqual(parseKeyIdea("Plain text"), { title: "", points: ["Plain text"] });
 const close = (actual, expected) =>
   assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} != ${expected}`);
 const check = (kind, mode, values, expected) =>

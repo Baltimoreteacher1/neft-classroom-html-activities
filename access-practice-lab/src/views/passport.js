@@ -1,0 +1,220 @@
+// My Passport: stamps per skill, practice streak, badges, a printable report,
+// and a portable progress code (move progress to another device, no account).
+import { crumbsHTML, domainGlyph, ringHTML } from "../components.js";
+import { bandDomains } from "../content.js";
+import {
+  clearAll,
+  exportCode,
+  getStudentName,
+  importCode,
+  loadRecord,
+  practiceDays,
+  setStudentName,
+  weekStreak,
+} from "../store.js";
+import {
+  BASE,
+  CORE_DOMAINS,
+  DOMAIN_META,
+  LEVEL_KEYS,
+  TIERS,
+  announce,
+  bandLabel,
+  formatDate,
+  html,
+  raw,
+} from "../util.js";
+
+const IGN = raw("data-nsr-ignore");
+
+function badges(stats, streak, days) {
+  const total = stats.reduce((n, s) => n + s.done, 0);
+  const all4 = stats.every((s) => s.done > 0);
+  return [
+    { on: total >= 1, icon: "🌱", name: "First stamp", how: "Finish any activity." },
+    { on: all4, icon: "🧭", name: "All four skills", how: "Finish one activity in every skill." },
+    { on: total >= 10, icon: "🔟", name: "Ten stamps", how: "Finish 10 activities." },
+    { on: total >= 30, icon: "🚀", name: "Thirty stamps", how: "Finish 30 activities." },
+    {
+      on: streak >= 3,
+      icon: "🔥",
+      name: "Three-week streak",
+      how: "Practice three weeks in a row.",
+    },
+    {
+      on: stats.find((s) => s.domain === "Speaking")?.done >= 5,
+      icon: "🎤",
+      name: "Brave speaker",
+      how: "Finish 5 speaking activities.",
+    },
+    {
+      on: stats.find((s) => s.domain === "Writing")?.done >= 5,
+      icon: "✍️",
+      name: "Strong writer",
+      how: "Finish 5 writing activities.",
+    },
+    {
+      on: days.length >= 10,
+      icon: "📅",
+      name: "Ten practice days",
+      how: "Practice on 10 different days.",
+    },
+  ];
+}
+
+export async function render(ctx) {
+  const band = ctx.band;
+  const domains = await bandDomains(band);
+  const stats = CORE_DOMAINS.filter((d) => domains[d]).map((d) => {
+    let done = 0;
+    let total = 0;
+    const byLevel = LEVEL_KEYS.filter((k) => domains[d].levels[k]).map((k) => {
+      const ids = new Set(domains[d].levels[k].activities.map((r) => r[0]));
+      const n = loadRecord(band, d, k).complete.filter((id) => ids.has(id)).length;
+      done += n;
+      total += ids.size;
+      return { level: k, n, of: ids.size };
+    });
+    return { domain: d, done, total, byLevel, color: domains[d].color };
+  });
+  const days = practiceDays();
+  const streak = weekStreak(days);
+  const list = badges(stats, streak, days);
+  const name = getStudentName();
+  return {
+    title: "My Passport",
+    html: html`${crumbsHTML([
+        ["Lab", `${BASE}/`],
+        ["My Passport", null],
+      ])}
+      <section class="passport">
+        <header class="passport-head">
+          <div>
+            <p class="eyebrow">ACCESS Practice Passport · ${bandLabel(band)}</p>
+            <h1 tabindex="-1">🛂 ${name ? `${name}'s` : "My"} Passport</h1>
+            <label class="field inline"
+              ><span>My name or initials</span
+              ><input
+                type="text"
+                data-name
+                value="${name}"
+                maxlength="40"
+                autocomplete="off"
+                ${IGN}
+            /></label>
+          </div>
+          <dl class="pp-stats">
+            <div>
+              <dt>Stamps</dt>
+              <dd>${stats.reduce((n, s) => n + s.done, 0)}</dd>
+            </div>
+            <div>
+              <dt>Week streak</dt>
+              <dd>${streak}</dd>
+            </div>
+            <div>
+              <dt>Practice days</dt>
+              <dd>${days.length}</dd>
+            </div>
+          </dl>
+        </header>
+        <div class="pp-grid">
+          ${stats.map(
+            (s) =>
+              html`<article class="pp-card" style="--room:${s.color}">
+                <h2>
+                  <span aria-hidden="true">${domainGlyph(s.domain)}</span>
+                  ${DOMAIN_META[s.domain].room}
+                </h2>
+                ${ringHTML(s.done, s.total, { size: 72, label: `${s.done} of ${s.total}` })}
+                <ul class="pp-levels">
+                  ${s.byLevel.map(
+                    (l) =>
+                      html`<li>
+                        <span>${TIERS[l.level].name}</span
+                        ><span class="stamps" aria-label="${l.n} of ${l.of} stamps"
+                          >${"●".repeat(l.n)}<span class="empty"
+                            >${"○".repeat(Math.max(0, l.of - l.n))}</span
+                          ></span
+                        >
+                      </li>`,
+                  )}
+                </ul>
+              </article>`,
+          )}
+        </div>
+        <h2 class="section-title">Badges</h2>
+        <ul class="badges">
+          ${list.map((b) => html`<li class="${b.on ? "is-on" : ""}"><span class="badge-icon" aria-hidden="true">${b.icon}</span><strong>${b.name}</strong><span>${b.on ? "Earned!" : b.how}</span></li>`)}
+        </ul>
+        ${days.length ? html`<p class="fine">Last practice: ${formatDate(days[0], { weekday: "long", month: "long", day: "numeric" })}</p>` : ""}
+        <div class="row-actions no-print">
+          <button type="button" class="btn btn-primary" data-print>🖨️ Print my passport</button>
+        </div>
+      </section>
+      <section class="panel no-print">
+        <h2>Use another computer</h2>
+        <p>
+          Your progress is saved on this device only. Copy your progress code, then paste it on
+          another device.
+        </p>
+        <div class="row-actions">
+          <button type="button" class="btn" data-export>Copy my progress code</button>
+        </div>
+        <label class="field"
+          ><span>Paste a progress code</span
+          ><textarea rows="2" data-import-text placeholder="ACCESS1.…" ${IGN}></textarea>
+        </label>
+        <div class="row-actions">
+          <button type="button" class="btn" data-import>Load progress</button
+          ><button type="button" class="ghost danger" data-clear>
+            Clear my progress on this device
+          </button>
+        </div>
+      </section>`,
+  };
+}
+
+export function onInput(e) {
+  if (e.target.matches("[data-name]")) setStudentName(e.target.value.trim());
+}
+
+export async function onClick(e, ctx) {
+  const t = e.target;
+  if (t.closest("[data-export]")) {
+    const code = exportCode();
+    try {
+      await navigator.clipboard.writeText(code);
+      announce("Progress code copied. Paste it on your other device.");
+    } catch {
+      const box = document.querySelector("[data-import-text]");
+      if (box) {
+        box.value = code;
+        box.select();
+      }
+      announce("Copy the code from the box.");
+    }
+    return;
+  }
+  if (t.closest("[data-import]")) {
+    try {
+      const n = importCode(document.querySelector("[data-import-text]")?.value);
+      announce(`Progress loaded (${n} items).`);
+      ctx.rerender();
+    } catch (err) {
+      announce(err.message || "That code did not work.");
+    }
+    return;
+  }
+  if (t.closest("[data-clear]")) {
+    if (
+      !window.confirm(
+        "Clear all ACCESS Practice Lab progress on this device? This cannot be undone.",
+      )
+    )
+      return;
+    clearAll();
+    announce("Progress cleared.");
+    ctx.rerender();
+  }
+}

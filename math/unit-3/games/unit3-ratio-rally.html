@@ -80,6 +80,8 @@
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
 </head>
   <body>
 
@@ -128,11 +130,14 @@
       const SFX = {
         ctx: null,
         init() {
+          if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
           if (!this.ctx)
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         },
         play(t, f, d, v = 0.2) {
+          if (window.__flagshipMuted) return;
           this.init();
+          if (!this.ctx) return;
           const c = this.ctx,
             o = c.createOscillator(),
             g = c.createGain();
@@ -146,7 +151,9 @@
           o.stop(c.currentTime + d);
         },
         noise(d, v = 0.1) {
+          if (window.__flagshipMuted) return;
           this.init();
+          if (!this.ctx) return;
           const c = this.ctx;
           const bufferSize = c.sampleRate * d;
           const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
@@ -289,9 +296,10 @@
 
       // ── Question Generator ──
       function generateQuestions(difficulty) {
+        const choice = values => values[randInt(0, values.length - 1)];
         const qs = [];
         for (let i = 0; i < 18; i++) {
-          const type = randInt(0, 5);
+          const type = difficulty === "easy" ? randInt(0, 2) : difficulty === "hard" ? randInt(3, 5) : randInt(0, 5);
           let q, answer, choices, prompt;
 
           if (type === 0) {
@@ -1797,6 +1805,7 @@
             btns.forEach((b) => b.disableInteractive());
 
             const isCorrect = c === q.answer;
+            document.dispatchEvent(new CustomEvent("flagship:answer", {detail:{correct:isCorrect,message:isCorrect ? "Ratio checkpoint cleared." : "Compare the quantities using the same scale factor."}}));
 
             if (isCorrect) {
               SFX.correct();
@@ -2347,7 +2356,7 @@
         this.cameras.main.fadeIn(600);
       };
 
-      var rrGame = new Phaser.Game(config);
+      var rrGame = window.__flagshipGame = new Phaser.Game(config);
       // Keyboard accessibility: make the game canvas focusable.
       rrGame.events.once("ready", function () {
         var c = rrGame.canvas;
@@ -2368,7 +2377,6 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     
@@ -2403,57 +2411,9 @@
           <p id="ewl-coach-text" data-en="Ratio tables show equivalent ratios." data-es="Las tablas de razones muestran razones equivalentes.">Ratio tables show equivalent ratios.</p>
         </div>
       </div>
-  
-  <script>
-    (function() {
-      window.ewlShowMasteryModal = function(opts) {
-        opts = opts || {};
-        const score = opts.score || 0;
-        const maxScore = opts.maxScore || 1000;
-        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
-        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
-        const gameTitle = opts.title || "Unit Game Complete!";
-        const nextUrl = opts.nextUrl || "/math/games/";
-
-        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-        
-        const modalHtml = `
-          <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
-            <div class="ewl-mastery-card">
-              <div class="ewl-mastery-stars">${starStr}</div>
-              <h2 class="ewl-mastery-title">${gameTitle}</h2>
-              <p class="ewl-mastery-subtitle">Grade 6 Math Review Mastery Achieved!</p>
-              <div class="ewl-mastery-stats">
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${score}</div>
-                  <div class="ewl-stat-lbl">Final Score</div>
-                </div>
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${accuracy}%</div>
-                  <div class="ewl-stat-lbl">Accuracy</div>
-                </div>
-              </div>
-              <div class="ewl-mastery-actions">
-                <button class="ewl-mastery-btn ewl-btn-secondary" onclick="location.reload()">🔄 Play Again</button>
-                <button class="ewl-mastery-btn ewl-btn-primary" onclick="location.href='${nextUrl}'">🎮 More Games</button>
-              </div>
-            </div>
-          </div>
-        `;
-        const existing = document.getElementById("ewl-mastery-modal");
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML("beforeend", modalHtml);
-        
-        if (window.GameFX && window.GameFX.AudioSynth) {
-          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
-        }
-        if (window.GameFX && window.GameFX.burst) {
-          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-        }
-      };
-    })();
-  </script>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+<script src="/assets/game-studio.js?v=20261002" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
 </body>
 </html>

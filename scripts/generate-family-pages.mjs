@@ -14,49 +14,51 @@ function loadCanonicalLessons() {
 }
 
 const CANONICAL_LESSONS = loadCanonicalLessons();
+const FAMILY_TITLES_ES = JSON.parse(
+  readFileSync(join(root, "data", "family-homework-titles-es.json"), "utf8"),
+);
 
 const UNIT_THEMES = {
   1: {
-    name: "Number System Launch",
-    blurb:
-      "Factors, multiples, and decimal operations that help students talk clearly about numbers.",
+    name: "Math Is Discovery",
+    blurb: "Math identity, problem solving, models, and explaining our thinking.",
   },
   2: {
-    name: "Fraction Detective Agency",
-    blurb: "Dividing fractions and mixed numbers with models, stories, and careful reasoning.",
+    name: "Statistics",
+    blurb:
+      "Statistical questions, data displays, and measures of center and spread, with decimal skills.",
   },
   3: {
-    name: "Culinary Academy",
+    name: "Ratios & Rates",
     blurb: "Ratios and ratio reasoning through recipes, comparisons, and shared quantities.",
   },
   4: {
-    name: "Arcade Builder",
-    blurb: "Rates, unit rates, and percents for shopping, games, speed, and decisions.",
+    name: "Percents",
+    blurb: "Percents, equivalent forms, estimates, and part-whole problems.",
   },
   5: {
-    name: "Architecture Firm",
-    blurb: "Area of polygons and composite figures using formulas, drawings, and labels.",
+    name: "Area, Surface Area & Volume",
+    blurb: "Area of shapes, volume of prisms, nets, and surface area.",
   },
   6: {
-    name: "Music Studio",
-    blurb:
-      "Expressions, exponents, and properties that describe patterns and repeated calculations.",
+    name: "Expressions",
+    blurb: "Fraction division, factors, exponents, and equivalent expressions.",
   },
   7: {
-    name: "Equation Detective Agency",
-    blurb: "Equations and inequalities that help students represent unknowns and solve fairly.",
+    name: "Integers & the Coordinate Plane",
+    blurb: "Positive and negative numbers, absolute value, and points on the coordinate plane.",
   },
   8: {
-    name: "Sports Analytics Lab",
-    blurb: "Statistics and data displays that help students summarize and compare information.",
+    name: "Equations & Inequalities",
+    blurb: "Writing, solving, and graphing equations and inequalities.",
   },
   9: {
-    name: "Treasure Map Navigator",
-    blurb: "Integers and the coordinate plane for direction, distance, and location.",
+    name: "Two-Variable Relationships",
+    blurb: "Tables, graphs, and equations that show how two quantities change together.",
   },
   10: {
-    name: "Time Capsule Engineers",
-    blurb: "Volume and surface area for boxes, packages, containers, and designs.",
+    name: "Math Is Synthesis",
+    blurb: "Using and explaining skills from across the year in new problems.",
   },
 };
 
@@ -163,12 +165,6 @@ function esc(value) {
     .replace(/"/g, "&quot;");
 }
 
-function stripObjective(objective) {
-  return String(objective || "")
-    .replace(/^I can\s+/i, "")
-    .replace(/\.$/, "");
-}
-
 function textFromMaybe(value) {
   if (!value) return "";
   if (typeof value === "string") return value;
@@ -183,30 +179,6 @@ function textFromMaybe(value) {
     );
   }
   return String(value);
-}
-
-function mainSkill(lesson) {
-  const objective = stripObjective(lesson.objective).trim();
-  const genericObjectives = new Set(["explain my math thinking", "i can explain my math thinking"]);
-  if (!objective || genericObjectives.has(objective.toLowerCase())) {
-    return `the skill from this lesson: ${lesson.title.toLowerCase()}`;
-  }
-  return objective.toLowerCase();
-}
-
-function spanishSkill(lesson) {
-  const topic = String(lesson.topic || "").toLowerCase();
-  if (topic.includes("number system")) return "usar números con cuidado y explicar sus pasos";
-  if (topic.includes("ratios") || topic.includes("rates") || topic.includes("percent"))
-    return "comparar cantidades y explicar relaciones";
-  if (topic.includes("geometry")) return "medir y resolver problemas de geometría";
-  if (topic.includes("expressions") || topic.includes("equations"))
-    return "usar letras, números y reglas para resolver problemas";
-  if (topic.includes("statistics") || topic.includes("data"))
-    return "leer datos, hacer gráficas y explicar patrones";
-  if (topic.includes("integers"))
-    return "usar números positivos y negativos en una recta numérica o plano";
-  return "resolver problemas y explicar su pensamiento";
 }
 
 function lessonSort(a, b) {
@@ -292,6 +264,7 @@ function normalizeVocabulary(config, topic) {
       term: textFromMaybe(item.term || item.word || item.name),
       termEs: textFromMaybe(item.termEs || item.spanish || item.translation),
       definition: textFromMaybe(item.definition || item.meaning),
+      definitionEs: textFromMaybe(item.definitionEs),
       example: textFromMaybe(item.example) || textFromMaybe(item.examples),
     }))
     .filter((item) => item.term && item.definition)
@@ -308,115 +281,9 @@ function normalizeVocabulary(config, topic) {
     term: textFromMaybe(item.term),
     termEs: textFromMaybe(item.termEs) || textFromMaybe(item.term),
     definition: textFromMaybe(item.definition),
+    definitionEs: textFromMaybe(item.definitionEs),
     example: textFromMaybe(item.example),
   }));
-}
-
-function practiceFor(config, topic) {
-  const title = String(config.title || "").toLowerCase();
-  if (/prime|factor/.test(title)) {
-    return [
-      ["Make a factor tree for 36.", "36 = 2 x 2 x 3 x 3"],
-      ["List all factors of 24.", "1, 2, 3, 4, 6, 8, 12, 24"],
-      ["Is 29 prime or composite? How do you know?", "Prime; only 1 and 29 divide it evenly."],
-      ["What is the greatest common factor of 18 and 30?", "6"],
-    ];
-  }
-  if (/triangle/.test(title)) {
-    return [
-      ["A triangle has base 8 cm and height 5 cm. What is its area?", "20 square centimeters"],
-      ["A triangle has area 18 square units and base 6 units. What is its height?", "6 units"],
-      [
-        "Why do we multiply by 1/2 when finding triangle area?",
-        "A triangle is half of a related rectangle or parallelogram.",
-      ],
-      [
-        "Draw a triangle and label a base and height.",
-        "Answers vary; height should be perpendicular to the base.",
-      ],
-    ];
-  }
-  if (/histogram/.test(title)) {
-    return [
-      [
-        "A histogram interval 10-19 has frequency 6. What does that mean?",
-        "Six data values are from 10 through 19.",
-      ],
-      [
-        "Make intervals of width 5 from 0 to 20.",
-        "0-4, 5-9, 10-14, 15-19, 20-24 or similar consistent groups",
-      ],
-      ["Which interval has the most data: 0-9 has 3, 10-19 has 8, 20-29 has 5?", "10-19"],
-      [
-        "Why do histograms use intervals?",
-        "They group many numbers so patterns are easier to see.",
-      ],
-    ];
-  }
-  if (topic === "Ratios, rates, and percents") {
-    return [
-      ["There are 2 red tiles for every 3 blue tiles. Write the ratio of red to blue.", "2:3"],
-      ["A pack of 4 pens costs $8. What is the cost for 1 pen?", "$2"],
-      ["What is 25% of 40?", "10"],
-      ["A recipe uses 3 cups of flour for 12 cookies. How much flour for 24 cookies?", "6 cups"],
-    ];
-  }
-  if (topic === "Geometry") {
-    return [
-      ["A rectangle is 7 ft by 4 ft. What is its area?", "28 square feet"],
-      ["A parallelogram has base 9 cm and height 3 cm. What is its area?", "27 square centimeters"],
-      [
-        "Name two units that could measure area.",
-        "Square inches, square feet, square centimeters, or similar",
-      ],
-      [
-        "Why is labeling units helpful?",
-        "It shows what the number measures and helps catch mistakes.",
-      ],
-    ];
-  }
-  if (topic === "Expressions and equations") {
-    return [
-      ["Evaluate 3x + 2 when x = 4.", "14"],
-      ["Solve x + 6 = 15.", "x = 9"],
-      ["Write an expression for 5 more than a number n.", "n + 5"],
-      ["Is y = 3 a solution to y + 4 = 7?", "Yes"],
-    ];
-  }
-  if (topic === "Statistics and data") {
-    return [
-      ["Find the mean of 4, 6, 8, and 10.", "7"],
-      ["Find the median of 3, 5, 9, 12, and 20.", "9"],
-      ["A dot plot has four dots above 6. What does that mean?", "The value 6 appears four times."],
-      [
-        "Name one question data could help answer.",
-        "Answers vary, such as which lunch is most popular.",
-      ],
-    ];
-  }
-  if (topic === "Integers and coordinate plane") {
-    return [
-      ["Which is greater: -2 or -7?", "-2"],
-      ["What is the opposite of 9?", "-9"],
-      ["What is |-5|?", "5"],
-      ["Plotting (3, -2), do you move right or left first?", "Right 3, then down 2"],
-    ];
-  }
-  return [
-    ["Estimate first, then solve: 48 / 6.", "Estimate about 50 / 5 = 10; exact answer 8"],
-    ["Explain one way to check an answer.", "Use the opposite operation, a model, or estimation."],
-    ["Write a number story for 12 x 3.", "Answers vary; for example, 12 rows of 3 chairs."],
-    [
-      "What should you do if an answer seems too big or too small?",
-      "Re-read the problem and check with an estimate.",
-    ],
-  ];
-}
-
-function learningText(lesson) {
-  const skill = mainSkill(lesson);
-  const phrase = skill.startsWith("the skill") ? skill : `how to ${skill}`;
-  return `In this lesson, students practice ${phrase}. They learn to show their thinking with numbers, pictures, words, or a model. The goal is not just getting an answer. Students should be able to explain why the answer makes sense.`;
 }
 
 function whyText(topic) {
@@ -438,18 +305,6 @@ function whyText(topic) {
   return "This skill supports everyday problem solving with money, measurements, games, planning, and checking whether an answer is reasonable.";
 }
 
-function classText(_lesson) {
-  return `Your child may use the interactive lesson, guided notes, examples from the board, partner talk, and short practice problems. They may be asked to solve, draw a model, label important numbers, and explain their reasoning in a sentence.`;
-}
-
-function homeText() {
-  return "You do not need to teach a new method. Ask your child to read the problem out loud, circle the important numbers, and explain what they tried first. Helpful questions include: What do you know? What are you trying to find? Does your answer make sense?";
-}
-
-function spanishLearning(lesson) {
-  return `En esta lección, su hijo/a practica ${spanishSkill(lesson)}. Puede usar dibujos, números, palabras o modelos para mostrar su pensamiento. Lo más importante es que pueda explicar por qué su respuesta tiene sentido.`;
-}
-
 function spanishWhy(topic) {
   if (topic === "Ratios, rates, and percents")
     return "Esta matemática aparece en recetas, compras, deportes, descuentos y comparaciones. Ayuda a los estudiantes a decidir qué es justo o cuál opción conviene más.";
@@ -462,10 +317,6 @@ function spanishWhy(topic) {
   if (topic === "Integers and coordinate plane")
     return "Los enteros y las coordenadas se usan con temperaturas, dinero, mapas, elevadores y juegos. Ayudan a describir ubicación y distancia.";
   return "Esta habilidad ayuda con dinero, medidas, juegos, planificación y con revisar si una respuesta es razonable.";
-}
-
-function spanishHome() {
-  return "No necesita ser experto/a en matemáticas. Pídale a su hijo/a que lea el problema en voz alta, marque los números importantes y explique su primer paso. Puede preguntar: ¿Qué sabes? ¿Qué necesitas encontrar? ¿Tu respuesta tiene sentido?";
 }
 
 function buildLessonRecords() {
@@ -485,11 +336,15 @@ function buildLessonRecords() {
       };
       const topic = topicFor(lessonSource);
       const isFlagship = lessonId.endsWith("-flagship");
+      const familyNote = JSON.parse(
+        readFileSync(join(root, "data", "family-homework-notes", `${lessonId}.json`), "utf8"),
+      );
       return {
         lessonId,
         unit,
         lesson: Number(lessonSource.lesson || lessonId.match(lessonDirPattern)[2]),
         title: lessonSource.title || `Lesson ${lessonId}`,
+        titleEs: FAMILY_TITLES_ES[lessonId],
         standard: lessonSource.standard || "Grade 6 Math",
         objective: lessonSource.objective || "I can explain my math thinking.",
         languageObjective:
@@ -502,7 +357,14 @@ function buildLessonRecords() {
         ...(isFlagship ? { variantLabel: "Flagship / Enrichment Version" } : {}),
         resources: resourcesFor(lessonId, canonical),
         vocabulary: normalizeVocabulary(config, topic),
-        practice: practiceFor(lessonSource, topic).map(([prompt, answer]) => ({ prompt, answer })),
+        support: {
+          learningTonight: familyNote.learningTonight,
+          bigIdea: familyNote.bigIdea,
+          conceptSteps: familyNote.conceptSteps,
+          watchFor: familyNote.watchFor,
+          tryTogether: familyNote.tryTogether,
+          stuckTips: familyNote.stuckTips,
+        },
       };
     });
 }
@@ -510,8 +372,22 @@ function buildLessonRecords() {
 function resourceLinks(resources, className = "resource-list") {
   if (!resources.length)
     return `<p class="muted">No linked classroom resources are available for this lesson yet.</p>`;
+  const labelsEs = {
+    "Interactive Lesson": "Lección interactiva",
+    "Guided Notes": "Notas guiadas",
+    "Practice Handout": "Hoja de práctica",
+    "Homework Practice": "Práctica de tarea",
+    "Student Help": "Ayuda para estudiantes",
+    "Check Understanding": "Comprueba lo aprendido",
+    "Notes PDF": "Notas PDF",
+    "Notes DOCX": "Notas DOCX",
+    Homework: "Tarea",
+  };
   return `<div class="${className}">${resources
-    .map((resource) => `<a href="${esc(resource.href)}">${esc(resource.label)}</a>`)
+    .map(
+      (resource) =>
+        `<a href="${esc(resource.href)}">${esc(resource.label)} / <span lang="es">${esc(labelsEs[resource.label] || resource.label)}</span></a>`,
+    )
     .join("")}</div>`;
 }
 
@@ -734,6 +610,10 @@ function renderLessonPage(lesson) {
     .muted { color: var(--muted); }
     .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
     .vocab-card, .practice-item { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+    .bilingual-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .bilingual-pair > div { min-width: 0; padding: 14px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); }
+    .bilingual-pair h3 { margin-top: 0; }
+    .coach-list { margin: 0; padding-left: 22px; }
     .vocab-card strong { display: block; color: var(--blue); font-size: 1.03rem; }
     .translation { color: var(--rose); font-weight: 800; }
     ol { padding-left: 22px; margin-bottom: 0; }
@@ -745,6 +625,7 @@ function renderLessonPage(lesson) {
     @media (max-width: 640px) {
       main { padding-top: 22px; }
       .resource-list a { width: 100%; text-align: center; }
+      .bilingual-pair { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -765,52 +646,64 @@ function renderLessonPage(lesson) {
         ${lesson.isFlagship ? `<span class="pill flagship">Flagship / Enrichment Version</span>` : ""}
       </div>
       <h1>${esc(lesson.title)}</h1>
+      <p lang="es" class="objective">${esc(lesson.titleEs)}</p>
       <p class="objective">${esc(lesson.objective)}</p>
       <p class="language-goal"><strong>Speaking and writing goal:</strong> ${esc(lesson.languageObjective)}</p>
       ${resourceLinks(lesson.resources)}
     </header>
 
     <section>
-      <h2>What Your Child Is Learning</h2>
-      <p>${esc(learningText(lesson))}</p>
+      <h2>What Your Child Is Learning / Qué está aprendiendo su estudiante</h2>
+      <div class="bilingual-pair">
+        <div><h3>English</h3><p>${esc(lesson.support.learningTonight.en)}</p><p>${esc(lesson.support.bigIdea.en)}</p></div>
+        <div lang="es"><h3>Español</h3><p>${esc(lesson.support.learningTonight.es)}</p><p>${esc(lesson.support.bigIdea.es)}</p></div>
+      </div>
     </section>
 
     <section>
-      <h2>Why This Matters</h2>
-      <p>${esc(whyText(lesson.topic))}</p>
+      <h2>Why This Matters / Por qué es importante</h2>
+      <div class="bilingual-pair"><div>${esc(whyText(lesson.topic))}</div><div lang="es">${esc(spanishWhy(lesson.topic))}</div></div>
     </section>
 
     <section>
-      <h2>What It May Look Like In Class</h2>
-      <p>${esc(classText(lesson))}</p>
+      <h2>Example from this lesson / Ejemplo de esta lección</h2>
+      ${lesson.support.conceptSteps
+        .slice(0, 3)
+        .map(
+          (step) =>
+            `<div class="bilingual-pair"><div><p>${esc(step.en)}</p></div><div lang="es"><p>${esc(step.es)}</p></div></div>`,
+        )
+        .join("\n")}
     </section>
 
     <section>
-      <h2>How You Can Help At Home</h2>
-      <p>${esc(homeText())}</p>
-    </section>
-
-    <section lang="es">
-      <h2>Apoyo para familias en español</h2>
-      <h3>Qué está aprendiendo su hijo/a</h3>
-      <p>${esc(spanishLearning(lesson))}</p>
-      <h3>Por qué es importante</h3>
-      <p>${esc(spanishWhy(lesson.topic))}</p>
-      <h3>Cómo puede ayudar en casa</h3>
-      <p>${esc(spanishHome())}</p>
+      <h2>How You Can Help At Home / Cómo puede ayudar en casa</h2>
+      <div class="bilingual-pair">
+        <div><h3>Ask your student</h3><ul class="coach-list">${lesson.support.stuckTips.say
+          .slice(0, 2)
+          .map((item) => `<li>${esc(item.en)}</li>`)
+          .join(
+            "",
+          )}</ul><p><strong>Watch for:</strong> ${esc(lesson.support.watchFor[0].en)}</p></div>
+        <div lang="es"><h3>Pregunte a su estudiante</h3><ul class="coach-list">${lesson.support.stuckTips.say
+          .slice(0, 2)
+          .map((item) => `<li>${esc(item.es)}</li>`)
+          .join(
+            "",
+          )}</ul><p><strong>Preste atención:</strong> ${esc(lesson.support.watchFor[0].es)}</p></div>
+      </div>
     </section>
 
     <section>
-      <h2>Key Vocabulary</h2>
+      <h2>Key Vocabulary / Vocabulario clave</h2>
       <div class="vocab-grid">
         ${lesson.vocabulary
           .map(
             (item) => `<article class="vocab-card">
           <strong>${esc(item.term)}</strong>
           <span class="translation">${esc(item.termEs)}</span>
-          <p>${esc(item.definition)}</p>${
-            item.example ? `\n          <p class="muted">Example: ${esc(item.example)}</p>` : ""
-          }
+          <p>${esc(item.definition)}</p>
+          <p lang="es">${esc(item.definitionEs)}</p>
         </article>`,
           )
           .join("\n        ")}
@@ -818,16 +711,17 @@ function renderLessonPage(lesson) {
     </section>
 
     <section>
-      <h2>Try It Together</h2>
-      <p class="muted">Pick one or two problems. Let your child explain the first step before opening the answer.</p>
+      <h2>Try It Together / Inténtenlo juntos</h2>
+      <div class="bilingual-pair"><div><p>${esc(lesson.support.tryTogether.scenarioEn)}</p></div><div lang="es"><p>${esc(lesson.support.tryTogether.scenarioEs)}</p></div></div>
+      <p class="muted">Let your child explain first, then open a hint. / Deje que su estudiante explique primero y después abra una pista.</p>
       <ol>
-        ${lesson.practice
+        ${lesson.support.tryTogether.steps
           .map(
             (item) => `<li class="practice-item">
-          ${esc(item.prompt)}
+          <div class="bilingual-pair"><div>${esc(item.en)}</div><div lang="es">${esc(item.es)}</div></div>
           <details>
-            <summary>Show answer</summary>
-            <p>${esc(item.answer)}</p>
+            <summary>Show hint / Mostrar pista</summary>
+            <div class="bilingual-pair"><div>${esc(item.hint)}</div><div lang="es">${esc(item.hintEs)}</div></div>
           </details>
         </li>`,
           )

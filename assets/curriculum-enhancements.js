@@ -945,6 +945,10 @@
             a.href = act.href;
             a.target = "_blank";
             a.rel = "noopener";
+            if (act.download != null) {
+              a.download = act.download;
+              a.removeAttribute("target");
+            }
             if (act.isBonus) a.className = "res-bonus";
             a.textContent = act.text;
             li.appendChild(a);
@@ -965,7 +969,7 @@
               var printBtn = document.createElement("button");
               printBtn.type = "button";
               printBtn.className = "lesson-print-activity";
-              printBtn.textContent = "🖨";
+              printBtn.textContent = "Print";
               printBtn.title = "Print “" + act.text + "”";
               printBtn.setAttribute("aria-label", "Print: " + act.text);
               printBtn.addEventListener(
@@ -985,7 +989,7 @@
                 var pktBtn = document.createElement("button");
                 pktBtn.type = "button";
                 pktBtn.className = "lesson-print-activity lesson-print-packet";
-                pktBtn.textContent = "🖨";
+                pktBtn.textContent = "Packet";
                 pktBtn.title = "Print full lesson packet";
                 pktBtn.setAttribute("aria-label", "Print full lesson packet");
                 pktBtn.addEventListener(
@@ -1026,7 +1030,7 @@
     var launch = card.querySelector(".btn-launch");
     var aHref = launch && launch.style.display !== "none" ? launch.getAttribute("href") : "";
     if (aHref && aHref !== "#") qs += "&a=" + encodeURIComponent(aHref);
-    return CANONICAL_ORIGIN + "/curriculum/" + qs;
+    return CANONICAL_ORIGIN + "/curriculum/units/" + qs;
   }
 
   // Student-safe launch URL used by /curriculum/student-launch/ — no teacher
@@ -1093,10 +1097,12 @@
         ta.style.opacity = "0";
         document.body.appendChild(ta);
         ta.select();
-        document.execCommand("copy");
+        var copied = document.execCommand("copy");
         document.body.removeChild(ta);
-        resolve();
+        if (copied) resolve();
+        else reject(new Error("Clipboard copy was unavailable"));
       } catch (e) {
+        if (ta && ta.parentNode) ta.parentNode.removeChild(ta);
         reject(e);
       }
     });
@@ -1210,7 +1216,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "lesson-print-lesson";
-    btn.innerHTML = "🖨 Print lesson";
+    btn.innerHTML = "Print lesson";
     btn.title = "Print this lesson — objective, standard, and its full activity list";
     btn.addEventListener("click", function () {
       printLessonSheet(card, unit);
@@ -1230,7 +1236,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "lesson-copy-link";
-    btn.innerHTML = "🔗 Copy link";
+    btn.innerHTML = "Copy link";
     btn.title = "Copy a shareable link to this lesson (for Classroom / Canvas)";
     btn.addEventListener("click", function () {
       var link = buildLessonShareLink(card, unit);
@@ -1246,9 +1252,10 @@
           }, 1600);
         },
         function () {
-          btn.innerHTML = "Press ⌘/Ctrl+C";
+          window.prompt("Copy this lesson link:", link);
+          btn.innerHTML = "Copy link manually";
           setTimeout(function () {
-            btn.innerHTML = "🔗 Copy link";
+            btn.innerHTML = "Copy link";
           }, 2000);
         },
       );
@@ -1272,7 +1279,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "lesson-copy-link lesson-student-launch-copy";
-    btn.innerHTML = "🎒 Copy student launch";
+    btn.innerHTML = "Copy student launch";
     btn.title =
       "Copy the student-safe launch link (/curriculum/student-launch/) — no teacher PIN needed";
     btn.addEventListener("click", function () {
@@ -1296,9 +1303,10 @@
           }, 1600);
         },
         function () {
-          btn.innerHTML = "Press ⌘/Ctrl+C";
+          window.prompt("Copy this lesson link:", link);
+          btn.innerHTML = "Copy link manually";
           setTimeout(function () {
-            btn.innerHTML = "🎒 Copy student launch";
+            btn.innerHTML = "Copy student launch";
           }, 2000);
         },
       );
@@ -1359,7 +1367,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "unit-resource-btn unit-print-btn";
-    btn.innerHTML = "🖨 Print unit";
+    btn.innerHTML = "Print unit";
     btn.title = "Print just this unit";
     btn.addEventListener("click", function () {
       printSingleUnit(idx, unit.num + " · " + unit.name);
@@ -1480,7 +1488,7 @@
           var printBtn = document.createElement("button");
           printBtn.type = "button";
           printBtn.className = "lesson-print-activity";
-          printBtn.textContent = "🖨";
+          printBtn.textContent = "Print";
           printBtn.title = "Print “" + text + "”";
           printBtn.setAttribute("aria-label", "Print: " + text);
           printBtn.addEventListener("click", function (e) {
@@ -1497,7 +1505,7 @@
             var pktBtn = document.createElement("button");
             pktBtn.type = "button";
             pktBtn.className = "lesson-print-activity lesson-print-packet";
-            pktBtn.textContent = "🖨";
+            pktBtn.textContent = "Packet";
             pktBtn.title = "Print full lesson packet";
             pktBtn.setAttribute("aria-label", "Print full lesson packet");
             pktBtn.addEventListener(

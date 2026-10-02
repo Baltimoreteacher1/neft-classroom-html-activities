@@ -1,6 +1,6 @@
 // Serve the ACCESS Practice Lab app shell for clean activity URLs such as
 // /access-practice-lab/Listening/A/classroom-directions while leaving static
-// assets (app.js, access-data.js, styles.css) untouched.
+// assets (src/*.js, content/*.json, pictures/*.svg, styles.css) untouched.
 //
 // IMPORTANT: `app-shell` is an extensionless mirror of index.html — fetching it
 // via ASSETS returns 200 directly, whereas fetching `/index.html` 308-redirects

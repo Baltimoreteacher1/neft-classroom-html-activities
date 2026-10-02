@@ -53,8 +53,8 @@ const SUPPORT = {
     ],
     "4, 7, 10",
     "data",
-    "A statistical question anticipates variation across a group.",
-    "Una pregunta estadística anticipa variación en un grupo.",
+    "One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.",
+    "Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.",
   ),
   "2-2": profile(
     "Make a small histogram",
@@ -743,6 +743,11 @@ function graphic(kind, equation) {
     `<text x="${x}" y="${y}" text-anchor="middle" fill="#12355b" font-size="20">${escape(value)}</text>`;
   const line = (x1, y1, x2, y2) =>
     `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#12355b" stroke-width="3"/>`;
+  if (kind === "data") {
+    const shelf = (x, y, count, label) =>
+      `<rect x="${x}" y="${y}" width="120" height="12" rx="3" fill="#0f766e"/>${Array.from({ length: count }, (_, i) => `<rect x="${x + 7 + i * 10}" y="${y - 26}" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/>`).join("")}${text(x + 60, y + 42, label)}`;
+    return `${shelf(50, 88, 4, "4")}${shelf(250, 88, 4, "4")}${shelf(210, 190, 7, "7")}${shelf(390, 190, 10, "10")}${line(190, 20, 190, 240)}`;
+  }
   if (kind === "triangle")
     return `<rect x="180" y="25" width="240" height="160" fill="#eff6ff" stroke="#94a3b8"/><polygon points="180,185 420,185 180,25" fill="#bfe4de" stroke="#0f766e" stroke-width="3"/>${text(300, 218, "b = 6")}${text(148, 105, "h = 4")}`;
   if (kind === "trapezoid")

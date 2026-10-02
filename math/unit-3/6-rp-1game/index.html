@@ -58,6 +58,8 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
 </head>
   <body>
 
@@ -110,6 +112,7 @@
           if (actx && actx.state === "suspended") actx.resume();
         }
         function beep(freq, dur, type = "sine", vol = 0.16) {
+          if (window.__flagshipMuted) return;
           if (!actx) return;
           const o = actx.createOscillator(),
             g = actx.createGain();
@@ -685,6 +688,7 @@
           }
 
           loadRound() {
+            this.roundLocked = false;
             this.round = makeRound(this.tier, this.roundIx);
             const r = this.round;
             this.counts = [r.preseed[0], r.preseed[1]];
@@ -755,6 +759,7 @@
           }
 
           addScoop(i) {
+            if (this.roundLocked || window.GameStudio?.paused) return;
             const r = this.round;
             if (r.locked && i === 0) {
               sfxWrong();
@@ -784,6 +789,7 @@
             this.checkOverfill();
           }
           removeScoop(i) {
+            if (this.roundLocked || window.GameStudio?.paused) return;
             const r = this.round;
             if (r.locked && i === 0) {
               sfxWrong();
@@ -799,6 +805,7 @@
             this.feedback.setText("");
           }
           clearTubes() {
+            if (this.roundLocked || window.GameStudio?.paused) return;
             sfxClick();
             this.counts = [this.round.preseed[0], this.round.preseed[1]];
             this.feedback.setText("");
@@ -903,6 +910,7 @@
           }
 
           serve() {
+            if (this.roundLocked || window.GameStudio?.paused) return;
             const r = this.round,
               [ca, cb] = this.counts;
             const total = ca + cb;
@@ -953,6 +961,8 @@
           }
 
           onCorrect() {
+            if (this.roundLocked) return;
+            this.roundLocked = true;
             sfxServe();
             this.correct++;
             this.served++;
@@ -1022,6 +1032,7 @@
           }
 
           showHint() {
+            if (this.roundLocked || window.GameStudio?.paused) return;
             sfxClick();
             const r = this.round;
             let h;
@@ -1241,7 +1252,7 @@
         }
 
         // ─── BOOT ───
-        new Phaser.Game({
+        window.__flagshipGame = new Phaser.Game({
           type: Phaser.AUTO,
           parent: "game-container",
           width: W,
@@ -1259,7 +1270,6 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     
@@ -1300,5 +1310,7 @@
   
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+<script src="/assets/game-studio.js?v=20261002" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
 </body>
 </html>

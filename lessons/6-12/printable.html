@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/6-12/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Least Common Multiple</h1>
   <p class="doc-meta">6.NOS.4 · Unit 6 · Lesson 12</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can find the least common multiple (LCM) of two numbers by listing or comparing their multiples.</p><p><strong>Language:</strong> I can explain how I found the LCM using the words multiple, common multiple, skip counting, and least common multiple.</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">Two robotic arms on Station Helios run on repeating cycles. Arm A resets every 9 minutes and Arm B resets every 15 minutes. Right now both arms just reset at the same moment.</p>
+         <figure class="notice-figure"><img src="/lessons/6-12/reveal-assets/notice-wonder.svg" alt="Two number lines: Arm A resets every 9 minutes and Arm B every 15 minutes, both starting together." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>Least Common Multiple</strong><br><span class="es">Mínimo común múltiplo</span></td><td>The least positive number that is a multiple of two or more numbers.<br><span class="es">El menor número positivo que es múltiplo de dos o más números.</span></td><td>24 for 8 and 6 — The first number in both lists.</td></tr><tr><td><strong>Multiple</strong><br><span class="es">Múltiplo</span></td><td>What you get when you multiply a number by 1, 2, 3, and so on.<br><span class="es">Lo que obtienes al multiplicar un número por 1, 2, 3, y así.</span></td><td>12 is a multiple of 4 — 4 × 3 = 12.</td></tr><tr><td><strong>Common multiple</strong><br><span class="es">Múltiplo común</span></td><td>A number that two or more numbers both go into.<br><span class="es">Un número al que llegan dos o más números al multiplicar.</span></td><td>24 appearing in both the 8s and the 6s — Both numbers reach it.</td></tr><tr><td><strong>Skip counting</strong><br><span class="es">Conteo salteado</span></td><td>Counting by a number, like 2, 4, 6, to list its multiples.<br><span class="es">Contar de un número en un número, como 2, 4, 6, para listar sus múltiplos.</span></td><td>8, 16, 24, 32 — Counting by a number to list multiples.</td></tr><tr><td><strong>Prime factorization</strong><br><span class="es">Factorización prima</span></td><td>Writing a number as prime numbers multiplied together. It helps you find the LCM.<br><span class="es">Escribir un número como números primos multiplicados. Ayuda a encontrar el mcm.</span></td><td>30 = 2 × 3 × 5 — Every factor is prime.</td></tr></table></section>
@@ -98,11 +169,12 @@
         <p class="hint-line">Word bank: Multiple, Least common multiple, Common multiple, Skip counting</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">Astronaut Reyes checks the oxygen system every 4 hours. Astronaut Chen checks the water recycler every 6 hours. They both start their shifts at 6:00 AM. When is the next time both astronauts will be checking their systems at the same time?</p><h3>What is the least common multiple (LCM)?</h3><p>A multiple is what you get when you count by a number: 4, 8, 12, 16. The least common multiple is the smallest multiple that two numbers share.</p><p class="keyidea"><strong>Key idea:</strong> Least Common Multiple (LCM). 1. Skip count multiples of each number starting with the larger number. 2. Identify the first non-zero multiple that appears in both lists. 3. Prime factorization method: Product of highest powers of all prime factors</p><div class="cistep"><p class="cititle">Watch me</p><ul><li>I want the LCM of 4 and 6. I skip count the multiples of 4: 4, 8, 12, 16, 20, 24.</li><li>Then I skip count the multiples of 6: 6, 12, 18, 24.</li><li>I look for the first number in BOTH lists. 12 is in both lists, and it comes before 24.</li><li>So the LCM of 4 and 6 is 12. I check: 12 ÷ 4 = 3 and 12 ÷ 6 = 2, so both go into 12 evenly.</li></ul></div><div class="cistep"><p class="cititle">Let's try together</p><ul><li>Let's find the LCM of 3 and 5. What are the multiples of 3? (3, 6, 9, 12, 15.)</li><li>What are the multiples of 5? (5, 10, 15.) What is the first number in both lists? (15.)</li><li>So the LCM of 3 and 5 is 15.</li></ul></div><div class="cistep"><p class="cititle">Now it's your turn</p><ul><li>Next, you will sort multiples to find the common multiples of two numbers and pick the smallest one.</li><li>Remember: the LCM is the SMALLEST multiple the two numbers share.</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><p class="context">Here are the first several multiples of 4 and 6 mixed together. Sort them — which are common multiples of BOTH 4 and 6, and which are multiples of only one?</p><div class="item" data-practice-item><p class="qtext">Here are the first several multiples of 4 and 6 mixed together. Sort them — which are common multiples of BOTH 4 and 6, and which are multiples of only one?</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">6</span> <span class="chip">24</span> <span class="chip">36</span> <span class="chip">4</span> <span class="chip">20</span> <span class="chip">12</span> <span class="chip">8</span> <span class="chip">16</span> <span class="chip">48</span> <span class="chip">18</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Common Multiples of 4 and 6</div></div><div class="sortbox"><div class="sorthd">NOT Common Multiples</div></div></div></div><p class="frame">What is the least common multiple of 4 and 6? How did sorting the multiples help you find it? — The LCM of 4 and 6 is ___ because it is the smallest number in the ___ group.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> Match each pair of numbers to their LCM.</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>LCM(2, 5)</td><td class="mans"></td><td class="mltr">A.</td><td>12</td></tr><tr><td class="mnum">2.</td><td>LCM(4, 10)</td><td class="mans"></td><td class="mltr">B.</td><td>18</td></tr><tr><td class="mnum">3.</td><td>LCM(3, 8)</td><td class="mans"></td><td class="mltr">C.</td><td>24</td></tr><tr><td class="mnum">4.</td><td>LCM(6, 9)</td><td class="mans"></td><td class="mltr">D.</td><td>20</td></tr><tr><td class="mnum">5.</td><td>LCM(5, 7)</td><td class="mans"></td><td class="mltr">E.</td><td>10</td></tr><tr><td class="mnum">6.</td><td>LCM(4, 6)</td><td class="mans"></td><td class="mltr">F.</td><td>35</td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> List multiples of each number until you find the LCM.</p><table class="grid"><tr><th>Numbers</th><th>Multiples of First</th><th>Multiples of Second</th><th>LCM</th></tr><tr><td>6 and 10</td><td>6, 12, 18, 24, 30</td><td>10, 20, 30</td><td class="fill"></td></tr><tr><td>8 and 12</td><td>8, 16, 24</td><td>12, 24</td><td class="fill"></td></tr><tr><td>9 and 12</td><td>9, 18, 27, 36</td><td>12, 24, 36</td><td class="fill"></td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?</p><ol class="choices"><li><span class="ltr">A</span> 8:30 AM (30 minutes later)</li><li><span class="ltr">B</span> 8:40 AM (40 minutes later)</li><li><span class="ltr">C</span> 9:00 AM (60 minutes later)</li><li><span class="ltr">D</span> 9:20 AM (80 minutes later)</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> Sort each pair: does the LCM equal the product of the two numbers, or is the LCM less than the product?</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">2 and 9</span> <span class="chip">5 and 11</span> <span class="chip">3 and 7</span> <span class="chip">6 and 8</span> <span class="chip">10 and 15</span> <span class="chip">4 and 6</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">LCM = Product (no shared factors)</div></div><div class="sortbox"><div class="sorthd">LCM &lt; Product (shared factors)</div></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> </p><div class="worked"><div class="wa-step"><span class="wa-lbl">Problem</span><span class="wa-work">Find the LCM of 6 and 9.</span></div><div class="wa-step"><span class="wa-lbl">Multiples of 6</span><span class="wa-work">6, 12, 18, 24</span></div><div class="wa-step"><span class="wa-lbl">Multiples of 9</span><span class="wa-work">9, 18, 27</span></div><div class="wa-step"><span class="wa-lbl">Choose the answer</span><span class="wa-work">Maya saw that 9 is bigger than 6, so she wrote LCM = 9.</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext">Here are the first several multiples of 4 and 6 mixed together. Sort them — which are common multiples of BOTH 4 and 6, and which are multiples of only one?</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">6</span> <span class="chip">24</span> <span class="chip">36</span> <span class="chip">4</span> <span class="chip">20</span> <span class="chip">12</span> <span class="chip">8</span> <span class="chip">16</span> <span class="chip">48</span> <span class="chip">18</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Common Multiples of 4 and 6</div></div><div class="sortbox"><div class="sorthd">NOT Common Multiples</div></div></div></div><p class="frame">What is the least common multiple of 4 and 6? How did sorting the multiples help you find it? — The LCM of 4 and 6 is ___ because it is the smallest number in the ___ group.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="matching-game"><p class="qtext"><span class="qnum">1.</span> Match each pair of numbers to their LCM.</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>LCM(2, 5)</td><td class="mans"></td><td class="mltr">A.</td><td>12</td></tr><tr><td class="mnum">2.</td><td>LCM(4, 10)</td><td class="mans"></td><td class="mltr">B.</td><td>18</td></tr><tr><td class="mnum">3.</td><td>LCM(3, 8)</td><td class="mans"></td><td class="mltr">C.</td><td>24</td></tr><tr><td class="mnum">4.</td><td>LCM(6, 9)</td><td class="mans"></td><td class="mltr">D.</td><td>20</td></tr><tr><td class="mnum">5.</td><td>LCM(5, 7)</td><td class="mans"></td><td class="mltr">E.</td><td>10</td></tr><tr><td class="mnum">6.</td><td>LCM(4, 6)</td><td class="mans"></td><td class="mltr">F.</td><td>35</td></tr></table></div><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">2.</span> List multiples of each number until you find the LCM.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Numbers</th><th scope="col">Multiples of First</th><th scope="col">Multiples of Second</th><th scope="col">LCM</th></tr></thead><tbody><tr><td>6 and 10</td><td class="fill" aria-label="Your response: Multiples of First, row 1"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Multiples of Second, row 1"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: LCM, row 1"><span class="paper-blank"></span></td></tr><tr><td>8 and 12</td><td class="fill" aria-label="Your response: Multiples of First, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Multiples of Second, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: LCM, row 2"><span class="paper-blank"></span></td></tr><tr><td>9 and 12</td><td class="fill" aria-label="Your response: Multiples of First, row 3"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Multiples of Second, row 3"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: LCM, row 3"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?</p><ol class="choices"><li><span class="ltr">A</span> 8:30 AM (30 minutes later)</li><li><span class="ltr">B</span> 8:40 AM (40 minutes later)</li><li><span class="ltr">C</span> 9:00 AM (60 minutes later)</li><li><span class="ltr">D</span> 9:20 AM (80 minutes later)</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext"><span class="qnum">4.</span> Sort each pair: does the LCM equal the product of the two numbers, or is the LCM less than the product?</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">2 and 9</span> <span class="chip">5 and 11</span> <span class="chip">3 and 7</span> <span class="chip">6 and 8</span> <span class="chip">10 and 15</span> <span class="chip">4 and 6</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">LCM = Product (no shared factors)</div></div><div class="sortbox"><div class="sorthd">LCM &lt; Product (shared factors)</div></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">5.</span> Spot Maya's Mistake — LCM of 6 and 9</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Problem</span><span class="wa-work">Find the LCM of 6 and 9.</span></div><div class="wa-step"><span class="wa-lbl">Multiples of 6</span><span class="wa-work">6, 12, 18, 24</span></div><div class="wa-step"><span class="wa-lbl">Multiples of 9</span><span class="wa-work">9, 18, 27</span></div><div class="wa-step"><span class="wa-lbl">Choose the answer</span><span class="wa-work">Maya saw that 9 is bigger than 6, so she wrote LCM = 9.</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">Hot dogs come in packs of 8 and buns come in packs of 6. You want to buy the exact same number of hot dogs and buns with none left over.</p><p class="qtext">How does the LCM help you figure out the fewest hot dogs and buns to buy so they come out even?</p><p class="hint-line">Try to use: LCM, least, common, multiple, 24, packs, equal, none left over</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">What is the LCM of 9 and 12?</p><ol class="choices"><li><span class="ltr">A</span> 3</li><li><span class="ltr">B</span> 36</li><li><span class="ltr">C</span> 72</li><li><span class="ltr">D</span> 108</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 6-12 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

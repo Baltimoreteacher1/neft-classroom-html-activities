@@ -13,7 +13,9 @@ const launch = JSON.parse(
 );
 const SAVED = "ewl:curriculum:saved:v1";
 const RECENT = "ewl:curriculum:recent:v1";
-const markup = `<main><section id="curriculum-navigator"><div id="nav-recent"></div><div class="cn-layout"><div class="cn-browser"><label for="curr-search">Find a lesson</label><input id="curr-search" type="search"><label for="nav-unit">Unit</label><select id="nav-unit"></select><button id="nav-saved" type="button" aria-pressed="false">Saved</button><button id="nav-reset" type="button">Reset</button><p id="nav-results-status" role="status"></p><ol id="nav-results"></ol><button id="nav-more" type="button" hidden>More</button></div><section id="nav-preview" tabindex="-1" aria-labelledby="nav-lesson-title"><h3 id="nav-lesson-title">Choose a lesson</h3></section></div><p id="nav-message" role="status"></p><button id="nav-retry" type="button" hidden>Retry</button></section></main>`;
+const markup = `<main><section id="curriculum-navigator"><div id="nav-recent"></div><div class="cn-layout"><div class="cn-browser"><label for="curr-search">Find a lesson</label><input id="curr-search" type="search"><button id="curr-search-clear" hidden>Clear search</button><label for="nav-unit">Unit</label><select id="nav-unit"></select><button id="nav-saved" type="button" aria-pressed="false">Saved</button><button id="nav-reset" type="button">Reset</button><p id="nav-results-status" role="status"></p><ol id="nav-results"></ol><button id="nav-more" type="button" hidden>More</button></div><section id="nav-preview" tabindex="-1" aria-labelledby="nav-lesson-title"><h3 id="nav-lesson-title">Choose a lesson</h3></section></div><p id="nav-message" role="status"></p><button id="nav-retry" type="button" hidden>Retry</button></section></main>`;
+/** A resource link's own label, without its "Printable"/"Interactive" kind tag. */
+const labelOf = (link) => link.querySelector(".cn-resource-label")?.textContent ?? link.textContent;
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 const tests = [];
 const test = (name, action) => tests.push({ name, action });
@@ -24,6 +26,14 @@ async function setup(options = {}) {
     runScripts: "outside-only",
   });
   const { window } = dom;
+  window.HTMLElement.prototype.scrollIntoView = function () {};
+  if (options.guide) {
+    const guide = window.document.createElement("button");
+    guide.dataset.guideTeacherView = "today";
+    guide.addEventListener("click", options.guide);
+    window.document.body.appendChild(guide);
+  }
+  if (options.teacher) window.document.body.classList.add("teacher-mode");
   const data = options.catalog || structuredClone(catalog);
   const launches = options.launch || structuredClone(launch);
   const calls = [];
@@ -49,6 +59,9 @@ async function setup(options = {}) {
   if (options.clipboard)
     Object.defineProperty(window.navigator, "clipboard", { value: options.clipboard });
   if (options.cockpit) window.CurriculumCockpit = options.cockpit;
+  if (options.pacingDays) window.__NT_PACING_DAYS = options.pacingDays;
+  if (options.overlay)
+    window.localStorage.setItem("nt-pacing:overlay", JSON.stringify(options.overlay));
   window.eval(source);
   await tick();
   const $ = (id) => window.document.getElementById(id);
@@ -73,6 +86,19 @@ async function using(options, action) {
     app.close();
   }
 }
+
+test("Lesson 3.4 has its own Section 1 ratio-table lab without replacing the student lesson", () =>
+  using({}, ({ $, pick }) => {
+    pick("3-4");
+    const lab = $("nav-preview").querySelector(
+      'a[href="/curriculum/learning-labs/ratio-table-lab/?student=1"]',
+    );
+    assert.ok(lab);
+    assert.equal(lab.textContent, "Ratio Table Lab · Section 1");
+    assert.ok($("nav-preview").querySelector('a[href$="/curriculum/student-launch/?lesson=3-4"]'));
+    pick("3-3");
+    assert.equal($("nav-preview").querySelector('a[href*="/ratio-table-lab/"]'), null);
+  }));
 
 test("all 84 real lessons load through the shared JSON cache and paginate", () =>
   using({}, ({ $, calls, window }) => {
@@ -132,7 +158,7 @@ test("selection shows target and real resources, including supported lesson vari
     assert.ok($("nav-preview").querySelector('a[href="/lessons/3-2-part2/?student=1"]'));
     assert.ok($("nav-preview").querySelector('a[href="/lessons/3-2-group1/?student=1"]'));
     assert.ok(
-      $("nav-preview").querySelector('a[href="/lessons/3-2-group2/worksheet-2.html?student=1"]'),
+      $("nav-preview").querySelector('a[href="/lessons/3-2-group2/worksheet-2?student=1"]'),
     );
     assert.ok($("nav-preview").querySelector(".hub-teacher-only a"));
     assert.match($("nav-preview").textContent, /does not record student learning or mastery/);
@@ -154,14 +180,11 @@ test("unavailable and inapplicable catalog resources never become links", async 
   await using({ catalog: altered }, ({ $, pick }) => {
     pick("3-2");
     assert.equal(
-      $("nav-preview").querySelector('a[href="/lessons/3-2/worksheet.html?student=1"]'),
+      $("nav-preview").querySelector('a[href="/lessons/3-2/worksheet?student=1"]'),
       null,
     );
-    assert.equal(
-      $("nav-preview").querySelector('a[href="/lessons/3-2/notes.html?student=1"]'),
-      null,
-    );
-    assert.equal($("nav-preview").querySelector('a[href="/lessons/3-2/slides.html"]'), null);
+    assert.equal($("nav-preview").querySelector('a[href="/lessons/3-2/notes?student=1"]'), null);
+    assert.equal($("nav-preview").querySelector('a[href="/lessons/3-2/slides"]'), null);
   });
 });
 
@@ -218,7 +241,7 @@ test("saving persists IDs only and retains keyboard focus", () =>
     assert.deepEqual(JSON.parse(window.localStorage.getItem(SAVED)), ["3-2"]);
     assert.equal(window.document.activeElement, save);
     assert.equal(save.getAttribute("aria-pressed"), "true");
-    assert.match($("nav-message").textContent, /saved on this device/);
+    assert.match($("nav-action-message").textContent, /saved on this device/);
     save.click();
     assert.deepEqual(JSON.parse(window.localStorage.getItem(SAVED)), []);
     assert.equal(save.getAttribute("aria-pressed"), "false");
@@ -243,7 +266,7 @@ test("unavailable storage never reports a successful save", () =>
       const save = $("nav-preview").querySelector("[data-save-lesson]");
       save.click();
       assert.equal(save.getAttribute("aria-pressed"), "false");
-      assert.match($("nav-message").textContent, /could not save your lesson/);
+      assert.match($("nav-action-message").textContent, /could not save your lesson/);
       assert.match($("nav-saved").textContent, /\(0\)/);
     },
   ));
@@ -300,7 +323,7 @@ test("copy uses only the student launch URL and reports actual clipboard success
         .click();
       await tick();
       assert.equal(copied, "https://eduwonderlab.com/curriculum/student-launch/?lesson=3-2");
-      assert.match($("nav-message").textContent, /Student link copied/);
+      assert.match($("nav-action-message").textContent, /Student link copied/);
       assert.equal($("nav-copy-url").parentElement.hidden, true);
     },
   );
@@ -324,8 +347,8 @@ test("denied clipboard exposes a visible selectable URL instead of claiming succ
       assert.equal($("nav-copy-url").parentElement.hidden, false);
       assert.equal($("nav-copy-url").readOnly, true);
       assert.equal(window.document.activeElement, $("nav-copy-url"));
-      assert.match($("nav-message").textContent, /Select and copy/);
-      assert.doesNotMatch($("nav-message").textContent, /link copied/);
+      assert.match($("nav-action-message").textContent, /Select and copy/);
+      assert.doesNotMatch($("nav-action-message").textContent, /link copied/);
     },
   ));
 
@@ -444,6 +467,305 @@ test("Enter opens a matching lesson; IME composition never triggers selection", 
     $("curr-search").dispatchEvent(new window.KeyboardEvent("keydown", { key: "Enter" }));
     assert.equal($("nav-lesson-title").textContent, "Understand Rates and Unit Rates");
   }));
+
+test("lesson prefixes, unit prefixes, and Spanish titles resolve authored matches", () =>
+  using({}, ({ $, find }) => {
+    for (const text of ["Lesson3.2", "lesson3-2", "Lesson 3.2", "Unit 3 Lesson 2"]) {
+      find(text);
+      assert.equal($("nav-results").querySelectorAll("[data-lesson-id]").length, 1, text);
+      assert.ok($("nav-results").querySelector('[data-lesson-id="3-2"]'), text);
+    }
+    find("lesson6.1");
+    assert.equal(
+      $("nav-results").querySelectorAll("[data-lesson-id]").length,
+      1,
+      "6.1 does not also match 6.10 through 6.15",
+    );
+    for (const text of ["unit3", "unit 3", "unit:3", "Unidad 3"]) {
+      find(text);
+      const count = catalog.lessons.filter((lesson) => lesson.unit === 3).length;
+      assert.match($("nav-results-status").textContent, new RegExp("^" + count + " lessons"));
+      assert.ok(
+        [...$("nav-results").querySelectorAll("[data-lesson-id]")].every((item) =>
+          item.dataset.lessonId.startsWith("3-"),
+        ),
+      );
+    }
+    find("unit 3 rates");
+    assert.ok($("nav-results").querySelector('[data-lesson-id="3-2"]'));
+    for (const text of ["matematicas son mias", "MATEMÁTICAS SON MÍAS"]) {
+      find(text);
+      const result = $("nav-results").querySelector('[data-lesson-id="1-1"]');
+      assert.ok(result, text);
+      assert.equal(result.querySelector('[lang="es"]').textContent, catalog.lessons[0].titleEs);
+    }
+  }));
+
+test("Back to results restores the selected result and retains pagination", () =>
+  using({}, ({ $, window }) => {
+    $("nav-more").click();
+    const original = $("nav-results").querySelectorAll("[data-lesson-id]")[12];
+    const id = original.dataset.lessonId;
+    original.click();
+    assert.equal(window.document.activeElement, $("nav-preview"));
+    $("nav-preview").querySelector(".cn-back").click();
+    assert.equal(window.document.activeElement.dataset.lessonId, id);
+    assert.equal($("nav-results").querySelectorAll("[data-lesson-id]").length, 16);
+    assert.match($("nav-lesson-title").textContent, /\S/);
+  }));
+
+test("Back to results focuses search if the selected saved lesson was removed", () =>
+  using({ query: "?saved=1&lesson=3-2", saved: ["3-2"] }, ({ $, window }) => {
+    $("nav-preview").querySelector("[data-save-lesson]").click();
+    $("nav-preview").querySelector(".cn-back").click();
+    assert.equal(window.document.activeElement, $("curr-search"));
+  }));
+
+test("recent selection clears conflicting filters and retains compatible saved filtering", () =>
+  using(
+    { query: "?q=4-1&u=4&saved=1", saved: ["3-2", "4-1"], recent: ["3-2"] },
+    ({ $, window }) => {
+      $("nav-recent").querySelector("button").click();
+      assert.equal($("curr-search").value, "");
+      assert.equal($("nav-unit").value, "");
+      assert.equal($("nav-saved").getAttribute("aria-pressed"), "true");
+      assert.equal($("nav-results").querySelector('[aria-current="true"]').dataset.lessonId, "3-2");
+      assert.equal(new URL(window.location.href).searchParams.get("saved"), "1");
+      assert.equal(new URL(window.location.href).searchParams.has("q"), false);
+      assert.equal($("curr-search-clear").hidden, true);
+    },
+  ));
+
+test("recent selection retains matching query and unit, and reveals later result pages", async () => {
+  await using({ query: "?q=rates&u=3&saved=1", saved: ["3-2"], recent: ["3-2"] }, ({ $ }) => {
+    $("nav-recent").querySelector("button").click();
+    assert.equal($("curr-search").value, "rates");
+    assert.equal($("nav-unit").value, "3");
+    assert.equal($("nav-saved").getAttribute("aria-pressed"), "true");
+  });
+  await using({ query: "?saved=1", saved: ["1-1"], recent: ["10-6"] }, ({ $ }) => {
+    $("nav-recent").querySelector("button").click();
+    assert.equal($("nav-saved").getAttribute("aria-pressed"), "false");
+    assert.equal($("nav-results").querySelector('[aria-current="true"]').dataset.lessonId, "10-6");
+  });
+});
+
+test("search clear state follows reset and restored browser history", () =>
+  using({ query: "?q=rate" }, ({ $, window, find }) => {
+    assert.equal($("curr-search-clear").hidden, false);
+    $("nav-reset").click();
+    assert.equal($("curr-search-clear").hidden, true);
+    find("lesson3.2");
+    assert.equal($("curr-search-clear").hidden, false);
+    window.history.replaceState({}, "", "/curriculum/");
+    window.dispatchEvent(new window.PopStateEvent("popstate"));
+    assert.equal($("curr-search").value, "");
+    assert.equal($("curr-search-clear").hidden, true);
+    window.history.replaceState({}, "", "/curriculum/?q=percents");
+    window.dispatchEvent(new window.PopStateEvent("popstate"));
+    assert.equal($("curr-search-clear").hidden, false);
+  }));
+
+test("Save feedback is an inline live status immediately after the actions", () =>
+  using({}, ({ $, pick }) => {
+    pick("3-2");
+    $("nav-preview").querySelector("[data-save-lesson]").click();
+    const feedback = $("nav-action-message");
+    assert.equal(feedback.previousElementSibling.className, "cn-preview-actions");
+    assert.equal(feedback.getAttribute("role"), "status");
+    assert.equal(feedback.getAttribute("aria-live"), "polite");
+    assert.equal(feedback.getAttribute("aria-atomic"), "true");
+    assert.match(feedback.textContent, /saved on this device/);
+  }));
+
+test("readiness and learning-lab links use the existing launch manifest without another fetch", () =>
+  using({}, ({ $, pick, calls }) => {
+    pick("3-2");
+    const resources = launch.lessons.find((lesson) => lesson.id === "3-2").resources;
+    assert.ok(
+      resources.readiness && resources.learningLab,
+      "generator supplies source-backed resource keys",
+    );
+    assert.ok($("nav-preview").querySelector('a[href="' + resources.readiness + '?student=1"]'));
+    assert.ok($("nav-preview").querySelector('a[href="' + resources.learningLab + '?student=1"]'));
+    assert.equal(calls.length, 2, "only existing catalog and launch-manifest requests");
+    const withoutReadiness = launch.lessons.find((lesson) => !lesson.resources.readiness);
+    pick(withoutReadiness.id);
+    assert.equal(
+      [...$("nav-preview").querySelectorAll("a")].some(
+        (link) => labelOf(link) === "Readiness check",
+      ),
+      false,
+    );
+  }));
+
+test("learning-lab exception rejects external, encoded, traversal, and other-resource paths", async () => {
+  for (const unsafe of [
+    "//evil.example/curriculum/learning-labs/recipe-remix/",
+    "/curriculum/learning-labs/recipe-remix/?next=/api/private",
+    "/curriculum/learning-labs/%72ecipe-remix/",
+    "/curriculum/learning-labs/../private/",
+    "/lessons/3-2/",
+  ]) {
+    const modified = structuredClone(launch);
+    modified.lessons.find((lesson) => lesson.id === "3-2").resources.learningLab = unsafe;
+    await using({ launch: modified }, ({ $, pick }) => {
+      pick("3-2");
+      assert.equal(
+        [...$("nav-preview").querySelectorAll("a")].some(
+          (link) => labelOf(link) === "Interactive learning lab",
+        ),
+        false,
+        unsafe,
+      );
+    });
+  }
+  const modified = structuredClone(launch);
+  modified.lessons.find((lesson) => lesson.id === "3-2").resources.handout =
+    "/curriculum/learning-labs/recipe-remix/";
+  await using({ launch: modified }, ({ $, pick }) => {
+    pick("3-2");
+    assert.equal(
+      [...$("nav-preview").querySelectorAll("a")].some((link) => labelOf(link) === "Handout"),
+      false,
+    );
+  });
+});
+
+test("Teach this lesson reuses the existing workflow control with the selected lesson", async () => {
+  const selections = [];
+  let opened = 0;
+  await using(
+    {
+      teacher: true,
+      guide: () => {
+        opened++;
+      },
+      cockpit: {
+        onSelect() {},
+        select(id) {
+          selections.push(id);
+          return true;
+        },
+      },
+    },
+    ({ $, pick }) => {
+      pick("3-2");
+      const teach = $("nav-preview").querySelector(".cn-teach");
+      assert.ok(teach.classList.contains("hub-teacher-only"));
+      teach.click();
+      assert.equal(selections.at(-1), "3-2");
+      assert.equal(opened, 1);
+    },
+  );
+  await using(
+    {
+      guide: () => {
+        opened++;
+      },
+    },
+    ({ $, pick }) => {
+      pick("3-2");
+      $("nav-preview").querySelector(".cn-teach").click();
+      assert.equal(opened, 1, "student mode does not activate teacher tools");
+    },
+  );
+});
+
+test("resource links use final URLs and say what kind of material they open", () =>
+  using({}, ({ $, pick }) => {
+    pick("3-2");
+    const links = [...$("nav-preview").querySelectorAll("a.cn-resource")];
+    assert.ok(links.length > 5);
+    for (const link of links)
+      assert.doesNotMatch(link.getAttribute("href"), /\.html(?:[?#]|$)/, link.getAttribute("href"));
+    const handout = links.find((link) => labelOf(link) === "Handout");
+    assert.ok(handout, "positive control: the label helper finds a real resource");
+    assert.equal(handout.querySelector(".cn-kind").textContent, "Printable");
+    assert.equal(
+      links.find((link) => labelOf(link) === "Interactive lesson").dataset.kind,
+      "Interactive",
+    );
+  }));
+
+test("with no lesson chosen, the panel opens on today's lesson from the pacing plan", async () => {
+  const today = new Date();
+  const iso = (d) =>
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0");
+  const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  const days = [
+    [iso(today), "3-4", "Core Lesson", ""],
+    [iso(tomorrow), "3-5", "Core Lesson", ""],
+  ];
+  const title = (id) => catalog.lessons.find((lesson) => lesson.id === id).title;
+  await using({ pacingDays: days }, ({ $, window }) => {
+    assert.equal($("nav-lesson-title").textContent, title("3-4"));
+    assert.match($("nav-preview").textContent, /Today in class/);
+    assert.ok(window.document.getElementById("curriculum-navigator").classList.contains("cn-idle"));
+    const open = [...$("nav-preview").querySelectorAll("button")].find(
+      (button) => button.textContent === "Open today’s lesson",
+    );
+    open.click();
+    assert.equal(new URL(window.location.href).searchParams.get("lesson"), "3-4");
+    assert.ok(
+      !window.document.getElementById("curriculum-navigator").classList.contains("cn-idle"),
+    );
+  });
+  // A planner move saved on this device wins over the original plan.
+  await using(
+    {
+      pacingDays: days,
+      overlay: { [iso(today)]: { plan: { lessonId: "3-3-catchup", dayType: "Catch-Up" } } },
+    },
+    ({ $ }) => {
+      assert.equal($("nav-lesson-title").textContent, title("3-3"));
+      assert.match($("nav-preview").textContent, /catch-up day/);
+    },
+  );
+  // A day with no lesson names the day and offers the next lesson instead.
+  await using(
+    { pacingDays: [[iso(today), "", "Assessment", "Unit Assessment — Unit 3"], days[1]] },
+    ({ $ }) => {
+      assert.equal($("nav-lesson-title").textContent, "Unit Assessment — Unit 3");
+      assert.match($("nav-preview").textContent, /Next lesson: 3\.5/);
+    },
+  );
+  // Outside the school year it falls back to the plain chooser, with copy for each audience.
+  await using({ pacingDays: [["2000-01-03", "3-4", "Core Lesson", ""]] }, ({ $ }) => {
+    assert.equal($("nav-lesson-title").textContent, "Choose your next lesson");
+    assert.ok($("nav-preview").querySelector(".hub-teacher-only"));
+    assert.ok($("nav-preview").querySelector(".hub-student-only"));
+  });
+});
+
+test("the teacher Lesson status filter narrows the results and students ignore it", async () => {
+  const altered = structuredClone(catalog);
+  altered.lessons.find((lesson) => lesson.id === "3-2").status = { needsReview: true };
+  altered.lessons.find((lesson) => lesson.id === "3-3").status = { missingResources: ["handout"] };
+  for (const lesson of altered.lessons) if (!["3-2", "3-3"].includes(lesson.id)) lesson.status = {};
+  await using({ catalog: altered, teacher: true }, ({ $, window }) => {
+    const ids = () =>
+      [...$("nav-results").querySelectorAll("[data-lesson-id]")].map((b) => b.dataset.lessonId);
+    const filter = (value) => {
+      window.document.body.dataset.auditFilter = value;
+      window.document.dispatchEvent(new window.CustomEvent("ewl:audit-filter"));
+    };
+    filter("attention");
+    assert.deepEqual(ids(), ["3-2", "3-3"]);
+    filter("review");
+    assert.deepEqual(ids(), ["3-2"]);
+    filter("missing");
+    assert.deepEqual(ids(), ["3-3"]);
+    assert.match($("nav-results").textContent, /Missing resources/);
+    window.document.body.classList.remove("teacher-mode");
+    filter("missing");
+    assert.match($("nav-results-status").textContent, /^84 lessons/);
+  });
+});
 
 for (const { name, action } of tests) {
   await action();

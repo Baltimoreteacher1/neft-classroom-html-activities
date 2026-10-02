@@ -6,7 +6,7 @@
    only. Content updates flow through automatically (network-first); bump CACHE only when this worker itself changes.
    Modeled on math/intervention/sw.js.
    ========================================================================== */
-const CACHE = "pa-off-v2";
+const CACHE = "pa-off-v3";
 const SCOPE = "/math/games/practice-arcade/";
 // Shared multi-day Save/Resume widget injected on the arcade page. It lives
 // outside SCOPE (at /shared/), so it must be explicitly precached +
@@ -26,6 +26,12 @@ const SKIP_PREFIXES = ["/api/", "/results"];
 const CORE = [
   SCOPE,
   SCOPE + "index.html",
+  SCOPE + "map.html",
+  SCOPE + "studio.js",
+  SCOPE + "studio.css",
+  "/assets/game-studio.js?v=20261002",
+  "/assets/game-studio.css?v=20261002",
+  "/data/curriculum-manifest.json",
   "/games/vendor/phaser/phaser-3.80.1.min.js",
   "/assets/favicon.svg",
   SR_PREFIX + "save-resume-styles.css",
@@ -53,7 +59,7 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(
     (async () => {
       const keys = await caches.keys();
-      await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
+      await Promise.all(keys.filter((k) => k.startsWith("pa-off-") && k !== CACHE).map((k) => caches.delete(k)));
       await self.clients.claim();
     })(),
   );
@@ -74,7 +80,7 @@ self.addEventListener("fetch", (e) => {
     !url.pathname.startsWith(ASSETS_PREFIX) &&
     !url.pathname.startsWith(VENDOR_PREFIX) &&
     !url.pathname.startsWith(LESSONS_PREFIX) &&
-    url.pathname !== "/assets/favicon.svg"
+    url.pathname !== "/data/curriculum-manifest.json"
   )
     return;
 
@@ -86,7 +92,7 @@ self.addEventListener("fetch", (e) => {
         try {
           const fresh = await fetch(req);
           const cache = await caches.open(CACHE);
-          cache.put(req, fresh.clone());
+          if (fresh.ok) cache.put(req, fresh.clone());
           return fresh;
         } catch (err) {
           return (await caches.match(req)) || (await caches.match(SCOPE)) || Response.error();

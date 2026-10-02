@@ -8,25 +8,97 @@
     @import url("/assets/fonts/fraunces-87aa83.css");
     @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
-    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; font-size: 17px; line-height: 1.55; }
+    main { max-width: 900px; margin: 0 auto; }
+    .resource-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .resource-toolbar a { color: #155f67; font-weight: 650; padding: 10px 0; }
+    .resource-toolbar button { min-height: 44px; border: 0; border-radius: 6px; background: #155f67; color: white; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
     .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
     .meta { color: #5a6b75; font-size: 0.9rem; }
     .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #dff2ee; }
+    .vocabulary-table { table-layout: fixed; overflow-wrap: break-word; }
+    .vocabulary-table th:first-child { width: 34%; }
     .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
     .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
     .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    .practice-box { background: #fff; }
+    .practice-box > h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } .bilingual, .notice-wonder { grid-template-columns: 1fr; } .name-line { min-width: 140px; } }
+    @page { size: Letter; margin: .55in; }
     @media print {
-      body { padding: 12px; }
+      body { padding: 0; font-size: 11.5pt; }
       .no-print { display: none; }
       .box { break-inside: avoid; }
+      .practice-box { break-inside: auto; border: 0; padding: 0; }
+      h1, h2, h3 { break-after: avoid; }
+      p { orphans: 3; widows: 3; }
+      .bilingual { display: block; }
     }
-    
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
+
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
    serif headings + paper ground + AA-safe ink. No layout/size changes. */
@@ -69,9 +141,10 @@ header.packet h1::after{
 </head>
 <body>
 <main>
-  <div class="no-print" style="text-align:right; margin-bottom:12px;">
-    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
-  </div>
+  <nav class="no-print resource-toolbar" aria-label="Handout actions">
+    <a href="/lessons/1-1/">← Back to lesson</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </nav>
   <header class="header">
     <h1>Math is Mine</h1>
     <div class="meta">MPP.3 · Unit 1 · Lesson 1</div>
@@ -82,7 +155,7 @@ header.packet h1::after{
     <div class="box">
       <h2>Objectives / Objetivos</h2>
       <p lang="en"><strong>Content Objective:</strong> I can describe the ways we are all doers of math, and compare my math story with a classmate's.</p>
-      
+
       <p lang="en"><strong>Language Objective:</strong> I can tell my math story using the words strength, challenge, and I use math when ___ .</p>
     </div>
     <div class="box">
@@ -91,19 +164,20 @@ header.packet h1::after{
     </div>
   </div>
 
-  
+
 
   <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
-    <table>
-      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+    <table class="vocabulary-table">
+      <thead><tr><th scope="col">Term / Término</th><th scope="col">Definition / Definición</th></tr></thead>
       <tbody><tr><td><strong>doer of math</strong><br><span lang="es">persona que hace matemáticas</span></td><td>Anyone who uses mathematical thinking — which is everyone, every day.<br><span lang="es">Cualquiera que use el pensamiento matemático, es decir, todos, todos los días.</span></td></tr><tr><td><strong>math story</strong><br><span lang="es">historia matemática</span></td><td>Your own history with mathematics — what you have done, felt, and learned so far.<br><span lang="es">Tu propia historia con las matemáticas: lo que has hecho, sentido y aprendido.</span></td></tr><tr><td><strong>strength</strong><br><span lang="es">fortaleza</span></td><td>Something you already do well and can share with others.<br><span lang="es">Algo que ya haces bien y puedes compartir con otros.</span></td></tr><tr><td><strong>decompose</strong><br><span lang="es">descomponer</span></td><td>To break a number into parts that add, subtract, multiply, or divide back to it.<br><span lang="es">Separar un número en partes que se combinan para volver a formarlo.</span></td></tr><tr><td><strong>estimate</strong><br><span lang="es">estimar</span></td><td>A reasoned answer that is close enough to be useful, without counting every one.<br><span lang="es">Una respuesta razonada, lo bastante cercana para ser útil, sin contar todo.</span></td></tr></tbody>
     </table>
   </div>
 
-  <div class="box" data-support-slot="practice">
+  <div class="box practice-box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
-    <ol><li>About how many people can ride the Ferris wheel at one time if it has 20 cars that each hold about 4 people?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>About 5</li><li>About 24</li><li>About 80</li><li>About 400</li></ol><div class="work-space"></div></li><li>Which decomposition of 78.5 uses multiplication correctly?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>39 × 2</li><li>39.25 × 2</li><li>39.25 × 3</li><li>78.5 × 2</li></ol><div class="work-space"></div></li><li>A Ferris wheel holds about 78 riders per turn and makes 6 turns an hour. About how many riders per hour?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>About 13</li><li>About 84</li><li>About 468</li><li>About 780</li></ol><div class="work-space"></div></li><li>Which set shows FIVE different correct decompositions of 78.5?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>70 + 8.5, 78 + 0.5, 80 − 1.5, 39.25 × 2, 157 ÷ 2</li><li>70 + 8.5, 78 + 5, 80 − 1.5, 39.25 × 2, 157 ÷ 2</li><li>70 + 8.5, 78 + 0.5, 80 + 1.5, 39.25 × 2, 157 ÷ 2</li><li>70 + 8.5, 78 + 0.5, 80 − 1.5, 39.25 × 3, 157 ÷ 2</li></ol><div class="work-space"></div></li></ol>
+    <p>Read each task. Show your work in the spaces provided and explain how you know.</p>
+    <div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> About how many people can ride the Ferris wheel at one time if it has 20 cars that each hold about 4 people?</p><ol class="choices"><li><span class="ltr">A</span> About 5</li><li><span class="ltr">B</span> About 24</li><li><span class="ltr">C</span> About 80</li><li><span class="ltr">D</span> About 400</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">2.</span> Which decomposition of 78.5 uses multiplication correctly?</p><ol class="choices"><li><span class="ltr">A</span> 39 × 2</li><li><span class="ltr">B</span> 39.25 × 2</li><li><span class="ltr">C</span> 39.25 × 3</li><li><span class="ltr">D</span> 78.5 × 2</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> A Ferris wheel holds about 78 riders per turn and makes 6 turns an hour. About how many riders per hour?</p><ol class="choices"><li><span class="ltr">A</span> About 13</li><li><span class="ltr">B</span> About 84</li><li><span class="ltr">C</span> About 468</li><li><span class="ltr">D</span> About 780</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">4.</span> Which set shows FIVE different correct decompositions of 78.5?</p><ol class="choices"><li><span class="ltr">A</span> 70 + 8.5, 78 + 0.5, 80 − 1.5, 39.25 × 2, 157 ÷ 2</li><li><span class="ltr">B</span> 70 + 8.5, 78 + 5, 80 − 1.5, 39.25 × 2, 157 ÷ 2</li><li><span class="ltr">C</span> 70 + 8.5, 78 + 0.5, 80 + 1.5, 39.25 × 2, 157 ÷ 2</li><li><span class="ltr">D</span> 70 + 8.5, 78 + 0.5, 80 − 1.5, 39.25 × 3, 157 ÷ 2</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div>
   </div>
 
   <div class="box" data-support-slot="response">

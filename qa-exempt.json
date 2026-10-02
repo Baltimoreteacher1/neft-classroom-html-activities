@@ -34,6 +34,7 @@
     "tools/audit-lesson-alignment.mjs": "States its own limit: 'Reported, not judged: an unflagged lesson has not been individually read.' A tool that explicitly declines to judge cannot be a pass/fail gate.",
     "tools/audit-small-group-quality.mjs": "Writes reports/small-group-quality-audit.md for review during small-group content passes. No pass/fail semantics.",
     "tools/scorm/validate-scorm-self-contained.mjs": "DECIDED 2026-08-20: stays out of `validate`. CLAUDE.md documents the live-iframe design as intentional and this gate as holding that contract rather than policing it per push, and its runtime probe FAILS in CI without a browser, which would turn CI red on infrastructure grounds. It passes and is stable (3/3 runs). Revisit only if the self-containment contract itself changes.",
-    "tools/smoke-planning.mjs": "Exits 3 (SKIP) — one planner check cannot run without a live planner backend. Honest about verifying nothing, but a gate that skips by default is decoration. Wire it once it can run offline."
+    "tools/smoke-planning.mjs": "Exits 3 (SKIP) — one planner check cannot run without a live planner backend. Honest about verifying nothing, but a gate that skips by default is decoration. Wire it once it can run offline.",
+    "tools/verify-flagship-studio.mjs": "Explicit browser release check requiring a running Vite server and Playwright. Executed for the October 2026 game release: 13 boots, native controls, pause, correct-answer and retry paths passed; documented in docs/game-studio/cabinet-verification.md. Kept separate from the serverless push gate."
   }
 }

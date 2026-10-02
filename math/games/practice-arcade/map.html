@@ -256,26 +256,13 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<style>.arcade-worlds .world{border:1px solid #ffffff55;box-shadow:0 12px 30px #02061733}.arcade-worlds .wname{font-size:22px;line-height:1.25}.arcade-worlds .lesson{min-height:48px;font-size:16px}.arcade-worlds .review{font-size:17px;min-height:48px}.arcade-worlds [hidden]{display:none!important}.arcade-worlds :is(a,button,input):focus-visible{outline:3px solid #fde68a;outline-offset:3px}.map-search-label{display:block;font-size:17px;font-weight:700;margin-bottom:8px}#map-search{width:100%;min-height:48px;background:#162846;color:#fff;border:1px solid #7a95bc;border-radius:12px;font:17px system-ui;padding:12px 16px}#map-search::placeholder{color:#c1d1ea}#map-results{min-height:24px;font-size:16px}.arcade-worlds button.btn{font:inherit;cursor:pointer}</style>
 </head>
-  <body>
-
-      <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
-      </div>
-  
-    <div class="wrap">
+  <body class="arcade-worlds">
+<div class="wrap">
       <div class="topbar">
         <a class="btn" href="/curriculum/">← Curriculum</a>
-        <a class="btn" id="langBtn" href="#" role="button">EN · es</a>
+        <button class="btn" id="langBtn" type="button">EN · es</button>
       </div>
       <header class="hero">
         <h1>🗺️ Arcade World Map</h1>
@@ -288,23 +275,23 @@
           teaches you. Sound and language stay on this device.
         </p>
       </div>
-      <div class="grid" id="grid"></div>
+      <label class="map-search-label" for="map-search">Find a lesson or math skill</label><input id="map-search" type="search" placeholder="Try fractions, decimal, or graph…"><p id="map-results" role="status" aria-live="polite"></p><div class="grid" id="grid"></div>
       <div id="status">Loading worlds…</div>
     </div>
 
     <script>
       // World identities — kept in sync with the arcade engine's WORLDS table.
       var WORLDS = {
-        1: { name: "Number Nebula", top: "#4338ca", bot: "#6d28d9", boss: "🦉" },
-        2: { name: "Fraction Falls", top: "#0f766e", bot: "#115e59", boss: "🐢" },
+        1: { name: "Math Is Mine", top: "#4338ca", bot: "#6d28d9", boss: "🦉" },
+        2: { name: "Statistics & Decimal Operations", top: "#0f766e", bot: "#115e59", boss: "🐢" },
         3: { name: "Ratio Reef", top: "#0369a1", bot: "#1e40af", boss: "🐬" },
         4: { name: "Percent Peaks", top: "#7e22ce", bot: "#a21caf", boss: "🦄" },
-        5: { name: "Ember Expanse", top: "#b45309", bot: "#9a3412", boss: "🦊" },
-        6: { name: "Grove of Signs", top: "#15803d", bot: "#166534", boss: "🐸" },
-        7: { name: "Cipher Caverns", top: "#1e3a8a", bot: "#334155", boss: "🦈" },
-        8: { name: "Data Dunes", top: "#be185d", bot: "#9d174d", boss: "🦩" },
-        9: { name: "Grid Galaxy", top: "#0e7490", bot: "#1e40af", boss: "🤖" },
-        10: { name: "Prism Peaks", top: "#a16207", bot: "#854d0e", boss: "🐻" },
+        5: { name: "Area, Volume & Surface Area", top: "#b45309", bot: "#9a3412", boss: "🦊" },
+        6: { name: "Fractions, Factors & Expressions", top: "#15803d", bot: "#166534", boss: "🐸" },
+        7: { name: "Rational Numbers & Coordinates", top: "#1e3a8a", bot: "#334155", boss: "🦈" },
+        8: { name: "Equations & Inequalities", top: "#be185d", bot: "#9d174d", boss: "🦩" },
+        9: { name: "Relationships Between Variables", top: "#0e7490", bot: "#1e40af", boss: "🤖" },
+        10: { name: "Math in My World", top: "#a16207", bot: "#854d0e", boss: "🐻" },
       };
       var lang = "en";
       try {
@@ -340,9 +327,9 @@
           return 0;
         }
       }
-      function starFor(score) {
-        if (!score) return "";
-        return score >= 800 ? "⭐⭐⭐" : score >= 400 ? "⭐⭐" : "⭐";
+      function starFor(id) {
+        try { var result = JSON.parse(localStorage.getItem("pa-summary-" + id) || "null"); if (result && result.stars >= 1 && result.stars <= 3) return "⭐".repeat(result.stars); } catch (_) {}
+        return best(id) ? "✓" : "";
       }
       function esc(s) {
         return String(s).replace(/[&<>"]/g, function (c) {
@@ -375,12 +362,13 @@
             return best(l.id) > 0;
           }).length;
           var pct = lessons.length ? Math.round((played / lessons.length) * 100) : 0;
-          var card = document.createElement("div");
+          var card = document.createElement("section");
           card.className = "world";
+          card.setAttribute("aria-label", "Unit " + u + ": " + w.name);
           card.style.background = "linear-gradient(160deg," + w.top + "," + w.bot + ")";
           var lessonHtml = lessons
             .map(function (l) {
-              var s = starFor(best(l.id));
+              var s = starFor(l.id);
               return (
                 '<a class="lesson" href="/math/games/practice-arcade/?lesson=' +
                 encodeURIComponent(l.id) +
@@ -402,7 +390,7 @@
             '</div><div class="wsub">Unit ' +
             u +
             "</div></div></div>" +
-            '<div class="prog"><i style="width:' +
+            '<div class="prog" role="progressbar" aria-label="Lessons played" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' +
             pct +
             '%"></i></div>' +
             '<div class="progtxt">' +
@@ -425,9 +413,18 @@
         document.getElementById("status").textContent = "";
       }
 
+      document.getElementById("map-search").addEventListener("input", function(event) {
+        var query = event.target.value.trim().toLowerCase(); var matches = 0;
+        document.querySelectorAll(".world").forEach(function(world) {
+          var worldMatch = !query || world.querySelector(".whead").textContent.toLowerCase().includes(query);
+          var count = 0; world.querySelectorAll(".lesson").forEach(function(lesson) { var show = worldMatch || lesson.textContent.toLowerCase().includes(query); lesson.hidden = !show; if(show) count++; });
+          world.hidden = !worldMatch && !count; matches += count;
+        });
+        document.getElementById("map-results").textContent = query ? matches + " lessons match." : "";
+      });
       fetch("/data/curriculum-manifest.json")
         .then(function (r) {
-          return r.ok ? r.json() : null;
+          if (!r.ok) throw new Error("Lesson list unavailable"); return r.json();
         })
         .then(function (m) {
           var byUnit = {};
@@ -455,50 +452,14 @@
         });
     </script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
   <!-- gfx-injected:end -->
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   
   <!-- mwb-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Choose any unit world on the Arcade Map to practice self-paced lesson challenges!" data-es="¡Elige cualquier mundo de la unidad en el Mapa Arcade para practicar desafíos a tu propio ritmo!">Choose any unit world on the Arcade Map to practice self-paced lesson challenges!</p>
-        </div>
-      </div>
-
-  <!-- Shared Arcade FX Engine & Particles -->
-  <canvas id="fx-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999;"></canvas>
-  <script src="/math/games/shared/arcade-fx-engine.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const canvas = document.getElementById("fx-canvas");
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener("resize", () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        });
-      }
-
-      document.body.addEventListener("click", function(e) {
-        if (window.ArcadeFX) {
-          window.ArcadeFX.playSFX("click");
-          if (canvas) {
-            window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#38bdf8", 15);
-          }
-        }
-      });
-    });
-  </script>
-  <script src="/assets/math-workbench-launcher.js" defer></script>
+<script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 </body>
 </html>

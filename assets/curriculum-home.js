@@ -43,4 +43,29 @@
   }
   window.addEventListener("hashchange", revealHash);
   revealHash();
+
+  // Mark the unit being taught now (or next, between units) on the course cards.
+  function markCurrentUnit() {
+    const cards = Array.from(document.querySelectorAll(".course-unit-list li[data-start]"));
+    if (!cards.length) return;
+    const now = new Date();
+    const today = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0"),
+    ].join("-");
+    const ordered = cards.sort((a, b) => a.dataset.start.localeCompare(b.dataset.start));
+    const current =
+      ordered.find((li) => li.dataset.start <= today && today <= li.dataset.end) ||
+      ordered.find((li) => today < li.dataset.start);
+    if (!current) return;
+    const live = current.dataset.start <= today;
+    current.classList.add("is-current");
+    const tag = document.createElement("span");
+    tag.className = "course-unit-now";
+    tag.textContent = live ? "Now" : "Next";
+    current.querySelector("a")?.prepend(tag);
+    if (live) current.querySelector("a")?.setAttribute("aria-current", "date");
+  }
+  markCurrentUnit();
 })();

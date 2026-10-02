@@ -15,14 +15,15 @@ try {
   const root = join(dirname(fileURLToPath(import.meta.url)), "..");
   const dir = join(root, "dist", "access-practice-lab");
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  // Content proof: read the DEPLOYED index.html to confirm the new app + data
-  // modules actually shipped (not just that the build ran).
+  // Content proof: read the DEPLOYED index.html and content index to confirm the
+  // app entry and its content actually shipped (not just that the build ran).
   let appVersion = "",
-    dataModules = 0;
+    contentSchema = 0;
   try {
     const idx = readFileSync(join(dir, "index.html"), "utf8");
-    appVersion = (idx.match(/app\.js\?v=([a-z0-9-]+)/i) || [])[1] || "";
-    dataModules = (idx.match(/access-data(?:-v\d+)?\.js/g) || []).length;
+    appVersion = (idx.match(/main\.js\?v=([a-z0-9.-]+)/i) || [])[1] || "";
+    contentSchema =
+      JSON.parse(readFileSync(join(dir, "content", "index.json"), "utf8")).schema || 0;
   } catch {}
   const stamp = {
     app: "access-practice-lab",
@@ -30,7 +31,7 @@ try {
     branch: process.env.CF_PAGES_BRANCH || "",
     builtAt: new Date().toISOString(),
     appVersion,
-    dataModules,
+    contentSchema,
   };
   // Write the public build stamp. This line was accidentally dropped in
   // c86637562 while adding SW cache-key stamping, which left every build

@@ -277,6 +277,9 @@ const state = {
   feed: [],
   seenByTag: null,
   projector: false,
+  focusTag: "",
+  sessionSolved: 0,
+  sessionAttempts: 0,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -786,7 +789,7 @@ function questionSeed(attempt) {
 }
 
 function nextQuestion() {
-  const tags = state.tags;
+  const tags = state.focusTag ? [state.focusTag] : state.tags;
   const tag = tags[state.attempt % tags.length];
   const templateIndex = Math.floor(state.attempt / tags.length);
   state.current = buildQuestion(tag, templateIndex, questionSeed(state.attempt));
@@ -878,11 +881,22 @@ function showFeedback(correct, chosen) {
 }
 
 function answer(choice) {
-  if (state.answered) return;
+  if (state.answered || window.GameStudio?.paused || document.querySelector(".studio-dialog[open]")) return;
   const q = state.current;
   const correct = String(choice) === String(q.correct);
   state.answered = true;
   state.lastAnswer = { choice, correct };
+  state.sessionAttempts++;
+  if (correct) state.sessionSolved++;
+  const session = $("raidSession");
+  if (session) session.textContent = state.lang === "es"
+    ? `Tu expedición: ${state.sessionSolved} de ${state.sessionAttempts} desafíos resueltos. Sin límite de tiempo.`
+    : `Your expedition: ${state.sessionSolved} of ${state.sessionAttempts} challenges solved. No time limit.`;
+  window.GameStudio?.emit("feedback", { correct });
+  if (state.sessionAttempts % 5 === 0) window.GameStudio?.emit("complete", {
+    correct: state.sessionSolved, total: state.sessionAttempts,
+    message: state.lang === "es" ? "Cinco desafíos más completados. Sigue practicando o toma un descanso." : "Five more challenges completed. Keep practicing or take a break.",
+  });
 
   applyAnsweredUi(choice, correct);
   flashBoss(correct ? "is-hit" : "is-attacking");
@@ -995,6 +1009,13 @@ async function init() {
   renderProgress();
   renderFeed();
   nextQuestion();
+  const focus = $("raidFocus");
+  state.tags.forEach(tag => {
+    const option = document.createElement("option"); option.value = tag;
+    option.textContent = labelFor(tag); focus?.append(option);
+  });
+  focus?.addEventListener("change", () => { state.focusTag = focus.value; nextQuestion(); });
+  window.GameStudio?.register({ title: "Class Boss", instructions: ["Choose one of the class's three attacks to practice, or keep all three.", "Read the problem. Select an answer or use number keys 1–4.", "Read the coaching before choosing Next question. A mistake costs no health or lives."] });
 
   el.nextBtn.addEventListener("click", () => nextQuestion());
   el.langBtn.addEventListener("click", () => setLang(state.lang === "en" ? "es" : "en"));
@@ -1002,9 +1023,9 @@ async function init() {
 
   // Number keys 1-4 pick a choice, so the raid is playable from the keyboard.
   document.addEventListener("keydown", (event) => {
-    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.metaKey || event.ctrlKey || event.altKey || document.querySelector(".studio-dialog[open]")) return;
     const tag = String(event.target?.tagName || "").toLowerCase();
-    if (tag === "input" || tag === "textarea") return;
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
     const n = Number(event.key);
     if (!Number.isInteger(n) || n < 1 || n > 4) return;
     const buttons = el.choices.querySelectorAll(".choice");

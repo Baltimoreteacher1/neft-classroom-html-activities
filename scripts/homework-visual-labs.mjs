@@ -530,6 +530,107 @@ function initialPreview() {
   return `<svg viewBox="0 0 520 220" role="img" aria-label="Interactive math model preview"><rect width="520" height="220" rx="24" fill="#f8fbf2"/><path d="M28 38H492M28 82H492M28 126H492M28 170H492" stroke="#d7e7df"/><path d="M76 20V200M124 20V200M172 20V200M220 20V200M268 20V200M316 20V200M364 20V200M412 20V200M460 20V200" stroke="#d7e7df"/>${dots}<path d="M84 190h352" stroke="#173a5e" stroke-width="5" stroke-linecap="round"/><text x="260" y="210" text-anchor="middle" font-size="14" font-weight="800" fill="#173a5e">Move a slider to change the math</text></svg>`;
 }
 
+const MODEL_ACTIONS = {
+  "algebra-expand": [
+    "Change the expression. Look for terms that stay equal when you expand it.",
+    "Cambia la expresión. Busca los términos que siguen siendo iguales al desarrollarla.",
+  ],
+  "area-morph": [
+    "Change the shape or its measurements. Find the area in square units.",
+    "Cambia la figura o sus medidas. Halla el área en unidades cuadradas.",
+  ],
+  "combine-like-terms": [
+    "Change the terms. Combine only terms with the same variable part.",
+    "Cambia los términos. Combina solo los que tienen la misma parte variable.",
+  ],
+  "coordinate-plane": [
+    "Plot the points. Read each pair across first, then up or down.",
+    "Marca los puntos. Lee cada par: primero a lo ancho, luego hacia arriba o abajo.",
+  ],
+  "distributive-builder": [
+    "Change the factors. Compare multiplying first with adding the two smaller products.",
+    "Cambia los factores. Compara multiplicar primero con sumar los dos productos menores.",
+  ],
+  "equation-balance-lab": [
+    "Change the equation. Keep both sides equal as you solve for the unknown.",
+    "Cambia la ecuación. Mantén iguales los dos lados mientras hallas la incógnita.",
+  ],
+  "factor-tree": [
+    "Split a number into factors until every branch ends in a prime number.",
+    "Separa un número en factores hasta que cada rama termine en un número primo.",
+  ],
+  "fraction-divide": [
+    "Choose a division problem. Show how many equal groups or pieces fit.",
+    "Elige una división. Muestra cuántos grupos o partes iguales caben.",
+  ],
+  "lcm-lab": [
+    "Change the two numbers. Find the first multiple they share.",
+    "Cambia los dos números. Encuentra el primer múltiplo que comparten.",
+  ],
+  "line-grapher": [
+    "Change the rate. Read what one point on the graph means in this situation.",
+    "Cambia la tasa. Explica qué significa un punto de la gráfica en esta situación.",
+  ],
+  "net-folder": [
+    "Fold the flat faces into a solid. Count which faces make its surface.",
+    "Dobla las caras planas para formar un sólido. Cuenta las caras de su superficie.",
+  ],
+  "number-line": [
+    "Move the point. Use its position to describe or compare the numbers.",
+    "Mueve el punto. Usa su posición para describir o comparar los números.",
+  ],
+  "number-line-explorer": [
+    "Move the point. Notice its distance from zero and which side of zero it is on.",
+    "Mueve el punto. Observa su distancia al cero y de qué lado está.",
+  ],
+  "percent-builder": [
+    "Change the percent and the whole. Check how large the part becomes.",
+    "Cambia el porcentaje y el total. Observa cuánto vale la parte.",
+  ],
+  "percent-grid": [
+    "Shade squares out of 100. Connect the picture to a fraction, decimal, and percent.",
+    "Sombrea cuadros de 100. Relaciona el dibujo con una fracción, un decimal y un porcentaje.",
+  ],
+  "power-builder": [
+    "Change the base and exponent. Count the repeated factors before multiplying.",
+    "Cambia la base y el exponente. Cuenta los factores repetidos antes de multiplicar.",
+  ],
+  "prism-volume": [
+    "Change the prism's three edges. Count the cubes in one layer, then all layers.",
+    "Cambia las tres aristas del prisma. Cuenta los cubos de una capa y luego de todas.",
+  ],
+  "ratio-table-builder": [
+    "Change the starting pair. Multiply both quantities by the same number to keep the ratio equivalent.",
+    "Cambia el par inicial. Multiplica ambas cantidades por el mismo número para conservar la razón.",
+  ],
+  "step-solver": [
+    "Change the problem. Explain why each solving step keeps the value correct.",
+    "Cambia el problema. Explica por qué cada paso mantiene correcto el valor.",
+  ],
+  "tape-diagram": [
+    "Change the amounts. Point to the whole and the parts before writing an equation.",
+    "Cambia las cantidades. Señala el total y las partes antes de escribir una ecuación.",
+  ],
+  "unit-rate-builder": [
+    "Change the two amounts. Divide to find the amount for one item.",
+    "Cambia las dos cantidades. Divide para hallar la cantidad por un objeto.",
+  ],
+};
+const MANIP_ACTIONS = {
+  "composite-split": [
+    "Split the shape into rectangles. Add their areas without counting any part twice.",
+    "Divide la figura en rectángulos. Suma sus áreas sin contar ninguna parte dos veces.",
+  ],
+  "cube-builder": [
+    "Build layers of cubes. Multiply length × width × height to count them all.",
+    "Forma capas de cubos. Multiplica largo × ancho × alto para contarlos todos.",
+  ],
+  balance: [
+    "Change the equation. Keep the two sides balanced as you find the unknown.",
+    "Cambia la ecuación. Mantén equilibrados los dos lados mientras hallas la incógnita.",
+  ],
+};
+
 function renderSharedLessonModel(topic, config, lessonModel) {
   const kind = lessonModel.kind || "interactive model";
   const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
@@ -570,21 +671,33 @@ function renderSharedLessonModel(topic, config, lessonModel) {
     modelNameEs = lessonModel.titleEs || "Modelo interactivo de la lección";
   }
 
-  const prompt = isFactorTree
-    ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
-    : kind === "fraction-divide"
-      ? "Choose a division problem. Watch how the total amount is cut into equal fraction pieces."
-      : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
-  const promptEs = isFactorTree
-    ? "Escribe dos factores para cada círculo compuesto. Sigue dividiendo hasta que cada hoja sea prima."
-    : kind === "fraction-divide"
-      ? "Elige un problema de división. Observa cómo la cantidad total se divide en partes fraccionarias iguales."
-      : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.";
+  const authored = config.familyNotes?.touchAndTry || {};
+  const modelAction = MANIP_ACTIONS[lessonModel.manip] ||
+    MODEL_ACTIONS[kind] || [
+      "Change the numbers. Explain what the picture shows.",
+      "Cambia los números. Explica qué muestra el dibujo.",
+    ];
+  const prompt =
+    authored.promptEn ||
+    (isFactorTree
+      ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
+      : kind === "fraction-divide"
+        ? "Choose a division problem. Watch how the total amount is cut into equal fraction pieces."
+        : modelAction[0]);
+  const promptEs =
+    authored.promptEs ||
+    (isFactorTree
+      ? "Escribe dos factores para cada círculo compuesto. Sigue dividiendo hasta que cada hoja sea prima."
+      : kind === "fraction-divide"
+        ? "Elige un problema de división. Observa cómo la cantidad total se divide en partes fraccionarias iguales."
+        : modelAction[1]);
   const idea =
+    config.familyNotes?.bigIdea?.en ||
     config.launch?.conceptIntro?.keyIdea ||
     config.explore?.conceptIntro?.keyIdea ||
     config.contentObjective ||
     config.title;
+  const ideaEs = config.familyNotes?.bigIdea?.es || idea;
 
   /* The three TOUCH & TRY cards default to text that is IDENTICAL on all 164
      family homeworks — "Move, type, tap, or drag in the model" tells a family
@@ -593,7 +706,6 @@ function renderSharedLessonModel(topic, config, lessonModel) {
      ended up with a tape diagram that can show part-to-part AND part-to-whole
      and a prompt that named neither. A lesson authors its own in the
      family-note sidecar under `touchAndTry`; everything unset falls back. */
-  const authored = config.familyNotes?.touchAndTry || {};
   const touch = {
     touchEn:
       authored.touchEn ||
@@ -629,13 +741,47 @@ function renderSharedLessonModel(topic, config, lessonModel) {
           <strong>💬 <span class="lang-en">Family conversation:</span><span class="lang-es" lang="es">Conversación familiar:</span></strong>
           <p class="visual-coach-q"><span class="lang-en">Ask: "Where do you see the numbers from tonight&#039;s math in this model?"</span><span class="lang-es" lang="es">Pregunta: "¿Dónde ves los números de la tarea de hoy en este modelo?"</span></p>
         </div>
-        <details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">${esc(idea)}</p></details>
+        <p class="visual-source-idea"><strong><span class="lang-en">Tonight's idea:</span><span class="lang-es" lang="es">La idea de hoy:</span></strong> <span class="lang-en">${esc(idea)}</span><span class="lang-es" lang="es">${esc(ideaEs)}</span></p>
       </article>
     </div>
   </section>`;
 }
 
+function renderRatioComparisonLab() {
+  return `<section class="family-visual-lab ratio-compare-lab" data-ratio-compare aria-labelledby="visual_lab_title">
+    <div class="visual-lab-heading">
+      <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
+      <h2 id="visual_lab_title"><span class="lang-en">Which cocoa is stronger?</span><span class="lang-es" lang="es">¿Cuál chocolate tiene más cacao?</span></h2></div>
+      <p><span class="lang-en">Change either recipe. Compare the cocoa for the same amount of milk.</span><span class="lang-es" lang="es">Cambia cualquier receta. Compara el cacao para la misma cantidad de leche.</span></p>
+    </div>
+    <div class="ratio-compare-grid">
+      ${[
+        ["a", "Reyes", 3, 5],
+        ["b", "Tran", 4, 7],
+      ]
+        .map(
+          ([
+            key,
+            name,
+            cocoa,
+            milk,
+          ]) => `<fieldset class="ratio-compare-recipe"><legend>Chef ${name}</legend>
+        <label><span class="lang-en">Tablespoons cocoa</span><span class="lang-es" lang="es">Cucharadas de cacao</span><input type="number" min="1" max="30" step="1" value="${cocoa}" data-ratio-${key}-cocoa></label>
+        <label><span class="lang-en">Ounces milk</span><span class="lang-es" lang="es">Onzas de leche</span><input type="number" min="1" max="30" step="1" value="${milk}" data-ratio-${key}-milk></label>
+        <div class="ratio-compare-result" data-ratio-${key}-result><span class="lang-en"></span><span class="lang-es" lang="es"></span></div>
+        <div class="ratio-compare-bar" aria-hidden="true"><span data-ratio-${key}-bar></span></div>
+      </fieldset>`,
+        )
+        .join("")}
+    </div>
+    <p class="ratio-compare-verdict" data-ratio-verdict role="status" aria-live="polite"><span class="lang-en"></span><span class="lang-es" lang="es"></span></p>
+    <p class="ratio-compare-coach"><strong><span class="lang-en">Family question:</span><span class="lang-es" lang="es">Pregunta para la familia:</span></strong> <span class="lang-en">Why can't we compare only the 3 and 4 tablespoons?</span><span class="lang-es" lang="es">¿Por qué no basta comparar las 3 y 4 cucharadas?</span></p>
+  </section>`;
+}
+
 export function renderVisualMathLab(topic, config, lessonModel = null) {
+  if (["3-5", "3-5-part2"].includes(String(config.lessonId || config.id)))
+    return renderRatioComparisonLab();
   if (lessonModel?.html) return renderSharedLessonModel(topic, config, lessonModel);
   const lab = LABS[topic] || LABS.fallback;
   const controls = lab.controls
@@ -716,6 +862,7 @@ export function renderVisualMathLab(topic, config, lessonModel = null) {
 }
 
 export const VISUAL_LABS_CSS = String.raw`
+.ratio-compare-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.ratio-compare-recipe{min-width:0;margin:0;padding:18px;border:2px solid #173a5e;border-radius:18px;background:#eef8f4}.ratio-compare-recipe legend{padding:0 8px;font-size:20px;font-weight:800}.ratio-compare-recipe label{display:grid;gap:5px;margin:10px 0;font-size:16px;font-weight:700}.ratio-compare-recipe input{width:100%;max-width:160px;min-height:44px;padding:7px 10px;border:2px solid #173a5e;border-radius:9px;background:#fff;color:#173a5e;font:inherit;font-size:20px}.ratio-compare-recipe input:focus-visible{outline:3px solid #b45309;outline-offset:2px}.ratio-compare-result{min-height:68px;margin-top:14px;font-size:17px;line-height:1.4}.ratio-compare-bar{height:22px;margin-top:10px;border:1px solid #173a5e;border-radius:12px;background:#fff;overflow:hidden}.ratio-compare-bar span{display:block;height:100%;background:#0b8f87;transition:width .2s}.ratio-compare-recipe:nth-child(2) .ratio-compare-bar span{background:#c65d43}.ratio-compare-verdict{margin:18px 0 8px;padding:16px;border:2px solid #173a5e;border-radius:14px;background:#fff2c2;font-size:19px;font-weight:800;line-height:1.4}.ratio-compare-coach{margin:8px 0 0;font-size:17px;line-height:1.45}@media(max-width:650px){.ratio-compare-grid{grid-template-columns:1fr}}
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
 .visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
@@ -747,6 +894,34 @@ export const VISUAL_LABS_CSS = String.raw`
 export const VISUAL_LABS_JS = String.raw`
 (function () {
   "use strict";
+  function initRatioComparison(lab) {
+    var fields = ['a-cocoa', 'a-milk', 'b-cocoa', 'b-milk'].map(function(key){return lab.querySelector('[data-ratio-'+key+']');});
+    function update() {
+      var nums = fields.map(function(field){return Number(field.value);});
+      var verdict = lab.querySelector('[data-ratio-verdict]');
+      if (nums.some(function(n){return !Number.isInteger(n) || n < 1 || n > 30;})) {
+        verdict.querySelector('.lang-en').textContent = 'Enter whole numbers from 1 to 30 in all four boxes.';
+        verdict.querySelector('.lang-es').textContent = 'Escribe números enteros del 1 al 30 en las cuatro casillas.';
+        ['a','b'].forEach(function(key){var box=lab.querySelector('[data-ratio-'+key+'-result]');box.querySelector('.lang-en').textContent='';box.querySelector('.lang-es').textContent='';lab.querySelector('[data-ratio-'+key+'-bar]').style.width='0';});
+        return;
+      }
+      var a = nums[0] / nums[1], b = nums[2] / nums[3];
+      [['a','Reyes',nums[0],nums[1],a],['b','Tran',nums[2],nums[3],b]].forEach(function(row){
+        var box=lab.querySelector('[data-ratio-'+row[0]+'-result]');
+        box.querySelector('.lang-en').textContent = row[2]+' ÷ '+row[3]+' = '+row[4].toFixed(2)+' tablespoons per 1 ounce';
+        box.querySelector('.lang-es').textContent = row[2]+' ÷ '+row[3]+' = '+row[4].toFixed(2)+' cucharadas por 1 onza';
+        lab.querySelector('[data-ratio-'+row[0]+'-bar]').style.width = (row[4]/Math.max(a,b)*100)+'%';
+      });
+      var common = nums[1]*nums[3], cocoaA = nums[0]*nums[3], cocoaB = nums[2]*nums[1];
+      var winner = cocoaA > cocoaB ? 'Reyes' : 'Tran';
+      verdict.querySelector('.lang-en').textContent = 'For '+common+' ounces of milk: Reyes uses '+cocoaA+' tablespoons; Tran uses '+cocoaB+'. '+(cocoaA===cocoaB?'Both recipes have the same cocoa strength.':winner+' has more cocoa for the same milk.');
+      verdict.querySelector('.lang-es').textContent = 'Para '+common+' onzas de leche: Reyes usa '+cocoaA+' cucharadas; Tran usa '+cocoaB+'. '+(cocoaA===cocoaB?'Ambas recetas tienen la misma intensidad de cacao.':winner+' tiene más cacao para la misma cantidad de leche.');
+    }
+    fields.forEach(function(field){field.addEventListener('input',update);});
+    update();
+  }
+  function initRatioComparisons(){document.querySelectorAll('[data-ratio-compare]').forEach(initRatioComparison);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRatioComparisons);else initRatioComparisons();
   var NS = "http://www.w3.org/2000/svg";
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
   function svgWrap(body, label) { return '<svg viewBox="0 0 560 280" role="img" aria-label="' + label + '"><rect x="8" y="8" width="544" height="264" rx="24" fill="#f8fbf2" stroke="#173a5e" stroke-width="3"/>' + body + '</svg>'; }

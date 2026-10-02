@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/2-5/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Describe Data by Range and Interquartile Range</h1>
   <p class="doc-meta">6.DS.3 · Unit 2 · Lesson 5</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can find the range and the interquartile range of a data set and use them to describe how spread out the data is.</p><p><strong>Language:</strong> I can explain what the spread of a data set is using the words range, quartile, interquartile range, and vary.</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">The team's data analyst pulls up two dot plots. Fan ages at last night's game: 18, 19, 20, 20, 21, 21, 22, 68 (one grandparent came too). Roster shoe sizes: 9, 10, 10, 10.5, 11, 11, 11.5.</p>
+         <figure class="notice-figure"><img src="/lessons/2-5/reveal-assets/notice-wonder.svg" alt="Two dot plots drawn to the same scale: fan ages at last night's game, and roster shoe sizes." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>Range and Interquartile Range</strong><br><span class="es">Rango y rango intercuartílico</span></td><td>Two numbers that describe spread: the range covers all the data, and the interquartile range covers only the middle half.<br><span class="es">Dos números que describen la dispersión: el rango cubre todos los datos y el rango intercuartílico solo la mitad central.</span></td><td>Range 26 with IQR 12.5 — The IQR is always the smaller of the two — it sits inside the range.</td></tr><tr><td><strong>Range</strong><br><span class="es">Rango</span></td><td>The distance from the least value to the greatest value, found by subtracting: greatest − least.<br><span class="es">La distancia del valor menor al mayor, que se halla restando: mayor − menor.</span></td><td>30 − 12 = 18 — Greatest minus least.</td></tr><tr><td><strong>Quartile</strong><br><span class="es">Cuartil</span></td><td>One of the three values that cut an ordered data set into four equal-sized groups.<br><span class="es">Uno de los tres valores que dividen un conjunto ordenado de datos en cuatro grupos del mismo tamaño.</span></td><td>Q1 = 9 for the lower half 4, 8, 10, 14 — It is the median OF that half.</td></tr><tr><td><strong>Interquartile range</strong><br><span class="es">Rango intercuartílico</span></td><td>The distance across the middle half of the data, found by subtracting the first quartile from the third: Q3 − Q1.<br><span class="es">La distancia a lo largo de la mitad central de los datos: se resta el primer cuartil del tercero: Q3 − Q1.</span></td><td>88 − 75.5 = 12.5 — Q3 minus Q1 — the middle half's width.</td></tr><tr><td><strong>Variability</strong><br><span class="es">Variabilidad</span></td><td>How much the values in a data set differ from one another — whether they sit close together or far apart.<br><span class="es">Cuánto se diferencian entre sí los valores de un conjunto de datos: si están juntos o muy separados.</span></td><td>Scores running from 68 to 94 — The values differ, which is what variability measures.</td></tr><tr><td><strong>Measure of variation</strong><br><span class="es">Medida de variación</span></td><td>A single number that describes the spread of a whole data set. The range and the IQR are both measures of variation.<br><span class="es">Un solo número que describe la dispersión de todo un conjunto de datos. El rango y el RIC son medidas de variación.</span></td><td>An IQR of 12.5 — It reports spread in one number.</td></tr><tr><td><strong>Extreme value</strong><br><span class="es">Valor extremo</span></td><td>The least or greatest value in a data set, far from the rest.<br><span class="es">El valor menor o mayor de un conjunto de datos, lejos del resto.</span></td><td>A score of 68 when the other scores are between 82 and 94 — It sits far below the rest of the data.</td></tr></table></section>
@@ -95,11 +166,12 @@
         <p class="hint-line">Word bank: greatest, least, all of, Q3, Q1, middle half</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">The league analyst is comparing two sixth-grade classes that took the same math test. Both classes have the SAME median score, 81 — so the medians alone cannot tell them apart. Your job is to measure how spread out each class's scores are, using the range and the interquartile range, and decide which class did better overall.</p><h3>How spread out is the data?</h3><p>A measure of center like the median tells you where the data sits. It does not tell you how far apart the values are. Two classes can share the same median and still look nothing alike. Range and interquartile range are the two numbers that describe that spread.</p><p class="keyidea"><strong>Key idea:</strong> Measures of Variability: Range &amp; IQR. Formula: Range = Maximum − Minimum | IQR = Q3 − Q1. 1. Range measures the total spread across the entire data set. 2. IQR (Interquartile Range) measures the spread of the middle 50% of data. 3. Both are non-negative distance measures of variability</p><div class="cistep"><p class="cititle">Watch me measure the spread of the test scores</p><ul><li>Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordering them first is what makes every step after this possible.</li><li>Range: I subtract the least value from the greatest. 94 − 68 = 26. The scores span 26 points from end to end.</li><li>Now the quartiles. The median splits the 20 scores into two halves of 10. The median is halfway between the 10th and 11th values: (83 + 84) ÷ 2 = 83.5.</li><li>Q1 is the median of the lower 10 values: halfway between 75 and 76, so Q1 = 75.5. Q3 is the median of the upper 10: halfway between 88 and 88, so Q3 = 88.</li><li>Interquartile range: IQR = Q3 − Q1 = 88 − 75.5 = 12.5. The middle half of the students' scores differed by only 12.5 points, even though the full range was 26.</li></ul></div><div class="cistep"><p class="cititle">Let's do one together</p><ul><li>Class A's box plot reads: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range first.</li><li>Range = 90 − 62 = 28 points from the lowest score to the highest.</li><li>Now the IQR: subtract Q1 from Q3. IQR = 87 − 74 = 13 points across the middle half.</li><li>Say what each one means: the whole class's scores span 28 points, but the middle half of the class is packed into 13 points.</li></ul></div><div class="cistep"><p class="cititle">Your turn</p><ul><li>Class B's box plot reads: least 70, Q1 76, median 81, Q3 84, greatest 90.</li><li>Find the range: greatest − least.</li><li>Find the IQR: Q3 − Q1.</li><li>Class A and Class B have the SAME median, 81. Which class's scores are less spread out — and how do your two numbers show it?</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item><p class="qtext">Each statement describes a spread. Sort it under the measure that produced it.</p><div class="wordbank"><strong>Word bank:</strong> </div><div class="sortboxes"><div class="sortbox"><div class="sorthd"></div></div><div class="sortbox"><div class="sorthd"></div></div></div></div><p class="frame">Both numbers describe spread. Why might a coach trust the IQR more than the range when one player had a record-breaking night? — I would use the ___ because it only uses the ___, so one unusual value cannot ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> A box plot shows: least 68, Q1 75.5, median 83.5, Q3 88, greatest 94. What are the range and the IQR?</p><ol class="choices"><li><span class="ltr">A</span> Range 12.5, IQR 26</li><li><span class="ltr">B</span> Range 20, IQR 12.5</li><li><span class="ltr">C</span> Range 26, IQR 12.5</li><li><span class="ltr">D</span> Range 26, IQR 83.5</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> Match each value from the history test data (68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94) with what it is.</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>26</td><td class="mans"></td><td class="mltr">A.</td><td>Third quartile</td></tr><tr><td class="mnum">2.</td><td>12.5</td><td class="mans"></td><td class="mltr">B.</td><td>Median</td></tr><tr><td class="mnum">3.</td><td>83.5</td><td class="mans"></td><td class="mltr">C.</td><td>Range</td></tr><tr><td class="mnum">4.</td><td>75.5</td><td class="mans"></td><td class="mltr">D.</td><td>First quartile</td></tr><tr><td class="mnum">5.</td><td>88</td><td class="mans"></td><td class="mltr">E.</td><td>Interquartile range</td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> Team A's salaries have a range of $14M and an IQR of $7M. Team B's have a range of $7M and an IQR of $2.5M. Both teams have the same median salary. What does this tell a player?</p><ol class="choices"><li><span class="ltr">A</span> Team B pays more overall</li><li><span class="ltr">B</span> Team B's salaries cluster much more tightly around the median</li><li><span class="ltr">C</span> Team A has more players</li><li><span class="ltr">D</span> Team B's highest salary is greater</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> A value far above the rest is added to a data set. Sort what happens.</p><div class="wordbank"><strong>Word bank:</strong> </div><div class="sortboxes"><div class="sortbox"><div class="sorthd"></div></div><div class="sortbox"><div class="sorthd"></div></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> </p><div class="worked"><div class="wa-step"><span class="wa-lbl">Setup</span><span class="wa-work">Data: 15, 18, 20, 22, 25, 60.</span></div><div class="wa-step"><span class="wa-lbl">Step 1</span><span class="wa-work">The range is 60 − 15 = 45.</span></div><div class="wa-step"><span class="wa-lbl">Step 2</span><span class="wa-work">The range of 45 shows that a typical value differs from the others by about 45.</span></div><div class="wa-step"><span class="wa-lbl">Step 3</span><span class="wa-work">So this data set has high variability everywhere.</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext">Each statement describes a spread. Sort it under the measure that produced it.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">Describes the middle half of the data</span> <span class="chip">The width of the box on a box plot</span> <span class="chip">Uses the third quartile and the first quartile</span> <span class="chip">Uses the greatest and least values</span> <span class="chip">One unusually high value stretches it a lot</span> <span class="chip">88 − 75.5 = 12.5</span> <span class="chip">94 − 68 = 26</span> <span class="chip">Describes every value in the data set</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Range</div></div><div class="sortbox"><div class="sorthd">Interquartile range</div></div></div></div><p class="frame">Both numbers describe spread. Why might a coach trust the IQR more than the range when one player had a record-breaking night? — I would use the ___ because it only uses the ___, so one unusual value cannot ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> A box plot shows: least 68, Q1 75.5, median 83.5, Q3 88, greatest 94. What are the range and the IQR?</p><ol class="choices"><li><span class="ltr">A</span> Range 12.5, IQR 26</li><li><span class="ltr">B</span> Range 20, IQR 12.5</li><li><span class="ltr">C</span> Range 26, IQR 12.5</li><li><span class="ltr">D</span> Range 26, IQR 83.5</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="matching"><p class="qtext"><span class="qnum">2.</span> Match each value from the history test data (68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94) with what it is.</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>26</td><td class="mans"></td><td class="mltr">A.</td><td>Third quartile</td></tr><tr><td class="mnum">2.</td><td>12.5</td><td class="mans"></td><td class="mltr">B.</td><td>Median</td></tr><tr><td class="mnum">3.</td><td>83.5</td><td class="mans"></td><td class="mltr">C.</td><td>Range</td></tr><tr><td class="mnum">4.</td><td>75.5</td><td class="mans"></td><td class="mltr">D.</td><td>First quartile</td></tr><tr><td class="mnum">5.</td><td>88</td><td class="mans"></td><td class="mltr">E.</td><td>Interquartile range</td></tr></table></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> Team A's salaries have a range of $14M and an IQR of $7M. Team B's have a range of $7M and an IQR of $2.5M. Both teams have the same median salary. What does this tell a player?</p><ol class="choices"><li><span class="ltr">A</span> Team B pays more overall</li><li><span class="ltr">B</span> Team B's salaries cluster much more tightly around the median</li><li><span class="ltr">C</span> Team A has more players</li><li><span class="ltr">D</span> Team B's highest salary is greater</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext"><span class="qnum">4.</span> A value far above the rest is added to a data set. Sort what happens.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">Because it uses only Q1 and Q3</span> <span class="chip">Because it uses the greatest value</span> <span class="chip">It measures only the middle half</span> <span class="chip">It measures the whole span of the data</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">The range grows a lot</div></div><div class="sortbox"><div class="sorthd">The IQR barely changes</div></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">5.</span> Find the error</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Setup</span><span class="wa-work">Data: 15, 18, 20, 22, 25, 60.</span></div><div class="wa-step"><span class="wa-lbl">Step 1</span><span class="wa-work">The range is 60 − 15 = 45.</span></div><div class="wa-step"><span class="wa-lbl">Step 2</span><span class="wa-work">The range of 45 shows that a typical value differs from the others by about 45.</span></div><div class="wa-step"><span class="wa-lbl">Step 3</span><span class="wa-work">So this data set has high variability everywhere.</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">Two sixth-grade classes took the same math test. Class A's box plot reads least 62, Q1 74, median 81, Q3 87, greatest 90. Class B's reads least 70, Q1 76, median 81, Q3 84, greatest 90. Both classes have a median of 81, so the median alone cannot tell you which class did better overall.</p><p class="qtext">Which class scored better overall, and how do the range and the IQR show it?</p><p class="hint-line">Try to use: 28, 20, spread out, 13, 8, smaller, 76, overall</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">A box plot has Q1 = 20 and Q3 = 36, with a least value of 10 and a greatest value of 50. What is the IQR, and what does it tell you?</p><ol class="choices"><li><span class="ltr">A</span> IQR = 16; the middle half of the data spans 16 units</li><li><span class="ltr">B</span> IQR = 28; 28 is halfway between the quartiles</li><li><span class="ltr">C</span> IQR = 40; the data spans 40 units from end to end</li><li><span class="ltr">D</span> IQR = 56; the quartiles add to 56</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 2-5 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

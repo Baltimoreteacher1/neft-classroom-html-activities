@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#315cde" />
+    <meta
+      name="description"
+      content="Grade 6 Lesson 3.4: build ratio tables, make equivalent ratios, plot them on the coordinate plane, and practice in new contexts."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23315cde%27/%3E%3Cpath d=%27M8 8h16v16H8zm0 8h16M16 8v16%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27/%3E%3C/svg%3E"
+    />
+    <title>Ratio table lab · Lesson 3.4</title>
+    <link rel="stylesheet" href="lab.css" />
+    <script type="module" src="app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip" href="#lesson">Skip to activity</a>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <svg viewBox="0 0 28 28" aria-hidden="true">
+            <rect width="28" height="28" rx="7" fill="#315cde" />
+            <path
+              d="M7 7h14v14H7zm0 7h14M14 7v14"
+              stroke="white"
+              stroke-width="1.7"
+              fill="none"
+            /></svg
+          >EduWonderLab
+        </div>
+        <div class="meta">Grade 6 · Lesson 3.4 · Equivalent ratios using graphs</div>
+        <button class="quiet" id="about-open" type="button">Lesson info</button>
+      </div>
+    </header>
+    <div class="shell">
+      <div class="intro">
+        <div>
+          <h1>Ratio table lab</h1>
+          <p>Pack the bags. Build the table. Graph the pattern. Practice in new places.</p>
+          <ul class="goals" aria-label="Learning goals">
+            <li>Ratio tables</li>
+            <li>Equivalent ratios</li>
+            <li>Ordered pairs</li>
+            <li>Graphing ratios</li>
+          </ul>
+        </div>
+        <div class="constant">
+          <svg class="ball-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="16" r="14" fill="white" stroke="#182844" stroke-width="1.5" />
+            <path
+              d="m16 9 7 5-3 8h-8l-3-8zM16 2v7M3 12l6 2M8 27l4-5m12 5-4-5m9-10-6 2"
+              fill="#182844"
+              stroke="#182844"
+            />
+          </svg>
+          <div class="constant-copy">
+            <strong>6 balls in every bag</strong><span>Our relationship stays the same.</span>
+          </div>
+        </div>
+      </div>
+      <nav aria-label="Lab stations">
+        <ol class="steps" id="steps"></ol>
+        <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+      </nav>
+      <main id="lesson" class="lesson" tabindex="-1">
+        <div id="activity">
+          <noscript
+            ><p style="padding: 2rem">
+              Enable JavaScript to use the interactive ratio table.
+            </p></noscript
+          >
+        </div>
+        <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+      </main>
+      <div class="footer-nav">
+        <button class="btn secondary" id="back" type="button">Back</button
+        ><span class="footer-progress" id="progress-text">0 of 8 complete</span
+        ><button class="btn primary" id="next" type="button">Next: Explore</button>
+      </div>
+      <p class="save-line" id="save-note">
+        Your work saves in this browser.
+        <button class="quiet" id="reset-open" type="button">Start over</button>
+      </p>
+    </div>
+    <dialog id="about" aria-labelledby="about-title">
+      <h2 id="about-title">About this lab</h2>
+      <p><strong>Grade 6 · Lesson 3.4</strong><br />Determine equivalent ratios using graphs</p>
+      <p>
+        <strong>I can</strong> graph the values from a ratio table as points on the coordinate
+        plane, and explain my graph using the words
+        <em>coordinate plane, ordered pair, origin,</em> and <em>proportional</em>.
+      </p>
+      <h3>Eight stations</h3>
+      <ul>
+        <li><strong>Learn</strong> — one ratio in words, a table, and a graph; key vocabulary.</li>
+        <li><strong>Explore · Build</strong> — grow and complete the soccer-ball ratio table.</li>
+        <li><strong>Strategies</strong> — multiply, divide, add columns, and use the unit rate.</li>
+        <li>
+          <strong>Graph</strong> — plot columns as ordered pairs, find the origin, read the line,
+          name the unit rate point.
+        </li>
+        <li><strong>Compare</strong> — decide which tables show equivalent ratios.</li>
+        <li><strong>Check</strong> — find and repair a ratio-table mistake.</li>
+        <li>
+          <strong>Practice</strong> — new contexts at three levels, with hints and worked answers.
+        </li>
+      </ul>
+      <p class="small">
+        The soccer-ball context, six-ball relationship, 10-bag application, and 4-bag check come
+        from Session 1 of the Reveal Math Lesson 3.4 deck. The sundae and recipe practice contexts
+        follow the lesson's Explore and Practice. Activities and hints are adapted for this
+        interactive lab.
+      </p>
+      <p class="small">
+        No name or sign-in is needed. Work stays in this browser; it is not sent to a teacher or
+        server. Use “Start over” between learners on a shared device.
+      </p>
+      <div class="actions">
+        <button class="btn primary" id="about-close" type="button">Back to the lab</button>
+      </div>
+    </dialog>
+    <dialog id="reset-dialog" aria-labelledby="reset-title">
+      <h2 id="reset-title">Start over?</h2>
+      <p>Clear every station’s answers and begin again at Learn.</p>
+      <div class="actions">
+        <button class="btn secondary" id="reset-cancel" type="button" autofocus>Keep my work</button
+        ><button class="btn primary" id="reset-confirm" type="button">Start over</button>
+      </div>
+    </dialog>
+  </body>
+</html>

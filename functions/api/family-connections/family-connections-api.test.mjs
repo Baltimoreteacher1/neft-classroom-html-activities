@@ -30,7 +30,7 @@ const publicResponse = await invoke("GET", "published");
 assert.equal(publicResponse.status, 200);
 assert.equal(publicResponse.headers.get("cache-control"), "no-store");
 const publicBody = await publicResponse.json();
-assert.deepEqual(Object.keys(publicBody).sort(), ["ok", "published"]);
+assert.deepEqual(Object.keys(publicBody).sort(), ["ok", "published", "weeks"]);
 assert.equal("draft" in publicBody, false);
 assert.equal("history" in publicBody, false);
 
@@ -68,6 +68,7 @@ assert.equal((await invoke("PUT", "draft", unknownFields, true)).status, 400);
 
 const draft = createDefaultSnapshot();
 draft.sections[0].week.label = "September 8-12";
+draft.sections[0].week.startDate = "2026-09-07";
 draft.sections[0].week.days[0] = {
   day: "Monday",
   status: "lesson",

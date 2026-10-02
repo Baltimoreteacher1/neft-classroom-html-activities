@@ -8,25 +8,97 @@
     @import url("/assets/fonts/fraunces-87aa83.css");
     @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
-    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; font-size: 17px; line-height: 1.55; }
+    main { max-width: 900px; margin: 0 auto; }
+    .resource-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .resource-toolbar a { color: #155f67; font-weight: 650; padding: 10px 0; }
+    .resource-toolbar button { min-height: 44px; border: 0; border-radius: 6px; background: #155f67; color: white; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
     .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
     .meta { color: #5a6b75; font-size: 0.9rem; }
     .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #dff2ee; }
+    .vocabulary-table { table-layout: fixed; overflow-wrap: break-word; }
+    .vocabulary-table th:first-child { width: 34%; }
     .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
     .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
     .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    .practice-box { background: #fff; }
+    .practice-box > h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } .bilingual, .notice-wonder { grid-template-columns: 1fr; } .name-line { min-width: 140px; } }
+    @page { size: Letter; margin: .55in; }
     @media print {
-      body { padding: 12px; }
+      body { padding: 0; font-size: 11.5pt; }
       .no-print { display: none; }
       .box { break-inside: avoid; }
+      .practice-box { break-inside: auto; border: 0; padding: 0; }
+      h1, h2, h3 { break-after: avoid; }
+      p { orphans: 3; widows: 3; }
+      .bilingual { display: block; }
     }
-    
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
+
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
    serif headings + paper ground + AA-safe ink. No layout/size changes. */
@@ -75,9 +147,10 @@ header.packet h1::after{
 </head>
 <body>
 <main>
-  <div class="no-print" style="text-align:right; margin-bottom:12px;">
-    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
-  </div>
+  <nav class="no-print resource-toolbar" aria-label="Handout actions">
+    <a href="/lessons/7-9/">← Back to lesson</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </nav>
   <header class="header">
     <h1>Reflect Points Across Axes</h1>
     <div class="meta">6.NOS.7 · Unit 7 · Lesson 9</div>
@@ -88,7 +161,7 @@ header.packet h1::after{
     <div class="box">
       <h2>Objectives / Objetivos</h2>
       <p lang="en"><strong>Content Objective:</strong> I can reflect points across the x-axis and y-axis on the coordinate plane.</p>
-      
+
       <p lang="en"><strong>Language Objective:</strong> I can explain my work using the words reflection, x-axis, y-axis, and symmetry.</p>
     </div>
     <div class="box">
@@ -104,15 +177,16 @@ header.packet h1::after{
 
   <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
-    <table>
-      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+    <table class="vocabulary-table">
+      <thead><tr><th scope="col">Term / Término</th><th scope="col">Definition / Definición</th></tr></thead>
       <tbody><tr><td><strong>Reflect Points Across Axes</strong><br><span lang="es">Reflejar puntos sobre los ejes</span></td><td>Flip a point across an axis so it stays the same perpendicular distance from that axis.<br><span lang="es">Voltear un punto sobre un eje para que quede a la misma distancia perpendicular de ese eje.</span></td></tr><tr><td><strong>Reflection</strong><br><span lang="es">Reflexión</span></td><td>A flipped, mirror image across a line.<br><span lang="es">Una imagen reflejada al otro lado de una línea.</span></td></tr><tr><td><strong>x-axis</strong><br><span lang="es">Eje x</span></td><td>The line that goes across the grid. Flipping over it changes the y sign.<br><span lang="es">La línea que va de lado en la cuadrícula. Voltear sobre ella cambia el signo de y.</span></td></tr><tr><td><strong>y-axis</strong><br><span lang="es">Eje y</span></td><td>The line that goes up the grid. Flipping over it changes the x sign.<br><span lang="es">La línea que va hacia arriba en la cuadrícula. Voltear sobre ella cambia el signo de x.</span></td></tr><tr><td><strong>Symmetry</strong><br><span lang="es">Simetría</span></td><td>When a shape looks the same on both sides of a line.<br><span lang="es">Cuando una figura se ve igual a ambos lados de una línea.</span></td></tr><tr><td><strong>Integer</strong><br><span lang="es">Número entero</span></td><td>Whole numbers and their opposites, like -2, -1, 0, 1, 2.<br><span lang="es">Números enteros y sus opuestos, como -2, -1, 0, 1, 2.</span></td></tr></tbody>
     </table>
   </div>
 
-  <div class="box" data-support-slot="practice">
+  <div class="box practice-box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
-    <ol><li>What is the reflection of (4, -3) over the x-axis?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>(-4, -3)</li><li>(-4, 3)</li><li>(3, -4)</li><li>(4, 3)</li></ol><div class="work-space"></div></li><li>Plot (1, 4) and its reflections: over the x-axis, over the y-axis, and over both axes<div class="work-space"></div></li><li>Find the reflection of each point over the given axis.<div class="work-space"></div></li><li>Find the Reflection Error<ol style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li><strong>Step 1:</strong> Problem — <span style="font-family:monospace;">Reflect (-3, 5) over the y-axis</span></li><li><strong>Step 2:</strong> Student thinking — <span style="font-family:monospace;">The y-axis is vertical, so I change the y-coordinate</span></li><li><strong>Step 3:</strong> Student answer — <span style="font-family:monospace;">(-3, -5)</span></li></ol><p style="margin:6px 0 0; font-size:0.85rem;"><em>Which step has the mistake? Explain it and write the correct work.</em></p><div class="work-space"></div></li></ol>
+    <p>Read each task. Show your work in the spaces provided and explain how you know.</p>
+    <div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> What is the reflection of (4, -3) over the x-axis?</p><ol class="choices"><li><span class="ltr">A</span> (-4, -3)</li><li><span class="ltr">B</span> (-4, 3)</li><li><span class="ltr">C</span> (3, -4)</li><li><span class="ltr">D</span> (4, 3)</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="coordinate-grid"><p class="qtext"><span class="qnum">2.</span> Plot (1, 4). Find and plot its reflection across the x-axis, its reflection across the y-axis, and its reflection across both axes. Start from the original point each time.</p><ul class="point-tasks"><li>Original: (1, 4)</li><li><strong>Across x-axis:</strong> Reflect the original point across the x-axis.</li><li><strong>Across y-axis:</strong> Reflect the original point across the y-axis.</li><li><strong>Across both axes:</strong> Reflect the original point across both axes.</li></ul><svg class="coordgrid" viewBox="0 0 420 420" role="img" aria-label="Blank coordinate grid; x from -6 to 6, y from -6 to 6"><line x1="48" y1="48" x2="48" y2="372" stroke="#ddd"/><text x="48" y="390" font-size="11" text-anchor="middle" fill="#333">-6</text><line x1="75" y1="48" x2="75" y2="372" stroke="#ddd"/><text x="75" y="390" font-size="11" text-anchor="middle" fill="#333">-5</text><line x1="102" y1="48" x2="102" y2="372" stroke="#ddd"/><text x="102" y="390" font-size="11" text-anchor="middle" fill="#333">-4</text><line x1="129" y1="48" x2="129" y2="372" stroke="#ddd"/><text x="129" y="390" font-size="11" text-anchor="middle" fill="#333">-3</text><line x1="156" y1="48" x2="156" y2="372" stroke="#ddd"/><text x="156" y="390" font-size="11" text-anchor="middle" fill="#333">-2</text><line x1="183" y1="48" x2="183" y2="372" stroke="#ddd"/><text x="183" y="390" font-size="11" text-anchor="middle" fill="#333">-1</text><line x1="210" y1="48" x2="210" y2="372" stroke="#ddd"/><text x="210" y="390" font-size="11" text-anchor="middle" fill="#333">0</text><line x1="237" y1="48" x2="237" y2="372" stroke="#ddd"/><text x="237" y="390" font-size="11" text-anchor="middle" fill="#333">1</text><line x1="264" y1="48" x2="264" y2="372" stroke="#ddd"/><text x="264" y="390" font-size="11" text-anchor="middle" fill="#333">2</text><line x1="291" y1="48" x2="291" y2="372" stroke="#ddd"/><text x="291" y="390" font-size="11" text-anchor="middle" fill="#333">3</text><line x1="318" y1="48" x2="318" y2="372" stroke="#ddd"/><text x="318" y="390" font-size="11" text-anchor="middle" fill="#333">4</text><line x1="345" y1="48" x2="345" y2="372" stroke="#ddd"/><text x="345" y="390" font-size="11" text-anchor="middle" fill="#333">5</text><line x1="372" y1="48" x2="372" y2="372" stroke="#ddd"/><text x="372" y="390" font-size="11" text-anchor="middle" fill="#333">6</text><line x1="48" y1="372" x2="372" y2="372" stroke="#ddd"/><text x="40" y="375" font-size="11" text-anchor="end" fill="#333">-6</text><line x1="48" y1="345" x2="372" y2="345" stroke="#ddd"/><text x="40" y="348" font-size="11" text-anchor="end" fill="#333">-5</text><line x1="48" y1="318" x2="372" y2="318" stroke="#ddd"/><text x="40" y="321" font-size="11" text-anchor="end" fill="#333">-4</text><line x1="48" y1="291" x2="372" y2="291" stroke="#ddd"/><text x="40" y="294" font-size="11" text-anchor="end" fill="#333">-3</text><line x1="48" y1="264" x2="372" y2="264" stroke="#ddd"/><text x="40" y="267" font-size="11" text-anchor="end" fill="#333">-2</text><line x1="48" y1="237" x2="372" y2="237" stroke="#ddd"/><text x="40" y="240" font-size="11" text-anchor="end" fill="#333">-1</text><line x1="48" y1="210" x2="372" y2="210" stroke="#ddd"/><text x="40" y="213" font-size="11" text-anchor="end" fill="#333">0</text><line x1="48" y1="183" x2="372" y2="183" stroke="#ddd"/><text x="40" y="186" font-size="11" text-anchor="end" fill="#333">1</text><line x1="48" y1="156" x2="372" y2="156" stroke="#ddd"/><text x="40" y="159" font-size="11" text-anchor="end" fill="#333">2</text><line x1="48" y1="129" x2="372" y2="129" stroke="#ddd"/><text x="40" y="132" font-size="11" text-anchor="end" fill="#333">3</text><line x1="48" y1="102" x2="372" y2="102" stroke="#ddd"/><text x="40" y="105" font-size="11" text-anchor="end" fill="#333">4</text><line x1="48" y1="75" x2="372" y2="75" stroke="#ddd"/><text x="40" y="78" font-size="11" text-anchor="end" fill="#333">5</text><line x1="48" y1="48" x2="372" y2="48" stroke="#ddd"/><text x="40" y="51" font-size="11" text-anchor="end" fill="#333">6</text><line data-axis="y" x1="210" y1="48" x2="210" y2="372" stroke="#333" stroke-width="2"/><line data-axis="x" x1="48" y1="210" x2="372" y2="210" stroke="#333" stroke-width="2"/><text x="210" y="414" font-size="12" text-anchor="middle" fill="#333">x</text><text x="13" y="210" font-size="12" text-anchor="middle" fill="#333" transform="rotate(-90 13 210)">y</text></svg><div class="work"><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">3.</span> Find the reflection of each point over the given axis.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Original Point</th><th scope="col">Axis</th><th scope="col">Reflected Point</th></tr></thead><tbody><tr><td>(3, -7)</td><td>x-axis</td><td class="fill" aria-label="Your response: Reflected Point, row 1"><span class="paper-blank"></span></td></tr><tr><td>(-5, 2)</td><td>y-axis</td><td class="fill" aria-label="Your response: Reflected Point, row 2"><span class="paper-blank"></span></td></tr><tr><td>(8, -1)</td><td>x-axis</td><td class="fill" aria-label="Your response: Reflected Point, row 3"><span class="paper-blank"></span></td></tr><tr><td>(-4, -6)</td><td>y-axis</td><td class="fill" aria-label="Your response: Reflected Point, row 4"><span class="paper-blank"></span></td></tr><tr><td>(0, 9)</td><td>x-axis</td><td class="fill" aria-label="Your response: Reflected Point, row 5"><span class="paper-blank"></span></td></tr><tr><td>(-3, 0)</td><td>y-axis</td><td class="fill" aria-label="Your response: Reflected Point, row 6"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">4.</span> Find the Reflection Error</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Problem</span><span class="wa-work">Reflect (-3, 5) over the y-axis</span></div><div class="wa-step"><span class="wa-lbl">Student thinking</span><span class="wa-work">The y-axis is vertical, so I change the y-coordinate</span></div><div class="wa-step"><span class="wa-lbl">Student answer</span><span class="wa-work">(-3, -5)</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div>
   </div>
 
   <div class="box" data-support-slot="response">

@@ -8,8 +8,14 @@
   var STORAGE_PREFIX = "curriculumStudentLaunch:";
   var RESOURCE_LABELS = {
     lesson: "Must do · Start interactive lesson",
+    readiness: "Before you begin · Get ready",
     guidedNotes: "If needed · Guided notes",
-    handout: "Practice · Handout",
+    handout: "Handout",
+    worksheetLevel0: "Start with support",
+    worksheet: "Worksheet 1",
+    worksheet2: "Worksheet 2",
+    mstarWorksheet: "MSTAR practice",
+    learningLab: "Interactive learning lab",
     homework: "At home · Homework practice",
     familyPage: "At home · Family help",
     studentHelp: "If needed · Student help",
@@ -20,6 +26,7 @@
   var playlist = [];
   var position = 0;
   var speaking = false;
+  var temporaryProgress = Object.create(null);
 
   function byId(id) {
     return document.getElementById(id);
@@ -63,9 +70,30 @@
     if (node) node.textContent = value || "";
   }
 
-  function forceStudentMode(path) {
-    if (!path || !path.startsWith("/lessons/")) return path;
-    var url = new URL(path, window.location.origin);
+  function forceStudentMode(path, lessonId, key) {
+    if (
+      typeof path !== "string" ||
+      !path.startsWith("/") ||
+      path.startsWith("//") ||
+      /[\\\u0000-\u001f]/.test(path)
+    )
+      return "";
+    var url;
+    try {
+      url = new URL(path, window.location.origin);
+    } catch (_error) {
+      return "";
+    }
+    if (url.origin !== window.location.origin) return "";
+    if (key === "learningLab") {
+      if (!/^\/curriculum\/learning-labs\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(url.pathname))
+        return "";
+    } else if (
+      !url.pathname.startsWith("/lessons/" + lessonId + "/") ||
+      /teacher|answer(?:-|_)?key|gradebook|dashboard|\.docx|\.pdf/i.test(url.pathname)
+    ) {
+      return "";
+    }
     url.searchParams.set("student", "1");
     var supports = querySupports();
     // Keep section anchors such as #reflect: the supports engine accepts both
@@ -92,12 +120,28 @@
     return STORAGE_PREFIX + lessonId;
   }
 
+  function checklistStatus(message) {
+    setText(byId("checklist-status") ? "checklist-status" : "launch-status", message);
+  }
+
   function loadProgress(lessonId) {
-    var saved = {};
-    try {
-      saved = JSON.parse(localStorage.getItem(progressKey(lessonId))) || {};
-    } catch (_error) {
-      saved = {};
+    var saved = temporaryProgress[lessonId] || {};
+    var temporaryMessage =
+      "Your checklist changes are temporary. This browser could not save them; they will be lost when you close or reload this page.";
+    if (temporaryProgress[lessonId]) {
+      checklistStatus(temporaryMessage);
+    } else {
+      try {
+        var parsed = JSON.parse(localStorage.getItem(progressKey(lessonId)) || "null");
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) saved = parsed;
+        checklistStatus(
+          "Mark the steps you complete. This checklist is separate from lesson scores.",
+        );
+      } catch (_error) {
+        checklistStatus(
+          "Saved checklist progress could not be loaded. You can still mark steps here; changes may be temporary.",
+        );
+      }
     }
     document.querySelectorAll("[data-progress]").forEach(function (box) {
       box.checked = saved[box.dataset.progress] === true;
@@ -108,7 +152,12 @@
         });
         try {
           localStorage.setItem(progressKey(lessonId), JSON.stringify(next));
-        } catch (_error) {}
+          delete temporaryProgress[lessonId];
+          checklistStatus("Checklist saved on this device.");
+        } catch (_error) {
+          temporaryProgress[lessonId] = next;
+          checklistStatus(temporaryMessage);
+        }
         updateNextStep();
       };
     });
@@ -127,7 +176,7 @@
       message = "Next: complete the final check to show what you know.";
     } else if (boxes.lesson && boxes.explain && boxes.check) {
       message =
-        "Lesson complete. If the final check felt difficult, use Student Help; if it felt solid, choose Practice or Challenge in the lesson.";
+        "You marked every step complete. If the final check felt difficult, use Student Help; if it felt solid, choose Practice or Challenge in the lesson.";
     }
     setText("next-step", message);
   }
@@ -147,16 +196,43 @@
   function renderResources(lesson) {
     var container = byId("resource-links");
     container.replaceChildren();
-    Object.keys(RESOURCE_LABELS).forEach(function (key) {
-      var path = lesson.resources && lesson.resources[key];
-      if (!path) return;
-      var link = document.createElement("a");
-      link.className = "resource-link";
-      link.href = key === "lesson" || key === "exitTicket" ? forceStudentMode(path) : path;
-      link.textContent = RESOURCE_LABELS[key];
-      container.appendChild(link);
+    function addLinks(parent, keys) {
+      keys.forEach(function (key) {
+        var href = forceStudentMode(lesson.resources && lesson.resources[key], lesson.id, key);
+        if (!href) return;
+        var link = document.createElement("a");
+        link.className = "resource-link";
+        link.dataset.resource = key;
+        link.href = href;
+        link.textContent = RESOURCE_LABELS[key];
+        parent.appendChild(link);
+      });
+    }
+    addLinks(container, ["lesson", "readiness", "guidedNotes", "studentHelp", "exitTicket"]);
+    [
+      [
+        "Choose practice",
+        ["handout", "worksheetLevel0", "worksheet", "worksheet2", "mstarWorksheet"],
+      ],
+      ["Explore & apply", ["learningLab"]],
+      ["At home", ["homework", "familyPage"]],
+    ].forEach(function (group) {
+      var details = document.createElement("details");
+      details.className = "resource-group";
+      var links = document.createElement("div");
+      links.className = "resource-group-content";
+      addLinks(links, group[1]);
+      if (!links.children.length) return;
+      var summary = document.createElement("summary");
+      summary.textContent =
+        group[0] +
+        " · " +
+        links.children.length +
+        (links.children.length === 1 ? " resource" : " resources");
+      details.append(summary, links);
+      container.appendChild(details);
     });
-    byId("start-lesson").href = forceStudentMode(lesson.resources.lesson);
+    byId("start-lesson").href = forceStudentMode(lesson.resources.lesson, lesson.id);
   }
 
   function readLesson(lesson) {
@@ -204,13 +280,14 @@
 
   function renderLesson() {
     var lesson = lessonsById[playlist[position]];
-    if (!lesson) {
+    if (!lesson || !forceStudentMode(lesson.resources && lesson.resources.lesson, lesson.id)) {
       showError("That lesson is not available in the student launcher.");
       return;
     }
     window.speechSynthesis?.cancel();
     speaking = false;
-    setText("launch-status", "Lesson ready. Your work stays on this device.");
+    setText("read-aloud", "🔊 Read aloud");
+    setText("launch-status", "Lesson ready. Open the lesson or choose a resource below.");
     setText(
       "lesson-meta",
       `Unit ${lesson.unit} · Lesson ${lesson.id} · ${lesson.standard} · ${lesson.timeEstimate}`,

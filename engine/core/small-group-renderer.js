@@ -2,6 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { createLessonCourseNav } from "./curriculum-nav.js";
 import { carriedDivisionFigures } from "./division-walk-figure.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
@@ -19,6 +20,7 @@ import {
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
 // every lesson entry links.
 import { mountPresentWidget } from "./present-mode.js";
+import { mountStepGuide, simplifyStudioHeader } from "./reading-flow.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
@@ -1230,6 +1232,10 @@ function renderStudio(config) {
     strip.setAttribute("role", "tablist");
     strip.setAttribute("aria-label", "Steps in this part of the session");
     panel.appendChild(strip);
+    const updateGuide = mountStepGuide(
+      strip,
+      live.map((step) => step.label),
+    );
     /** @type {HTMLElement[]} */
     const hosts = [];
     /** @type {HTMLButtonElement[]} */
@@ -1243,8 +1249,9 @@ function renderStudio(config) {
         c.classList.toggle("is-on", j === i);
         c.setAttribute("aria-selected", j === i ? "true" : "false");
       });
+      updateGuide(i, save);
       if (save) {
-        store.set(storeKey, i);
+        store.set(storeKey, live[i].label);
         trackSmallGroupStep(config, { tab: id, step: live[i].label, index: i, count: live.length });
         panel.scrollIntoView({ behavior: "smooth", block: "start" });
       }
@@ -1272,8 +1279,27 @@ function renderStudio(config) {
       panel.appendChild(host);
       hosts.push(host);
     });
-    const saved = Number(store.get(storeKey));
-    show(Number.isInteger(saved) && saved >= 0 && saved < live.length ? saved : 0, false);
+    // Older saves used numeric positions before these sections were split.
+    const oldLabels = {
+      "sg-tab-learn": [
+        vocab && "Key Words",
+        (build || explore) && (build ? "Build the Idea" : "Explore"),
+        model && "Worked Model",
+      ].filter(Boolean),
+      "sg-tab-practice": ["Guided", practice && "On My Own", talk && "Talk It Out"].filter(Boolean),
+      "sg-tab-more": [
+        (mathCheck || check) && (mathCheck ? "Math Check" : "Check"),
+        (reflection.section || evidence.section || packet.section) &&
+          (reflection.section ? "Reflect" : "My Evidence"),
+        (completion || masteryLadder || morePractice) &&
+          (completion || masteryLadder ? "Grow" : "More Practice"),
+        (mission || apply || goDeeper) && (mission ? "Mission" : apply ? "Apply" : "Go Deeper"),
+      ].filter(Boolean),
+    };
+    const saved = store.get(storeKey);
+    const label = typeof saved === "number" ? oldLabels[id]?.[saved] : saved;
+    const restored = live.findIndex((step) => step.label === label);
+    show(restored >= 0 ? restored : 0, false);
     return panel;
   };
 
@@ -1291,11 +1317,13 @@ function renderStudio(config) {
       panel: makeStepPanel(
         "sg-tab-learn",
         [
+          { icon: "🌱", label: "Get Ready", children: [pulseCard] },
           { icon: "🔑", label: "Key Words", children: [vocab] },
-          { icon: "🧱", label: "Build the Idea", children: [build, explore] },
+          { icon: "🧱", label: "Build the Idea", children: [build] },
+          { icon: "🔍", label: "Explore", children: [explore] },
           { icon: "📝", label: "Worked Model", children: [model] },
         ],
-        [pulseCard],
+        [],
       ),
     },
     {
@@ -1306,7 +1334,17 @@ function renderStudio(config) {
         {
           icon: "🤝",
           label: "Guided",
-          children: [...practiceLabs, guided, createAdaptiveCoach(variant, state, store)],
+          children: [guided],
+        },
+        ...practiceLabs.map((lab) => ({
+          icon: "🔍",
+          label: lab.querySelector("h2, h3")?.textContent || "Explore Together",
+          children: [lab],
+        })),
+        {
+          icon: "🧭",
+          label: "Choose a Strategy",
+          children: [createAdaptiveCoach(variant, state, store)],
         },
         { icon: "✏️", label: "On My Own", children: [practice] },
         { icon: "🗣️", label: "Talk It Out", children: [talk] },
@@ -1317,14 +1355,19 @@ function renderStudio(config) {
       label: "Check & Growth",
       sub: "Show it & celebrate",
       panel: makeStepPanel("sg-tab-more", [
-        { icon: "✅", label: "Check", children: [mathCheck, check] },
+        { icon: "✅", label: "Math Check", children: [mathCheck] },
+        { icon: "✏️", label: "Check", children: [check] },
         {
           icon: "💭",
           label: "Reflect",
-          children: [reflection.section, evidence.section, packet.section],
+          children: [reflection.section],
         },
-        { icon: "📈", label: "Grow", children: [completion, masteryLadder, morePractice] },
-        { icon: "🚀", label: "Mission", children: [mission, apply, goDeeper] },
+        { icon: "📋", label: "My Evidence", children: [evidence.section, packet.section] },
+        { icon: "📈", label: "Grow", children: [completion, masteryLadder] },
+        { icon: "✏️", label: "More Practice", children: [morePractice] },
+        { icon: "🚀", label: "Mission", children: [mission] },
+        { icon: "🔍", label: "Apply", children: [apply] },
+        { icon: "💡", label: "Go Deeper", children: [goDeeper] },
       ]),
     },
   ];
@@ -1344,6 +1387,8 @@ function renderStudio(config) {
   } else {
     heroNode.appendChild(roomChip);
   }
+  const courseNav = createLessonCourseNav(config);
+  if (courseNav) app.appendChild(courseNav);
   app.appendChild(heroNode);
   // Publisher-grade standards display: resolve the bare code to its full MCCRS
   // wording (best-effort) and fold it into the hero's objectives detail, so
@@ -1416,6 +1461,7 @@ function renderStudio(config) {
   // Mounted here, after numbering, so its rows can never be mistaken for a
   // numbered lesson section.
   mountToolDrawer(config, { panels: activeTabSteps, hero: heroNode });
+  simplifyStudioHeader(heroNode);
 
   // The always-visible "Hide buttons" pill (Focus Mode) — same affordance as
   // the whole-group lessons.

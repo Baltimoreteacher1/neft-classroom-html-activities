@@ -17,9 +17,10 @@ import {
   renderWelcomeBanner,
   resolveKitchenTableActivity,
 } from "../scripts/homework-guided-notes.mjs";
-import { lessonPath } from "./lib/curriculum-source.mjs";
+import { VISUAL_LABS_JS } from "../scripts/homework-visual-labs.mjs";
+import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
-const config = (id) => JSON.parse(readFileSync(lessonPath(id, "config.json"), "utf8"));
+const config = loadLessonConfig;
 function runtime(query = "") {
   const markup =
     renderQuickPlan() +
@@ -44,14 +45,14 @@ function runtime(query = "") {
   return dom;
 }
 
-test("new family starts on essentials, keeps saved choice, and explicit valid URL wins", () => {
+test("new family starts on 20 minutes, keeps saved choice, and retired links use 20 minutes", () => {
   const dom = runtime();
   const w = dom.window;
   w.restoreHomeworkRoute();
-  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  assert.equal(w.document.body.dataset.homeworkRoute, "core");
   assert.equal(
     w.document.querySelectorAll(".practice-tier-warmup .problem-section:not([hidden])").length,
-    2,
+    4,
   );
   assert.equal(w.document.getElementById("hw_tab_words").hidden, true);
   w.localStorage.setItem("hw_route_3-2", "full");
@@ -61,31 +62,27 @@ test("new family starts on essentials, keeps saved choice, and explicit valid UR
   w.localStorage.setItem("hw_lang_mode", "en");
   w.restoreHomeworkRoute();
   w.setLanguageMode(w.preferredLanguageMode());
-  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  assert.equal(w.document.body.dataset.homeworkRoute, "full");
   assert.equal(w.document.documentElement.lang, "es");
   assert.match(w.document.getElementById("hw_tab_check").getAttribute("aria-label"), /parada/);
   const shared = new URL(w.homeworkShareUrl());
-  assert.equal(shared.searchParams.get("route"), "quick");
+  assert.equal(shared.searchParams.get("route"), "full");
   assert.equal(shared.searchParams.get("lang"), "es");
   assert.equal(shared.searchParams.get("section"), "class-1");
   assert.match(
     decodeURIComponent(w.document.getElementById("hw_text_link").href),
-    /route=quick&lang=es/,
+    /route=full&lang=es/,
   );
   w.history.replaceState(null, "", "?route=__proto__&lang=bad");
   w.localStorage.setItem("hw_route_3-2", "broken");
   w.restoreHomeworkRoute();
-  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  assert.equal(w.document.body.dataset.homeworkRoute, "core");
   dom.window.close();
 });
 
-test("10-minute Together route keeps the problem situation and all guided steps", () => {
+test("20-minute Together route keeps the problem situation and all guided steps", () => {
   const page = readFileSync(lessonPath("3-3", "homework.html"), "utf8");
-  const quickRules = page.match(
-    /\/\* The 10-minute route[\s\S]*?display: none !important;\s*}/,
-  )?.[0];
-  assert.ok(quickRules, "generated 3-3 homework must contain the quick-route rules");
-  assert.doesNotMatch(quickRules, /\.try-scenario|\.try-together-note|\.together-steps/);
+  assert.doesNotMatch(page, /data-route-mode="quick"|The 10-minute route/);
   const dom = new JSDOM(page);
   const together = dom.window.document.querySelector("#hw_panel_together");
   assert.match(together.querySelector(".try-scenario.lang-en").textContent, /drink uses 1 cup/);
@@ -93,11 +90,33 @@ test("10-minute Together route keeps the problem situation and all guided steps"
   dom.window.close();
 });
 
-test("Done is brief; all signatures, media and extra activity live in closed optional details", () => {
+test("statistical-question homework shows a concrete model and keeps reasons for feedback", () => {
+  const page = readFileSync(lessonPath("2-1", "homework.html"), "utf8");
+  const dom = new JSDOM(page);
+  const d = dom.window.document;
+  assert.equal(d.querySelectorAll("[data-route-mode]").length, 2);
+  assert.match(d.querySelector(".concept-visual-caption").textContent, /One shelf has one count/);
+  // The authored wording affects the deterministic problem order. Identify
+  // the warm-up table by its task and content, not its displayed number.
+  const table = [
+    ...d.querySelectorAll('.practice-tier-warmup [data-problem-type="fill-table"] .fill-table'),
+  ].find((candidate) =>
+    /How many push-ups can each student do in one minute\?/.test(candidate.textContent),
+  );
+  assert.ok(table);
+  assert.equal(table.querySelectorAll("input.table-input").length, 6);
+  assert.ok([...table.querySelectorAll("input.table-input")].every((input) => input.value === ""));
+  assert.equal(table.querySelectorAll('input[data-self-review="true"]').length, 3);
+  assert.doesNotMatch(table.textContent, /Different students can do different amounts/);
+  dom.window.close();
+});
+
+test("Done shows every optional activity without a disclosure", () => {
   const dom = runtime();
   const d = dom.window.document;
   const extras = d.querySelector(".homework-optional-extras");
-  assert.equal(extras.open, false);
+  assert.equal(extras.tagName, "SECTION");
+  assert.equal(extras.querySelectorAll(".homework-extra-actions .btn").length, 3);
   for (const selector of [
     "#parent_name_input",
     "#parent_note_input",
@@ -112,6 +131,56 @@ test("Done is brief; all signatures, media and extra activity live in closed opt
   assert.match(d.querySelector("#hw_panel_done").textContent, /no adult signature is needed/);
   assert.equal(d.querySelector("#submit_signoff_btn").disabled, false);
   dom.window.close();
+});
+
+test("ratio homework compares two recipes and updates both rates", () => {
+  for (const id of ["3-5", "3-5-part2"]) {
+    const dom = new JSDOM(readFileSync(lessonPath(id, "homework.html"), "utf8"), {
+      runScripts: "outside-only",
+    });
+    const d = dom.window.document;
+    dom.window.eval(VISUAL_LABS_JS);
+    d.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
+    const verdict = d.querySelector("[data-ratio-verdict]");
+    assert.match(verdict.textContent, /35 ounces of milk.*21 tablespoons.*Tran uses 20/);
+    const cocoa = d.querySelector("[data-ratio-b-cocoa]");
+    cocoa.value = "5";
+    cocoa.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+    assert.match(verdict.textContent, /Tran uses 25.*Tran has more cocoa/);
+    dom.window.close();
+  }
+});
+
+test("graph and polygon family models match their lesson topics", () => {
+  for (const [id, kind] of [
+    ["3-4", "line-grapher"],
+    ["7-7", "coordinate-plane"],
+    ["9-2", "line-grapher"],
+  ]) {
+    for (const session of [id, `${id}-part2`]) {
+      const page = readFileSync(lessonPath(session, "homework.html"), "utf8");
+      const dom = new JSDOM(page);
+      assert.equal(
+        dom.window.document.querySelector(".family-visual-lab").dataset.lessonModel,
+        kind,
+      );
+      dom.window.close();
+    }
+  }
+});
+
+test("the optional table activity uses the lesson's own math", () => {
+  const withNotes = (id) => ({
+    ...config(id),
+    lessonId: id,
+    familyNotes: JSON.parse(
+      readFileSync(new URL(`../data/family-homework-notes/${id}.json`, import.meta.url), "utf8"),
+    ),
+  });
+  const compare = resolveKitchenTableActivity(withNotes("3-5"));
+  assert.match(compare.steps.join(" "), /35 ounces.*Compare 21 and 20/);
+  const polygon = resolveKitchenTableActivity(withNotes("7-7"));
+  assert.match(polygon.steps.join(" "), /coordinate|polygon|vertex|rectangle/i);
 });
 
 test("local reflection never implies a network send, can save without a guardian, and reports storage failure", () => {

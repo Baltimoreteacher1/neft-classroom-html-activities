@@ -73,7 +73,7 @@
       details = document.createElement("details");
       details.className = "curriculum-tools-disclosure";
       var summary = document.createElement("summary");
-      summary.textContent = "🧰 More teacher tools and featured resources";
+      summary.textContent = "More teacher tools and featured resources";
       details.appendChild(summary);
       bar.parentNode.insertBefore(details, bar);
       details.appendChild(bar);

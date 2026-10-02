@@ -1576,6 +1576,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/fluency/teacher/",
+    title: "Reveal Math · Grade 6 · Fluency & Diagnostic Guide",
+    category: "Activity",
+    unit: null,
+  },
+  {
+    path: "/curriculum/fluency/teacher/printables/",
+    title: "Grade 6 Fluency · Printable Library",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/learning-labs/algebra-workshop/",
     title: "Algebra Workshop",
     category: "Activity",
@@ -1782,6 +1794,12 @@ export const ACTIVITIES = [
   {
     path: "/curriculum/learning-labs/ratio-railway/",
     title: "Ratio Railway",
+    category: "Activity",
+    unit: null,
+  },
+  {
+    path: "/curriculum/learning-labs/ratio-table-lab/",
+    title: "Ratio table lab · Lesson 3.4",
     category: "Activity",
     unit: null,
   },
@@ -3658,6 +3676,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/3-4-activity/",
+    title: "3.4 Activity · Equivalent Ratio Tables & Graphs | Grade 6",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/ai-hub/",
     title: "AI Learning Hub",
     category: "Hub",
@@ -3708,6 +3732,12 @@ export const ACTIVITIES = [
   {
     path: "/curriculum/family-letter/",
     title: "Family Math Letter · Carta de Matemáticas",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/fluency/",
+    title: "Fluency Practice",
     category: "Hub",
     unit: null,
   },
@@ -3816,6 +3846,18 @@ export const ACTIVITIES = [
   {
     path: "/curriculum/teach-the-machine/",
     title: "Teach the Machine",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-3-adventure-review/",
+    title: "Expedition Meridian — Unit 3 Review Adventure (Ratios and Rates)",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-3-test-review/",
+    title: "Unit 3 Test Review | Grade 6 Family Homework",
     category: "Hub",
     unit: null,
   },

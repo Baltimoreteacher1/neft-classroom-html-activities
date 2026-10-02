@@ -2,7 +2,7 @@
  * Generate a full, print-friendly student packet per lesson: `printable.html`.
  *
  * This is the paper fallback for students without a device. Unlike `handout.html`
- * (a one-page condensed sheet), this renders the COMPLETE lesson linearly from
+ * (a condensed practice handout), this renders the COMPLETE lesson linearly from
  * `config.json` — objectives, Notice & Wonder, vocabulary, Turn & Talk, Launch
  * (I do / We do / You do), Explore, the on-level Practice set, Connect, and the
  * Exit Ticket — with generous work space and NO answers revealed.
@@ -13,269 +13,21 @@
  *   node scripts/generate-printable-lesson.mjs            # all lessons
  *   node scripts/generate-printable-lesson.mjs 1-1 10-3   # specific lessons
  */
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
-const esc = (s) =>
-  String(s ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-// Deterministic shuffle (seeded by string) so re-running the generator produces
-// stable output — avoids noisy git diffs while still scrambling match columns.
-function seededShuffle(arr, seedStr) {
-  let seed = 0;
-  for (const ch of String(seedStr)) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
-  const rand = () => {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 0xffffffff;
-  };
-  const out = arr.slice();
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
-const workLines = (n = 3) => `<div class="work">${'<div class="wl"></div>'.repeat(n)}</div>`;
-const answerBlank = (label = "Answer") =>
-  `<p class="ans"><strong>${esc(label)}:</strong> <span class="blank"></span></p>`;
-
-// ---- Section renderers ----------------------------------------------------
-
-function questionText(item) {
-  return (
-    item.stem || item.prompt || item.label || item.question || item.instructions || item.text || ""
-  );
-}
-
-function renderChoices(choices) {
-  return `<ol class="choices">${choices
-    .map((c, i) => `<li><span class="ltr">${LETTERS[i]}</span> ${esc(c)}</li>`)
-    .join("")}</ol>`;
-}
-
-// Print twin of the engine's buildRowFigure: the row's regular polygon fanned
-// into its congruent triangles, so the paper copy shows the same picture the
-// screen does. Returns "" for anything it does not draw.
-function polygonFigureSvg(spec) {
-  if (!spec || typeof spec !== "object" || spec.shape !== "regular-polygon") return "";
-  const sides = Number(spec.sides);
-  if (!Number.isInteger(sides) || sides < 3 || sides > 12) return "";
-  const size = 44;
-  const c = size / 2;
-  const r = c - 3;
-  const pt = (i) => {
-    const a = (2 * Math.PI * i) / sides - Math.PI / 2;
-    return [
-      Math.round((c + Math.cos(a) * r) * 100) / 100,
-      Math.round((c + Math.sin(a) * r) * 100) / 100,
-    ];
-  };
-  let wedges = "";
-  for (let i = 0; i < sides; i++) {
-    const [x1, y1] = pt(i);
-    const [x2, y2] = pt(i + 1);
-    wedges += `<polygon points="${c},${c} ${x1},${y1} ${x2},${y2}" fill="none" stroke="#333" stroke-width="1"/>`;
-  }
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="Regular polygon with ${sides} sides split into ${sides} triangles" style="display:block; margin-bottom:3px;">${wedges}</svg>`;
-}
-
-// A blank grid table: header row + one row per data row, final column blanked
-// for the student to fill. Earlier (scaffold) columns are shown as given.
-function renderFillTable(item) {
-  const cols = item.columns || [];
-  // Configs author the row data as either `rows` or `items` (the engine's
-  // normalizeFillTable accepts both); without the fallback the printable
-  // renders a headers-only table with no rows at all.
-  const rows = Array.isArray(item.rows) && item.rows.length ? item.rows : item.items || [];
-  // `figure` is row metadata (a drawn shape), not a column — same contract the
-  // engine's normalizeFillTable uses. Keeping it would shift every column.
-  const keys = rows.length ? Object.keys(rows[0]).filter((k) => k !== "figure") : [];
-  const head = `<tr>${cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr>`;
-  const body = rows
-    .map((r) => {
-      const vals = keys.map((k) => r[k]);
-      const fig = polygonFigureSvg(r.figure);
-      return `<tr>${vals
-        .map((v, i) =>
-          i === vals.length - 1
-            ? `<td class="fill"></td>`
-            : `<td>${i === 0 ? fig : ""}${esc(v)}</td>`,
-        )
-        .join("")}</tr>`;
-    })
-    .join("");
-  return `<table class="grid">${head}${body}</table>`;
-}
-
-function renderSort(item) {
-  const cats = (item.categories || []).map((c) => c.label || c.id || "");
-  const items = seededShuffle(
-    (item.items || []).map((it) => it.text ?? String(it)),
-    JSON.stringify(item.items || []),
-  );
-  const bank = `<div class="wordbank"><strong>Word bank:</strong> ${items
-    .map((t) => `<span class="chip">${esc(t)}</span>`)
-    .join(" ")}</div>`;
-  const boxes = `<div class="sortboxes">${cats
-    .map((c) => `<div class="sortbox"><div class="sorthd">${esc(c)}</div></div>`)
-    .join("")}</div>`;
-  return bank + boxes;
-}
-
-function renderMatch(item) {
-  const pairs = item.pairs || [];
-  const left = pairs.map((p) => p.situation ?? p.term ?? p.left ?? "");
-  const rightRaw = pairs.map((p) => p.equation ?? p.match ?? p.right ?? "");
-  const right = seededShuffle(rightRaw, JSON.stringify(rightRaw));
-  const rows = left
-    .map(
-      (l, i) =>
-        `<tr><td class="mnum">${i + 1}.</td><td>${esc(l)}</td>` +
-        `<td class="mans"></td>` +
-        `<td class="mltr">${LETTERS[i]}.</td><td>${esc(right[i])}</td></tr>`,
-    )
-    .join("");
-  return (
-    `<p class="hint-line">Write the letter of the matching item in the blank.</p>` +
-    `<table class="matchtbl">${rows}</table>`
-  );
-}
-
-function renderErrorAnalysis(item) {
-  const steps = (item.workedExample || [])
-    .map(
-      (s) =>
-        `<div class="wa-step"><span class="wa-lbl">${esc(s.label || "")}</span><span class="wa-work">${esc(s.work || "")}</span></div>`,
-    )
-    .join("");
-  return (
-    `<div class="worked">${steps}</div>` +
-    `<p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p>` +
-    workLines(3)
-  );
-}
-
-function renderNumberLine(item) {
-  const min = Number(item.min ?? 0);
-  const max = Number(item.max ?? 10);
-  const step = Number(item.step ?? 1) || 1;
-  const w = 680;
-  const pad = 24;
-  const span = max - min || 1;
-  const x = (v) => pad + ((v - min) / span) * (w - 2 * pad);
-  let ticks = "";
-  for (let v = min; v <= max + 1e-9; v += step) {
-    const tx = x(v);
-    ticks += `<line x1="${tx}" y1="34" x2="${tx}" y2="46" stroke="#333" stroke-width="1"/>`;
-    ticks += `<text x="${tx}" y="60" font-size="11" text-anchor="middle" fill="#333">${+v.toFixed(2)}</text>`;
-  }
-  return `<svg class="numline" viewBox="0 0 ${w} 72" role="img" aria-label="Number line from ${min} to ${max}"><line x1="${pad}" y1="40" x2="${w - pad}" y2="40" stroke="#333" stroke-width="2"/>${ticks}</svg>`;
-}
-
-function renderCoordGrid(item) {
-  const xMin = Number(item.xMin ?? 0);
-  const xMax = Number(item.xMax ?? 10);
-  const yMin = Number(item.yMin ?? 0);
-  const yMax = Number(item.yMax ?? 10);
-  const xStep = Number(item.xStep ?? 1) || 1;
-  const yStep = Number(item.yStep ?? 1) || 1;
-  const size = 320;
-  const pad = 34;
-  const inner = size - 2 * pad;
-  const sx = (v) => pad + ((v - xMin) / (xMax - xMin || 1)) * inner;
-  const sy = (v) => size - pad - ((v - yMin) / (yMax - yMin || 1)) * inner;
-  let lines = "";
-  for (let v = xMin; v <= xMax + 1e-9; v += xStep) {
-    lines += `<line x1="${sx(v)}" y1="${pad}" x2="${sx(v)}" y2="${size - pad}" stroke="#ddd"/>`;
-    lines += `<text x="${sx(v)}" y="${size - pad + 14}" font-size="9" text-anchor="middle" fill="#555">${v}</text>`;
-  }
-  for (let v = yMin; v <= yMax + 1e-9; v += yStep) {
-    lines += `<line x1="${pad}" y1="${sy(v)}" x2="${size - pad}" y2="${sy(v)}" stroke="#ddd"/>`;
-    lines += `<text x="${pad - 8}" y="${sy(v) + 3}" font-size="9" text-anchor="end" fill="#555">${v}</text>`;
-  }
-  const axes = `<line x1="${pad}" y1="${pad}" x2="${pad}" y2="${size - pad}" stroke="#333" stroke-width="1.5"/><line x1="${pad}" y1="${size - pad}" x2="${size - pad}" y2="${size - pad}" stroke="#333" stroke-width="1.5"/>`;
-  const labels = `<text x="${size / 2}" y="${size - 4}" font-size="10" text-anchor="middle" fill="#333">${esc(item.xLabel || "x")}</text><text x="10" y="${size / 2}" font-size="10" text-anchor="middle" fill="#333" transform="rotate(-90 10 ${size / 2})">${esc(item.yLabel || "y")}</text>`;
-  return `<svg class="coordgrid" viewBox="0 0 ${size} ${size}" role="img" aria-label="Blank coordinate grid">${lines}${axes}${labels}</svg>`;
-}
-
-function renderBalance(item) {
-  const rows = (item.items || [])
-    .map(
-      (it) =>
-        `<tr><td>${esc(it.left ?? "")}</td><td class="bvs">?=?</td><td>${esc(it.right ?? "")}</td><td class="mans"></td></tr>`,
-    )
-    .join("");
-  return (
-    `<p class="hint-line">Balanced or not balanced? Show your check in the blank.</p>` +
-    `<table class="balancetbl">${rows}</table>`
-  );
-}
-
-// Render one practice/explore item into a static, answer-free block.
-function renderItem(item, idx) {
-  if (!item || typeof item !== "object") return "";
-  const type = item.type || "open-response";
-  const q = questionText(item);
-  let body = "";
-  switch (type) {
-    case "multiple-choice":
-      body = renderChoices(item.choices || []) + answerBlank();
-      break;
-    case "matching":
-    case "matching-game":
-      body = renderMatch(item);
-      break;
-    case "drag-sort":
-      body = renderSort(item);
-      break;
-    case "fill-table":
-      body = renderFillTable(item);
-      break;
-    case "error-analysis":
-      body = renderErrorAnalysis(item);
-      break;
-    case "number-line":
-      body = renderNumberLine(item) + workLines(2);
-      break;
-    case "coordinate-grid":
-      body = renderCoordGrid(item) + workLines(1);
-      break;
-    case "balance-scale":
-      body = renderBalance(item);
-      break;
-    case "bar-model":
-      body = (item.questionText ? `<p>${esc(item.questionText)}</p>` : "") + workLines(3);
-      break;
-    case "open-response":
-      body =
-        (item.sentenceFrame ? `<p class="frame">${esc(item.sentenceFrame)}</p>` : "") +
-        workLines(5);
-      break;
-    default:
-      body = workLines(4);
-  }
-  const num = idx != null ? `<span class="qnum">${idx + 1}.</span> ` : "";
-  // data-practice-item is the anchor the runtime support layer uses to mark the
-  // tail of the set optional when a teacher applies the shorter-practice-set
-  // modification. A semantic marker, not a CSS selector, so re-styling the
-  // packet cannot quietly break the one support that changes the task.
-  return `<div class="item" data-practice-item>${num ? `<p class="qtext">${num}${esc(q)}</p>` : q ? `<p class="qtext">${esc(q)}</p>` : ""}${body}</div>`;
-}
+import {
+  answerBlank,
+  esc,
+  renderChoices,
+  renderItem,
+  STUDENT_TASK_CSS,
+  workLines,
+} from "./lib/student-print-tasks.mjs";
 
 // Semantic support slots. The runtime support layer attaches blocks by these
 // NAMES, never by a CSS selector or an nth-child path — an adaptation anchored
@@ -321,6 +73,7 @@ function buildPrintable(config) {
         "Notice & Wonder",
         "👀",
         `${nw.context ? `<p class="context">${esc(nw.context)}</p>` : ""}
+         ${nw.image ? `<figure class="notice-figure"><img src="${esc(nw.image)}" alt="${esc(nw.imageAlt || nw.alt || nw.context || "Notice and Wonder lesson visual")}" loading="eager" decoding="sync"></figure>` : ""}
          <p><strong>I notice…</strong></p>${workLines(2)}
          <p><strong>I wonder…</strong></p>${workLines(2)}`,
       )
@@ -374,7 +127,7 @@ function buildPrintable(config) {
   // Explore
   const ex = config.explore;
   const exploreInner = ex
-    ? `${ex.instructions ? `<p class="context">${esc(ex.instructions)}</p>` : ""}${renderItem(ex, null)}${
+    ? `${renderItem(ex, null)}${
         ex.discourse?.prompt
           ? `<p class="frame">${esc(ex.discourse.prompt)}${ex.discourse.sentenceFrame ? " — " + esc(ex.discourse.sentenceFrame) : ""}</p>${workLines(2)}`
           : ""
@@ -442,6 +195,8 @@ function buildPrintable(config) {
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -475,18 +230,30 @@ function buildPrintable(config) {
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+  ${STUDENT_TASK_CSS}
 </style>
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/${esc(id)}/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>${title}</h1>
   <p class="doc-meta">${meta}</p>
   <div class="idbar">
@@ -504,6 +271,7 @@ function buildPrintable(config) {
   ${connect}
   ${reflect}
   <footer>Neft Teacher · ${esc(id)} · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next \`npm run build\`
@@ -519,7 +287,7 @@ function buildPrintable(config) {
        reason given above: this file is rewritten on every build. -->
   <script src="/shared/supports/print-supports.js" defer></script>
 </body>
-</html>`;
+</html>`.replace(/[ \t]+$/gm, "");
 }
 
 // ---- Run ------------------------------------------------------------------

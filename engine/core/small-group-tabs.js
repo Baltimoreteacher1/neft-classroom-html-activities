@@ -122,7 +122,7 @@ export function mountSmallGroupTabs(
     const toHalfway = Math.ceil(total / 2) - solved;
     fill.style.width = `${percent}%`;
     if (percent >= 100) {
-      label.textContent = `All ${total} steps done 🏆`;
+      label.textContent = `All ${total} checks complete 🏆`;
     } else if (remaining === 1 || percent >= 90) {
       label.textContent = esLane()
         ? remaining === 1
@@ -139,14 +139,12 @@ export function mountSmallGroupTabs(
       label.textContent = `${solved} of ${total} — over halfway 💪`;
     } else if (solved === 0) {
       // The one milestone the ladder above did not cover was the first sight of
-      // the page. "0 of 27 steps done" opens the lesson by reporting a score of
+      // the page. "0 of 27 checks complete" opens the lesson by reporting a score of
       // zero against a total no one asked for; every other branch here is
       // encouraging, and the start deserves the same treatment.
-      label.textContent = esLane()
-        ? `${total} pasos · empieza aquí`
-        : `${total} steps · start here`;
+      label.textContent = esLane() ? `${total} pasos · empieza aquí` : "Your work saves as you go";
     } else {
-      label.textContent = `${solved} of ${total} steps done`;
+      label.textContent = `${solved} of ${total} checks complete`;
     }
     if (lastPercent !== null && lastPercent < 100 && percent >= 100) celebrate("🏆");
     lastPercent = percent;

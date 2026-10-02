@@ -39,6 +39,17 @@ const first = (dir, predicate = () => true) => {
  */
 export const TEMPLATES = [
   {
+    id: "fluency-practice",
+    name: "Fluency student practice",
+    resolve: () => "/curriculum/fluency/",
+  },
+  {
+    id: "fluency-teacher",
+    name: "Fluency readiness guide",
+    authGated: true,
+    resolve: () => "/curriculum/fluency/teacher/",
+  },
+  {
     id: "lesson-launcher",
     name: "Lesson launcher",
     resolve: () => {

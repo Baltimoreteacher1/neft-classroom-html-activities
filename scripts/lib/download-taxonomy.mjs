@@ -92,6 +92,12 @@ export const TYPES = [
     group: "worksheets",
     folder: "Practice-Workbook",
   },
+  {
+    id: "reveal-document",
+    label: "Reveal Document",
+    group: "worksheets",
+    folder: "Reveal-Documents",
+  },
 
   // --- unit level ---
   { id: "pre-test", label: "Pre-Test", group: "assessments", folder: "Assessments" },

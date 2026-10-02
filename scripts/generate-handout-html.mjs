@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 /**
- * Generate a single-page printable student handout per lesson.
+ * Generate a printable student handout per lesson.
  * Linked from the lesson welcome/cover screen.
  *
  * Run: node scripts/generate-handout-html.mjs
  */
 
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
+import { renderItem, STUDENT_TASK_CSS } from "./lib/student-print-tasks.mjs";
 
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -42,32 +44,7 @@ function practicePreview(config) {
 
   return items
     .slice(0, 4)
-    .map((p, i) => {
-      const stem = p.stem || p.instructions || p.title || p.label || `Problem ${i + 1}`;
-      let extra = "";
-      if (p.type === "multiple-choice" && Array.isArray(p.choices)) {
-        extra = `<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;">${p.choices
-          .map((c) => `<li>${esc(c)}</li>`)
-          .join("")}</ol>`;
-      } else if (p.type === "matching" && Array.isArray(p.pairs)) {
-        extra = `<ul style="margin:8px 0 0 1.2rem; font-size:0.88rem;">${p.pairs
-          .slice(0, 3)
-          .map((pair) => `<li>${esc(pair.left || pair.term || "")} → ___</li>`)
-          .join("")}</ul>`;
-      } else if (p.type === "error-analysis" && Array.isArray(p.workedExample)) {
-        // Print the (flawed) worked solution the student must critique — without
-        // it the handout showed only the title, so there was no problem to solve.
-        // The wrong step is NOT marked: finding it is the task.
-        const steps = p.workedExample
-          .map(
-            (s, si) =>
-              `<li><strong>Step ${si + 1}:</strong> ${esc(s.label)} — <span style="font-family:monospace;">${esc(s.work)}</span></li>`,
-          )
-          .join("");
-        extra = `<ol style="margin:8px 0 0 1.2rem; font-size:0.88rem;">${steps}</ol><p style="margin:6px 0 0; font-size:0.85rem;"><em>Which step has the mistake? Explain it and write the correct work.</em></p>`;
-      }
-      return `<li>${esc(stem)}${extra}<div class="work-space"></div></li>`;
-    })
+    .map((p, i) => renderItem(p, i))
     .join("");
 }
 
@@ -90,32 +67,49 @@ function buildHandout(config) {
     ${EDITORIAL_FONT_IMPORT}
     @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
-    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; font-size: 17px; line-height: 1.55; }
+    main { max-width: 900px; margin: 0 auto; }
+    .resource-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .resource-toolbar a { color: #155f67; font-weight: 650; padding: 10px 0; }
+    .resource-toolbar button { min-height: 44px; border: 0; border-radius: 6px; background: #155f67; color: white; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
     .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
     .meta { color: #5a6b75; font-size: 0.9rem; }
     .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #dff2ee; }
+    .vocabulary-table { table-layout: fixed; overflow-wrap: break-word; }
+    .vocabulary-table th:first-child { width: 34%; }
     .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
     .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
     .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    .practice-box { background: #fff; }
+    .practice-box > h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } .bilingual, .notice-wonder { grid-template-columns: 1fr; } .name-line { min-width: 140px; } }
+    @page { size: Letter; margin: .55in; }
     @media print {
-      body { padding: 12px; }
+      body { padding: 0; font-size: 11.5pt; }
       .no-print { display: none; }
       .box { break-inside: avoid; }
+      .practice-box { break-inside: auto; border: 0; padding: 0; }
+      h1, h2, h3 { break-after: avoid; }
+      p { orphans: 3; widows: 3; }
+      .bilingual { display: block; }
     }
+    ${STUDENT_TASK_CSS}
     ${EDITORIAL_OVERRIDES}
   </style>
 </head>
 <body>
 <main>
-  <div class="no-print" style="text-align:right; margin-bottom:12px;">
-    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
-  </div>
+  <nav class="no-print resource-toolbar" aria-label="Handout actions">
+    <a href="/lessons/${esc(config.lessonId)}/">← Back to lesson</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </nav>
   <header class="header">
     <h1>${esc(config.title)}</h1>
     <div class="meta">${esc(config.standard)} · Unit ${config.unit} · Lesson ${config.lesson ?? ""}</div>
@@ -146,15 +140,16 @@ function buildHandout(config) {
 
   <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
-    <table>
-      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+    <table class="vocabulary-table">
+      <thead><tr><th scope="col">Term / Término</th><th scope="col">Definition / Definición</th></tr></thead>
       <tbody>${vocabRows(config)}</tbody>
     </table>
   </div>
 
-  <div class="box" data-support-slot="practice">
+  <div class="box practice-box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
-    <ol>${practicePreview(config)}</ol>
+    <p>Read each task. Show your work in the spaces provided and explain how you know.</p>
+    ${practicePreview(config)}
   </div>
 
   <div class="box" data-support-slot="response">
@@ -169,11 +164,16 @@ function buildHandout(config) {
        shared/supports/print-supports.js. Inert until supports are configured. -->
   <script src="/shared/supports/print-supports.js" defer></script>
 </body>
-</html>`;
+</html>`.replace(/[ \t]+$/gm, "");
 }
 
 const lessonIds = readdirSync(lessonsDir)
-  .filter((d) => LESSON_DIR_RE.test(d) && existsSync(join(lessonsDir, d, "config.json")))
+  .filter(
+    (d) =>
+      LESSON_DIR_RE.test(d) &&
+      inScope(d, lessonScope()) &&
+      existsSync(join(lessonsDir, d, "config.json")),
+  )
   .sort();
 
 const CHECK = process.argv.includes("--check");

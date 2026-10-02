@@ -18,20 +18,6 @@
   // (loaded via <script src="/curriculum/lesson-mstar-worksheets.js">; regenerate with `npm run generate-lesson-mstar-worksheet-map`)
   var LESSON_MSTAR_WORKSHEETS = window.LESSON_MSTAR_WORKSHEETS || {};
 
-  // Culminating projects directory per unit
-  var UNIT_CULMINATING_PROJECT = {
-    1: "/math/unit-1/projects/",
-    2: "/math/unit-2/projects/",
-    3: "/math/unit-3/projects/",
-    4: "/math/unit-4/projects/",
-    5: "/math/unit-5/projects/",
-    6: "/math/unit-6/projects/",
-    7: "/math/unit-8/projects/",
-    8: "/math/statistics/projects/",
-    9: "/math/unit-7/projects/",
-    10: "/math/unit-10/projects/",
-  };
-
   // Specific lesson-to-projects mapping
   // Print-ready resources (paper game, color-by-number, word search,
   // MCAP packet) attached to each lesson card. Surfaced in the activity
@@ -2207,287 +2193,8 @@
     ],
   };
 
-  var LESSON_PROJECTS = {
-    // Unit 1 - The Number System
-    "1-1": [
-      {
-        text: "Lesson 1-1: Prime Factorization Game",
-        href: "/math/unit-1/factor-tree-salvage/",
-      },
-    ],
-
-    // Unit 2 - Fractions
-    "2-1": [
-      {
-        text: "Lesson 2-1: Fraction Division Soccer Game",
-        href: "/math/unit-2/fraction-division-soccer/",
-      },
-    ],
-    "2-2": [
-      {
-        text: "Lesson 2-2: Fraction Division Soccer Game",
-        href: "/math/unit-2/fraction-division-soccer/",
-      },
-    ],
-
-    // Unit 3 - Ratios
-    "3-1": [
-      {
-        text: "Kitchen Chef Game",
-        href: "/math/unit-3/6-rp-1game/",
-      },
-    ],
-    "3-2": [
-      {
-        text: "Recipe Factory",
-        href: "/math/unit-3/recipe-factory-line/",
-      },
-      { text: "RatioLab", href: "/ratiolab/" },
-    ],
-    "3-3": [{ text: "RatioLab", href: "/ratiolab/" }],
-    "3-4": [
-      {
-        text: "Recipe Factory",
-        href: "/math/unit-3/recipe-factory-line/",
-      },
-    ],
-
-    // Unit 4 - Rates & Percents
-    "4-2": [
-      {
-        text: "Lesson 4-2: Relate Fractions, Decimals, and Percents Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-    "4-3": [
-      {
-        text: "Lesson 4-3: Percents Greater Than 100% and Less Than 1% Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-    "4-4": [
-      {
-        text: "Lesson 4-4: Find the Percent of a Number Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-    "4-5": [
-      {
-        text: "Lesson 4-5: Use Percent to Solve Problems Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-
-    // Unit 5 - Area
-    "5-1": [
-      {
-        text: "Lesson 5-1: Area of Parallelograms Game",
-        href: "/math/unit-10/area-architect/",
-      },
-    ],
-    "5-2": [{ text: "Lesson 5-2: Area of Triangles Game", href: "/math/unit-10/area-architect/" }],
-    "5-3": [{ text: "Lesson 5-3: Area of Trapezoids Game", href: "/math/unit-10/area-architect/" }],
-    "5-4": [
-      { text: "Lesson 5-4: Apply Area Concepts Game", href: "/math/unit-10/area-architect/" },
-    ],
-
-    // Unit 6 - Expressions
-    "6-1": [
-      {
-        text: "Lesson 6-1: Powers and Exponents Game",
-        href: "/math/unit-6/exponent-space-launch/",
-      },
-    ],
-    "6-2": [
-      {
-        text: "Lesson 6-2: Numerical Expressions Game",
-        href: "/math/unit-6/pemdas-alchemy/",
-      },
-    ],
-    "6-3": [
-      {
-        text: "Distributive Alchemy",
-        href: "/math/unit-6/distributive-alchemy/",
-      },
-    ],
-    "6-4": [
-      {
-        text: "Equivalent Expressions Forge",
-        href: "/math/unit-6/equivalent-expressions-forge/",
-      },
-    ],
-    "6-5": [{ text: "Word-to-Equations", href: "/word-to-equations/" }],
-
-    // Unit 7 - Equations / Two-Variable Relationships
-    "7-2": [
-      {
-        text: "One-Step Solver Arena",
-        href: "/math/unit-8/one-step-solver-arena/",
-      },
-    ],
-    "7-3": [
-      {
-        text: "Lesson 7-3: Solve Multiplication and Division Equations Game",
-        href: "/math/unit-8/inverse-balance-scale/",
-      },
-    ],
-    "7-4": [
-      {
-        text: "Neon Inequality",
-        href: "/math/unit-8/neon-inequality/",
-      },
-    ],
-    "7-6": [
-      {
-        text: "Mars Exploration Game",
-        href: "/math/unit-9/6-ee-c-9martiangame/",
-      },
-      {
-        text: "Variable Velocity Racing",
-        href: "/math/unit-9/6-ee-c-9variablevelocitygame/",
-      },
-      {
-        text: "Lesson 7-6: Relationships Between Two Variables Game",
-        href: "/math/unit-9/variable-voyage/",
-      },
-    ],
-    "7-7": [
-      {
-        text: "Variable Velocity Racing",
-        href: "/math/unit-9/6-ee-c-9variablevelocitygame/",
-      },
-      {
-        text: "Lesson 7-7: Graphs of Relationships Game",
-        href: "/math/unit-9/variable-voyage/",
-      },
-    ],
-
-    // Unit 8 - Statistics
-    "8-1": [
-      {
-        text: "Statistical Question Detective",
-        href: "/math/statistics/6-sp-a-1reviewactivities/",
-      },
-      {
-        text: "6.DS.A.1 Data Lab",
-        href: "/math/statistics/6-sp-a-1data-lab-6-sp-a-1-flagship/",
-      },
-    ],
-    "8-2": [
-      {
-        text: "Stats of My Life Project",
-        href: "/math/statistics/statistics-of-my-life/",
-      },
-      {
-        text: "Stats Choice Quest",
-        href: "/math/statistics/meanmedianmodesoccerandbracelets/",
-      },
-      {
-        text: "Lesson 8-2: Mean, Median, and Mode Game",
-        href: "/gemini-data-quest/gemini_median_mode_ai_adventure.html",
-      },
-    ],
-    "8-3": [
-      {
-        text: "Lesson 8-3: Mean Absolute Deviation Game",
-        href: "/math/unit-8/mad-balance-sandbox/",
-      },
-    ],
-    "8-5": [
-      {
-        text: "Box Plot Builder",
-        href: "/math/statistics/box-plot-builder/",
-      },
-      {
-        text: "Box Plot Detective Game",
-        href: "/math/statistics/box-plot-detective/",
-      },
-    ],
-    "8-6": [
-      {
-        text: "Histogram Master Lab",
-        href: "/math/statistics/histogram-master-lab/",
-      },
-      {
-        text: "Histogram Hero Game",
-        href: "/math/statistics/histogram-hero/",
-      },
-      {
-        text: "Disease Detectives (Level 2)",
-        href: "/math/statistics/histogram-master-lab/games/disease-detectives-level-2.html",
-      },
-      {
-        text: "Game Day Data Lab (Level 2)",
-        href: "/math/statistics/histogram-master-lab/games/game-day-data-lab-level-2.html",
-      },
-      {
-        text: "Histogram Graphic Novel",
-        href: "/math/statistics/histogram-graphic-novel/",
-      },
-    ],
-
-    // Unit 9 - Coordinate Plane & Integers
-    "9-1": [
-      {
-        text: "Coordinate Graphing Game",
-        href: "/math/unit-7/6-ns-c-6game/",
-      },
-      { text: "Cartesian Odyssey", href: "/cartesian-odyssey/" },
-      { text: "Lesson 9-1: Represent Integers Game", href: "/math/unit-7/subzero-ledger/" },
-    ],
-    "9-2": [
-      {
-        text: "Coordinate Graphing Game",
-        href: "/math/unit-7/6-ns-c-6game/",
-      },
-      { text: "Cartesian Odyssey", href: "/cartesian-odyssey/" },
-      {
-        text: "Lesson 9-2: Opposites and Absolute Value Game",
-        href: "/math/unit-7/subzero-ledger/",
-      },
-    ],
-    "9-3": [
-      {
-        text: "Lesson 9-3: Compare and Order Integers Game",
-        href: "/math/unit-7/subzero-ledger/",
-      },
-    ],
-    "9-4": [{ text: "Lesson 9-4: Rational Numbers Game", href: "/math/unit-7/subzero-ledger/" }],
-    "9-6": [
-      {
-        text: "Lesson 9-6: Graph Reflections of Points Game",
-        href: "/math/unit-7/coordinate-reflections/",
-      },
-    ],
-    "9-7": [
-      {
-        text: "Lesson 9-7: Absolute Value and Distance Game",
-        href: "/math/unit-7/subzero-ledger/",
-      },
-    ],
-
-    // Unit 10 - Geometry / Volume & Surface Area
-    "10-1": [
-      {
-        text: "Lesson 10-1: Volume of Rectangular Prisms Game",
-        href: "/math/unit-10/voxel-volume-pack/",
-      },
-    ],
-    "10-3": [
-      { text: "NetFold Pro Simulator", href: "/netfold-pro/" },
-      {
-        text: "Nets of 3D Figures",
-        href: "/math/unit-5/supplemental/5-6session1/",
-      },
-    ],
-    "10-5": [
-      { text: "NetFold Pro Simulator", href: "/netfold-pro/" },
-      {
-        text: "Nets of 3D Figures",
-        href: "/math/unit-5/supplemental/5-6session1/",
-      },
-    ],
-  };
+  // Current lesson-owned recommendations, generated from config.projects.
+  var LESSON_PROJECTS = window.LESSON_PROJECTS || {};
 
   // 1. Scrape Curriculum Data from existing DOM
   var unitsData = [];
@@ -2499,7 +2206,7 @@
   // Homework&Family first, else fall back to Practice & Games.
   var OUTLINE_GROUPS = [
     {
-      title: "✅ Must Do · Learn",
+      title: "Learn",
       keywords: [
         "open the lesson",
         "interactive lesson",
@@ -2512,32 +2219,63 @@
       ],
     },
     {
-      title: "🧩 If Needed · Supports",
+      title: "Supports",
       keywords: ["notes", "handout"],
     },
     {
-      title: "🔬 Interactive Learning Labs",
+      title: "Interactive learning labs",
       keywords: ["interactive learning lab"],
     },
     {
-      title: "🏠 At Home · Continue",
+      title: "At home",
       keywords: ["homework", "family", "forms"],
     },
     // Practice & Games is the catch-all; rendered last regardless of
     // position here (see buildGroupedOutline ordering).
   ];
 
-  function outlineItemIcon(act, isProject) {
-    var name = (act.text || "").toLowerCase();
-    if (act.isBonus) return "🎯";
-    if (isProject) return "🛠️";
-    if (name.indexOf("lesson") > -1 || name.indexOf("html") > -1) return "💻";
-    if (name.indexOf("notes") > -1 || name.indexOf("packet") > -1) return "📝";
-    if (name.indexOf("homework") > -1) return "🏠";
-    return "🔗";
+  // Authored labels still carry a leading pictograph in places ("👪 Family
+  // Page"). Icons as text leak into aria-labels ("Mark complete: 💻 …") and
+  // read as clutter; the row's kind tag now says what the link opens.
+  var LEADING_SYMBOL =
+    /^(?:[☀-➿⬀-⯿]|[\uD83C-\uDBFF][\uDC00-\uDFFF])(?:️|‍(?:[\uD83C-\uDBFF][\uDC00-\uDFFF]|[☀-➿]))*\s*/;
+  function cleanLabel(text) {
+    var out = String(text || "");
+    var guard = 0;
+    while (LEADING_SYMBOL.test(out) && guard++ < 4) out = out.replace(LEADING_SYMBOL, "");
+    return out.trim();
+  }
+  window.NeftCleanLabel = cleanLabel;
+
+  // What a row opens, as a short tag beside its name. Order matters: a
+  // "Practice Arcade Game" is a game before it is practice; a PDF is a
+  // printable whatever it is called.
+  function outlineItemKind(act, isProject) {
+    var name = cleanLabel(act.text).toLowerCase();
+    var href = (act.href || "").toLowerCase();
+    if (isProject) return "Project";
+    if (/\.(pdf)([?#]|$)/.test(href)) return "PDF";
+    if (/\.(docx?)([?#]|$)/.test(href)) return "Word";
+    if (/\.(pptx?)([?#]|$)/.test(href)) return "Slides";
+    if (/\/api\/scorm/.test(href)) return "Canvas";
+    if (/\bgame\b|arcade|\/games?\//.test(name + " " + href)) return "Game";
+    if (/slides|present/.test(name)) return "Slides";
+    if (/learning lab/.test(name) || /\/learning-labs\//.test(href)) return "Lab";
+    if (/mode=tools/.test(href) || /interactive tools|manipulative/.test(name)) return "Tools";
+    if (/forms?\b|exit ticket|final check|quiz|readiness/.test(name) || /post-forms/.test(href))
+      return "Check";
+    if (/family/.test(name) || /\/family\//.test(href)) return "Family";
+    if (/homework/.test(name) || /homework/.test(href)) return "Homework";
+    if (/teacher notes/.test(name) || /teacher-notes/.test(href)) return "Teacher";
+    if (/notes|handout|worksheet|packet|printable|study guide/.test(name)) return "Printable";
+    if (/student help/.test(name) || /student-help/.test(href)) return "Help";
+    if (act.isBonus) return "Bonus";
+    if (/lesson|html/.test(name) || /^\/lessons\/[^/]+\/?(\?|$)/.test(href)) return "Interactive";
+    return "Link";
   }
 
   function outlineCategoryIndex(act) {
+    if (act.isRevealDocument) return OUTLINE_GROUPS.length;
     var name = (act.text || "").toLowerCase();
     for (var g = 0; g < OUTLINE_GROUPS.length; g++) {
       var kw = OUTLINE_GROUPS[g].keywords;
@@ -2617,7 +2355,7 @@
           ? head.querySelector(".lesson-head").textContent.replace(/\s+/g, " ").trim()
           : link.textContent) || "Small Group";
       var moreBody = ensureOutlineMore(link.parentElement);
-      moreBody.appendChild(makeScormLink(href, title, "⬇", "scorm-dl"));
+      moreBody.appendChild(makeScormLink(href, title, "Canvas", "scorm-dl"));
     });
 
   // Apply Day (Part II). These rows are static anchors on /curriculum/units/:
@@ -2641,7 +2379,7 @@
     var chip = makeScormLink(
       href,
       "Lesson " + m[1] + " \u00b7 Part II: Apply",
-      "\ud83c\udf93 Canvas (SCORM)",
+      "Canvas (SCORM)",
       "res scorm-dl scorm-dl-part2",
       "",
     );
@@ -2745,12 +2483,17 @@
     var a = document.createElement("a");
     a.href = act.href;
     a.target = "_blank";
+    if (act.download != null) {
+      a.download = act.download;
+      a.removeAttribute("target");
+    }
     if (isProject) {
       a.className = "res-project";
     } else if (act.isBonus) {
       a.className = "res-bonus";
     }
-    a.innerHTML = outlineItemIcon(act, isProject) + " " + act.text;
+    a.textContent = cleanLabel(act.text);
+    a.dataset.kind = outlineItemKind(act, isProject);
     li.appendChild(a);
     if (act.isFamilyHomework) {
       var qrBtn = document.createElement("button");
@@ -2760,7 +2503,7 @@
         "margin-left:6px;padding:1px 6px;font-size:11px;font-weight:700;border-radius:6px;background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;cursor:pointer;vertical-align:middle;";
       qrBtn.title = "Show QR Code for families";
       qrBtn.setAttribute("aria-label", "Show QR Code for " + act.text);
-      qrBtn.textContent = "📱 QR";
+      qrBtn.textContent = "QR";
       qrBtn.addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2773,7 +2516,7 @@
         makeScormLink(
           act.href,
           (scormTitlePrefix ? scormTitlePrefix + " — " : "") + act.text,
-          "⬇",
+          "Canvas",
           "scorm-dl",
         ),
       );
@@ -2801,7 +2544,7 @@
     // order is: Lesson & Slides, Notes & Handouts, Practice & Games,
     // Homework & Family.
     sections.splice(2, 0, {
-      title: "🎯 Practice · Apply",
+      title: "Practice & games",
       items: buckets[OUTLINE_GROUPS.length],
     });
 
@@ -2964,6 +2707,18 @@
       head = head.replace(/\s+/g, " "); // Clean whitespaces
 
       var headHTML = headEl ? headEl.innerHTML.trim() : "Lesson " + (lIdx + 1);
+      // What people read: the hub's "Lesson 3.1" numbering, without the
+      // standard badge's text run onto the title (the standard has its own
+      // chip). `title` stays the raw text because SCORM names and lookups use it.
+      var displayTitle = head;
+      if (headEl) {
+        var plain = headEl.cloneNode(true);
+        plain.querySelectorAll(".badge-std").forEach(function (badge) {
+          badge.remove();
+        });
+        displayTitle = plain.textContent.replace(/\s+/g, " ").trim() || head;
+      }
+      displayTitle = displayTitle.replace(/^Lesson\s+(\d+)-(\d+)\b/, "Lesson $1.$2");
 
       var objEl = l.querySelector(".lesson-obj");
       var obj = objEl ? objEl.textContent.trim() : "";
@@ -2974,6 +2729,9 @@
         activities.push({
           text: a.textContent.trim(),
           href: a.getAttribute("href"),
+          download: a.getAttribute("download"),
+          isRevealDocument: a.hasAttribute("data-reveal-document"),
+          phaseIndex: a.hasAttribute("data-reveal-document") ? 1 : undefined,
         });
       });
 
@@ -3047,7 +2805,11 @@
       // Resolve projects
       var projects = LESSON_PROJECTS[lessonId] || LESSON_PROJECTS[baseLessonId];
       if (!projects || projects.length === 0) {
-        var culminatingHref = UNIT_CULMINATING_PROJECT[unitInteger];
+        // The unit card already records current ownership; path numbers are legacy.
+        var culminatingResource = endOfUnitRes.concat(unitRes).find(function (resource) {
+          return /\/projects\/(?:[?#].*)?$/.test(resource.href || "");
+        });
+        var culminatingHref = culminatingResource && culminatingResource.href;
         if (culminatingHref) {
           projects = [
             {
@@ -3084,6 +2846,7 @@
         id: uIdx + "-" + lIdx,
         lessonId: lessonId,
         title: head,
+        displayTitle: displayTitle,
         titleHTML: headHTML,
         objective: obj,
         activities: activities,
@@ -3135,6 +2898,9 @@
       cluster: unitCluster,
       unitIndex: unitInteger,
       resources: unitRes,
+      projectResources: endOfUnitRes.concat(unitRes).filter(function (resource) {
+        return /\/projects\/(?:[?#].*)?$/.test(resource.href || "");
+      }),
       lessons: lessonsData,
     });
   });
@@ -3248,9 +3014,9 @@
         '<span class="unit-card-num">' +
         u.num +
         "</span>" +
-        '<span class="unit-card-name">' +
+        '<h2 class="unit-card-name">' +
         u.name +
-        "</span>" +
+        "</h2>" +
         "</div>" +
         '<div class="unit-card-meta">' +
         '<span class="unit-card-blurb">' +
@@ -3275,16 +3041,18 @@
         resRow.appendChild(a);
       });
       if (u.unitIndex) {
-        var projPath =
-          UNIT_CULMINATING_PROJECT[u.unitIndex] || "/math/unit-" + u.unitIndex + "/projects/";
-        var openProjBtn = document.createElement("a");
-        openProjBtn.className = "unit-resource-btn";
-        openProjBtn.href = projPath;
-        openProjBtn.innerHTML = "🚀 " + (u.num ? u.num + " Project" : "Unit Project");
-        openProjBtn.style.background = "#1a6fb5";
-        openProjBtn.style.color = "#ffffff";
-        openProjBtn.style.fontWeight = "700";
-        resRow.appendChild(openProjBtn);
+        var projectResource = u.projectResources[0];
+        if (projectResource) {
+          var projPath = projectResource.href;
+          var openProjBtn = document.createElement("a");
+          openProjBtn.className = "unit-resource-btn";
+          openProjBtn.href = projPath;
+          openProjBtn.innerHTML = "🚀 " + (u.num ? u.num + " Project" : "Unit Project");
+          openProjBtn.style.background = "#1a6fb5";
+          openProjBtn.style.color = "#ffffff";
+          openProjBtn.style.fontWeight = "700";
+          resRow.appendChild(openProjBtn);
+        }
 
         resRow.appendChild(
           makeScormLink(
@@ -3299,16 +3067,18 @@
         // never generated — all 10 buttons 404'd. Build it on demand from
         // the live unit projects page, the same path the review-game chip
         // above uses, so there is nothing to keep in sync.
-        var zipBtn = makeScormLink(
-          projPath,
-          u.num + " Project",
-          "📦 Unit Project — Canvas SCORM",
-          "unit-resource-btn scorm-dl",
-        );
-        zipBtn.style.background = "#256b5b";
-        zipBtn.style.color = "#ffffff";
-        zipBtn.style.fontWeight = "700";
-        resRow.appendChild(zipBtn);
+        if (projectResource) {
+          var zipBtn = makeScormLink(
+            projPath,
+            u.num + " Project",
+            "📦 Unit Project — Canvas SCORM",
+            "unit-resource-btn scorm-dl",
+          );
+          zipBtn.style.background = "#256b5b";
+          zipBtn.style.color = "#ffffff";
+          zipBtn.style.fontWeight = "700";
+          resRow.appendChild(zipBtn);
+        }
       }
       if (resRow.children.length > 0) {
         card.appendChild(resRow);
@@ -3332,7 +3102,7 @@
       u.lessons.forEach(function (l, lIdx) {
         var opt = document.createElement("option");
         opt.value = lIdx;
-        opt.textContent = l.title;
+        opt.textContent = l.displayTitle || l.title;
         lessonSelect.appendChild(opt);
       });
       lessonWrapper.appendChild(lessonSelect);
@@ -3378,8 +3148,7 @@
 
       var outline = document.createElement("div");
       outline.className = "lesson-outline";
-      outline.innerHTML =
-        '<span class="lesson-outline-title">Activities List (Outline Form)</span>';
+      outline.innerHTML = '<span class="lesson-outline-title">Lesson resources</span>';
       var outlineList = document.createElement("ul");
       outlineList.className = "lesson-outline-list";
       outline.appendChild(outlineList);
@@ -3428,12 +3197,12 @@
         if (!hasArcade) {
           if (lesson.isEndOfUnit && lesson.unitInteger) {
             allActs.push({
-              text: "🎮 Unit Review Game",
+              text: "Unit Review Game",
               href: "/math/games/practice-arcade/?unit=" + lesson.unitInteger,
             });
           } else if (lesson.lessonId) {
             allActs.push({
-              text: "⚙️ Practice Arcade Game",
+              text: "Practice Arcade Game",
               href: "/math/games/practice-arcade/?lesson=" + lesson.lessonId,
             });
           }
@@ -3460,7 +3229,7 @@
         }
         if (toolsId) {
           allActs.push({
-            text: "🧰 Interactive Tools",
+            text: "Interactive Tools",
             href: "/lessons/" + toolsId + "/?mode=tools",
             phaseIndex: 1,
           });
@@ -3513,7 +3282,7 @@
         }
         if (scormTarget) {
           scormLessonBtn.href = scormDownloadHref(scormTarget, scormTitle);
-          scormLessonBtn.textContent = "🎓 Download for Canvas (SCORM)";
+          scormLessonBtn.textContent = "Canvas package (SCORM)";
           scormLessonBtn.title = "Download “" + scormTitle + "” as a Canvas-ready SCORM package";
           scormLessonBtn.setAttribute("aria-label", scormLessonBtn.title);
           scormLessonBtn.style.display = "";
@@ -3585,7 +3354,6 @@
     var title = document.createElement("h2");
     title.style.fontSize = "18px";
     title.style.color = "var(--navy)";
-    title.style.fontFamily = "Outfit, sans-serif";
     title.style.marginBottom = "12px";
     title.textContent = 'Search Results for "' + q + '"';
     panel.appendChild(title);
@@ -3606,7 +3374,7 @@
 
           var header = document.createElement("div");
           header.className = "search-result-header";
-          header.textContent = l.title;
+          header.textContent = l.displayTitle || l.title;
           item.appendChild(header);
 
           if (l.objective) {

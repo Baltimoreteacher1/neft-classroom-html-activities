@@ -798,7 +798,7 @@ export const blueprints = [
 ];
 
 export const unitNames = [
-  "Math Is…",
+  "Math Is Discovery",
   "Statistics",
   "Ratios & Rates",
   "Percents",
@@ -807,5 +807,5 @@ export const unitNames = [
   "Integers & the Coordinate Plane",
   "Equations & Inequalities",
   "Two-Variable Relationships",
-  "Math Is…",
+  "Math Is Synthesis",
 ];

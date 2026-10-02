@@ -1,86 +1,45 @@
 #!/usr/bin/env node
 /**
- * Generate printable ACCESS Practice Lab packets per domain-level, in two real
- * formats teachers can use beyond the interactive site:
- *   - <Domain>-<Level>.docx  (editable Word; also opens directly in Google Docs)
- *   - <Domain>-<Level>.html  (print-optimized; Print → PDF)
- * Each packet lists every activity (directions, prompt, choices/items, key
- * vocabulary) plus a teacher answer key. Content is derived from the live
- * access-data*.js modules, so packets stay in lock-step with the app.
+ * Printable packets for the ACCESS Practice Lab, generated at build time from
+ * access-practice-lab/content/ (never committed):
  *
- * Runs at the END of `npm run build`, writing into dist/access-practice-lab/printables/
- * (not committed; regenerated every build so they never drift).
+ *   dist/access-practice-lab/printables/<file>.html|.docx  STUDENT packets — no
+ *       answer keys, no listening scripts (the teacher reads those aloud).
+ *   dist/access-teacher/packets/<file>.html|.docx          TEACHER packets — answer
+ *       keys, listening scripts, sample answers. /access-teacher/ is a teacher
+ *       surface (password-gated by functions/_middleware.js).
  *
- * Usage: node tools/generate-access-printables.mjs [outDir]
+ * <file> is `<Domain>-<Level>` for grades 6–8 (the URLs the old lab linked) and
+ * `g3-5-<Domain>-<Level>` for grades 3–5. Before 2026-10 the public packets
+ * carried the answer key; they no longer do.
+ *
+ * Never fails the build: a content generator must not block a deploy.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { BANDS, loadBand, orderedActivities, REPO_ROOT } from "./lib/access-lab-content.mjs";
 
-// docx is optional at build time: if it can't load, we still emit the HTML
-// packets and the build continues (never let a content generator break deploy).
-let Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle;
-let docxAvailable = false;
+let docx = null;
 try {
-  ({ Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } =
-    await import("docx"));
-  docxAvailable = true;
+  docx = await import("docx");
 } catch (e) {
   console.warn("generate-access-printables: docx unavailable, skipping .docx packets —", e.message);
 }
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, "..");
-const labDir = join(root, "access-practice-lab");
-const outDir = process.argv[2] || join(root, "dist", "access-practice-lab", "printables");
+const studentDir = process.argv[2] || join(REPO_ROOT, "dist", "access-practice-lab", "printables");
+const teacherDir = process.argv[3] || join(REPO_ROOT, "dist", "access-teacher", "packets");
+const TIER = { A: "Starting", B: "Growing", C: "Expanding" };
+const esc = (s) =>
+  String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+const list = (x) => (Array.isArray(x) ? x : x ? [x] : []);
+const fileBase = (band, domain, level) =>
+  (band === "6-8" ? `${domain}-${level}` : `g3-5-${domain}-${level}`).replace(/\s+/g, "");
 
-// ── load + merge data (mirror app.js) ──
-const window = {};
-for (const f of [
-  "access-data.js",
-  "access-data-v3.js",
-  "access-data-v4.js",
-  "access-data-v5.js",
-  "access-data-v6.js",
-  "access-data-v7.js",
-  "access-data-v8.js",
-  "access-data-v9.js",
-]) {
-  // eslint-disable-next-line no-eval
-  eval(readFileSync(join(labDir, f), "utf8"));
-}
-const DATA = window.ACCESS_LAB_DATA;
-for (const V of [
-  "ACCESS_LAB_V3",
-  "ACCESS_LAB_V4",
-  "ACCESS_LAB_V5",
-  "ACCESS_LAB_V6",
-  "ACCESS_LAB_V7",
-]) {
-  const v = window[V];
-  if (!v) continue;
-  for (const [dn, lv] of Object.entries(v.appendActivities || {})) {
-    const d = DATA.domains[dn];
-    if (!d) continue;
-    for (const [lk, list] of Object.entries(lv)) {
-      const L = d.levels[lk];
-      if (!L) continue;
-      const ex = new Set((L.activities || []).map((a) => a.id));
-      L.activities = (L.activities || []).concat(list.filter((a) => a && a.id && !ex.has(a.id)));
-    }
-  }
-}
-const v8 = window.ACCESS_LAB_V8;
-const v9 = window.ACCESS_LAB_V9;
-for (const d of Object.values(DATA.domains))
-  for (const L of Object.values(d.levels))
-    for (const a of L.activities || []) {
-      if (v8?.scenes?.[a.id] && !a.scene) a.scene = v8.scenes[a.id];
-      if (v9?.patches?.[a.id]) Object.assign(a, v9.patches[a.id]);
-    }
-
-// ── answer-key text per activity ──
-function answerKey(a) {
+export function answerKey(a) {
   const opt = (id) => (a.options || []).find((o) => o.id === id)?.text || id;
   switch (a.type) {
     case "multipleChoice":
@@ -99,197 +58,240 @@ function answerKey(a) {
     case "hotText":
       return `Evidence: ${(a.answers || []).map((id) => (a.sentences || []).find((s) => s.id === id)?.text || id).join(" / ")}`;
     case "constructed":
-      return "Open response — see model in 'correct'/support.";
-    case "worksheet":
-      return "Printable worksheet.";
+      return a.models
+        ? `Sample answers — Starting: ${a.models.A || "—"} | Growing: ${a.models.B || "—"} | Expanding: ${a.models.C || "—"}`
+        : "Open response — teacher scores.";
     default:
       return "";
   }
 }
-function choicesText(a) {
-  if (a.options) return a.options.map((o, i) => `   ${String.fromCharCode(97 + i)}) ${o.text}`);
-  if (a.items && a.type === "order") return a.items.map((i) => `   • ${i.text}`);
-  if (a.items && a.type === "sort")
+
+function choiceLines(a) {
+  if (a.options) return a.options.map((o, i) => `${String.fromCharCode(97 + i)}) ${o.text}`);
+  if (a.type === "order") return (a.items || []).map((i) => `___ ${i.text}`);
+  if (a.type === "sort")
     return [
-      `   Categories: ${(a.categories || []).join(", ")}`,
-      ...a.items.map((i) => `   • ${i.text}`),
+      `Groups: ${(a.categories || []).join(" · ")}`,
+      ...(a.items || []).map((i) => `• ${i.text}  → ________`),
     ];
-  if (a.segments) return [`   ${a.segments.map((s) => (s.blank ? "_____" : s.text)).join("")}`];
-  if (a.sentences) return a.sentences.map((s) => `   • ${s.text}`);
+  if (a.segments)
+    return [
+      a.segments
+        .map((s) => (s.blank ? `______ (${(s.blank.options || []).join(" / ")})` : s.text))
+        .join(""),
+    ];
+  if (a.sentences) return a.sentences.map((s) => `◯ ${s.text}`);
   return [];
 }
-const esc = (s) =>
-  String(s || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
 
-// ── HTML packet ──
-function buildHTML(domain, levelKey, level) {
-  const acts = level.activities || [];
-  const rows = acts
+function visualsHTML(a) {
+  const pics = list(a.picture).map(
+    (p) => `<img class="pic" src="/access-practice-lab/${esc(p.src)}" alt="${esc(p.alt)}">`,
+  );
+  const charts = list(a.chart).map(
+    (c) =>
+      `<table class="data"><caption>${esc(c.title || "Chart")}</caption><tr>${c.data.map((d) => `<th>${esc(d.label)}</th>`).join("")}</tr><tr>${c.data.map((d) => `<td>${esc(d.value)}</td>`).join("")}</tr></table>`,
+  );
+  const table = a.table
+    ? `<table class="data"><caption>${esc(a.table.caption || "")}</caption><tr>${a.table.headers.map((h) => `<th>${esc(h)}</th>`).join("")}</tr>${a.table.rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</table>`
+    : "";
+  return [...pics, ...charts, table].join("");
+}
+
+function itemHTML(a, n, { teacher, listening }) {
+  const lines = choiceLines(a);
+  const writeLines =
+    a.type === "constructed"
+      ? `<div class="lines">${"<div></div>".repeat(a.models ? 6 : 4)}</div>`
+      : "";
+  const sheet = (a.sheet || [])
     .map(
-      (a, n) => `
-    <article class="act">
-      <h3>${n + 1}. ${esc(a.title)} <span class="type">${esc(a.type)}</span></h3>
-      <p class="dir"><strong>Directions:</strong> ${esc(a.directions)}</p>
-      ${a.scene ? `<p class="scene">${esc(a.scene)}</p>` : ""}
-      ${a.prompt ? `<p class="prompt">${esc(a.prompt)}</p>` : ""}
-      ${a.adminScript ? `<p class="script"><strong>Read aloud:</strong> ${esc(a.adminScript)}</p>` : ""}
-      ${choicesText(a)
-        .map((c) => `<div class="choice">${esc(c.trim())}</div>`)
-        .join("")}
-      ${(a.vocabulary || []).length ? `<p class="vocab"><strong>Vocabulary:</strong> ${a.vocabulary.map((v) => esc(v[0])).join(", ")}</p>` : ""}
-      <p class="key"><strong>Teacher key:</strong> ${esc(answerKey(a))}</p>
-    </article>`,
+      (s) =>
+        `<h4>${esc(s.heading)}</h4><ol>${(s.items || []).map((i) => `<li>${esc(i)}<div class="line"></div></li>`).join("")}</ol>`,
     )
     .join("");
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ACCESS Practice Packet — ${esc(domain)} ${esc(levelKey)}</title>
+  const script = listening && a.script ? list(a.script).join(" ") : "";
+  return `<article class="act">
+    <h3>${n}. ${esc(a.title)}</h3>
+    <p class="dir">${esc(a.directions)}</p>
+    ${visualsHTML(a)}
+    ${listening ? (teacher && script ? `<p class="script"><strong>Read aloud:</strong> ${esc(script)}</p>` : `<p class="listen">🎧 Listen to your teacher. Then answer.</p>`) : ""}
+    ${
+      list(a.passage).length && !listening
+        ? `<div class="passage">${a.passageTitle ? `<h4>${esc(a.passageTitle)}</h4>` : ""}${list(
+            a.passage,
+          )
+            .map((p) => `<p>${esc(p)}</p>`)
+            .join("")}</div>`
+        : ""
+    }
+    ${a.prompt ? `<p class="prompt">${esc(a.prompt)}</p>` : ""}
+    ${lines.map((l) => `<div class="choice">${esc(l)}</div>`).join("")}
+    ${sheet}${writeLines}
+    ${teacher && answerKey(a) ? `<p class="key"><strong>Key:</strong> ${esc(answerKey(a))}</p>` : ""}
+  </article>`;
+}
+
+function packetHTML({ band, domain, level, L, teacher }) {
+  const acts = orderedActivities(L);
+  const listening = domain === "Listening";
+  const tier = TIER[level] ? `${TIER[level]} (${L.tier?.range || ""})` : L.displayLabel || level;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACCESS Practice — ${esc(domain)} · ${esc(tier)} · Grades ${esc(band)}${teacher ? " (teacher)" : ""}</title>
 <style>
-  body{font-family:"Atkinson Hyperlegible",Georgia,serif;max-width:8.2in;margin:0 auto;padding:0.6in;color:#14223a;line-height:1.5}
-  h1{font-family:"Nunito",sans-serif;color:#15487f;margin:0 0 2px}
-  .sub{color:#56627a;margin:0 0 18px}
-  .act{border:1px solid #d6e0ec;border-radius:10px;padding:12px 14px;margin:0 0 14px;break-inside:avoid}
-  .act h3{font-family:"Nunito",sans-serif;color:#205fa6;margin:0 0 6px;font-size:1.05rem}
-  .type{font-size:.7rem;color:#56627a;font-weight:600;text-transform:uppercase}
-  .scene{font-size:2rem;text-align:center;margin:6px 0}
-  .prompt{font-weight:700}
-  .choice{margin:2px 0 2px 8px}
-  .key{background:#fff8e7;border-left:4px solid #a96f16;padding:6px 10px;margin-top:8px;font-size:.92rem}
-  .script{font-style:italic;color:#334}
-  .toolbar{margin:0 0 16px}
-  button{font:inherit;padding:8px 16px;border-radius:8px;border:1px solid #205fa6;background:#205fa6;color:#fff;cursor:pointer}
-  @media print{.toolbar{display:none}.act{border-color:#bbb}}
+body{font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;max-width:8in;margin:0 auto;padding:.5in;color:#1d2730}
+h1{margin:0;font-size:1.5rem}.sub{color:#4a5864;margin:.2rem 0 1rem}.name{margin:0 0 1rem;font-weight:700}
+.act{border:1px solid #cfd6dc;border-radius:10px;padding:.7rem .9rem;margin:0 0 .9rem;break-inside:avoid}
+.act h3{margin:0 0 .3rem;font-size:1.05rem}.dir{color:#4a5864;margin:.2rem 0}.prompt{font-weight:700}
+.pic{display:block;max-width:4.5in;width:100%;margin:.4rem auto;border:1px solid #ddd;border-radius:8px}
+.passage{background:#f4f2ed;border-radius:8px;padding:.4rem .8rem;margin:.4rem 0}.choice{margin:.15rem 0 .15rem .6rem}
+.data{border-collapse:collapse;margin:.4rem 0}.data caption{text-align:left;font-weight:700}.data th,.data td{border:1px solid #999;padding:.2rem .6rem}
+.lines div,.line{border-bottom:1px solid #888;height:1.7rem}.listen{font-weight:700}.script{background:#eef6f5;padding:.4rem .6rem;border-radius:6px}
+.key{background:#fff4dc;border-left:4px solid #a96f16;padding:.35rem .6rem;margin-top:.5rem;font-size:.92rem}
+.toolbar{margin:0 0 1rem}button{font:inherit;padding:.5rem 1rem;border-radius:8px;border:0;background:#1f766f;color:#fff;cursor:pointer}
+@media print{.toolbar{display:none}}
 </style></head><body>
-  <div class="toolbar"><button onclick="window.print()">🖨️ Print / Save as PDF</button></div>
-  <h1>ACCESS Practice Packet</h1>
-  <p class="sub">${esc(domain)} · ${esc(level.range || levelKey)} · ${acts.length} activities · Grades 6–8 · Teacher copy (with answer key)</p>
-  ${rows}
+<div class="toolbar"><button onclick="window.print()">🖨️ Print / Save as PDF</button></div>
+<h1>ACCESS Practice Packet${teacher ? " — Teacher copy" : ""}</h1>
+<p class="sub">${esc(domain)} · ${esc(tier)} · Grades ${esc(band)} · ${acts.length} activities</p>
+${teacher ? "" : '<p class="name">Name: ______________________ Date: ____________</p>'}
+${acts.map((a, i) => itemHTML(a, i + 1, { teacher, listening: listening || a.listening })).join("")}
+<p class="sub">Original classroom practice inspired by WIDA ACCESS — not an official WIDA test.</p>
 </body></html>`;
 }
 
-// ── DOCX packet ──
-function buildDocx(domain, levelKey, level) {
-  const acts = level.activities || [];
-  const NAVY = "15487F",
-    BLUE = "205FA6",
-    GOLD = "A96F16",
-    SLATE = "56627A";
+function packetDocx({ band, domain, level, L, teacher }) {
+  const { Document, Paragraph, TextRun, HeadingLevel, BorderStyle } = docx;
+  const acts = orderedActivities(L);
+  const listening = domain === "Listening";
+  const P = (runs, opts = {}) =>
+    new Paragraph({
+      ...opts,
+      children: runs.map((r) => (typeof r === "string" ? new TextRun(r) : new TextRun(r))),
+    });
   const children = [
     new Paragraph({
       heading: HeadingLevel.TITLE,
-      children: [new TextRun({ text: "ACCESS Practice Packet", color: NAVY, bold: true })],
-    }),
-    new Paragraph({
-      spacing: { after: 240 },
       children: [
         new TextRun({
-          text: `${domain} · ${level.range || levelKey} · ${acts.length} activities · Grades 6–8 · Teacher copy (with answer key)`,
-          color: SLATE,
-          italics: true,
+          text: `ACCESS Practice Packet${teacher ? " — Teacher copy" : ""}`,
+          bold: true,
         }),
       ],
     }),
+    P(
+      [
+        {
+          text: `${domain} · ${TIER[level] || level} · Grades ${band} · ${acts.length} activities`,
+          italics: true,
+        },
+      ],
+      { spacing: { after: 200 } },
+    ),
   ];
-  acts.forEach((a, n) => {
+  if (!teacher) children.push(P(["Name: ______________________   Date: ____________"]));
+  acts.forEach((a, i) => {
     children.push(
       new Paragraph({
         heading: HeadingLevel.HEADING_2,
         spacing: { before: 200 },
-        children: [
-          new TextRun({ text: `${n + 1}. ${a.title}`, color: BLUE, bold: true }),
-          new TextRun({ text: `   [${a.type}]`, color: SLATE, size: 16 }),
-        ],
+        children: [new TextRun({ text: `${i + 1}. ${a.title}`, bold: true })],
       }),
     );
-    children.push(
-      new Paragraph({
-        children: [
-          new TextRun({ text: "Directions: ", bold: true }),
-          new TextRun(a.directions || ""),
-        ],
-      }),
-    );
-    if (a.scene)
+    children.push(P([a.directions || ""]));
+    for (const p of list(a.picture))
+      children.push(P([{ text: `[Picture: ${p.alt}]`, italics: true }]));
+    for (const c of list(a.chart))
+      children.push(
+        P([
+          {
+            text: `${c.title || "Chart"}: ${c.data.map((d) => `${d.label} ${d.value}`).join(", ")}`,
+            italics: true,
+          },
+        ]),
+      );
+    if (a.table)
+      children.push(
+        P([
+          {
+            text: `${a.table.caption || "Table"}: ${a.table.rows.map((r) => r.join(" ")).join("; ")}`,
+            italics: true,
+          },
+        ]),
+      );
+    if ((listening || a.listening) && a.script && teacher)
+      children.push(
+        P([
+          { text: "Read aloud: ", bold: true },
+          { text: list(a.script).join(" "), italics: true },
+        ]),
+      );
+    if ((listening || a.listening) && !teacher)
+      children.push(P([{ text: "Listen to your teacher. Then answer.", bold: true }]));
+    if (list(a.passage).length && !(listening || a.listening))
+      for (const para of list(a.passage)) children.push(P([para]));
+    if (a.prompt) children.push(P([{ text: a.prompt, bold: true }]));
+    for (const l of choiceLines(a)) children.push(P([l]));
+    for (const s of a.sheet || []) {
+      children.push(P([{ text: s.heading, bold: true }]));
+      for (const it of s.items || [])
+        children.push(P([it]), P(["______________________________________________"]));
+    }
+    if (a.type === "constructed")
+      for (let k = 0; k < 4; k++)
+        children.push(P(["______________________________________________"]));
+    if (teacher && answerKey(a))
       children.push(
         new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [new TextRun({ text: a.scene, size: 40 })],
+          border: { left: { style: BorderStyle.SINGLE, size: 18, color: "A96F16", space: 8 } },
+          shading: { fill: "FFF4DC" },
+          children: [new TextRun({ text: "Key: ", bold: true }), new TextRun(answerKey(a))],
         }),
       );
-    if (a.prompt)
-      children.push(new Paragraph({ children: [new TextRun({ text: a.prompt, bold: true })] }));
-    if (a.adminScript)
-      children.push(
-        new Paragraph({
-          children: [
-            new TextRun({ text: "Read aloud: ", bold: true }),
-            new TextRun({ text: a.adminScript, italics: true }),
-          ],
-        }),
-      );
-    for (const c of choicesText(a))
-      children.push(new Paragraph({ children: [new TextRun(c.trim())] }));
-    if ((a.vocabulary || []).length)
-      children.push(
-        new Paragraph({
-          children: [
-            new TextRun({ text: "Vocabulary: ", bold: true }),
-            new TextRun(a.vocabulary.map((v) => v[0]).join(", ")),
-          ],
-        }),
-      );
-    children.push(
-      new Paragraph({
-        border: { left: { style: BorderStyle.SINGLE, size: 18, color: GOLD, space: 8 } },
-        shading: { fill: "FFF8E7" },
-        children: [
-          new TextRun({ text: "Teacher key: ", bold: true, color: GOLD }),
-          new TextRun(answerKey(a)),
-        ],
-      }),
-    );
   });
   return new Document({
     sections: [
       {
-        properties: { page: { margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 } } },
+        properties: { page: { margin: { top: 1080, bottom: 1080, left: 1080, right: 1080 } } },
         children,
       },
     ],
   });
 }
 
-// ── generate ──
 try {
-  mkdirSync(outDir, { recursive: true });
+  mkdirSync(studentDir, { recursive: true });
+  mkdirSync(teacherDir, { recursive: true });
   const manifest = [];
-  let html = 0,
-    docx = 0;
   const jobs = [];
-  for (const [domain, d] of Object.entries(DATA.domains)) {
-    for (const [levelKey, level] of Object.entries(d.levels)) {
-      if (!(level.activities || []).length) continue;
-      const base = `${domain}-${levelKey}`.replace(/\s+/g, "");
-      writeFileSync(join(outDir, `${base}.html`), buildHTML(domain, levelKey, level));
-      html++;
-      if (docxAvailable) {
-        jobs.push(
-          Packer.toBuffer(buildDocx(domain, levelKey, level)).then((buf) => {
-            writeFileSync(join(outDir, `${base}.docx`), buf);
-            docx++;
-          }),
-        );
+  let html = 0;
+  for (const band of BANDS)
+    for (const { domain, data } of loadBand(band))
+      for (const [level, L] of Object.entries(data.levels || {})) {
+        if (!(L.activities || []).length) continue;
+        const base = fileBase(band, domain, level);
+        const job = { band, domain, level, L };
+        writeFileSync(join(studentDir, `${base}.html`), packetHTML({ ...job, teacher: false }));
+        writeFileSync(join(teacherDir, `${base}.html`), packetHTML({ ...job, teacher: true }));
+        html += 2;
+        if (docx) {
+          for (const [dir, teacher] of [
+            [studentDir, false],
+            [teacherDir, true],
+          ])
+            jobs.push(
+              docx.Packer.toBuffer(packetDocx({ ...job, teacher })).then((buf) =>
+                writeFileSync(join(dir, `${base}.docx`), buf),
+              ),
+            );
+        }
+        manifest.push({ band, domain, level, base, count: L.activities.length });
       }
-      manifest.push({ domain, levelKey, base, count: (level.activities || []).length });
-    }
-  }
   await Promise.all(jobs);
-  writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 1));
+  writeFileSync(join(studentDir, "manifest.json"), JSON.stringify(manifest, null, 1));
+  writeFileSync(join(teacherDir, "manifest.json"), JSON.stringify(manifest, null, 1));
   console.log(
-    `generate-access-printables: ${html} HTML + ${docx} DOCX packets → ${outDir.replace(root + "/", "")}`,
+    `generate-access-printables: ${html} HTML + ${jobs.length} DOCX packets (${manifest.length} student + ${manifest.length} teacher)`,
   );
 } catch (e) {
   console.warn("generate-access-printables: non-fatal error, continuing build —", e.message);

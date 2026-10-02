@@ -1020,15 +1020,11 @@ export function injectSmallGroupStyles(accent) {
     .sg-tabs .sg-step .lbl{display:inline}.sg-match-options{grid-template-columns:1fr}
     .sg-h{gap:11px;margin-bottom:15px;padding-bottom:12px}.sg-h .n{width:34px;height:34px;font-size:14px}
     .card,.prob,.sg-stage{padding:17px}.sg-pulse{display:grid;grid-template-columns:1fr;gap:8px}.sg-pulse-btn{width:100%}
-    /* Site-wide passport pill mounts fixed top-left, where it collides with the
-       studio's mode bar on phones. Dropping it "just below the bar" (top:70px)
-       does not survive: the bar wraps to two rows under 420px, so the same
-       offset lands on the bar at one width and across the hero's accent rule at
-       another. Move it out of the top band entirely — every other floating
-       control (supports dock, annotation rail, Save/Resume, Math Workbench) is
-       pinned right, so bottom-left is the one corner with nothing in it.
-       !important because the passport stylesheet lazy-loads after this one. */
-    .ntp-pill{top:auto!important;bottom:12px!important;left:12px!important}}
+    /* Keep the passport, timer, save controls, and Hide buttons in separate
+       rows on phones. The passport stylesheet arrives later. */
+    .ntp-pill{top:auto!important;bottom:122px!important;left:12px!important}
+    .sg-station-timer{bottom:68px!important;left:14px!important;right:auto!important}
+    #mwb-launcher{bottom:124px!important}}
     @media(max-width:420px){body{font-size:16px}.sg-hero h1{font-size:29px}.sg-context,.sg-talk-q{font-size:17px}.sg-tabs{position:static;grid-template-columns:repeat(2,1fr)}.sg-problem-nav{grid-template-columns:1fr 1fr}.sg-problem-count{grid-column:1/-1;grid-row:1}.sg-problem-support-head{align-items:flex-start;flex-direction:column}.sg-problem-visual svg{min-height:210px}.sg-fill-step{grid-template-columns:auto minmax(0,1fr)}.sg-step-check{grid-column:2}.sg-step-status{grid-column:1/-1}.btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice,.sg-another-choice{width:100%;justify-content:flex-start}.sg-another-panel{padding:13px}.sg-another-choices{grid-template-columns:1fr}.sg-timer{align-items:flex-start;flex-direction:column}.sg-timer-track{width:100%;flex:none}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none!important}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.sg-match-btn.correct,.sg-match-btn.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad,.sg-fill-step.complete{animation:none}.btn,.choice{transition:none}}
     @media print{:root{--sg-paper:#fff;--sg-card:#fff;--sg-figure:#fff;--sg-text:#111;--sg-ink:#12355b;--sg-muted:#3f5166;--sg-soft:#f2f4f8;--sg-line:#cfd7e2;--sg-rule:#12355b;--sg-fill:#e9edf2;--sg-good-bg:#eef8f1;--sg-good-ink:#0e5033;--sg-bad-bg:#fdeeec;--sg-bad-ink:#7c2d24;--sg-warn-bg:#fdf3e3;--sg-warn-ink:#743706}

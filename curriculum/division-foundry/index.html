@@ -1163,7 +1163,7 @@
         right: 12px;
         border-radius: 99px;
         padding: 4px 11px;
-        background: var(--copper);
+        background: #9d4228;
         color: #fff;
         font-weight: 900;
         font-size: 12.5px;
@@ -1299,7 +1299,9 @@
         line-height: 1.3;
       }
     </style>
-  </head>
+      <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+    <script src="/assets/game-studio.js?v=20261002" defer></script>
+</head>
   <body>
     <a class="sr" href="#main">Skip to the game</a>
 
@@ -1531,7 +1533,7 @@
         }
 
         function sparks(n) {
-          if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          if (window.GameStudio?.settings.reducedMotion || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches))
             return;
           var cols = ["#edb54a", "#e0784f", "#37c8a6", "#ffffff"];
           for (var i = 0; i < n; i++) {
@@ -1583,6 +1585,9 @@
         }
 
         var run = null;
+        window.addEventListener("DOMContentLoaded", function () {
+          window.GameStudio?.register({ title: "Order Up!", instructions: ["Choose an order from the customer board. Higher difficulty pays more.", "Work the division in your notebook, then enter your answer. Hints and retries are always available.", "Serve the order, read the receipt, and use your earnings to upgrade your truck."] });
+        });
 
         function paintGauges() {
           el("gStars").textContent = "$" + state.ingots;
@@ -2028,6 +2033,7 @@
           wrap.appendChild(btn);
 
           function submit() {
+            if (!run || run.completed || window.GameStudio?.paused) return;
             var vals = inputs.map(function (i2) {
               return i2.value.trim();
             });
@@ -2057,6 +2063,7 @@
               return;
             }
             var ok = cfg.onSubmit(nums);
+            window.GameStudio?.emit("feedback", { correct: !!ok });
             if (!ok) {
               wrap.classList.remove("shake");
               void wrap.offsetWidth;
@@ -2177,7 +2184,7 @@
         }
 
         function lock() {
-          if (!run || !run.mod) return;
+          if (!run || !run.mod || run.completed) return;
           var res = run.mod.check();
           var box = el("say");
           if (res.soft) {
@@ -2204,10 +2211,12 @@
             st = run.wrong + run.tries > 4 ? 1 : 2;
           var key = k(run.shop.id, run.lv);
           if ((state.stars[key] || 0) < st) state.stars[key] = st;
+          run.completed = true;
           var pay = payFor(run.shop.id, run.lv, st);
           if (run.rush) pay = Math.round(pay * 1.5);
           state.ingots += pay;
           state.jobsDone++;
+          window.GameStudio?.emit("complete", { score: pay, message: "Order served! Earned $" + pay + ". Read your receipt, then choose your next order." });
           save();
           paintGauges();
           var gb = el("gStars");
@@ -2242,14 +2251,16 @@
           sparks(st * 10);
           payDrop(pay);
           say("Correct. Paid " + pay + " dollars.");
-          setTimeout(function () {
-            paintFoundry();
-            show("scMap");
-          }, 2400);
+          var nextOrder = document.createElement("button");
+          nextOrder.type = "button";
+          nextOrder.className = "b brass lg";
+          nextOrder.textContent = "Choose the next order →";
+          nextOrder.addEventListener("click", function () { paintFoundry(); show("scMap"); }, { once: true });
+          box.appendChild(nextOrder);
         }
 
         function payDrop(amount) {
-          if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          if (window.GameStudio?.settings.reducedMotion || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches))
             return;
           var d = document.createElement("span");
           d.className = "paydrop";
@@ -2261,7 +2272,7 @@
         }
 
         function hint() {
-          if (!run || !run.mod) return;
+          if (!run || !run.mod || run.completed) return;
           run.tier = Math.min(2, run.tier + 1);
           var t = run.mod.hint(run.tier);
           el("say").className = "say tip on";

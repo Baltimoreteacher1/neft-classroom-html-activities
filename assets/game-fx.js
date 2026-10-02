@@ -1491,7 +1491,21 @@
       <button class="pub-btn" id="btn-game-contrast" onclick="toggleGameContrast()">🌓 Contrast: NORM</button>
       <button class="pub-btn" id="btn-game-controls" onclick="toggleControlsDialog()">⌨️ Controls</button>
     `;
-    document.body.appendChild(toolbar);
+    // Practice Arcade has an explicit game stage. Keep optional tools in one native
+    // disclosure rather than covering the title and canvas with a floating row.
+    var publisherHeader = document.querySelector(".ewl-arcade-header-bar");
+    var toolsMenu;
+    if (publisherHeader && document.getElementById("pa-stage")) {
+      toolsMenu = document.createElement("details");
+      toolsMenu.className = "game-tools-menu no-print";
+      var toolsSummary = document.createElement("summary");
+      toolsSummary.textContent = "Game tools";
+      toolsMenu.appendChild(toolsSummary);
+      toolsMenu.appendChild(toolbar);
+      publisherHeader.insertAdjacentElement("afterend", toolsMenu);
+    } else {
+      document.body.appendChild(toolbar);
+    }
 
     // Accessible streak badge (always available; calm under reduced motion)
     var streakAccess = document.createElement("div");
@@ -1550,7 +1564,8 @@
       <button class="arcade-switch" id="sw-filter" onclick="toggleCabinetFilter()">🎛️ Audio LPF</button>
       <canvas id="gfx-equalizer" width="70" height="24"></canvas>
     `;
-    document.body.appendChild(cabinet);
+    if (toolsMenu) toolsMenu.appendChild(cabinet);
+    else document.body.appendChild(cabinet);
 
     // Start the audio-reactive visualizer renderer loop
     drawBezelEqualizer();

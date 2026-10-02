@@ -1,6 +1,7 @@
 import { COPY_FIELDS } from "../shared/copy-defaults.js";
 import {
   DAYS,
+  homeworkLabel,
   normalizeLessons,
   resolveSection,
   weekHasMeaningfulContent,
@@ -41,7 +42,8 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
       ["lesson", "Lesson"],
       ["review", "Review & practice"],
       ["assessment", "Learning check"],
-      ["no-class", "No class / no post"],
+      ["no-class", "No homework assigned"],
+      ["pending", "Not posted yet"],
     ])
       status.append(option(value, label, entry.status === value));
     statusLabel.append(status);
@@ -49,7 +51,9 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
     const lesson = node("select");
     lesson.append(option("", "Choose a lesson", !entry.lessonId));
     for (const item of normalized) {
-      lesson.append(option(item.id, `${item.id} · ${item.title}`, entry.lessonId === item.id));
+      lesson.append(
+        option(item.id, `${homeworkLabel(item)} · ${item.title}`, entry.lessonId === item.id),
+      );
     }
     lesson.disabled = entry.status !== "lesson";
     lessonLabel.append(lesson);
@@ -159,7 +163,10 @@ export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
   // Same computation the family page runs, so this preview cannot over-promise.
   const homework = weekHomework(snapshot, inputLessons, snapshot.homeworkOverrides, section.id);
   const plannedDays = section.week.days.filter(
-    (day) => day.status !== "no-class" || day.lessonId || String(day.note ?? "").trim(),
+    (day) =>
+      !["no-class", "pending"].includes(day.status) ||
+      day.lessonId ||
+      String(day.note ?? "").trim(),
   ).length;
   const summary = node(
     "p",
@@ -185,7 +192,7 @@ export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
           "span",
           "",
           lesson
-            ? `Lesson ${lesson.id} · ${lesson.title}`
+            ? `${homeworkLabel(lesson)} · ${lesson.title}`
             : entry.note || entry.status.replace("-", " "),
         ),
       );
@@ -198,7 +205,11 @@ export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
   for (const item of homework) {
     const card = node("article");
     card.append(
-      node("strong", "", `${(item.days ?? []).join(" · ")} — Lesson ${item.id} · ${item.title}`),
+      node(
+        "strong",
+        "",
+        `${(item.days ?? []).join(" · ")} — ${homeworkLabel(item)} · ${item.title}`,
+      ),
       node("p", "", item.directions),
     );
     if (item.arcadePath) card.append(node("p", "", `Arcade included · ${item.arcadeTitle}`));

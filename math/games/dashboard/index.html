@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta
       name="description"
-      content="Teacher analytics dashboard for the Grade 6 math games — reads EduPulse and Save/Resume data stored on this device to show attempts, best scores, stars, mastery signals, and a needs-review callout. Fully client-side; nothing leaves this browser."
+      content="Teacher analytics dashboard for the Grade 6 math games — reads EduPulse and Save/Resume data stored on this device to show attempts, best scores, stars, session performance, and a needs-review callout. Fully client-side; nothing leaves this browser."
     />
     <title>Math Games — Teacher Dashboard | Neft Teacher</title>
     <link rel="stylesheet" href="/assets/shared.css" />
@@ -24,29 +24,15 @@
 </head>
   <body>
     <a class="skip-link" href="#dash-main">Skip to dashboard</a>
-    
-      <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
-      </div>
-  
 <main class="page-shell">
       <header class="hero compact-hero" id="dash-head">
-        <p class="eyebrow">Math Curriculum · Teacher Analytics</p>
+        <p class="eyebrow">Math Curriculum · Device Progress</p>
         <h1>Math Games Dashboard</h1>
         <p class="hero-copy">
           Reads the EduPulse and Save/Resume data saved in this browser and
           summarizes play across the Grade 6 math games: attempts, best score,
-          stars, mastery signal, and who needs review. Pure client-side —
-          nothing leaves this device.
+          stars, session performance, and who needs review. Pure client-side —
+          nothing leaves this device. These results describe practice sessions; they do not certify skill mastery.
         </p>
         <p class="dash-scope" id="scope-line" aria-live="polite"></p>
       </header>
@@ -75,14 +61,12 @@
         <button class="dash-btn" id="btn-print" type="button">⎙ Print</button>
         <button class="dash-btn" id="btn-import-backups" type="button" onclick="triggerBackupImport()">📂 Import Backups</button>
         <input type="file" id="file-import-backups" multiple accept=".json" style="display:none;" onchange="handleBackupImport(event)" />
-        <button class="dash-btn" id="btn-export-lms" type="button" onclick="if(window.NeftSaveResume && window.NeftSaveResume.getLmsGradePayload) { var p=window.NeftSaveResume.getLmsGradePayload(); alert('🎓 LMS / SCORM Payload:\n\n' + JSON.stringify(p, null, 2)); }">🎓 LMS Export</button>
-        <button class="dash-btn" id="btn-certificate" type="button" onclick="if(window.NeftSaveResume && window.NeftSaveResume.openCertificateModal) { window.NeftSaveResume.openCertificateModal(); }">🏆 Certificate</button>
-        <button class="dash-btn" id="btn-family-card" type="button" onclick="if(window.NeftSaveResume && window.NeftSaveResume.openFamilyCardModal) { window.NeftSaveResume.openFamilyCardModal(); }">📱 Family Card</button>
         <button class="dash-btn primary" id="btn-export" type="button">
           ⤓ Export CSV
         </button>
       </section>
 
+      <p id="dashboard-import-status" role="status" aria-live="polite"></p>
       <div id="dash-main">
         <section
           class="dash-cards"
@@ -99,7 +83,7 @@
           <div class="section-heading">
             <h2 id="review-h">Needs review</h2>
             <p>
-              Sessions with a low mastery signal (1 star, low score, or a
+              Sessions to revisit (1 star, low score, or a
               not-yet-finished game) — a quick list of who to check in with.
             </p>
           </div>
@@ -197,31 +181,24 @@
           document.getElementById('file-import-backups').click();
         };
         
-        window.handleBackupImport = function(event) {
-          var files = event.target.files;
+        window.handleBackupImport = async function(event) {
+          var files = Array.from(event.target.files || []);
           if (!files.length) return;
-          var loaded = 0;
-          Array.prototype.forEach.call(files, function(file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-              try {
-                var data = JSON.parse(e.target.result);
-                if (data && (data.activityId || data.studentName)) {
-                  var code = data.code || ('IMP-' + Math.random().toString(36).substring(2, 6).toUpperCase());
-                  var key = "nsr:rec:" + code;
-                  localStorage.setItem(key, JSON.stringify(data));
-                  loaded++;
-                }
-              } catch(err) {
-                console.error("Error parsing backup file", err);
-              }
-              if (loaded === files.length) {
-                alert("Successfully imported " + loaded + " student backup(s)!");
-                window.location.reload();
-              }
-            };
-            reader.readAsText(file);
-          });
+          var outcomes = await Promise.all(files.map(async function(file) {
+            try {
+              if (file.size > 2 * 1024 * 1024) throw new Error("File too large");
+              var data = JSON.parse(await file.text());
+              if (!data || data.schema !== 1 || typeof data.activityId !== "string" || !data.activityId || !data.state || typeof data.state !== "object" || Array.isArray(data.state)) throw new Error("Unsupported backup");
+              var code = String(data.saveCode || ('IMP-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6))).replace(/[^A-Za-z0-9_-]/g, '').slice(0,64);
+              data.saveCode = code;
+              localStorage.setItem("nsr:rec:" + code, JSON.stringify(data));
+              return true;
+            } catch (_) { return false; }
+          }));
+          var loaded = outcomes.filter(Boolean).length;
+          document.getElementById("dashboard-import-status").textContent = loaded + " of " + files.length + " backups imported. " + (loaded < files.length ? "Skipped files were unsupported, too large, or could not be saved." : "Progress is available below.");
+          event.target.value = "";
+          load();
         };
 
 
@@ -432,14 +409,14 @@
           var stars = agg.bestStars;
           var pct = agg.bestPercent;
           if (stars != null) {
-            if (stars >= 3) return { level: "mastery", label: "Mastery" };
-            if (stars >= 2) return { level: "developing", label: "On track" };
-            return { level: "review", label: "Needs review" };
+            if (stars >= 3) return { level: "mastery", label: "Strong session" };
+            if (stars >= 2) return { level: "developing", label: "Practicing" };
+            return { level: "review", label: "Revisit questions" };
           }
           if (pct != null) {
-            if (pct >= 85) return { level: "mastery", label: "Mastery" };
-            if (pct >= 60) return { level: "developing", label: "On track" };
-            return { level: "review", label: "Needs review" };
+            if (pct >= 85) return { level: "mastery", label: "Strong session" };
+            if (pct >= 60) return { level: "developing", label: "Practicing" };
+            return { level: "review", label: "Revisit questions" };
           }
           // No score signal: a save with low progress means still working.
           if (agg.bestProgress != null && agg.bestProgress < 50)
@@ -876,15 +853,7 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Calm self-paced review lab: practice, match, sort, and solve at your own pace!" data-es="Práctica a tu propio ritmo: clasifica, empareja y resuelve.">Calm self-paced review lab: practice, match, sort, and solve at your own pace!</p>
-        </div>
-      </div>
+
   
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>

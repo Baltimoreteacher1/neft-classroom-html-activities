@@ -8,25 +8,97 @@
     @import url("/assets/fonts/fraunces-87aa83.css");
     @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
-    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; font-size: 17px; line-height: 1.55; }
+    main { max-width: 900px; margin: 0 auto; }
+    .resource-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .resource-toolbar a { color: #155f67; font-weight: 650; padding: 10px 0; }
+    .resource-toolbar button { min-height: 44px; border: 0; border-radius: 6px; background: #155f67; color: white; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
     .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
     .meta { color: #5a6b75; font-size: 0.9rem; }
     .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #dff2ee; }
+    .vocabulary-table { table-layout: fixed; overflow-wrap: break-word; }
+    .vocabulary-table th:first-child { width: 34%; }
     .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
     .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
     .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    .practice-box { background: #fff; }
+    .practice-box > h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } .bilingual, .notice-wonder { grid-template-columns: 1fr; } .name-line { min-width: 140px; } }
+    @page { size: Letter; margin: .55in; }
     @media print {
-      body { padding: 12px; }
+      body { padding: 0; font-size: 11.5pt; }
       .no-print { display: none; }
       .box { break-inside: avoid; }
+      .practice-box { break-inside: auto; border: 0; padding: 0; }
+      h1, h2, h3 { break-after: avoid; }
+      p { orphans: 3; widows: 3; }
+      .bilingual { display: block; }
     }
-    
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
+
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
    serif headings + paper ground + AA-safe ink. No layout/size changes. */
@@ -76,9 +148,10 @@ header.packet h1::after{
 </head>
 <body>
 <main>
-  <div class="no-print" style="text-align:right; margin-bottom:12px;">
-    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
-  </div>
+  <nav class="no-print resource-toolbar" aria-label="Handout actions">
+    <a href="/lessons/3-4/">← Back to lesson</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </nav>
   <header class="header">
     <h1>Determine Equivalent Ratios Using Graphs</h1>
     <div class="meta">6.AT.3a · Unit 3 · Lesson 4</div>
@@ -89,7 +162,7 @@ header.packet h1::after{
     <div class="box">
       <h2>Objectives / Objetivos</h2>
       <p lang="en"><strong>Content Objective:</strong> I can graph the values from a ratio table as points on the coordinate plane.</p>
-      
+
       <p lang="en"><strong>Language Objective:</strong> I can explain my graph using the words coordinate plane, ordered pair, origin, and proportional.</p>
     </div>
     <div class="box">
@@ -105,15 +178,16 @@ header.packet h1::after{
 
   <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
-    <table>
-      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+    <table class="vocabulary-table">
+      <thead><tr><th scope="col">Term / Término</th><th scope="col">Definition / Definición</th></tr></thead>
       <tbody><tr><td><strong>Graph Ratio Tables</strong><br><span lang="es">Representar tablas de razones en una gráfica</span></td><td>Plot the paired values from a ratio table as ordered pairs.<br><span lang="es">Ubicar los valores emparejados de una tabla de razones como pares ordenados.</span></td></tr><tr><td><strong>Coordinate plane</strong><br><span lang="es">Plano cartesiano</span></td><td>A grid with a line going across and a line going up to plot points.<br><span lang="es">Una cuadrícula con una línea horizontal y una vertical para marcar puntos.</span></td></tr><tr><td><strong>Ordered pair</strong><br><span lang="es">Par ordenado</span></td><td>Two numbers (x, y) that tell where a point is on a grid.<br><span lang="es">Dos números (x, y) que dicen dónde está un punto en una cuadrícula.</span></td></tr><tr><td><strong>Linear pattern</strong><br><span lang="es">Patrón lineal</span></td><td>Points that make a straight line on a grid.<br><span lang="es">Puntos que forman una línea recta en una cuadrícula.</span></td></tr><tr><td><strong>Proportional</strong><br><span lang="es">Proporcional</span></td><td>Two amounts that grow together at the same rate.<br><span lang="es">Dos cantidades que crecen juntas al mismo ritmo.</span></td></tr><tr><td><strong>Origin</strong><br><span lang="es">Origen</span></td><td>The point (0, 0) where the two grid lines cross.<br><span lang="es">El punto (0, 0) donde se cruzan las dos líneas de la cuadrícula.</span></td></tr></tbody>
     </table>
   </div>
 
-  <div class="box" data-support-slot="practice">
+  <div class="box practice-box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
-    <ol><li>A ratio table shows (2, 6), (4, 12), and (6, 18). Which ordered pair comes next if the pattern continues?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>(7, 20)</li><li>(8, 24)</li><li>(8, 22)</li><li>(10, 24)</li></ol><div class="work-space"></div></li><li>Chef Reyes uses 3 cups of flour for every 1 cup of sugar. Plot the ordered pairs from the ratio table: (1,3), (2,6), (3,9), (4,12).<div class="work-space"></div></li><li>Points from a ratio table are plotted at (1, 4), (2, 8), and (3, 12). What is the ratio of y to x for each point?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>1:4</li><li>2:8</li><li>3:4</li><li>4:1</li></ol><div class="work-space"></div></li><li>Find Jada's Mistake<ol style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li><strong>Step 1:</strong> Read the ratio table — <span style="font-family:monospace;">Cookies: 2, 4, 6 | Cups of milk: 1, 2, 3</span></li><li><strong>Step 2:</strong> Write ordered pairs — <span style="font-family:monospace;">(1, 2), (2, 4), (3, 6)</span></li><li><strong>Step 3:</strong> Plot the points — <span style="font-family:monospace;">Plotted (1,2), (2,4), (3,6) on the grid</span></li><li><strong>Step 4:</strong> Conclusion — <span style="font-family:monospace;">The x-axis is cookies and y-axis is cups of milk</span></li></ol><p style="margin:6px 0 0; font-size:0.85rem;"><em>Which step has the mistake? Explain it and write the correct work.</em></p><div class="work-space"></div></li></ol>
+    <p>Read each task. Show your work in the spaces provided and explain how you know.</p>
+    <div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> A ratio table shows (2, 6), (4, 12), and (6, 18). Which ordered pair comes next if the pattern continues?</p><ol class="choices"><li><span class="ltr">A</span> (7, 20)</li><li><span class="ltr">B</span> (8, 24)</li><li><span class="ltr">C</span> (8, 22)</li><li><span class="ltr">D</span> (10, 24)</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="coordinate-grid"><p class="qtext"><span class="qnum">2.</span> Chef Reyes uses 3 cups of flour for every 1 cup of sugar. Plot the ordered pairs from the ratio table: (1,3), (2,6), (3,9), (4,12).</p><ul class="point-tasks"><li>(1, 3)</li><li>(2, 6)</li><li>(3, 9)</li><li>(4, 12)</li></ul><svg class="coordgrid" viewBox="0 0 420 420" role="img" aria-label="Blank coordinate grid; Cups of Sugar from 0 to 6, Cups of Flour from 0 to 15"><line x1="48" y1="48" x2="48" y2="372" stroke="#ddd"/><text x="48" y="390" font-size="11" text-anchor="middle" fill="#333">0</text><line x1="102" y1="48" x2="102" y2="372" stroke="#ddd"/><text x="102" y="390" font-size="11" text-anchor="middle" fill="#333">1</text><line x1="156" y1="48" x2="156" y2="372" stroke="#ddd"/><text x="156" y="390" font-size="11" text-anchor="middle" fill="#333">2</text><line x1="210" y1="48" x2="210" y2="372" stroke="#ddd"/><text x="210" y="390" font-size="11" text-anchor="middle" fill="#333">3</text><line x1="264" y1="48" x2="264" y2="372" stroke="#ddd"/><text x="264" y="390" font-size="11" text-anchor="middle" fill="#333">4</text><line x1="318" y1="48" x2="318" y2="372" stroke="#ddd"/><text x="318" y="390" font-size="11" text-anchor="middle" fill="#333">5</text><line x1="372" y1="48" x2="372" y2="372" stroke="#ddd"/><text x="372" y="390" font-size="11" text-anchor="middle" fill="#333">6</text><line x1="48" y1="372" x2="372" y2="372" stroke="#ddd"/><text x="40" y="375" font-size="11" text-anchor="end" fill="#333">0</text><line x1="48" y1="307.2" x2="372" y2="307.2" stroke="#ddd"/><text x="40" y="310.2" font-size="11" text-anchor="end" fill="#333">3</text><line x1="48" y1="242.4" x2="372" y2="242.4" stroke="#ddd"/><text x="40" y="245.4" font-size="11" text-anchor="end" fill="#333">6</text><line x1="48" y1="177.6" x2="372" y2="177.6" stroke="#ddd"/><text x="40" y="180.6" font-size="11" text-anchor="end" fill="#333">9</text><line x1="48" y1="112.80000000000001" x2="372" y2="112.80000000000001" stroke="#ddd"/><text x="40" y="115.80000000000001" font-size="11" text-anchor="end" fill="#333">12</text><line x1="48" y1="48" x2="372" y2="48" stroke="#ddd"/><text x="40" y="51" font-size="11" text-anchor="end" fill="#333">15</text><line data-axis="y" x1="48" y1="48" x2="48" y2="372" stroke="#333" stroke-width="2"/><line data-axis="x" x1="48" y1="372" x2="372" y2="372" stroke="#333" stroke-width="2"/><text x="210" y="414" font-size="12" text-anchor="middle" fill="#333">Cups of Sugar</text><text x="13" y="210" font-size="12" text-anchor="middle" fill="#333" transform="rotate(-90 13 210)">Cups of Flour</text></svg><div class="work"><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> Points from a ratio table are plotted at (1, 4), (2, 8), and (3, 12). What is the ratio of y to x for each point?</p><ol class="choices"><li><span class="ltr">A</span> 1:4</li><li><span class="ltr">B</span> 2:8</li><li><span class="ltr">C</span> 3:4</li><li><span class="ltr">D</span> 4:1</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">4.</span> Find Jada's Mistake</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Read the ratio table</span><span class="wa-work">Cookies: 2, 4, 6 | Cups of milk: 1, 2, 3</span></div><div class="wa-step"><span class="wa-lbl">Write ordered pairs</span><span class="wa-work">(1, 2), (2, 4), (3, 6)</span></div><div class="wa-step"><span class="wa-lbl">Plot the points</span><span class="wa-work">Plotted (1,2), (2,4), (3,6) on the grid</span></div><div class="wa-step"><span class="wa-lbl">Conclusion</span><span class="wa-work">The x-axis is cookies and y-axis is cups of milk</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div>
   </div>
 
   <div class="box" data-support-slot="response">

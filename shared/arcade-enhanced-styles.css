@@ -594,3 +594,17 @@ h1, h2, h3, h4, .ewl-arcade-title-group, .ewl-mastery-title, .nums, .vterm, .res
     max-width: none;
   }
 }
+
+/* Shared game controls stay readable instead of squeezing each word. */
+.ewl-arcade-controls { flex-wrap: wrap; }
+.ewl-btn-toggle { min-height: 44px; overflow-wrap: normal; word-break: normal; }
+.ewl-coach-card { max-width: 1100px; margin: 16px auto 100px; padding: 16px; gap: 12px; color: #f8fafc; background: #102e40; border: 1px solid #486b80; border-radius: 12px; font: 16px/1.5 var(--ewl-font-sans); }
+body:has(.game-tools-menu) .ntp-pill { top: auto; bottom: 132px; }
+@media (max-width: 640px) {
+  .ewl-arcade-controls { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ewl-arcade-controls > * { text-align: center; justify-content: center; overflow-wrap: normal; word-break: normal; }
+  .ewl-arcade-controls #arcade-streak-badge { grid-column: 1 / -1; }
+  .ewl-arcade-header-bar { margin-bottom: 12px; }
+  .ewl-coach-card { margin-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .ewl-btn-toggle, .ewl-back-hub-btn { transition: none; } }

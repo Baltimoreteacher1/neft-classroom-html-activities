@@ -2,6 +2,7 @@
 /** All lesson practice workbooks, including Apply Day and small-group paths. */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { withCurriculumShell } from "../tools/lib/curriculum-shell.mjs";
 import {
   lessonPath,
   listLessonDirs,
@@ -88,5 +89,5 @@ header{background:#fff;border-bottom:1px solid var(--line)}.wrap{max-width:1120p
 const search=document.getElementById('search'),count=document.getElementById('count'),empty=document.getElementById('empty');search.addEventListener('input',()=>{const query=search.value.toLowerCase().trim();let visible=0;for(const unit of document.querySelectorAll('.unit')){let unitCount=0;for(const sheet of unit.querySelectorAll('.sheet')){const show=!query||sheet.dataset.search.includes(query);sheet.hidden=!show;if(show){visible++;unitCount++}}unit.hidden=unitCount===0;if(query&&unitCount)unit.open=true}count.textContent=visible+' practice '+(visible===1?'sheet':'sheets');empty.style.display=visible?'none':'block'});
 </script></body></html>`;
 mkdirSync(join(root, "curriculum", "practice-workbooks"), { recursive: true });
-writeFileSync(out, html);
+writeFileSync(out, withCurriculumShell(html, "practice"));
 console.log(`Indexed ${files.length} practice workbooks at ${out}`);

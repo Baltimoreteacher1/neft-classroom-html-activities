@@ -1,6 +1,7 @@
 import {
   absolutePublicUrl,
   dayNote,
+  homeworkLabel,
   mergeHomework,
   normalizeLessons,
   resolveSection,
@@ -168,7 +169,9 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
         element(
           "strong",
           "lesson-number",
-          `${t.lessonWord} ${lesson.id.replace("-flagship", t.spotlightSuffix)}`,
+          lesson.kind === "unit-review"
+            ? homeworkLabel(lesson, lang)
+            : `${t.lessonWord} ${lesson.id.replace("-flagship", t.spotlightSuffix)}`,
         ),
       );
       card.append(element("p", "lesson-title", lesson.title));
@@ -193,6 +196,7 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
         review: t.statusReview,
         assessment: t.statusAssessment,
         "no-class": t.statusNoClass,
+        pending: lang === "es" ? "Aún no se ha publicado" : "Not posted yet",
       };
       card.append(element("strong", "lesson-number", labels[entry.status] ?? t.statusUpdateSoon));
       card.append(element("p", "day-note", dayNote(entry, lang) || t.checkBack));
@@ -303,7 +307,13 @@ function practiceCard(item, t, { badge = "", isToday = false, source = "library"
   );
   const meta = element("div", "homework-meta");
   meta.append(
-    element("span", "", `${t.lessonWord} ${item.id.replace("-flagship", t.spotlightSuffix)}`),
+    element(
+      "span",
+      "",
+      item.kind === "unit-review"
+        ? homeworkLabel(item, t.lessonWord === "Lección" ? "es" : "en")
+        : `${t.lessonWord} ${item.id.replace("-flagship", t.spotlightSuffix)}`,
+    ),
     element("span", "", item.estimatedTime),
   );
   card.append(meta);
@@ -414,6 +424,7 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
     review: es ? "Repaso y práctica" : "Review & practice",
     assessment: es ? "Evaluación" : "Learning check",
     "no-class": es ? "Sin lección" : "No lesson posted",
+    pending: es ? "Aún no se ha publicado" : "Not posted yet",
   };
   /* The practice link is the one thing a family needs after they leave the page,
    * so it travels with the week. One link per lesson, even when the lesson runs
@@ -440,8 +451,15 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
     ? "La práctica familiar es opcional y nunca se califica."
     : "Family practice is optional and never graded.";
   const message = weekNote(section.week, lang);
-  const body = [subject, "", intro, ...(message ? ["", message] : []), "", ...lines, "", closer].join(
-    "\n",
-  );
+  const body = [
+    subject,
+    "",
+    intro,
+    ...(message ? ["", message] : []),
+    "",
+    ...lines,
+    "",
+    closer,
+  ].join("\n");
   return { subject, body };
 }

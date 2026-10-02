@@ -119,13 +119,18 @@ function resolveSitePath(link, fromFile) {
   return abs;
 }
 
-const ACCESS_PRACTICE_SPA_RE =
-  /^\/access-practice-lab\/(Listening|Speaking|Reading|Writing|Model-Test)\//;
-
-/** Routes served by functions/access-practice-lab/[[path]].js, not static files. */
+/**
+ * Routes served by functions/access-practice-lab/[[path]].js, not static files.
+ * Mirrors that function: every extensionless path under the lab answers with the
+ * app shell, except the generated /printables/ packets.
+ */
 function isFunctionBackedRoute(link) {
   const path = link.split("#")[0].split("?")[0];
-  return ACCESS_PRACTICE_SPA_RE.test(path);
+  return (
+    path.startsWith("/access-practice-lab/") &&
+    !path.startsWith("/access-practice-lab/printables/") &&
+    !/\.[a-z0-9]+$/i.test(path)
+  );
 }
 
 /** Does this absolute path exist as a file, or as a dir with index.html? */
