@@ -3850,6 +3850,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/unit-3-adventure-review/",
+    title: "Expedition Meridian — Unit 3 Review Adventure (Ratios and Rates)",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/unit-3-test-review/",
     title: "Unit 3 Test Review | Grade 6 Family Homework",
     category: "Hub",
